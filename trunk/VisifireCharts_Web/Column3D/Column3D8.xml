@@ -1,0 +1,21 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type4" Width="500" Height="300" View3D="True">
+
+  <vc:Title Text="Visifire 3D Column Chart"/>
+  <vc:AxisX Interval="1"/>
+
+  <vc:DataSeries RenderAs="Column">
+    <vc:DataPoint AxisLabel="Jan" YValue="95"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="90"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="85"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="75"/>
+    <vc:DataPoint AxisLabel="May" YValue="70"/>
+    <vc:DataPoint AxisLabel="Jun" YValue="65"/>
+    <vc:DataPoint AxisLabel="Jul" YValue="55"/>
+    <vc:DataPoint AxisLabel="Aug" YValue="50"/>
+    <vc:DataPoint AxisLabel="Sep" YValue="45"/>
+    <vc:DataPoint AxisLabel="Oct" YValue="40"/>
+    <vc:DataPoint AxisLabel="Nov" YValue="30"/>
+    <vc:DataPoint AxisLabel="Dec" YValue="20"/>
+  </vc:DataSeries>
+</vc:Chart>

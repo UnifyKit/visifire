@@ -1,0 +1,22 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type2" Width="500" Height="300">
+
+  <vc:Title Text="Visifire Multiseries Bubble Chart" />
+
+  <vc:DataSeries Name="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue">
+    <vc:DataPoint AxisLabel="Jan" YValue="6009" ZValue="300"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="7547" ZValue="200"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="5047" ZValue="400"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="8208" ZValue="600"/>
+    <vc:DataPoint AxisLabel="May" YValue="2222" ZValue="450"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="2006" RenderAs="Bubble" ToolTipText="Size: #ZValue">
+    <vc:DataPoint YValue="3768" ZValue="200"/>
+    <vc:DataPoint YValue="6094" ZValue="250"/>
+    <vc:DataPoint YValue="7580" ZValue="300"/>
+    <vc:DataPoint YValue="3795" ZValue="300"/>
+    <vc:DataPoint YValue="6246" ZValue="350"/>
+  </vc:DataSeries>
+
+</vc:Chart>

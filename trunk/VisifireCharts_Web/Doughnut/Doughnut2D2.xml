@@ -1,0 +1,16 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type2" Width="500" Height="300">
+
+  <vc:Title Text="Visifire Doughnut Chart"/>
+
+  <vc:DataSeries Name="2005" RenderAs="Doughnut">
+    <vc:DataPoint AxisLabel="Jan" YValue="550"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="704"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="200"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="850"/>
+    <vc:DataPoint AxisLabel="May" YValue="602"/>
+    <vc:DataPoint AxisLabel="Jun" YValue="904"/>
+    <vc:DataPoint AxisLabel="Jul" YValue="750"/>
+  </vc:DataSeries>
+
+</vc:Chart>

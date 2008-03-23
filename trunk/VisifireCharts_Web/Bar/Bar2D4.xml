@@ -1,0 +1,16 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type1" Width="350" Height="400">
+
+  <vc:Title Text="Worldwide Box office Grosses" />
+  <vc:AxisX Title="Movie" />
+  <vc:AxisY Title="Total Gross (millions)" InterlacedColor="#f1f1f1" ValueFormatString="$#0.##"/>
+  
+  <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Bevel="True">
+    <vc:DataPoint AxisLabel="Transformers" YValue="706.5"/>
+    <vc:DataPoint AxisLabel="Ratatouille" YValue="620.4"/>
+    <vc:DataPoint AxisLabel="I Am Legend" YValue="582.4"/>
+    <vc:DataPoint AxisLabel="Simpsons Movie" YValue="525.5"/>
+    <vc:DataPoint AxisLabel="The Bourne Ultimatum" YValue="442.6"/>
+  </vc:DataSeries>
+
+</vc:Chart>

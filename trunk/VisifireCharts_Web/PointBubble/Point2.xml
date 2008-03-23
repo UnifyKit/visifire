@@ -1,0 +1,59 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type4" Width="500" Height="300">
+
+  <vc:Title Text="GDP Vs CPI Estimate"/>
+  <vc:AxisX Interval="1">
+    <vc:MajorGrids LineThickness="0.25"/>
+  </vc:AxisX>
+  <vc:AxisY Title="Estimate" Suffix="%"/>
+  <vc:TrendLine YValue="10" LineColor="#cdd0fc" ToolTipText="Highest Growth"/>
+
+  <vc:DataSeries Name="GDP 2008" RenderAs="Point" MarkerStyle="Diamond" MarkerSize="8">
+    <vc:DataPoint AxisLabel="Australia" YValue="3.66"/>
+    <vc:DataPoint AxisLabel="Brazil" YValue="4.42"/>
+    <vc:DataPoint AxisLabel="Canada" YValue="2.02"/>
+    <vc:DataPoint AxisLabel="China" YValue="10.63"/>
+    <vc:DataPoint AxisLabel="France" YValue="2.8"/>
+    <vc:DataPoint AxisLabel="Germany" YValue="2.00"/>
+    <vc:DataPoint AxisLabel="HongKong" YValue="5.18"/>
+    <vc:DataPoint AxisLabel="India" YValue="8.68"/>
+    <vc:DataPoint AxisLabel="Italy" YValue="1.42"/>
+    <vc:DataPoint AxisLabel="Malaysia" YValue="5.79"/>
+    <vc:DataPoint AxisLabel="Mexico" YValue="3.53"/>
+    <vc:DataPoint AxisLabel="Russia" YValue="7.00"/>
+    <vc:DataPoint AxisLabel="Singapore" YValue="6.48"/>
+    <vc:DataPoint AxisLabel="South Africa" YValue="4.52"/>
+    <vc:DataPoint AxisLabel="South Korea" YValue="4.91"/>
+    <vc:DataPoint AxisLabel="Spain" YValue="2.69"/>
+    <vc:DataPoint AxisLabel="Sweden" YValue="2.81"/>
+    <vc:DataPoint AxisLabel="Switzerland" YValue="2.01"/>
+    <vc:DataPoint AxisLabel="Taiwan" YValue="4.63"/>
+    <vc:DataPoint AxisLabel="USA" YValue="2.02"/>
+    <vc:DataPoint AxisLabel="UK" YValue="2.1"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="CPI 2008" RenderAs="Point" MarkerStyle="Diamond" MarkerSize="8">
+    <vc:DataPoint YValue="2.82"/>
+    <vc:DataPoint YValue="4.02"/>
+    <vc:DataPoint YValue="1.68"/>
+    <vc:DataPoint YValue="3.48"/>
+    <vc:DataPoint YValue="1.82"/>
+    <vc:DataPoint YValue="1.42"/>
+    <vc:DataPoint YValue="3.52"/>
+    <vc:DataPoint YValue="4.48"/>
+    <vc:DataPoint YValue="2.9"/>
+    <vc:DataPoint YValue="2.49"/>
+    <vc:DataPoint YValue="3.79"/>
+    <vc:DataPoint YValue="8.41"/>
+    <vc:DataPoint YValue="1.48"/>
+    <vc:DataPoint YValue="5.91"/>
+    <vc:DataPoint YValue="2.82"/>
+    <vc:DataPoint YValue="3.29"/>
+    <vc:DataPoint YValue="2.49"/>
+    <vc:DataPoint YValue="1.32"/>
+    <vc:DataPoint YValue="1.68"/>
+    <vc:DataPoint YValue="2.01"/>
+    <vc:DataPoint YValue="2.69"/>
+  </vc:DataSeries>
+  
+</vc:Chart>

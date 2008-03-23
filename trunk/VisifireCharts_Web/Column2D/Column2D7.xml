@@ -1,0 +1,16 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type3" Width="500" Height="300" >
+
+  <vc:Title Text="Visifire 2D Column Chart"/>
+
+  <vc:DataSeries RenderAs="Column" Bevel="False" RadiusX="6" RadiusY="6">
+    <vc:DataPoint AxisLabel="Jan" YValue="60"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="30"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="68"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="75"/>
+    <vc:DataPoint AxisLabel="May" YValue="90"/>
+    <vc:DataPoint AxisLabel="Jun" YValue="50"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+

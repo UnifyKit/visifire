@@ -1,0 +1,48 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type3" Width="500" Height="300">
+
+    <vc:Title Text="US Market Share for Auto Sales"/>
+    <vc:AxisX Title="Month"/>
+    <vc:AxisY Title="Market Share" Suffix="%"/>
+
+    <vc:DataSeries Name="GM" RenderAs="Line">
+      <vc:DataPoint AxisLabel="Feb" YValue="25"/>
+      <vc:DataPoint AxisLabel="Mar" YValue="22"/>
+      <vc:DataPoint AxisLabel="Apr" YValue="23"/>
+      <vc:DataPoint AxisLabel="May" YValue="24"/>
+      <vc:DataPoint AxisLabel="Jun" YValue="22"/>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Ford" RenderAs="Line">
+      <vc:DataPoint YValue="15.5"/>
+      <vc:DataPoint YValue="16"/>
+      <vc:DataPoint YValue="16"/>
+      <vc:DataPoint YValue="15"/>
+      <vc:DataPoint YValue="16"/>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Toyota" RenderAs="Line">
+      <vc:DataPoint YValue="14.5"/>
+      <vc:DataPoint YValue="15"/>
+      <vc:DataPoint YValue="16"/>
+      <vc:DataPoint YValue="18"/>
+      <vc:DataPoint YValue="17.5"/>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Chrysler LLC" RenderAs="Line">
+      <vc:DataPoint YValue="13.5"/>
+      <vc:DataPoint YValue="13"/>
+      <vc:DataPoint YValue="14"/>
+      <vc:DataPoint YValue="12"/>
+      <vc:DataPoint YValue="12"/>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Honda" RenderAs="Line">
+      <vc:DataPoint YValue="9"/>
+      <vc:DataPoint YValue="9.5"/>
+      <vc:DataPoint YValue="9.5"/>
+      <vc:DataPoint YValue="9.5"/>
+      <vc:DataPoint YValue="10"/>
+    </vc:DataSeries>
+
+</vc:Chart>

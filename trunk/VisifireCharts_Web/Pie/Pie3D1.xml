@@ -1,0 +1,15 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type4" View3D="True" Width="500" Height="300">
+
+  <vc:Title Text="Web Search Engine Market Share"/>
+
+  <vc:DataSeries RenderAs="Pie">
+    <vc:DataPoint AxisLabel="Yahoo" YValue="16.7" ExplodeOffset="0.3"/>
+    <vc:DataPoint AxisLabel="Google" YValue="68.6"/>
+    <vc:DataPoint AxisLabel="MSN/Live" YValue="8.7" ExplodeOffset="0.3"/>
+    <vc:DataPoint AxisLabel="Ask" YValue="3.7" ExplodeOffset="0.3"/>
+    <vc:DataPoint AxisLabel="AOL" YValue="1.7" ExplodeOffset="0.3"/>
+    <vc:DataPoint AxisLabel="Others" YValue="0.6" ExplodeOffset="0.3"/>
+  </vc:DataSeries>
+
+</vc:Chart>

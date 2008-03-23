@@ -1,0 +1,32 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme3" AnimationType="Type4" Width="500" Height="300" View3D="True">
+
+  <vc:Title Text="World Population Growth Rates"/>
+  <vc:AxisX Interval="1" AxisMaximum="11"/>
+  <vc:AxisY Interval="0.5" Title="Growth Rate (percent)" ValueFormatString="#0.0#"/>
+    
+  <vc:DataSeries RenderAs="Line">
+    <vc:DataPoint XValue="1" AxisLabel="1950" YValue="1.5"/>
+    <vc:DataPoint XValue="1.5" YValue="1.8"/>
+    <vc:DataPoint XValue="2" AxisLabel="1960" YValue="1.4"/>
+    <vc:DataPoint XValue="2.5" YValue="2.0"/>
+    <vc:DataPoint XValue="3" AxisLabel="1970" YValue="2.1"/>
+    <vc:DataPoint XValue="3.5" YValue="1.7"/>
+    <vc:DataPoint XValue="4" AxisLabel="1980" YValue="1.7"/>
+    <vc:DataPoint XValue="4.5" YValue="1.6"/>
+    <vc:DataPoint XValue="5" AxisLabel="1990" YValue="1.4"/>
+    <vc:DataPoint XValue="5.5" YValue="1.3"/>
+    <vc:DataPoint XValue="6" AxisLabel="2000" YValue="1.3"/>
+    <vc:DataPoint XValue="6.5" YValue="1.3"/>
+    <vc:DataPoint XValue="7" AxisLabel="2010" YValue="1.2"/>
+    <vc:DataPoint XValue="7.5" YValue="1.1"/>
+    <vc:DataPoint XValue="8" AxisLabel="2020" YValue="1"/>
+    <vc:DataPoint XValue="8.5" YValue="0.9"/>
+    <vc:DataPoint XValue="9" AxisLabel="2030" YValue="0.8"/>
+    <vc:DataPoint XValue="9.5" YValue="0.7"/>
+    <vc:DataPoint XValue="10" AxisLabel="2040" YValue="0.65"/>
+    <vc:DataPoint XValue="10.5" YValue="0.6"/>
+    <vc:DataPoint XValue="11" AxisLabel="2050" YValue="0.5"/>
+  </vc:DataSeries>
+
+</vc:Chart>

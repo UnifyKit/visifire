@@ -1,0 +1,42 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" Width="500" Height="300"
+          View3D="True">
+
+  <vc:Title Text="Visifire 3D Stacked Area Chart"/>
+  <vc:AxisY Title="Production (million tonnes)"/>
+
+  <vc:DataSeries Name="Product A" RenderAs="StackedArea" Opacity=".9">
+    <vc:DataPoint AxisLabel="2000" YValue="7.2"/>
+    <vc:DataPoint AxisLabel="2001" YValue="6.5"/>
+    <vc:DataPoint AxisLabel="2002" YValue="7.7"/>
+    <vc:DataPoint AxisLabel="2003" YValue="5.7"/>
+    <vc:DataPoint AxisLabel="2004" YValue="7.9"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Product B" RenderAs="StackedArea" Opacity=".9">
+    <vc:DataPoint YValue="6.1"/>
+    <vc:DataPoint YValue="5.0"/>
+    <vc:DataPoint YValue="7.5"/>
+    <vc:DataPoint YValue="5.8"/>
+    <vc:DataPoint YValue="6.4"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Product C" RenderAs="StackedArea" Opacity=".9">
+    <vc:DataPoint YValue="11.7"/>
+    <vc:DataPoint YValue="12.6"/>
+    <vc:DataPoint YValue="15.6"/>
+    <vc:DataPoint YValue="13.4"/>
+    <vc:DataPoint YValue="17.2"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Product D" RenderAs="StackedArea" Opacity=".9">
+    <vc:DataPoint YValue="14.9"/>
+    <vc:DataPoint YValue="14.3"/>
+    <vc:DataPoint YValue="16.6"/>
+    <vc:DataPoint YValue="14.7"/>
+    <vc:DataPoint YValue="17.1"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+
+

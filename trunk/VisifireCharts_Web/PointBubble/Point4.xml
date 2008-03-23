@@ -1,0 +1,33 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type3" Width="500" Height="300">
+
+  <vc:Title Text="Visifire Point Chart"/>
+  <vc:AxisX Interval="1">
+    <vc:MajorGrids LineThickness="0.25"/>
+  </vc:AxisX>
+
+  <vc:DataSeries RenderAs="Point" MarkerStyle="Square">
+    <vc:DataPoint YValue="2.82"/>
+    <vc:DataPoint YValue="4.02"/>
+    <vc:DataPoint YValue="1.68"/>
+    <vc:DataPoint YValue="3.48"/>
+    <vc:DataPoint YValue="1.82"/>
+    <vc:DataPoint YValue="1.42"/>
+    <vc:DataPoint YValue="3.52"/>
+    <vc:DataPoint YValue="4.48"/>
+    <vc:DataPoint YValue="2.9"/>
+    <vc:DataPoint YValue="2.49"/>
+    <vc:DataPoint YValue="3.79"/>
+    <vc:DataPoint YValue="9.41"/>
+    <vc:DataPoint YValue="1.48"/>
+    <vc:DataPoint YValue="5.91"/>
+    <vc:DataPoint YValue="2.82"/>
+    <vc:DataPoint YValue="3.29"/>
+    <vc:DataPoint YValue="2.49"/>
+    <vc:DataPoint YValue="1.32"/>
+    <vc:DataPoint YValue="1.68"/>
+    <vc:DataPoint YValue="2.01"/>
+    <vc:DataPoint YValue="2.69"/>
+  </vc:DataSeries>
+  
+</vc:Chart>

@@ -1,0 +1,15 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme3" AnimationType="Type4" Width="500" Height="300">
+
+    <vc:Title Text="Visifire 2D Column Chart"/>
+
+    <vc:DataSeries RenderAs="Column" Bevel="False">
+      <vc:DataPoint AxisLabel="9/07" YValue="60"/>
+      <vc:DataPoint AxisLabel="10/07" YValue="30"/>
+      <vc:DataPoint AxisLabel="11/07" YValue="68"/>
+      <vc:DataPoint AxisLabel="12/08" YValue="75"/>
+      <vc:DataPoint AxisLabel="1/08" YValue="90"/>
+      <vc:DataPoint AxisLabel="2/08" YValue="50"/>
+    </vc:DataSeries>
+
+</vc:Chart>

@@ -1,0 +1,23 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme3" AnimationType="Type2" Width="500" Height="300" View3D="True">
+
+  <vc:Title Text="Visifire Multiseries Column Chart"/>
+
+  <vc:DataSeries RenderAs="Column">
+    <vc:DataPoint AxisLabel="10/07" YValue="62"/>
+    <vc:DataPoint AxisLabel="11/07" YValue="76"/>
+    <vc:DataPoint AxisLabel="12/07" YValue="56"/>
+    <vc:DataPoint AxisLabel="1/08" YValue="45"/>
+    <vc:DataPoint AxisLabel="2/08" YValue="55"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries RenderAs="Column">
+    <vc:DataPoint YValue="45"/>
+    <vc:DataPoint YValue="62"/>
+    <vc:DataPoint YValue="34"/>
+    <vc:DataPoint YValue="70"/>
+    <vc:DataPoint YValue="45"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+

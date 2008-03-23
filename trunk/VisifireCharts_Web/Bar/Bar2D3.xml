@@ -1,0 +1,25 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type2" Width="350" Height="400">
+
+  <vc:Title Text="Visifire Multiseries 2D Bar Chart"/>
+  <vc:AxisY InterlacedColor="#f1f1f1"/>
+
+  <vc:DataSeries RenderAs="Bar">
+    <vc:DataPoint AxisLabel="5/10/07" YValue="220"/>
+    <vc:DataPoint AxisLabel="5/11/07" YValue="450"/>
+    <vc:DataPoint AxisLabel="5/12/07" YValue="550"/>
+    <vc:DataPoint AxisLabel="5/1/08" YValue="650"/>
+    <vc:DataPoint AxisLabel="5/2/08" YValue="620"/>
+    <vc:DataPoint AxisLabel="5/3/08" YValue="446"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries RenderAs="Bar">
+    <vc:DataPoint YValue="330"/>
+    <vc:DataPoint YValue="400"/>
+    <vc:DataPoint YValue="653"/>
+    <vc:DataPoint YValue="756"/>
+    <vc:DataPoint YValue="545"/>
+    <vc:DataPoint YValue="334"/>
+  </vc:DataSeries>
+
+</vc:Chart>

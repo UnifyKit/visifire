@@ -1,0 +1,40 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type4" Width="500" Height="300">
+
+  <vc:Title Text="World Cheese Production"/>
+  <vc:AxisX Title="Year"/>
+  <vc:AxisY Title="Production (million tonnes)"/>
+
+  <vc:DataSeries Name="W. Europe" RenderAs="StackedArea">
+    <vc:DataPoint AxisLabel="2000" YValue="7.2"/>
+    <vc:DataPoint AxisLabel="2001" YValue="6.5"/>
+    <vc:DataPoint AxisLabel="2002" YValue="7.7"/>
+    <vc:DataPoint AxisLabel="2003" YValue="5.7"/>
+    <vc:DataPoint AxisLabel="2004" YValue="7.9"/>
+    <vc:DataPoint AxisLabel="2005" YValue="5.0"/>
+    <vc:DataPoint AxisLabel="2006" YValue="8.1"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="North America" RenderAs="StackedArea">
+    <vc:DataPoint YValue="4.1"/>
+    <vc:DataPoint YValue="3.0"/>
+    <vc:DataPoint YValue="4.5"/>
+    <vc:DataPoint YValue="3.8"/>
+    <vc:DataPoint YValue="4.4"/>
+    <vc:DataPoint YValue="5.2"/>
+    <vc:DataPoint YValue="4.2"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Others" RenderAs="StackedArea">
+    <vc:DataPoint YValue="12.9"/>
+    <vc:DataPoint YValue="13.3"/>
+    <vc:DataPoint YValue="15.6"/>
+    <vc:DataPoint YValue="14.7"/>
+    <vc:DataPoint YValue="16.1"/>
+    <vc:DataPoint YValue="15.5"/>
+    <vc:DataPoint YValue="17.0"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+
+

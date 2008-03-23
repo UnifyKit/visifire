@@ -1,0 +1,21 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts" 
+          Theme="Theme1" AnimationType="Type4" Width="350" Height="400" View3D="True">
+  
+  <vc:Title Text="Top 10 Emerging Mobile Market Carriers"/>
+  <vc:AxisX Interval="1" Title="Company"/>
+  <vc:AxisY Title="Subscriber (millions)"/>
+  
+  <vc:DataSeries RenderAs="Bar" LabelEnabled="True">
+    <vc:DataPoint AxisLabel="China Mobile" YValue="349.76" />
+    <vc:DataPoint AxisLabel="America Movil" YValue="147.32" />
+    <vc:DataPoint AxisLabel="China Telecom" YValue="223.54" />
+    <vc:DataPoint AxisLabel="China Unicom" YValue="115.88" />
+    <vc:DataPoint AxisLabel="MTN" YValue="54.18" />
+    <vc:DataPoint AxisLabel="Saudi Telecom" YValue="19.12" />
+    <vc:DataPoint AxisLabel="MTS" YValue="77.92" />
+    <vc:DataPoint AxisLabel="TelKom SA" YValue="36.14" />
+    <vc:DataPoint AxisLabel="VimpleCom" YValue="47.20" />
+    <vc:DataPoint AxisLabel="Bharti" YValue="50.22" />
+  </vc:DataSeries>
+
+</vc:Chart>

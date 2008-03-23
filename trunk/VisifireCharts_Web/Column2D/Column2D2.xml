@@ -1,0 +1,27 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" Width="500" Height="300">
+  
+  <vc:Title Text="Visifire MultiSeries Column Chart" />
+  <vc:AxisY Prefix="$"/>
+  
+  <vc:DataSeries Name="2005" RenderAs="Column">
+    <vc:DataPoint AxisLabel="Jan" YValue="5509" />
+    <vc:DataPoint AxisLabel="Feb" YValue="7047" />
+    <vc:DataPoint AxisLabel="Mar" YValue="10047" />
+    <vc:DataPoint AxisLabel="Apr" YValue="8508" />
+    <vc:DataPoint AxisLabel="May" YValue="6022" />
+    <vc:DataPoint AxisLabel="June" YValue="9047" />
+    <vc:DataPoint AxisLabel="July" YValue="7508" />
+  </vc:DataSeries>
+  
+  <vc:DataSeries Name="2006" RenderAs="Column">
+    <vc:DataPoint YValue="7768" />
+    <vc:DataPoint YValue="9094" />
+    <vc:DataPoint YValue="11580" />
+    <vc:DataPoint YValue="9795" />
+    <vc:DataPoint YValue="10646" />
+    <vc:DataPoint YValue="10080" />
+    <vc:DataPoint YValue="9795" />
+  </vc:DataSeries>
+  
+</vc:Chart>

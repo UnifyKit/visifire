@@ -1,0 +1,15 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type4" ColorSet="VisiAqua" Width="350" Height="400">
+
+  <vc:Title Text="Internet Penetration Rate in America" />
+  <vc:AxisY Title="Penetration (% Population)" Suffix="%"/>
+  
+  <vc:DataSeries RenderAs="Bar" LabelEnabled="True">
+    <vc:DataPoint AxisLabel="World" YValue="20.2"/>
+    <vc:DataPoint AxisLabel="Caribbean" YValue="15.0"/>
+    <vc:DataPoint AxisLabel="C. America" YValue="18.8"/>
+    <vc:DataPoint AxisLabel="S. America" YValue="24.2"/>
+    <vc:DataPoint AxisLabel="N. America" YValue="71.2"/>
+  </vc:DataSeries>
+
+</vc:Chart>

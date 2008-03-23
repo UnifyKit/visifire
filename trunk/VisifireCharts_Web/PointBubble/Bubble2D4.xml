@@ -1,0 +1,20 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type3" Width="500" Height="300">
+
+  <vc:Title Text="World Gold Mine Production and Reserves, 2007"/>
+  <vc:Title Text="Bubble size indicates gold reserves" FontSize="9" AlignmentX="Left" AlignmentY="Bottom"/>
+  <vc:AxisX >
+    <vc:MajorGrids LineThickness="0.25"/>
+  </vc:AxisX>
+  <vc:AxisY AxisMaximum="350" Title="Production (metric tons)"/>
+  
+  <vc:DataSeries RenderAs="Bubble" ToolTipText="Production: #YValue, Reserves: #ZValue">
+    <vc:DataPoint AxisLabel="Unites States" YValue="240" ZValue="2700"/>
+    <vc:DataPoint AxisLabel="Australia" YValue="280" ZValue="5000"/>
+    <vc:DataPoint AxisLabel="Canada" YValue="100" ZValue="1300"/>
+    <vc:DataPoint AxisLabel="China" YValue="250" ZValue="1200"/>
+    <vc:DataPoint AxisLabel="Russia" YValue="160" ZValue="3000"/>
+    <vc:DataPoint AxisLabel="South Africa" YValue="270" ZValue="6000"/>
+  </vc:DataSeries>
+
+</vc:Chart>

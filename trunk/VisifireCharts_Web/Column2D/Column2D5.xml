@@ -1,0 +1,24 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" ColorSet="Caravan" Width="500" Height="300">
+
+  <vc:Title Text="List of Top 5 Countries by GDP"/>
+  <vc:AxisY Title="GDP (billions of USD)"/>
+  <vc:TrendLine YValue="12988" LineColor="Orange" Enabled="True" ToolTipText="China has the highest growth rate"></vc:TrendLine>
+
+  <vc:DataSeries Name="2008" RenderAs="Column" LabelEnabled="True" LabelStyle="Inside">
+    <vc:DataPoint AxisLabel="United States" YValue="14045"/>
+    <vc:DataPoint AxisLabel="China" YValue="12988"/>
+    <vc:DataPoint AxisLabel="India" YValue="5210"/>
+    <vc:DataPoint AxisLabel="Japan" YValue="4494"/>
+    <vc:DataPoint AxisLabel="Germany" YValue="2816"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="2007" RenderAs="Column" LabelEnabled="True" LabelStyle="Inside">
+    <vc:DataPoint YValue="13543"/>
+    <vc:DataPoint YValue="11606"/>
+    <vc:DataPoint YValue="4726"/>
+    <vc:DataPoint YValue="4346"/>
+    <vc:DataPoint YValue="2714"/>
+  </vc:DataSeries>
+
+</vc:Chart>

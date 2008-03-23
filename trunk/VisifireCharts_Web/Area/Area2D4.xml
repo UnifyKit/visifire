@@ -1,0 +1,19 @@
+﻿ <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts" Theme="Theme2" AnimationType="Type3" Width="500" Height="300">
+  <vc:Title Text="Web Search Engine Market Share and Volume" />
+  <vc:Title Text="Bubble size indicates percentage market share" FontSize="9" AlignmentX="Left" AlignmentY="Bottom" />
+  <vc:AxisY AxisMaximum="7000" Title="Query Volume (millions)" />
+   <vc:DataSeries Name="Jan-08" RenderAs="Bubble" ZValueFormatString="#0.##%" ToolTipText="Query Volume: #YValue, MarketShare: #ZValue">
+    <vc:DataPoint AxisLabel="Goolge" YValue="5286" ZValue="68.6" />
+    <vc:DataPoint AxisLabel="Yahoo" YValue="1830" ZValue="16.7" />
+    <vc:DataPoint AxisLabel="MSN/Live" YValue="843" ZValue="8.7" />
+    <vc:DataPoint AxisLabel="Ask" YValue="322" ZValue="3.7" />
+    <vc:DataPoint AxisLabel="AOL" YValue="249" ZValue="1.7" />
+  </vc:DataSeries>
+   <vc:DataSeries Name="Jan-07" RenderAs="Bubble" ZValueFormatString="#0.##%" ToolTipText="Query Volume: #YValue, MarketShare: #ZValue">
+    <vc:DataPoint YValue="3398" ZValue="61.9" />
+    <vc:DataPoint YValue="1326" ZValue="22.7" />
+    <vc:DataPoint YValue="460" ZValue="8.9" />
+    <vc:DataPoint YValue="215" ZValue="3.4" />
+    <vc:DataPoint YValue="101" ZValue="1.6" />
+  </vc:DataSeries>
+</vc:Chart>

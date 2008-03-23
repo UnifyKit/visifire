@@ -1,0 +1,27 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" Width="500" Height="300">
+
+  <vc:Title Text="Company Revenue and Profits 2007"/>
+  <vc:AxisY Title="Revenue" Prefix="$" Suffix="K"/>
+
+  <vc:DataSeries Name="Product A" RenderAs="Area">
+    <vc:DataPoint AxisLabel="01/01/2008" YValue="12"/>
+    <vc:DataPoint AxisLabel="02/01/2008" YValue="16"/>
+    <vc:DataPoint AxisLabel="03/01/2008" YValue="23"/>
+    <vc:DataPoint AxisLabel="04/01/2008" YValue="28"/>
+    <vc:DataPoint AxisLabel="05/01/2008" YValue="32"/>
+    <vc:DataPoint AxisLabel="06/01/2008" YValue="23"/>
+    <vc:DataPoint AxisLabel="07/01/2008" YValue="17"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Product B" RenderAs="Column">
+    <vc:DataPoint YValue="8"/>
+    <vc:DataPoint YValue="12"/>
+    <vc:DataPoint YValue="19"/>
+    <vc:DataPoint YValue="25"/>
+    <vc:DataPoint YValue="26"/>
+    <vc:DataPoint YValue="21"/>
+    <vc:DataPoint YValue="16"/>
+  </vc:DataSeries>
+
+</vc:Chart>

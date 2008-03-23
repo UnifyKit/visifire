@@ -1,0 +1,14 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type3" Width="500" Height="300" View3D="True">
+
+  <vc:Title Text="Visifire 3D Column Chart"/>
+  <vc:AxisY InterlacedColor="#f8f8f8"/>
+
+  <vc:DataSeries RenderAs="Column">
+    <vc:DataPoint YValue="50"/>
+    <vc:DataPoint YValue="60"/>
+    <vc:DataPoint YValue="70"/>
+    <vc:DataPoint YValue="90"/>
+    <vc:DataPoint YValue="100"/>
+  </vc:DataSeries>
+</vc:Chart>

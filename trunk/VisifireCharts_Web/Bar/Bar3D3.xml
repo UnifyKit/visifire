@@ -1,0 +1,36 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" AnimationType="Type3" View3D="True" Width="350" Height="400">
+
+  <vc:Title Text="Visifire Multiseries 3D Bar Chart"/>
+  <vc:AxisY InterlacedColor="#f1f1f1"/>
+
+  <vc:DataSeries RenderAs="Bar" Bevel="False">
+    <vc:DataPoint YValue="60"/>
+    <vc:DataPoint YValue="30"/>
+    <vc:DataPoint YValue="68"/>
+    <vc:DataPoint YValue="75"/>
+    <vc:DataPoint YValue="90"/>
+    <vc:DataPoint YValue="50"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries RenderAs="Bar" Bevel="False">
+    <vc:DataPoint YValue="45"/>
+    <vc:DataPoint YValue="40"/>
+    <vc:DataPoint YValue="50"/>
+    <vc:DataPoint YValue="90"/>
+    <vc:DataPoint YValue="70"/>
+    <vc:DataPoint YValue="80"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries RenderAs="Bar" Bevel="False">
+    <vc:DataPoint YValue="40"/>
+    <vc:DataPoint YValue="55"/>
+    <vc:DataPoint YValue="80"/>
+    <vc:DataPoint YValue="50"/>
+    <vc:DataPoint YValue="50"/>
+    <vc:DataPoint YValue="66"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+
+

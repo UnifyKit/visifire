@@ -1,0 +1,34 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" Width="350" Height="400">
+
+  <vc:Title Text="Visifire Stacked Bar Chart"/>
+  <vc:AxisX Title="Month"/>
+  <vc:AxisY Title="Sales (Millions of Dollars)" Prefix="$"/>
+
+  <vc:DataSeries Name="ProductA" RenderAs="StackedBar" LabelEnabled="True" LabelText="#YValue">
+    <vc:DataPoint AxisLabel="01/12/2007" YValue="90.3"/>
+    <vc:DataPoint AxisLabel="01/01/2008" YValue="95.4"/>
+    <vc:DataPoint AxisLabel="01/02/2008" YValue="105.6"/>
+    <vc:DataPoint AxisLabel="01/03/2008" YValue="108.8"/>
+    <vc:DataPoint AxisLabel="01/04/2008" YValue="114.2"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="ProductB" RenderAs="StackedBar" LabelEnabled="True" LabelText="#YValue">
+    <vc:DataPoint YValue="112"/>
+    <vc:DataPoint YValue="155.3"/>
+    <vc:DataPoint YValue="132.8"/>
+    <vc:DataPoint YValue="166.4"/>
+    <vc:DataPoint YValue="144"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="ProductC" RenderAs="StackedBar" LabelEnabled="True" LabelText="#YValue">
+    <vc:DataPoint YValue="182.9"/>
+    <vc:DataPoint YValue="210.9"/>
+    <vc:DataPoint YValue="200.0"/>
+    <vc:DataPoint YValue="185.3"/>
+    <vc:DataPoint YValue="218.5"/>
+  </vc:DataSeries>
+
+</vc:Chart>
+
+

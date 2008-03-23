@@ -1,0 +1,17 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme1" AnimationType="Type2" ColorSet="VisiGray" Width="500" Height="300">
+
+  <vc:Title Text="Largest Cities in the World"/>
+  <vc:Title Text="Bubble size indicates land area" FontSize="9" AlignmentX="Left" AlignmentY="Bottom"/>
+  <vc:AxisY AxisMaximum="6000" Title="Population Density (per sqkm)"/>
+
+  <vc:DataSeries RenderAs="Bubble" ZValueFormatString="#,0.##" ToolTipText="Density: #YValue, Land Area: #ZValue">
+    <vc:DataPoint AxisLabel="New York" YValue="2050" ZValue="8683"/>
+    <vc:DataPoint AxisLabel="Tokyo" YValue="4750" ZValue="6993"/>
+    <vc:DataPoint AxisLabel="Chicago" YValue="1500" ZValue="5498"/>
+    <vc:DataPoint AxisLabel="Atlanta" YValue="700" ZValue="5083"/>
+    <vc:DataPoint AxisLabel="Philadelphia" YValue="1100" ZValue="4661"/>
+    <vc:DataPoint AxisLabel="Boston" YValue="900" ZValue="4497"/>
+  </vc:DataSeries>
+
+</vc:Chart>

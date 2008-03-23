@@ -1,0 +1,26 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+          Theme="Theme2" Width="500" Height="300">
+
+  <vc:Title Text="Visifire Stacked Column Chart"/>
+
+  <vc:DataSeries Name="2005" RenderAs="StackedColumn">
+    <vc:DataPoint AxisLabel="Jan" YValue="5509"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="7047"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="10047"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="8508"/>
+    <vc:DataPoint AxisLabel="May" YValue="6022"/>
+    <vc:DataPoint AxisLabel="June" YValue="9047"/>
+    <vc:DataPoint AxisLabel="July" YValue="7508"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="2006" RenderAs="StackedColumn">
+    <vc:DataPoint AxisLabel="Jan" YValue="5609"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="7247"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="11347"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="8608"/>
+    <vc:DataPoint AxisLabel="May" YValue="6322"/>
+    <vc:DataPoint AxisLabel="June" YValue="9247"/>
+    <vc:DataPoint AxisLabel="July" YValue="7608"/>
+  </vc:DataSeries>
+
+</vc:Chart>
