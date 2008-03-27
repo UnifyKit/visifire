@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" AnimationType="Type3" Width="500" Height="300">
+          Theme="Theme3" AnimationType="Type3">
 
   <vc:Title Text="Athens 2004 Olympics"/>
   <vc:AxisX Title="Country"/>

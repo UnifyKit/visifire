@@ -71,6 +71,7 @@ namespace Visifire.Commons
                 
             }
 
+            
         }
         /// <summary>
         /// This functions sets the warp size for a title and applies the hyperlink
@@ -310,7 +311,8 @@ namespace Visifire.Commons
         {
             int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as FrameworkElement).Width * (Parent as FrameworkElement).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)) % fontSizes.Length);
+            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
 
@@ -332,7 +334,7 @@ namespace Visifire.Commons
             DockInsidePlotArea = false;
             this.Opacity = 1.0;
             this.BorderThickness = 0;
-            this.BorderColor = new SolidColorBrush(Colors.Black);
+            this.BorderColor = null;
             this.BorderStyle = "Solid";
             this.SetValue(ZIndexProperty, 2);
             Enabled = true;

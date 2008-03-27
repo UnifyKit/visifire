@@ -212,6 +212,54 @@ namespace Visifire.Charts
             {
                 _textBlock.Foreground = Cloner.CloneBrush(_fontColor);
             }
+
+            if (BorderColor == null)
+            {
+                if (DockInsidePlotArea && _parent.PlotArea.Background == null)
+                {
+                    if (_parent.Background == null)
+                        BorderColor = new SolidColorBrush(Colors.Black);
+                    else
+                    {
+                        if (Parser.GetBrushIntensity(_parent.Background) > 0.5)
+                        {
+                            BorderColor = new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            BorderColor = new SolidColorBrush(Colors.LightGray);
+                        }
+                    }
+
+                }
+                else if (DockInsidePlotArea)
+                {
+                    if (Parser.GetBrushIntensity(_parent.PlotArea.Background) > 0.5)
+                    {
+                        BorderColor = new SolidColorBrush(Colors.Black);
+                    }
+                    else
+                    {
+                        BorderColor = new SolidColorBrush(Colors.LightGray);
+                    }
+                }
+                else
+                {
+                    if (_parent.Background == null)
+                        BorderColor = new SolidColorBrush(Colors.Black);
+                    else
+                    {
+                        if (Parser.GetBrushIntensity(_parent.Background) > 0.5)
+                        {
+                            BorderColor = new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            BorderColor = new SolidColorBrush(Colors.LightGray);
+                        }
+                    }
+                }
+            }
         }
 
         public override void Render()

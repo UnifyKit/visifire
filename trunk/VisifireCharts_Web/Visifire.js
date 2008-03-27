@@ -23,24 +23,25 @@ if(!window.Visifire)
     //  Visifire class
     window.Visifire = function(pXapPath,pWidth,pHeight)
     {
-        this.isLogEnabled = false;                      //  Determines whether to log or not.
-        this.xapPath = "Visifire.xap";            // Default is taken as Visifire.xap in the same directory.
+        this.logLevel = 1;                      //  Determines whether to log or not.
+        this.xapPath = "Visifire.xap";          // Default is taken as Visifire.xap in the same directory.
         this.targetElement = null;
-        this.dataXml = null;                            //  Data xml
+        this.dataXml = null;                    //  Data xml
         this.dataUri = null;
         
-        this.width = "100%";
-        this.height = "100%";
-        
-        if(pWidth != undefined)
-            this.width = pWidth;
-        if(pHeight != undefined)
-            this.height = pHeight;
-                                            
-        this._uThisObject = this;                       // Reference to the Class Instance.
+        this.width = null;
+        this.height = null;
         
         if(pXapPath)
             this.xapPath = pXapPath;
+            
+        if(pWidth)
+            this.width = pWidth;
+            
+        if(pHeight)
+            this.height = pHeight;
+                                            
+        this._uThisObject = this;                       // Reference to the Class Instance.
             
         this.index = ++Visifire._slCount;
     }
@@ -57,28 +58,44 @@ if(!window.Visifire)
         this.dataUri = pDataUri;
     }
     
-    Visifire.prototype.enableLogging = function()
+    Visifire.prototype.setLogLevel = function(level)
     {
-        this.isLogEnabled = true;
+        if(level != null)
+        {
+            this.logLevel = level;
+        }
     }
     
     Visifire.prototype.render = function(pTargetElement)
     {
         var _uThisObject = this;
+        var width;
+        var height;
+        
         _uThisObject.targerElement = (typeof(pTargetElement) == "string")?document.getElementById(pTargetElement):pTargetElement;
         
-        var html = '<object id="VisifirePlugin' + _uThisObject.index +'" data="data:application/x-silverlight," type="application/x-silverlight-2-b1" width="' + _uThisObject.width +'" height="' + _uThisObject.height +'">';
+        if(_uThisObject.width != null)
+            width = _uThisObject.width;
+        else if(_uThisObject.targerElement.offsetWidth != 0)
+            width = _uThisObject.targerElement.offsetWidth;
+        else
+            width = 500;
+            
+        if(_uThisObject.height != null)
+            height = _uThisObject.height;
+        else if(_uThisObject.targerElement.offsetHeight != 0)
+            height = _uThisObject.targerElement.offsetHeight;
+        else
+            height = 300;
+                
+        var html = '<object id="VisifirePlugin' + _uThisObject.index +'" data="data:application/x-silverlight," type="application/x-silverlight-2-b1" width="' + width +'" height="' + height +'">';
         
         html    +=  '<param name="source" value="' + _uThisObject.xapPath +'"/>'
 		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>';
 		        
 		html += '<param name="initParams" value="';
 		
-		if(_uThisObject.isLogEnabled)
-		{
-		    html += "isLogEnabled=true,";
-		}
-		
+		html += "logLevel=" + _uThisObject.logLevel + ",";
 		
         if(_uThisObject.dataXml != null)
         {
@@ -94,7 +111,7 @@ if(!window.Visifire)
             html +=	'dataUri='+ _uThisObject.dataUri  +',';
         }
         
-        html    +=   'width=' + _uThisObject.width + ',' + 'height=' + _uThisObject.height + '';
+        html    +=   'width=' + width + ',' + 'height=' + height + '';
         html    += "\"/>";
         html    +=   '<param name="enableHtmlAccess" value="true" />'
 		        +   '<param name="background" value="white" />'

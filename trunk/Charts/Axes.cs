@@ -181,8 +181,17 @@ namespace Visifire.Charts
             {
                 Double h = _parent.Height;
                 Double w = _parent.Width;
-                MajorTicks.TickLength = (h > w ? w : h) * (0.03 * _parent.Count);
-                PlankThickness = (h > w ? w : h) * (0.03);
+                if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
+                {
+                    MajorTicks.TickLength = (h > w ? w : h) * (0.03 * _parent.Count);
+                    PlankThickness = (h > w ? w : h) * (0.03);
+                }
+                else
+                {
+                    MajorTicks.TickLength = (h > w ? w : h) * (0.015 * _parent.Count);
+                    PlankThickness = (h > w ? w : h) * (0.025);
+                }
+                
             }
 
             if (this.GetType().Name == "AxisX") StartFromZero = false;
@@ -732,7 +741,8 @@ namespace Visifire.Charts
         {
             int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as Chart).Width * (Parent as Chart).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)) % fontSizes.Length);
+            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
 

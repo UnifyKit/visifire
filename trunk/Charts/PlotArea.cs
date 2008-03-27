@@ -60,7 +60,36 @@ namespace Visifire.Charts
             //This step applies theme background
             Background = Background;
 
+            if (BorderColor == null)
+            {
 
+                if (_parent.Background == null && this.Background == null)
+                {
+                    BorderColor = new SolidColorBrush(Colors.Black);
+                }
+                else if (Background == null)
+                {
+                    if (Parser.GetBrushIntensity(_parent.Background) > 0.5)
+                    {
+                        BorderColor = new SolidColorBrush(Colors.Black);
+                    }
+                    else
+                    {
+                        BorderColor = new SolidColorBrush(Colors.LightGray);
+                    }
+                }
+                else
+                {
+                    if (Parser.GetBrushIntensity(Background) > 0.5)
+                    {
+                        BorderColor = new SolidColorBrush(Colors.Black);
+                    }
+                    else
+                    {
+                        BorderColor = new SolidColorBrush(Colors.LightGray);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -171,48 +200,94 @@ namespace Visifire.Charts
         {
             if (_parent.View3D && _parent.PlotDetails.AxisOrientation != AxisOrientation.Pie)
             {
-
-                System.Collections.Generic.List<Point> effect = new System.Collections.Generic.List<Point>();
-                effect.Add(new Point(Width, 0));
-                effect.Add(new Point(Width + 3, 3));
-                effect.Add(new Point(Width + 3, Height - 3));
-                effect.Add(new Point(Width, Height));
-                Polygon plot3d = new Polygon();
-                if (Background != null)
+                if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
                 {
-                    if (Background.GetType().Name == "SolidColorBrush")
+                    System.Collections.Generic.List<Point> effect = new System.Collections.Generic.List<Point>();
+                    effect.Add(new Point(Width, 0));
+                    effect.Add(new Point(Width + 3, 3));
+                    effect.Add(new Point(Width + 3, Height - 3));
+                    effect.Add(new Point(Width, Height));
+                    Polygon plot3d = new Polygon();
+                    if (Background != null)
                     {
-                        String fillString = "0;";
-                        fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.61) + ",0;";
-                        fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.95) + ",1";
-                        plot3d.Fill = Parser.ParseLinearGradient(fillString);
+                        if (Background.GetType().Name == "SolidColorBrush")
+                        {
+                            String fillString = "0;";
+                            fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.61) + ",0;";
+                            fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.95) + ",1";
+                            plot3d.Fill = Parser.ParseLinearGradient(fillString);
+                        }
+                        else if (Background.GetType().Name == "LinearGradientBrush" || Background.GetType().Name == "RadialGradientBrush")
+                        {
+                            plot3d.Fill = Cloner.CloneBrush(Background);
+                            (plot3d.Fill as GradientBrush).GradientStops.Clear();
+                            Parser.GenerateDarkerGradientBrush(Background as GradientBrush, plot3d.Fill as GradientBrush, 0.75);
+                        }
                     }
-                    else if (Background.GetType().Name == "LinearGradientBrush" || Background.GetType().Name == "RadialGradientBrush")
+                    else
                     {
-                        plot3d.Fill = Cloner.CloneBrush(Background);
-                        (plot3d.Fill as GradientBrush).GradientStops.Clear();
-                        Parser.GenerateDarkerGradientBrush(Background as GradientBrush, plot3d.Fill as GradientBrush, 0.75);
+                        plot3d.Fill = Parser.ParseColor("0;#7f000000,0;#33000000,1");
                     }
+
+
+                    plot3d.Points = Converter.ArrayToCollection(effect.ToArray());
+
+                    plot3d.Opacity = 1;
+                    plot3d.SetValue(ZIndexProperty, 60);
+                    plot3d.SetValue(LeftProperty, GetValue(LeftProperty));
+                    plot3d.SetValue(TopProperty, GetValue(TopProperty));
+                    _parent.Children.Add(plot3d);
+                    ApplyClipRegion = false;
+                    RectangleGeometry rg = new RectangleGeometry();
+                    rg.Rect = new Rect(0, 0, Width + 3, Height);
+                    rg.RadiusX = RadiusX + BorderThickness / 2;
+                    rg.RadiusY = RadiusY + BorderThickness / 2;
+                    this.Clip = rg;
                 }
                 else
                 {
-                    plot3d.Fill = Parser.ParseColor("0;#7f000000,0;#33000000,1");
+                    System.Collections.Generic.List<Point> effect = new System.Collections.Generic.List<Point>();
+                    effect.Add(new Point(0, 0));
+                    effect.Add(new Point(Width , 0));
+                    effect.Add(new Point(Width - 3, - 3));
+                    effect.Add(new Point(3, -3));
+                    Polygon plot3d = new Polygon();
+                    if (Background != null)
+                    {
+                        if (Background.GetType().Name == "SolidColorBrush")
+                        {
+                            String fillString = "180;";
+                            fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.61) + ",0;";
+                            fillString += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.95) + ",1";
+                            plot3d.Fill = Parser.ParseLinearGradient(fillString);
+                        }
+                        else if (Background.GetType().Name == "LinearGradientBrush" || Background.GetType().Name == "RadialGradientBrush")
+                        {
+                            plot3d.Fill = Cloner.CloneBrush(Background);
+                            (plot3d.Fill as GradientBrush).GradientStops.Clear();
+                            Parser.GenerateDarkerGradientBrush(Background as GradientBrush, plot3d.Fill as GradientBrush, 0.75);
+                        }
+                    }
+                    else
+                    {
+                        plot3d.Fill = Parser.ParseColor("-45;#7f000000,0;#33000000,1");
+                    }
+
+
+                    plot3d.Points = Converter.ArrayToCollection(effect.ToArray());
+
+                    plot3d.Opacity = 1;
+                    plot3d.SetValue(ZIndexProperty, 60);
+                    plot3d.SetValue(LeftProperty, GetValue(LeftProperty));
+                    plot3d.SetValue(TopProperty, GetValue(TopProperty));
+                    _parent.Children.Add(plot3d);
+                    ApplyClipRegion = false;
+                    RectangleGeometry rg = new RectangleGeometry();
+                    rg.Rect = new Rect(0, -3, Width, Height+3);
+                    rg.RadiusX = RadiusX + BorderThickness / 2;
+                    rg.RadiusY = RadiusY + BorderThickness / 2;
+                    this.Clip = rg;
                 }
-
-
-                plot3d.Points = Converter.ArrayToCollection(effect.ToArray());
-
-                plot3d.Opacity = 1;
-                plot3d.SetValue(ZIndexProperty, 60);
-                plot3d.SetValue(LeftProperty, GetValue(LeftProperty));
-                plot3d.SetValue(TopProperty, GetValue(TopProperty));
-                _parent.Children.Add(plot3d);
-                ApplyClipRegion = false;
-                RectangleGeometry rg = new RectangleGeometry();
-                rg.Rect = new Rect(0, 0, Width + 3, Height);
-                rg.RadiusX = RadiusX + BorderThickness / 2;
-                rg.RadiusY = RadiusY + BorderThickness / 2;
-                this.Clip = rg;
             }
 
             ApplyBorder();
@@ -229,11 +304,13 @@ namespace Visifire.Charts
 
             if (ShadowEnabled)
             {
-                ApplyShadow();
+                if(Background != null)
+                    ApplyShadow();
             }
             if (LightingEnabled)
             {
-                ApplyLighting();
+                if(Background != null)
+                    ApplyLighting();
             }
             if (Bevel)
             {

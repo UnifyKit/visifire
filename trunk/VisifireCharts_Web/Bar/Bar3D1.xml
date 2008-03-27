@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts" 
-          Theme="Theme1" AnimationType="Type4" Width="350" Height="400" View3D="True">
+          Theme="Theme1" AnimationType="Type4" View3D="True">
   
   <vc:Title Text="Top 10 Emerging Mobile Market Carriers"/>
   <vc:AxisX Interval="1" Title="Company"/>

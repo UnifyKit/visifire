@@ -51,6 +51,17 @@ namespace Visifire.Charts
             Background = Background;
             if (Background == null)
                 Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 229, 229, 240));
+            if (BorderColor == null)
+            {
+                if (Parser.GetBrushIntensity(Background)>0.5)
+                {
+                    BorderColor = new SolidColorBrush(Colors.Black);
+                }
+                else
+                {
+                    BorderColor = new SolidColorBrush(Colors.LightGray);
+                }
+            }
         }
 
         public override void SetLeft()
@@ -67,9 +78,10 @@ namespace Visifire.Charts
         #region Private Methods
         private int CalculateFontSize()
         {
-            int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as Chart).Width * (Parent as Chart).Height;
-            int i = (int)(Math.Floor(((_parentSize + 10000) / 115000)) % fontSizes.Length);
+            int i = (int)(Math.Floor(((_parentSize + 10000) / 115000)));
+            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
             
         }

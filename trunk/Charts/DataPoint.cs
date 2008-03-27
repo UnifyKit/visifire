@@ -630,7 +630,7 @@ namespace Visifire.Charts
             else
             {
                 if (String.IsNullOrEmpty(_parent.YValueFormatString))
-                    str = str.Replace("#YValue", _parent._parent.AxisY.GetFormattedText(YValue));
+                    str = str.Replace("#YValue", _parent._parent.AxisY.GetFormattedText((Double.IsNaN(_yValue) ? 0 : _yValue)));
                 else
                     str = str.Replace("#YValue", YValue.ToString(_parent.YValueFormatString));
             }
@@ -781,7 +781,9 @@ namespace Visifire.Charts
         {
             int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = _parent._parent.PlotArea.Width * _parent._parent.PlotArea.Height;
-            return fontSizes[(int)(Math.Ceiling(((_parentSize + 161027.5) / 163840)) % fontSizes.Length)];
+            int i = (int)(Math.Ceiling(((_parentSize + 161027.5) / 163840)) );
+            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
+            return fontSizes[i];
         }
 
         private void ApplyLabelFontColor(Label label, Boolean onDataPoint)

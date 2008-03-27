@@ -237,9 +237,9 @@ namespace Visifire.Commons
                 if (Background.GetType().Name == "SolidColorBrush")
                 {
                     String linearGrad = "0;";
-                    linearGrad += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.745);//Lighter 0.65
+                    linearGrad += Parser.GetDarkerColor((Background as SolidColorBrush).Color, 0.90);//Lighter 0.65
                     linearGrad += ",0;";
-                    linearGrad += Parser.GetLighterColor((Background as SolidColorBrush).Color, 0.745);//Lighter 0.55
+                    linearGrad += Parser.GetLighterColor((Background as SolidColorBrush).Color, 0.25);//Lighter 0.55
                     linearGrad += ",1";
                     Background = Parser.ParseLinearGradient(linearGrad);
                 }

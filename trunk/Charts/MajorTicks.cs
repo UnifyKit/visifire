@@ -328,15 +328,15 @@ namespace Visifire.Charts
                 {
                     LinearGradientBrush brush = tempBrush as LinearGradientBrush;
                     brush2 = Cloner.CloneBrush(tempBrush);
-                    String linBrush1 = "-90;", linBrush2 = "-90;";
+                    String linBrush1 = "0;", linBrush2 = "45;";
 
                     foreach (GradientStop grad in brush.GradientStops)
                     {
 
-                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.65) + ",";
+                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
                         linBrush1 += grad.Offset.ToString() + ";";
 
-                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
+                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
                         linBrush2 += grad.Offset.ToString() + ";";
                     }
                     brushFront = Parser.ParseLinearGradient(linBrush1);
@@ -368,27 +368,33 @@ namespace Visifire.Charts
 
                     //In case of video or image brush will have null
                     String linbrush;
-                    linbrush = "-90;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                    linbrush = "135;";
+                    linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
                     linbrush += ",0;";
-                    linbrush += Parser.GetLighterColor(brush.Color, 0.35);
+                    if(Parser.GetBrushIntensity(brush)>0.5)
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                    else
+                        linbrush += Parser.GetLighterColor(brush.Color, 0.35);
                     linbrush += ",1";
 
                     brush2 = Parser.ParseLinearGradient(linbrush);
 
-                    linbrush = "-90;";
+                    linbrush = "0;";
                     linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
                     linbrush += ",0;";
-                    linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                    if (Parser.GetBrushIntensity(brush) > 0.5)
+                        linbrush += Parser.GetLighterColor(brush.Color, 0.90);
+                    else
+                        linbrush += Parser.GetLighterColor(brush.Color, 0.55);
                     linbrush += ",1";
 
 
                     brushFront = Parser.ParseLinearGradient(linbrush);
 
-                    linbrush = "-120;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
+                    linbrush = "90;";
+                    linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
                     linbrush += ",0;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                    linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
                     linbrush += ",1";
 
                     brushShade = Parser.ParseLinearGradient(linbrush);

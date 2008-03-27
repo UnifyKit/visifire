@@ -22,6 +22,12 @@ namespace VisifireCharts
             this.Exit += this.Application_Exit;
             this.UnhandledException += this.Application_UnhandledException;
 
+            String fullName = System.Reflection.Assembly.GetExecutingAssembly().FullName;
+
+            version = fullName.Split(',')[1];
+
+            version = (version.Substring(0, version.LastIndexOf('.')) + " Beta").Trim();
+
             InitializeComponent();
         }
 
@@ -32,13 +38,15 @@ namespace VisifireCharts
 
             System.Net.WebClient webclient;
 
+            wrapper.KeyDown += new KeyEventHandler(wrapper_KeyDown);
+                       
+
             baseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
             baseUri = baseUri.Substring(0, baseUri.LastIndexOf("/") + 1);
 
-            if (e.InitParams.ContainsKey("isLogEnabled"))
+            if (e.InitParams.ContainsKey("logLevel"))
             {
-                if (e.InitParams["isLogEnabled"].Trim() == "true")
-                    isLogEnabled = true;
+                logLevel = Int32.Parse(e.InitParams["logLevel"].Trim());
 
                 AddLogViewer(wrapper);
             }
@@ -78,6 +86,12 @@ namespace VisifireCharts
             wrapper.LayoutRoot.Children.Add(tb);
         }
 
+        void wrapper_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.F8)
+                System.Windows.Browser.HtmlPage.Window.Alert("Visifire " + version);
+        }
+
         private void AddLogViewer(Wrapper wrapper)
         {
 
@@ -91,7 +105,7 @@ namespace VisifireCharts
             logTextBox.MaxHeight = 300;
             logTextBox.MaxWidth = 500;
 
-            logTextBox.Text = "Error Log:\n";
+            logTextBox.Text = "Error Log (" + version + ") :\n";
 
             wrapper.LayoutRoot.Children.Add(logTextBox);
         }
@@ -138,16 +152,24 @@ namespace VisifireCharts
         }
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
-            if (isLogEnabled)
+            if (logLevel == 1)
             {
                 logTextBox.Text += e.ExceptionObject.Message + "\n" + e.ExceptionObject.StackTrace + "\n";
                 logTextBox.BorderThickness = new Thickness(1);
                 logTextBox.Visibility = Visibility.Visible;
+
+                foreach (FrameworkElement child in wrapper.LayoutRoot.Children)
+                {
+                    if(child != logTextBox)
+                        child.Visibility = Visibility.Collapsed;
+                }
+
             }
             e.Handled = true;
         }
 
-        private Boolean isLogEnabled = false;
+        private String version = null;
+        private Int32 logLevel = 0;
         private String dataUri = null;
         private String dataXml = null;
         private String baseUri = null;

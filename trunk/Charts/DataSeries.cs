@@ -114,6 +114,370 @@ namespace Visifire.Charts
         {
         }
 
+        public override void Init()
+        {
+            ValidateParent();
+
+            if (base.Background != null)
+            {
+                Background = base.Background;
+                base.Background = null;
+            }
+            if (String.IsNullOrEmpty(ColorSet))
+            {
+                if (_parent.ColorSetReference != null)
+                {
+                    if (_parent.UniqueColors)
+                    {
+                        if (Background == null && _parent.DataSeries.Count > 1)
+                        {
+                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
+                        }
+                        else if (Background == null)
+                        {
+                            ColorSetReference = _parent.ColorSetReference;
+                        }
+                    }
+                    else
+                    {
+                        if (Background == null)
+                        {
+                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Find if the pallete is available in the pallets collection
+                foreach (ColorSet child in _parent.ColorSets)
+                {
+                    if (child.Name.ToLower() == ColorSet.ToLower())
+                    {
+                        ColorSetReference = child;
+                    }
+                }
+            }
+            SetName();
+
+
+            if (Opacity > 1 && GetFromTheme("Opacity") != null)
+                Opacity = Convert.ToDouble(GetFromTheme("Opacity"));
+            else if (Opacity > 1) Opacity = 1;
+
+            if (ColorSetReference == null && _parent.ColorSetReference == null)
+            {
+                foreach (ColorSet child in _parent.ColorSets)
+                {
+                    if (child.Name.ToLower() == "visifire1")
+                        ColorSetReference = child;
+                }
+            }
+            // If there is only one Dataseries and if ShowInLegend is not defined then make it false
+            if (RenderAs.ToLower() != "pie" && RenderAs.ToLower() != "doughnut")
+            {
+                if (_showInLegend == "Undefined")
+                {
+                    if (_parent.DataSeries.Count == 1)
+                    {
+                        _showInLegend = false.ToString();
+                    }
+                    else
+                    {
+                        _showInLegend = true.ToString();
+                    }
+                }
+            }
+
+
+            CreateReferences();
+
+
+            if (DataPoints.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine(RenderAs + " : To draw chart atleast one DataPoint is required");
+                throw (new Exception(RenderAs + " : To draw chart atleast one DataPoint is required"));
+
+            }
+
+
+            if (Background == null)
+            {
+                Background = Cloner.CloneBrush(ColorSetReference.GetColor(Index));
+            }
+
+
+            if (_lightingEnabled == "Undefined" && _parent.View3D)
+            {
+                _lightingEnabled = true.ToString();
+            }
+
+            int i = 0;
+            int chType = 0;
+            switch (RenderAs.ToUpper())
+            {
+                case "LINE":
+                    Canvas _lineCanvas = new Canvas();
+                    if (_parent.View3D)
+                    {
+                        _parent.AreaLine3D.Add(_lineCanvas);
+                        _lineCanvas.Width = _parent.Width;
+                        _lineCanvas.Height = _parent.Height;
+                        _parent.Children.Add(_lineCanvas);
+                        _lineCanvas.SetValue(ZIndexProperty, (int)this.GetValue(ZIndexProperty));
+                        _drawingCanvas = _lineCanvas;
+
+                    }
+                    _line = new Polyline();
+                    _lineShadow = new Polyline();
+                    if (_parent.View3D)
+                    {
+                        _lineCanvas.Children.Add(_line);
+                        _lineCanvas.Children.Add(_lineShadow);
+                    }
+                    else
+                    {
+                        this.Children.Add(_line);
+                        this.Children.Add(_lineShadow);
+                    }
+                    break;
+
+                case "PIE":
+                    if (_parent.View3D)
+                    {
+                        _pies = new Path[DataPoints.Count];
+                        _pieLeft = new Path[DataPoints.Count];
+                        _pieRight = new Path[DataPoints.Count];
+                        _pieSides = new Path[DataPoints.Count];
+                        for (i = 0; i < DataPoints.Count; i++)
+                        {
+                            _pies[i] = new Path();
+                            _pieLeft[i] = new Path();
+                            _pieRight[i] = new Path();
+                            _pieSides[i] = new Path();
+
+                            this.Children.Add(_pies[i]);
+                            this.Children.Add(_pieLeft[i]);
+                            this.Children.Add(_pieRight[i]);
+                            this.Children.Add(_pieSides[i]);
+                        }
+                    }
+                    else
+                    {
+                        _pies = new Path[DataPoints.Count];
+                        for (i = 0; i < DataPoints.Count; i++)
+                        {
+                            _pies[i] = new Path();
+                            DataPoints[i].Children.Add(_pies[i]);
+                        }
+                    }
+                    break;
+                case "DOUGHNUT":
+                    if (_parent.View3D)
+                    {
+                        _pies = new Path[DataPoints.Count];
+                        _pieLeft = new Path[DataPoints.Count];
+                        _pieRight = new Path[DataPoints.Count];
+                        _pieSides = new Path[DataPoints.Count];
+                        _doughnut = new Path[DataPoints.Count];
+                        for (i = 0; i < DataPoints.Count; i++)
+                        {
+                            _pies[i] = new Path();
+                            _pieLeft[i] = new Path();
+                            _pieRight[i] = new Path();
+                            _pieSides[i] = new Path();
+                            _doughnut[i] = new Path();
+                            this.Children.Add(_pies[i]);
+                            this.Children.Add(_pieLeft[i]);
+                            this.Children.Add(_pieRight[i]);
+                            this.Children.Add(_pieSides[i]);
+                            this.Children.Add(_doughnut[i]);
+                        }
+                    }
+                    else
+                    {
+                        _doughnut = new Path[DataPoints.Count];
+                        for (i = 0; i < DataPoints.Count; i++)
+                        {
+                            _doughnut[i] = new Path();
+                            DataPoints[i].Children.Add(_doughnut[i]);
+                        }
+                    }
+                    break;
+                case "AREA":
+                    Canvas _areaCanvas = new Canvas();
+                    if (_parent.View3D)
+                    {
+                        _parent.AreaLine3D.Add(_areaCanvas);
+                        _areaCanvas.Width = _parent.Width;
+                        _areaCanvas.Height = _parent.Height;
+                        _parent.Children.Add(_areaCanvas);
+                        _areaCanvas.SetValue(ZIndexProperty, (int)this.GetValue(ZIndexProperty));
+                        _drawingCanvas = _areaCanvas;
+                    }
+                    _areas = new Polygon[DataPoints.Count - 1];
+
+
+                    for (i = 0; i < DataPoints.Count - 1; i++)
+                    {
+                        _areas[i] = new Polygon();
+                        if (_parent.View3D)
+                        {
+                            _areaCanvas.Children.Add(_areas[i]);
+                        }
+                        else
+                        {
+                            DataPoints[i].Children.Add(_areas[i]);
+                        }
+                    }
+                    if (_parent.View3D)
+                    {
+                        _areaShadows = new Rectangle[DataPoints.Count - 1];
+                        _areaTops = new Polygon[DataPoints.Count - 1];
+                        for (i = 0; i < DataPoints.Count - 1; i++)
+                        {
+                            _areaTops[i] = new Polygon();
+                            _areaShadows[i] = new Rectangle();
+                            _areaCanvas.Children.Add(_areaTops[i]);
+                            _areaCanvas.Children.Add(_areaShadows[i]);
+                        }
+                    }
+                    break;
+                case "STACKEDAREA100":
+                case "STACKEDAREA":
+                    if (_parent.View3D)
+                    {
+                        if (RenderAs.ToUpper() == "STACKEDAREA")
+                            chType = (int)Surface3DCharts.StackedArea;
+                        else
+                            chType = (int)Surface3DCharts.StackedArea100;
+
+                        if (_parent.Surface3D[chType] == null)
+                        {
+                            _parent.Surface3D[chType] = new Canvas();
+                            _parent.Surface3D[chType].Height = _parent.Height;
+                            _parent.Surface3D[chType].Width = _parent.Width;
+                            _parent.Children.Add(_parent.Surface3D[chType]);
+                            _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
+
+                        }
+                        else
+                        {
+                            if ((int)this.GetValue(ZIndexProperty) > (int)_parent.Surface3D[chType].GetValue(ZIndexProperty))
+                                _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
+                        }
+                        _drawingCanvas = _parent.Surface3D[chType];
+                    }
+                    _areas = new Polygon[DataPoints.Count - 1];
+                    for (i = 0; i < DataPoints.Count - 1; i++)
+                    {
+                        _areas[i] = new Polygon();
+                        if (_parent.View3D)
+                        {
+                            _parent.Surface3D[chType].Children.Add(_areas[i]);
+                        }
+                        else
+                        {
+                            DataPoints[i].Children.Add(_areas[i]);
+                        }
+                    }
+                    if (_parent.View3D)
+                    {
+                        _areaShadows = new Rectangle[DataPoints.Count - 1];
+                        _areaTops = new Polygon[DataPoints.Count - 1];
+                        for (i = 0; i < DataPoints.Count - 1; i++)
+                        {
+                            _areaTops[i] = new Polygon();
+                            _areaShadows[i] = new Rectangle();
+                            _parent.Surface3D[chType].Children.Add(_areaTops[i]);
+                            _parent.Surface3D[chType].Children.Add(_areaShadows[i]);
+                        }
+                    }
+
+                    break;
+
+                case "COLUMN":
+                case "STACKEDCOLUMN":
+                case "BAR":
+                case "STACKEDBAR":
+                case "STACKEDBAR100":
+                case "STACKEDCOLUMN100":
+                    if (_parent.View3D)
+                    {
+                        if (RenderAs.ToUpper() == "COLUMN")
+                            chType = (int)Surface3DCharts.Column;
+                        else if (RenderAs.ToUpper() == "STACKEDCOLUMN")
+                            chType = (int)Surface3DCharts.StackedColumn;
+                        else if (RenderAs.ToUpper() == "BAR")
+                            chType = (int)Surface3DCharts.Bar;
+                        else if (RenderAs.ToUpper() == "STACKEDBAR")
+                            chType = (int)Surface3DCharts.StackedBar;
+                        else if (RenderAs.ToUpper() == "STACKEDBAR100")
+                            chType = (int)Surface3DCharts.StackedBar100;
+                        else
+                            chType = (int)Surface3DCharts.StackedColumn100;
+
+                        if (_parent.Surface3D[chType] == null)
+                        {
+                            _parent.Surface3D[chType] = new Canvas();
+                            _parent.Surface3D[chType].Height = _parent.Height;
+                            _parent.Surface3D[chType].Width = _parent.Width;
+                            _parent.Children.Add(_parent.Surface3D[chType]);
+                            _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
+
+                        }
+                        else
+                        {
+                            if ((int)this.GetValue(ZIndexProperty) > (int)_parent.Surface3D[chType].GetValue(ZIndexProperty))
+                                _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
+                        }
+                        _drawingCanvas = _parent.Surface3D[chType];
+                    }
+                    _columns = new Rectangle[DataPoints.Count];
+                    _columnShadows = new Rectangle[DataPoints.Count];
+                    _shadows = new Rectangle[DataPoints.Count];
+                    for (i = 0; i < DataPoints.Count; i++)
+                    {
+                        _columns[i] = new Rectangle();
+                        _columnShadows[i] = new Rectangle();
+                        _shadows[i] = new Rectangle();
+                        if (_parent.View3D)
+                        {
+                            _parent.Surface3D[chType].Children.Add(_columns[i]);
+                            _parent.Surface3D[chType].Children.Add(_columnShadows[i]);
+                            _parent.Surface3D[chType].Children.Add(_shadows[i]);
+                        }
+                        else
+                        {
+                            DataPoints[i].Children.Add(_columns[i]);
+                            DataPoints[i].Children.Add(_columnShadows[i]);
+                            DataPoints[i].Children.Add(_shadows[i]);
+                        }
+                    }
+                    if (_parent.View3D)
+                    {
+                        _columnTops = new Rectangle[DataPoints.Count];
+
+
+                        for (i = 0; i < DataPoints.Count; i++)
+                        {
+                            _columnTops[i] = new Rectangle();
+
+
+                            _parent.Surface3D[chType].Children.Add(_columnTops[i]);
+
+                        }
+                    }
+                    break;
+                default:
+                    if (_parent.View3D)
+                        _drawingCanvas = _parent;
+                    else
+                        _drawingCanvas = this;
+                    break;
+            }
+        }
+
         #endregion Public Methods
 
         #region Public Properties
@@ -809,374 +1173,7 @@ namespace Visifire.Charts
             
         }
 
-        
-
-        public override void Init()
-        {
-            ValidateParent();
-
-            if (base.Background != null)
-            {
-                Background = base.Background;
-                base.Background = null;
-            }
-            if (String.IsNullOrEmpty(ColorSet))
-            {
-                if (_parent.ColorSetReference != null)
-                {
-                    if (_parent.UniqueColors)
-                    {
-                        if (Background == null && _parent.DataSeries.Count > 1)
-                        {
-                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
-                        }
-                        else if (Background == null)
-                        {
-                            ColorSetReference = _parent.ColorSetReference;
-                        }
-                    }
-                    else
-                    {
-                        if (Background == null)
-                        {
-                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Find if the pallete is available in the pallets collection
-                foreach (ColorSet child in _parent.ColorSets)
-                {
-                    if (child.Name.ToLower() == ColorSet.ToLower())
-                    {
-                        ColorSetReference = child;
-                    }
-                }
-            }
-            SetName();
-
-
-            if (Opacity > 1 && GetFromTheme("Opacity") != null)
-                Opacity = Convert.ToDouble(GetFromTheme("Opacity"));
-            else if (Opacity > 1) Opacity = 1;
-
-            if (ColorSetReference == null && _parent.ColorSetReference == null)
-            {
-                foreach(ColorSet child in _parent.ColorSets)
-                {
-                    if(child.Name.ToLower() == "visifire1")
-                        ColorSetReference = child;
-                }
-            }
-            // If there is only one Dataseries and if ShowInLegend is not defined then make it false
-            if (RenderAs.ToLower()!="pie" && RenderAs.ToLower() != "doughnut")
-            {
-                if (_showInLegend == "Undefined")
-                {
-                    if (_parent.DataSeries.Count == 1)
-                    {
-                        _showInLegend = false.ToString();
-                    }
-                    else
-                    {
-                        _showInLegend = true.ToString();
-                    }
-                }
-            }
-            
-
-            CreateReferences();
-
-            
-            if (DataPoints.Count == 0)
-            {
-                System.Diagnostics.Debug.WriteLine(RenderAs + " : To draw chart atleast one DataPoint is required");
-                throw (new Exception(RenderAs + " : To draw chart atleast one DataPoint is required"));
-                
-            }
-            
-
-            if (Background == null)
-            {
-                Background = Cloner.CloneBrush(ColorSetReference.GetColor(Index));
-            }
-
-
-            if (_lightingEnabled == "Undefined" && _parent.View3D)
-            {
-                _lightingEnabled = true.ToString();
-            }
-
-            int i = 0;
-            int chType=0;
-            switch (RenderAs.ToUpper())
-            {
-                case "LINE":
-                    Canvas _lineCanvas = new Canvas();
-                    if (_parent.View3D)
-                    {
-                        _parent.AreaLine3D.Add(_lineCanvas);
-                        _lineCanvas.Width = _parent.Width;
-                        _lineCanvas.Height = _parent.Height;
-                        _parent.Children.Add(_lineCanvas);
-                        _lineCanvas.SetValue(ZIndexProperty, (int)this.GetValue(ZIndexProperty));
-                        _drawingCanvas = _lineCanvas;
-                        
-                    }
-                    _line = new Polyline();
-                    _lineShadow = new Polyline();
-                    if (_parent.View3D)
-                    {
-                        _lineCanvas.Children.Add(_line);
-                        _lineCanvas.Children.Add(_lineShadow);
-                    }
-                    else
-                    {
-                        this.Children.Add(_line);
-                        this.Children.Add(_lineShadow);
-                    }
-                    break;
-
-                case "PIE":
-                    if (_parent.View3D)
-                    {
-                        _pies = new Path[DataPoints.Count];
-                        _pieLeft = new Path[DataPoints.Count];
-                        _pieRight = new Path[DataPoints.Count];
-                        _pieSides = new Path[DataPoints.Count];
-                        for (i = 0; i < DataPoints.Count; i++)
-                        {
-                            _pies[i] = new Path();
-                            _pieLeft[i] = new Path();
-                            _pieRight[i] = new Path();
-                            _pieSides[i] = new Path();
-
-                            this.Children.Add(_pies[i]);
-                            this.Children.Add(_pieLeft[i]);
-                            this.Children.Add(_pieRight[i]);
-                            this.Children.Add(_pieSides[i]);
-                        }
-                    }
-                    else
-                    {
-                        _pies = new Path[DataPoints.Count];
-                        for (i = 0; i < DataPoints.Count; i++)
-                        {
-                            _pies[i] = new Path();
-                            DataPoints[i].Children.Add(_pies[i]);
-                        }
-                    }
-                    break;
-                case "DOUGHNUT":
-                    if (_parent.View3D)
-                    {
-                        _pies = new Path[DataPoints.Count];
-                        _pieLeft = new Path[DataPoints.Count];
-                        _pieRight = new Path[DataPoints.Count];
-                        _pieSides = new Path[DataPoints.Count];
-                        _doughnut = new Path[DataPoints.Count];
-                        for (i = 0; i < DataPoints.Count; i++)
-                        {
-                            _pies[i] = new Path();
-                            _pieLeft[i] = new Path();
-                            _pieRight[i] = new Path();
-                            _pieSides[i] = new Path();
-                            _doughnut[i] = new Path();
-                            this.Children.Add(_pies[i]);
-                            this.Children.Add(_pieLeft[i]);
-                            this.Children.Add(_pieRight[i]);
-                            this.Children.Add(_pieSides[i]);
-                            this.Children.Add(_doughnut[i]);
-                        }
-                    }
-                    else
-                    {
-                        _doughnut = new Path[DataPoints.Count];
-                        for (i = 0; i < DataPoints.Count; i++)
-                        {
-                            _doughnut[i] = new Path();
-                            DataPoints[i].Children.Add(_doughnut[i]);
-                        }
-                    }
-                    break;
-                case "AREA":
-                    Canvas _areaCanvas = new Canvas();
-                    if (_parent.View3D)
-                    {
-                        _parent.AreaLine3D.Add(_areaCanvas);
-                        _areaCanvas.Width = _parent.Width;
-                        _areaCanvas.Height = _parent.Height;
-                        _parent.Children.Add(_areaCanvas);
-                        _areaCanvas.SetValue(ZIndexProperty, (int)this.GetValue(ZIndexProperty));
-                        _drawingCanvas = _areaCanvas;
-                    }
-                    _areas = new Polygon[DataPoints.Count - 1];
-                    
-
-                    for (i = 0; i < DataPoints.Count - 1; i++)
-                    {
-                        _areas[i] = new Polygon();
-                        if (_parent.View3D)
-                        {
-                            _areaCanvas.Children.Add(_areas[i]);
-                        }
-                        else
-                        {
-                            DataPoints[i].Children.Add(_areas[i]);
-                        }
-                    }
-                    if (_parent.View3D)
-                    {
-                        _areaShadows = new Rectangle[DataPoints.Count - 1];
-                        _areaTops = new Polygon[DataPoints.Count - 1];
-                        for (i = 0; i < DataPoints.Count - 1; i++)
-                        {
-                            _areaTops[i] = new Polygon();
-                            _areaShadows[i] = new Rectangle();
-                            _areaCanvas.Children.Add(_areaTops[i]);
-                            _areaCanvas.Children.Add(_areaShadows[i]);
-                        }
-                    }
-                    break;
-                case "STACKEDAREA100":
-                case "STACKEDAREA":
-                    if (_parent.View3D)
-                    {
-                         if (RenderAs.ToUpper() == "STACKEDAREA")
-                            chType = (int)Surface3DCharts.StackedArea;
-                        else
-                            chType = (int)Surface3DCharts.StackedArea100;
-
-                        if (_parent.Surface3D[chType] == null)
-                        {
-                            _parent.Surface3D[chType] = new Canvas();
-                            _parent.Surface3D[chType].Height = _parent.Height;
-                            _parent.Surface3D[chType].Width = _parent.Width;
-                            _parent.Children.Add(_parent.Surface3D[chType]);
-                            _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
-                            
-                        }
-                        else
-                        {
-                            if ((int)this.GetValue(ZIndexProperty) > (int)_parent.Surface3D[chType].GetValue(ZIndexProperty))
-                                _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
-                        }
-                        _drawingCanvas = _parent.Surface3D[chType];
-                    }
-                    _areas = new Polygon[DataPoints.Count - 1];
-                    for (i = 0; i < DataPoints.Count - 1; i++)
-                    {
-                        _areas[i] = new Polygon();
-                        if (_parent.View3D)
-                        {
-                            _parent.Surface3D[chType].Children.Add(_areas[i]);
-                        }
-                        else
-                        {
-                            DataPoints[i].Children.Add(_areas[i]);
-                        }
-                    }
-                    if (_parent.View3D)
-                    {
-                        _areaShadows = new Rectangle[DataPoints.Count - 1];
-                        _areaTops = new Polygon[DataPoints.Count - 1];
-                        for (i = 0; i < DataPoints.Count - 1; i++)
-                        {
-                            _areaTops[i] = new Polygon();
-                            _areaShadows[i] = new Rectangle();
-                            _parent.Surface3D[chType].Children.Add(_areaTops[i]);
-                            _parent.Surface3D[chType].Children.Add(_areaShadows[i]);
-                        }
-                    }
-
-                    break;
-
-                case "COLUMN":
-                case "STACKEDCOLUMN":
-                case "BAR":
-                case "STACKEDBAR":
-                case "STACKEDBAR100":
-                case "STACKEDCOLUMN100":
-                    if (_parent.View3D)
-                    {
-                        if (RenderAs.ToUpper() == "COLUMN")
-                            chType = (int)Surface3DCharts.Column;
-                        else if (RenderAs.ToUpper() == "STACKEDCOLUMN")
-                            chType = (int)Surface3DCharts.StackedColumn;
-                        else if (RenderAs.ToUpper() == "BAR")
-                            chType = (int)Surface3DCharts.Bar;
-                        else if (RenderAs.ToUpper() == "STACKEDBAR")
-                            chType = (int)Surface3DCharts.StackedBar;
-                        else if (RenderAs.ToUpper() == "STACKEDBAR100")
-                            chType = (int)Surface3DCharts.StackedBar100;
-                        else
-                            chType = (int)Surface3DCharts.StackedColumn100;
-
-                        if (_parent.Surface3D[chType] == null)
-                        {
-                            _parent.Surface3D[chType] = new Canvas();
-                            _parent.Surface3D[chType].Height = _parent.Height;
-                            _parent.Surface3D[chType].Width = _parent.Width;
-                            _parent.Children.Add(_parent.Surface3D[chType]);
-                            _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
-                            
-                        }
-                        else
-                        {
-                            if ((int)this.GetValue(ZIndexProperty) > (int)_parent.Surface3D[chType].GetValue(ZIndexProperty))
-                                _parent.Surface3D[chType].SetValue(ZIndexProperty, this.GetValue(ZIndexProperty));
-                        }
-                        _drawingCanvas = _parent.Surface3D[chType];
-                    }
-                    _columns = new Rectangle[DataPoints.Count];
-                    _columnShadows = new Rectangle[DataPoints.Count];
-                    _shadows = new Rectangle[DataPoints.Count];
-                    for (i = 0; i < DataPoints.Count; i++)
-                    {
-                        _columns[i] = new Rectangle();
-                        _columnShadows[i] = new Rectangle();
-                        _shadows[i] = new Rectangle();
-                        if (_parent.View3D)
-                        {
-                            _parent.Surface3D[chType].Children.Add(_columns[i]);
-                            _parent.Surface3D[chType].Children.Add(_columnShadows[i]);
-                            _parent.Surface3D[chType].Children.Add(_shadows[i]);
-                        }
-                        else
-                        {
-                            DataPoints[i].Children.Add(_columns[i]);
-                            DataPoints[i].Children.Add(_columnShadows[i]);
-                            DataPoints[i].Children.Add(_shadows[i]);
-                        }
-                    }
-                    if (_parent.View3D)
-                    {
-                        _columnTops = new Rectangle[DataPoints.Count];
-
-                        
-                        for (i = 0; i < DataPoints.Count; i++)
-                        {
-                            _columnTops[i] = new Rectangle();
-
-
-                            _parent.Surface3D[chType].Children.Add(_columnTops[i]);
-
-                        }
-                    }
-                    break;
-                default:
-                    if (_parent.View3D)
-                        _drawingCanvas = _parent;
-                    else
-                        _drawingCanvas = this;
-                    break;
-            }
-        }
-        
-
-
+     
         private void PlotPoint()
         {
             int i;
@@ -1328,7 +1325,7 @@ namespace Visifire.Charts
             if (height > temp)
                 height = temp;
 
-            height -= height * 0.1;
+            height -= height * 0.3;
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<double, Point>();
@@ -1789,7 +1786,7 @@ namespace Visifire.Charts
             if (height > temp)
                 height = temp;
 
-            height -= height * 0.1;
+            height -= height * 0.3;
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<double, Point>();
@@ -7308,6 +7305,10 @@ namespace Visifire.Charts
                     break;
             }
             Children.Add(_borderRectangle);
+
+            _parent._plotAreaBorder = _borderRectangle;
+            _parent._plotAreaBorder.SetValue(NameProperty, _parent.GetNewObjectName(_parent._plotAreaBorder));
+            _parent._plotAreaBorder.Opacity = 0;
         }
 
         internal void PlotData()
@@ -7887,7 +7888,6 @@ namespace Visifire.Charts
 
         }
 
-
         internal void PlotBar()
         {
             Double width = 10;
@@ -7908,7 +7908,7 @@ namespace Visifire.Charts
             if (height > temp)
                 height = temp;
 
-            height -= height * 0.1;
+            height -= height * 0.3;
 
             List<Double> checkDrawPositive = new List<double>();
             List<Double> checkDrawNegetive = new List<double>();

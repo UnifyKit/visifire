@@ -89,14 +89,18 @@ namespace Visifire.Charts
 
             if (AnimationEnabled)
             {
-                
+
                 foreach (Storyboard sb in animation)
                 {
                     sb.Begin();
-                    
+
                 }
 
-               
+
+            }
+            else
+            {
+                PerformFinalDiplaySettings();
             }
         }
 
@@ -134,7 +138,13 @@ namespace Visifire.Charts
             ApplyEffects();
 
 
-            if (BorderColor == null) BorderColor = new SolidColorBrush(Colors.Black);
+            if (BorderColor == null)
+            {
+                if (Parser.GetBrushIntensity(Background) > 0.5)
+                    BorderColor = new SolidColorBrush(Colors.Black);
+                else
+                    BorderColor = new SolidColorBrush(Colors.LightGray);
+            }
             this.ApplyBorder();
 
 
@@ -683,6 +693,9 @@ namespace Visifire.Charts
                 OnLoadedEvent(this, null);
             }
 
+            AttachHref();
+            AttachToolTip();
+
             DisplayWatermark();
         }
 
@@ -1047,24 +1060,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
-        private String GetNewObjectName(Object o)
-        {
-            int i = 0;
-            if (o == null) return "";
-            String type = o.GetType().Name;
-            String name = type;
-
-            // Check for an available name
-            while (FindName(name + i.ToString()) != null)
-            {
-                i++;
-            }
-
-            name += i.ToString();
-
-            return name;
-        }
-
+        
         private void ApplyDoubleAnimation(String targetName, String targetProperty, Double from, Double to, Double duration, Double beginTime)
         {
             TimeSpan durationTimeSpan = new TimeSpan(0,0,0,0,(int)(1000* duration));
@@ -1097,8 +1093,25 @@ namespace Visifire.Charts
             animation.Add(CreateStoryboard(storyBoard));
         }
 
-       
+        private void PerformFinalDiplaySettings()
+        {
+            if (_plotAreaBorder != null)
+            {
+                if (AnimationEnabled)
+                {
+                    if (_storyboardEndCounter == animation.Count)
+                    {
+                        _plotAreaBorder.Opacity = _plotArea.Opacity;
+                    }
+                }
+                else
+                {
+                    _plotAreaBorder.Opacity = _plotArea.Opacity;
+                }
+            }
+        }
 
+        
         private Storyboard CreateStoryboard(String storyboard)
         {
             Storyboard sb;
@@ -1108,6 +1121,8 @@ namespace Visifire.Charts
             sb.Completed += delegate(object sender1, EventArgs e1)
             {
                 this.Resources.Remove(sb);
+                _storyboardEndCounter++;
+                PerformFinalDiplaySettings();
             };
             return sb;
         }
@@ -1311,6 +1326,7 @@ namespace Visifire.Charts
                             st = new ScaleTransform();
                             i++;
                         }
+                        
                     }
                     #endregion Type2
                     break;
@@ -1444,6 +1460,7 @@ namespace Visifire.Charts
                             st = new ScaleTransform();
                             i++;
                         }
+                        
                     }
                     #endregion Type3
                     break;
@@ -2024,6 +2041,8 @@ namespace Visifire.Charts
                     case "ToolTip":
                         _toolTip = child as ToolTip;
                         _toolTip.FixToolTipSize();
+                        if (!_toolTip.Enabled)
+                            _toolTip.Opacity = 0;
                         break;
 
                     case "Image":
@@ -2786,6 +2805,24 @@ namespace Visifire.Charts
             }
         }
 
+        internal String GetNewObjectName(Object o)
+        {
+            int i = 0;
+            if (o == null) return "";
+            String type = o.GetType().Name;
+            String name = type;
+
+            // Check for an available name
+            while (FindName(name + i.ToString()) != null)
+            {
+                i++;
+            }
+
+            name += i.ToString();
+
+            return name;
+        }
+
         #endregion Internal Methods
 
         #region Data
@@ -2831,7 +2868,8 @@ namespace Visifire.Charts
         private List<Storyboard> animation = new List<Storyboard>();
         private TextBlock _watermark;
         private Double _animationDuration;
-        
+        internal Rectangle _plotAreaBorder;
+        private Int32 _storyboardEndCounter = 0;
         #endregion Data
     }
 }
