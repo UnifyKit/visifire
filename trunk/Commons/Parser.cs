@@ -29,6 +29,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Commons
 {
@@ -48,7 +49,7 @@ namespace Visifire.Commons
             RotateTransform rt = new RotateTransform();
 
             String[] strSplit = str.Split(';');
-            angle = Double.Parse(strSplit[0]);
+            angle = Double.Parse(strSplit[0],CultureInfo.InvariantCulture);
 
             brush.StartPoint = new Point(0, 0);
             brush.EndPoint = new Point(1, 0);
@@ -85,8 +86,8 @@ namespace Visifire.Commons
             
             String[] strSplit = str.Split(';');
 
-           
-            brush.GradientOrigin = new Point(Double.Parse(strSplit[0]), Double.Parse(strSplit[1]));
+
+            brush.GradientOrigin = new Point(Double.Parse(strSplit[0], CultureInfo.InvariantCulture), Double.Parse(strSplit[1], CultureInfo.InvariantCulture));
 
 
             foreach (String colorOffset in strSplit)
@@ -110,7 +111,7 @@ namespace Visifire.Commons
         /// <returns></returns>
         public static Brush ParseSolidColor(String colorCode)
         {
-            return (SolidColorBrush)XamlReader.Load(String.Format(@"<SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" Color=""{0}""></SolidColorBrush>",colorCode));
+            return (SolidColorBrush)XamlReader.Load(String.Format(CultureInfo.InvariantCulture, @"<SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" Color=""{0}""></SolidColorBrush>",colorCode));
         }
 
         /// <summary>

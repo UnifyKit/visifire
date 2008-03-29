@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Visifire.Commons;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Charts
 {
@@ -1615,24 +1616,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height / 2) yRadiusLimit = height / 2;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(bar);
                     DataPoints[i].Children.Add(shadow);
@@ -1654,26 +1655,26 @@ namespace Visifire.Charts
 
                     
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
 
 
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -2087,24 +2088,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height / 2) yRadiusLimit = height / 2;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(bar);
                     DataPoints[i].Children.Add(shadow);
@@ -2127,26 +2128,26 @@ namespace Visifire.Charts
                     
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
 
 
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -2926,7 +2927,7 @@ namespace Visifire.Charts
             String pathXAML;
             
             pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos,radius,radius);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos,radius,radius);
             pathXAML += "</GeometryGroup>";
 
             _pies[id].Data = (GeometryGroup)XamlReader.Load(pathXAML);
@@ -2978,8 +2979,8 @@ namespace Visifire.Charts
             if (Bevel)
             {
                 pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius-4, radius-4);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius-4, radius-4);
                 pathXAML += "</GeometryGroup>";
 
                 String gradient = "-90;";
@@ -3004,8 +3005,8 @@ namespace Visifire.Charts
             String pathXAML;
 
             pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2, radius/2);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2, radius/2);
             pathXAML += "</GeometryGroup>";
 
             _doughnut[id].Data = (GeometryGroup)XamlReader.Load(pathXAML);
@@ -3052,10 +3053,10 @@ namespace Visifire.Charts
             if (Bevel)
             {
                 pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius - 4, radius - 4);
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2 + 4, radius/2 + 4);
-                pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2, radius/2);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius, radius);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius - 4, radius - 4);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2 + 4, radius/2 + 4);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, radius/2, radius/2);
                 pathXAML += "</GeometryGroup>";
 
                 String gradient = "-90;";
@@ -3080,7 +3081,7 @@ namespace Visifire.Charts
             String pathXAML;
 
             pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, pieRadius.X, pieRadius.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", startPos, pieRadius.X, pieRadius.Y);
             pathXAML += "</GeometryGroup>";
 
             _pies[id].Data = (GeometryGroup)XamlReader.Load(pathXAML);
@@ -3099,17 +3100,17 @@ namespace Visifire.Charts
             arcEnd.Y = startPos.Y + radius * Math.Sin(sec1StopAngle) * yScalingFactor;
 
             pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-            pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X,pieRadius.Y );
-            pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
-            pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-            pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-            pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X,pieRadius.Y );
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
             _pieSides[id].Data = (PathGeometry)XamlReader.Load(pathXAML);
 
             _pies[id].Stroke = Cloner.CloneBrush(DataPoints[id].BorderColor);
@@ -3209,8 +3210,8 @@ namespace Visifire.Charts
             String pathXAML;
 
             pathXAML = @"<GeometryGroup FillRule=""EvenOdd"" xmlns=""http://schemas.microsoft.com/client/2007"">";
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", StartPos, pieRadius.X, pieRadius.Y);
-            pathXAML += String.Format(@"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", StartPos, pieRadius.X/2, pieRadius.Y/2);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", StartPos, pieRadius.X, pieRadius.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<EllipseGeometry Center=""{0}"" RadiusX=""{1}"" RadiusY=""{2}"" />", StartPos, pieRadius.X/2, pieRadius.Y/2);
             pathXAML += "</GeometryGroup>";
 
             _doughnut[id].Data = (GeometryGroup)XamlReader.Load(pathXAML);
@@ -3229,17 +3230,17 @@ namespace Visifire.Charts
             arcEnd.Y = StartPos.Y + radius * Math.Sin(secStopAngle) * yScalingFactor;
 
             pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-            pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
-            pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
-            pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-            pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-            pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X, pieRadius.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
             _pieSides[id].Data = (PathGeometry)XamlReader.Load(pathXAML);
 
             secStartAngle = Math.PI * 1.01;
@@ -3252,17 +3253,17 @@ namespace Visifire.Charts
             arcEnd.Y = StartPos.Y + radius/2 * Math.Sin(secStopAngle) * yScalingFactor;
 
             pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-            pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X/2, pieRadius.Y/2);
-            pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-            pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-            pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-            pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X/2, pieRadius.Y/2);
-            pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-            pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-            pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X/2, pieRadius.Y/2);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", pieRadius.X/2, pieRadius.Y/2);
+            pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+            pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
             _pies[id].Data = (PathGeometry)XamlReader.Load(pathXAML);
 
             _doughnut[id].Stroke = Cloner.CloneBrush(DataPoints[id].BorderColor);
@@ -3509,17 +3510,17 @@ namespace Visifire.Charts
 
 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
-                pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pies[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 _pies[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
 
@@ -3589,7 +3590,7 @@ namespace Visifire.Charts
                     bevelEnd2.Y = centerY + (radius -  bevelLength) * Math.Sin(stopAngle - 0.03);
 
                     Double tempangle = (startAngle + stopAngle) * 0.5 * 180/Math.PI;
-                    
+
                     List<Point> bevelPoints = new List<Point>();
                     bevelPoints.Add(new Point(centerX, centerY));
                     bevelPoints.Add(end1);
@@ -3622,21 +3623,21 @@ namespace Visifire.Charts
 
                     Path _bevel = new Path();
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd2.X, bevelEnd2.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd2.X, bevelEnd2.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle>stopAngle)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", bevelEnd1.X, bevelEnd1.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", bevelEnd2.X, bevelEnd2.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", bevelEnd1.X, bevelEnd1.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", bevelEnd2.X, bevelEnd2.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle > stopAngle)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", (radius - bevelLength), (radius - bevelLength));
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", (radius - bevelLength), (radius - bevelLength));
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     _bevel.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
                     String linGrad;
@@ -3644,13 +3645,13 @@ namespace Visifire.Charts
                     {
                         if (tempangle - StartAngle * 180 / Math.PI > 0 && tempangle - StartAngle * 180 / Math.PI < 180)
                         {
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color,0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.85) + ",1";
                         }
                         else
                         {
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetLighterColor((DataPoints[i].Background as SolidColorBrush).Color, 0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.99) + ",1";
                         }
@@ -3830,25 +3831,25 @@ namespace Visifire.Charts
                 
 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
-                pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius / 2, radius / 2);
-                pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius / 2, radius / 2);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                 _doughnut[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
 
@@ -3968,21 +3969,21 @@ namespace Visifire.Charts
 
                     Path _bevel = new Path();
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd2.X, bevelEnd2.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd2.X, bevelEnd2.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle > stopAngle )
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", bevelEnd1.X, bevelEnd1.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", bevelEnd2.X, bevelEnd2.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius, radius);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", bevelEnd1.X, bevelEnd1.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", bevelEnd2.X, bevelEnd2.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle > stopAngle )
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", (radius - bevelLength), (radius - bevelLength));
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", (radius - bevelLength), (radius - bevelLength));
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     _bevel.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
                     String linGrad;
@@ -3990,13 +3991,13 @@ namespace Visifire.Charts
                     {
                         if (tempangle - StartAngle * 180 / Math.PI > 0 && tempangle - StartAngle * 180 / Math.PI < 180)
                         {
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.85) + ",1";
                         }
                         else
                         {
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetLighterColor((DataPoints[i].Background as SolidColorBrush).Color, 0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.99) + ",1";
                         }
@@ -4013,21 +4014,21 @@ namespace Visifire.Charts
                     DataPoints[i].Children.Add(_bevel);
                     _bevel = new Path();
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd4.X, bevelEnd4.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", bevelEnd4.X, bevelEnd4.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle > stopAngle )
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", radius / 2, radius / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", bevelEnd3.X, bevelEnd3.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", bevelEnd4.X, bevelEnd4.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", radius / 2, radius / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", bevelEnd3.X, bevelEnd3.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", bevelEnd4.X, bevelEnd4.Y);
                     if (stopAngle - startAngle >= Math.PI || startAngle > stopAngle)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", (radius / 2 + bevelLength), (radius / 2 + bevelLength));
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", (radius / 2 + bevelLength), (radius / 2 + bevelLength));
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     _bevel.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
                     if (DataPoints[i].Background.GetType().Name == "SolidColorBrush")
@@ -4035,13 +4036,13 @@ namespace Visifire.Charts
                         if (tempangle - StartAngle * 180 / Math.PI > 0 && tempangle - StartAngle * 180 / Math.PI < 180)
                         {
 
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetLighterColor((DataPoints[i].Background as SolidColorBrush).Color, 0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.99) + ",1";
                         }
                         else
                         {
-                            linGrad = (tempangle + 90) + ";";
+                            linGrad = (tempangle + 90).ToString(CultureInfo.InvariantCulture) + ";";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.745) + ",0;";
                             linGrad += Parser.GetDarkerColor((DataPoints[i].Background as SolidColorBrush).Color, 0.85) + ",1";
                         }
@@ -4267,7 +4268,7 @@ namespace Visifire.Charts
                         String linbrush;
                         Double r, g, b;
 
-                        linbrush = (startAngle * 180 / Math.PI).ToString() + ";";
+                        linbrush = (startAngle * 180 / Math.PI).ToString(CultureInfo.InvariantCulture) + ";";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
                         linbrush += ",0;";
                         r = ((Double)(brush as SolidColorBrush).Color.R / 255) * 0.6;
@@ -4282,8 +4283,8 @@ namespace Visifire.Charts
                         brushRight = Parser.ParseLinearGradient(linbrush);
 
 
-                        
-                        linbrush = (((startAngle + stopAngle) / 2) * 180 / Math.PI).ToString() + ";";
+
+                        linbrush = (((startAngle + stopAngle) / 2) * 180 / Math.PI).ToString(CultureInfo.InvariantCulture) + ";";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
                         linbrush += ",0;";
                         linbrush += Parser.GetLighterColor((brush as SolidColorBrush).Color, 1 - r, 1 - g, 1 - b);
@@ -4314,18 +4315,18 @@ namespace Visifire.Charts
                 #region PieFace
 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pies[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 #endregion PieFace
 
@@ -4479,17 +4480,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec1StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide1.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section2)
@@ -4505,17 +4506,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec2StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide2.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section3)
@@ -4531,34 +4532,34 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec3StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide3.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (setbottom)
                 {
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""> <PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY + depth);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y + depth);
 
                     if (stopAngle - startAngle >= Math.PI)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     _pieSides[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                     _pieSides[i].Fill = new SolidColorBrush(Colors.Transparent);
                     _pieSides[i].SetValue(ZIndexProperty, -100);
@@ -4569,25 +4570,25 @@ namespace Visifire.Charts
                     if (startAngle >= 0 && stopAngle >= 0 && startAngle <= Math.PI && stopAngle <= Math.PI)
                     {
                         pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end1.X, end1.Y);
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end1.X, end1.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                        pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                        pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                        pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         _pieSides[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                         _pieSides[i].Fill = Cloner.CloneBrush(brushSide);
                     }
@@ -4597,25 +4598,25 @@ namespace Visifire.Charts
 
                 #region Pie Left
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pieLeft[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 #endregion Pie Left
 
                 #region Pie Right
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", centerX, centerY);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pieRight[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 #endregion Pie Right
 
@@ -4922,7 +4923,7 @@ namespace Visifire.Charts
 
                         Double r, g, b;
 
-                        linbrush = (startAngle * 180 / Math.PI).ToString() + ";";
+                        linbrush = (startAngle * 180 / Math.PI).ToString(CultureInfo.InvariantCulture) + ";";
                         
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.55);
                         linbrush += ",0;";
@@ -4938,7 +4939,7 @@ namespace Visifire.Charts
                         brushRight = Parser.ParseLinearGradient(linbrush);
 
 
-                        linbrush = (((startAngle + stopAngle) / 2) * 180 / Math.PI).ToString() + ";";
+                        linbrush = (((startAngle + stopAngle) / 2) * 180 / Math.PI).ToString(CultureInfo.InvariantCulture) + ";";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
                         linbrush += ",0;";
                         linbrush += Parser.GetLighterColor((brush as SolidColorBrush).Color, 1 - r, 1 - g, 1 - b);
@@ -4970,25 +4971,25 @@ namespace Visifire.Charts
                 #region DoughnutFace
 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
-                pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y);
 
                 if (stopAngle - startAngle >= Math.PI)
-                    pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _doughnut[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 #endregion DoughnutFace
 
@@ -5209,17 +5210,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec1StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide1.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section2)
@@ -5234,17 +5235,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec2StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide2.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section3)
@@ -5259,17 +5260,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius * Math.Sin(sec3StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide3.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section4)
@@ -5284,17 +5285,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius/2 * Math.Sin(sec4StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide4.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section5)
@@ -5309,17 +5310,17 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius/2 * Math.Sin(sec5StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide5.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (section6)
@@ -5335,37 +5336,37 @@ namespace Visifire.Charts
                     arcEnd.Y = centerY + radius/2 * Math.Sin(sec6StopAngle) * yScalingFactor;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide6.Data = (PathGeometry)XamlReader.Load(pathXAML);
                 }
                 if (setbottom)
                 {
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y + depth);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
                     if (DataPoints[i].YValue / sum >= 0.5)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y + depth);
                     if (DataPoints[i].YValue / sum >= 0.5)
-                        pathXAML += String.Format(@"IsLargeArc=""true"" ");
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     _pieSides[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                     _pieSides[i].Fill = new SolidColorBrush(Colors.Transparent);
                     _pieSides[i].SetValue(ZIndexProperty, -100);
@@ -5376,25 +5377,25 @@ namespace Visifire.Charts
                     if (startAngle >= 0 && stopAngle >= 0 && startAngle <= Math.PI && stopAngle <= Math.PI)
                     {
                         pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end1.X, end1.Y);
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end1.X, end1.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end2.X, end2.Y + depth);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                        pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end1.X, end1.Y);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                        pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                        pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         _pieSides[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                         _pieSides[i].Fill = Cloner.CloneBrush(brushSide);
                     }
@@ -5402,25 +5403,25 @@ namespace Visifire.Charts
                     if (startAngle >= Math.PI && startAngle <= Math.PI * 2 && stopAngle >= Math.PI && stopAngle <= Math.PI * 2)
                     {
                         pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y + depth);
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end4.X, end4.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end4.X, end4.Y);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                        pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
-                        pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
-                        pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", end3.X, end3.Y + depth);
 
                         if (stopAngle - startAngle >= Math.PI)
-                            pathXAML += String.Format(@"IsLargeArc=""true"" ");
+                            pathXAML += String.Format(CultureInfo.InvariantCulture, @"IsLargeArc=""true"" ");
 
-                        pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                        pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
-                        pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         _pies[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                     }
                     #endregion InnerFace
@@ -5431,25 +5432,25 @@ namespace Visifire.Charts
 
                 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end4.X, end4.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end4.X, end4.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end2.X, end2.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end4.X, end4.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pieLeft[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 
 
                 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y + depth);
-                pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y);
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end1.X, end1.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y + depth);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", end3.X, end3.Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                 _pieRight[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 
 
@@ -5883,24 +5884,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(column);
                     DataPoints[i].Children.Add(shadow);
@@ -5922,24 +5923,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -6383,24 +6384,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(column);
                     DataPoints[i].Children.Add(shadow);
@@ -6422,24 +6423,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -7725,24 +7726,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(column);
                     DataPoints[i].Children.Add(shadow);
@@ -7766,24 +7767,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height) yRadiusLimit = height;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -8194,24 +8195,24 @@ namespace Visifire.Charts
                     if (yRadiusLimit > height / 2) yRadiusLimit = height / 2;
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     DataPoints[i].Children.Add(bar);
                     DataPoints[i].Children.Add(shadow);
@@ -8234,26 +8235,26 @@ namespace Visifire.Charts
 
 
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
 
 
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Counterclockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
 
-                    pathXAML += String.Format(@"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
-                    pathXAML += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
 
-                    pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                     shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
@@ -8860,3 +8861,4 @@ namespace Visifire.Charts
 
     }
 }
+

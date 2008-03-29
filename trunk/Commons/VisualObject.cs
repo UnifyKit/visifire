@@ -29,6 +29,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Browser;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Commons
 {
@@ -658,18 +659,18 @@ namespace Visifire.Commons
                 Path path = new Path();
 
                 String pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                pathXAML += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", points[0].X, points[0].Y);
+                pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", points[0].X, points[0].Y);
 
                 for (int i = 1; i <= points.Count; i++)
-                    pathXAML += String.Format(@"<LineSegment Point=""{0},{1}""/>", points[i % points.Count].X, points[i % points.Count].Y);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", points[i % points.Count].X, points[i % points.Count].Y);
 
-                pathXAML += String.Format("</PathFigure.Segments></PathFigure>");
-                pathXAML += String.Format("</PathGeometry.Figures></PathGeometry>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
                 path.Data = (PathGeometry)XamlReader.Load(pathXAML);
 
 
-                String fillString = Angle + ";";
+                String fillString = Angle.ToString(CultureInfo.InvariantCulture) + ";";
                 Brush brush = Background;
                 if (brush == null)
                     brush = new SolidColorBrush(Colors.Transparent);

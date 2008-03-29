@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Visifire.Commons;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Charts
 {
@@ -43,8 +44,10 @@ namespace Visifire.Charts
         {
             // Initialize all local data
 
+            //System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US",);
+
             this.Loaded += new RoutedEventHandler(OnLoaded);
-            
+                        
         }
 
         public void DisplayWatermark()
@@ -80,7 +83,6 @@ namespace Visifire.Charts
 
         public void OnLoaded(Object sender, EventArgs e)
         {
-
             Init();
 
             Render();
@@ -95,8 +97,6 @@ namespace Visifire.Charts
                     sb.Begin();
 
                 }
-
-
             }
             else
             {
@@ -1066,7 +1066,7 @@ namespace Visifire.Charts
             TimeSpan durationTimeSpan = new TimeSpan(0,0,0,0,(int)(1000* duration));
             TimeSpan beginTimeSpan = new TimeSpan(0,0,0,0,(int)(1000* beginTime));
             String storyBoard = "" ;
-            storyBoard += String.Format(@"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimation Storyboard.TargetName=""{0}""  
+            storyBoard += String.Format(CultureInfo.InvariantCulture, @"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimation Storyboard.TargetName=""{0}""  
                             Storyboard.TargetProperty=""{1}"" From=""{2}""
                             To=""{3}"" Duration=""{4}"" BeginTime=""{5}""/></Storyboard>", targetName, targetProperty, from, to, durationTimeSpan.ToString(), beginTimeSpan.ToString());
             animation.Add(CreateStoryboard(storyBoard));
@@ -1079,13 +1079,13 @@ namespace Visifire.Charts
             String[] Spline = { "0,0,0.75,1", "0.25,0,1,1" };
             String storyBoard = "" ;
             
-            storyBoard += String.Format(@"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimationUsingKeyFrames Storyboard.TargetName=""{0}"" Storyboard.TargetProperty=""{1}"" >", targetName, targetProperty);
+            storyBoard += String.Format(CultureInfo.InvariantCulture, @"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimationUsingKeyFrames Storyboard.TargetName=""{0}"" Storyboard.TargetProperty=""{1}"" >", targetName, targetProperty);
 
                        
             for (int i = 0; i < valueSet.Length; i++)
             {
                 TimeSpan ts = TimeSpan.FromMilliseconds((int)(1000 * (timeSet[i]*duration + beginTime)));
-                storyBoard += String.Format(@"<SplineDoubleKeyFrame Value=""{0}"" KeyTime=""{1}"" KeySpline=""{2}""/>", valueSet[i], ts.ToString(), Spline[i % 2]);
+                storyBoard += String.Format(CultureInfo.InvariantCulture, @"<SplineDoubleKeyFrame Value=""{0}"" KeyTime=""{1}"" KeySpline=""{2}""/>", valueSet[i], ts.ToString(), Spline[i % 2]);
             }
 
             storyBoard += "</DoubleAnimationUsingKeyFrames></Storyboard>";

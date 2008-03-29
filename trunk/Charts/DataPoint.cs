@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Visifire.Commons;
 using Visifire.Charts;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Charts
 {
@@ -566,7 +567,7 @@ namespace Visifire.Charts
 
                 points[2].X = center.X + radius * Math.Cos(angle);
                 points[2].Y = center.Y + radius * Math.Sin(angle) * yScalingFactor;
-                String lineXAML = "<Polyline xmlns=\"http://schemas.microsoft.com/client/2007\" Points=\"" + points[0] + " " + points[1] + " " + points[2] + "\"/>";
+                String lineXAML = "<Polyline xmlns=\"http://schemas.microsoft.com/client/2007\" Points=\"" + points[0].ToString(CultureInfo.InvariantCulture) + " " + points[1].ToString(CultureInfo.InvariantCulture) + " " + points[2].ToString(CultureInfo.InvariantCulture) + "\"/>";
                 _labelLine = (Polyline)XamlReader.Load(lineXAML);
                 if (LabelLineColor != null)
                     _labelLine.Stroke = Cloner.CloneBrush(LabelLineColor);

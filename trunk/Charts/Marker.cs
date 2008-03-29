@@ -31,6 +31,7 @@ using System.Net;
 using System.Windows.Markup;
 using System.Windows.Resources;
 using System.Windows.Media.Imaging;
+using System.Globalization;
 namespace Visifire.Charts
 {
     public class Marker : Canvas
@@ -274,38 +275,38 @@ namespace Visifire.Charts
                 case "CROSS":
 
                     pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", _size * 0.1, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", _size * 0.1, 0);
 
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.4);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.9, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.4);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.9, 0);
 
-                    pathCross += String.Format(@"<ArcSegment Point=""{0},{1}""  ", _size, _size * 0.1);
-                    pathCross += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
-                    pathCross += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}""  ", _size, _size * 0.1);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.6, _size * 0.5);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.9);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.6, _size * 0.5);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.9);
 
-                    pathCross += String.Format(@"<ArcSegment Point=""{0},{1}""  ", _size * 0.9, _size);
-                    pathCross += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
-                    pathCross += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}""  ", _size * 0.9, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.6);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.1, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.6);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.1, _size);
 
-                    pathCross += String.Format(@"<ArcSegment Point=""{0},{1}""  ", 0, _size * 0.9);
-                    pathCross += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
-                    pathCross += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}""  ", 0, _size * 0.9);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.4, _size * 0.5);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.1);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.4, _size * 0.5);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.1);
 
-                    pathCross += String.Format(@"<ArcSegment Point=""{0},{1}""  ", _size * 0.1, 0);
-                    pathCross += String.Format(@"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
-                    pathCross += String.Format(@"SweepDirection=""Clockwise"" />");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}""  ", _size * 0.1, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", _size * 0.05, _size * 0.05);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
 
-                    pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
 
                     _path.Data = (PathGeometry)XamlReader.Load(pathCross);
@@ -320,25 +321,25 @@ namespace Visifire.Charts
                     
 
                     pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.1, 0);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.4);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.9, 0);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, 0);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.1);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.6, _size * 0.5);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.9);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, _size);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.9, _size);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.6);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.1, _size);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, _size);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.9);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.4, _size * 0.5);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.1);
-                    pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, 0);
-                    pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                    pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.1, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.4);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.9, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.1);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.6, _size * 0.5);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, _size * 0.9);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.9, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size * 0.6);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.1, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, _size);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.9);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.4, _size * 0.5);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, _size * 0.1);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
+                    pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
 
 
                     _path.Data = (PathGeometry)XamlReader.Load(pathCross);
@@ -357,23 +358,23 @@ namespace Visifire.Charts
                     if (!String.IsNullOrEmpty(ImagePath) && _downloaded)
                     {
                         pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, Height);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", Width * 0.5, 0);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", Width, Height);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, Height);
-                        pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, Height);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", Width * 0.5, 0);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", Width, Height);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, Height);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         this.Clip = (PathGeometry)XamlReader.Load(pathCross);
                     }
                     else
                     {
                         pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, _size);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, 0);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size, _size);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, _size);
-                        pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, _size);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, 0);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size, _size);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, _size);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         _path.Data = (PathGeometry)XamlReader.Load(pathCross);
                         if (Shadow)
                         {
@@ -386,25 +387,25 @@ namespace Visifire.Charts
                     if (!String.IsNullOrEmpty(ImagePath) && _downloaded)
                     {
                         pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", Width*0.5,0 );
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", Width, Height*0.5);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", Width*0.5, Height);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0, Height*0.5);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", Width * 0.5, 0);
-                        pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", Width*0.5,0 );
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", Width, Height*0.5);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", Width*0.5, Height);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, Height*0.5);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", Width * 0.5, 0);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         this.Clip = (PathGeometry)XamlReader.Load(pathCross);
                     }
                     else
                     {
                         pathCross = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                        pathCross += String.Format(@"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", _size * 0.5, 0);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size*0.9, _size * 0.5);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", 0.1*_size, _size * 0.5);
-                        pathCross += String.Format(@"<LineSegment Point=""{0},{1}""/>", _size * 0.5, 0);
-                        pathCross += String.Format("</PathFigure.Segments></PathFigure>");
-                        pathCross += String.Format("</PathGeometry.Figures></PathGeometry>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", _size * 0.5, 0);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size*0.9, _size * 0.5);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, _size);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0.1*_size, _size * 0.5);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", _size * 0.5, 0);
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                        pathCross += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                         _path.Data = (PathGeometry)XamlReader.Load(pathCross);
                         if (Shadow)
                         {

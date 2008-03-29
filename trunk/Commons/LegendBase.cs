@@ -28,6 +28,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace Visifire.Commons
 {
@@ -40,20 +41,20 @@ namespace Visifire.Commons
 
         public LegendBase()
         {
-            lineStrokeXaml = String.Format(@"<Path.Stroke>
+            lineStrokeXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke>
 			    <LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""0.174,0.273"" StartPoint=""0.826,0.727"">
 				    <GradientStop Color=""#FFD4D4D4"" Offset=""0""/>
 				    <GradientStop Color=""#FEE8E5E5"" Offset=""1""/>
 				    <GradientStop Color=""#FF000000"" Offset=""0.518""/>
 			    </LinearGradientBrush>
 		    </Path.Stroke>");
-            lineStrokeLeftXaml = String.Format(@"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
+            lineStrokeLeftXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
 			<LinearGradientBrush EndPoint=""0.008,0.833"" StartPoint=""0.998,0.833"">
 				<GradientStop Color=""#FF000000"" Offset=""1""/>
 				<GradientStop Color=""#FFFFFFFF"" Offset=""0""/>
 			</LinearGradientBrush>
 		</Path.Stroke>");
-            lineStrokeRightXaml = String.Format(@"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
+            lineStrokeRightXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
 			<LinearGradientBrush EndPoint=""0.998,0.833"" StartPoint=""0.008,0.833"">
 				<GradientStop Color=""#FF000000"" Offset=""1""/>
 				<GradientStop Color=""#FFFFFFFF"" Offset=""0""/>

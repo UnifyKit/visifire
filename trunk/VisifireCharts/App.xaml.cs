@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Charts;
 using System.Windows.Markup;
+using System.Globalization;
 
 namespace VisifireCharts
 {
@@ -20,6 +21,8 @@ namespace VisifireCharts
         {
             this.Startup += this.Application_Startup;
             this.Exit += this.Application_Exit;
+
+            
             this.UnhandledException += this.Application_UnhandledException;
 
             String fullName = System.Reflection.Assembly.GetExecutingAssembly().FullName;
@@ -33,9 +36,11 @@ namespace VisifireCharts
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+
             // Load the main control
             this.RootVisual = wrapper;
 
+            
             System.Net.WebClient webclient;
 
             wrapper.KeyDown += new KeyEventHandler(wrapper_KeyDown);
