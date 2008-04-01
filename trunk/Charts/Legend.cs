@@ -257,6 +257,7 @@ namespace Visifire.Charts
                 Double[] Angle = { 90, 180, -90, 0 };
                 ApplyBevel(type, length, Angle, 0);
             }
+
         }
 
         #endregion Internal Methods

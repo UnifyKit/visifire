@@ -50,47 +50,16 @@ namespace Visifire.Charts
                         
         }
 
-        public void DisplayWatermark()
-        {
-            if (!Watermark) return;
-            _watermark = new TextBlock();
-            _watermark.SetValue(ZIndexProperty, 1000);
-            if (Parser.GetBrushIntensity(this.Background) > 0.5)
-                _watermark.Foreground = new SolidColorBrush(Colors.Black);
-            else
-                _watermark.Foreground = new SolidColorBrush(Colors.White);
-
-            _watermark.Text = "Powered by Visifire";
-            _watermark.FontSize = 10;
-            _watermark.Opacity = 0.3;
-            _watermark.SetValue(LeftProperty, this.Width - _watermark.ActualWidth-6);
-            _watermark.SetValue(TopProperty, 3);
-            
-            _watermark.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
-            {
-                System.Windows.Browser.HtmlPage.Window.Navigate(new Uri("http://www.visifire.com"));
-            };
-            _watermark.MouseEnter += delegate(Object sender, MouseEventArgs e)
-            {
-                this.Cursor = Cursors.Hand;
-            };
-            _watermark.MouseLeave += delegate(Object sender, MouseEventArgs e)
-            {
-                this.Cursor = Cursors.Arrow;
-            };
-            this.Children.Add(_watermark);
-        }
-
         public void OnLoaded(Object sender, EventArgs e)
         {
             Init();
 
             Render();
 
-            GenerateAnimationData();
 
             if (AnimationEnabled)
             {
+                GenerateAnimationData();
 
                 foreach (Storyboard sb in animation)
                 {
@@ -100,8 +69,9 @@ namespace Visifire.Charts
             }
             else
             {
-                PerformFinalDiplaySettings();
+                ApplyFinalDiplaySettings();
             }
+            
         }
 
         public override System.Collections.Generic.List<Point> GetBoundingPoints()
@@ -150,12 +120,13 @@ namespace Visifire.Charts
 
             CreateReferences();
 
-            // if dataseries in not present then throw exception
             if (DataSeries.Count == 0)
             {
-                System.Diagnostics.Debug.WriteLine("DataSeries is missing");
-                throw (new Exception("DataSeries is missing"));
+                DataSeries ds = new DataSeries();
+                this.DataSeries.Add(ds);
+                this.Children.Add(ds);
             }
+           
 
             ToolTip.Init();
 
@@ -288,7 +259,7 @@ namespace Visifire.Charts
             }
 
 
-            if (PlotDetails.AxisOrientation == AxisOrientation.Column)
+            if (PlotDetails.AxisOrientation == AxisOrientation.Column )
             {
                 PlotArea.SetTop();
                 AxisY.SetTop();
@@ -718,6 +689,37 @@ namespace Visifire.Charts
             this.SetValue(HeightProperty, _parent.Height);
         }
 
+        public void DisplayWatermark()
+        {
+            if (!Watermark) return;
+            _watermark = new TextBlock();
+            _watermark.SetValue(ZIndexProperty, 1000);
+            if (Parser.GetBrushIntensity(this.Background) > 0.5)
+                _watermark.Foreground = new SolidColorBrush(Colors.Black);
+            else
+                _watermark.Foreground = new SolidColorBrush(Colors.White);
+
+            _watermark.Text = "Powered by Visifire";
+            _watermark.FontSize = 10;
+            _watermark.Opacity = 0.3;
+            _watermark.SetValue(LeftProperty, this.Width - _watermark.ActualWidth - 6);
+            _watermark.SetValue(TopProperty, 3);
+
+            _watermark.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                System.Windows.Browser.HtmlPage.Window.Navigate(new Uri("http://www.visifire.com"));
+            };
+            _watermark.MouseEnter += delegate(Object sender, MouseEventArgs e)
+            {
+                this.Cursor = Cursors.Hand;
+            };
+            _watermark.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                this.Cursor = Cursors.Arrow;
+            };
+            this.Children.Add(_watermark);
+        }
+
         #endregion Public Methods
 
         #region Public Properties
@@ -1072,6 +1074,7 @@ namespace Visifire.Charts
             animation.Add(CreateStoryboard(storyBoard));
 
         }
+
         private void ApplySplineDoubleKeyFrameAnimation(String targetName, String targetProperty, Double duration, Double beginTime, Double[] valueSet, Double[] timeSet)
         {
             TimeSpan durationTimeSpan = TimeSpan.FromMilliseconds( (int)(1000 * duration));
@@ -1093,7 +1096,7 @@ namespace Visifire.Charts
             animation.Add(CreateStoryboard(storyBoard));
         }
 
-        private void PerformFinalDiplaySettings()
+        private void ApplyFinalDiplaySettings()
         {
             if (_plotAreaBorder != null)
             {
@@ -1109,9 +1112,10 @@ namespace Visifire.Charts
                     _plotAreaBorder.Opacity = _plotArea.Opacity;
                 }
             }
+
+            
         }
 
-        
         private Storyboard CreateStoryboard(String storyboard)
         {
             Storyboard sb;
@@ -1122,10 +1126,11 @@ namespace Visifire.Charts
             {
                 this.Resources.Remove(sb);
                 _storyboardEndCounter++;
-                PerformFinalDiplaySettings();
+                ApplyFinalDiplaySettings();
             };
             return sb;
         }
+
         private void GenerateAnimationData()
         {
    
@@ -1931,11 +1936,6 @@ namespace Visifire.Charts
             Watermark = true;
         }
 
-        
-
-        
-
-
         /// <summary>
         /// Validate Parent element and assign it to _parent.
         /// Parent element should be a Canvas element. Else throw an exception.
@@ -2034,10 +2034,12 @@ namespace Visifire.Charts
                         if (!(child as TrendLine).Enabled) continue;
                         _trendLines.Add(child as TrendLine);
                         break;
+
                     case "ColorSet":
                         _colorSets.Add(child as ColorSet);
                         (child as ColorSet).Init();
                         break;
+
                     case "ToolTip":
                         _toolTip = child as ToolTip;
                         _toolTip.FixToolTipSize();
@@ -2046,6 +2048,7 @@ namespace Visifire.Charts
                         break;
 
                     case "Image":
+                        if (!(child as Image).Enabled) continue;
                         _logo = child as Image;
                         break;
 

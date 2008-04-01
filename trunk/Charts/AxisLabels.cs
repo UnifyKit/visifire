@@ -335,7 +335,7 @@ namespace Visifire.Charts
                 else
                     i = _parent.AxisMinimum;
 
-                if (plotDetails.AllAxisLabels)
+                if (plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0)
                 {
 
                     System.Collections.Generic.Dictionary<Double, String>.Enumerator enumerator = plotDetails.AxisLabels.GetEnumerator();
@@ -356,7 +356,7 @@ namespace Visifire.Charts
             for (; i <= _parent.AxisMaximum; i = minValue + (++countIntervals) * interval)
             {
                 if (_parent.GetType().Name == "AxisX")
-                    if (plotDetails.AllAxisLabels && i > plotDetails.MaxAxisXValue)
+                    if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > plotDetails.MaxAxisXValue)
                         continue;
 
                 lbl = new AxisLabel();

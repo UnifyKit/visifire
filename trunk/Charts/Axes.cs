@@ -196,7 +196,31 @@ namespace Visifire.Charts
 
             if (this.GetType().Name == "AxisX") StartFromZero = false;
 
-            _axisManager = new AxisManager((Decimal)MaxDataValue, (Decimal)MinDataValue, StartFromZero);
+            if ( Double.IsInfinity(MaxDataValue) || Double.IsInfinity(MinDataValue) )
+            {
+                if (this.GetType().Name == "AxisX")
+                {
+                    Double xInterval = (Double.IsNaN(_interval) ? 1 : _interval);
+                    Double maxXValue = (Double.IsNaN(AxisMaximum) ? 9 : AxisMaximum - xInterval);
+                    Double minXValue = (Double.IsNaN(AxisMinimum) ? 1 : AxisMinimum + xInterval);
+
+                    _axisManager = new AxisManager((Decimal)maxXValue, (Decimal)minXValue, StartFromZero);
+                    _axisManager.Interval = (Decimal)xInterval;
+                }
+                else
+                {
+                    Double yInterval = (Double.IsNaN(_interval) ? 10: _interval);
+                    Double maxYValue = (Double.IsNaN(AxisMaximum) ? 90 : AxisMaximum - yInterval);
+                    Double minYValue = (Double.IsNaN(AxisMinimum) ? 10 : AxisMinimum + yInterval);
+
+                    _axisManager = new AxisManager((Decimal)maxYValue, (Decimal)minYValue, StartFromZero);
+                    _axisManager.Interval = (Decimal)yInterval;
+                }
+            }
+            else
+            {
+                _axisManager = new AxisManager((Decimal)MaxDataValue, (Decimal)MinDataValue, StartFromZero);
+            }
 
             if (Interval > 0)
                 AxisManager.Interval = (Decimal)Interval;
@@ -837,7 +861,7 @@ namespace Visifire.Charts
         internal String GetFormattedText(Double value)
         {
             String str = value.ToString();
-            if (ScalingEnabled)
+            if (ScalingEnabled && _scaleValues.Count>0 && _scaleUnits.Count>0 )
             {
                 Double sValue = _scaleValues[0];
                 String sUnit = _scaleUnits[0];
@@ -886,22 +910,38 @@ namespace Visifire.Charts
                     if (gap > tempGap)
                         gap = tempGap;
 
-                    if (Double.IsNaN(AxisMinimum) && AxisOrientation == AxisOrientation.Column)
-                        AxisManager.AxisMinimumValue = (Decimal)PixelToDouble(DoubleToPixel((Double)(AxisManager.GetMinimumDataValue())) - (Double)gap * 1.1 * _parent.TotalSiblings / 2);
-                    else
-                        AxisManager.AxisMinimumValue = (Decimal)PixelToDouble(DoubleToPixel((Double)(AxisManager.GetMinimumDataValue())) + (Double)gap * 1.1 * _parent.TotalSiblings / 2);
+                    if (AxisOrientation == AxisOrientation.Column)
+                    {
+                        if (Double.IsNaN(AxisMinimum))
+                            AxisManager.AxisMinimumValue = (Decimal)PixelToDouble(DoubleToPixel((Double)(AxisManager.GetMinimumDataValue())) - (Double)gap * 1.1 * _parent.TotalSiblings / 2);
+                        else
+                            AxisManager.AxisMinimumValue = (Decimal)AxisMinimum;
+                    }
+                    else if (AxisOrientation == AxisOrientation.Bar)
+                    {
+                        if(Double.IsNaN(AxisMinimum))
+                            AxisManager.AxisMinimumValue = (Decimal)PixelToDouble(DoubleToPixel((Double)(AxisManager.GetMinimumDataValue())) + (Double)gap * 1.1 * _parent.TotalSiblings / 2);
+                        else
+                            AxisManager.AxisMinimumValue = (Decimal)AxisMinimum;
+                    }
                 }
 
 
                 // This is a modification
                 // This was done so that the space left by the left most datapoint and plot area must 
                 // be same as the space left by the rightmost datapoint and plot area
-
-                if (AxisManager.AxisMaximumValue - AxisManager.GetMaximumDataValue() >= AxisManager.GetMinimumDataValue() - AxisManager.AxisMinimumValue)
+                if(Double.IsNaN(AxisMaximum))
                 {
+                    if (AxisManager.AxisMaximumValue - AxisManager.GetMaximumDataValue() >= AxisManager.GetMinimumDataValue() - AxisManager.AxisMinimumValue)
+                    {
 
-                    // This part makes the gaps equal
-                    AxisManager.AxisMaximumValue = AxisManager.GetMaximumDataValue() + AxisManager.GetMinimumDataValue() - AxisManager.AxisMinimumValue;
+                        // This part makes the gaps equal
+                        AxisManager.AxisMaximumValue = AxisManager.GetMaximumDataValue() + AxisManager.GetMinimumDataValue() - AxisManager.AxisMinimumValue;
+                    }
+                }
+                else
+                {
+                    AxisManager.AxisMaximumValue = (Decimal)AxisMaximum;
                 }
 
             }

@@ -194,14 +194,6 @@ namespace Visifire.Charts
             CreateReferences();
 
 
-            if (DataPoints.Count == 0)
-            {
-                System.Diagnostics.Debug.WriteLine(RenderAs + " : To draw chart atleast one DataPoint is required");
-                throw (new Exception(RenderAs + " : To draw chart atleast one DataPoint is required"));
-
-            }
-
-
             if (Background == null)
             {
                 Background = Cloner.CloneBrush(ColorSetReference.GetColor(Index));
@@ -779,13 +771,13 @@ namespace Visifire.Charts
             get
             {
                 if (_labelFontWeight != null)
-                    return _labelFontWeight.ToString();
+                    return _labelFontWeight;
                 else
                     return _parent.Label.FontWeight;
             }
             set
             {
-                _labelFontWeight = Converter.StringToFontWeight(value);
+                _labelFontWeight = value;
             }
         }
 
@@ -3400,6 +3392,7 @@ namespace Visifire.Charts
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
                 _textBlock.FontWeight = Converter.StringToFontWeight(dp.LabelFontWeight);
+                _textBlock.FontStyle = Converter.StringToFontStyle(dp.LabelFontStyle);
                 _textBlock.Text = dp.TextParser(dp.LabelText);
 
                 if (MaxLabelHeight < _textBlock.ActualHeight) MaxLabelHeight = _textBlock.ActualHeight;
@@ -3713,6 +3706,7 @@ namespace Visifire.Charts
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
                 _textBlock.FontWeight = Converter.StringToFontWeight(dp.LabelFontWeight);
+                _textBlock.FontStyle = Converter.StringToFontStyle(dp.LabelFontStyle);
                 _textBlock.Text = dp.TextParser(dp.LabelText);
 
                 if (MaxLabelHeight < _textBlock.ActualHeight) MaxLabelHeight = _textBlock.ActualHeight;
@@ -4100,6 +4094,7 @@ namespace Visifire.Charts
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
                 _textBlock.FontWeight = Converter.StringToFontWeight(dp.LabelFontWeight);
+                _textBlock.FontStyle = Converter.StringToFontStyle(dp.LabelFontStyle);
                 _textBlock.Text = dp.TextParser(dp.LabelText);
 
                 if (MaxLabelHeight < _textBlock.ActualHeight) MaxLabelHeight = _textBlock.ActualHeight;
@@ -4744,6 +4739,7 @@ namespace Visifire.Charts
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
                 _textBlock.FontWeight = Converter.StringToFontWeight(dp.LabelFontWeight);
+                _textBlock.FontStyle = Converter.StringToFontStyle(dp.LabelFontStyle);
                 _textBlock.Text = dp.TextParser(dp.LabelText);
 
                 if (MaxLabelHeight < _textBlock.ActualHeight) MaxLabelHeight = _textBlock.ActualHeight;
@@ -8810,7 +8806,7 @@ namespace Visifire.Charts
         private Double _labelFontSize;
         private Brush _labelFontColor;
         private Brush _labelBackground;
-        private FontWeight _labelFontWeight;
+        private String _labelFontWeight;
         private String _labelFontFamily;
         private String _labelStyle;
         private Brush _labelLineColor;

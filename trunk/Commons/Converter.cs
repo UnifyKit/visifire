@@ -57,27 +57,27 @@ namespace Visifire.Commons
 
         public static FontWeight StringToFontWeight(String fws)
         {
-            switch (fws)
+            switch (fws.ToLower())
             {
-                case "Black":
+                case "black":
                     return FontWeights.Black;
-                case "Bold":
+                case "bold":
                     return FontWeights.Bold;
-                case "ExtraBlack":
+                case "extrablack":
                     return FontWeights.ExtraBlack;
-                case "ExtraBold":
+                case "extrabold":
                     return FontWeights.ExtraBold;
-                case "ExtraLight":
+                case "extralight":
                     return FontWeights.ExtraLight;
-                case "Light":
+                case "light":
                     return FontWeights.Light;
-                case "Medium":
+                case "medium":
                     return FontWeights.Medium;
-                case "Normal":
+                case "normal":
                     return FontWeights.Normal;
-                case "SemiBold":
+                case "semibold":
                     return FontWeights.SemiBold;
-                case "Thin":
+                case "thin":
                     return FontWeights.Thin;
                 default:
                     return FontWeights.Normal;
@@ -86,11 +86,11 @@ namespace Visifire.Commons
 
         public static FontStyle StringToFontStyle(String fss)
         {
-            switch (fss)
+            switch (fss.ToLower())
             {
-                case "Normal":
+                case "normal":
                     return FontStyles.Normal;
-                case "Italic":
+                case "italic":
                     return FontStyles.Italic;
                 default:
                     return FontStyles.Normal;

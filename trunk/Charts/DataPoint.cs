@@ -1431,13 +1431,13 @@ namespace Visifire.Charts
             get
             {
                 if (_labelFontWeight != null)
-                    return _labelFontWeight.ToString();
+                    return _labelFontWeight;
                 else
                     return _parent.LabelFontWeight;
             }
             set
             {
-                _labelFontWeight = Converter.StringToFontWeight(value);
+                _labelFontWeight = value;
             }
         }
 
@@ -1939,7 +1939,7 @@ namespace Visifire.Charts
         private Double _labelFontSize;
         private Brush _labelFontColor;
         private Brush _labelBackground;
-        private FontWeight _labelFontWeight;
+        private String _labelFontWeight;
         private String _labelFontFamily;
         private String _labelStyle;
         private Brush _labelLineColor;

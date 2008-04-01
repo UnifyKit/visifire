@@ -80,7 +80,7 @@ namespace Visifire.Charts
 
         public String TextParser(String unParsed)
         {
-            if (String.IsNullOrEmpty(ToolTipText))
+            if (String.IsNullOrEmpty(unParsed))
                 return "";
             String str = new String(unParsed.ToCharArray());
             if (str.Contains("##Source"))
