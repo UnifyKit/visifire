@@ -250,6 +250,7 @@ namespace Visifire.Charts
             MajorTicks.Init();
 
             AttachHref();
+            AttachToolTip();
         }
         #endregion Public Methods
 

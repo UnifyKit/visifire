@@ -58,7 +58,11 @@ namespace Visifire.Charts
             SetName();
 
             //This step applies theme background
-            Background = Background;
+            if(GetFromTheme("Background") != null)
+                Background = GetFromTheme("Background") as Brush;
+
+            AttachToolTip();
+            AttachHref();
 
             if (BorderColor == null)
             {

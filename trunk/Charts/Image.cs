@@ -102,7 +102,18 @@ namespace Visifire.Charts
         internal void Init()
         {
 
-            this.Children.Add(_image);
+            if ((_imageHeightSet && !_imageWidthSet) || (!_imageHeightSet && _imageWidthSet))
+            {
+                throw new Exception("ImageWidth and ImageHeight; both must be set.");
+            }
+            else if (_imageWidthSet && _imageHeightSet)
+            {
+                imgBrush.Stretch = Stretch.Fill;
+            }
+            else
+            {
+                imgBrush.Stretch = Stretch.Uniform;
+            }
         }
 
         private void SetObjectSize(Object o,RoutedEventArgs e)
@@ -214,14 +225,22 @@ namespace Visifire.Charts
             }
             set
             { 
-                _imageWidth = value; 
+                _imageWidth = value;
+                _imageWidthSet = true;
             }
         }
 
         public Double ImageHeight
         {
-            get { return _imageHeight; }
-            set { _imageHeight = value; }
+            get 
+            { 
+                return _imageHeight; 
+            }
+            set 
+            { 
+                _imageHeight = value;
+                _imageHeightSet = true;
+            }
         }
 
         public AlignmentX AlignmentX
@@ -274,18 +293,15 @@ namespace Visifire.Charts
                     UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
                     _source = ub2.ToString();
                 }
-                ImageBrush imgBrush;
+                
                 String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _source + "\"/>";
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
-                imgBrush.Stretch = Stretch.Uniform;
+                
                 imgBrush.ImageFailed += delegate(Object o, ExceptionRoutedEventArgs e)
                 {
                     throw new Exception("Image Failed in Logo");
                 };
                 this.Background = imgBrush;
-
-                
-
             }
         }
 
@@ -308,7 +324,7 @@ namespace Visifire.Charts
             Scale = 1.0;
             AlignmentX = AlignmentX.Center;
             AlignmentY = AlignmentY.Top;
-
+            Enabled = true;
         }
 
         private void AttachToolTip()
@@ -345,8 +361,11 @@ namespace Visifire.Charts
         private AlignmentY _alignmentY;
         private Double _imageHeight;
         private Double _imageWidth;
+        private Boolean _imageHeightSet = false;
+        private Boolean _imageWidthSet = false;
         private Canvas _image;
         private String _href;
+        private ImageBrush imgBrush;
         #endregion Data
     }
 }

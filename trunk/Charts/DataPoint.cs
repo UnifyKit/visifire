@@ -719,20 +719,11 @@ namespace Visifire.Charts
         {
             base.SetDefaults();
 
-            _shadowRectangle = new Rectangle();
-            this.Children.Add(_shadowRectangle);
-
+           
             _borderRectangle = new Rectangle();
             this.Children.Add(_borderRectangle);
 
-            _lineShadow = new Line();
-            this.Children.Add(_lineShadow);
-
-            _line = new Line();
-            this.Children.Add(_line);
-
-            _polygon = new Polygon();
-            this.Children.Add(_polygon);
+           
 
             XValue = Double.NaN;
             YValue = Double.NaN;
@@ -1910,13 +1901,9 @@ namespace Visifire.Charts
         private String _color;
         private DataSeries _parent;
 
-        public Line _line;
-        public Line _lineShadow;
-        public Polygon _polygon;
-
         private Double _borderThickness;
         public Rectangle _borderRectangle;
-        public Rectangle _shadowRectangle;
+
 
         private Brush _borderColor;
         private String _borderStyle;

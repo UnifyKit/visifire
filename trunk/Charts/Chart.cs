@@ -90,7 +90,8 @@ namespace Visifire.Charts
 
 
             // This is done to apply background from themes
-            Background = Background;
+            if(GetFromTheme("Background") != null)
+                Background = GetFromTheme("Background") as Brush;
 
 
             SetName();
@@ -187,6 +188,8 @@ namespace Visifire.Charts
 
             PlotArea.Init();
 
+            if(_logo != null)
+                _logo.Init();
 
             if (PlotDetails.AxisOrientation != AxisOrientation.Pie)
             {
@@ -314,6 +317,15 @@ namespace Visifire.Charts
                 AxisX.SetWidth();
                 AxisX.AxisLabels.SetWidth();
 
+                //test
+                AxisX.AxisLabels.PositionLabels();
+                AxisX.AxisLabels.SetHeight();
+                AxisX.SetHeight();
+                AxisX.SetTop();
+                PlotArea.SetHeight();
+                AxisY.SetHeight();
+                AxisY.AxisLabels.PositionLabels();
+                //test
 
                 AxisX.MajorGrids.SetWidth();
                 AxisY.MajorGrids.SetHeight();
@@ -338,8 +350,8 @@ namespace Visifire.Charts
                 AxisY.MajorTicks.DrawTicks();
                 AxisX.MajorTicks.DrawTicks();
 
-                AxisX.AxisLabels.PositionLabels();
-                AxisY.AxisLabels.PositionLabels();
+                //AxisX.AxisLabels.PositionLabels();
+                //AxisY.AxisLabels.PositionLabels();
 
 
                 AxisY.DrawAxisLine();
@@ -1120,7 +1132,6 @@ namespace Visifire.Charts
         {
             Storyboard sb;
             sb = (Storyboard)XamlReader.Load(storyboard);
-            sb.SetValue(NameProperty, GetNewObjectName(sb));
             this.Resources.Add(sb);
             sb.Completed += delegate(object sender1, EventArgs e1)
             {
@@ -1192,12 +1203,6 @@ namespace Visifire.Charts
                     }
                     
 
-                    foreach (Legend child in Legends)
-                    {
-                        ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
-                        child.Opacity = 0;
-                    }
-
                     if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
                     {
                         for (i = 0; i < Surface3D.Length; i++)
@@ -1253,10 +1258,7 @@ namespace Visifire.Charts
                     }
 
 
-                    foreach (Legend child in Legends)
-                    {
-                        ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, 0);
-                    }
+                    
 
                     st = new ScaleTransform();
 
@@ -1349,11 +1351,7 @@ namespace Visifire.Charts
                     }
 
 
-                    foreach (Legend child in Legends)
-                    {
-                        
-                        ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, 0);
-                    }
+                    
 
                     st = new ScaleTransform();
 
@@ -1486,12 +1484,7 @@ namespace Visifire.Charts
                     }
 
 
-                    foreach (Legend child in Legends)
-                    {
-                        
-                        ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
-                        child.Opacity = 0;
-                    }
+                    
                     System.Collections.Generic.List<Double> rx = new System.Collections.Generic.List<double>();
                     System.Collections.Generic.List<Double> ry = new System.Collections.Generic.List<double>();
                     Random rand = new Random();
@@ -2054,6 +2047,8 @@ namespace Visifire.Charts
 
                     case "Label":
                         _label = child as Label;
+                        _label.Init();
+                        _label.Visibility = Visibility.Collapsed;
                         break;
                 }
             }
@@ -2824,6 +2819,7 @@ namespace Visifire.Charts
             name += i.ToString();
 
             return name;
+        
         }
 
         #endregion Internal Methods

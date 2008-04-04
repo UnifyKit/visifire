@@ -7875,7 +7875,7 @@ namespace Visifire.Charts
 
                     DataPoints[i].AttachHref(column);
                     DataPoints[i].ApplyEffects((int)column.GetValue(ZIndexProperty) + 1);
-
+                    
                     #endregion Column 2D Plotting
 
 

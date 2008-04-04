@@ -89,6 +89,8 @@ namespace Visifire.Commons
             _currentWidth = Padding;
             if (!_alignmentXChanged && DockInsidePlotArea) _alignmentX = AlignmentX.Right;
             if (!_alignmentYChanged && DockInsidePlotArea) _alignmentY = AlignmentY.Top;
+            this.MaxHeight = base.MaxHeight;
+            this.MaxWidth = base.MaxWidth;
         }
 
         /// <summary>
@@ -165,11 +167,11 @@ namespace Visifire.Commons
         {
             if (Enabled == true)
             {
-                if (Double.IsNaN(_maxWidth))
+                if (Double.IsNaN(_maxWidth) || (_maxWidth > titleBounds.Width))
                 {
                     _maxWidth = titleBounds.Width - 2 * margin;
                 }
-                if (Double.IsNaN(_maxHeight))
+                if (Double.IsNaN(_maxHeight) || (_maxHeight > titleBounds.Height))
                 {
                     _maxHeight = titleBounds.Height - 2 * margin;
                 }
@@ -336,7 +338,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Max width of the legend
         /// </summary>
-        public Double MaxWidth
+        public virtual Double MaxWidth
         {
             get
             {
@@ -345,13 +347,14 @@ namespace Visifire.Commons
             set
             {
                 _maxWidth = value;
+                
             }
         }
 
         /// <summary>
         /// Max height of the legend
         /// </summary>
-        public Double MaxHeight
+        public virtual Double MaxHeight
         {
             get
             {
@@ -974,6 +977,7 @@ namespace Visifire.Commons
         {
             BorderThickness = Double.NaN;
             Spacing = Padding * 50 / 100 + 2;
+            ApplyClipRegion = true;
         }
 
         #endregion

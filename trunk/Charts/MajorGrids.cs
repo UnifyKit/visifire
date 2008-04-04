@@ -192,7 +192,7 @@ namespace Visifire.Charts
                         if (ln.Y1 < -0.5 || ln.Y1 > this.Height + 0.5) continue;
 
 
-                        if (i % 2 == 1)
+                        if (i % 2 == 0)
                         {
                             interlacedRectangle = new Rectangle();
 
@@ -265,7 +265,7 @@ namespace Visifire.Charts
                         if (ln.X1 < -0.5 || ln.X1 > this.Width + 0.5) continue;
 
 
-                        if (i % 2 == 1)
+                        if (i % 2 == 0)
                         {
                             interlacedRectangle = new Rectangle();
 

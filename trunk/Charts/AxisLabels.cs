@@ -50,6 +50,8 @@ namespace Visifire.Charts
 
             SetName();
             MaxLabelWidth = (_parent.Parent as Chart).Width * (TextWrap <= 0 ? 0.3 : TextWrap);
+            AttachHref();
+            AttachToolTip();
         }
 
         public override void SetWidth()
@@ -520,6 +522,8 @@ namespace Visifire.Charts
                 //These variables will be used to update the height of the row
                 _rowHeight = rowHeight;
                 _numberOfCalculatedRows = numberOfRows;
+
+                SetHeight();
             }
             else
             {
