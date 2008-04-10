@@ -1,0 +1,12 @@
+Visifire follows dual licensing scheme as mentioned below.
+
+1. GNU GPL License:
+    You can redistribute Visifire and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version. Please read the 
+    "GNU General Public License Version 3.txt" for further details.
+
+2. Commercial License:
+    If you've obtained a commercial license from Webyog, please refer to
+    the license that you have received on puchase.
