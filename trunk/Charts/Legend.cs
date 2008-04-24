@@ -1005,7 +1005,6 @@ namespace Visifire.Charts
 
         private Chart _parent;
 
-        private Brush _borderColor;
         private Rectangle _borderRectangle;
 
 

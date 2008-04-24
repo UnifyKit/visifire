@@ -43,9 +43,6 @@ namespace Visifire.Charts
 
         public Chart()
         {
-            // Initialize all local data
-
-            //System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US",);
 
             this.Loaded += new RoutedEventHandler(OnLoaded);
                         
@@ -91,21 +88,30 @@ namespace Visifire.Charts
 
 
             // This is done to apply background from themes
-            if(GetFromTheme("Background") != null)
+            if(GetFromTheme("Background") != null && GetCurrentBackground()== null)
                 Background = GetFromTheme("Background") as Brush;
 
 
             SetName();
 
             if (Double.IsNaN(this.Width))
-                this.Width = ((FrameworkElement)Parent).Width;
+            {
+                if (Double.IsNaN(((FrameworkElement)Parent).Width))
+                    throw new Exception("Specify the width of the Chart element.");
+                else
+                    this.Width = ((FrameworkElement)Parent).Width;
 
+            }
 
 
 
             if (Double.IsNaN(this.Height))
-                this.Height = ((FrameworkElement)Parent).Height;
-
+            {
+                if (Double.IsNaN(((FrameworkElement)Parent).Height))
+                    throw new Exception("Specify the height of the Chart element.");
+                else
+                    this.Height = ((FrameworkElement)Parent).Height;
+            }
 
             ApplyEffects();
 
@@ -137,14 +143,25 @@ namespace Visifire.Charts
 
             _innerTitleBounds = new Rect(Padding, Padding, Width - 2 * Padding, Height - 2 * Padding);
 
+            if (_titles.Count != 0)
+            {
+                foreach (Title child in _titles)
+                    child.Init();
+            }
+
+            if (_legends.Count != 0)
+            {
+                foreach (Legend child in _legends)
+                    child.Init();
+            }
 
             foreach (DataSeries child in _dataSeries)
             {
+                if (String.IsNullOrEmpty(child.Legend) && _legends.Count != 0)
+                    child.Legend = _legends[0].Name;
                 child.Init();
 
             }
-
-
 
 
             GeneratePlotDetails();
@@ -154,20 +171,10 @@ namespace Visifire.Charts
             GenerateIndexTable();
 
 
-
-            if (_titles.Count != 0)
-            {
-                foreach (Title child in _titles)
-                    child.Init();
-            }
-
-
             if (_legends.Count != 0)
             {
                 foreach (Legend child in _legends)
                 {
-                    child.Init();
-
                     foreach (DataSeries ds in _dataSeries)
                     {
                         if (child.Name == ds.Legend)
@@ -687,6 +694,7 @@ namespace Visifire.Charts
         {
             throw new NotImplementedException();
         }
+
         public override void SetTop()
         {
             throw new NotImplementedException();
@@ -1075,38 +1083,90 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
-        
-        private void ApplyDoubleAnimation(String targetName, String targetProperty, Double from, Double to, Double duration, Double beginTime)
+
+        private void ApplyDoubleAnimation(DependencyObject target, String targetProperty, Double from, Double to, Double duration, Double beginTime)
         {
-            TimeSpan durationTimeSpan = new TimeSpan(0,0,0,0,(int)(1000* duration));
-            TimeSpan beginTimeSpan = new TimeSpan(0,0,0,0,(int)(1000* beginTime));
-            String storyBoard = "" ;
-            storyBoard += String.Format(CultureInfo.InvariantCulture, @"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimation Storyboard.TargetName=""{0}""  
-                            Storyboard.TargetProperty=""{1}"" From=""{2}""
-                            To=""{3}"" Duration=""{4}"" BeginTime=""{5}""/></Storyboard>", targetName, targetProperty, from, to, durationTimeSpan.ToString(), beginTimeSpan.ToString());
-            animation.Add(CreateStoryboard(storyBoard));
+            TimeSpan durationTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * duration));
+            TimeSpan beginTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * beginTime));
+            
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation doubleAnimation = new DoubleAnimation();
+
+            doubleAnimation.Duration = durationTimeSpan;
+
+            doubleAnimation.BeginTime = beginTimeSpan;
+
+            storyboard.Children.Add(doubleAnimation);
+
+            Storyboard.SetTarget(doubleAnimation, target);
+
+            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+
+            doubleAnimation.From = from;
+
+            doubleAnimation.To = to;
+
+            this.Resources.Add(storyboard);
+
+            storyboard.Completed += delegate(object sender, EventArgs e)
+            {
+                this.Resources.Remove(storyboard);
+                _storyboardEndCounter++;
+                ApplyFinalDiplaySettings();
+            };
+
+            animation.Add(storyboard);
 
         }
 
-        private void ApplySplineDoubleKeyFrameAnimation(String targetName, String targetProperty, Double duration, Double beginTime, Double[] valueSet, Double[] timeSet)
+        private void ApplySplineDoubleKeyFrameAnimation(DependencyObject target, String targetProperty, Double duration, Double beginTime, Double[] valueSet, Double[] timeSet)
         {
-            TimeSpan durationTimeSpan = TimeSpan.FromMilliseconds( (int)(1000 * duration));
-            TimeSpan beginTimeSpan = TimeSpan.FromMilliseconds((int)(1000 * beginTime));
-            String[] Spline = { "0,0,0.75,1", "0.25,0,1,1" };
-            String storyBoard = "" ;
-            
-            storyBoard += String.Format(CultureInfo.InvariantCulture, @"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007""><DoubleAnimationUsingKeyFrames Storyboard.TargetName=""{0}"" Storyboard.TargetProperty=""{1}"" >", targetName, targetProperty);
+            Storyboard storyboard = new Storyboard();
 
-                       
+            DoubleAnimationUsingKeyFrames doubleAnimation = new DoubleAnimationUsingKeyFrames();
+
+            storyboard.Children.Add(doubleAnimation);
+
+            Storyboard.SetTarget(doubleAnimation, target);
+
+            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+
             for (int i = 0; i < valueSet.Length; i++)
             {
-                TimeSpan ts = TimeSpan.FromMilliseconds((int)(1000 * (timeSet[i]*duration + beginTime)));
-                storyBoard += String.Format(CultureInfo.InvariantCulture, @"<SplineDoubleKeyFrame Value=""{0}"" KeyTime=""{1}"" KeySpline=""{2}""/>", valueSet[i], ts.ToString(), Spline[i % 2]);
+                SplineDoubleKeyFrame splineKeyframe = new SplineDoubleKeyFrame();
+
+                splineKeyframe.Value = valueSet[i];
+
+                splineKeyframe.KeyTime = TimeSpan.FromMilliseconds((int)(1000 * (timeSet[i] * duration + beginTime)));
+
+                KeySpline Spline = new KeySpline();
+
+                Spline = new KeySpline();
+
+                if (i % 2 == 0)
+                {
+                    Spline.ControlPoint1 = new Point(0, 0);
+                    Spline.ControlPoint2 = new Point(0.75, 1);
+                }
+                else
+                {
+                    Spline.ControlPoint1 = new Point(0.25, 0);
+                    Spline.ControlPoint2 = new Point(1, 1);
+                }
+                splineKeyframe.KeySpline = Spline;
+
+                doubleAnimation.KeyFrames.Add(splineKeyframe);
             }
+            this.Resources.Add(storyboard);
 
-            storyBoard += "</DoubleAnimationUsingKeyFrames></Storyboard>";
+            storyboard.Completed += delegate(object sender, EventArgs e)
+            {
+                this.Resources.Remove(storyboard);
+                _storyboardEndCounter++;
+                ApplyFinalDiplaySettings();
+            };
 
-            animation.Add(CreateStoryboard(storyBoard));
+            animation.Add(storyboard);
         }
 
         private void ApplyFinalDiplaySettings()
@@ -1158,8 +1218,11 @@ namespace Visifire.Charts
             }
 
             framesetTime = new System.Collections.Generic.List<Double>();
-            
-           
+
+            if (AnimationDuration > 0 && AnimationDuration < 0.6) AnimationDuration = 0.6;
+
+            if (AnimationDuration <= 0) return;
+
             Double initialTime = 600/(AnimationDuration * 1000);
             Double initialShootup = ((Double)PlotArea.GetValue(TopProperty)+PlotArea.Height) / PlotArea.Height;
             
@@ -1193,10 +1256,10 @@ namespace Visifire.Charts
                     #region Type1
                     if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
                     {
-                        ApplyDoubleAnimation(AxisX.Name, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.Name, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.MajorGrids.Name, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(PlotArea.Name, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
                         AxisX.Opacity = 0;
                         AxisY.Opacity = 0;
                         AxisY.MajorGrids.Opacity = 0;
@@ -1210,21 +1273,21 @@ namespace Visifire.Charts
                         {
                             if (Surface3D[i] == null) continue;
                             Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                            ApplyDoubleAnimation(Surface3D[i].Name, "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, initialTime);
                             Surface3D[i].Opacity = 0;
                         }
                         for (i = 0; i < AreaLine3D.Count; i++)
                         {
                             if (AreaLine3D[i] == null) continue;
                             AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                            ApplyDoubleAnimation(AreaLine3D[i].Name, "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, initialTime);
                             AreaLine3D[i].Opacity = 0;
                         }
                         foreach (DataSeries child in DataSeries)
                         {
                             if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
                             {
-                                ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
                                 child.Opacity = 0;
                             }
                         }
@@ -1236,11 +1299,11 @@ namespace Visifire.Charts
                         {
                             if (DataSeries.Count > 2)
                             {
-                                ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, initialTime);
+                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, initialTime);
                             }
                             else
                             {
-                                ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime);
+                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime);
                             }
                             child.Opacity = 0;
                             i++;
@@ -1252,10 +1315,10 @@ namespace Visifire.Charts
                     #region Type2
                     if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
                     {
-                        ApplyDoubleAnimation(AxisX.Name, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.Name, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.MajorGrids.Name, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(PlotArea.Name, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
                     }
 
 
@@ -1280,8 +1343,8 @@ namespace Visifire.Charts
                             Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
                             st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
                             
-                            ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(Surface3D[i].Name, "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, 0);
+                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                            ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, 0);
 
                             Surface3D[i].Opacity = 0;
                         }
@@ -1296,8 +1359,8 @@ namespace Visifire.Charts
                             AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
                             st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
                             
-                            ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(AreaLine3D[i].Name, "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, 0);
+                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                            ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, 0);
                             AreaLine3D[i].Opacity = 0;
                         }
                         foreach (DataSeries child in DataSeries)
@@ -1310,8 +1373,8 @@ namespace Visifire.Charts
                                 child.RenderTransform = st;
                                 st.SetValue(NameProperty, st.GetType().Name + child.Name);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, AnimationDuration, 0);
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, 0);
                                 child.Opacity = 0;
                             }
                         }
@@ -1328,8 +1391,8 @@ namespace Visifire.Charts
                             st.SetValue(NameProperty, st.GetType().Name + child.Name);
 
 
-                            ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count+initialTime, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(child.Name, "Opacity", 0, child.Opacity, 0, (Double)i / (Double)_dataSeries.Count+initialTime);
+                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count+initialTime, framesetScaleY.ToArray(), framesetTime.ToArray());
+                            ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, 0, (Double)i / (Double)_dataSeries.Count+initialTime);
                             child.Opacity = 0;
                             st = new ScaleTransform();
                             i++;
@@ -1345,10 +1408,10 @@ namespace Visifire.Charts
                     if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
                     {
                         
-                        ApplyDoubleAnimation(AxisX.Name, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.Name, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.MajorGrids.Name, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(PlotArea.Name, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
                     }
 
 
@@ -1380,7 +1443,7 @@ namespace Visifire.Charts
 
                                 Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                                 
                             }
                             else
@@ -1389,7 +1452,7 @@ namespace Visifire.Charts
                                 Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
                                 Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                                 
                             }
                         }
@@ -1408,7 +1471,7 @@ namespace Visifire.Charts
                             
                             AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
                             
-                            ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                             
 
 
@@ -1426,7 +1489,7 @@ namespace Visifire.Charts
                                 child.RenderTransformOrigin = new Point(0.5, 1);
                                 st.SetValue(NameProperty, st.GetType().Name + child.Name);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                                 
 
                             }
@@ -1448,7 +1511,7 @@ namespace Visifire.Charts
                                 
                                 child.RenderTransformOrigin = new Point(0.5, 1);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                                 
 
                             }
@@ -1457,7 +1520,7 @@ namespace Visifire.Charts
                                
                                 child.RenderTransformOrigin = new Point(0, 0.5);
                                 
-                                ApplySplineDoubleKeyFrameAnimation(st.GetValue(NameProperty).ToString(), "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
                                 
 
                             }
@@ -1474,10 +1537,10 @@ namespace Visifire.Charts
                     if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
                     {
                         
-                        ApplyDoubleAnimation(AxisX.Name, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.Name, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.MajorGrids.Name, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(PlotArea.Name, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
                         AxisX.Opacity = 0;
                         AxisY.Opacity = 0;
                         AxisY.MajorGrids.Opacity = 0;
@@ -1513,7 +1576,7 @@ namespace Visifire.Charts
                                     dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
 
                                     
-                                    ApplyDoubleAnimation(dp.LabelLine.Name, "Opacity", 0, dp.LabelLine.Opacity, initialTime, AnimationDuration);
+                                    ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, initialTime, AnimationDuration);
                                     dp.LabelLine.Opacity = 0;
                                 }
                                 if (dp.Label != null)
@@ -1521,7 +1584,7 @@ namespace Visifire.Charts
                                     dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
 
                                     
-                                    ApplyDoubleAnimation(dp.Label.Name, "Opacity", 0, dp.Label.Opacity, initialTime, AnimationDuration);
+                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, initialTime, AnimationDuration);
                                 }
                             }
                             i = 0;
@@ -1530,9 +1593,9 @@ namespace Visifire.Charts
                                 if (path == null) continue;
                                 path.SetValue(NameProperty, GetNewObjectName(path));
                                 
-                                ApplyDoubleAnimation(path.Name, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
                                 path.Opacity = 0;
                                 i++;
                             }
@@ -1542,9 +1605,9 @@ namespace Visifire.Charts
                                 if (path == null) continue;
                                 path.SetValue(NameProperty, GetNewObjectName(path));
                                 
-                                ApplyDoubleAnimation(path.Name, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
                                 path.Opacity = 0;
                                 i++;
                             }
@@ -1554,9 +1617,9 @@ namespace Visifire.Charts
                                 if (path == null) continue;
                                 path.SetValue(NameProperty, GetNewObjectName(path));
                                 
-                                ApplyDoubleAnimation(path.Name, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
                                 path.Opacity = 0;
                                 i++;
                             }
@@ -1566,9 +1629,9 @@ namespace Visifire.Charts
                                 if (path == null) continue;
                                 path.SetValue(NameProperty, GetNewObjectName(path));
                                 
-                                ApplyDoubleAnimation(path.Name, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path.Name, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
                                 path.Opacity = 0;
                                 i++;
                             }
@@ -1579,9 +1642,9 @@ namespace Visifire.Charts
                                     if (path == null) continue;
                                     path.SetValue(NameProperty, GetNewObjectName(path));
                                     
-                                    ApplyDoubleAnimation(path.Name, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(path.Name, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(path.Name, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
                                     path.Opacity = 0;
                                     i++;
                                 }
@@ -1590,9 +1653,9 @@ namespace Visifire.Charts
 
                                 child.auxSide1.SetValue(NameProperty, GetNewObjectName(child.auxSide1));
                                 
-                                ApplyDoubleAnimation(child.auxSide1.Name, "Opacity", 0, child.auxSide1.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide1.Name, "(Canvas.Left)", (Double)child.auxSide1.GetValue(LeftProperty) + rx[child.auxID1], (Double)child.auxSide1.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide1.Name, "(Canvas.Top)", (Double)child.auxSide1.GetValue(TopProperty) + ry[child.auxID1], (Double)child.auxSide1.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide1, "Opacity", 0, child.auxSide1.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide1, "(Canvas.Left)", (Double)child.auxSide1.GetValue(LeftProperty) + rx[child.auxID1], (Double)child.auxSide1.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide1, "(Canvas.Top)", (Double)child.auxSide1.GetValue(TopProperty) + ry[child.auxID1], (Double)child.auxSide1.GetValue(TopProperty), AnimationDuration, initialTime);
                                 child.auxSide1.Opacity = 0;
                             }
                             if (child.auxSide2 != null)
@@ -1600,31 +1663,21 @@ namespace Visifire.Charts
 
                                 child.auxSide2.SetValue(NameProperty, GetNewObjectName(child.auxSide2));
                                 
-                                ApplyDoubleAnimation(child.auxSide2.Name, "Opacity", 0, child.auxSide2.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide2.Name, "(Canvas.Left)", (Double)child.auxSide2.GetValue(LeftProperty) + rx[child.auxID2], (Double)child.auxSide2.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide2.Name, "(Canvas.Top)", (Double)child.auxSide2.GetValue(TopProperty) + ry[child.auxID2], (Double)child.auxSide2.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide2, "Opacity", 0, child.auxSide2.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide2, "(Canvas.Left)", (Double)child.auxSide2.GetValue(LeftProperty) + rx[child.auxID2], (Double)child.auxSide2.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide2, "(Canvas.Top)", (Double)child.auxSide2.GetValue(TopProperty) + ry[child.auxID2], (Double)child.auxSide2.GetValue(TopProperty), AnimationDuration, initialTime);
 
                                 child.auxSide2.Opacity = 0;
                             }
-                            if (child.auxSide3 != null)
-                            {
-
-                                child.auxSide3.SetValue(NameProperty, GetNewObjectName(child.auxSide3));
-                                
-                                ApplyDoubleAnimation(child.auxSide3.Name, "Opacity", 0, child.auxSide3.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide3.Name, "(Canvas.Left)", (Double)child.auxSide3.GetValue(LeftProperty) + rx[child.auxID3], (Double)child.auxSide3.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide3.Name, "(Canvas.Top)", (Double)child.auxSide3.GetValue(TopProperty) + ry[child.auxID3], (Double)child.auxSide3.GetValue(TopProperty), AnimationDuration, initialTime);
-
-                                child.auxSide3.Opacity = 0;
-                            }
+                            
                             if (child.auxSide4 != null)
                             {
 
                                 child.auxSide4.SetValue(NameProperty, GetNewObjectName(child.auxSide4));
                                 
-                                ApplyDoubleAnimation(child.auxSide4.Name, "Opacity", 0, child.auxSide4.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide4.Name, "(Canvas.Left)", (Double)child.auxSide4.GetValue(LeftProperty) + rx[child.auxID4], (Double)child.auxSide4.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide4.Name, "(Canvas.Top)", (Double)child.auxSide4.GetValue(TopProperty) + ry[child.auxID4], (Double)child.auxSide4.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide4, "Opacity", 0, child.auxSide4.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide4, "(Canvas.Left)", (Double)child.auxSide4.GetValue(LeftProperty) + rx[child.auxID4], (Double)child.auxSide4.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide4, "(Canvas.Top)", (Double)child.auxSide4.GetValue(TopProperty) + ry[child.auxID4], (Double)child.auxSide4.GetValue(TopProperty), AnimationDuration, initialTime);
 
                                 child.auxSide4.Opacity = 0;
                             }
@@ -1633,23 +1686,13 @@ namespace Visifire.Charts
 
                                 child.auxSide5.SetValue(NameProperty, GetNewObjectName(child.auxSide5));
                                 
-                                ApplyDoubleAnimation(child.auxSide5.Name, "Opacity", 0, child.auxSide5.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide5.Name, "(Canvas.Left)", (Double)child.auxSide5.GetValue(LeftProperty) + rx[child.auxID5], (Double)child.auxSide5.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide5.Name, "(Canvas.Top)", (Double)child.auxSide5.GetValue(TopProperty) + ry[child.auxID5], (Double)child.auxSide5.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide5, "Opacity", 0, child.auxSide5.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide5, "(Canvas.Left)", (Double)child.auxSide5.GetValue(LeftProperty) + rx[child.auxID5], (Double)child.auxSide5.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child.auxSide5, "(Canvas.Top)", (Double)child.auxSide5.GetValue(TopProperty) + ry[child.auxID5], (Double)child.auxSide5.GetValue(TopProperty), AnimationDuration, initialTime);
                                 
                                 child.auxSide5.Opacity = 0;
                             }
-                            if (child.auxSide6 != null)
-                            {
-
-                                child.auxSide6.SetValue(NameProperty, GetNewObjectName(child.auxSide6));
-                                
-                                ApplyDoubleAnimation(child.auxSide6.Name, "Opacity", 0, child.auxSide6.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide6.Name, "(Canvas.Left)", (Double)child.auxSide6.GetValue(LeftProperty) + rx[child.auxID6], (Double)child.auxSide6.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide6.Name, "(Canvas.Top)", (Double)child.auxSide6.GetValue(TopProperty) + ry[child.auxID6], (Double)child.auxSide6.GetValue(TopProperty), AnimationDuration, initialTime);
-
-                                child.auxSide6.Opacity = 0;
-                            }
+                            
                             #endregion PieDoughnut3D animation
                         }
                         if (View3D && (child.RenderAs.ToLower() != "bubble" && child.RenderAs.ToLower() != "point" && child.RenderAs.ToLower() != "line"))
@@ -1661,7 +1704,7 @@ namespace Visifire.Charts
                                     dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
 
                                     
-                                    ApplyDoubleAnimation(dp.Marker.Name, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
+                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
                                     dp.Marker.Opacity = 0;
                                 }
                                 if (dp.Label != null)
@@ -1669,7 +1712,7 @@ namespace Visifire.Charts
                                     dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
 
                                     
-                                    ApplyDoubleAnimation(dp.Label.Name, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
                                     dp.Label.Opacity = 0;
                                 }
                             }
@@ -1680,9 +1723,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1694,9 +1737,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1708,9 +1751,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1722,9 +1765,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1736,9 +1779,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1750,9 +1793,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1764,9 +1807,9 @@ namespace Visifire.Charts
                                 {
                                     shape.SetValue(NameProperty, GetNewObjectName(shape));
                                     
-                                    ApplyDoubleAnimation(shape.Name, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape.Name, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
                                     shape.Opacity = 0;
                                     i++;
                                 }
@@ -1785,9 +1828,9 @@ namespace Visifire.Charts
 
                                     
 
-                                    ApplyDoubleAnimation(dp.Marker.Name, "Opacity", 0, dp.Marker.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(dp.Marker.Name, "(Canvas.Left)", (Double)dp.Marker.GetValue(LeftProperty) + rx[i], (Double)dp.Marker.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(dp.Marker.Name, "(Canvas.Top)", (Double)dp.Marker.GetValue(TopProperty) + ry[i], (Double)dp.Marker.GetValue(TopProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(dp.Marker, "(Canvas.Left)", (Double)dp.Marker.GetValue(LeftProperty) + rx[i], (Double)dp.Marker.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                    ApplyDoubleAnimation(dp.Marker, "(Canvas.Top)", (Double)dp.Marker.GetValue(TopProperty) + ry[i], (Double)dp.Marker.GetValue(TopProperty), AnimationDuration, initialTime);
                                     dp.Marker.Opacity = 0;
                                     i++;
 
@@ -1797,7 +1840,7 @@ namespace Visifire.Charts
                                     dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
 
                                     
-                                    ApplyDoubleAnimation(dp.Label.Name, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration);
+                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration);
                                     dp.Label.Opacity = 0;
                                 }
                             }
@@ -1811,7 +1854,7 @@ namespace Visifire.Charts
                                     dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
 
                                     
-                                    ApplyDoubleAnimation(dp.Marker.Name, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
+                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
                                     dp.Marker.Opacity = 0;
                                 }
                                 if (dp.Label != null)
@@ -1819,7 +1862,7 @@ namespace Visifire.Charts
                                     dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
 
                                     
-                                    ApplyDoubleAnimation(dp.Label.Name, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
                                     dp.Label.Opacity = 0;
                                 }
                             }
@@ -1828,7 +1871,7 @@ namespace Visifire.Charts
                                 child._line.SetValue(NameProperty, GetNewObjectName(child._line));
 
                                 
-                                ApplyDoubleAnimation(child._line.Name, "Opacity", 0, child._line.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child._line, "Opacity", 0, child._line.Opacity, AnimationDuration, initialTime);
                                 child._line.Opacity = 0;
                                 st = new ScaleTransform();
                                 st.CenterX = child.Width / 2;
@@ -1836,8 +1879,8 @@ namespace Visifire.Charts
                                 child._line.RenderTransform = st;
                                 st.SetValue(NameProperty, GetNewObjectName(st));
                                 
-                                ApplyDoubleAnimation(st.GetValue(NameProperty).ToString(), "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
-                                ApplyDoubleAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", 0, 1, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
+                                ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
 
 
                             }
@@ -1846,15 +1889,15 @@ namespace Visifire.Charts
                                 child._lineShadow.SetValue(NameProperty, GetNewObjectName(child._lineShadow));
 
                                 
-                                ApplyDoubleAnimation(child._lineShadow.Name, "Opacity", 0, child._lineShadow.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(child._lineShadow, "Opacity", 0, child._lineShadow.Opacity, AnimationDuration, initialTime);
                                 st = new ScaleTransform();
                                 st.CenterX = child.Width / 2;
                                 st.CenterY = child.Height / 2;
                                 child._lineShadow.RenderTransform = st;
                                 st.SetValue(NameProperty, GetNewObjectName(st));
                                 
-                                ApplyDoubleAnimation(st.GetValue(NameProperty).ToString(), "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
-                                ApplyDoubleAnimation(st.GetValue(NameProperty).ToString(), "ScaleY", 0, 1, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
+                                ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
                             }
                         }
                         else
@@ -1870,7 +1913,7 @@ namespace Visifire.Charts
                                         dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
 
                                         
-                                        ApplyDoubleAnimation(dp.LabelLine.Name, "Opacity", 0, dp.LabelLine.Opacity, 0, AnimationDuration + initialTime);
+                                        ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, 0, AnimationDuration + initialTime);
                                         dp.LabelLine.Opacity = 0;
                                     }
                                 }
@@ -1879,16 +1922,16 @@ namespace Visifire.Charts
                                     dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
 
                                     
-                                    ApplyDoubleAnimation(dp.Label.Name, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
                                     dp.Label.Opacity = 0;
                                 }
 
 
 
                                 
-                                ApplyDoubleAnimation(dp.Name, "Opacity", 0, dp.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(dp.Name, "(Canvas.Left)", (Double)dp.GetValue(LeftProperty) + rx[i], (Double)dp.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(dp.Name, "(Canvas.Top)", (Double)dp.GetValue(TopProperty) + ry[i], (Double)dp.GetValue(TopProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(dp, "Opacity", 0, dp.Opacity, AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(dp, "(Canvas.Left)", (Double)dp.GetValue(LeftProperty) + rx[i], (Double)dp.GetValue(LeftProperty), AnimationDuration, initialTime);
+                                ApplyDoubleAnimation(dp, "(Canvas.Top)", (Double)dp.GetValue(TopProperty) + ry[i], (Double)dp.GetValue(TopProperty), AnimationDuration, initialTime);
                                 dp.Opacity = 0;
                                 i++;
                             }
@@ -1896,6 +1939,141 @@ namespace Visifire.Charts
                     }
                     
                     #endregion Type4
+                    break;
+                case "type5":
+                    #region Type5
+
+                    framesetTime.Clear();
+                    framesetTime.Add(0);
+                    framesetTime.Add(initialTime);
+                    framesetTime.Add(1);
+
+                    framesetScaleY.Clear();
+                    framesetScaleY.Add(0);
+                    framesetScaleY.Add(0);
+                    framesetScaleY.Add(1);
+
+                    AnimationDuration -= initialTime;
+
+                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
+                    {
+
+                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+                    }
+
+                    st = new ScaleTransform();
+
+                    if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
+                    {
+                        for (i = 0; i < Surface3D.Length; i++)
+                        {
+
+                            if (Surface3D[i] == null) continue;
+                            Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
+                            st = new ScaleTransform();
+
+
+                            Surface3D[i].RenderTransform = st;
+                            st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
+
+                            if (PlotDetails.AxisOrientation == AxisOrientation.Column)
+                            {
+
+                                Surface3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                                Surface3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                                Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                            }
+                            else
+                            {
+
+                                Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
+                                Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
+
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                            }
+                        }
+                        for (i = 0; i < AreaLine3D.Count; i++)
+                        {
+
+                            if (AreaLine3D[i] == null) continue;
+                            AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
+                            st = new ScaleTransform();
+
+                            AreaLine3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                            AreaLine3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                            AreaLine3D[i].RenderTransform = st;
+                            st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
+
+                            AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+
+                        }
+                        foreach (DataSeries child in DataSeries)
+                        {
+                            if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
+                            {
+                                st = new ScaleTransform();
+                                st.CenterX = child.Width / 2;
+                                st.CenterY = child.Height / 2;
+                                child.RenderTransform = st;
+
+
+                                child.RenderTransformOrigin = new Point(0.5, 1);
+                                st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        i = 0;
+                        foreach (DataSeries child in _dataSeries)
+                        {
+
+                            child.RenderTransform = st;
+                            st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+
+                            if (PlotDetails.AxisOrientation == AxisOrientation.Column || PlotDetails.AxisOrientation == AxisOrientation.Pie)
+                            {
+
+                                child.RenderTransformOrigin = new Point(0.5, 1);
+
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                            }
+                            else
+                            {
+
+                                child.RenderTransformOrigin = new Point(0, 0.5);
+
+                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                            }
+                            st = new ScaleTransform();
+                            i++;
+                        }
+
+                    }
+                    #endregion Type5
                     break;
             }
             
@@ -1967,8 +2145,6 @@ namespace Visifire.Charts
             }
         }
 
-        
-
         /// <summary>
         /// Create reference to all child elements. If the user has not sepcified any required element, then 
         /// create them and assign a reference.
@@ -2006,14 +2182,16 @@ namespace Visifire.Charts
                         break;
 
                     case "Title":
-                        
                         if ((child as Title).Enabled)
+                        {
                             _titles.Add(child as Title);
+                            (child as Title).SetValue(ZIndexProperty, (int)(child as Title).GetValue(ZIndexProperty) + 6);
+                        }
                         break;
 
                     case "Legend":
-                        
-                            _legends.Add(child as Legend);
+                        _legends.Add(child as Legend);
+                        (child as Legend).SetValue(ZIndexProperty, (int)(child as Legend).GetValue(ZIndexProperty) + 6);
                         break;
 
                     case "DataSeries":
@@ -2110,9 +2288,6 @@ namespace Visifire.Charts
             }
             
         }
-
-        
-
 
         /// <summary>
         /// Creates summary out of all DataSeries present.

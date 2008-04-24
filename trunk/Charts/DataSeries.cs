@@ -43,6 +43,7 @@ namespace Visifire.Charts
         StackedArea=6, StackedArea100=7, StackedBar=8,
         StackedBar100= 9
     }
+
     internal class ElementPosition
     {
         public static int CompareAngle(ElementPosition a, ElementPosition b)
@@ -562,6 +563,7 @@ namespace Visifire.Charts
                 _color = value;
             }
         }
+
         public override String Image
         {
             get
@@ -591,7 +593,8 @@ namespace Visifire.Charts
                 _background = imgBrush;
             }
         }
-        public virtual Stretch ImageStretch
+
+        public override Stretch ImageStretch
         {
             get
             {
@@ -647,7 +650,7 @@ namespace Visifire.Charts
 
         }
 
-        public  Boolean ShadowEnabled
+        public override Boolean ShadowEnabled
         {
             get
             {
@@ -667,7 +670,7 @@ namespace Visifire.Charts
             }
         }
 
-        public  Boolean LightingEnabled
+        public override Boolean LightingEnabled
         {
             get
             {
@@ -958,6 +961,18 @@ namespace Visifire.Charts
             set
             {
                 _href = value;
+                Uri ur = new Uri(_href, UriKind.RelativeOrAbsolute);
+                if (ur.IsAbsoluteUri)
+                {
+                    _href = ur.AbsoluteUri;
+                }
+                else
+                {
+                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
+                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
+                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
+                    _href = ub2.ToString();
+                }
             }
         }
 
@@ -1157,7 +1172,7 @@ namespace Visifire.Charts
             _labelFontColor = null;
             
             _showInLegend = "Undefined";
-            Legend = "Legend0";
+            Legend = "";
             
             ColorSet = "";
             ColorSetReference = null;
@@ -1167,12 +1182,11 @@ namespace Visifire.Charts
             
         }
 
-     
         private void PlotPoint()
         {
             int i;
             Double OffsetX=0, OffsetY=0;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * _parent.IndexList["point" + DrawingIndex.ToString()];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["point" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
             Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
 
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
@@ -1203,6 +1217,8 @@ namespace Visifire.Charts
                 {
                     marker.SetValue(ZIndexProperty,(int) GetValue(ZIndexProperty) + 20);
                     DataPoints[i].AttachToolTip(marker);
+                    DataPoints[i].AttachHref(marker);
+                    DataPoints[i].AttachEvents(marker);
                     marker.Opacity = Opacity * DataPoints[i].Opacity;
                 }
 
@@ -1238,7 +1254,7 @@ namespace Visifire.Charts
             Double slope = (maxSize - minSize) / (maxZ - minZ);
             Double intercept = minSize - minZ * slope;
             Double offsetX=0, offsetY=0;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count==0?1:_parent.Count) * _parent.IndexList["bubble" + DrawingIndex.ToString()];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["bubble" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
             Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
 
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
@@ -1290,6 +1306,8 @@ namespace Visifire.Charts
                 {
 
                     DataPoints[i].AttachToolTip(marker);
+                    DataPoints[i].AttachHref(marker);
+                    DataPoints[i].AttachEvents(marker);
                     marker.Opacity = DataPoints[i].Opacity * Opacity;
                 }
 
@@ -1568,8 +1586,16 @@ namespace Visifire.Charts
 
                     DataPoints[i].AttachToolTip(_columnShadows[i]);
                     DataPoints[i].AttachToolTip(_columnTops[i]);
-
                     DataPoints[i].AttachToolTip(_columns[i]);
+
+                    DataPoints[i].AttachHref(_columnShadows[i]);
+                    DataPoints[i].AttachHref(_columnTops[i]);
+                    DataPoints[i].AttachHref(_columns[i]);
+
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
+                    DataPoints[i].AttachEvents(_columns[i]);
+
                     marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
                     {
@@ -1741,6 +1767,11 @@ namespace Visifire.Charts
                     }
 
                     DataPoints[i].AttachToolTip(bar);
+
+                    DataPoints[i].AttachHref(bar);
+
+                    DataPoints[i].AttachEvents(bar);
+
                     marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
                     {
@@ -2035,13 +2066,18 @@ namespace Visifire.Charts
                     }
                     #endregion Bar 3D Plotting
 
+
                     DataPoints[i].AttachToolTip(_columnShadows[i]);
                     DataPoints[i].AttachToolTip(_columns[i]);
                     DataPoints[i].AttachToolTip(_columnTops[i]);
+
                     DataPoints[i].AttachHref(_columnShadows[i]);
                     DataPoints[i].AttachHref(_columns[i]);
-
                     DataPoints[i].AttachHref(_columnTops[i]);
+
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columns[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
 
                     marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
@@ -2211,18 +2247,23 @@ namespace Visifire.Charts
                             bar.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
-
+                    
                     DataPoints[i].AttachToolTip(bar);
+
+                    DataPoints[i].AttachHref(bar);
+
+                    DataPoints[i].AttachEvents(bar);
+
                     marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
                     {
                         marker.SetValue(ZIndexProperty, (int)bar.GetValue(ZIndexProperty) + 1);
                         DataPoints[i].AttachToolTip(marker);
                     }
+
                     if (DataPoints[i].LabelEnabled.ToLower() == "true")
                         DataPoints[i].AttachLabel(DataPoints[i],0);
-
-                    DataPoints[i].AttachHref(bar);
+                    
                     if (width > 10 && height > 10)
                         DataPoints[i].ApplyEffects((int)bar.GetValue(ZIndexProperty) + 1);
                     #endregion Bar2D
@@ -2241,6 +2282,7 @@ namespace Visifire.Charts
             }
             return min;
         }
+
         private Double Maximum(Dictionary<Double, Double> data, int start, int limit)
         {
             Double max = Double.NegativeInfinity;
@@ -2255,22 +2297,27 @@ namespace Visifire.Charts
         {
             return a.Y.CompareTo(b.Y);
         }
+
         private int ComparePointX(Point a, Point b)
         {
             return a.X.CompareTo(b.X);
         }
+
         private int CompareRectY(Rect a, Rect b)
         {
             return a.Y.CompareTo(b.Y);
         }
+
         private int CompareRectX(Rect a, Rect b)
         {
             return a.X.CompareTo(b.X);
         }
+
         private Double Maximum(Double a, Double b)
         {
             return (a > b ? a : b);
         }
+
         private Double Minimum(Double a, Double b)
         {
             return (a < b ? a : b);
@@ -2651,8 +2698,7 @@ namespace Visifire.Charts
                 if (DataPoints[i].LabelStyle.ToLower() == "inside")
                 {
 
-                    
-
+                   
                     centerX = startPos.X + pieradius * DataPoints[i].ExplodeOffset * Math.Cos(angle);
                     centerY = startPos.Y + pieradius * DataPoints[i].ExplodeOffset * Math.Sin(angle) * yScalingFactor;
 
@@ -2667,10 +2713,7 @@ namespace Visifire.Charts
                 else
                 {
                     offset = 30;
-                    
-                   
-
-
+    
                     centerX = startPos.X + pieradius * DataPoints[i].ExplodeOffset * Math.Cos(angle);
                     centerY = startPos.Y + pieradius * DataPoints[i].ExplodeOffset * Math.Sin(angle)*yScalingFactor;
 
@@ -2740,8 +2783,8 @@ namespace Visifire.Charts
             Double maxY, minY;
 
 
-            maxY = (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.PlotArea.Height;
-            minY = (Double)_parent.PlotArea.GetValue(TopProperty);
+            maxY = _parent.PlotArea.Height;
+            minY = 0;
 
             // For placing between angles 90 to 270
 
@@ -2762,13 +2805,14 @@ namespace Visifire.Charts
                     if (Math.Abs(prevY - curY) < GapL && i != 0)
                     {
                         pt.Y = prevY - ((GapL > maxGap) ? maxGap / 2 : GapL / 2);
+                        if (pt.Y < minY) pt.Y = (minY + prevY) / 2;
                         curY = pt.Y;
                         labelYL.Remove(i);
                         labelYL.Add(i, new Point(pt.X, pt.Y));
 
                         labelYL.TryGetValue(i - 1, out pt);
                         pt.Y = prevY + ((GapL > maxGap) ? maxGap / 2 : GapL / 2);
-                        if (pt.Y > maxY) pt.Y = maxY - GapL;
+                        if (pt.Y > maxY) pt.Y = (prevY + maxY - GapL) / 2;
                         labelYL.Remove(i - 1);
                         labelYL.Add(i - 1, new Point(pt.X, pt.Y));
 
@@ -2780,8 +2824,19 @@ namespace Visifire.Charts
                 }
                 countIterations++;
 
-            } while (isoverlap && countIterations < 128);
+            } while (isoverlap && countIterations < 1024);
 
+            if (isoverlap)
+            {
+                Double stepSize = (maxY - minY) / lIndex;
+                for (i = 0; i < lIndex; i++)
+                {
+                    labelYL.TryGetValue(i, out pt);
+                    pt.Y = maxY - stepSize * (i + 1);
+                    labelYL.Remove(i);
+                    labelYL.Add(i, new Point(pt.X, pt.Y));
+                }
+            }
 
             for (i = 0; i < lIndex; i++)
             {
@@ -2814,13 +2869,14 @@ namespace Visifire.Charts
                     if (Math.Abs(prevY - curY) < GapR && i != 0)
                     {
                         pt.Y = prevY + ((GapR > maxGap) ? maxGap / 2 : GapR / 2);
-                        if (pt.Y > maxY) pt.Y = maxY - GapR;
+                        if (pt.Y > maxY) pt.Y = (prevY + maxY - GapR) / 2;
                         curY = pt.Y;
                         labelYR.Remove(i);
                         labelYR.Add(i, new Point(pt.X, pt.Y));
 
                         labelYR.TryGetValue(i - 1, out pt);
                         pt.Y = prevY - ((GapR > maxGap) ? maxGap / 2 : GapR / 2);
+                        if (pt.Y < minY) pt.Y = (minY + prevY) / 2;
                         labelYR.Remove(i - 1);
                         labelYR.Add(i - 1, new Point(pt.X, pt.Y));
                         isoverlap = true;
@@ -2831,8 +2887,19 @@ namespace Visifire.Charts
                 }
                 countIterations++;
 
-            } while (isoverlap && countIterations < 128);
+            } while (isoverlap && countIterations < 1024);
 
+            if (isoverlap)
+            {
+                Double stepSize = (maxY - minY) / rIndex;
+                for (i = 0; i < rIndex; i++)
+                {
+                    labelYR.TryGetValue(i, out pt);
+                    pt.Y = stepSize * i;
+                    labelYR.Remove(i);
+                    labelYR.Add(i, new Point(pt.X, pt.Y));
+                }
+            }
 
             for (i = 0; i < rIndex; i++)
             {
@@ -2849,7 +2916,6 @@ namespace Visifire.Charts
   
 
         }
-
 
         private void GetPositiveMax(Double xValue,ref String maxDP,ref String maxDS)
         {
@@ -2992,7 +3058,10 @@ namespace Visifire.Charts
             DataPoints[id].AttachToolTip(_pies[id]);
             
             DataPoints[id].AttachHref(_pies[id]);
+
+            DataPoints[id].AttachEvents(_pies[id]);
         }
+
         private void PlotDoughnutSingleton(int id, Point startPos, Double radius)
         {
             String pathXAML;
@@ -3068,7 +3137,10 @@ namespace Visifire.Charts
             DataPoints[id].AttachToolTip(_doughnut[id]);
             
             DataPoints[id].AttachHref(_doughnut[id]);
+
+            DataPoints[id].AttachEvents(_doughnut[id]);
         }
+
         private void PlotPieSingleton3D(int id, Point startPos, Point pieRadius)
         {
             String pathXAML;
@@ -3123,12 +3195,7 @@ namespace Visifire.Charts
                     _pieSides[id].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                     break;
             }
-            DataPoints[id].AttachToolTip(_pies[id]);
             
-            DataPoints[id].AttachHref(_pies[id]);
-            DataPoints[id].AttachToolTip(_pieSides[id]);
-            
-            DataPoints[id].AttachHref(_pieSides[id]);
 
             Brush tempBrush = DataPoints[id].Background;
             Brush brushPie, brushSide;
@@ -3196,8 +3263,16 @@ namespace Visifire.Charts
             _pies[id].Fill = brushPie;
             _pieSides[id].Fill = brushSide;
 
+            DataPoints[id].AttachToolTip(_pies[id]);
+            DataPoints[id].AttachToolTip(_pieSides[id]);
 
+            DataPoints[id].AttachHref(_pies[id]);
+            DataPoints[id].AttachHref(_pieSides[id]);
+
+            DataPoints[id].AttachEvents(_pies[id]);
+            DataPoints[id].AttachEvents(_pieSides[id]);
         }
+
         private void PlotDoughnutSingleton3D(int id, Point StartPos, Point pieRadius)
         {
             String pathXAML;
@@ -3279,15 +3354,7 @@ namespace Visifire.Charts
                     _pies[id].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                     break;
             }
-            DataPoints[id].AttachToolTip(_doughnut[id]);
             
-            DataPoints[id].AttachHref(_doughnut[id]);
-            DataPoints[id].AttachToolTip(_pieSides[id]);
-            
-            DataPoints[id].AttachHref(_pieSides[id]);
-            DataPoints[id].AttachToolTip(_pies[id]);
-            
-            DataPoints[id].AttachHref(_pies[id]);
 
             Brush tempBrush = DataPoints[id].Background;
             Brush brushPie, brushSide;
@@ -3356,6 +3423,190 @@ namespace Visifire.Charts
             _pieSides[id].Fill = brushSide;
             _pies[id].Fill = brushSide;
 
+            DataPoints[id].AttachToolTip(_doughnut[id]);
+            DataPoints[id].AttachToolTip(_pieSides[id]);
+            DataPoints[id].AttachToolTip(_pies[id]);
+
+            DataPoints[id].AttachHref(_doughnut[id]);
+            DataPoints[id].AttachHref(_pies[id]);
+            DataPoints[id].AttachHref(_pieSides[id]);
+
+            DataPoints[id].AttachEvents(_doughnut[id]);
+            DataPoints[id].AttachEvents(_pies[id]);
+            DataPoints[id].AttachEvents(_pieSides[id]);
+        }
+
+        private Storyboard ApplyDoubleAnimation(DependencyObject target, String targetProperty, Double from, Double to, Double duration, Double beginTime)
+        {
+            TimeSpan durationTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * duration));
+            TimeSpan beginTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * beginTime));
+
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation doubleAnimation = new DoubleAnimation();
+
+            doubleAnimation.Duration = durationTimeSpan;
+
+            doubleAnimation.BeginTime = beginTimeSpan;
+
+            storyboard.Children.Add(doubleAnimation);
+
+            Storyboard.SetTarget(doubleAnimation, target);
+
+            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+
+            doubleAnimation.From = from;
+
+            doubleAnimation.To = to;
+
+            this.Resources.Add(storyboard);
+
+            storyboard.Completed += delegate(object sender, EventArgs e)
+            {
+                this.Resources.Remove(storyboard);
+            };
+            return storyboard;
+        }
+
+        private void AnimatePosition(FrameworkElement element,FrameworkElement index)
+        {
+            Storyboard leftAnimation = ApplyDoubleAnimation(element, "(Canvas.Left)", (Double)element.GetValue(LeftProperty), (Double)element.GetValue(LeftProperty) + _positionOffset[index].X, 0.07, 0);
+            Storyboard topAnimation = ApplyDoubleAnimation(element, "(Canvas.Top)", (Double)element.GetValue(TopProperty), (Double)element.GetValue(TopProperty) + _positionOffset[index].Y, 0.07, 0);
+            leftAnimation.Begin();
+            topAnimation.Begin();
+        }
+
+        private void AnimateSlice(object sender)
+        {
+            FrameworkElement element = (sender as FrameworkElement).Parent as FrameworkElement;
+
+            AnimatePosition(element, element);
+
+            if ((element as DataPoint).Label != null)
+            {
+                FrameworkElement labelElement = (element as DataPoint).Label as FrameworkElement;
+                Storyboard labelAnimation = ApplyDoubleAnimation(labelElement, "(Canvas.Left)", (Double)labelElement.GetValue(LeftProperty), (Double)labelElement.GetValue(LeftProperty) + _labelPosOffset[element].X, 0.07, 0);
+                labelAnimation.Begin();
+            }
+            if ((element as DataPoint).LabelLine != null)
+            {
+
+                PointCollection pc = new PointCollection();
+                Polyline labelLineElement = (element as DataPoint).LabelLine as Polyline;
+
+                pc.Add(new Point(labelLineElement.Points[0].X + _labelPosOffset[element].X, labelLineElement.Points[0].Y));
+                pc.Add(new Point(labelLineElement.Points[1].X + _labelPosOffset[element].X, labelLineElement.Points[1].Y));
+                pc.Add(new Point(labelLineElement.Points[2].X + _positionOffset[element].X, labelLineElement.Points[2].Y + _positionOffset[element].Y));
+
+                labelLineElement.Points = pc;
+            }
+            _positionOffset[element] = new Point(-1 * _positionOffset[element].X, -1 * _positionOffset[element].Y);
+            _labelPosOffset[element] = new Point(-1 * _labelPosOffset[element].X, -1 * _labelPosOffset[element].Y);
+            
+        }
+
+        private void AnimateSlice3D(int i)
+        {
+            FrameworkElement element = DataPoints[i] as FrameworkElement;
+            if (_pies[i] != null)
+            {
+                AnimatePosition(_pies[i], element);
+            }
+            if (_pieSides[i] != null)
+            {
+                AnimatePosition(_pieSides[i], element);
+            }
+            if (_pieLeft[i] != null)
+            {
+                AnimatePosition(_pieLeft[i], element);
+            }
+            if (_pieRight[i] != null)
+            {
+                AnimatePosition(_pieRight[i], element);
+            }
+            if(_doughnut != null)
+            {
+                AnimatePosition(_doughnut[i], element);
+            }
+            if (i == auxID1 && auxSide1!=null)
+            {
+                AnimatePosition(auxSide1, element);
+            }
+            if (i == auxID2 && auxSide2 != null)
+            {
+                AnimatePosition(auxSide2, element);
+            }
+            if (i == auxID4 && auxSide4 != null)
+            {
+                AnimatePosition(auxSide4, element);
+            }
+            if (i == auxID5 && auxSide5 != null)
+            {
+                AnimatePosition(auxSide5, element);
+            }
+
+            if ((element as DataPoint).Label != null)
+            {
+                FrameworkElement labelElement = (element as DataPoint).Label as FrameworkElement;
+                Storyboard labelLeftAnimation = ApplyDoubleAnimation(labelElement, "(Canvas.Left)", (Double)labelElement.GetValue(LeftProperty),(Double)labelElement.GetValue(LeftProperty) +_labelPosOffset[element].X, 0.07, 0);
+                Storyboard labelTopAnimation = ApplyDoubleAnimation(labelElement, "(Canvas.Top)", (Double)labelElement.GetValue(TopProperty), (Double)labelElement.GetValue(TopProperty) + _labelPosOffset[element].Y, 0.07, 0);
+
+                labelLeftAnimation.Begin();
+                labelTopAnimation.Begin();
+
+                if ((element as DataPoint).LabelLine != null)
+                {
+
+                    PointCollection pc = new PointCollection();
+                    Polyline labelLineElement = (element as DataPoint).LabelLine as Polyline;
+
+                    pc.Add(new Point(labelLineElement.Points[0].X + _labelPosOffset[element].X, labelLineElement.Points[0].Y + _labelPosOffset[element].Y));
+                    pc.Add(new Point(labelLineElement.Points[1].X + _labelPosOffset[element].X, labelLineElement.Points[1].Y + _labelPosOffset[element].Y));
+                    pc.Add(new Point(labelLineElement.Points[2].X + _positionOffset[element].X, labelLineElement.Points[2].Y + _positionOffset[element].Y));
+
+                    labelLineElement.Points = pc;
+                }
+            }
+            
+            _positionOffset[element] = new Point(-1 * _positionOffset[element].X, -1 * _positionOffset[element].Y);
+            _labelPosOffset[element] = new Point(-1 * _labelPosOffset[element].X, -1 * _labelPosOffset[element].Y);
+        }
+
+        private Point CheckLabelPosition(Point pos, Double angle,Double width,Double height)
+        {
+            Double newLeft = pos.X;
+            Double newTop = pos.Y;
+
+            if (angle > Math.PI / 2 && angle < Math.PI * 3 / 2)
+                newLeft = pos.X - width - 10;
+            else
+                newLeft = pos.X + 10;
+
+            // this condition places the label such that they do not go outside of the plot area in horizontal direction
+            if (angle > (Math.PI / 2) && angle < (Math.PI * 3 / 2))
+            {
+                if (newLeft < 0)
+                    newLeft = 0;
+            }
+            else
+            {
+
+                if ((newLeft + width) > (_parent.PlotArea.Width))
+                    newLeft = (_parent.PlotArea.Width - width);
+            }
+
+            // this condition places the label such that they do not go outside of the plot area in horizontal direction
+            if (angle > Math.PI && angle < Math.PI * 2)
+            {
+                if (newTop < 0)
+                    newTop = 0;
+            }
+            else
+            {
+                if ((newTop + height) > (_parent.PlotArea.Height))
+                    newTop = _parent.PlotArea.Height - height;
+
+            }
+            return new Point(newLeft, newTop);
         }
 
         private void PlotPie()
@@ -3369,6 +3620,7 @@ namespace Visifire.Charts
 
             Point end2 = new Point();
 
+            
             Double startAngle, stopAngle;
             Double radius;
 
@@ -3380,14 +3632,11 @@ namespace Visifire.Charts
             Double MaxLabelWidth = 0;
             Double MaxLabelHeight = 0;
             TextBlock _textBlock = new TextBlock();
+
+           
             foreach (DataPoint dp in DataPoints)
             {
-                if (dp.YValue == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("Zero valued DataPoints area not supported");
-                    throw (new Exception("Zero valued DataPoints area not supported"));
-                    
-                }
+                
                 sum += dp.YValue;
                 
                 _textBlock.FontSize = dp.LabelFontSize;
@@ -3418,9 +3667,10 @@ namespace Visifire.Charts
             _sum = sum;
             if (_sum <= 0)
             {
-                System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
-                throw (new Exception("Pie chart requires at least one entry other than zero"));
-                
+                //System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
+                //throw (new Exception("Pie chart requires at least one entry other than zero"));
+                _sum = 1;
+                sum = 1;
             }
             plotSide1 = _parent.PlotArea.Width - 2 * _parent.PlotArea.BorderThickness;
             plotSide2 = _parent.PlotArea.Height - 2 * _parent.PlotArea.BorderThickness;
@@ -3437,6 +3687,8 @@ namespace Visifire.Charts
 
             if (maxExplodeValue > 0 && maxExplodeValue + 0.05 <= 1)
                 maxExplodeValue += 0.05;
+
+            if (maxExplodeValue <= 0.05) maxExplodeValue = 0.2;
 
             radiusScaling = 1 - 0.5 * maxExplodeValue;
             centerOffsetFactor = 1 - radiusScaling;
@@ -3496,6 +3748,31 @@ namespace Visifire.Charts
                 centerX = startPos.X + centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
                 centerY = startPos.Y + centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
 
+                Point positionOffset = new Point();
+                Point labelPosOffset = new Point();
+                if (DataPoints[i].ExplodeOffset == 0)
+                {
+                    centerOffsetFactor = maxExplodeValue;
+                    centerOffset = centerOffsetFactor * radius;
+                    positionOffset.X = centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
+                }
+                else
+                {
+                    positionOffset.X = -centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = -centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
+                }
+                labelPosOffset.X = (Double)DataPoints[i].Label.GetValue(LeftProperty) + positionOffset.X;
+                labelPosOffset.Y = (Double)DataPoints[i].Label.GetValue(TopProperty) + positionOffset.Y;
+
+                Point tempLabelOffset = CheckLabelPosition(labelPosOffset, (startAngle + stopAngle) * 0.5, DataPoints[i].Label.Width, DataPoints[i].Label.Height);
+
+                labelPosOffset.X = tempLabelOffset.X - (Double)DataPoints[i].Label.GetValue(LeftProperty);
+                labelPosOffset.Y = tempLabelOffset.Y - (Double)DataPoints[i].Label.GetValue(TopProperty);
+
+                _positionOffset.Add(DataPoints[i], positionOffset);
+                _labelPosOffset.Add(DataPoints[i], labelPosOffset);
+
                 end1.X = centerX + radius * Math.Cos(startAngle);
                 end1.Y = centerY + radius * Math.Sin(startAngle);
 
@@ -3521,7 +3798,16 @@ namespace Visifire.Charts
                 _pies[i].StrokeThickness = DataPoints[i].BorderThickness;
 
                 DataPoints[i].AttachToolTip(_pies[i]);
+
                 DataPoints[i].AttachHref(_pies[i]);
+
+                DataPoints[i].AttachEvents(_pies[i]);
+
+                _pies[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice(sender);
+                };
+                
 
                 switch (DataPoints[i].BorderStyle)
                 {
@@ -3565,9 +3851,7 @@ namespace Visifire.Charts
                     _pies[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
                 }
 
-                
-
-                if (Bevel)
+                if (Bevel && Math.Abs(startAngle - stopAngle) > 0.03)
                 {
                     Point bevelCenter = new Point();
                     Point bevelEnd1 = new Point();
@@ -3696,12 +3980,7 @@ namespace Visifire.Charts
             TextBlock _textBlock = new TextBlock();
             foreach (DataPoint dp in DataPoints)
             {
-                if (dp.YValue == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("Zero valued DataPoints area not supported");
-                    throw (new Exception("Zero valued DataPoints area not supported"));
-                    
-                }
+                
                 sum += dp.YValue;
 
                 _textBlock.FontSize = dp.LabelFontSize;
@@ -3731,8 +4010,10 @@ namespace Visifire.Charts
             _sum = sum;
             if (_sum <= 0)
             {
-                System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
-                throw (new Exception("Pie chart requires at least one entry other than zero"));
+                //System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
+                //throw (new Exception("Pie chart requires at least one entry other than zero"));
+                _sum = 1;
+                sum = 1;
             }
             plotSide1 = _parent.PlotArea.Width - 2 * _parent.PlotArea.BorderThickness;
             plotSide2 = _parent.PlotArea.Height - 2 * _parent.PlotArea.BorderThickness;
@@ -3749,16 +4030,15 @@ namespace Visifire.Charts
             if (maxExplodeValue > 0 && maxExplodeValue + 0.05 <= 1)
                 maxExplodeValue += 0.05;
 
-            
-            radiusScaling = 1 - 0.5*maxExplodeValue;
+            if (maxExplodeValue <= 0.05) maxExplodeValue = 0.2;
+
+            radiusScaling = 1 - 0.5 * maxExplodeValue;
             centerOffsetFactor = 1 - radiusScaling;
 
             if (labelFlag)
             {
                 
                 radius = Math.Min(plotSide1 / 2, plotSide2 / 2);
-
-                
 
                 if (labelOutsideFlag && maxExplodeValue <= 0)
                 {
@@ -3809,6 +4089,30 @@ namespace Visifire.Charts
                 centerX = startPos.X + centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
                 centerY = startPos.Y + centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
 
+                Point positionOffset = new Point();
+                Point labelPosOffset = new Point();
+                if (DataPoints[i].ExplodeOffset == 0)
+                {
+                    centerOffsetFactor = maxExplodeValue;
+                    centerOffset = centerOffsetFactor * radius;
+                    positionOffset.X = centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
+                }
+                else
+                {
+                    positionOffset.X = -centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = -centerOffset * Math.Sin((startAngle + stopAngle) * 0.5);
+                }
+                labelPosOffset.X = (Double)DataPoints[i].Label.GetValue(LeftProperty) + positionOffset.X;
+                labelPosOffset.Y = (Double)DataPoints[i].Label.GetValue(TopProperty) + positionOffset.Y;
+
+                Point tempLabelOffset = CheckLabelPosition(labelPosOffset, (startAngle + stopAngle) * 0.5, DataPoints[i].Label.Width, DataPoints[i].Label.Height);
+
+                labelPosOffset.X = tempLabelOffset.X - (Double)DataPoints[i].Label.GetValue(LeftProperty);
+                labelPosOffset.Y = tempLabelOffset.Y - (Double)DataPoints[i].Label.GetValue(TopProperty);
+
+                _positionOffset.Add(DataPoints[i], positionOffset);
+                _labelPosOffset.Add(DataPoints[i], labelPosOffset);
 
                 end1.X = centerX + radius * Math.Cos(startAngle);
                 end1.Y = centerY + radius * Math.Sin(startAngle);
@@ -3821,9 +4125,6 @@ namespace Visifire.Charts
 
                 end4.X = centerX + radius / 2 * Math.Cos(stopAngle);
                 end4.Y = centerY + radius / 2 * Math.Sin(stopAngle);
-
-                
-                
 
                 pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
                 pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", end3.X, end3.Y);
@@ -3851,11 +4152,17 @@ namespace Visifire.Charts
                 _doughnut[i].StrokeThickness = DataPoints[i].BorderThickness;
 
                 DataPoints[i].AttachToolTip(_doughnut[i]);
+
                 DataPoints[i].AttachHref(_doughnut[i]);
+
+                DataPoints[i].AttachEvents(_doughnut[i]);
 
                 _doughnut[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
 
-                
+                _doughnut[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice(sender);
+                };
 
                 switch (DataPoints[i].BorderStyle)
                 {
@@ -3900,9 +4207,6 @@ namespace Visifire.Charts
                 {
                     _doughnut[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
                 }
-
-
-                
 
                 if (Bevel)
                 {
@@ -4086,11 +4390,7 @@ namespace Visifire.Charts
 
             foreach (DataPoint dp in DataPoints)
             {
-                if (dp.YValue == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("Zero valued DataPoints area not supported");
-                    throw (new Exception("Zero valued DataPoints area not supported"));
-                }
+                
                 sum += dp.YValue;
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
@@ -4118,8 +4418,10 @@ namespace Visifire.Charts
             _sum = sum;
             if (_sum <= 0)
             {
-                System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
-                throw (new Exception("Pie chart requires at least one entry other than zero"));
+                //System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
+                //throw (new Exception("Pie chart requires at least one entry other than zero"));
+                _sum = 1;
+                sum = 1;
             }
 
             plotWidth = _parent.PlotArea.Width - 2 * _parent.PlotArea.BorderThickness - depth;
@@ -4130,8 +4432,6 @@ namespace Visifire.Charts
 
             startPos.X = plotWidth / 2 + _parent.PlotArea.BorderThickness + depth / 2 + MaxLabelWidth / 2;
             startPos.Y = plotHeight / 2 + _parent.PlotArea.BorderThickness + depth + MaxLabelHeight / 2;
-
-
 
             plotWidth /= 2;
             plotHeight /= 2;
@@ -4148,7 +4448,9 @@ namespace Visifire.Charts
 
             Double centerOffsetFactor, centerOffset;
             Double radiusScaling, angle;
-            
+
+            if (maxExplodeValue <= 0.05) maxExplodeValue = 0.2;
+
             radiusScaling = 1 - 0.5 * maxExplodeValue;
             centerOffsetFactor = 1 - radiusScaling;
 
@@ -4193,20 +4495,42 @@ namespace Visifire.Charts
                     PlotPieSingleton3D(i, startPos, new Point(plotWidth, plotHeight));
                     continue;
                 }
+                if (stopAngle == startAngle)
+                    continue;
+
                 centerOffsetFactor = DataPoints[i].ExplodeOffset;
-                
                 centerOffset = centerOffsetFactor * radius;
 
                 centerX = startPos.X + centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
                 centerY = startPos.Y + centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
 
-                
+                Point positionOffset = new Point();
+                Point labelPosOffset = new Point();
+                if (DataPoints[i].ExplodeOffset == 0)
+                {
+                    centerOffsetFactor = maxExplodeValue;
+                    centerOffset = centerOffsetFactor * radius;
+                    positionOffset.X = centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
+                }
+                else
+                {
+                    positionOffset.X = -centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = -centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
+                }
+                labelPosOffset.X = (Double)DataPoints[i].Label.GetValue(LeftProperty) + positionOffset.X;
+                labelPosOffset.Y = (Double)DataPoints[i].Label.GetValue(TopProperty) + positionOffset.Y;
+
+                Point tempLabelOffset = CheckLabelPosition(labelPosOffset,(startAngle + stopAngle) * 0.5,DataPoints[i].Label.Width,DataPoints[i].Label.Height);
+
+                labelPosOffset.X = tempLabelOffset.X - (Double)DataPoints[i].Label.GetValue(LeftProperty);
+                labelPosOffset.Y = tempLabelOffset.Y - (Double)DataPoints[i].Label.GetValue(TopProperty);
+
+                _positionOffset.Add(DataPoints[i], positionOffset);
+                _labelPosOffset.Add(DataPoints[i], labelPosOffset);
 
                 end1.X = centerX + radius * Math.Cos(startAngle);
                 end1.Y = centerY + radius * Math.Sin(startAngle) * yScalingFactor;
-
-
-                
 
                 end2.X = centerX + radius * Math.Cos(stopAngle);
                 end2.Y = centerY + radius * Math.Sin(stopAngle) * yScalingFactor;
@@ -4343,15 +4667,12 @@ namespace Visifire.Charts
                 #region PieSide
                 Boolean section1 = false;
                 Boolean section2 = false;
-                Boolean section3 = false;
                 Boolean setbottom = false;
 
                 Double sec1StartAngle = Double.NaN;
                 Double sec1StopAngle = Double.NaN;
                 Double sec2StartAngle = Double.NaN;
                 Double sec2StopAngle = Double.NaN;
-                Double sec3StartAngle = Double.NaN;
-                Double sec3StopAngle = Double.NaN;
                 Point arcStart = new Point();
                 Point arcEnd = new Point();
 
@@ -4408,7 +4729,7 @@ namespace Visifire.Charts
                     this.Children.Add(auxSide2);
 
                 }
-                else if ((startAngle >= 0 && startAngle <= Math.PI) && (stopAngle >= Math.PI && stopAngle <= Math.PI * 2))
+                else if ((startAngle >= 0 && startAngle < Math.PI) && (stopAngle > Math.PI && stopAngle <= Math.PI * 2))
                 {
                     section1 = true;
                     CreateAuxPath(ref auxSide1, i, brushSide);
@@ -4423,11 +4744,11 @@ namespace Visifire.Charts
                     elementGroup.Add(new ElementPosition(auxSide1, sec1StartAngle, sec1StopAngle));
                     elementGroup.Add(new ElementPosition(_pieRight[i], stopAngle, stopAngle));
                     if (DataPoints[i].LabelLine != null)
-                        elementGroup.Add(new ElementPosition(DataPoints[i].LabelLine, startAngle, stopAngle));
+                        elementGroup.Add(new ElementPosition(DataPoints[i].LabelLine, startAngle, startAngle));
 
                     this.Children.Add(auxSide1);
                 }
-                else if ((startAngle >= Math.PI && startAngle <= Math.PI * 2) && (stopAngle >= 0 && stopAngle <= Math.PI))
+                else if ((startAngle > Math.PI && startAngle <= Math.PI * 2) && (stopAngle > 0 && stopAngle <= Math.PI))
                 {
                     section2 = true;
                     CreateAuxPath(ref auxSide2, i, brushSide);
@@ -4488,6 +4809,14 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide1.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide1);
+                    DataPoints[i].AttachHref(auxSide1);
+                    DataPoints[i].AttachEvents(auxSide1);
+                    auxSide1.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID1);
+                    };
                 }
                 if (section2)
                 {
@@ -4514,33 +4843,16 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide2.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide2);
+                    DataPoints[i].AttachHref(auxSide2);
+                    DataPoints[i].AttachEvents(auxSide2);
+                    auxSide2.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID2);
+                    };
                 }
-                if (section3)
-                {
-                    
-
-                    arcStart.X = centerX + radius * Math.Cos(sec3StartAngle);
-                    arcStart.Y = centerY + radius * Math.Sin(sec3StartAngle) * yScalingFactor;
-
-                   
-
-                    arcEnd.X = centerX + radius * Math.Cos(sec3StopAngle);
-                    arcEnd.Y = centerY + radius * Math.Sin(sec3StopAngle) * yScalingFactor;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-                    auxSide3.Data = (PathGeometry)XamlReader.Load(pathXAML);
-                }
+                
                 if (setbottom)
                 {
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""> <PathGeometry.Figures>";
@@ -4616,8 +4928,6 @@ namespace Visifire.Charts
                 _pieRight[i].Data = (PathGeometry)XamlReader.Load(pathXAML);
                 #endregion Pie Right
 
-
-
                 _pies[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
                 _pieSides[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
                 _pieLeft[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
@@ -4648,6 +4958,29 @@ namespace Visifire.Charts
                 DataPoints[i].AttachHref(_pieSides[i]);
                 DataPoints[i].AttachHref(_pieLeft[i]);
                 DataPoints[i].AttachHref(_pieRight[i]);
+
+                DataPoints[i].AttachEvents(_pies[i]);
+                DataPoints[i].AttachEvents(_pieSides[i]);
+                DataPoints[i].AttachEvents(_pieLeft[i]);
+                DataPoints[i].AttachEvents(_pieRight[i]);
+
+
+                _pies[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pies, sender as Path));
+                };
+                _pieSides[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieSides, sender as Path));
+                };
+                _pieLeft[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieLeft, sender as Path));
+                };
+                _pieRight[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieRight, sender as Path));
+                };
 
                 switch (DataPoints[i].BorderStyle)
                 {
@@ -4729,13 +5062,6 @@ namespace Visifire.Charts
 
             foreach (DataPoint dp in DataPoints)
             {
-                if (dp.YValue == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("Zero valued DataPoints area not supported");
-                    throw (new Exception("Zero valued DataPoints area not supported"));
-                    
-                }
-
                 sum += dp.YValue;
                 _textBlock.FontSize = dp.LabelFontSize;
                 _textBlock.FontFamily = new FontFamily(dp.LabelFontFamily);
@@ -4764,9 +5090,10 @@ namespace Visifire.Charts
             _sum = sum;
             if (_sum <= 0)
             {
-                System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
-                throw (new Exception("Pie chart requires at least one entry other than zero"));
-                
+                //System.Diagnostics.Debug.WriteLine("Pie chart requires at least one entry other than zero");
+                //throw (new Exception("Pie chart requires at least one entry other than zero"));
+                _sum = 1;
+                sum = 1;
             }
 
             plotWidth = _parent.PlotArea.Width - 2 * _parent.PlotArea.BorderThickness - depth;
@@ -4799,6 +5126,8 @@ namespace Visifire.Charts
 
             Double centerOffsetFactor, centerOffset;
             Double radiusScaling;
+
+            if (maxExplodeValue <= 0.05) maxExplodeValue = 0.2;
 
             radiusScaling = 1 - 0.5 * maxExplodeValue;
             centerOffsetFactor = 1 - radiusScaling;
@@ -4844,6 +5173,9 @@ namespace Visifire.Charts
                     PlotDoughnutSingleton3D(i, startPos, new Point(plotWidth, plotHeight));
                     continue;
                 }
+                if (stopAngle == startAngle)
+                    continue;
+
                 centerOffsetFactor = DataPoints[i].ExplodeOffset;
                 
                 centerOffset = centerOffsetFactor * radius;
@@ -4851,15 +5183,36 @@ namespace Visifire.Charts
                 centerX = startPos.X + centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
                 centerY = startPos.Y + centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
 
+                Point positionOffset = new Point();
+                Point labelPosOffset = new Point();
+                if (DataPoints[i].ExplodeOffset == 0)
+                {
+                    centerOffsetFactor = maxExplodeValue;
+                    centerOffset = centerOffsetFactor * radius;
+                    positionOffset.X = centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
+                }
+                else
+                {
+                    positionOffset.X = -centerOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                    positionOffset.Y = -centerOffset * Math.Sin((startAngle + stopAngle) * 0.5) * yScalingFactor;
+                }
+                labelPosOffset.X = (Double)DataPoints[i].Label.GetValue(LeftProperty) + positionOffset.X;
+                labelPosOffset.Y = (Double)DataPoints[i].Label.GetValue(TopProperty) + positionOffset.Y;
 
+                Point tempLabelOffset = CheckLabelPosition(labelPosOffset, (startAngle + stopAngle) * 0.5, DataPoints[i].Label.Width, DataPoints[i].Label.Height);
+
+                labelPosOffset.X = tempLabelOffset.X - (Double)DataPoints[i].Label.GetValue(LeftProperty);
+                labelPosOffset.Y = tempLabelOffset.Y - (Double)DataPoints[i].Label.GetValue(TopProperty);
+
+                _positionOffset.Add(DataPoints[i], positionOffset);
+                _labelPosOffset.Add(DataPoints[i], labelPosOffset);
                 
                 end1.X = centerX + radius * Math.Cos(startAngle);
                 end1.Y = centerY + radius * Math.Sin(startAngle) * yScalingFactor;
                 end3.X = centerX + radius / 2 * Math.Cos(startAngle);
                 end3.Y = centerY + radius / 2 * Math.Sin(startAngle) * yScalingFactor;
 
-
-                
 
                 end2.X = centerX + radius * Math.Cos(stopAngle);
                 end2.Y = centerY + radius * Math.Sin(stopAngle) * yScalingFactor;
@@ -5012,24 +5365,20 @@ namespace Visifire.Charts
                 #region PieSide
                 Boolean section1 = false;
                 Boolean section2 = false;
-                Boolean section3 = false;
+
                 Boolean section4 = false;
                 Boolean section5 = false;
-                Boolean section6 = false;
                 Boolean setbottom = false;
 
                 Double sec1StartAngle = Double.NaN;
                 Double sec1StopAngle = Double.NaN;
                 Double sec2StartAngle = Double.NaN;
                 Double sec2StopAngle = Double.NaN;
-                Double sec3StartAngle = Double.NaN;
-                Double sec3StopAngle = Double.NaN;
                 Double sec4StartAngle = Double.NaN;
                 Double sec4StopAngle = Double.NaN;
                 Double sec5StartAngle = Double.NaN;
                 Double sec5StopAngle = Double.NaN;
-                Double sec6StartAngle = Double.NaN;
-                Double sec6StopAngle = Double.NaN;
+
                 Point arcStart = new Point();
                 Point arcEnd = new Point();
 
@@ -5116,7 +5465,7 @@ namespace Visifire.Charts
                     this.Children.Add(auxSide4);
 
                 }
-                else if ((startAngle >= 0 && startAngle <= Math.PI) && (stopAngle >= Math.PI && stopAngle <= Math.PI * 2))
+                else if ((startAngle >= 0 && startAngle < Math.PI) && (stopAngle > Math.PI && stopAngle <= Math.PI * 2))
                 {
                     section1 = true;
                     CreateAuxPath(ref auxSide1, i, brushSide);
@@ -5145,7 +5494,7 @@ namespace Visifire.Charts
 
                     this.Children.Add(auxSide4);
                 }
-                else if ((startAngle >= Math.PI && startAngle <= Math.PI * 2) && (stopAngle >= 0 && stopAngle <= Math.PI))
+                else if ((startAngle > Math.PI && startAngle <= Math.PI * 2) && (stopAngle > 0 && stopAngle <= Math.PI))
                 {
                     section2 = true;
                     CreateAuxPath(ref auxSide2, i, brushSide);
@@ -5196,8 +5545,6 @@ namespace Visifire.Charts
                 if (section1)
                 {
 
-                    
-
                     arcStart.X = centerX + radius * Math.Cos(sec1StartAngle);
                     arcStart.Y = centerY + radius * Math.Sin(sec1StartAngle) * yScalingFactor;
 
@@ -5219,6 +5566,14 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide1.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide1);
+                    DataPoints[i].AttachHref(auxSide1);
+                    DataPoints[i].AttachEvents(auxSide1);
+                    auxSide1.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID1);
+                    };
                 }
                 if (section2)
                 {
@@ -5244,32 +5599,16 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide2.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide2);
+                    DataPoints[i].AttachHref(auxSide2);
+                    DataPoints[i].AttachEvents(auxSide2);
+                    auxSide2.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID2);
+                    };
                 }
-                if (section3)
-                {
-                    
-                    arcStart.X = centerX + radius * Math.Cos(sec3StartAngle);
-                    arcStart.Y = centerY + radius * Math.Sin(sec3StartAngle) * yScalingFactor;
-
-                   
-
-                    arcEnd.X = centerX + radius * Math.Cos(sec3StopAngle);
-                    arcEnd.Y = centerY + radius * Math.Sin(sec3StopAngle) * yScalingFactor;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth, plotHeight);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-                    auxSide3.Data = (PathGeometry)XamlReader.Load(pathXAML);
-                }
+                
                 if (section4)
                 {
                     
@@ -5294,6 +5633,14 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide4.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide4);
+                    DataPoints[i].AttachHref(auxSide4);
+                    DataPoints[i].AttachEvents(auxSide4);
+                    auxSide4.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID4);
+                    };
                 }
                 if (section5)
                 {
@@ -5319,33 +5666,16 @@ namespace Visifire.Charts
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
                     pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
                     auxSide5.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    DataPoints[i].AttachToolTip(auxSide5);
+                    DataPoints[i].AttachHref(auxSide5);
+                    DataPoints[i].AttachEvents(auxSide5);
+                    auxSide5.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        AnimateSlice3D(auxID5);
+                    };
                 }
-                if (section6)
-                {
-                    
-
-                    arcStart.X = centerX + radius/2 * Math.Cos(sec6StartAngle);
-                    arcStart.Y = centerY + radius/2 * Math.Sin(sec6StartAngle) * yScalingFactor;
-
-                    
-
-                    arcEnd.X = centerX + radius/2 * Math.Cos(sec6StopAngle);
-                    arcEnd.Y = centerY + radius/2 * Math.Sin(sec6StopAngle) * yScalingFactor;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcStart.X, arcStart.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcEnd.X, arcEnd.Y + depth);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", arcEnd.X, arcEnd.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", arcStart.X, arcStart.Y);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", plotWidth / 2, plotHeight / 2);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-                    auxSide6.Data = (PathGeometry)XamlReader.Load(pathXAML);
-                }
+                
                 if (setbottom)
                 {
                     pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
@@ -5491,7 +5821,33 @@ namespace Visifire.Charts
                 DataPoints[i].AttachHref(_pieRight[i]);
                 DataPoints[i].AttachHref(_doughnut[i]);
 
+                DataPoints[i].AttachEvents(_pies[i]);
+                DataPoints[i].AttachEvents(_pieSides[i]);
+                DataPoints[i].AttachEvents(_pieLeft[i]);
+                DataPoints[i].AttachEvents(_pieRight[i]);
+                DataPoints[i].AttachEvents(_doughnut[i]);
 
+                _pies[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+
+                    AnimateSlice3D(Array.IndexOf(_pies, sender as Path));
+                };
+                _pieSides[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieSides, sender as Path));
+                };
+                _pieLeft[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieLeft, sender as Path));
+                };
+                _pieRight[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_pieRight, sender as Path));
+                };
+                _doughnut[i].MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    AnimateSlice3D(Array.IndexOf(_doughnut, sender as Path));
+                };
                 switch (DataPoints[i].BorderStyle)
                 {
                     case "Solid":
@@ -5530,7 +5886,6 @@ namespace Visifire.Charts
             #endregion ZIndex final
 
         }
-
 
         private void PlotStackedColumn()
         {
@@ -5820,13 +6175,18 @@ namespace Visifire.Charts
                             _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
+
                     DataPoints[i].AttachToolTip(_columnShadows[i]);
                     DataPoints[i].AttachToolTip(_columns[i]);
                     DataPoints[i].AttachToolTip(_columnTops[i]);
+
                     DataPoints[i].AttachHref(_columnShadows[i]);
                     DataPoints[i].AttachHref(_columns[i]);
-
                     DataPoints[i].AttachHref(_columnTops[i]);
+
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columns[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
 
                     DataPoints[i].SetValue(TopProperty, top + (depth + initialDepth));
 
@@ -5908,9 +6268,6 @@ namespace Visifire.Charts
                     column.Height = height;
                     column.SetValue(TopProperty, 0);
                     column.SetValue(LeftProperty, 0);
-
-
-
 
                     shadow.Width = width;
                     shadow.SetValue(LeftProperty, ShadowSize);
@@ -6027,7 +6384,13 @@ namespace Visifire.Charts
                             column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
+                    
                     DataPoints[i].AttachToolTip(column);
+
+                    DataPoints[i].AttachHref(column);
+
+                    DataPoints[i].AttachEvents(column);
+
                     Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
                     {
@@ -6037,7 +6400,7 @@ namespace Visifire.Charts
                     if (DataPoints[i].LabelEnabled.ToLower() == "true")
                         DataPoints[i].AttachLabel(DataPoints[i],0);
 
-                    DataPoints[i].AttachHref(column);
+                    
                     DataPoints[i].ApplyEffects((int)column.GetValue(ZIndexProperty) + 1);
                     #endregion Stacked Column 2d Plotting
                 }
@@ -6323,10 +6686,19 @@ namespace Visifire.Charts
                     }
                     #endregion Column100 3D Plotting
 
+                    
                     DataPoints[i].AttachToolTip(_columnShadows[i]);
                     DataPoints[i].AttachToolTip(_columnTops[i]);
-
                     DataPoints[i].AttachToolTip(_columns[i]);
+
+                    DataPoints[i].AttachHref(_columnShadows[i]);
+                    DataPoints[i].AttachHref(_columnTops[i]);
+                    DataPoints[i].AttachHref(_columns[i]);
+
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
+                    DataPoints[i].AttachEvents(_columns[i]);
+
                     DataPoints[i].SetValue(TopProperty, top + (depth + initialDepth));
                     Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
@@ -6336,9 +6708,6 @@ namespace Visifire.Charts
                     }
                     if (DataPoints[i].LabelEnabled.ToLower() == "true")
                         DataPoints[i].AttachLabel(DataPoints[i],depth);
-
-                    DataPoints[i].AttachHref(_columns[i]);
-                    
                 }
                 else
                 {
@@ -6409,12 +6778,8 @@ namespace Visifire.Charts
                     column.SetValue(TopProperty, 0);
                     column.SetValue(LeftProperty, 0);
 
-
-
-
                     shadow.Width = width;
                     shadow.SetValue(LeftProperty, ShadowSize);
-
 
                     if (xRadiusLimit > shadow.Width / 2) xRadiusLimit = shadow.Width / 2;
                     if (yRadiusLimit > height) yRadiusLimit = height;
@@ -6527,7 +6892,13 @@ namespace Visifire.Charts
                             column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
+                    
                     DataPoints[i].AttachToolTip(column);
+
+                    DataPoints[i].AttachHref(column);
+
+                    DataPoints[i].AttachEvents(column);
+
                     Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
                     if (marker != null)
                     {
@@ -6537,7 +6908,7 @@ namespace Visifire.Charts
                     if (DataPoints[i].LabelEnabled.ToLower() == "true")
                         DataPoints[i].AttachLabel(DataPoints[i],0);
 
-                    DataPoints[i].AttachHref(column);
+                    
                     DataPoints[i].ApplyEffects((int)column.GetValue(ZIndexProperty) + 1);
                 }
                 
@@ -6683,6 +7054,11 @@ namespace Visifire.Charts
                             break;
                     }
                     DataPoints[i].AttachToolTip(_areas[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+
                     DataPoints[i].ApplyEffects((int)_areas[i].GetValue(ZIndexProperty)+1);
                 }
                 else
@@ -6852,9 +7228,19 @@ namespace Visifire.Charts
                             _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
+
+                    
                     DataPoints[i].AttachToolTip(_areas[i]);
                     DataPoints[i].AttachToolTip(_areaShadows[i]);
                     DataPoints[i].AttachToolTip(_areaTops[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+                    DataPoints[i].AttachHref(_areaShadows[i]);
+                    DataPoints[i].AttachHref(_areaTops[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+                    DataPoints[i].AttachEvents(_areaShadows[i]);
+                    DataPoints[i].AttachEvents(_areaTops[i]);
                 }
                 
                 marker = DataPoints[i].PlaceMarker();
@@ -7014,6 +7400,11 @@ namespace Visifire.Charts
                             break;
                     }
                     DataPoints[i].AttachToolTip(_areas[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+
                     DataPoints[i].ApplyEffects((int)_areas[i].GetValue(ZIndexProperty) + 1);
                 }
                 else
@@ -7182,9 +7573,18 @@ namespace Visifire.Charts
                             _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
                             break;
                     }
+                    
                     DataPoints[i].AttachToolTip(_areas[i]);
                     DataPoints[i].AttachToolTip(_areaShadows[i]);
                     DataPoints[i].AttachToolTip(_areaTops[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+                    DataPoints[i].AttachHref(_areaShadows[i]);
+                    DataPoints[i].AttachHref(_areaTops[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+                    DataPoints[i].AttachEvents(_areaShadows[i]);
+                    DataPoints[i].AttachEvents(_areaTops[i]);
                 }
                 marker = DataPoints[i].PlaceMarker();
                 if (marker != null)
@@ -7210,7 +7610,1349 @@ namespace Visifire.Charts
                 DataPoints[i].AttachLabel(DataPoints[i],depth);
         }
 
-        
+        private void PlotColumn()
+        {
+            Double width = 10;
+            Double height;
+            Double left;
+            Double top;
+            Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
+
+            int i;
+
+            if (Double.IsNaN(MinDifference) || MinDifference == 0)
+            {
+                width = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+            }
+            else
+            {
+                width = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+
+            }
+
+            Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
+            temp *= 2;
+            if (width > temp)
+                width = temp;
+
+            width -= width * 0.1;
+
+            List<Double> checkDrawPositive = new List<double>();
+            List<Double> checkDrawNegetive = new List<double>();
+            Double finalYValue;
+            for (i = 0; i < _columns.Length; i++)
+            {
+                if (Double.IsNaN(DataPoints[i].YValue)) continue;
+
+                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
+
+                if (!checkDrawPositive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue >= 0)
+                {
+                    finalYValue = _maxVals[DataPoints[i].XValue].X;
+                    if (DataPoints[i].YValue != finalYValue) continue;
+                    checkDrawPositive.Add(DataPoints[i].XValue);
+                }
+                else if (!checkDrawNegetive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue < 0)
+                {
+                    finalYValue = _maxVals[DataPoints[i].XValue].Y;
+                    if (DataPoints[i].YValue != finalYValue) continue;
+                    checkDrawNegetive.Add(DataPoints[i].XValue);
+                }
+                else
+                {
+                    continue;
+                }
+                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
+
+                if (_parent.AxisY.AxisMinimum > 0)
+                    height = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                else
+                    height = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+
+
+                left = (point.X + Index * width - (TotalSiblings * width) / 2);
+
+
+
+                if (DataPoints[i].YValue >= 0)
+                    top = point.Y;
+                else
+                    top = _parent.AxisY.DoubleToPixel(0);
+
+
+                DataPoints[i].SetValue(WidthProperty, width);
+                DataPoints[i].SetValue(HeightProperty, height);
+                DataPoints[i].SetValue(LeftProperty, left);
+                DataPoints[i].SetValue(TopProperty, top);
+                Path column = new Path();
+
+                if (_parent.View3D)
+                {
+
+
+                    //To plot in 3D
+                    #region Column 3D Plotting
+                    //relative width is set here
+
+                    Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["column"];
+                    Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
+
+
+                    left -= (depth + initialDepth);
+                    DataPoints[i].SetValue(LeftProperty, left);
+
+
+                    _columnShadows[i].Width = depth;
+                    _columnShadows[i].Height = height;
+                    _columnShadows[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth));
+                    _columnShadows[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + width + (Double)_parent.PlotArea.GetValue(LeftProperty));
+
+                    _columnShadows[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+
+                    _columnShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+
+                    _columnShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+                    SkewTransform st1 = new SkewTransform();
+                    st1.AngleY = -45;
+                    st1.CenterX = 0;
+                    st1.CenterY = 0;
+                    st1.AngleX = 0;
+                    _columnShadows[i].RenderTransform = st1;
+
+                    _columnTops[i].Width = width;
+                    //relative height is set here
+                    _columnTops[i].Height = depth;
+
+                    _columnTops[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) - _columnTops[i].Height + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth));
+
+                    //use4 the same relative width here
+                    _columnTops[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + depth + (Double)_parent.PlotArea.GetValue(LeftProperty));
+
+
+                    _columnTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _columnTops[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+
+                    _columnTops[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+
+                    SkewTransform st2 = new SkewTransform();
+                    st2.AngleY = 0;
+                    st2.CenterX = 0;
+                    st2.CenterY = 0;
+                    st2.AngleX = -45;
+                    _columnTops[i].RenderTransform = st2;
+
+                    _shadows[i].SetValue(TopProperty, (Double)_columnTops[i].GetValue(TopProperty) - ShadowSize);
+                    _shadows[i].SetValue(LeftProperty, (Double)_columnTops[i].GetValue(LeftProperty) + ShadowSize);
+                    if ((Double)_shadows[i].GetValue(LeftProperty) + width > _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMaximum))
+                        _shadows[i].Width = width - ShadowSize;
+                    else
+                        _shadows[i].Width = width;
+                    _shadows[i].Height = _columnShadows[i].Height + ShadowSize;
+                    _shadows[i].Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
+                    _shadows[i].Fill = Parser.ParseSolidColor("#66000000");
+                    //_shadows[i].OpacityMask = Parser.ParseLinearGradient("0;#FF000000,0;#66666666,1");
+
+                    if (!ShadowEnabled)
+                    {
+                        _shadows[i].Opacity = 0;
+                    }
+
+                    _columns[i].Width = width;
+                    _columns[i].Height = height;
+                    _columns[i].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty));
+                    _columns[i].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty) + depth + initialDepth);
+                    _columns[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _columns[i].StrokeThickness = DataPoints[i].BorderThickness;
+                    _columns[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+
+                    _shadows[i].SetValue(ZIndexProperty, 2);
+                    int Zi = (int)(left + Math.Abs(left) + depth);
+
+                    if (DataPoints[i].YValue > 0)
+                    {
+                        _columnTops[i].SetValue(ZIndexProperty, Zi - 1);
+                        _columnShadows[i].SetValue(ZIndexProperty, Zi - 2);
+                        _columns[i].SetValue(ZIndexProperty, Zi);
+                    }
+                    else
+                    {
+                        _columnTops[i].SetValue(ZIndexProperty, Zi - 11);
+                        _columnShadows[i].SetValue(ZIndexProperty, Zi - 12);
+                        _columns[i].SetValue(ZIndexProperty, Zi - 10);
+                    }
+                    //This part of the code generates the 3d gradients
+                    #region Color Gradient
+                    Brush brush2 = null;
+                    Brush brushShade = null;
+                    Brush brushTop = null;
+                    Brush tempBrush = DataPoints[i].Background;
+                    if (tempBrush.GetType().Name == "LinearGradientBrush")
+                    {
+                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
+
+                        RotateTransform rt = new RotateTransform();
+                        rt.Angle = -45;
+                        brushTop.RelativeTransform = rt;
+
+                    }
+                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
+                    {
+                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = new RadialGradientBrush();
+                        brushTop = new RadialGradientBrush();
+                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
+                    }
+                    else if (tempBrush.GetType().Name == "SolidColorBrush")
+                    {
+                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        if (LightingEnabled)
+                        {
+                            String linbrush;
+                            //Generate a gradient string
+                            linbrush = "-90;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                            linbrush += ",1";
+
+                            //Get the gradient shade
+                            brush2 = Parser.ParseLinearGradient(linbrush);
+
+                            linbrush = "-45;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetLighterColor(brush.Color, 0.35);
+                            linbrush += ",1";
+
+                            brushTop = Parser.ParseLinearGradient(linbrush);
+
+                            linbrush = "-120;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                            linbrush += ",1";
+
+                            brushShade = Parser.ParseLinearGradient(linbrush);
+
+
+                        }
+                        else
+                        {
+                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                        }
+                    }
+                    else
+                    {
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+                    #endregion Color Gradient
+
+                    _columnShadows[i].Fill = Cloner.CloneBrush(brushShade);
+
+                    _columns[i].Fill = Cloner.CloneBrush(brush2);
+
+
+                    //Apply transform to the brushTop
+
+                    _columnTops[i].Fill = Cloner.CloneBrush(brushTop);
+
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+                    #endregion Column 3D Plotting
+
+                    
+                    DataPoints[i].AttachToolTip(_columnShadows[i]);
+                    DataPoints[i].AttachToolTip(_columnTops[i]);
+                    DataPoints[i].AttachToolTip(_columns[i]);
+
+                    DataPoints[i].AttachHref(_columnShadows[i]);
+                    DataPoints[i].AttachHref(_columnTops[i]);
+                    DataPoints[i].AttachHref(_columns[i]);
+
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
+                    DataPoints[i].AttachEvents(_columns[i]);
+
+                    DataPoints[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + depth + initialDepth);
+                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
+                    if (marker != null)
+                    {
+                        marker.SetValue(ZIndexProperty, (int)_columns[i].GetValue(ZIndexProperty) + 1);
+                        DataPoints[i].AttachToolTip(marker);
+                    }
+                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                        DataPoints[i].AttachLabel(DataPoints[i], depth);
+
+                }
+                else
+                {
+                    //To plot in 2d use this
+                    #region Column 2D Plotting
+
+                    Path shadow = new Path();
+                    String pathXAML = @"";
+                    Double xRadiusLimit = DataPoints[i].RadiusX;
+                    Double yRadiusLimit = DataPoints[i].RadiusY;
+
+                    if (xRadiusLimit > width / 2) xRadiusLimit = width / 2;
+                    if (yRadiusLimit > height) yRadiusLimit = height;
+
+                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
+
+                    DataPoints[i].Children.Add(column);
+                    DataPoints[i].Children.Add(shadow);
+
+                    column.Data = (PathGeometry)XamlReader.Load(pathXAML);
+                    column.Width = width;
+                    column.Height = height;
+                    column.SetValue(TopProperty, 0);
+                    column.SetValue(LeftProperty, 0);
+
+                    shadow.Width = width;
+                    shadow.Height = height - ShadowSize;
+                    shadow.SetValue(TopProperty, ShadowSize);
+                    shadow.SetValue(LeftProperty, ShadowSize);
+
+
+                    if (xRadiusLimit > shadow.Width / 2) xRadiusLimit = shadow.Width / 2;
+                    if (yRadiusLimit > height) yRadiusLimit = height;
+
+                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
+
+                    shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    if (DataPoints[i].YValue < 0)
+                    {
+                        ScaleTransform st = new ScaleTransform();
+                        st.ScaleX = 1;
+                        st.ScaleY = -1;
+                        column.RenderTransformOrigin = new Point(0.5, 0.5);
+                        column.RenderTransform = st;
+
+                        st = new ScaleTransform();
+                        st.ScaleX = 1;
+                        st.ScaleY = -1;
+                        shadow.RenderTransformOrigin = new Point(0.5, 0.5);
+                        shadow.RenderTransform = st;
+                        shadow.SetValue(TopProperty, ShadowSize);
+                    }
+
+                    column.Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    column.StrokeThickness = DataPoints[i].BorderThickness;
+
+                    String linbrush;
+                    SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled && !Bevel)
+                    {
+
+
+                        linbrush = "-90;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
+                        linbrush += ",0;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
+                        linbrush += ",1";
+                        column.Fill = Parser.ParseLinearGradient(linbrush);
+                    }
+                    else if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && Bevel)
+                    {
+
+                        if (DataPoints[i].YValue > 0) linbrush = "-90;";
+                        else linbrush = "90;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
+                        linbrush += ",0;";
+                        linbrush += Parser.GetLighterColor(brush.Color, 0.99);
+                        linbrush += ",1";
+
+                        column.Fill = Parser.ParseLinearGradient(linbrush);
+
+                    }
+                    else
+                    {
+                        column.Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+
+
+                    column.Opacity = this.Opacity * DataPoints[i].Opacity;
+                    shadow.Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
+
+                    shadow.Fill = Parser.ParseSolidColor("#66000000");
+
+
+                    shadow.SetValue(ZIndexProperty, 1);
+                    column.SetValue(ZIndexProperty, 5);
+                    if (!ShadowEnabled)
+                    {
+                        shadow.Opacity = 0;
+                    }
+
+                    
+
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+
+                            column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+
+                            column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+
+                    
+                    DataPoints[i].AttachToolTip(column);
+
+                    DataPoints[i].AttachHref(column);
+
+                    DataPoints[i].AttachEvents(column);
+
+                    
+                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
+                    if (marker != null)
+                    {
+                        marker.SetValue(ZIndexProperty, (int)column.GetValue(ZIndexProperty) + 1);
+                        DataPoints[i].AttachToolTip(marker);
+                    }
+                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                        DataPoints[i].AttachLabel(DataPoints[i], 0);
+
+
+                    DataPoints[i].ApplyEffects((int)column.GetValue(ZIndexProperty) + 1);
+
+                    #endregion Column 2D Plotting
+
+
+                }
+
+            }
+
+        }
+
+        private void PlotBar()
+        {
+            Double width = 10;
+            Double height;
+            Double left;
+            Double top;
+            Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
+
+            int i;
+
+            if (Double.IsNaN(MinDifference) || MinDifference == 0)
+                height = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+            else
+                height = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+
+            Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
+            temp *= 2;
+            if (height > temp)
+                height = temp;
+
+            height -= height * 0.3;
+
+            List<Double> checkDrawPositive = new List<double>();
+            List<Double> checkDrawNegetive = new List<double>();
+            Double finalYValue;
+            for (i = 0; i < _columns.Length; i++)
+            {
+                if (Double.IsNaN(DataPoints[i].YValue)) continue;
+
+                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
+
+                if (!checkDrawPositive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue >= 0)
+                {
+                    finalYValue = _maxVals[DataPoints[i].XValue].X;
+                    if (DataPoints[i].YValue != finalYValue) continue;
+                    checkDrawPositive.Add(DataPoints[i].XValue);
+                }
+                else if (!checkDrawNegetive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue < 0)
+                {
+                    finalYValue = _maxVals[DataPoints[i].XValue].Y;
+                    if (DataPoints[i].YValue != finalYValue) continue;
+                    checkDrawNegetive.Add(DataPoints[i].XValue);
+                }
+                else
+                {
+                    continue;
+                }
+                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
+
+                top = point.X + Index * height - (TotalSiblings * height) / 2;
+
+                if (_parent.AxisY.AxisMinimum > 0)
+                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum));
+                else
+                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(0));
+
+
+                if (_parent.AxisY.AxisMinimum > 0)
+                {
+                    left = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum);
+                }
+                else
+                {
+                    if (DataPoints[i].YValue > 0)
+                        left = _parent.AxisY.DoubleToPixel(0);
+                    else
+                        left = _parent.AxisY.DoubleToPixel(0) - width;
+                }
+
+                DataPoints[i].SetValue(WidthProperty, width);
+                DataPoints[i].SetValue(HeightProperty, height);
+                DataPoints[i].SetValue(LeftProperty, left);
+                DataPoints[i].SetValue(TopProperty, top);
+
+                Path bar = new Path();
+
+                if (_parent.View3D)
+                {
+
+                    // Add zero plane if required
+
+
+                    //To plot in 3D
+                    #region Bar 3D Plotting
+                    //relative width is set here
+                    Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["bar"];
+                    Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
+
+                    top += (depth + initialDepth);
+                    DataPoints[i].SetValue(TopProperty, top);
+
+                    _columnShadows[i].Width = depth;
+                    _columnShadows[i].Height = height;
+                    _columnShadows[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + (Double)_parent.PlotArea.GetValue(TopProperty));
+                    _columnShadows[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + width + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth));
+
+                    _columnShadows[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+                    _columnShadows[i].SetValue(ZIndexProperty, 7);
+                    _columnShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+
+                    _columnShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+                    SkewTransform st1 = new SkewTransform();
+                    st1.AngleY = -45;
+                    st1.CenterX = 0;
+                    st1.CenterY = 0;
+                    st1.AngleX = 0;
+                    _columnShadows[i].RenderTransform = st1;
+
+                    _columnTops[i].Width = width;
+                    //relative height is set here
+                    _columnTops[i].Height = depth;
+
+                    _columnTops[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) - _columnTops[i].Height + (Double)_parent.PlotArea.GetValue(TopProperty));
+
+                    //use4 the same relative width here
+                    _columnTops[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + (Double)_parent.PlotArea.GetValue(LeftProperty) - initialDepth);
+
+
+                    _columnTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _columnTops[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+
+                    _columnTops[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+
+                    SkewTransform st2 = new SkewTransform();
+                    st2.AngleY = 0;
+                    st2.CenterX = 0;
+                    st2.CenterY = 0;
+                    st2.AngleX = -45;
+                    _columnTops[i].RenderTransform = st2;
+
+                    _columns[i].Width = width;
+                    _columns[i].Height = height;
+                    _columns[i].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth));
+                    _columns[i].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty));
+                    _columns[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _columns[i].StrokeThickness = DataPoints[i].BorderThickness;
+                    _columns[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+
+
+                    //This part of the code generates the 3d gradients
+                    #region Color Gradient
+                    Brush brush2 = null;
+                    Brush brushShade = null;
+                    Brush brushTop = null;
+                    Brush tempBrush = DataPoints[i].Background;
+                    if (tempBrush.GetType().Name == "LinearGradientBrush")
+                    {
+                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
+
+                        RotateTransform rt = new RotateTransform();
+                        rt.Angle = -45;
+                        brushTop.RelativeTransform = rt;
+
+                    }
+                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
+                    {
+                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = new RadialGradientBrush();
+                        brushTop = new RadialGradientBrush();
+                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
+                    }
+                    else if (tempBrush.GetType().Name == "SolidColorBrush")
+                    {
+                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        if (LightingEnabled)
+                        {
+                            String linbrush;
+                            //Generate a gradient string
+                            linbrush = "0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                            linbrush += ",1";
+
+                            //Get the gradient shade
+                            brush2 = Parser.ParseLinearGradient(linbrush);
+
+                            linbrush = "0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.5);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                            linbrush += ",1";
+                            brushTop = Parser.ParseLinearGradient(linbrush);
+
+
+                            linbrush = "0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.95);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                            linbrush += ",1";
+                            brushShade = Parser.ParseLinearGradient(linbrush);
+
+
+                        }
+                        else
+                        {
+                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                        }
+                    }
+                    else
+                    {
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+                    #endregion Color Gradient
+
+                    _columnShadows[i].Fill = Cloner.CloneBrush(brushShade);
+                    _columns[i].Fill = Cloner.CloneBrush(brush2);
+
+                    //Apply transform to the brushTop
+
+                    _columnTops[i].Fill = Cloner.CloneBrush(brushTop);
+
+                    _shadows[i].SetValue(TopProperty, (Double)_columnTops[i].GetValue(TopProperty) - _columnShadows[i].Height * 0.1);
+                    _shadows[i].SetValue(LeftProperty, (Double)_columnTops[i].GetValue(LeftProperty));
+                    _shadows[i].Width = width + ShadowSize;
+                    _shadows[i].Height = _columnShadows[i].Height;
+                    _shadows[i].Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
+                    _shadows[i].Fill = Parser.ParseSolidColor("#66000000");
+
+                    _shadows[i].SetValue(ZIndexProperty, 2);
+
+                    int zindex = (int)((Double)_parent.PlotArea.GetValue(TopProperty) + _parent.PlotArea.Height - top);
+                    zindex = (int)(Math.Sqrt(Math.Pow(left, 2) + Math.Pow(zindex, 2)));
+                    _columnTops[i].SetValue(ZIndexProperty, zindex - 2);
+                    _columnShadows[i].SetValue(ZIndexProperty, zindex - 1);
+                    _columns[i].SetValue(ZIndexProperty, zindex);
+
+                    if (!ShadowEnabled)
+                    {
+                        _shadows[i].Opacity = 0;
+                    }
+
+                    DataPoints[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) - (depth + initialDepth));
+
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+                    #endregion Bar 3D Plotting
+                    
+
+                    DataPoints[i].AttachToolTip(_columnShadows[i]);
+                    DataPoints[i].AttachToolTip(_columnTops[i]);
+                    DataPoints[i].AttachToolTip(_columns[i]);
+
+                    DataPoints[i].AttachHref(_columns[i]);
+                    DataPoints[i].AttachHref(_columnShadows[i]);
+                    DataPoints[i].AttachHref(_columnTops[i]);
+
+                    DataPoints[i].AttachEvents(_columns[i]);
+                    DataPoints[i].AttachEvents(_columnShadows[i]);
+                    DataPoints[i].AttachEvents(_columnTops[i]);
+
+                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
+                    if (marker != null)
+                    {
+                        marker.SetValue(ZIndexProperty, (int)_columns[i].GetValue(ZIndexProperty) + 1);
+                        DataPoints[i].AttachToolTip(marker);
+                    }
+                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                        DataPoints[i].AttachLabel(DataPoints[i], depth);
+
+                    
+                }
+                else
+                {
+
+                    #region Bar2D
+                    Path shadow = new Path();
+                    String pathXAML = @"";
+                    Double xRadiusLimit = DataPoints[i].RadiusX;
+                    Double yRadiusLimit = DataPoints[i].RadiusY;
+
+                    if (xRadiusLimit > width) xRadiusLimit = width;
+                    if (yRadiusLimit > height / 2) yRadiusLimit = height / 2;
+
+                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
+
+                    DataPoints[i].Children.Add(bar);
+                    DataPoints[i].Children.Add(shadow);
+
+                    bar.Width = width;
+                    bar.Height = height;
+
+                    bar.SetValue(TopProperty, 0);
+                    bar.SetValue(LeftProperty, 0);
+                    bar.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+                    shadow.Width = width;
+                    shadow.Height = ShadowSize;
+
+                    shadow.SetValue(TopProperty, height);
+                    shadow.SetValue(LeftProperty, 0);
+
+
+
+                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
+
+
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
+
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
+                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
+
+                    shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
+
+
+                    bar.Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    bar.StrokeThickness = DataPoints[i].BorderThickness;
+                    String linbrush;
+                    SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled && !Bevel)
+                    {
+
+
+                        linbrush = "-90;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
+                        linbrush += ",0;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
+                        linbrush += ",1";
+                        bar.Fill = Parser.ParseLinearGradient(linbrush);
+                    }
+                    else if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && Bevel)
+                    {
+
+                        if (DataPoints[i].YValue > 0) linbrush = "-90;";
+                        else linbrush = "90;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
+                        linbrush += ",0;";
+                        linbrush += Parser.GetLighterColor(brush.Color, 0.99);
+                        linbrush += ",1";
+                        bar.Fill = Parser.ParseLinearGradient(linbrush);
+
+                    }
+                    else
+                    {
+                        bar.Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+                    bar.SetValue(ZIndexProperty, 5);
+
+                    if (DataPoints[i].YValue < 0)
+                    {
+                        ScaleTransform st = new ScaleTransform();
+                        st.ScaleX = -1;
+                        st.ScaleY = 1;
+                        bar.RenderTransformOrigin = new Point(0.5, 0.5);
+                        bar.RenderTransform = st;
+
+                        st = new ScaleTransform();
+                        st.ScaleX = -1;
+                        st.ScaleY = 1;
+                        shadow.RenderTransformOrigin = new Point(0.5, 0.5);
+                        shadow.RenderTransform = st;
+                    }
+                    shadow.Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
+                    shadow.Fill = Parser.ParseSolidColor("#66000000");
+                    shadow.SetValue(ZIndexProperty, 3);
+                    if (!ShadowEnabled)
+                    {
+                        shadow.Opacity = 0;
+                    }
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+                            bar.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+                            bar.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+                    
+                    DataPoints[i].AttachToolTip(bar);
+
+                    DataPoints[i].AttachHref(bar);
+
+                    DataPoints[i].AttachEvents(bar);
+
+                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
+                    if (marker != null)
+                    {
+                        marker.SetValue(ZIndexProperty, (int)bar.GetValue(ZIndexProperty) + 1);
+                        DataPoints[i].AttachToolTip(marker);
+                    }
+                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                        DataPoints[i].AttachLabel(DataPoints[i], 0);
+
+                    
+                    if (width > 10 && height > 10)
+                        DataPoints[i].ApplyEffects((int)bar.GetValue(ZIndexProperty) + 1);
+                    #endregion Bar2D
+                }
+
+            }
+
+        }
+
+        private void PlotLine()
+        {
+            int i;
+            Double strokeThickness = ((_parent.Width * _parent.Height) + 25000) / 35000;
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["line" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
+            Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
+
+            if (Double.IsNaN(initialDepth)) initialDepth = 0;
+            if (Double.IsNaN(depth)) depth = _parent.AxisX.MajorTicks.TickLength;
+
+            _line.Stroke = Cloner.CloneBrush(Background);
+            _lineShadow.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(127, 127, 127, 127));
+
+            if (!Double.IsNaN(LineThickness) && LineThickness <= 0)
+            {
+                Debug.WriteLine("LineThichness for line Cahrt cannot be 0 or negative");
+                throw (new Exception("Invalid Line Thickness value"));
+            }
+            else if (!Double.IsNaN(LineThickness))
+            {
+                strokeThickness = LineThickness;
+            }
+
+            _line.StrokeThickness = strokeThickness;
+            _lineShadow.StrokeThickness = strokeThickness;
+
+            _line.StrokeLineJoin = PenLineJoin.Round;
+            _lineShadow.StrokeLineJoin = PenLineJoin.Round;
+
+            _line.StrokeEndLineCap = PenLineCap.Round;
+            _lineShadow.StrokeEndLineCap = PenLineCap.Round;
+
+            _line.StrokeStartLineCap = PenLineCap.Round;
+            _lineShadow.StrokeEndLineCap = PenLineCap.Round;
+
+            _line.SetValue(ZIndexProperty, (int)GetValue(ZIndexProperty) + 20);
+            _lineShadow.SetValue(ZIndexProperty, (int)_line.GetValue(ZIndexProperty) - 1);
+
+
+
+            List<Point> points = new List<Point>();
+            List<Point> points2 = new List<Point>();
+
+            Double offsetX = 0, offsetY = 0;
+            if (_parent.View3D)
+            {
+                offsetX = (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                offsetY = (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+            }
+
+            for (i = 0; i < DataPoints.Count; i++)
+            {
+                if (Double.IsNaN(DataPoints[i].YValue)) continue;
+                points.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + offsetY));
+                points2.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX + strokeThickness / 2, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + offsetY + strokeThickness / 2));
+
+                DataPoints[i].SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (_parent.View3D ? (depth + initialDepth) : 0));
+                DataPoints[i].SetValue(TopProperty, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + (_parent.View3D ? (depth + initialDepth) : 0));
+                DataPoints[i].Width = 1;
+                DataPoints[i].Height = 1;
+
+
+                Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
+                if (marker != null)
+                {
+                    marker.SetValue(ZIndexProperty, (int)_line.GetValue(ZIndexProperty) + 1);
+                    DataPoints[i].AttachToolTip(marker);
+
+                    DataPoints[i].AttachHref(marker);
+
+                    DataPoints[i].AttachEvents(marker);
+                }
+                if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                    DataPoints[i].AttachLabel(DataPoints[i], depth);
+            }
+            _line.Points = Converter.ArrayToCollection(points.ToArray());
+            _lineShadow.Points = Converter.ArrayToCollection(points2.ToArray());
+            if (!ShadowEnabled)
+            {
+                _lineShadow.Opacity = 0;
+            }
+
+        }
+
+        private void PlotArea()
+        {
+            int i;
+            Point[] points = new Point[4];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["area" + DrawingIndex.ToString()];
+            Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
+            Visifire.Charts.Marker marker;
+            Double labeldepth = _parent.View3D ? 0 : depth;
+            for (i = 0; i < 4; i++) points[i] = new Point();
+
+            foreach (DataPoint datapoint in DataPoints)
+            {
+                if (_parent.View3D)
+                {
+                    datapoint.SetValue(LeftProperty, (Double)_parent.AxisX.DoubleToPixel(datapoint.XValue) + (Double)_parent.GetValue(LeftProperty) - (depth + initialDepth));
+                    datapoint.SetValue(TopProperty, (Double)_parent.AxisY.DoubleToPixel(datapoint.YValue) + (Double)_parent.GetValue(TopProperty) + (depth + initialDepth));
+                }
+                else
+                {
+                    datapoint.SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(datapoint.XValue));
+                    datapoint.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(datapoint.YValue));
+                }
+                datapoint.Width = 1;
+                datapoint.Height = 1;
+            }
+
+            for (i = 0; i < _areas.Length; i++)
+            {
+                if (Double.IsNaN(DataPoints[i].YValue)) continue;
+                if (Double.IsNaN(DataPoints[i + 1].YValue))
+                {
+                    i++;
+                    continue;
+                }
+
+                if (!_parent.View3D)
+                {
+
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue);
+                    points[2].X = points[1].X;
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
+
+                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].YValue);
+                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].YValue);
+                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0);
+                    points[3].Y = points[2].Y;
+
+                    _areas[i].Points = Converter.ArrayToCollection(points);
+
+                    Double left = (Double)DataPoints[i].GetValue(LeftProperty);
+                    Double top = (Double)DataPoints[i].GetValue(TopProperty);
+                    DataPoints[i].points.Add(new Point(points[0].X - left, points[0].Y - top));
+                    DataPoints[i].points.Add(new Point(points[1].X - left, points[1].Y - top));
+                    DataPoints[i].points.Add(new Point(points[2].X - left, points[2].Y - top));
+                    DataPoints[i].points.Add(new Point(points[3].X - left, points[3].Y - top));
+
+
+                    _areas[i].SetValue(TopProperty, -top);
+                    _areas[i].SetValue(LeftProperty, -left);
+
+                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
+                    {
+                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        String linbrush;
+                        linbrush = "-90;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
+                        linbrush += ",0;";
+                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
+                        linbrush += ",1";
+                        _areas[i].Fill = Parser.ParseLinearGradient(linbrush);
+                    }
+                    else
+                    {
+                        _areas[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+
+
+
+                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+                    DataPoints[i].AttachToolTip(_areas[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+
+                    DataPoints[i].ApplyEffects((int)_areas[i].GetValue(ZIndexProperty) + 1);
+
+                }
+                else
+                {
+
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                    points[2].X = points[1].X;
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+
+                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].YValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[3].Y = points[2].Y;
+
+                    _areas[i].Points = Converter.ArrayToCollection(points);
+
+                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _areaShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _areaTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+
+
+                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
+                    _areaShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
+                    _areaTops[i].StrokeThickness = DataPoints[i].BorderThickness;
+
+                    _areas[i].Opacity = Opacity * DataPoints[i].Opacity;
+                    _areaShadows[i].Opacity = Opacity * DataPoints[i].Opacity;
+                    _areaTops[i].Opacity = Opacity * DataPoints[i].Opacity;
+
+
+                    _areaShadows[i].Height = points[2].Y - points[1].Y;
+                    _areaShadows[i].Width = depth;
+                    _areaShadows[i].SetValue(TopProperty, points[1].Y);
+                    _areaShadows[i].SetValue(LeftProperty, points[1].X);
+
+                    SkewTransform st1 = new SkewTransform();
+                    st1.AngleY = -45;
+                    st1.CenterX = 0;
+                    st1.CenterY = 0;
+                    st1.AngleX = 0;
+                    _areaShadows[i].RenderTransform = st1;
+
+
+                    points[0].X += depth;
+                    points[1].X += depth;
+
+                    points[2].Y = points[1].Y;
+                    points[3].Y = points[0].Y;
+                    points[0].Y -= depth;
+                    points[1].Y -= depth;
+
+
+                    _areaTops[i].Points = Converter.ArrayToCollection(points);
+
+                    //This part of the code generates the 3D gradient
+                    #region Color Gradient
+                    Brush brush2 = null;
+                    Brush brushShade = null;
+                    Brush brushTop = null;
+                    Brush tempBrush = DataPoints[i].Background;
+                    if (tempBrush.GetType().Name == "LinearGradientBrush")
+                    {
+                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
+
+                        RotateTransform rt = new RotateTransform();
+                        rt.Angle = -45;
+                        brushTop.RelativeTransform = rt;
+
+                    }
+                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
+                    {
+                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+
+                        brushShade = new RadialGradientBrush();
+                        brushTop = new RadialGradientBrush();
+                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
+                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
+                    }
+                    else if (tempBrush.GetType().Name == "SolidColorBrush")
+                    {
+                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        if (LightingEnabled)
+                        {
+                            String linbrush;
+                            //Generate a gradient string
+                            linbrush = "-90;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                            linbrush += ",1";
+
+                            //Get the gradient shade
+                            brush2 = Parser.ParseLinearGradient(linbrush);
+
+                            linbrush = "-45;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetLighterColor(brush.Color, 0.35);
+                            linbrush += ",1";
+
+                            brushTop = Parser.ParseLinearGradient(linbrush);
+
+                            linbrush = "-120;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
+                            linbrush += ",0;";
+                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                            linbrush += ",1";
+
+                            brushShade = Parser.ParseLinearGradient(linbrush);
+
+
+                        }
+                        else
+                        {
+                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                        }
+                    }
+                    else
+                    {
+                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                    }
+                    #endregion Color Gradient
+
+                    _areas[i].Fill = Cloner.CloneBrush(brush2);
+                    _areaShadows[i].Fill = Cloner.CloneBrush(brushShade);
+                    _areaTops[i].Fill = Cloner.CloneBrush(brushTop);
+
+                    int zindex = 10;
+
+                    _areas[i].SetValue(ZIndexProperty, zindex);
+                    _areaShadows[i].SetValue(ZIndexProperty, zindex - 5);
+                    _areaTops[i].SetValue(ZIndexProperty, zindex - 5);
+
+                    switch (DataPoints[i].BorderStyle)
+                    {
+                        case "Solid":
+                            break;
+
+                        case "Dashed":
+                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
+                            break;
+
+                        case "Dotted":
+                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
+                            break;
+                    }
+
+                    
+                    DataPoints[i].AttachToolTip(_areas[i]);
+                    DataPoints[i].AttachToolTip(_areaShadows[i]);
+                    DataPoints[i].AttachToolTip(_areaTops[i]);
+
+                    DataPoints[i].AttachHref(_areas[i]);
+                    DataPoints[i].AttachHref(_areaShadows[i]);
+                    DataPoints[i].AttachHref(_areaTops[i]);
+
+                    DataPoints[i].AttachEvents(_areas[i]);
+                    DataPoints[i].AttachEvents(_areaShadows[i]);
+                    DataPoints[i].AttachEvents(_areaTops[i]);
+                }
+
+                marker = DataPoints[i].PlaceMarker();
+                if (marker != null)
+                {
+                    marker.SetValue(ZIndexProperty, (int)_areas[i].GetValue(ZIndexProperty) + 1);
+                    DataPoints[i].AttachToolTip(marker);
+                }
+                if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                    DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
+
+            }
+            i = _areas.Length;
+            marker = DataPoints[i].PlaceMarker();
+            if (marker != null)
+            {
+                marker.SetValue(ZIndexProperty, (int)_areas[i - 1].GetValue(ZIndexProperty) + 1);
+                DataPoints[i].AttachToolTip(marker);
+            }
+
+            if (DataPoints[i].LabelEnabled.ToLower() == "true")
+                DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
+        }
 
         private void CreateAuxPath(ref Path path, int index, Brush brush)
         {
@@ -7220,8 +8962,6 @@ namespace Visifire.Charts
             DataPoints[index].AttachHref(path);
             DataPoints[index].AttachToolTip(path);
         }
-
-        
 
         /// <summary>
         /// Validate Parent element and assign it to _parent.
@@ -7402,1318 +9142,7 @@ namespace Visifire.Charts
 
         }
 
-        internal void PlotColumn()
-        {
-            Double width = 10;
-            Double height;
-            Double left;
-            Double top;
-            Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
-
-            int i;
-
-            if (Double.IsNaN(MinDifference) || MinDifference == 0)
-            {
-                width = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
-            }
-            else
-            {
-                width = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
-
-            }
-
-            Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
-            temp *= 2;
-            if (width > temp)
-                width = temp;
-
-            width -= width * 0.1;
-
-            List<Double> checkDrawPositive = new List<double>();
-            List<Double> checkDrawNegetive = new List<double>();
-            Double finalYValue;
-            for (i = 0; i < _columns.Length; i++)
-            {
-                if (Double.IsNaN(DataPoints[i].YValue)) continue;
-
-                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-
-                if (!checkDrawPositive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue >= 0)
-                {
-                    finalYValue = _maxVals[DataPoints[i].XValue].X;
-                    if (DataPoints[i].YValue != finalYValue) continue;
-                    checkDrawPositive.Add(DataPoints[i].XValue);
-                }
-                else if (!checkDrawNegetive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue < 0)
-                {
-                    finalYValue = _maxVals[DataPoints[i].XValue].Y;
-                    if (DataPoints[i].YValue != finalYValue) continue;
-                    checkDrawNegetive.Add(DataPoints[i].XValue);
-                }
-                else
-                {
-                    continue;
-                }
-                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
-
-                if (_parent.AxisY.AxisMinimum > 0)
-                    height = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
-                else
-                    height = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
-
-
-                left = (point.X + Index * width - (TotalSiblings * width) / 2);
-
-
-
-                if (DataPoints[i].YValue >= 0)
-                    top = point.Y;
-                else
-                    top = _parent.AxisY.DoubleToPixel(0);
-
-
-                DataPoints[i].SetValue(WidthProperty, width);
-                DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
-                Path column = new Path();
-
-                if (_parent.View3D)
-                {
-
-
-                    //To plot in 3D
-                    #region Column 3D Plotting
-                    //relative width is set here
-
-                    Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["column"];
-                    Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
-
-
-                    left -= (depth + initialDepth);
-                    DataPoints[i].SetValue(LeftProperty, left);
-
-
-                    _columnShadows[i].Width = depth;
-                    _columnShadows[i].Height = height;
-                    _columnShadows[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth));
-                    _columnShadows[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + width + (Double)_parent.PlotArea.GetValue(LeftProperty));
-
-                    _columnShadows[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-
-                    _columnShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-
-                    _columnShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-                    SkewTransform st1 = new SkewTransform();
-                    st1.AngleY = -45;
-                    st1.CenterX = 0;
-                    st1.CenterY = 0;
-                    st1.AngleX = 0;
-                    _columnShadows[i].RenderTransform = st1;
-
-                    _columnTops[i].Width = width;
-                    //relative height is set here
-                    _columnTops[i].Height = depth;
-
-                    _columnTops[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) - _columnTops[i].Height + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth));
-
-                    //use4 the same relative width here
-                    _columnTops[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + depth + (Double)_parent.PlotArea.GetValue(LeftProperty));
-
-
-                    _columnTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _columnTops[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-
-                    _columnTops[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-
-                    SkewTransform st2 = new SkewTransform();
-                    st2.AngleY = 0;
-                    st2.CenterX = 0;
-                    st2.CenterY = 0;
-                    st2.AngleX = -45;
-                    _columnTops[i].RenderTransform = st2;
-
-                    _shadows[i].SetValue(TopProperty, (Double)_columnTops[i].GetValue(TopProperty) - ShadowSize);
-                    _shadows[i].SetValue(LeftProperty, (Double)_columnTops[i].GetValue(LeftProperty) + ShadowSize);
-                    if ((Double)_shadows[i].GetValue(LeftProperty) + width > _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMaximum))
-                        _shadows[i].Width = width - ShadowSize;
-                    else
-                        _shadows[i].Width = width;
-                    _shadows[i].Height = _columnShadows[i].Height + ShadowSize;
-                    _shadows[i].Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
-                    _shadows[i].Fill = Parser.ParseSolidColor("#66000000");
-                    //_shadows[i].OpacityMask = Parser.ParseLinearGradient("0;#FF000000,0;#66666666,1");
-
-                    if (!ShadowEnabled)
-                    {
-                        _shadows[i].Opacity = 0;
-                    }
-
-                    _columns[i].Width = width;
-                    _columns[i].Height = height;
-                    _columns[i].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty));
-                    _columns[i].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty) + depth + initialDepth);
-                    _columns[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _columns[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _columns[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-
-
-
-
-
-                    _shadows[i].SetValue(ZIndexProperty, 2);
-                    int Zi = (int)(left + Math.Abs(left) + depth);
-
-                    if (DataPoints[i].YValue > 0)
-                    {
-                        _columnTops[i].SetValue(ZIndexProperty, Zi - 1);
-                        _columnShadows[i].SetValue(ZIndexProperty, Zi - 2);
-                        _columns[i].SetValue(ZIndexProperty, Zi);
-                    }
-                    else
-                    {
-                        _columnTops[i].SetValue(ZIndexProperty, Zi - 11);
-                        _columnShadows[i].SetValue(ZIndexProperty, Zi - 12);
-                        _columns[i].SetValue(ZIndexProperty, Zi - 10);
-                    }
-                    //This part of the code generates the 3d gradients
-                    #region Color Gradient
-                    Brush brush2 = null;
-                    Brush brushShade = null;
-                    Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
-                    if (tempBrush.GetType().Name == "LinearGradientBrush")
-                    {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
-
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
-
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
-
-                        RotateTransform rt = new RotateTransform();
-                        rt.Angle = -45;
-                        brushTop.RelativeTransform = rt;
-
-                    }
-                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
-                    {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = new RadialGradientBrush();
-                        brushTop = new RadialGradientBrush();
-                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
-                    }
-                    else if (tempBrush.GetType().Name == "SolidColorBrush")
-                    {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                        if (LightingEnabled)
-                        {
-                            String linbrush;
-                            //Generate a gradient string
-                            linbrush = "-90;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
-                            linbrush += ",1";
-
-                            //Get the gradient shade
-                            brush2 = Parser.ParseLinearGradient(linbrush);
-
-                            linbrush = "-45;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetLighterColor(brush.Color, 0.35);
-                            linbrush += ",1";
-
-                            brushTop = Parser.ParseLinearGradient(linbrush);
-
-                            linbrush = "-120;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
-                            linbrush += ",1";
-
-                            brushShade = Parser.ParseLinearGradient(linbrush);
-
-
-                        }
-                        else
-                        {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
-                        }
-                    }
-                    else
-                    {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-                    #endregion Color Gradient
-
-                    _columnShadows[i].Fill = Cloner.CloneBrush(brushShade);
-
-                    _columns[i].Fill = Cloner.CloneBrush(brush2);
-
-
-                    //Apply transform to the brushTop
-
-                    _columnTops[i].Fill = Cloner.CloneBrush(brushTop);
-
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-                    #endregion Column 3D Plotting
-
-                    DataPoints[i].AttachToolTip(_columnShadows[i]);
-                    DataPoints[i].AttachToolTip(_columnTops[i]);
-                    DataPoints[i].AttachHref(_columnShadows[i]);
-                    DataPoints[i].AttachHref(_columnTops[i]);
-                    DataPoints[i].AttachToolTip(_columns[i]);
-                    DataPoints[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + depth + initialDepth);
-                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
-                    if (marker != null)
-                    {
-                        marker.SetValue(ZIndexProperty, (int)_columns[i].GetValue(ZIndexProperty) + 1);
-                        DataPoints[i].AttachToolTip(marker);
-                    }
-                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                        DataPoints[i].AttachLabel(DataPoints[i], depth);
-
-                    DataPoints[i].AttachHref(_columns[i]);
-
-                }
-                else
-                {
-                    //To plot in 2d use this
-                    #region Column 2D Plotting
-
-
-                    Path shadow = new Path();
-                    String pathXAML = @"";
-                    Double xRadiusLimit = DataPoints[i].RadiusX;
-                    Double yRadiusLimit = DataPoints[i].RadiusY;
-
-                    if (xRadiusLimit > width / 2) xRadiusLimit = width / 2;
-                    if (yRadiusLimit > height) yRadiusLimit = height;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-
-                    DataPoints[i].Children.Add(column);
-                    DataPoints[i].Children.Add(shadow);
-
-                    column.Data = (PathGeometry)XamlReader.Load(pathXAML);
-                    column.Width = width;
-                    column.Height = height;
-                    column.SetValue(TopProperty, 0);
-                    column.SetValue(LeftProperty, 0);
-
-
-
-
-                    shadow.Width = width;
-                    shadow.Height = height - ShadowSize;
-                    shadow.SetValue(TopProperty, ShadowSize);
-                    shadow.SetValue(LeftProperty, ShadowSize);
-
-
-                    if (xRadiusLimit > shadow.Width / 2) xRadiusLimit = shadow.Width / 2;
-                    if (yRadiusLimit > height) yRadiusLimit = height;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, yRadiusLimit);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", xRadiusLimit, 0);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-
-                    shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
-
-                    if (DataPoints[i].YValue < 0)
-                    {
-                        ScaleTransform st = new ScaleTransform();
-                        st.ScaleX = 1;
-                        st.ScaleY = -1;
-                        column.RenderTransformOrigin = new Point(0.5, 0.5);
-                        column.RenderTransform = st;
-
-                        st = new ScaleTransform();
-                        st.ScaleX = 1;
-                        st.ScaleY = -1;
-                        shadow.RenderTransformOrigin = new Point(0.5, 0.5);
-                        shadow.RenderTransform = st;
-                        shadow.SetValue(TopProperty, ShadowSize);
-                    }
-
-                    column.Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    column.StrokeThickness = DataPoints[i].BorderThickness;
-
-                    String linbrush;
-                    SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled && !Bevel)
-                    {
-
-
-                        linbrush = "-90;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
-                        linbrush += ",0;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
-                        linbrush += ",1";
-                        column.Fill = Parser.ParseLinearGradient(linbrush);
-                    }
-                    else if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && Bevel)
-                    {
-
-                        if (DataPoints[i].YValue > 0) linbrush = "-90;";
-                        else linbrush = "90;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
-                        linbrush += ",0;";
-                        linbrush += Parser.GetLighterColor(brush.Color, 0.99);
-                        linbrush += ",1";
-
-                        column.Fill = Parser.ParseLinearGradient(linbrush);
-
-                    }
-                    else
-                    {
-                        column.Fill = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-
-
-                    column.Opacity = this.Opacity * DataPoints[i].Opacity;
-                    shadow.Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
-
-                    shadow.Fill = Parser.ParseSolidColor("#66000000");
-
-
-                    shadow.SetValue(ZIndexProperty, 1);
-                    column.SetValue(ZIndexProperty, 5);
-                    if (!ShadowEnabled)
-                    {
-                        shadow.Opacity = 0;
-                    }
-
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-
-                            column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-
-                            column.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-                    DataPoints[i].AttachToolTip(column);
-                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
-                    if (marker != null)
-                    {
-                        marker.SetValue(ZIndexProperty, (int)column.GetValue(ZIndexProperty) + 1);
-                        DataPoints[i].AttachToolTip(marker);
-                    }
-                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                        DataPoints[i].AttachLabel(DataPoints[i], 0);
-
-                    DataPoints[i].AttachHref(column);
-                    DataPoints[i].ApplyEffects((int)column.GetValue(ZIndexProperty) + 1);
-                    
-                    #endregion Column 2D Plotting
-
-
-                }
-
-            }
-
-        }
-
-        internal void PlotBar()
-        {
-            Double width = 10;
-            Double height;
-            Double left;
-            Double top;
-            Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
-
-            int i;
-
-            if (Double.IsNaN(MinDifference) || MinDifference == 0)
-                height = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
-            else
-                height = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
-
-            Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
-            temp *= 2;
-            if (height > temp)
-                height = temp;
-
-            height -= height * 0.3;
-
-            List<Double> checkDrawPositive = new List<double>();
-            List<Double> checkDrawNegetive = new List<double>();
-            Double finalYValue;
-            for (i = 0; i < _columns.Length; i++)
-            {
-                if (Double.IsNaN(DataPoints[i].YValue)) continue;
-
-                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-
-                if (!checkDrawPositive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue >= 0)
-                {
-                    finalYValue = _maxVals[DataPoints[i].XValue].X;
-                    if (DataPoints[i].YValue != finalYValue) continue;
-                    checkDrawPositive.Add(DataPoints[i].XValue);
-                }
-                else if (!checkDrawNegetive.Contains(DataPoints[i].XValue) && DataPoints[i].YValue < 0)
-                {
-                    finalYValue = _maxVals[DataPoints[i].XValue].Y;
-                    if (DataPoints[i].YValue != finalYValue) continue;
-                    checkDrawNegetive.Add(DataPoints[i].XValue);
-                }
-                else
-                {
-                    continue;
-                }
-                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
-
-                top = point.X + Index * height - (TotalSiblings * height) / 2;
-
-                if (_parent.AxisY.AxisMinimum > 0)
-                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum));
-                else
-                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(0));
-
-
-                if (_parent.AxisY.AxisMinimum > 0)
-                {
-                    left = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum);
-                }
-                else
-                {
-                    if (DataPoints[i].YValue > 0)
-                        left = _parent.AxisY.DoubleToPixel(0);
-                    else
-                        left = _parent.AxisY.DoubleToPixel(0) - width;
-                }
-
-                DataPoints[i].SetValue(WidthProperty, width);
-                DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
-
-                Path bar = new Path();
-
-                if (_parent.View3D)
-                {
-
-                    // Add zero plane if required
-
-
-                    //To plot in 3D
-                    #region Bar 3D Plotting
-                    //relative width is set here
-                    Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["bar"];
-                    Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
-
-                    top += (depth + initialDepth);
-                    DataPoints[i].SetValue(TopProperty, top);
-
-                    _columnShadows[i].Width = depth;
-                    _columnShadows[i].Height = height;
-                    _columnShadows[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) + (Double)_parent.PlotArea.GetValue(TopProperty));
-                    _columnShadows[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + width + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth));
-
-                    _columnShadows[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-                    _columnShadows[i].SetValue(ZIndexProperty, 7);
-                    _columnShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-
-
-
-                    _columnShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-                    SkewTransform st1 = new SkewTransform();
-                    st1.AngleY = -45;
-                    st1.CenterX = 0;
-                    st1.CenterY = 0;
-                    st1.AngleX = 0;
-                    _columnShadows[i].RenderTransform = st1;
-
-                    _columnTops[i].Width = width;
-                    //relative height is set here
-                    _columnTops[i].Height = depth;
-
-                    _columnTops[i].SetValue(TopProperty, (Double)DataPoints[i].GetValue(TopProperty) - _columnTops[i].Height + (Double)_parent.PlotArea.GetValue(TopProperty));
-
-                    //use4 the same relative width here
-                    _columnTops[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) + (Double)_parent.PlotArea.GetValue(LeftProperty) - initialDepth);
-
-
-                    _columnTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _columnTops[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-
-                    _columnTops[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-
-                    SkewTransform st2 = new SkewTransform();
-                    st2.AngleY = 0;
-                    st2.CenterX = 0;
-                    st2.CenterY = 0;
-                    st2.AngleX = -45;
-                    _columnTops[i].RenderTransform = st2;
-
-                    _columns[i].Width = width;
-                    _columns[i].Height = height;
-                    _columns[i].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth));
-                    _columns[i].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty));
-                    _columns[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _columns[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _columns[i].Opacity = this.Opacity * DataPoints[i].Opacity;
-
-
-                    //This part of the code generates the 3d gradients
-                    #region Color Gradient
-                    Brush brush2 = null;
-                    Brush brushShade = null;
-                    Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
-                    if (tempBrush.GetType().Name == "LinearGradientBrush")
-                    {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
-
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
-
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
-
-                        RotateTransform rt = new RotateTransform();
-                        rt.Angle = -45;
-                        brushTop.RelativeTransform = rt;
-
-                    }
-                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
-                    {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = new RadialGradientBrush();
-                        brushTop = new RadialGradientBrush();
-                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
-                    }
-                    else if (tempBrush.GetType().Name == "SolidColorBrush")
-                    {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                        if (LightingEnabled)
-                        {
-                            String linbrush;
-                            //Generate a gradient string
-                            linbrush = "0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
-                            linbrush += ",1";
-
-                            //Get the gradient shade
-                            brush2 = Parser.ParseLinearGradient(linbrush);
-
-                            linbrush = "0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.5);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
-                            linbrush += ",1";
-                            brushTop = Parser.ParseLinearGradient(linbrush);
-
-
-                            linbrush = "0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.95);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
-                            linbrush += ",1";
-                            brushShade = Parser.ParseLinearGradient(linbrush);
-
-
-                        }
-                        else
-                        {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
-                        }
-                    }
-                    else
-                    {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-                    #endregion Color Gradient
-
-                    _columnShadows[i].Fill = Cloner.CloneBrush(brushShade);
-                    _columns[i].Fill = Cloner.CloneBrush(brush2);
-
-                    //Apply transform to the brushTop
-
-                    _columnTops[i].Fill = Cloner.CloneBrush(brushTop);
-
-                    _shadows[i].SetValue(TopProperty, (Double)_columnTops[i].GetValue(TopProperty) - _columnShadows[i].Height * 0.1);
-                    _shadows[i].SetValue(LeftProperty, (Double)_columnTops[i].GetValue(LeftProperty));
-                    _shadows[i].Width = width + ShadowSize;
-                    _shadows[i].Height = _columnShadows[i].Height;
-                    _shadows[i].Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
-                    _shadows[i].Fill = Parser.ParseSolidColor("#66000000");
-
-                    _shadows[i].SetValue(ZIndexProperty, 2);
-
-                    int zindex = (int)((Double)_parent.PlotArea.GetValue(TopProperty) + _parent.PlotArea.Height - top);
-                    zindex = (int)(Math.Sqrt(Math.Pow(left, 2) + Math.Pow(zindex, 2)));
-                    _columnTops[i].SetValue(ZIndexProperty, zindex - 2);
-                    _columnShadows[i].SetValue(ZIndexProperty, zindex - 1);
-                    _columns[i].SetValue(ZIndexProperty, zindex);
-
-                    if (!ShadowEnabled)
-                    {
-                        _shadows[i].Opacity = 0;
-                    }
-
-                    DataPoints[i].SetValue(LeftProperty, (Double)DataPoints[i].GetValue(LeftProperty) - (depth + initialDepth));
-
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-                            _columns[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            _columnShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            _columnTops[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-                    #endregion Bar 3D Plotting
-
-                    DataPoints[i].AttachToolTip(_columnShadows[i]);
-                    DataPoints[i].AttachToolTip(_columnTops[i]);
-                    DataPoints[i].AttachToolTip(_columns[i]);
-
-
-
-                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
-                    if (marker != null)
-                    {
-                        marker.SetValue(ZIndexProperty, (int)_columns[i].GetValue(ZIndexProperty) + 1);
-                        DataPoints[i].AttachToolTip(marker);
-                    }
-                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                        DataPoints[i].AttachLabel(DataPoints[i], depth);
-
-                    DataPoints[i].AttachHref(_columns[i]);
-                    DataPoints[i].AttachHref(_columnShadows[i]);
-                    DataPoints[i].AttachHref(_columnTops[i]);
-                }
-                else
-                {
-
-                    #region Bar2D
-                    Path shadow = new Path();
-                    String pathXAML = @"";
-                    Double xRadiusLimit = DataPoints[i].RadiusX;
-                    Double yRadiusLimit = DataPoints[i].RadiusY;
-
-                    if (xRadiusLimit > width) xRadiusLimit = width;
-                    if (yRadiusLimit > height / 2) yRadiusLimit = height / 2;
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width - xRadiusLimit, 0);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", width, height - yRadiusLimit);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", width - xRadiusLimit, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-
-                    DataPoints[i].Children.Add(bar);
-                    DataPoints[i].Children.Add(shadow);
-
-                    bar.Width = width;
-                    bar.Height = height;
-
-                    bar.SetValue(TopProperty, 0);
-                    bar.SetValue(LeftProperty, 0);
-                    bar.Data = (PathGeometry)XamlReader.Load(pathXAML);
-
-
-
-                    shadow.Width = width;
-                    shadow.Height = ShadowSize;
-
-                    shadow.SetValue(TopProperty, height);
-                    shadow.SetValue(LeftProperty, 0);
-
-
-
-                    pathXAML = @"<PathGeometry xmlns=""http://schemas.microsoft.com/client/2007""><PathGeometry.Figures>";
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<PathFigure StartPoint=""{0},{1}""><PathFigure.Segments>", 0, 0);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width - xRadiusLimit, 0);
-
-
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width, -yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Counterclockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", shadow.Width, shadow.Height - yRadiusLimit);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<ArcSegment Point=""{0},{1}"" ", shadow.Width - xRadiusLimit, shadow.Height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"Size=""{0},{1}"" RotationAngle=""0"" ", xRadiusLimit, yRadiusLimit);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"SweepDirection=""Clockwise"" />");
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, shadow.Height);
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, @"<LineSegment Point=""{0},{1}""/>", 0, 0);
-
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathFigure.Segments></PathFigure>");
-                    pathXAML += String.Format(CultureInfo.InvariantCulture, "</PathGeometry.Figures></PathGeometry>");
-
-                    shadow.Data = (PathGeometry)XamlReader.Load(pathXAML);
-
-
-                    bar.Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    bar.StrokeThickness = DataPoints[i].BorderThickness;
-                    String linbrush;
-                    SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled && !Bevel)
-                    {
-
-
-                        linbrush = "-90;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
-                        linbrush += ",0;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
-                        linbrush += ",1";
-                        bar.Fill = Parser.ParseLinearGradient(linbrush);
-                    }
-                    else if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && Bevel)
-                    {
-
-                        if (DataPoints[i].YValue > 0) linbrush = "-90;";
-                        else linbrush = "90;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
-                        linbrush += ",0;";
-                        linbrush += Parser.GetLighterColor(brush.Color, 0.99);
-                        linbrush += ",1";
-                        bar.Fill = Parser.ParseLinearGradient(linbrush);
-
-                    }
-                    else
-                    {
-                        bar.Fill = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-                    bar.SetValue(ZIndexProperty, 5);
-
-                    if (DataPoints[i].YValue < 0)
-                    {
-                        ScaleTransform st = new ScaleTransform();
-                        st.ScaleX = -1;
-                        st.ScaleY = 1;
-                        bar.RenderTransformOrigin = new Point(0.5, 0.5);
-                        bar.RenderTransform = st;
-
-                        st = new ScaleTransform();
-                        st.ScaleX = -1;
-                        st.ScaleY = 1;
-                        shadow.RenderTransformOrigin = new Point(0.5, 0.5);
-                        shadow.RenderTransform = st;
-                    }
-                    shadow.Opacity = this.Opacity * DataPoints[i].Opacity * 0.8;
-                    shadow.Fill = Parser.ParseSolidColor("#66000000");
-                    shadow.SetValue(ZIndexProperty, 3);
-                    if (!ShadowEnabled)
-                    {
-                        shadow.Opacity = 0;
-                    }
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-                            bar.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-                            bar.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-
-                    DataPoints[i].AttachToolTip(bar);
-                    Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
-                    if (marker != null)
-                    {
-                        marker.SetValue(ZIndexProperty, (int)bar.GetValue(ZIndexProperty) + 1);
-                        DataPoints[i].AttachToolTip(marker);
-                    }
-                    if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                        DataPoints[i].AttachLabel(DataPoints[i], 0);
-
-                    DataPoints[i].AttachHref(bar);
-                    if (width > 10 && height > 10)
-                        DataPoints[i].ApplyEffects((int)bar.GetValue(ZIndexProperty) + 1);
-                    #endregion Bar2D
-                }
-
-            }
-
-        }
-
-        internal void PlotLine()
-        {
-            int i;
-            Double strokeThickness = ((_parent.Width * _parent.Height) + 25000) / 35000;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * _parent.IndexList["line" + DrawingIndex.ToString()];
-            Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
-
-            if (Double.IsNaN(initialDepth)) initialDepth = 0;
-            if (Double.IsNaN(depth)) depth = _parent.AxisX.MajorTicks.TickLength;
-
-            _line.Stroke = Cloner.CloneBrush(Background);
-            _lineShadow.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(127, 127, 127, 127));
-
-            if (!Double.IsNaN(LineThickness) && LineThickness <= 0)
-            {
-                Debug.WriteLine("LineThichness for line Cahrt cannot be 0 or negative");
-                throw (new Exception("Invalid Line Thickness value"));
-            }
-            else if (!Double.IsNaN(LineThickness))
-            {
-                strokeThickness = LineThickness;
-            }
-
-            _line.StrokeThickness = strokeThickness;
-            _lineShadow.StrokeThickness = strokeThickness;
-
-            _line.StrokeLineJoin = PenLineJoin.Round;
-            _lineShadow.StrokeLineJoin = PenLineJoin.Round;
-
-            _line.StrokeEndLineCap = PenLineCap.Round;
-            _lineShadow.StrokeEndLineCap = PenLineCap.Round;
-
-            _line.StrokeStartLineCap = PenLineCap.Round;
-            _lineShadow.StrokeEndLineCap = PenLineCap.Round;
-
-            _line.SetValue(ZIndexProperty, (int)GetValue(ZIndexProperty) + 20);
-            _lineShadow.SetValue(ZIndexProperty, (int)_line.GetValue(ZIndexProperty) - 1);
-
-
-
-            List<Point> points = new List<Point>();
-            List<Point> points2 = new List<Point>();
-
-            Double offsetX = 0, offsetY = 0;
-            if (_parent.View3D)
-            {
-                offsetX = (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
-                offsetY = (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-            }
-
-            for (i = 0; i < DataPoints.Count; i++)
-            {
-                if (Double.IsNaN(DataPoints[i].YValue)) continue;
-                points.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + offsetY));
-                points2.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX + strokeThickness / 2, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + offsetY + strokeThickness / 2));
-
-                DataPoints[i].SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (_parent.View3D ? (depth + initialDepth) : 0));
-                DataPoints[i].SetValue(TopProperty, _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + (_parent.View3D ? (depth + initialDepth) : 0));
-                DataPoints[i].Width = 1;
-                DataPoints[i].Height = 1;
-
-
-                Visifire.Charts.Marker marker = DataPoints[i].PlaceMarker();
-                if (marker != null)
-                {
-                    marker.SetValue(ZIndexProperty, (int)_line.GetValue(ZIndexProperty) + 1);
-                    DataPoints[i].AttachToolTip(marker);
-                }
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i], depth);
-            }
-            _line.Points = Converter.ArrayToCollection(points.ToArray());
-            _lineShadow.Points = Converter.ArrayToCollection(points2.ToArray());
-            if (!ShadowEnabled)
-            {
-                _lineShadow.Opacity = 0;
-            }
-
-        }
-
-        internal void PlotArea()
-        {
-            int i;
-            Point[] points = new Point[4];
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["area" + DrawingIndex.ToString()];
-            Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
-            Visifire.Charts.Marker marker;
-            Double labeldepth = _parent.View3D ? 0 : depth;
-            for (i = 0; i < 4; i++) points[i] = new Point();
-
-            foreach (DataPoint datapoint in DataPoints)
-            {
-                if (_parent.View3D)
-                {
-                    datapoint.SetValue(LeftProperty, (Double)_parent.AxisX.DoubleToPixel(datapoint.XValue) + (Double)_parent.GetValue(LeftProperty) - (depth + initialDepth));
-                    datapoint.SetValue(TopProperty, (Double)_parent.AxisY.DoubleToPixel(datapoint.YValue) + (Double)_parent.GetValue(TopProperty) + (depth + initialDepth));
-                }
-                else
-                {
-                    datapoint.SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(datapoint.XValue));
-                    datapoint.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(datapoint.YValue));
-                }
-                datapoint.Width = 1;
-                datapoint.Height = 1;
-            }
-
-            for (i = 0; i < _areas.Length; i++)
-            {
-                if (Double.IsNaN(DataPoints[i].YValue)) continue;
-                if (Double.IsNaN(DataPoints[i + 1].YValue))
-                {
-                    i++;
-                    continue;
-                }
-
-                if (!_parent.View3D)
-                {
-
-
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue);
-                    points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-
-                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].YValue);
-                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].YValue);
-                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0);
-                    points[3].Y = points[2].Y;
-
-                    _areas[i].Points = Converter.ArrayToCollection(points);
-
-                    Double left = (Double)DataPoints[i].GetValue(LeftProperty);
-                    Double top = (Double)DataPoints[i].GetValue(TopProperty);
-                    DataPoints[i].points.Add(new Point(points[0].X - left, points[0].Y - top));
-                    DataPoints[i].points.Add(new Point(points[1].X - left, points[1].Y - top));
-                    DataPoints[i].points.Add(new Point(points[2].X - left, points[2].Y - top));
-                    DataPoints[i].points.Add(new Point(points[3].X - left, points[3].Y - top));
-
-
-                    _areas[i].SetValue(TopProperty, -top);
-                    _areas[i].SetValue(LeftProperty, -left);
-
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
-                    {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                        String linbrush;
-                        linbrush = "-90;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
-                        linbrush += ",0;";
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
-                        linbrush += ",1";
-                        _areas[i].Fill = Parser.ParseLinearGradient(linbrush);
-                    }
-                    else
-                    {
-                        _areas[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-
-
-
-                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-                    DataPoints[i].AttachToolTip(_areas[i]);
-                    DataPoints[i].ApplyEffects((int)_areas[i].GetValue(ZIndexProperty) + 1);
-
-                }
-                else
-                {
-
-
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
-                    points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
-
-                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].YValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].YValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-                    points[3].Y = points[2].Y;
-
-                    _areas[i].Points = Converter.ArrayToCollection(points);
-
-                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-
-
-                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaTops[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-                    _areas[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaShadows[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaTops[i].Opacity = Opacity * DataPoints[i].Opacity;
-
-
-                    _areaShadows[i].Height = points[2].Y - points[1].Y;
-                    _areaShadows[i].Width = depth;
-                    _areaShadows[i].SetValue(TopProperty, points[1].Y);
-                    _areaShadows[i].SetValue(LeftProperty, points[1].X);
-
-                    SkewTransform st1 = new SkewTransform();
-                    st1.AngleY = -45;
-                    st1.CenterX = 0;
-                    st1.CenterY = 0;
-                    st1.AngleX = 0;
-                    _areaShadows[i].RenderTransform = st1;
-
-
-                    points[0].X += depth;
-                    points[1].X += depth;
-
-                    points[2].Y = points[1].Y;
-                    points[3].Y = points[0].Y;
-                    points[0].Y -= depth;
-                    points[1].Y -= depth;
-
-
-                    _areaTops[i].Points = Converter.ArrayToCollection(points);
-
-                    //This part of the code generates the 3D gradient
-                    #region Color Gradient
-                    Brush brush2 = null;
-                    Brush brushShade = null;
-                    Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
-                    if (tempBrush.GetType().Name == "LinearGradientBrush")
-                    {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
-
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
-
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
-
-                        RotateTransform rt = new RotateTransform();
-                        rt.Angle = -45;
-                        brushTop.RelativeTransform = rt;
-
-                    }
-                    else if (tempBrush.GetType().Name == "RadialGradientBrush")
-                    {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-
-                        brushShade = new RadialGradientBrush();
-                        brushTop = new RadialGradientBrush();
-                        (brushShade as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        (brushTop as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
-                        Parser.GenerateDarkerGradientBrush(brush, brushShade as RadialGradientBrush, 0.75);
-                        Parser.GenerateLighterGradientBrush(brush, brushTop as RadialGradientBrush, 0.85);
-                    }
-                    else if (tempBrush.GetType().Name == "SolidColorBrush")
-                    {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
-                        if (LightingEnabled)
-                        {
-                            String linbrush;
-                            //Generate a gradient string
-                            linbrush = "-90;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetLighterColor(brush.Color, 0.55);
-                            linbrush += ",1";
-
-                            //Get the gradient shade
-                            brush2 = Parser.ParseLinearGradient(linbrush);
-
-                            linbrush = "-45;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetLighterColor(brush.Color, 0.35);
-                            linbrush += ",1";
-
-                            brushTop = Parser.ParseLinearGradient(linbrush);
-
-                            linbrush = "-120;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
-                            linbrush += ",0;";
-                            linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
-                            linbrush += ",1";
-
-                            brushShade = Parser.ParseLinearGradient(linbrush);
-
-
-                        }
-                        else
-                        {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
-                        }
-                    }
-                    else
-                    {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
-                    }
-                    #endregion Color Gradient
-
-                    _areas[i].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[i].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[i].Fill = Cloner.CloneBrush(brushTop);
-
-                    int zindex = 10;
-
-                    _areas[i].SetValue(ZIndexProperty, zindex);
-                    _areaShadows[i].SetValue(ZIndexProperty, zindex - 5);
-                    _areaTops[i].SetValue(ZIndexProperty, zindex - 5);
-
-                    switch (DataPoints[i].BorderStyle)
-                    {
-                        case "Solid":
-                            break;
-
-                        case "Dashed":
-                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                            break;
-
-                        case "Dotted":
-                            _areas[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            _areaShadows[i].StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                            break;
-                    }
-                    DataPoints[i].AttachToolTip(_areas[i]);
-                    DataPoints[i].AttachToolTip(_areaShadows[i]);
-                    DataPoints[i].AttachToolTip(_areaTops[i]);
-                }
-
-                marker = DataPoints[i].PlaceMarker();
-                if (marker != null)
-                {
-                    marker.SetValue(ZIndexProperty, (int)_areas[i].GetValue(ZIndexProperty) + 1);
-                    DataPoints[i].AttachToolTip(marker);
-                }
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
-
-            }
-            i = _areas.Length;
-            marker = DataPoints[i].PlaceMarker();
-            if (marker != null)
-            {
-                marker.SetValue(ZIndexProperty, (int)_areas[i - 1].GetValue(ZIndexProperty) + 1);
-                DataPoints[i].AttachToolTip(marker);
-            }
-
-            if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
-        }
+        
 
         #endregion Internal Methods
 
@@ -8832,8 +9261,8 @@ namespace Visifire.Charts
         internal Polygon[] _areaTops;
         internal Path[] _pieSides, _pieRight, _pieLeft;
         internal Path[] _doughnut;
-        internal Path auxSide1, auxSide2, auxSide3, auxSide4,auxSide5,auxSide6;
-        internal int auxID1, auxID2, auxID3, auxID4, auxID5, auxID6;
+        internal Path auxSide1, auxSide2,  auxSide4,auxSide5;
+        internal int auxID1, auxID2, auxID4, auxID5;
 
         //3D shadows
         internal Rectangle[] _shadows;
@@ -8854,6 +9283,8 @@ namespace Visifire.Charts
         private String _yValueFormatString;
         private String _zValueFormatString;
         private Dictionary<Double, Point> _maxVals = new Dictionary<Double, Point>();
+        private Dictionary<FrameworkElement, Point> _positionOffset = new Dictionary<FrameworkElement, Point>();
+        private Dictionary<FrameworkElement, Point> _labelPosOffset = new Dictionary<FrameworkElement, Point>();
         #endregion Data
 
     }

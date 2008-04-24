@@ -18,6 +18,7 @@
  
 */
 
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,8 +58,8 @@ namespace Visifire.Commons
             Double limitTop, limitBottom;
             Double toolTipTop = top;
 
-            limitTop = (Double)_parent.GetValue(TopProperty);
-            limitBottom = limitTop + _parent.Height - this.Height;
+            limitTop = 0;
+            limitBottom = _parent.Height - this.Height;
 
             if (limitTop <= top && top <= limitBottom) toolTipTop = top;
             else if (limitTop > top) toolTipTop = limitTop + 30;
@@ -74,8 +75,8 @@ namespace Visifire.Commons
             Double limitLeft, limitRight;
             Double toolTipLeft = left;
 
-            limitRight = (Double)_parent.GetValue(LeftProperty) + _parent.Width - this.Width;
-            limitLeft = (Double)_parent.GetValue(LeftProperty);
+            limitRight = _parent.Width - this.Width;
+            limitLeft = 0;
 
             if (limitLeft <= left && left <= limitRight) toolTipLeft = left;
             else if (limitLeft > left) toolTipLeft = limitLeft;

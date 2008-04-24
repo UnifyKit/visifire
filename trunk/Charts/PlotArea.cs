@@ -18,6 +18,7 @@
  
 */
 
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,7 +59,7 @@ namespace Visifire.Charts
             SetName();
 
             //This step applies theme background
-            if(GetFromTheme("Background") != null)
+            if(GetFromTheme("Background") != null && Background == null)
                 Background = GetFromTheme("Background") as Brush;
 
             AttachToolTip();
@@ -67,7 +68,7 @@ namespace Visifire.Charts
             if (BorderColor == null)
             {
 
-                if (_parent.Background == null && this.Background == null)
+                if (_parent.Background == null && GetCurrentBackground() == null)
                 {
                     BorderColor = new SolidColorBrush(Colors.Black);
                 }
@@ -320,7 +321,7 @@ namespace Visifire.Charts
             {
 
                 String[] type = { "Bright", "Medium", "Dark", "Medium" };
-                Double[] length = { 13, 10, 13, 10 };
+                Double[] length = { 10, 8, 0, 8 };
                 Double[] Angle = { 90, 180, -90, 0 };
                 ApplyBevel(type, length, Angle);
             }

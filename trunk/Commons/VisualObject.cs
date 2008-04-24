@@ -46,8 +46,13 @@ namespace Visifire.Commons
                 SetDefaults();
             }
 
+            public Brush GetCurrentBackground()
+            {
+                return base.Background;
+            }
+            
             /// <summary>
-            /// This function applies the border to the canvas dependeing on the border properties
+            /// This function applies the border to the canvas depending on the border properties
             /// Also applies clipping region
             /// </summary>
             public virtual void ApplyBorder()
@@ -102,10 +107,6 @@ namespace Visifire.Commons
             /// <summary>
             /// This function applies href to a canvas
             /// </summary>
-            /// <param name="HyperLink"> 
-            ///     <remarks> HyperLink should contain parsed version of the href 
-            ///     </remarks>
-            /// </param>
             public void AttachHref()
             {
                 if (!String.IsNullOrEmpty(Href))
@@ -185,7 +186,7 @@ namespace Visifire.Commons
             }
 
             /// <summary>
-            /// ??????????????????????????????????????????????????????????????
+            /// 
             /// </summary>
             /// <param name="element"></param>
             public virtual void AttachToolTip(FrameworkElement element)
@@ -215,7 +216,8 @@ namespace Visifire.Commons
 
                 };
             }
-
+            
+            
             public virtual String TextParser(String str)
             {
                 return str;
@@ -294,7 +296,8 @@ namespace Visifire.Commons
             }
                 
         #endregion Public Methods
-        
+
+
         #region Public Properties
         
             #region Background Properties
@@ -317,7 +320,7 @@ namespace Visifire.Commons
                     _bevel = value.ToString();
                 }
             }
-            public Boolean LightingEnabled
+            public virtual Boolean LightingEnabled
             {
                 get
                 {
@@ -336,7 +339,7 @@ namespace Visifire.Commons
                     _lightingEnabled = value.ToString();
                 }
             }
-            public Boolean ShadowEnabled
+            public virtual Boolean ShadowEnabled
             {
                 get
                 {
@@ -557,7 +560,18 @@ namespace Visifire.Commons
                 set
                 {
                     _href = value;
-                    
+                    Uri ur = new Uri(_href, UriKind.RelativeOrAbsolute);
+                    if (ur.IsAbsoluteUri)
+                    {
+                        _href = ur.AbsoluteUri;
+                    }
+                    else
+                    {
+                        UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
+                        String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
+                        UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
+                        _href = ub2.ToString();
+                    }
                 }
             }
             

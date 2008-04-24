@@ -131,7 +131,7 @@ namespace Visifire.Charts
 
         #region Internal Properties
 
-        internal Double ActualWidth
+        internal new Double ActualWidth
         {
             get
             {
@@ -190,7 +190,7 @@ namespace Visifire.Charts
             set;
         }
 
-        internal Double ActualHeight
+        internal new Double ActualHeight
         {
             get
             {

@@ -18,6 +18,7 @@
  
 */
 
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -363,7 +364,6 @@ namespace Visifire.Charts
         private Double _imageWidth;
         private Boolean _imageHeightSet = false;
         private Boolean _imageWidthSet = false;
-        private Canvas _image;
         private String _href;
         private ImageBrush imgBrush;
         #endregion Data

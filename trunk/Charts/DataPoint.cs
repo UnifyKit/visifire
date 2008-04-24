@@ -97,6 +97,8 @@ namespace Visifire.Charts
                     _showInLegend = true.ToString();
                 }
             }
+
+            
         }
 
         public Marker PlaceMarker()
@@ -106,9 +108,10 @@ namespace Visifire.Charts
             {
                 if (MarkerEnabled.ToLower() != "true") return null;
             }
-            else if (_markerEnabled.ToLower() == "false" || _parent._markerEnabled.ToLower() == "false")
+            else if (_parent._markerEnabled.ToLower() == "false")
             {
-                return null;
+                if(_markerEnabled.ToLower() == "false" || _markerEnabled.ToLower() == "undefined")
+                    return null;
             }
 
             Marker marker = new Marker();
@@ -262,8 +265,6 @@ namespace Visifire.Charts
             {
                 marker.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    if (!Href.ToLower().StartsWith("http://"))
-                        Href = Href.Insert(0, "http://");
                     HtmlPage.Window.Navigate(new Uri(Href));
                 };
             }
@@ -713,6 +714,43 @@ namespace Visifire.Charts
             this.Clip = rg;
         }
 
+        /// <summary>
+        /// Collects events from the this object and attaches a copy of the event to the element
+        /// </summary>
+        /// <param name="element"></param>
+        public virtual void AttachEvents(FrameworkElement element)
+        {
+            element.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+            {
+                if (MouseLeftButtonUp != null)
+                    MouseLeftButtonUp(this, e);
+            };
+
+            element.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+            {
+                if (MouseLeftButtonDown != null)
+                    MouseLeftButtonDown(this, e);
+            };
+
+            element.MouseEnter += delegate(object sender, MouseEventArgs e)
+            {
+                if (MouseEnter != null)
+                    MouseEnter(this, e);
+            };
+
+            element.MouseLeave += delegate(object sender, MouseEventArgs e)
+            {
+                if (MouseLeave != null)
+                    MouseLeave(this, e);
+            };
+
+            element.MouseMove += delegate(object sender, MouseEventArgs e)
+            {
+                if (MouseMove != null)
+                    MouseMove(this, e);
+            };
+        }
+
         #endregion  Public Methods
 
         #region Private Methods
@@ -781,7 +819,7 @@ namespace Visifire.Charts
 
         private void ApplyLabelFontColor(Label label, Boolean onDataPoint)
         {
-            System.Windows.Media.Color color = new System.Windows.Media.Color();
+            
             Double intensity;
             if (onDataPoint && _parent.RenderAs.ToLower() != "line")
             {
@@ -849,225 +887,6 @@ namespace Visifire.Charts
                 }
             }
         }
-        private void PositionLabelInside(Label _label, int recurCount)
-        {
-            Double top;
-            Double left;
-            Double offset = recurCount >= 2 ? 0 : 5;
-            Double plotLeft = (Double)_parent._parent.PlotArea.GetValue(LeftProperty);
-            Double plotRight = plotLeft + _parent._parent.PlotArea.Width;
-            Double plotTop = (Double)_parent._parent.PlotArea.GetValue(TopProperty);
-            Double plotBottom = plotTop + _parent._parent.PlotArea.Height + (_parent._parent.View3D ? _parent._parent.AxisX.MajorTicks.TickLength : 0);
-            Double Depth = _parent._parent.AxisX.MajorTicks.TickLength;
-
-            if (_parent._parent.View3D)
-            {
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    top = (Double)GetValue(TopProperty) + Height / 2 - _label.Height / 2;
-                    if (YValue >= 0)
-                    {
-                        left = (Double)GetValue(LeftProperty) + Width - _label.Width - offset;
-                    }
-                    else
-                    {
-                        left = (Double)GetValue(LeftProperty) + offset;
-                    }
-                    if ((left < (Double)GetValue(LeftProperty) || (left + _label.Width) > (Double)GetValue(LeftProperty) + this.Width) && recurCount < 2)
-                    {
-                        _label.RotateLabelVerticle();
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-
-
-                }
-                else
-                {
-                    left = (Double)GetValue(LeftProperty) + this.Width / 2 - _label.Width / 2;
-                    if (YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) + offset;
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + this.Height - _label.Height - offset;
-                    }
-                    if ((top < (Double)GetValue(TopProperty) || (top + _label.Height) > (Double)GetValue(TopProperty) + this.Height) && recurCount < 2)
-                    {
-                        _label.RotateLabelHorizontal();
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-
-                }
-            }
-            else
-            {
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    top = (Double)GetValue(TopProperty) + this.Height / 2 - _label.Height / 2;
-                    if (YValue >= 0)
-                    {
-                        left = (Double)GetValue(LeftProperty) + this.Width - _label.Width - offset;
-                    }
-                    else
-                    {
-                        left = (Double)GetValue(LeftProperty) + offset;
-                    }
-                    if ((left < (Double)GetValue(LeftProperty) || (left + _label.Width) > (Double)GetValue(LeftProperty) + this.Width) && recurCount < 2)
-                    {
-                        _label.RotateLabelVerticle();
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-                else
-                {
-                    left = (Double)GetValue(LeftProperty) + this.Width / 2 - _label.Width / 2;
-                    if (YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) + offset;
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + this.Height - _label.Height - offset;
-                    }
-                    if ((top < (Double)GetValue(TopProperty) || (top + _label.Height) > (Double)GetValue(TopProperty) + this.Height) && recurCount < 2)
-                    {
-                        _label.RotateLabelHorizontal();
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-            }
-        }
-        private void PositionLabelOutside(Label _label, int recurCount)
-        {
-            Double top;
-            Double left;
-            Double offset = 5;
-            Double plotLeft = 0;
-            Double plotRight = plotLeft + _parent._parent.PlotArea.Width;
-            Double plotTop = 0;
-            Double plotBottom = plotTop + _parent._parent.PlotArea.Height + (_parent._parent.View3D ? _parent._parent.AxisX.MajorTicks.TickLength : 0);
-            Double Depth = _parent._parent.AxisX.MajorTicks.TickLength;
-
-            if (_parent._parent.View3D)
-            {
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    top = ((Double)this.GetValue(TopProperty) * 2 + this.Height) / 2 - _label.Height / 2;
-                    if (YValue >= 0)
-                    {
-                        left = (Double)this.GetValue(LeftProperty) + this.Width + Depth + offset;
-                    }
-                    else
-                    {
-                        left = (Double)this.GetValue(LeftProperty) - _label.Width - offset;
-                    }
-
-                    if ((left < plotLeft || (left + _label.Width) > plotRight) && recurCount < 2)
-                    {
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-                else
-                {
-                    if (this.Width < _label.Width && (_parent.RenderAs.ToLower().Contains("column")))
-                    {
-                        _label.RotateLabelVerticle();
-                    }
-
-                    left = ((Double)this.GetValue(LeftProperty) * 2 + Depth + this.Width) / 2 - _label.Width / 2;
-                    if (YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) - _label.Height - Depth - offset;
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + Height + offset;
-                    }
-                    if ((top < plotTop || (top + _label.Height) > plotBottom) && recurCount < 2)
-                    {
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-            }
-            else
-            {
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    top = (Double)GetValue(TopProperty) + this.Height / 2 - _label.Height / 2;
-                    if (YValue >= 0)
-                    {
-                        left = (Double)GetValue(LeftProperty) + this.Width + offset;
-                    }
-                    else
-                    {
-                        left = (Double)GetValue(LeftProperty) - _label.Width - offset;
-                    }
-                    if ((left < plotLeft || (left + _label.Width) > plotRight) && recurCount < 2)
-                    {
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-                else
-                {
-                    left = (Double)GetValue(LeftProperty) + this.Width / 2 - _label.Width / 2;
-                    if (YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) - _label.Height - offset;
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + this.Height + offset;
-                    }
-                    if ((top < plotTop || (top + _label.Height) > plotBottom) && recurCount < 2)
-                    {
-                        PositionLabelInside(_label, recurCount++);
-                    }
-                    else
-                    {
-                        _label.SetValue(LeftProperty, left);
-                        _label.SetValue(TopProperty, top);
-                    }
-                }
-            }
-        }
-
-
 
         private Double Percentage()
         {
@@ -1084,8 +903,6 @@ namespace Visifire.Charts
             }
             return percentage;
         }
-
-
 
         private String GetAxisLabelString()
         {
@@ -1595,6 +1412,18 @@ namespace Visifire.Charts
             set
             {
                 _href = value;
+                Uri ur = new Uri(_href, UriKind.RelativeOrAbsolute);
+                if (ur.IsAbsoluteUri)
+                {
+                    _href = ur.AbsoluteUri;
+                }
+                else
+                {
+                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
+                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
+                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
+                    _href = ub2.ToString();
+                }
             }
         }
 
@@ -1645,108 +1474,9 @@ namespace Visifire.Charts
             set
             {
                 _axisLabel = value;
-            }
-        }
-
-        #endregion Public Properties
-
-        #region Internal Properties
-
-        internal Int32 Index
-        {
-            get
-            {
-                return _index;
-            }
-            set
-            {
-                _index = value;
-            }
-        }
-
-        #endregion Internal Properties
-
-        #region Internal Methods
-        internal void ApplyEffects(int ZIndex)
-        {
-            
-            if (_parent.Bevel)
-            {
-                String renderType = _parent.RenderAs.ToLower();
-                List<Point> bevelPoints = new List<Point>();
-                switch (renderType)
-                {
-                    case "column":
-                    case "stackedcolumn100":
-                    case "stackedcolumn":
-
-                        if (this.Height > 10)
-                        {
-                            bevelPoints.Add(new Point(0, 0));
-                            bevelPoints.Add(new Point(Width, 0));
-                            bevelPoints.Add(new Point(Width - 6, 6));
-                            bevelPoints.Add(new Point(6, 6));
-                            CreateAndAddBevelPath(bevelPoints, "Bright", 90, ZIndex);
-                            bevelPoints.Clear();
-
-                            bevelPoints.Add(new Point(0, 0));
-                            bevelPoints.Add(new Point(5, 5));
-                            bevelPoints.Add(new Point(5, Height - 5));
-                            bevelPoints.Add(new Point(0, Height));
-                            CreateAndAddBevelPath(bevelPoints, "Medium", -80, ZIndex);
-                            bevelPoints.Clear();
-
-                            bevelPoints.Add(new Point(Width, 0));
-                            bevelPoints.Add(new Point(Width, Height));
-                            bevelPoints.Add(new Point(Width - 5, Height - 5));
-                            bevelPoints.Add(new Point(Width - 5, 5));
-                            CreateAndAddBevelPath(bevelPoints, "Medium", -100, ZIndex);
-                            bevelPoints.Clear();
-                        }
-                        break;
-                    case "bar":
-                    case "stackedbar100":
-                    case "stackedbar":
-                        
-                        if (this.Width > 10)
-                        {
-                            bevelPoints.Add(new Point(0, 0));
-                            bevelPoints.Add(new Point(Width, 0));
-                            bevelPoints.Add(new Point(Width - 4, 4));
-                            bevelPoints.Add(new Point(4, 4));
-                            CreateAndAddBevelPath(bevelPoints, "Bright", 90, ZIndex);
-                            bevelPoints.Clear();
-
-
-                            bevelPoints.Add(new Point(0, 0));
-                            bevelPoints.Add(new Point(5, 5));
-                            bevelPoints.Add(new Point(5, Height - 5));
-                            bevelPoints.Add(new Point(0, Height));
-                            CreateAndAddBevelPath(bevelPoints, "Medium", -80, ZIndex);
-                            bevelPoints.Clear();
-
-                            bevelPoints.Add(new Point(Width, 0));
-                            bevelPoints.Add(new Point(Width, Height));
-                            bevelPoints.Add(new Point(Width - 5, Height - 5));
-                            bevelPoints.Add(new Point(Width - 5, 5));
-                            CreateAndAddBevelPath(bevelPoints, "Medium", -100, ZIndex);
-                            bevelPoints.Clear();
-                        }
-                        break;
-                    case "area":
-                    case "stackedarea":
-                    case "stackedarea100":
-                        String[] type2 = { "Bright", "Medium", "Dark", "Medium" };
-                        Double[] length2 = { 6, 6, 0, 6 };
-                        Double[] Angle2 = { 90, 180, -90, 0 };
-                        ApplyBevel(type2,length2,Angle2,ZIndex);
-                        break;
-                }
                 
             }
         }
-        #endregion Internal Methods
-
         #region Border Properties
         public override Double BorderThickness
         {
@@ -1831,7 +1561,7 @@ namespace Visifire.Charts
         }
 
 
-        
+
         public override String Color
         {
             set
@@ -1873,7 +1603,7 @@ namespace Visifire.Charts
                 _background = imgBrush;
             }
         }
-        public virtual Stretch ImageStretch
+        public override Stretch ImageStretch
         {
             get
             {
@@ -1892,6 +1622,118 @@ namespace Visifire.Charts
             }
         }
         #endregion
+        #endregion Public Properties
+
+        #region Public Events
+
+        public new event MouseButtonEventHandler MouseLeftButtonUp;
+
+        public new event MouseButtonEventHandler MouseLeftButtonDown;
+
+        public new event MouseEventHandler MouseMove;
+
+        public new event MouseEventHandler MouseLeave;
+
+        public new event MouseEventHandler MouseEnter;
+
+        #endregion Public Events
+      
+        #region Internal Properties
+
+        internal Int32 Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                _index = value;
+            }
+        }
+
+        #endregion Internal Properties
+
+        #region Internal Methods
+        internal void ApplyEffects(int ZIndex)
+        {
+            
+            if (_parent.Bevel)
+            {
+                String renderType = _parent.RenderAs.ToLower();
+                List<Point> bevelPoints = new List<Point>();
+                switch (renderType)
+                {
+                    case "column":
+                    case "stackedcolumn100":
+                    case "stackedcolumn":
+
+                        if (this.Height > 7 && this.Width > 10)
+                        {
+                            bevelPoints.Add(new Point(0, 0));
+                            bevelPoints.Add(new Point(Width, 0));
+                            bevelPoints.Add(new Point(Width - 6, 6));
+                            bevelPoints.Add(new Point(6, 6));
+                            CreateAndAddBevelPath(bevelPoints, "Bright", 90, ZIndex);
+                            bevelPoints.Clear();
+
+                            bevelPoints.Add(new Point(0, 0));
+                            bevelPoints.Add(new Point(5, 5));
+                            bevelPoints.Add(new Point(5, Height - 5));
+                            bevelPoints.Add(new Point(0, Height));
+                            CreateAndAddBevelPath(bevelPoints, "Medium", -80, ZIndex);
+                            bevelPoints.Clear();
+
+                            bevelPoints.Add(new Point(Width, 0));
+                            bevelPoints.Add(new Point(Width, Height));
+                            bevelPoints.Add(new Point(Width - 5, Height - 5));
+                            bevelPoints.Add(new Point(Width - 5, 5));
+                            CreateAndAddBevelPath(bevelPoints, "Medium", -100, ZIndex);
+                            bevelPoints.Clear();
+                        }
+                        break;
+                    case "bar":
+                    case "stackedbar100":
+                    case "stackedbar":
+                        
+                        if (this.Width > 10 && this.Height > 7)
+                        {
+                            bevelPoints.Add(new Point(0, 0));
+                            bevelPoints.Add(new Point(Width, 0));
+                            bevelPoints.Add(new Point(Width - 4, 4));
+                            bevelPoints.Add(new Point(4, 4));
+                            CreateAndAddBevelPath(bevelPoints, "Bright", 90, ZIndex);
+                            bevelPoints.Clear();
+
+
+                            bevelPoints.Add(new Point(0, 0));
+                            bevelPoints.Add(new Point(5, 5));
+                            bevelPoints.Add(new Point(5, Height - 5));
+                            bevelPoints.Add(new Point(0, Height));
+                            CreateAndAddBevelPath(bevelPoints, "Medium", -80, ZIndex);
+                            bevelPoints.Clear();
+
+                            bevelPoints.Add(new Point(Width, 0));
+                            bevelPoints.Add(new Point(Width, Height));
+                            bevelPoints.Add(new Point(Width - 5, Height - 5));
+                            bevelPoints.Add(new Point(Width - 5, 5));
+                            CreateAndAddBevelPath(bevelPoints, "Medium", -100, ZIndex);
+                            bevelPoints.Clear();
+                        }
+                        break;
+                    case "area":
+                    case "stackedarea":
+                    case "stackedarea100":
+                        String[] type2 = { "Bright", "Medium", "Dark", "Medium" };
+                        Double[] length2 = { 6, 6, 0, 6 };
+                        Double[] Angle2 = { 90, 180, -90, 0 };
+                        ApplyBevel(type2,length2,Angle2,ZIndex);
+                        break;
+                }
+                
+            }
+        }
+        #endregion Internal Methods
 
         #region Data
         private Double _xValue;
@@ -1940,7 +1782,6 @@ namespace Visifire.Charts
         private Polyline _labelLine;
 
         private String _toolTipText;
-
 
         private Brush _background;
         private String _href;

@@ -81,7 +81,7 @@ namespace Visifire.Charts
 
         #region Marker Properties
 
-        public String Style
+        public new String Style
         {
             get
             {
