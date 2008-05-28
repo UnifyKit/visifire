@@ -35,11 +35,13 @@ namespace Visifire.Commons
     {
     
         #region Public Methods
+
         public LogoBase()
         {
             
             
         }
+
         public override String TextParser(String unParsed)
         {
             if (String.IsNullOrEmpty(unParsed)) return "";
@@ -56,9 +58,11 @@ namespace Visifire.Commons
         {
             base.Render();
         }
+
         #endregion Public Methods
 
         #region Public Properties
+
         public Double Left
         {
             get
@@ -115,8 +119,8 @@ namespace Visifire.Commons
                 _source = value;
                 _timer.Start();
                 String URL = System.Windows.Browser.HtmlPage.Document.DocumentUri.OriginalString;
-                string[] parts = URL.Split('/');
-                string newpath = URL.Substring(0, URL.IndexOf(parts[parts.Length - 1])) + _source;
+                String[] parts = URL.Split('/');
+                String newpath = URL.Substring(0, URL.IndexOf(parts[parts.Length - 1])) + _source;
                 
 
                 System.Windows.Controls.Image img = new Image();
@@ -132,7 +136,7 @@ namespace Visifire.Commons
         {
             get
             {
-                if ((int)GetValue(ZIndexProperty) > 1) return true;
+                if ((Int32)GetValue(ZIndexProperty) > 1) return true;
                 return false;
             }
             set
@@ -143,9 +147,11 @@ namespace Visifire.Commons
                     SetValue(ZIndexProperty, 1);
             }
         }
+
         #endregion Public Properties
 
         #region Private Methods
+
         private void _timer_Tick(object sender, EventArgs e)
         {
             if (_image.DownloadProgress == 1)
@@ -181,6 +187,7 @@ namespace Visifire.Commons
             _image.Opacity = 0;
             _source = "";
         }
+
         #endregion Private Methods
         
         #region Data

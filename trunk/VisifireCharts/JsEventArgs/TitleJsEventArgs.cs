@@ -18,12 +18,39 @@
  
 */
 
-
 using System;
-using System.Windows.Documents;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Browser;
+using Visifire.Charts;
 
-
-namespace Visifire.Charts
+namespace VisifireCharts
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    /// <summary>
+    /// JavaScript event arguments for Title
+    /// </summary>
+    [ScriptableType]
+    public class TitleJsEventArgs : JsEventArgs
+    {
+        #region Public Method
+
+        public TitleJsEventArgs(Title title, EventArgs e, String eventName)
+            : base(title.Parent as Chart, title, e, eventName)
+        {
+            Name = title.Name;
+            Text = title.Text;
+            Index = title.Index;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public String Name { get; set; }
+        public Int32 Index { get; set; }
+
+        public String Text { get; set; }
+
+        #endregion
+    }
 }

@@ -28,12 +28,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Visifire.Commons;
+
 namespace Visifire.Commons
 {
     public abstract class Container:VisualObject
     {
         #region Public Properties
+
         public Double Padding
         {
             get
@@ -70,6 +71,17 @@ namespace Visifire.Commons
             set;
         }
 
+        public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> AppliedTheme
+        {
+            get
+            {
+                return _appliedTheme;
+            }
+            set
+            {
+                _appliedTheme = value;
+            }
+        }
 
         #endregion Public Properties
 
@@ -78,7 +90,8 @@ namespace Visifire.Commons
 
         public Themes Themes = new Themes();
         private String _theme;
-        public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> AppliedTheme;
+        public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> _appliedTheme;
+
         #endregion Data
     }
 }

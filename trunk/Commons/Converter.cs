@@ -21,19 +21,15 @@
 
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
+using System.Reflection;
 
 namespace Visifire.Commons
 {
     public static class Converter
     {
         #region Static Methods
+
         public static DoubleCollection ArrayToCollection(Double[] arr)
         {
             DoubleCollection doubleCollection = new DoubleCollection();
@@ -56,47 +52,31 @@ namespace Visifire.Commons
             return pointCollection;
         }
 
-        public static FontWeight StringToFontWeight(String fws)
+        public static FontWeight StringToFontWeight(String fontWeightString)
         {
-            switch (fws.ToLower())
-            {
-                case "black":
-                    return FontWeights.Black;
-                case "bold":
-                    return FontWeights.Bold;
-                case "extrablack":
-                    return FontWeights.ExtraBlack;
-                case "extrabold":
-                    return FontWeights.ExtraBold;
-                case "extralight":
-                    return FontWeights.ExtraLight;
-                case "light":
-                    return FontWeights.Light;
-                case "medium":
-                    return FontWeights.Medium;
-                case "normal":
-                    return FontWeights.Normal;
-                case "semibold":
-                    return FontWeights.SemiBold;
-                case "thin":
-                    return FontWeights.Thin;
-                default:
-                    return FontWeights.Normal;
-            }
+
+            PropertyInfo fontProperty = typeof(FontWeights).GetProperty(fontWeightString);
+            FontWeightMethod fontWeightMethod = (FontWeightMethod)Delegate.CreateDelegate(typeof(FontWeightMethod), fontProperty.GetGetMethod());
+            return fontWeightMethod();
+
         }
 
-        public static FontStyle StringToFontStyle(String fss)
+        public static FontStyle StringToFontStyle(String fontStyleString)
         {
-            switch (fss.ToLower())
-            {
-                case "normal":
-                    return FontStyles.Normal;
-                case "italic":
-                    return FontStyles.Italic;
-                default:
-                    return FontStyles.Normal;
-            }
+            PropertyInfo fontProperty = typeof(FontStyles).GetProperty(fontStyleString);
+            FontStyleMethod fontStyleMethod = (FontStyleMethod)Delegate.CreateDelegate(typeof(FontStyleMethod), fontProperty.GetGetMethod());
+            return fontStyleMethod();
         }
+
         #endregion Static Methods
+
+        #region Delegate
+
+        private delegate FontWeight FontWeightMethod();
+
+        private delegate FontStyle FontStyleMethod();
+
+        #endregion Delegate
+
     }
 }

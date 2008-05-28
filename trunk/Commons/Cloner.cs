@@ -56,7 +56,7 @@ namespace Visifire.Commons
                     case "LinearGradientBrush":
                         LinearGradientBrush lgb = (LinearGradientBrush)brush;
                         LinearGradientBrush lgb2 = new LinearGradientBrush();
-
+                        
                         lgb2.StartPoint = lgb.StartPoint;
                         lgb2.EndPoint = lgb.EndPoint;
                         GradientStopCollection gsc = new GradientStopCollection();
@@ -213,6 +213,7 @@ namespace Visifire.Commons
             return transform;
 
         }
+
         #endregion Static Methods
     }
 }

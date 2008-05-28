@@ -332,34 +332,7 @@ namespace Visifire.Charts
         #endregion Internal Methods
 
         #region Private Methods
-
         
-        
-        /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
         /// <summary>
         /// Validate Parent element and assign it to _parent.
         /// Parent element should be a Chart element. Else throw an exception.
@@ -372,8 +345,6 @@ namespace Visifire.Charts
             else
                 throw new Exception(this + "Parent should be a Chart");
         }
-
-        
 
         #endregion Private Methods
 

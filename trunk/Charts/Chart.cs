@@ -22,14 +22,11 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Reflection;
 using Visifire.Commons;
 using System.Windows.Markup;
 using System.Globalization;
@@ -54,10 +51,16 @@ namespace Visifire.Charts
 
             Render();
 
+            SetTags();
+
+            // Svae hit test for the chart
+            _chartHitTestState = this.IsHitTestVisible;
 
             if (AnimationEnabled)
             {
                 GenerateAnimationData();
+
+                this.IsHitTestVisible = false;
 
                 foreach (Storyboard sb in animation)
                 {
@@ -67,7 +70,7 @@ namespace Visifire.Charts
             }
             else
             {
-                ApplyFinalDiplaySettings();
+                ApplyPostAnimationSettings();
             }
             
         }
@@ -84,194 +87,14 @@ namespace Visifire.Charts
 
         public override void Init()
         {
-            System.Windows.Interop.SilverlightHost silverlightHost = new System.Windows.Interop.SilverlightHost();
 
-
-            // This is done to apply background from themes
-            if(GetFromTheme("Background") != null && GetCurrentBackground()== null)
-                Background = GetFromTheme("Background") as Brush;
-
-
-            SetName();
-
-            if (Double.IsNaN(this.Width))
-            {
-                if (Double.IsNaN(((FrameworkElement)Parent).Width))
-                    throw new Exception("Specify the width of the Chart element.");
-                else
-                    this.Width = ((FrameworkElement)Parent).Width;
-
-            }
-
-
-
-            if (Double.IsNaN(this.Height))
-            {
-                if (Double.IsNaN(((FrameworkElement)Parent).Height))
-                    throw new Exception("Specify the height of the Chart element.");
-                else
-                    this.Height = ((FrameworkElement)Parent).Height;
-            }
-
-            ApplyEffects();
-
-
-            if (BorderColor == null)
-            {
-                if (Parser.GetBrushIntensity(Background) > 0.5)
-                    BorderColor = new SolidColorBrush(Colors.Black);
-                else
-                    BorderColor = new SolidColorBrush(Colors.LightGray);
-            }
-            this.ApplyBorder();
-
-
-            CreateReferences();
-
-            if (DataSeries.Count == 0)
-            {
-                DataSeries ds = new DataSeries();
-                this.DataSeries.Add(ds);
-                this.Children.Add(ds);
-            }
-           
-
-            ToolTip.Init();
-
-
-            // Initialize inner bounds rectangle
-
-            _innerTitleBounds = new Rect(Padding, Padding, Width - 2 * Padding, Height - 2 * Padding);
-
-            if (_titles.Count != 0)
-            {
-                foreach (Title child in _titles)
-                    child.Init();
-            }
-
-            if (_legends.Count != 0)
-            {
-                foreach (Legend child in _legends)
-                    child.Init();
-            }
-
-            foreach (DataSeries child in _dataSeries)
-            {
-                if (String.IsNullOrEmpty(child.Legend) && _legends.Count != 0)
-                    child.Legend = _legends[0].Name;
-                child.Init();
-
-            }
-
-
-            GeneratePlotDetails();
-
-
-
-            GenerateIndexTable();
-
-
-            if (_legends.Count != 0)
-            {
-                foreach (Legend child in _legends)
-                {
-                    foreach (DataSeries ds in _dataSeries)
-                    {
-                        if (child.Name == ds.Legend)
-                        {
-                            child.SeriesCount += 1;
-                        }
-                    }
-                    if (child.SeriesCount == 0) child.Enabled = false;
-                }
-            }
-
-            //remove legends which are not called by any dataseries
-            for (int i = 0; i < _legends.Count; i++)
-            {
-                if (!_legends[i].Enabled) _legends.RemoveAt(i);
-            }
-
-
-
-            PlotArea.Init();
-
-            if(_logo != null)
-                _logo.Init();
-
-            if (PlotDetails.AxisOrientation != AxisOrientation.Pie)
-            {
-
-                AxisX.Init();
-                AxisX.FixTitleSize();
-
-
-
-                AxisY.Init();
-                AxisY.FixTitleSize();
-
-            }
-
-            if (_titles.Count != 0)
-            {
-                foreach (Title child in _titles)
-                {
-
-
-                    if (child.DockInsidePlotArea == false)
-                    {
-                        child.SetWidth();
-                        child.SetHeight();
-                        child.SetLeft();
-                        child.SetTop();
-                    }
-
-                }
-            }
-
-
-            // Copy titles inner bounds to inner bounds to be used by legend
-            if (Padding <= 4)
-            {
-                _innerBounds = new Rect(_innerTitleBounds.X + 5, _innerTitleBounds.Y + 10, _innerTitleBounds.Width - 10, _innerTitleBounds.Height - 10);
-                Padding = 5;
-            }
-            else
-            {
-                _innerBounds = new Rect(_innerTitleBounds.X, _innerTitleBounds.Y, _innerTitleBounds.Width, _innerTitleBounds.Height);
-            }
-
-
-
-            if (_legends.Count != 0)
-            {
-                Rect temp = new Rect();
-                for (int i = 0; i < _legends.Count; i++)
-                {
-                    if (_legends[i].DockInsidePlotArea == false)
-                    {
-                        _legends[i].SetMaxWidthHeight(_innerTitleBounds, Padding);
-                        temp = _innerBounds;
-                        _legends[i].SetLeft();
-                        _legends[i].SetWidth();
-                        _legends[i].SetHeight();
-                        _legends[i].MarkLegends();
-                        if (!_legends[i].EntriesPresent)
-                        {
-                            _legends.RemoveAt(i);
-                            _innerBounds = temp;
-                            continue;
-                        }
-                        _legends[i].SetTop();
-                        _legends[i].SetLeft();
-                        _legends[i].ApplyEffects();
-                    }
-                }
-            }
-
-
+            InitialCommonInitSteps();
+             
             if (PlotDetails.AxisOrientation == AxisOrientation.Column )
             {
+                if (_innerBounds.X < AxisX.MajorTicks.TickLength && !AxisY.Enabled)
+                    _innerBounds.X = AxisX.MajorTicks.TickLength;
+
                 PlotArea.SetTop();
                 AxisY.SetTop();
 
@@ -290,8 +113,6 @@ namespace Visifire.Charts
                 PlotArea.SetLeft();
                 PlotArea.SetHeight();
                 PlotArea.SetWidth();
-
-
 
                 AxisY.SetHeight();
                 AxisY.AxisLabels.SetHeight();
@@ -325,7 +146,7 @@ namespace Visifire.Charts
                 AxisX.SetWidth();
                 AxisX.AxisLabels.SetWidth();
 
-                //test
+
                 AxisX.AxisLabels.PositionLabels();
                 AxisX.AxisLabels.SetHeight();
                 AxisX.SetHeight();
@@ -333,7 +154,7 @@ namespace Visifire.Charts
                 PlotArea.SetHeight();
                 AxisY.SetHeight();
                 AxisY.AxisLabels.PositionLabels();
-                //test
+
 
                 AxisX.MajorGrids.SetWidth();
                 AxisY.MajorGrids.SetHeight();
@@ -348,8 +169,6 @@ namespace Visifire.Charts
                 AxisX.MajorTicks.SetHeight();
                 AxisX.MajorTicks.SetTop();
 
-
-
                 AxisY.MajorTicks.SetLeft();
                 AxisY.MajorTicks.SetHeight();
                 AxisY.MajorTicks.SetWidth();
@@ -358,67 +177,33 @@ namespace Visifire.Charts
                 AxisY.MajorTicks.DrawTicks();
                 AxisX.MajorTicks.DrawTicks();
 
-                //AxisX.AxisLabels.PositionLabels();
-                //AxisY.AxisLabels.PositionLabels();
-
-
                 AxisY.DrawAxisLine();
                 AxisX.DrawAxisLine();
 
                 AxisX.AxisLabels.SetTop();
                 AxisY.AxisLabels.SetLeft();
 
+                // Positions titles that have to be placed outside PlotArea
+                _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
 
 
-                if (_titles.Count != 0)
-                {
-                    foreach (Title child in _titles)
-                    {
+                // Positions legends that have to be placed outside PlotArea
+                _legends.ForEach(delegate(Legend child) 
+                { 
+                    child.PlaceInsidePlotArea(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding); 
+                });
 
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetWidth();
-                            child.SetHeight();
-                            child.SetLeft();
-                            child.SetTop();
-                        }
-                    }
-                }
-
-                if (_legends.Count != 0)
-                {
-                    foreach (Legend child in _legends)
-                    {
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetMaxWidthHeight(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding);
-                            child.MarkLegends();
-                            child.SetLeft();
-
-                            child.SetTop();
-                            child.ApplyEffects();
-                        }
-                    }
-                }
-
-
+                //Removes unused legends
+                RemoveUnMarkedLegends();
 
                 AxisX.PlaceTitle();
                 AxisY.PlaceTitle();
 
                 PlotArea.ApplyBorder();
 
-
-
-                foreach (TrendLine trendLine in _trendLines)
-                {
-
-                    trendLine.Init();
-
-
-                    trendLine.SetDimensions();
-                    trendLine.AttachToolTip();
-                }
+                // Position trend lines
+                _trendLines.ForEach(delegate(TrendLine trendLine) { trendLine.InitAndDraw(); });
+                
             }
 
             else if (PlotDetails.AxisOrientation == AxisOrientation.Bar)
@@ -519,56 +304,27 @@ namespace Visifire.Charts
                 AxisX.AxisLabels.SetLeft();
 
 
+                // Positions titles that have to be placed outside PlotArea
+                _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
 
-                if (_titles.Count != 0)
+
+                // Positions legends that have to be placed outside PlotArea
+                _legends.ForEach(delegate(Legend child)
                 {
+                    child.PlaceInsidePlotArea(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding);
+                });
 
-                    foreach (Title child in _titles)
-                    {
-
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetWidth();
-                            child.SetHeight();
-                            child.SetLeft();
-                            child.SetTop();
-                        }
-                    }
-                }
-
-                if (_legends.Count != 0)
-                {
-                    foreach (Legend child in _legends)
-                    {
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetMaxWidthHeight(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding);
-                            child.MarkLegends();
-                            child.SetLeft();
-
-                            child.SetTop();
-                            child.ApplyEffects();
-                        }
-                    }
-                }
-
-
+                //Removes unused legends
+                RemoveUnMarkedLegends();
 
                 AxisX.PlaceTitle();
                 AxisY.PlaceTitle();
 
-
                 PlotArea.ApplyBorder();
 
+                // Position trend lines
+                _trendLines.ForEach(delegate(TrendLine trendLine) { trendLine.InitAndDraw(); });
 
-
-                foreach (TrendLine trendLine in _trendLines)
-                {
-                    trendLine.Init();
-
-                    trendLine.SetDimensions();
-                    trendLine.AttachToolTip();
-                }
             }
             else if (PlotDetails.AxisOrientation == AxisOrientation.Pie)
             {
@@ -576,62 +332,36 @@ namespace Visifire.Charts
                 PlotArea.SetHeight();
                 PlotArea.SetLeft();
                 PlotArea.SetWidth();
+
                 AxisX.SetValue(VisibilityProperty, Visibility.Collapsed);
                 AxisY.SetValue(VisibilityProperty, Visibility.Collapsed);
-                if (_titles.Count != 0)
+
+                // Positions titles that have to be placed outside PlotArea
+                _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
+
+
+                // Positions legends that have to be placed outside PlotArea
+                _legends.ForEach(delegate(Legend child)
                 {
+                    child.PlaceInsidePlotArea(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding);
+                });
 
-                    foreach (Title child in _titles)
-                    {
+                //Removes unused legends
+                RemoveUnMarkedLegends();
 
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetWidth();
-                            child.SetHeight();
-                            child.SetLeft();
-                            child.SetTop();
-                        }
-                    }
-                }
-
-                if (_legends.Count != 0)
-                {
-                    foreach (Legend child in _legends)
-                    {
-                        if (child.DockInsidePlotArea == true)
-                        {
-                            child.SetMaxWidthHeight(new Rect((Double)PlotArea.GetValue(LeftProperty), (Double)PlotArea.GetValue(TopProperty), PlotArea.Width, PlotArea.Height), Padding);
-                            child.MarkLegends();
-                            child.SetLeft();
-
-                            child.SetTop();
-                            child.ApplyEffects();
-                        }
-                    }
-                }
             }
 
 
             //Apply lighting bevel and other such effects to plotarea
             PlotArea.ApplyEffects();
 
-            foreach (DataSeries ds in _dataSeries)
-            {
-                ds.SetLeft();
-                ds.SetTop();
-                ds.SetWidth();
-                ds.SetHeight();
-            }
-
-
-           
+            _dataSeries.ForEach(delegate(Visifire.Charts.DataSeries child) { child.PlaceDataSeries(); });
 
 
         }
 
         public override void Render()
         {
-            this.Children.Add(_borderRectangle);
 
             if (_logo != null)
                 _logo.Render();
@@ -669,16 +399,7 @@ namespace Visifire.Charts
                     ds.PlotData();
                 }
             }
-            if (View3D && PlotDetails.AxisOrientation == AxisOrientation.Bar)
-            {
-
-                DrawZeroPlane(true, 3, 0);
-            }
-            else if (View3D && PlotDetails.AxisOrientation == AxisOrientation.Column)
-            {
-
-                DrawZeroPlane(false, 3, 0);
-            }
+            
             if (OnLoadedEvent != null)
             {
                 OnLoadedEvent(this, null);
@@ -873,49 +594,46 @@ namespace Visifire.Charts
                 return _toolTip;
             }
         }
-
+        
         #endregion Public Properties
 
         #region Public Events
+
         public EventHandler OnLoadedEvent;
+
         #endregion Public Events
 
         #region Protected Methods
-
-        
-
-        /// <summary>
-        /// Applies visual effects like lighting and shadow and bevel
-        /// </summary>
-        private void ApplyEffects()
+        protected override void SetDefaults()
         {
-            if (ShadowEnabled)
-            {
-                this.Width -= 4;
-                this.Height -= 4;
-                ApplyShadow();
-            }
-            if (LightingEnabled)
-            {
-                ApplyLighting();
-            }
-            if (Bevel)
-            {
-                
-                String[] type = { "Bright", "Medium", "Dark", "Medium" };
-                Double[] length = { 10, 10, 10, 10 };
-                Double[] Angle = { 90, 180, -90, 0 };
-                ApplyBevel(type, length, Angle,0);
+            base.SetDefaults();
 
-            }
+            _dataSeries = new System.Collections.Generic.List<DataSeries>();
+            _trendLines = new System.Collections.Generic.List<TrendLine>();
+            _titles = new System.Collections.Generic.List<Title>();
+            _legends = new System.Collections.Generic.List<Legend>();
+            _colorSets = new System.Collections.Generic.List<ColorSet>();
+
+            _plotDetails = new PlotDetails();
+            _view3D = "Undefined";
+            BorderThickness = Double.NaN;
+            _animationDuration = Double.NaN;
+            AnimationEnabled = true;
+            if (_label != null) _label.FontSize = Double.NaN;
+            ColorSet = "";
+            ColorSetReference = null;
+            this.SetValue(ZIndexProperty, 1);
+            _animationEnabled = "Undefined";
+            _uniqueColors = "Undefined";
+            Theme = "Theme1";
+
+            Watermark = true;
         }
-
-        
         #endregion Protected Methods
 
         #region Internal Properties
 
-        internal int TotalSiblings
+        internal Int32 TotalSiblings
         {
             get;
             set;
@@ -927,7 +645,7 @@ namespace Visifire.Charts
             set;
         }
 
-        internal System.Collections.Generic.List<DataSeries> DataSeries
+        public System.Collections.Generic.List<DataSeries> DataSeries
         {
             get
             {
@@ -935,7 +653,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal System.Collections.Generic.List<Title> Titles
+        public System.Collections.Generic.List<Title> Titles
         {
             get
             {
@@ -943,7 +661,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal System.Collections.Generic.List<Legend> Legends
+        public System.Collections.Generic.List<Legend> Legends
         {
             get
             {
@@ -985,7 +703,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal AxisX AxisX
+        public AxisX AxisX
         {
             get
             {
@@ -993,7 +711,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal AxisY AxisY
+        public AxisY AxisY
         {
             get
             {
@@ -1086,8 +804,8 @@ namespace Visifire.Charts
 
         private void ApplyDoubleAnimation(DependencyObject target, String targetProperty, Double from, Double to, Double duration, Double beginTime)
         {
-            TimeSpan durationTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * duration));
-            TimeSpan beginTimeSpan = new TimeSpan(0, 0, 0, 0, (int)(1000 * beginTime));
+            TimeSpan durationTimeSpan = new TimeSpan(0, 0, 0, 0, (Int32)(1000 * duration));
+            TimeSpan beginTimeSpan = new TimeSpan(0, 0, 0, 0, (Int32)(1000 * beginTime));
             
             Storyboard storyboard = new Storyboard();
             DoubleAnimation doubleAnimation = new DoubleAnimation();
@@ -1110,9 +828,9 @@ namespace Visifire.Charts
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove(storyboard);
+                this.Resources.Remove(sender as Storyboard);
                 _storyboardEndCounter++;
-                ApplyFinalDiplaySettings();
+                ApplyPostAnimationSettings();
             };
 
             animation.Add(storyboard);
@@ -1131,26 +849,24 @@ namespace Visifire.Charts
 
             Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
 
-            for (int i = 0; i < valueSet.Length; i++)
+            for (Int32 i = 0; i < valueSet.Length; i++)
             {
                 SplineDoubleKeyFrame splineKeyframe = new SplineDoubleKeyFrame();
 
                 splineKeyframe.Value = valueSet[i];
 
-                splineKeyframe.KeyTime = TimeSpan.FromMilliseconds((int)(1000 * (timeSet[i] * duration + beginTime)));
+                splineKeyframe.KeyTime = TimeSpan.FromMilliseconds((Int32)(1000 * (timeSet[i] * duration + beginTime)));
 
                 KeySpline Spline = new KeySpline();
-
-                Spline = new KeySpline();
 
                 if (i % 2 == 0)
                 {
                     Spline.ControlPoint1 = new Point(0, 0);
-                    Spline.ControlPoint2 = new Point(0.75, 1);
+                    Spline.ControlPoint2 = new Point(0.25, 1);
                 }
                 else
                 {
-                    Spline.ControlPoint1 = new Point(0.25, 0);
+                    Spline.ControlPoint1 = new Point(0.75, 0);
                     Spline.ControlPoint2 = new Point(1, 1);
                 }
                 splineKeyframe.KeySpline = Spline;
@@ -1161,32 +877,63 @@ namespace Visifire.Charts
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove(storyboard);
+                this.Resources.Remove(sender as Storyboard);
                 _storyboardEndCounter++;
-                ApplyFinalDiplaySettings();
+                ApplyPostAnimationSettings();
             };
 
             animation.Add(storyboard);
         }
 
-        private void ApplyFinalDiplaySettings()
+        /// <summary>
+        /// Applies visual effects like lighting and shadow and bevel
+        /// </summary>
+        private void ApplyEffects()
         {
-            if (_plotAreaBorder != null)
+            if (ShadowEnabled)
             {
-                if (AnimationEnabled)
+                this.Width -= 4;
+                this.Height -= 4;
+                ApplyShadow();
+            }
+            if (LightingEnabled)
+            {
+                ApplyLighting();
+            }
+            if (Bevel)
+            {
+
+                String[] type = { "Bright", "Medium", "Dark", "Medium" };
+                Double[] length = { 10, 10, 10, 10 };
+                Double[] Angle = { 90, 180, -90, 0 };
+                ApplyBevel(type, length, Angle, 0);
+
+            }
+        }
+
+        private void PostAnimationSettings()
+        {
+            if (_plotAreaBorder != null) _plotAreaBorder.Opacity = _plotArea.Opacity;
+
+            //Restore Hit test state
+            this.IsHitTestVisible = _chartHitTestState;
+        }
+
+        private void ApplyPostAnimationSettings()
+        {
+
+            if (AnimationEnabled)
+            {
+                if (_storyboardEndCounter == animation.Count)
                 {
-                    if (_storyboardEndCounter == animation.Count)
-                    {
-                        _plotAreaBorder.Opacity = _plotArea.Opacity;
-                    }
-                }
-                else
-                {
-                    _plotAreaBorder.Opacity = _plotArea.Opacity;
+                    PostAnimationSettings();
                 }
             }
-
-            
+            else
+            {
+                PostAnimationSettings();
+            }
+   
         }
 
         private Storyboard CreateStoryboard(String storyboard)
@@ -1198,39 +945,76 @@ namespace Visifire.Charts
             {
                 this.Resources.Remove(sb);
                 _storyboardEndCounter++;
-                ApplyFinalDiplaySettings();
+                ApplyPostAnimationSettings();
             };
             return sb;
         }
 
-        private void GenerateAnimationData()
+        private void AnimationType1(Double initialTime)
         {
-   
-            int i = 0;
-            System.Collections.Generic.List<Double> framesetScaleY;
-            System.Collections.Generic.List<Double> framesetTime;
-            ScaleTransform st;
-            String animationTypeSelected = "Type1";
 
-            if (AnimationType != "Undefined" && !String.IsNullOrEmpty(AnimationType))
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
             {
-                animationTypeSelected = AnimationType;
+                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
+                AxisX.Opacity = 0;
+                AxisY.Opacity = 0;
+                AxisY.MajorGrids.Opacity = 0;
+                PlotArea.Opacity = 0;
             }
 
-            framesetTime = new System.Collections.Generic.List<Double>();
 
-            if (AnimationDuration > 0 && AnimationDuration < 0.6) AnimationDuration = 0.6;
+            if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
+            {
+                for (Int32 i = 0; i < Surface3D.Length; i++)
+                {
+                    if (Surface3D[i] == null) continue;
+                    Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
+                    ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, initialTime);
+                    Surface3D[i].Opacity = 0;
+                }
+                for (Int32 i = 0; i < AreaLine3D.Count; i++)
+                {
+                    if (AreaLine3D[i] == null) continue;
+                    AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
+                    ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, initialTime);
+                    AreaLine3D[i].Opacity = 0;
+                }
+                foreach (DataSeries child in DataSeries)
+                {
+                    if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
+                    {
+                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
+                        child.Opacity = 0;
+                    }
+                }
+            }
+            else
+            {
+                Int32 i = 0;
+                foreach (DataSeries child in _dataSeries)
+                {
+                    if (DataSeries.Count > 2)
+                    {
+                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, initialTime);
+                    }
+                    else
+                    {
+                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime);
+                    }
+                    child.Opacity = 0;
+                    i++;
+                }
+            }
+        }
 
-            if (AnimationDuration <= 0) return;
+        private void AnimationType2(Double initialTime,Double initialShootup)
+        {
+            System.Collections.Generic.List<Double> framesetTime = new System.Collections.Generic.List<Double>();
+            System.Collections.Generic.List<Double>  framesetScaleY = new System.Collections.Generic.List<Double>();
 
-            Double initialTime = 600/(AnimationDuration * 1000);
-            Double initialShootup = ((Double)PlotArea.GetValue(TopProperty)+PlotArea.Height) / PlotArea.Height;
-            
-            AnimationDuration += initialTime;
-
-
-            framesetScaleY = new System.Collections.Generic.List<Double>();
-            
             framesetTime.Add(0);
             framesetTime.Add(initialTime);
             framesetTime.Add(initialTime + 0.2);
@@ -1250,862 +1034,826 @@ namespace Visifire.Charts
             framesetScaleY.Add(1 + skipSize / 16);
             framesetScaleY.Add(1);
 
+
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
+            {
+                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+            }
+
+
+            ScaleTransform st = new ScaleTransform();
+
+            if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
+            {
+
+                for (Int32 i = 0; i < Surface3D.Length; i++)
+                {
+                    if (Surface3D[i] == null) continue;
+                    st = new ScaleTransform();
+                    st.CenterX = Surface3D[i].Width / 2;
+                    st.CenterY = Surface3D[i].Height / 2;
+
+                    Surface3D[i].RenderTransform = st;
+                    Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
+                    st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
+
+                    ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                    ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, 0);
+
+                    Surface3D[i].Opacity = 0;
+                }
+                for (Int32 i = 0; i < AreaLine3D.Count; i++)
+                {
+                    if (AreaLine3D[i] == null) continue;
+                    st = new ScaleTransform();
+                    st.CenterX = AreaLine3D[i].Width / 2;
+                    st.CenterY = AreaLine3D[i].Height / 2;
+
+                    AreaLine3D[i].RenderTransform = st;
+                    AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
+                    st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
+
+                    ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                    ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, 0);
+                    AreaLine3D[i].Opacity = 0;
+                }
+                foreach (DataSeries child in DataSeries)
+                {
+                    if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
+                    {
+                        st = new ScaleTransform();
+                        st.CenterX = child.Width / 2;
+                        st.CenterY = child.Height / 2;
+                        child.RenderTransform = st;
+                        st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, 0);
+                        child.Opacity = 0;
+                    }
+                }
+            }
+            else
+            {
+                Int32 i = 0;
+                foreach (DataSeries child in _dataSeries)
+                {
+
+                    st.CenterX = child.Width / 2;
+                    st.CenterY = child.Height / 2;
+                    child.RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+
+                    ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime, framesetScaleY.ToArray(), framesetTime.ToArray());
+                    ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, 0, (Double)i / (Double)_dataSeries.Count + initialTime);
+                    child.Opacity = 0;
+                    st = new ScaleTransform();
+                    i++;
+                }
+
+            }
+
+        }
+
+        private void AnimationType3(Double initialTime, Double initialShootup)
+        {
+            System.Collections.Generic.List<Double> framesetTime = new System.Collections.Generic.List<Double>();
+            System.Collections.Generic.List<Double> framesetScaleY = new System.Collections.Generic.List<Double>();
+
+            framesetTime.Add(0);
+            framesetTime.Add(initialTime);
+            framesetTime.Add(initialTime + 0.2);
+            framesetTime.Add(initialTime + 0.36);
+            framesetTime.Add(initialTime + 0.52);
+            framesetTime.Add(initialTime + 0.68);
+            framesetTime.Add(initialTime + 0.84);
+            framesetTime.Add(initialTime + 1);
+
+            Double skipSize = initialShootup - 1;
+            framesetScaleY.Add(0);
+            framesetScaleY.Add(0);
+            framesetScaleY.Add(initialShootup);
+            framesetScaleY.Add(1 - skipSize / 2);
+            framesetScaleY.Add(1 + skipSize / 4);
+            framesetScaleY.Add(1 - skipSize / 8);
+            framesetScaleY.Add(1 + skipSize / 16);
+            framesetScaleY.Add(1);
+
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
+            {
+
+                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+            }
+
+
+
+
+            ScaleTransform st = new ScaleTransform();
+
+
+
+
+            if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
+            {
+                for (Int32 i = 0; i < Surface3D.Length; i++)
+                {
+
+                    if (Surface3D[i] == null) continue;
+                    Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
+                    st = new ScaleTransform();
+
+
+                    Surface3D[i].RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
+
+                    if (PlotDetails.AxisOrientation == AxisOrientation.Column)
+                    {
+
+                        Surface3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                        Surface3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                        Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                    }
+                    else
+                    {
+
+                        Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
+                        Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                    }
+                }
+                for (Int32 i = 0; i < AreaLine3D.Count; i++)
+                {
+
+                    if (AreaLine3D[i] == null) continue;
+                    AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
+                    st = new ScaleTransform();
+
+                    AreaLine3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                    AreaLine3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                    AreaLine3D[i].RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
+
+                    AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                    ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+
+                }
+                foreach (DataSeries child in DataSeries)
+                {
+                    if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
+                    {
+                        st = new ScaleTransform();
+                        st.CenterX = child.Width / 2;
+                        st.CenterY = child.Height / 2;
+                        child.RenderTransform = st;
+
+
+                        child.RenderTransformOrigin = new Point(0.5, 1);
+                        st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                }
+
+            }
+            else
+            {
+                Int32 i = 0;
+                foreach (DataSeries child in _dataSeries)
+                {
+
+                    child.RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+
+                    if (PlotDetails.AxisOrientation == AxisOrientation.Column || PlotDetails.AxisOrientation == AxisOrientation.Pie)
+                    {
+
+                        child.RenderTransformOrigin = new Point(0.5, 1);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                    else
+                    {
+
+                        child.RenderTransformOrigin = new Point(0, 0.5);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                    st = new ScaleTransform();
+                    i++;
+                }
+
+            }
+            
+        }
+
+        private void AnimationType4(Double initialTime)
+        {
+            Int32 i = 0;
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
+            {
+
+                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
+                AxisX.Opacity = 0;
+                AxisY.Opacity = 0;
+                AxisY.MajorGrids.Opacity = 0;
+                PlotArea.Opacity = 0;
+            }
+
+
+
+            System.Collections.Generic.List<Double> rx = new System.Collections.Generic.List<Double>();
+            System.Collections.Generic.List<Double> ry = new System.Collections.Generic.List<Double>();
+            Random rand = new Random();
+
+
+            foreach (DataSeries child in _dataSeries)
+            {
+                rx.Clear();
+                ry.Clear();
+                Double angle = Math.PI / Math.Abs(child.DataPoints.Count - 1);
+                for (i = 0; i < child.DataPoints.Count; i++)
+                {
+
+                    rx.Add(child.Width / 2 * Math.Cos(angle * (i + 1)));
+                    ry.Add(child.Height / 2 * Math.Sin(angle * (i + 1)));
+                }
+                if (View3D && PlotDetails.AxisOrientation == AxisOrientation.Pie)
+                {
+                    #region PieDoughnut3D animation
+
+                    foreach (DataPoint dp in child.DataPoints)
+                    {
+                        if (dp.LabelLine != null)
+                        {
+                            dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
+
+
+                            ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, initialTime, AnimationDuration);
+                            dp.LabelLine.Opacity = 0;
+                        }
+                        if (dp.Label != null)
+                        {
+                            dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
+
+
+                            ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, initialTime, AnimationDuration);
+                        }
+                    }
+                    i = 0;
+                    foreach (Path path in child._pies)
+                    {
+                        if (path == null) continue;
+                        path.SetValue(NameProperty, GetNewObjectName(path));
+
+                        ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                        path.Opacity = 0;
+                        i++;
+                    }
+                    i = 0;
+                    foreach (Path path in child._pieSides)
+                    {
+                        if (path == null) continue;
+                        path.SetValue(NameProperty, GetNewObjectName(path));
+
+                        ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                        path.Opacity = 0;
+                        i++;
+                    }
+                    i = 0;
+                    foreach (Path path in child._pieRight)
+                    {
+                        if (path == null) continue;
+                        path.SetValue(NameProperty, GetNewObjectName(path));
+
+                        ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                        path.Opacity = 0;
+                        i++;
+                    }
+                    i = 0;
+                    foreach (Path path in child._pieLeft)
+                    {
+                        if (path == null) continue;
+                        path.SetValue(NameProperty, GetNewObjectName(path));
+
+                        ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                        path.Opacity = 0;
+                        i++;
+                    }
+                    i = 0;
+                    if (child._doughnut != null)
+                        foreach (Path path in child._doughnut)
+                        {
+                            if (path == null) continue;
+                            path.SetValue(NameProperty, GetNewObjectName(path));
+
+                            ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
+                            path.Opacity = 0;
+                            i++;
+                        }
+                    if (child.auxSide1 != null)
+                    {
+
+                        child.auxSide1.SetValue(NameProperty, GetNewObjectName(child.auxSide1));
+
+                        ApplyDoubleAnimation(child.auxSide1, "Opacity", 0, child.auxSide1.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide1, "(Canvas.Left)", (Double)child.auxSide1.GetValue(LeftProperty) + rx[child.auxID1], (Double)child.auxSide1.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide1, "(Canvas.Top)", (Double)child.auxSide1.GetValue(TopProperty) + ry[child.auxID1], (Double)child.auxSide1.GetValue(TopProperty), AnimationDuration, initialTime);
+                        child.auxSide1.Opacity = 0;
+                    }
+                    if (child.auxSide2 != null)
+                    {
+
+                        child.auxSide2.SetValue(NameProperty, GetNewObjectName(child.auxSide2));
+
+                        ApplyDoubleAnimation(child.auxSide2, "Opacity", 0, child.auxSide2.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide2, "(Canvas.Left)", (Double)child.auxSide2.GetValue(LeftProperty) + rx[child.auxID2], (Double)child.auxSide2.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide2, "(Canvas.Top)", (Double)child.auxSide2.GetValue(TopProperty) + ry[child.auxID2], (Double)child.auxSide2.GetValue(TopProperty), AnimationDuration, initialTime);
+
+                        child.auxSide2.Opacity = 0;
+                    }
+
+                    if (child.auxSide4 != null)
+                    {
+
+                        child.auxSide4.SetValue(NameProperty, GetNewObjectName(child.auxSide4));
+
+                        ApplyDoubleAnimation(child.auxSide4, "Opacity", 0, child.auxSide4.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide4, "(Canvas.Left)", (Double)child.auxSide4.GetValue(LeftProperty) + rx[child.auxID4], (Double)child.auxSide4.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide4, "(Canvas.Top)", (Double)child.auxSide4.GetValue(TopProperty) + ry[child.auxID4], (Double)child.auxSide4.GetValue(TopProperty), AnimationDuration, initialTime);
+
+                        child.auxSide4.Opacity = 0;
+                    }
+                    if (child.auxSide5 != null)
+                    {
+
+                        child.auxSide5.SetValue(NameProperty, GetNewObjectName(child.auxSide5));
+
+                        ApplyDoubleAnimation(child.auxSide5, "Opacity", 0, child.auxSide5.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide5, "(Canvas.Left)", (Double)child.auxSide5.GetValue(LeftProperty) + rx[child.auxID5], (Double)child.auxSide5.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(child.auxSide5, "(Canvas.Top)", (Double)child.auxSide5.GetValue(TopProperty) + ry[child.auxID5], (Double)child.auxSide5.GetValue(TopProperty), AnimationDuration, initialTime);
+
+                        child.auxSide5.Opacity = 0;
+                    }
+
+                    #endregion PieDoughnut3D animation
+                }
+                if (View3D && (child.RenderAs.ToLower() != "bubble" && child.RenderAs.ToLower() != "point" && child.RenderAs.ToLower() != "line"))
+                {
+                    foreach (DataPoint dp in child.DataPoints)
+                    {
+                        if (dp.Marker != null)
+                        {
+                            dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
+
+
+                            ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
+                            dp.Marker.Opacity = 0;
+                        }
+                        if (dp.Label != null)
+                        {
+                            dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
+
+
+                            ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                            dp.Label.Opacity = 0;
+                        }
+                    }
+                    if (child._areas != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._areas)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._areaShadows != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._areaShadows)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._areaTops != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._areaTops)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._columns != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._columns)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._columnSides != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._columnSides)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._columnTops != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._columnTops)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+                    if (child._shadows != null)
+                    {
+                        i = 0;
+                        foreach (Shape shape in child._shadows)
+                        {
+                            shape.SetValue(NameProperty, GetNewObjectName(shape));
+
+                            ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
+                            shape.Opacity = 0;
+                            i++;
+                        }
+                    }
+
+
+                }
+                else if (child.RenderAs.ToLower() == "bubble" || child.RenderAs.ToLower() == "point")
+                {
+                    i = 0;
+                    foreach (DataPoint dp in child.DataPoints)
+                    {
+                        if (dp.Marker != null)
+                        {
+                            dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
+
+
+
+                            ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(dp.Marker, "(Canvas.Left)", (Double)dp.Marker.GetValue(LeftProperty) + rx[i], (Double)dp.Marker.GetValue(LeftProperty), AnimationDuration, initialTime);
+                            ApplyDoubleAnimation(dp.Marker, "(Canvas.Top)", (Double)dp.Marker.GetValue(TopProperty) + ry[i], (Double)dp.Marker.GetValue(TopProperty), AnimationDuration, initialTime);
+                            dp.Marker.Opacity = 0;
+                            i++;
+
+                        }
+                        if (dp.Label != null)
+                        {
+                            dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
+
+
+                            ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration);
+                            dp.Label.Opacity = 0;
+                        }
+                    }
+                }
+                else if (child.RenderAs.ToLower() == "line")
+                {
+                    foreach (DataPoint dp in child.DataPoints)
+                    {
+                        if (dp.Marker != null)
+                        {
+                            dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
+
+
+                            ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
+                            dp.Marker.Opacity = 0;
+                        }
+                        if (dp.Label != null)
+                        {
+                            dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
+
+
+                            ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                            dp.Label.Opacity = 0;
+                        }
+                    }
+                    if (child._line != null)
+                    {
+                        child._line.SetValue(NameProperty, GetNewObjectName(child._line));
+
+
+                        ApplyDoubleAnimation(child._line, "Opacity", 0, child._line.Opacity, AnimationDuration, initialTime);
+                        child._line.Opacity = 0;
+                        ScaleTransform st = new ScaleTransform();
+                        st.CenterX = child.Width / 2;
+                        st.CenterY = child.Height / 2;
+                        child._line.RenderTransform = st;
+                        st.SetValue(NameProperty, GetNewObjectName(st));
+
+                        ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
+                        ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
+
+
+                    }
+                    if (child._lineShadow != null)
+                    {
+                        child._lineShadow.SetValue(NameProperty, GetNewObjectName(child._lineShadow));
+
+
+                        ApplyDoubleAnimation(child._lineShadow, "Opacity", 0, child._lineShadow.Opacity, AnimationDuration, initialTime);
+                        ScaleTransform st = new ScaleTransform();
+                        st.CenterX = child.Width / 2;
+                        st.CenterY = child.Height / 2;
+                        child._lineShadow.RenderTransform = st;
+                        st.SetValue(NameProperty, GetNewObjectName(st));
+
+                        ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
+                        ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
+                    }
+                }
+                else
+                {
+                    i = 0;
+                    foreach (DataPoint dp in child.DataPoints)
+                    {
+                        if (PlotDetails.AxisOrientation == AxisOrientation.Pie)
+                        {
+
+                            if (dp.LabelLine != null)
+                            {
+                                dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
+
+
+                                ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, 0, AnimationDuration + initialTime);
+                                dp.LabelLine.Opacity = 0;
+                            }
+                        }
+                        if (dp.Label != null)
+                        {
+                            dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
+
+
+                            ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
+                            dp.Label.Opacity = 0;
+                        }
+                        ApplyDoubleAnimation(dp, "Opacity", 0, dp.Opacity, AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(dp, "(Canvas.Left)", (Double)dp.GetValue(LeftProperty) + rx[i], (Double)dp.GetValue(LeftProperty), AnimationDuration, initialTime);
+                        ApplyDoubleAnimation(dp, "(Canvas.Top)", (Double)dp.GetValue(TopProperty) + ry[i], (Double)dp.GetValue(TopProperty), AnimationDuration, initialTime);
+                        dp.Opacity = 0;
+                        i++;
+                    }
+                }
+            }
+        }
+
+        private void AnimationType5(Double initialTime)
+        {
+            System.Collections.Generic.List<Double> framesetTime = new System.Collections.Generic.List<Double>();
+            System.Collections.Generic.List<Double> framesetScaleY = new System.Collections.Generic.List<Double>();
+
+            framesetTime.Clear();
+            framesetTime.Add(0);
+            framesetTime.Add(initialTime);
+            framesetTime.Add(0.99);
+            framesetTime.Add(1);
+
+            framesetScaleY.Clear();
+            framesetScaleY.Add(0);
+            framesetScaleY.Add(0);
+            framesetScaleY.Add(0.99);
+            framesetScaleY.Add(1);
+
+            AnimationDuration -= initialTime;
+
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
+            {
+
+                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+            }
+
+            ScaleTransform st = new ScaleTransform();
+
+            if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
+            {
+                for (Int32 i = 0; i < Surface3D.Length; i++)
+                {
+
+                    if (Surface3D[i] == null) continue;
+                    Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
+                    st = new ScaleTransform();
+
+
+                    Surface3D[i].RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
+
+                    if (PlotDetails.AxisOrientation == AxisOrientation.Column)
+                    {
+
+                        Surface3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                        Surface3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                        Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                    }
+                    else
+                    {
+
+                        Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
+                        Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+                    }
+                }
+                for (Int32 i = 0; i < AreaLine3D.Count; i++)
+                {
+
+                    if (AreaLine3D[i] == null) continue;
+                    AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
+                    st = new ScaleTransform();
+
+                    AreaLine3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
+                    AreaLine3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
+
+                    AreaLine3D[i].RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
+
+                    AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
+
+                    ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+
+                }
+                foreach (DataSeries child in DataSeries)
+                {
+                    if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
+                    {
+                        st = new ScaleTransform();
+                        st.CenterX = child.Width / 2;
+                        st.CenterY = child.Height / 2;
+                        child.RenderTransform = st;
+
+
+                        child.RenderTransformOrigin = new Point(0.5, 1);
+                        st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                }
+
+            }
+            else
+            {
+                Int32 i = 0;
+                foreach (DataSeries child in _dataSeries)
+                {
+
+                    child.RenderTransform = st;
+                    st.SetValue(NameProperty, st.GetType().Name + child.Name);
+
+
+                    if (PlotDetails.AxisOrientation == AxisOrientation.Column || PlotDetails.AxisOrientation == AxisOrientation.Pie)
+                    {
+
+                        child.RenderTransformOrigin = new Point(0.5, 1);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                    else
+                    {
+
+                        child.RenderTransformOrigin = new Point(0, 0.5);
+
+                        ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
+
+
+                    }
+                    st = new ScaleTransform();
+                    i++;
+                }
+
+            }
+        }
+
+        private void GenerateAnimationData()
+        {
+   
+            String animationTypeSelected = Constants.ThemeAndAnimation.DefaultAnimation;
+
+            if (AnimationType != Constants.General.SrtingUndefined && !String.IsNullOrEmpty(AnimationType))
+            {
+                animationTypeSelected = AnimationType;
+            }
+
+
+            if (AnimationDuration > 0 && AnimationDuration < 0.6) AnimationDuration = 0.6;
+
+            if (AnimationDuration <= 0) return;
+
+            Double initialTime = 600/(AnimationDuration * 1000);
+            Double initialShootup = ((Double)PlotArea.GetValue(TopProperty)+PlotArea.Height) / PlotArea.Height;
+            
+            AnimationDuration += initialTime;
+
+
             switch (animationTypeSelected.ToLower())
             {
                 case "type1":
-                    #region Type1
-                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-                    {
-                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
-                        AxisX.Opacity = 0;
-                        AxisY.Opacity = 0;
-                        AxisY.MajorGrids.Opacity = 0;
-                        PlotArea.Opacity = 0;
-                    }
-                    
-
-                    if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
-                    {
-                        for (i = 0; i < Surface3D.Length; i++)
-                        {
-                            if (Surface3D[i] == null) continue;
-                            Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                            ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, initialTime);
-                            Surface3D[i].Opacity = 0;
-                        }
-                        for (i = 0; i < AreaLine3D.Count; i++)
-                        {
-                            if (AreaLine3D[i] == null) continue;
-                            AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                            ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, initialTime);
-                            AreaLine3D[i].Opacity = 0;
-                        }
-                        foreach (DataSeries child in DataSeries)
-                        {
-                            if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
-                            {
-                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
-                                child.Opacity = 0;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        i = 0;
-                        foreach (DataSeries child in _dataSeries)
-                        {
-                            if (DataSeries.Count > 2)
-                            {
-                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, initialTime);
-                            }
-                            else
-                            {
-                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime);
-                            }
-                            child.Opacity = 0;
-                            i++;
-                        }
-                    }
-                    #endregion Type1
+                    AnimationType1(initialTime);
                     break;
                 case "type2":
-                    #region Type2
-                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-                    {
-                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
-                    }
-
-
-                    
-
-                    st = new ScaleTransform();
-
-
-
-
-                    if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
-                    {
-                        
-                        for (i = 0; i < Surface3D.Length; i++)
-                        {
-                            if (Surface3D[i] == null) continue;
-                            st = new ScaleTransform();
-                            st.CenterX = Surface3D[i].Width / 2;
-                            st.CenterY = Surface3D[i].Height / 2;
-
-                            Surface3D[i].RenderTransform = st;
-                            Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                            st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
-                            
-                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, 0);
-
-                            Surface3D[i].Opacity = 0;
-                        }
-                        for (i = 0; i < AreaLine3D.Count; i++)
-                        {
-                            if (AreaLine3D[i] == null) continue;
-                            st = new ScaleTransform();
-                            st.CenterX = AreaLine3D[i].Width / 2;
-                            st.CenterY = AreaLine3D[i].Height / 2;
-
-                            AreaLine3D[i].RenderTransform = st;
-                            AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                            st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
-                            
-                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, 0);
-                            AreaLine3D[i].Opacity = 0;
-                        }
-                        foreach (DataSeries child in DataSeries)
-                        {
-                            if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
-                            {
-                                st = new ScaleTransform();
-                                st.CenterX = child.Width / 2;
-                                st.CenterY = child.Height / 2;
-                                child.RenderTransform = st;
-                                st.SetValue(NameProperty, st.GetType().Name + child.Name);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, 0);
-                                child.Opacity = 0;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        i = 0;
-                        foreach (DataSeries child in _dataSeries)
-                        {
-                           
-                            st.CenterX = child.Width / 2;
-                            st.CenterY = child.Height / 2;
-                            child.RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + child.Name);
-
-
-                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count+initialTime, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, 0, (Double)i / (Double)_dataSeries.Count+initialTime);
-                            child.Opacity = 0;
-                            st = new ScaleTransform();
-                            i++;
-                        }
-                        
-                    }
-                    #endregion Type2
+                    AnimationType2(initialTime,initialShootup);
                     break;
                 case "type3":
-                    #region Type3
-                    
-
-                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-                    {
-                        
-                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
-                    }
-
-
-                    
-
-                    st = new ScaleTransform();
-
-                    
-
-
-                    if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
-                    {
-                        for (i = 0; i < Surface3D.Length; i++)
-                        {
-
-                            if (Surface3D[i] == null) continue;
-                            Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                            st = new ScaleTransform();
-
-
-                            Surface3D[i].RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
-                            
-                            if (PlotDetails.AxisOrientation == AxisOrientation.Column)
-                            {
-
-                                Surface3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
-                                Surface3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
-
-                                Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                
-                            }
-                            else
-                            {
-
-                                Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
-                                Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                
-                            }
-                        }
-                        for (i = 0; i < AreaLine3D.Count; i++)
-                        {
-
-                            if (AreaLine3D[i] == null) continue;
-                            AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                            st = new ScaleTransform();
-                            
-                            AreaLine3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
-                            AreaLine3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
-
-                            AreaLine3D[i].RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
-                            
-                            AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
-                            
-                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                            
-
-
-                        }
-                        foreach (DataSeries child in DataSeries)
-                        {
-                            if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
-                            {
-                                st = new ScaleTransform();
-                                st.CenterX = child.Width / 2;
-                                st.CenterY = child.Height / 2;
-                                child.RenderTransform = st;
-
-                               
-                                child.RenderTransformOrigin = new Point(0.5, 1);
-                                st.SetValue(NameProperty, st.GetType().Name + child.Name);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                
-
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        i = 0;
-                        foreach (DataSeries child in _dataSeries)
-                        {
-
-                            child.RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + child.Name);
-
-                            
-                            if (PlotDetails.AxisOrientation == AxisOrientation.Column || PlotDetails.AxisOrientation == AxisOrientation.Pie)
-                            {
-                                
-                                child.RenderTransformOrigin = new Point(0.5, 1);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                
-
-                            }
-                            else
-                            {
-                               
-                                child.RenderTransformOrigin = new Point(0, 0.5);
-                                
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-                                
-
-                            }
-                            st = new ScaleTransform();
-                            i++;
-                        }
-                        
-                    }
-                    #endregion Type3
+                    AnimationType3(initialTime, initialShootup);
                     break;
                 case "type4":
-                    #region Type4
-                    i = 0;
-                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-                    {
-                        
-                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
-                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
-                        AxisX.Opacity = 0;
-                        AxisY.Opacity = 0;
-                        AxisY.MajorGrids.Opacity = 0;
-                        PlotArea.Opacity = 0;
-                    }
-
-
-                    
-                    System.Collections.Generic.List<Double> rx = new System.Collections.Generic.List<double>();
-                    System.Collections.Generic.List<Double> ry = new System.Collections.Generic.List<double>();
-                    Random rand = new Random();
-
-
-                    foreach (DataSeries child in _dataSeries)
-                    {
-                        rx.Clear();
-                        ry.Clear();
-                        Double angle = Math.PI / Math.Abs(child.DataPoints.Count - 1);
-                        for (i = 0; i < child.DataPoints.Count; i++)
-                        {
-                            
-                            rx.Add(child.Width / 2 * Math.Cos(angle * (i + 1)));
-                            ry.Add(child.Height / 2 * Math.Sin(angle * (i + 1)));
-                        }
-                        if (View3D && PlotDetails.AxisOrientation == AxisOrientation.Pie)
-                        {
-                            #region PieDoughnut3D animation
-
-                            foreach (DataPoint dp in child.DataPoints)
-                            {
-                                if (dp.LabelLine != null)
-                                {
-                                    dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
-
-                                    
-                                    ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, initialTime, AnimationDuration);
-                                    dp.LabelLine.Opacity = 0;
-                                }
-                                if (dp.Label != null)
-                                {
-                                    dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, initialTime, AnimationDuration);
-                                }
-                            }
-                            i = 0;
-                            foreach (Path path in child._pies)
-                            {
-                                if (path == null) continue;
-                                path.SetValue(NameProperty, GetNewObjectName(path));
-                                
-                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
-                                path.Opacity = 0;
-                                i++;
-                            }
-                            i = 0;
-                            foreach (Path path in child._pieSides)
-                            {
-                                if (path == null) continue;
-                                path.SetValue(NameProperty, GetNewObjectName(path));
-                                
-                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
-                                path.Opacity = 0;
-                                i++;
-                            }
-                            i = 0;
-                            foreach (Path path in child._pieRight)
-                            {
-                                if (path == null) continue;
-                                path.SetValue(NameProperty, GetNewObjectName(path));
-                                
-                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
-                                path.Opacity = 0;
-                                i++;
-                            }
-                            i = 0;
-                            foreach (Path path in child._pieLeft)
-                            {
-                                if (path == null) continue;
-                                path.SetValue(NameProperty, GetNewObjectName(path));
-                                
-                                ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
-                                path.Opacity = 0;
-                                i++;
-                            }
-                            i = 0;
-                            if (child._doughnut != null)
-                                foreach (Path path in child._doughnut)
-                                {
-                                    if (path == null) continue;
-                                    path.SetValue(NameProperty, GetNewObjectName(path));
-                                    
-                                    ApplyDoubleAnimation(path, "Opacity", 0, path.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(path, "(Canvas.Left)", (Double)path.GetValue(LeftProperty) + rx[i], (Double)path.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(path, "(Canvas.Top)", (Double)path.GetValue(TopProperty) + ry[i], (Double)path.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    path.Opacity = 0;
-                                    i++;
-                                }
-                            if (child.auxSide1 != null)
-                            {
-
-                                child.auxSide1.SetValue(NameProperty, GetNewObjectName(child.auxSide1));
-                                
-                                ApplyDoubleAnimation(child.auxSide1, "Opacity", 0, child.auxSide1.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide1, "(Canvas.Left)", (Double)child.auxSide1.GetValue(LeftProperty) + rx[child.auxID1], (Double)child.auxSide1.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide1, "(Canvas.Top)", (Double)child.auxSide1.GetValue(TopProperty) + ry[child.auxID1], (Double)child.auxSide1.GetValue(TopProperty), AnimationDuration, initialTime);
-                                child.auxSide1.Opacity = 0;
-                            }
-                            if (child.auxSide2 != null)
-                            {
-
-                                child.auxSide2.SetValue(NameProperty, GetNewObjectName(child.auxSide2));
-                                
-                                ApplyDoubleAnimation(child.auxSide2, "Opacity", 0, child.auxSide2.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide2, "(Canvas.Left)", (Double)child.auxSide2.GetValue(LeftProperty) + rx[child.auxID2], (Double)child.auxSide2.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide2, "(Canvas.Top)", (Double)child.auxSide2.GetValue(TopProperty) + ry[child.auxID2], (Double)child.auxSide2.GetValue(TopProperty), AnimationDuration, initialTime);
-
-                                child.auxSide2.Opacity = 0;
-                            }
-                            
-                            if (child.auxSide4 != null)
-                            {
-
-                                child.auxSide4.SetValue(NameProperty, GetNewObjectName(child.auxSide4));
-                                
-                                ApplyDoubleAnimation(child.auxSide4, "Opacity", 0, child.auxSide4.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide4, "(Canvas.Left)", (Double)child.auxSide4.GetValue(LeftProperty) + rx[child.auxID4], (Double)child.auxSide4.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide4, "(Canvas.Top)", (Double)child.auxSide4.GetValue(TopProperty) + ry[child.auxID4], (Double)child.auxSide4.GetValue(TopProperty), AnimationDuration, initialTime);
-
-                                child.auxSide4.Opacity = 0;
-                            }
-                            if (child.auxSide5 != null)
-                            {
-
-                                child.auxSide5.SetValue(NameProperty, GetNewObjectName(child.auxSide5));
-                                
-                                ApplyDoubleAnimation(child.auxSide5, "Opacity", 0, child.auxSide5.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide5, "(Canvas.Left)", (Double)child.auxSide5.GetValue(LeftProperty) + rx[child.auxID5], (Double)child.auxSide5.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(child.auxSide5, "(Canvas.Top)", (Double)child.auxSide5.GetValue(TopProperty) + ry[child.auxID5], (Double)child.auxSide5.GetValue(TopProperty), AnimationDuration, initialTime);
-                                
-                                child.auxSide5.Opacity = 0;
-                            }
-                            
-                            #endregion PieDoughnut3D animation
-                        }
-                        if (View3D && (child.RenderAs.ToLower() != "bubble" && child.RenderAs.ToLower() != "point" && child.RenderAs.ToLower() != "line"))
-                        {
-                            foreach (DataPoint dp in child.DataPoints)
-                            {
-                                if (dp.Marker != null)
-                                {
-                                    dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
-                                    dp.Marker.Opacity = 0;
-                                }
-                                if (dp.Label != null)
-                                {
-                                    dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
-                                    dp.Label.Opacity = 0;
-                                }
-                            }
-                            if (child._areas != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._areas)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._areaShadows != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._areaShadows)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._areaTops != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._areaTops)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._columns != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._columns)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._columnShadows != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._columnShadows)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._columnTops != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._columnTops)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-                            if (child._shadows != null)
-                            {
-                                i = 0;
-                                foreach (Shape shape in child._shadows)
-                                {
-                                    shape.SetValue(NameProperty, GetNewObjectName(shape));
-                                    
-                                    ApplyDoubleAnimation(shape, "Opacity", 0, shape.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Left)", (Double)shape.GetValue(LeftProperty) + rx[i], (Double)shape.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(shape, "(Canvas.Top)", (Double)shape.GetValue(TopProperty) + ry[i], (Double)shape.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    shape.Opacity = 0;
-                                    i++;
-                                }
-                            }
-
-
-                        }
-                        else if (child.RenderAs.ToLower() == "bubble" || child.RenderAs.ToLower() == "point")
-                        {
-                            i = 0;
-                            foreach (DataPoint dp in child.DataPoints)
-                            {
-                                if (dp.Marker != null)
-                                {
-                                    dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
-
-                                    
-
-                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(dp.Marker, "(Canvas.Left)", (Double)dp.Marker.GetValue(LeftProperty) + rx[i], (Double)dp.Marker.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                    ApplyDoubleAnimation(dp.Marker, "(Canvas.Top)", (Double)dp.Marker.GetValue(TopProperty) + ry[i], (Double)dp.Marker.GetValue(TopProperty), AnimationDuration, initialTime);
-                                    dp.Marker.Opacity = 0;
-                                    i++;
-
-                                }
-                                if (dp.Label != null)
-                                {
-                                    dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration);
-                                    dp.Label.Opacity = 0;
-                                }
-                            }
-                        }
-                        else if (child.RenderAs.ToLower() == "line")
-                        {
-                            foreach (DataPoint dp in child.DataPoints)
-                            {
-                                if (dp.Marker != null)
-                                {
-                                    dp.Marker.SetValue(NameProperty, GetNewObjectName(dp.Marker));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Marker, "Opacity", 0, dp.Marker.Opacity, 0, AnimationDuration + initialTime);
-                                    dp.Marker.Opacity = 0;
-                                }
-                                if (dp.Label != null)
-                                {
-                                    dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
-                                    dp.Label.Opacity = 0;
-                                }
-                            }
-                            if (child._line != null)
-                            {
-                                child._line.SetValue(NameProperty, GetNewObjectName(child._line));
-
-                                
-                                ApplyDoubleAnimation(child._line, "Opacity", 0, child._line.Opacity, AnimationDuration, initialTime);
-                                child._line.Opacity = 0;
-                                st = new ScaleTransform();
-                                st.CenterX = child.Width / 2;
-                                st.CenterY = child.Height / 2;
-                                child._line.RenderTransform = st;
-                                st.SetValue(NameProperty, GetNewObjectName(st));
-                                
-                                ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
-                                ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
-
-
-                            }
-                            if (child._lineShadow != null)
-                            {
-                                child._lineShadow.SetValue(NameProperty, GetNewObjectName(child._lineShadow));
-
-                                
-                                ApplyDoubleAnimation(child._lineShadow, "Opacity", 0, child._lineShadow.Opacity, AnimationDuration, initialTime);
-                                st = new ScaleTransform();
-                                st.CenterX = child.Width / 2;
-                                st.CenterY = child.Height / 2;
-                                child._lineShadow.RenderTransform = st;
-                                st.SetValue(NameProperty, GetNewObjectName(st));
-                                
-                                ApplyDoubleAnimation(st, "ScaleX", 0, 1, AnimationDuration / 2, initialTime);
-                                ApplyDoubleAnimation(st, "ScaleY", 0, 1, AnimationDuration, initialTime);
-                            }
-                        }
-                        else
-                        {
-                            i = 0;
-                            foreach (DataPoint dp in child.DataPoints)
-                            {
-                                if (PlotDetails.AxisOrientation == AxisOrientation.Pie)
-                                {
-
-                                    if (dp.LabelLine != null)
-                                    {
-                                        dp.LabelLine.SetValue(NameProperty, GetNewObjectName(dp.LabelLine));
-
-                                        
-                                        ApplyDoubleAnimation(dp.LabelLine, "Opacity", 0, dp.LabelLine.Opacity, 0, AnimationDuration + initialTime);
-                                        dp.LabelLine.Opacity = 0;
-                                    }
-                                }
-                                if (dp.Label != null)
-                                {
-                                    dp.Label.SetValue(NameProperty, GetNewObjectName(dp.Label));
-
-                                    
-                                    ApplyDoubleAnimation(dp.Label, "Opacity", 0, dp.Label.Opacity, 0, AnimationDuration + initialTime);
-                                    dp.Label.Opacity = 0;
-                                }
-
-
-
-                                
-                                ApplyDoubleAnimation(dp, "Opacity", 0, dp.Opacity, AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(dp, "(Canvas.Left)", (Double)dp.GetValue(LeftProperty) + rx[i], (Double)dp.GetValue(LeftProperty), AnimationDuration, initialTime);
-                                ApplyDoubleAnimation(dp, "(Canvas.Top)", (Double)dp.GetValue(TopProperty) + ry[i], (Double)dp.GetValue(TopProperty), AnimationDuration, initialTime);
-                                dp.Opacity = 0;
-                                i++;
-                            }
-                        }
-                    }
-                    
-                    #endregion Type4
+                    AnimationType4(initialTime);
                     break;
                 case "type5":
-                    #region Type5
-
-                    framesetTime.Clear();
-                    framesetTime.Add(0);
-                    framesetTime.Add(initialTime);
-                    framesetTime.Add(1);
-
-                    framesetScaleY.Clear();
-                    framesetScaleY.Add(0);
-                    framesetScaleY.Add(0);
-                    framesetScaleY.Add(1);
-
-                    AnimationDuration -= initialTime;
-
-                    if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-                    {
-
-                        ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
-                        ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
-                    }
-
-                    st = new ScaleTransform();
-
-                    if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
-                    {
-                        for (i = 0; i < Surface3D.Length; i++)
-                        {
-
-                            if (Surface3D[i] == null) continue;
-                            Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                            st = new ScaleTransform();
-
-
-                            Surface3D[i].RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + Surface3D[i].Name);
-
-                            if (PlotDetails.AxisOrientation == AxisOrientation.Column)
-                            {
-
-                                Surface3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
-                                Surface3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
-
-                                Surface3D[i].RenderTransformOrigin = new Point(0.5, 1);
-
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-                            }
-                            else
-                            {
-
-                                Double scaleX = ((Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength) / Surface3D[i].Width;
-                                Surface3D[i].RenderTransformOrigin = new Point(scaleX, 0.5);
-
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-                            }
-                        }
-                        for (i = 0; i < AreaLine3D.Count; i++)
-                        {
-
-                            if (AreaLine3D[i] == null) continue;
-                            AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                            st = new ScaleTransform();
-
-                            AreaLine3D[i].Width = PlotArea.Width + (Double)PlotArea.GetValue(LeftProperty);
-                            AreaLine3D[i].Height = (Double)PlotArea.GetValue(TopProperty) + PlotArea.Height + AxisX.MajorTicks.TickLength;
-
-                            AreaLine3D[i].RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + AreaLine3D[i].Name);
-
-                            AreaLine3D[i].RenderTransformOrigin = new Point(0.5, 1);
-
-                            ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-
-
-                        }
-                        foreach (DataSeries child in DataSeries)
-                        {
-                            if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
-                            {
-                                st = new ScaleTransform();
-                                st.CenterX = child.Width / 2;
-                                st.CenterY = child.Height / 2;
-                                child.RenderTransform = st;
-
-
-                                child.RenderTransformOrigin = new Point(0.5, 1);
-                                st.SetValue(NameProperty, st.GetType().Name + child.Name);
-
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        i = 0;
-                        foreach (DataSeries child in _dataSeries)
-                        {
-
-                            child.RenderTransform = st;
-                            st.SetValue(NameProperty, st.GetType().Name + child.Name);
-
-
-                            if (PlotDetails.AxisOrientation == AxisOrientation.Column || PlotDetails.AxisOrientation == AxisOrientation.Pie)
-                            {
-
-                                child.RenderTransformOrigin = new Point(0.5, 1);
-
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleY", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-
-                            }
-                            else
-                            {
-
-                                child.RenderTransformOrigin = new Point(0, 0.5);
-
-                                ApplySplineDoubleKeyFrameAnimation(st, "ScaleX", AnimationDuration, 0, framesetScaleY.ToArray(), framesetTime.ToArray());
-
-
-                            }
-                            st = new ScaleTransform();
-                            i++;
-                        }
-
-                    }
-                    #endregion Type5
+                    AnimationType5(initialTime);
                     break;
             }
             
             
-        }
-
-        protected override void SetDefaults()
-        {
-            base.SetDefaults();
-
-            _borderRectangle = new Rectangle();
-
-            _dataSeries = new System.Collections.Generic.List<DataSeries>();
-            _trendLines = new System.Collections.Generic.List<TrendLine>();
-            _titles = new System.Collections.Generic.List<Title>();
-            _legends = new System.Collections.Generic.List<Legend>();
-            _colorSets = new System.Collections.Generic.List<ColorSet>();
-
-            _plotDetails = new PlotDetails();
-            _view3D = "Undefined";
-            BorderThickness = Double.NaN;
-            _animationDuration = Double.NaN;
-            AnimationEnabled = true;
-            if(_label!=null)_label.FontSize = Double.NaN;
-            ColorSet = "";
-            ColorSetReference = null;
-            this.SetValue(ZIndexProperty, 1);
-            _animationEnabled = "Undefined";
-            _uniqueColors = "Undefined";
-            Theme = "Theme1";
-
-            Watermark = true;
         }
 
         /// <summary>
@@ -2121,31 +1869,6 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
-        /// <summary>
         /// Create reference to all child elements. If the user has not sepcified any required element, then 
         /// create them and assign a reference.
         /// </summary>
@@ -2155,7 +1878,9 @@ namespace Visifire.Charts
             // This is done so that any object color in future can be initialized using this palette
             GenerateDefaultColorSets();
 
-            int index = 0;
+            Int32 dataSeriesIndex = 0;
+            Int32 legendIndex = 0;
+            Int32 titleIndex = 0;
             foreach (FrameworkElement child in Children)
             {
                 switch (child.GetType().Name)
@@ -2185,20 +1910,22 @@ namespace Visifire.Charts
                         if ((child as Title).Enabled)
                         {
                             _titles.Add(child as Title);
-                            (child as Title).SetValue(ZIndexProperty, (int)(child as Title).GetValue(ZIndexProperty) + 6);
+                            (child as Title).SetValue(ZIndexProperty, (Int32)(child as Title).GetValue(ZIndexProperty) + 6);
+                            (child as Title).Index = titleIndex++;
                         }
                         break;
 
                     case "Legend":
                         _legends.Add(child as Legend);
-                        (child as Legend).SetValue(ZIndexProperty, (int)(child as Legend).GetValue(ZIndexProperty) + 6);
+                        (child as Legend).SetValue(ZIndexProperty, (Int32)(child as Legend).GetValue(ZIndexProperty) + 6);
+                        (child as Legend).Index = legendIndex++;
                         break;
 
                     case "DataSeries":
                         if (!(child as DataSeries).Enabled) continue;
                         _dataSeries.Add(child as DataSeries);
-                        child.SetValue(ZIndexProperty, index + (int)child.GetValue(ZIndexProperty));
-                        (child as DataSeries).DrawingIndex = index++;
+                        child.SetValue(ZIndexProperty, dataSeriesIndex + (Int32)child.GetValue(ZIndexProperty));
+                        (child as DataSeries).DrawingIndex = dataSeriesIndex++;
                         AccumalateChartCount((child as DataSeries).RenderAs.ToLower());
                         break;
 
@@ -2252,6 +1979,7 @@ namespace Visifire.Charts
                 Legend _legend = new Legend();
                 this.Children.Add(_legend);
                 _legends.Add(_legend);
+                _legend.Index = legendIndex++;
             }
 
             // If there is no PlotArea specified, create one and add to the children collection
@@ -2296,7 +2024,7 @@ namespace Visifire.Charts
         {
             Plot plot = new Plot();
             Boolean stacked = false, stacked100 = false;
-            int normal = 0;
+            Int32 normal = 0;
             foreach (DataSeries dataSeries in _dataSeries)
             {
 
@@ -2801,12 +2529,12 @@ namespace Visifire.Charts
         /// Generates default Colors sets
         /// </summary>
         /// <returns>number of color sets created</returns>
-        private int GenerateDefaultColorSets()
+        private Int32 GenerateDefaultColorSets()
         {
             Dictionary<String, List<Brush>> defaultColorSetList = ColorSetDefaultList.GenerateColorSetDefaultList();
             Dictionary<String, List<Brush>>.Enumerator enumerator = defaultColorSetList.GetEnumerator();
 
-            for (int i = 0; i < defaultColorSetList.Count; i++)
+            for (Int32 i = 0; i < defaultColorSetList.Count; i++)
             {
                 enumerator.MoveNext();
                 ColorSet cl = new ColorSet();
@@ -2836,7 +2564,7 @@ namespace Visifire.Charts
 
         private void GenerateIndexTable()
         {
-            int depthcounter = 0;
+            Int32 depthcounter = 0;
 
             if (ChartCounts.ContainsKey("column")) depthcounter++;
             if (ChartCounts.ContainsKey("stackedcolumn")) depthcounter++;
@@ -2849,8 +2577,8 @@ namespace Visifire.Charts
             if (ChartCounts.ContainsKey("stackedbar100")) depthcounter++;
             Count = depthcounter;
             // Index for column
-            Dictionary<String, int> ZIndexTable = new Dictionary<string, int>();
-            Dictionary<String, int> ZIndexArea = new Dictionary<string, int>();
+            Dictionary<String, Int32> ZIndexTable = new Dictionary<String, Int32>();
+            Dictionary<String, Int32> ZIndexArea = new Dictionary<String, Int32>();
             String rendertype;
             foreach (DataSeries ds in DataSeries)
             {
@@ -2859,47 +2587,47 @@ namespace Visifire.Charts
                 {
                     if (ZIndexTable.ContainsKey(rendertype))
                     {
-                        if (ZIndexTable[rendertype] < (int)ds.GetValue(ZIndexProperty))
+                        if (ZIndexTable[rendertype] < (Int32)ds.GetValue(ZIndexProperty))
                         {
-                            ZIndexTable[rendertype] = (int)ds.GetValue(ZIndexProperty);
+                            ZIndexTable[rendertype] = (Int32)ds.GetValue(ZIndexProperty);
                         }
 
                     }
                     else
                     {
-                        ZIndexTable.Add(rendertype, (int)ds.GetValue(ZIndexProperty));
+                        ZIndexTable.Add(rendertype, (Int32)ds.GetValue(ZIndexProperty));
                     }
                 }
                 else
                 {
                     if (ZIndexArea.ContainsKey(rendertype + ds.DrawingIndex.ToString()))
                     {
-                        ZIndexArea[rendertype + ds.DrawingIndex.ToString()] = (int)ds.GetValue(ZIndexProperty);
+                        ZIndexArea[rendertype + ds.DrawingIndex.ToString()] = (Int32)ds.GetValue(ZIndexProperty);
                     }
                     else
                     {
-                        ZIndexArea.Add(rendertype + ds.DrawingIndex.ToString(), (int)ds.GetValue(ZIndexProperty));
+                        ZIndexArea.Add(rendertype + ds.DrawingIndex.ToString(), (Int32)ds.GetValue(ZIndexProperty));
                     }
                 }
             }
 
 
-            List<String> ZITableStr = new List<string>(ZIndexArea.Keys);
+            List<String> ZITableStr = new List<String>(ZIndexArea.Keys);
 
  
-            List<int> ZITableInt = new List<int>(ZIndexArea.Values);
+            List<Int32> ZITableInt = new List<Int32>(ZIndexArea.Values);
 
             ZITableStr.InsertRange(ZITableStr.Count, ZIndexTable.Keys);
             ZITableInt.InsertRange(ZITableInt.Count, ZIndexTable.Values);
 
             String[] ZITableStrArr = ZITableStr.ToArray();
-            int[] ZITableIntArr = ZITableInt.ToArray();
-            Array.Sort<int, String>(ZITableIntArr, ZITableStrArr);
+            Int32[] ZITableIntArr = ZITableInt.ToArray();
+            Array.Sort<Int32, String>(ZITableIntArr, ZITableStrArr);
 
             
 
-            int j = 0;
-            for (int i = 0; j< ZITableStrArr.Length;j++ )
+            Int32 j = 0;
+            for (Int32 i = 0; j< ZITableStrArr.Length;j++ )
             {
                 if (ZITableStrArr[j].ToLower().Contains("line") || ZITableStrArr[j].ToLower().Contains("point") || ZITableStrArr[j].ToLower().Contains("bubble"))
                 {
@@ -2927,61 +2655,204 @@ namespace Visifire.Charts
             }
 
         }
-        
+
+        private void SetTag(FrameworkElement element)
+        {
+            if(element != null)
+                element.Tag = this.Name;
+        }
+
+        private void SetTag(FrameworkElement[] elements)
+        {
+            foreach(FrameworkElement element in elements)
+            {
+                SetTag(element);
+            }
+        }
+
+        private void SetTags()
+        {
+            SetTag(_plotAreaBorder);
+            SetTag(_zeroPlankBorderFront);
+            SetTag(_zeroPlankBorderSide);
+            SetTag(_watermark);
+
+            SetTag(Surface3D);
+            SetTag(_areaLabelMarker);
+        }
+
+        private void InitialCommonInitSteps()
+        {
+            SetName();
+
+            // This is done to apply background from themes
+            if (GetFromTheme("Background") != null && GetCurrentBackground() == null)
+                Background = GetFromTheme("Background") as Brush;
+
+            if (Double.IsNaN(this.Width))
+            {
+                if (Double.IsNaN(((FrameworkElement)Parent).Width))
+                    throw new Exception("Specify the width of the Chart element.");
+                else
+                    this.Width = ((FrameworkElement)Parent).Width;
+
+            }
+
+            if (Double.IsNaN(this.Height))
+            {
+                if (Double.IsNaN(((FrameworkElement)Parent).Height))
+                    throw new Exception("Specify the height of the Chart element.");
+                else
+                    this.Height = ((FrameworkElement)Parent).Height;
+            }
+
+            ApplyEffects();
+
+            _plankDrawState.Initialize();
+
+            if (BorderColor == null)
+            {
+                BorderColor = Parser.GetDefaultBorderColor(Parser.GetBrushIntensity(Background));
+            }
+
+            this.ApplyBorder();
+
+            CreateReferences();
+
+            if (DataSeries.Count == 0)
+            {
+                DataSeries ds = new DataSeries();
+                this.DataSeries.Add(ds);
+                this.Children.Add(ds);
+            }
+
+            ToolTip.Init();
+
+            // Initialize inner bounds rectangle
+            _innerTitleBounds = new Rect(Padding, Padding, Width - 2 * Padding, Height - 2 * Padding);
+
+            // Initializes all titles
+            _titles.ForEach(delegate(Title child) { child.Init(); });
+
+            // Initializes all legends
+            _legends.ForEach(delegate(Legend child) { child.Init(); });
+
+            // Initalizes DataSeries and sets the default legend
+            foreach (DataSeries child in _dataSeries)
+            {
+                if (String.IsNullOrEmpty(child.Legend) && _legends.Count != 0)
+                    child.Legend = _legends[0].Name;
+                child.Init();
+            }
+
+            GeneratePlotDetails();
+
+            GenerateIndexTable();
+
+
+            foreach (Legend legend in _legends)
+            {
+                foreach (DataSeries ds in _dataSeries)
+                {
+                    if (legend.Name == ds.Legend)
+                        legend.SeriesCount += 1;
+                }
+
+                // if no DataSeries Points to the Legend then Disable the legend
+                if (legend.SeriesCount == 0)
+                    legend.Enabled = false;
+            }
+
+
+            // Remove all disabled Legends
+            List<Legend> newLegendSet = new List<Legend>();
+            _legends.ForEach(delegate(Legend child)
+            {
+                if (child.Enabled)
+                    newLegendSet.Add(child);
+            });
+            _legends.Clear();
+            _legends = newLegendSet;
+
+
+            PlotArea.Init();
+
+            if (_logo != null)
+                _logo.Init();
+
+            if (PlotDetails.AxisOrientation != AxisOrientation.Pie)
+            {
+
+                AxisX.Init();
+
+                AxisY.Init();
+
+            }
+
+            // Positions titles that have to be placed outside PlotArea
+            _titles.ForEach(delegate(Title child) { child.PlaceOutsidePlotArea(); });
+
+            // Copy titles inner bounds to inner bounds to be used by legend
+            if (Padding <= 4)
+            {
+                _innerBounds = new Rect(_innerTitleBounds.X + 5, _innerTitleBounds.Y + 10, _innerTitleBounds.Width - 10, _innerTitleBounds.Height - 10);
+                Padding = 5;
+            }
+            else
+            {
+                _innerBounds = new Rect(_innerTitleBounds.X, _innerTitleBounds.Y, _innerTitleBounds.Width, _innerTitleBounds.Height);
+            }
+
+
+            Rect previousBounds = new Rect();
+            foreach (Legend legend in _legends)
+            {
+                previousBounds = _innerBounds;
+                legend.PlaceOutsidePlotArea(_innerTitleBounds, Padding);
+                if (!legend.EntriesPresent)
+                    _innerBounds = previousBounds;
+            }
+
+
+
+        }
+
+        private void RemoveUnMarkedLegends()
+        {
+            // Remove all unmarked legends
+            List<Legend> newLegendSet = new List<Legend>();
+            newLegendSet = new List<Legend>();
+            _legends.ForEach(delegate(Legend child)
+            {
+
+                if (child.EntriesPresent)
+                    newLegendSet.Add(child);
+                else
+                    Children.Remove(child);
+
+            });
+            _legends.Clear();
+            _legends = newLegendSet;
+        }
+
         #endregion Private Methods
 
         #region Internal Methods
 
-        internal void CollectStackContent(double xValue, double yValue)
+        internal void CollectStackContent(Double xValue, Double yValue)
         {
             // here point.X contains Sum
             // here poin.Y contains Absolute sum
-            if (_stackSum.ContainsKey(xValue))
-                _stackSum[xValue] = new Point(_stackSum[xValue].X + yValue, _stackSum[xValue].Y + Math.Abs(yValue));
+            if (_stackTotals.ContainsKey(xValue))
+                _stackTotals[xValue] = new Point(_stackTotals[xValue].X + yValue, _stackTotals[xValue].Y + Math.Abs(yValue));
             else
-                _stackSum.Add(xValue, new Point(yValue, Math.Abs(yValue)));
+                _stackTotals.Add(xValue, new Point(yValue, Math.Abs(yValue)));
 
-        }
-
-        internal void DrawZeroPlane(Boolean IsBar, int ZIndex, int chartType)
-        {
-            if (AxisY.AxisMinimum < 0 && AxisY.AxisMaximum > 0 && IsBar)
-            {
-                Rectangle zeroPlane = new Rectangle();
-                zeroPlane.Width = AxisX.MajorTicks.TickLength;
-                zeroPlane.Height = (Double)PlotArea.GetValue(HeightProperty);
-                SkewTransform st = new SkewTransform();
-                st.AngleY = -45;
-                zeroPlane.SetValue(TopProperty, (Double)PlotArea.GetValue(TopProperty) + AxisX.MajorTicks.TickLength);
-                zeroPlane.SetValue(LeftProperty, AxisY.DoubleToPixel(0) + (Double)PlotArea.GetValue(LeftProperty) - AxisX.MajorTicks.TickLength);
-                zeroPlane.RenderTransform = st;
-                zeroPlane.Opacity = 0.2;
-                zeroPlane.Fill = Parser.ParseLinearGradient("-45;#ff000000,0;#7f000000,1");
-                zeroPlane.SetValue(ZIndexProperty, ZIndex);
-                this.Children.Add(zeroPlane);
-
-            }
-            else if (AxisY.AxisMinimum < 0 && AxisY.AxisMaximum > 0 && !IsBar)
-            {
-                Rectangle zeroPlane = new Rectangle();
-                zeroPlane.Width = (Double)PlotArea.GetValue(WidthProperty);
-                zeroPlane.Height = AxisX.MajorTicks.TickLength;
-                SkewTransform st = new SkewTransform();
-                st.AngleX = -45;
-                zeroPlane.SetValue(TopProperty, AxisY.DoubleToPixel(0) + (Double)PlotArea.GetValue(TopProperty));
-                zeroPlane.SetValue(LeftProperty, PlotArea.GetValue(LeftProperty));
-                zeroPlane.RenderTransform = st;
-                zeroPlane.Opacity = 0.2;
-                zeroPlane.Fill = Parser.ParseLinearGradient("-45;#ff000000,0;#7f000000,1");
-                zeroPlane.SetValue(ZIndexProperty, ZIndex);
-                this.Children.Add(zeroPlane);
-
-            }
         }
 
         internal String GetNewObjectName(Object o)
         {
-            int i = 0;
+            Int32 i = 0;
             if (o == null) return "";
             String type = o.GetType().Name;
             String name = type;
@@ -3001,28 +2872,37 @@ namespace Visifire.Charts
         #endregion Internal Methods
 
         #region Data
+        private Int32 _storyboardEndCounter = 0;
 
         private Double _labelPaddingTop;
         private Double _labelPaddingBottom;
         private Double _labelPaddingRight;
         private Double _labelPaddingLeft;
 
-        internal Dictionary<String, int> ChartCounts = new Dictionary<string, int>();
-        internal Dictionary<String, int> IndexList = new Dictionary<string, int>();
-        private Rectangle _borderRectangle;
-        
-        private Canvas _parent;
-        private PlotDetails _plotDetails;
+        private Double _animationDuration;
 
+        internal Dictionary<String, Int32> ChartCounts = new Dictionary<String, Int32>();
+        internal Dictionary<String, Int32> IndexList = new Dictionary<String, Int32>();
+        internal Dictionary<Double, Point> _stackTotals = new Dictionary<Double, Point>();
+        
+        internal List<Canvas> AreaLine3D = new List<Canvas>();
+        private List<Storyboard> animation = new List<Storyboard>();
+        private List<DataSeries> _dataSeries;
+        private List<Title> _titles;
+        private List<Legend> _legends;
+        private List<TrendLine> _trendLines;
+        private List<ColorSet> _colorSets;
+
+        internal Boolean[] _plankDrawState = new Boolean[10];
+
+        private Canvas _parent;
+        internal Canvas[] Surface3D = new Canvas[10];
+        internal Canvas _areaLabelMarker = null;
+
+        private PlotDetails _plotDetails;
         private PlotArea _plotArea;
-        private System.Collections.Generic.List<Title> _titles;
-        private System.Collections.Generic.List<Legend> _legends;
         private AxisX _axisX;
         private AxisY _axisY;
-        private System.Collections.Generic.List<DataSeries> _dataSeries;
-
-        internal Dictionary<Double, Point> _stackSum = new Dictionary<double, Point>();
-
         private ToolTip _toolTip;
         private Label _label;
         private Image _logo;
@@ -3030,21 +2910,18 @@ namespace Visifire.Charts
         internal Rect _innerBounds;
         internal Rect _innerTitleBounds;
 
-        private System.Collections.Generic.List<TrendLine> _trendLines;
+
         private String _animationType;
-        private System.Collections.Generic.List<ColorSet> _colorSets;
-        internal Canvas[] Surface3D = new Canvas[10];
-        internal List<Canvas> AreaLine3D = new List<Canvas>();
-        internal Canvas _areaLabelMarker = null;
         private String _colorSet;
         private String _uniqueColors;
         private String _view3D;
         private String _animationEnabled;
-        private List<Storyboard> animation = new List<Storyboard>();
-        private TextBlock _watermark;
-        private Double _animationDuration;
+
         internal Rectangle _plotAreaBorder;
-        private Int32 _storyboardEndCounter = 0;
+        private Rectangle _zeroPlankBorderFront;
+        private Rectangle _zeroPlankBorderSide;
+        private TextBlock _watermark;
+        private Boolean _chartHitTestState;
         #endregion Data
     }
 }

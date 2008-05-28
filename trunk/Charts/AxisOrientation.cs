@@ -18,12 +18,12 @@
  
 */
 
-
-using System;
-using System.Windows.Documents;
-
-
 namespace Visifire.Charts
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    /// <summary>
+    /// AxisOrientation is classified into 4 general categories.
+    /// Orientation / Presence of AxisX and AxisY depends on this value.
+    /// Axes will not be present if AxisOrientation is Pie
+    /// </summary>
+    internal enum AxisOrientation { Undefined = 0, Bar = 1, Column = 2, Pie = 3 };
 }

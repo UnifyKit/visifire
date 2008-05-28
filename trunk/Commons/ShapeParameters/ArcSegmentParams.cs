@@ -20,59 +20,53 @@
 
 
 using System;
-using System.Windows.Documents;
+using System.Windows;
 using System.Windows.Media;
-using Visifire.Commons;
 
-namespace Visifire.Charts
+
+namespace Visifire.Commons
 {
-    public class Color: System.Windows.Controls.Canvas
+    public class ArcSegmentParams : PathGeometryParams
     {
-        #region Public Method
-
-        public Color()
+        #region Public Methods
+        public ArcSegmentParams(Size size, Double rotation, Boolean isLargeArc, SweepDirection sweepDirection, Point endPoint)
+            : base(endPoint)
         {
-
+            Size = size;
+            RotationAngle = rotation;
+            IsLargeArc = isLargeArc;
+            SweepDirection = sweepDirection;
         }
+        #endregion Public Methods
 
-        public Color(Brush brush)
-        {
-            this.Background = brush;
-        }
-
-        #endregion Public Method
-                
         #region Public Properties
-        public String Value
-        {
-            set
-            {
-                this.Background = Parser.ParseColor(value);
-                _color = value;
-            }
-            get
-            {
-                return _color;
-            }
-        }
-        #endregion Public Propertirs
 
-        #region Internal Method
-        internal Brush ColorValue
+        public Size Size
         {
-            get
-            {
-                return this.Background;
-            }
-            set
-            {
-                this.Background = value;
-            }
+            get;
+            set;
         }
-        #endregion Internal Method
 
-        #region Data
-        String _color;
-        #endregion  Data
+        public Double RotationAngle
+        {
+            get;
+            set;
+        }
+
+        public Boolean IsLargeArc
+        {
+            get;
+            set;
+        }
+
+        public SweepDirection SweepDirection
+        {
+            get;
+            set;
+        }
+
+        #endregion Public 
+
+        
     }
 }

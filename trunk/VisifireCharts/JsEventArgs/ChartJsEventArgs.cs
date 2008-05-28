@@ -18,12 +18,25 @@
  
 */
 
-
 using System;
-using System.Windows.Documents;
-
-
-namespace Visifire.Charts
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Browser;
+using Visifire.Charts;
+namespace VisifireCharts
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    /// <summary>
+    /// JavaScript event arguments for Chart
+    /// </summary>
+    [ScriptableType]
+    public class ChartJsEventArgs : JsEventArgs
+    {
+        #region Public Method
+
+        public ChartJsEventArgs(Chart chart, EventArgs e, String eventName)
+            : base(chart, chart, e, eventName)
+        { }
+
+        #endregion
+    }
 }

@@ -47,6 +47,7 @@
     <Compile Include="AxisLabel.cs" />
     <Compile Include="AxisLabels.cs" />
     <Compile Include="AxisManager.cs" />
+    <Compile Include="AxisOrientation.cs" />
     <Compile Include="AxisX.cs" />
     <Compile Include="AxisY.cs" />
     <Compile Include="BorderStyles.cs" />
@@ -54,8 +55,10 @@
     <Compile Include="ChartTypes.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="ColorSet.cs" />
+    <Compile Include="ChartConstants.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="DataSeries.cs" />
+    <Compile Include="ElementPositionData.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="Legend.cs" />
     <Compile Include="Image.cs" />

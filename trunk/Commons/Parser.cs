@@ -38,30 +38,25 @@ namespace Visifire.Commons
     {
         #region Static Methods
         /// <summary>
-        /// This converts a given string of angle;color,stop;.... string to a linear gradient brush
+        /// This converts a given String of angle;color,stop;.... String to a linear gradient brush
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
         public static Brush ParseLinearGradient(String str)
         {
             Double angle;
-            LinearGradientBrush brush = new LinearGradientBrush();
-            TransformGroup tg = new TransformGroup();
-            RotateTransform rt = new RotateTransform();
-
+            
             String[] strSplit = str.Split(';');
             angle = Double.Parse(strSplit[0],CultureInfo.InvariantCulture);
 
-            brush.StartPoint = new Point(0, 0);
-            brush.EndPoint = new Point(1, 0);
+            //rt.Angle = angle;
+            //rt.CenterX = .5;
+            //rt.CenterY = .5;
 
-            rt.Angle = angle;
-            rt.CenterX = .5;
-            rt.CenterY = .5;
+            //tg.Children.Add(rt);
+            //brush.RelativeTransform = tg;
 
-            tg.Children.Add(rt);
-            brush.RelativeTransform = tg;
-
+            GradientStopCollection gsc = new GradientStopCollection();
             foreach (String colorOffset in strSplit)
             {
                 String[] colorOffsetSplit = colorOffset.Split(',');
@@ -69,14 +64,97 @@ namespace Visifire.Commons
                 if (colorOffsetSplit.Length > 1)
                 {
                     GradientStop gs = (GradientStop)XamlReader.Load(@"<GradientStop xmlns=""http://schemas.microsoft.com/client/2007"" Color=""" + colorOffsetSplit[0] + @""" Offset=""" + colorOffsetSplit[1] + @"""/>");
-                    brush.GradientStops.Add(gs);
+                    gsc.Add(gs);
+                    
                 }
             }
+
+            LinearGradientBrush brush = new LinearGradientBrush();
+
+            brush.GradientStops = gsc;
+            brush.StartPoint = new Point(0, 0);
+            brush.EndPoint = new Point(1, 0);
+
+            // Rotate brush
+            TransformGroup tg = new TransformGroup();
+            RotateTransform rt = new RotateTransform();
+            rt.Angle = angle;
+            rt.CenterX = .5;
+            rt.CenterY = .5;
+
+            tg.Children.Add(rt);
+            brush.RelativeTransform = tg;
+
             return brush;
         }
 
         /// <summary>
-        /// This converts a given string of X;Y;color,stop;.... string to a radial gradient brush
+        /// This converts a given String of color,stop;.... String to a linear gradient brush
+        /// </summary>
+        /// <param name="str">color1,stop1;color2,stop2;.... String </param>
+        /// <param name="start">gradient start point</param>
+        /// <param name="end">gradient end point</param>
+        /// <returns></returns>
+        public static Brush ParseLinearGradient(String str, Point start, Point end)
+        {
+            LinearGradientBrush linearGradient = new LinearGradientBrush();
+
+            linearGradient.StartPoint = start;
+            linearGradient.EndPoint = end;
+
+            String[] colorStopSet = str.Split(';');
+
+            for (Int32 i = 0; i < colorStopSet.Length; i++)
+            {
+                String[] colorStop = colorStopSet[i].Split(',');
+                if (colorStop.Length > 1)
+                {
+                    GradientStop stops = (GradientStop)XamlReader.Load(@"<GradientStop xmlns=""http://schemas.microsoft.com/client/2007"" Color=""" + colorStop[0] + @""" Offset=""" + colorStop[1] + @"""/>");
+                    linearGradient.GradientStops.Add(stops);
+                }
+            }
+            return linearGradient;
+        }
+
+        /// <summary>
+        /// This converts a given String of color,intensity,stop;.... String to a linear gradient brush
+        /// </summary>
+        /// <param name="str">ShadeType1,intensity1,stop1;ShadeType2,intensity2,stop2;.... String</param>
+        /// <param name="color">color to be used for generating gradient</param>
+        /// <param name="angle">transform angle</param>
+        /// <returns></returns>
+        public static Brush ParseLinearGradient(String str, Color color,Double angle)
+        {
+            String linearGrad = angle.ToString() + ";";
+
+            String[] shadeValues = str.Split(';');
+            
+            foreach (String value in shadeValues)
+            {
+                String[] splitValue = value.Split(',');
+                if (splitValue.Length <= 2) continue;
+
+                Double intensity = Double.Parse(splitValue[1]);
+                Double stops = Double.Parse(splitValue[2]);
+
+                switch (splitValue[0])
+                {
+                    case "l":
+                    case "L":
+                        linearGrad += GetLighterColor(color,intensity).ToString() + "," + stops + ";";
+                        break;
+                    case "d":
+                    case "D":
+                        linearGrad += GetDarkerColor(color, intensity).ToString() + "," + stops + ";";
+                        break;
+                }
+            }
+
+            return ParseLinearGradient(linearGrad);
+        }
+
+        /// <summary>
+        /// This converts a given String of X;Y;color,stop;.... String to a radial gradient brush
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
@@ -106,7 +184,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Converts a color is string form to Solid Color Brush
+        /// Converts a color is String form to Solid Color Brush
         /// </summary>
         /// <param name="colorCode"></param>
         /// <returns></returns>
@@ -128,9 +206,10 @@ namespace Visifire.Commons
             darkerShade.R = (Byte)(color.R * intensity);
             darkerShade.G = (Byte)(color.G * intensity);
             darkerShade.B = (Byte)(color.B * intensity);
-            darkerShade.A = 255;
+            darkerShade.A = color.A;
             return darkerShade;
         }
+
         public static System.Windows.Media.Color GetDarkerColor(System.Windows.Media.Color color, Double intensityR, Double intensityG, Double intensityB)
         {
             Color darkerShade = new Color();
@@ -140,9 +219,10 @@ namespace Visifire.Commons
             darkerShade.R = (Byte)(color.R * intensityR);
             darkerShade.G = (Byte)(color.G * intensityG);
             darkerShade.B = (Byte)(color.B * intensityB);
-            darkerShade.A = 255;
+            darkerShade.A = color.A;
             return darkerShade;
         }
+
         /// <summary>
         /// Returns a lighter shade of the color by increasing the brightness by the given intensity value
         /// </summary>
@@ -156,9 +236,10 @@ namespace Visifire.Commons
             lighterShade.R = (Byte)(256 - ((256 - color.R) * intensity));
             lighterShade.G = (Byte)(256 - ((256 - color.G) * intensity));
             lighterShade.B = (Byte)(256 - ((256 - color.B) * intensity));
-            lighterShade.A = 255;
+            lighterShade.A = color.A;
             return lighterShade;
         }
+
         public static System.Windows.Media.Color GetLighterColor(System.Windows.Media.Color color, Double intensityR, Double intensityG, Double intensityB)
         {
             Color lighterShade = new Color();
@@ -168,7 +249,7 @@ namespace Visifire.Commons
             lighterShade.R = (Byte)(256 - ((256 - color.R) * intensityR));
             lighterShade.G = (Byte)(256 - ((256 - color.G) * intensityG));
             lighterShade.B = (Byte)(256 - ((256 - color.B) * intensityB));
-            lighterShade.A = 255;
+            lighterShade.A = color.A;
             return lighterShade;
         }
 
@@ -197,7 +278,7 @@ namespace Visifire.Commons
         public static System.Windows.Media.Color InvertColor(System.Windows.Media.Color color)
         {
             Color newColor = new Color();
-            newColor.A = 255;
+            newColor.A = color.A;
             newColor.R = (Byte)(255 - color.R);
             newColor.G = (Byte)(255 - color.G);
             newColor.B = (Byte)(255 - color.B);
@@ -231,6 +312,16 @@ namespace Visifire.Commons
             return newBrush;
         }
 
+        public static Color RemoveAlpha(Color color)
+        {
+            Color newColor = new Color();
+            newColor.A = 255;
+            newColor.R = color.R;
+            newColor.G = color.G;
+            newColor.B = color.B;
+            return newColor;
+        }
+
         public static Double GetBrushIntensity(Brush brush)
         {
             Color color = new Color();
@@ -254,7 +345,7 @@ namespace Visifire.Commons
             }
             else
             {
-                intensity = 0;
+                intensity = 1;
             }
             return intensity;
         }
@@ -275,159 +366,258 @@ namespace Visifire.Commons
                     return ParseLinearGradient(colorString);
             }
         }
+
+        public static Brush GetDefaultFontColor(Double intensity)
+        {
+            Brush brush = null;
+            if (intensity < 0.5)
+            {
+                brush = ParseSolidColor("#EFEFEF");
+            }
+            else
+            {
+                brush = ParseSolidColor("#000000");
+            }
+            return brush;
+        }
+
+        public static Brush GetDefaultBorderColor(Double intensity)
+        {
+            Brush brush = null;
+            if (intensity < 0.5)
+            {
+                brush = ParseSolidColor("#BBBBBB");
+            }
+            else
+            {
+                brush = ParseSolidColor("#000000");
+            }
+            return brush;
+        }
+
+        public static Brush GenerateBrush(Brush baseBrush,Boolean replicateBrush, GradientParams gradientParams)
+        {
+             Brush generatedBrush = null;
+
+            if (baseBrush.GetType().Name == "LinearGradientBrush")
+            {
+                if (replicateBrush)
+                    return Cloner.CloneBrush(baseBrush);
+
+                LinearGradientBrush brush = baseBrush as LinearGradientBrush;
+                generatedBrush = new LinearGradientBrush();
+
+                (generatedBrush as LinearGradientBrush).StartPoint = new Point(gradientParams._linearGradientParams._startPoint.X, gradientParams._linearGradientParams._startPoint.Y);
+                (generatedBrush as LinearGradientBrush).EndPoint = new Point(gradientParams._linearGradientParams._endPoint.X,gradientParams._linearGradientParams._endPoint.Y);
+
+                switch(gradientParams._linearGradientParams._shadeType)
+                {
+                    case "l":
+                    case "L":
+                        Parser.GenerateLighterGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._linearGradientParams._intensity);
+                        break;
+                    case "d":
+                    case "D":
+                        Parser.GenerateDarkerGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._linearGradientParams._intensity);
+                        break;
+
+                }
+                if (!Double.IsNaN(gradientParams._linearGradientParams._angle))
+                {
+                    RotateTransform rt = new RotateTransform();
+                    rt.Angle = gradientParams._linearGradientParams._angle;
+                    generatedBrush.RelativeTransform = rt;
+                }
+
+            }
+            else if (baseBrush.GetType().Name == "RadialGradientBrush")
+            {
+                if (replicateBrush)
+                    return Cloner.CloneBrush(baseBrush);
+
+                RadialGradientBrush brush = baseBrush as RadialGradientBrush;
+
+                generatedBrush = new RadialGradientBrush();
+
+                (generatedBrush as RadialGradientBrush).GradientOrigin = brush.GradientOrigin;
+
+                switch (gradientParams._radialGradientParams._shadeType)
+                {
+                    case "l":
+                    case "L":
+                        Parser.GenerateDarkerGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._radialGradientParams._intensity);
+                        break;
+                    case "d":
+                    case "D":
+                        Parser.GenerateLighterGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._radialGradientParams._intensity);
+                        break;
+                }
+            }
+            else if (baseBrush.GetType().Name == "SolidColorBrush")
+            {
+                SolidColorBrush brush = baseBrush as SolidColorBrush;
+                if (gradientParams._solidBrushParams._isGrad)
+                {
+                    generatedBrush = Parser.ParseLinearGradient(gradientParams._solidBrushParams._gradString, brush.Color, gradientParams._solidBrushParams._angle);
+                }
+                else
+                {
+                    switch (gradientParams._solidBrushParams._shadeType)
+                    {
+                        case "l":
+                        case "L":
+                            generatedBrush = new SolidColorBrush(Parser.GetLighterColor(brush.Color, gradientParams._solidBrushParams._intensity));
+                            break;
+                        case "d":
+                        case "D":
+                            generatedBrush = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, gradientParams._solidBrushParams._intensity));
+                            break;
+                        default:
+                            generatedBrush = Cloner.CloneBrush(brush);
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                generatedBrush = Cloner.CloneBrush(baseBrush);
+            }
+
+            return generatedBrush;
+        }
+
+        public static DoubleCollection GetStrokeDashArray(String dashType)
+        {
+            if (dashType == null) return null;
+
+            DoubleCollection dashArray = new DoubleCollection();
+
+            switch (dashType.ToLower())
+            {
+                case "solid":
+                    dashArray = null;
+                    break;
+
+                case "dashed":
+                    dashArray.Clear();
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    break;
+
+                case "dotted":
+                    dashArray.Clear();
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    break;
+
+            }
+
+            return dashArray;
+        }
+
+        public static PathGeometry GetPathGeometryFromList(FillRule fillRule, Point startPoint, List<PathGeometryParams> pathGeometryParams)
+        {
+            PathGeometry pathGeometry = new PathGeometry();
+
+            pathGeometry.FillRule = fillRule;
+            pathGeometry.Figures = new PathFigureCollection();
+
+            PathFigure pathFigure = new PathFigure();
+
+            pathFigure.StartPoint = startPoint;
+            pathFigure.Segments = new PathSegmentCollection();
+
+            foreach (PathGeometryParams param in pathGeometryParams)
+            {
+                switch (param.GetType().Name)
+                {
+                    case "LineSegmentParams":
+                        LineSegment lineSegment = new LineSegment();
+                        lineSegment.Point = param.EndPoint;
+                        pathFigure.Segments.Add(lineSegment);
+                        break;
+
+                    case "ArcSegmentParams":
+                        ArcSegment arcSegment = new ArcSegment();
+                        arcSegment.Point = param.EndPoint;
+                        arcSegment.IsLargeArc = (param as ArcSegmentParams).IsLargeArc;
+                        arcSegment.RotationAngle = (param as ArcSegmentParams).RotationAngle;
+                        arcSegment.SweepDirection = (param as ArcSegmentParams).SweepDirection;
+                        arcSegment.Size = (param as ArcSegmentParams).Size;
+                        pathFigure.Segments.Add(arcSegment);
+                        break;
+                }
+            }
+
+            pathGeometry.Figures.Add(pathFigure);
+
+            return pathGeometry;
+        }
+
+        public static GeometryGroup GetGeometryGroupFromList(FillRule fillRule, List<Object> geometryGroupParams)
+        {
+            GeometryGroup geometryGroup = new GeometryGroup();
+
+            geometryGroup.Children = new GeometryCollection();
+            geometryGroup.FillRule = fillRule;
+
+            foreach (Object param in geometryGroupParams)
+            {
+                switch (param.GetType().Name)
+                {
+                    case "EllipseGeometryParams":
+                        EllipseGeometryParams ellipse = param as EllipseGeometryParams;
+                        geometryGroup.Children.Add(GetEllipseGeometry(ellipse.Center, ellipse.RadiusX, ellipse.RadiusY));
+                        break;
+                }
+            }
+
+            return geometryGroup;
+        }
+
+        public static EllipseGeometry GetEllipseGeometry(Point center, Double radiusX, Double radiusY)
+        {
+            EllipseGeometry ellipseGeometry = new EllipseGeometry();
+            ellipseGeometry.Center = center;
+            ellipseGeometry.RadiusX = radiusX;
+            ellipseGeometry.RadiusY = radiusY;
+
+            return ellipseGeometry;
+        }
+
+        /// <summary>
+        /// Accepts absolute or relative Uri, builds and returns abslute path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static String BuildAbsolutePath(String path)
+        {
+            Uri ur = new Uri(path, UriKind.RelativeOrAbsolute);
+            if (ur.IsAbsoluteUri)
+            {
+                return ur.AbsoluteUri;
+            }
+            else if (path.StartsWith("/"))
+            {
+                UriBuilder baseUri = new UriBuilder(Constants.Html.BaseUri);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, path);
+                return newUri.ToString();
+            }
+            else
+            {
+                UriBuilder baseUri = new UriBuilder(Constants.Html.BaseUri);
+                String sourcePath = baseUri.Path.Substring(0, baseUri.Path.LastIndexOf('/') + 1);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + path);
+                return newUri.ToString();
+            }
+        }
+
         #endregion Static Methods
 
     }
 
-
-    public class PointMath
-    {
-        #region Static Methods
-        /// <summary>
-        /// calculates distance between two points
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        public static Double DistanceFormulae(Point point1, Point point2)
-        {
-            return Math.Sqrt(Math.Pow(point1.X-point2.X,2) + Math.Pow(point1.Y-point2.Y,2));
-        }
-
-        /// <summary>
-        /// Calculate Centroid from given point collection
-        /// </summary>
-        /// <param name="points"></param>
-        /// <returns></returns>
-        public static Point Centroid(List<Point> points)
-        {
-            Double Area = 0;
-            Double X = 0, Y = 0;
-            int i = 0;
-
-            //Calculate area of the polygon
-            for (i = 0; i < points.Count - 1; i++)
-            {
-                Area += (points[i].X*points[i+1].Y -points[i].Y*points[i+1].X);
-            }
-            Area /= 2;
-
-            //Calculate centroid X
-            for (i = 0; i < points.Count - 1; i++)
-            {
-                X += ((points[i].X + points[i + 1].X) * (points[i].X * points[i + 1].Y - points[i].Y * points[i + 1].X));
-            }
-            X /= (6 * Area);
-            //Calculate Centroid Y
-            for (i = 0; i < points.Count - 1; i++)
-            {
-                Y += ((points[i].Y + points[i + 1].Y) * (points[i].X * points[i + 1].Y - points[i].Y * points[i + 1].X));
-            }
-            Y /= (6 * Area);
-            return new Point(X, Y);
-            
-        }
-
-        /// <summary>
-        /// Calculates the slope of the line joining the two points
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        public static Double LineSlope(Point point1, Point point2)
-        {
-            return (point2.Y - point1.Y) / (point2.X - point1.X);
-        }
-
-        /// <summary>
-        /// Calculates intercept of a line joining the two points
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        public static Double LineIntercept(Point point1, Point point2)
-        {
-            return point1.Y - LineSlope(point1, point2) * point1.X;
-        }
-
-        /// <summary>
-        /// Calculates the slope and intercept and returns X=slope and Y=intercept
-        /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        public static Point SlopeIntercept(Point point1, Point point2)
-        {
-            Double slope = LineSlope(point1, point2);
-            Double intercept = LineIntercept(point1, point2);
-            return new Point(slope, intercept);
-        }
-
-
-        /// <summary>
-        /// Gets a point which is reduced by a given value in distance from point1 and closest to point2
-        /// </summary>
-        /// <param name="reduceAmt"></param>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
-        /// <returns></returns>
-        public static Point PointFromLength(Double reduceAmt, Point point1, Point point2)
-        {
-            Double length = DistanceFormulae(point1, point2);
-            Double l = Math.Abs(length - reduceAmt);
-
-            Double a, b, c;
-            Point temp=SlopeIntercept(point1,point2); //to store slope and intercept
-
-            a = 1 + Math.Pow(temp.X,2);
-
-            b= 2*(temp.X*temp.Y - point1.X - point1.Y*temp.X);
-
-            c = Math.Pow(point1.X, 2) + Math.Pow(point1.Y, 2) + Math.Pow(temp.Y, 2) - 2 * point1.Y * temp.Y - l * l;
-
-            Double x1, x2,d;
-            d = b*b-4*a*c;
-            if (d < 0)
-            {
-                return point1;
-            }
-            else
-            {
-                x1 = (-b + Math.Sqrt(d))/(2*a);
-                x2 = (-b - Math.Sqrt(d)) / (2 * a);
-            }
-
-            Double X,Y;
-            if (Math.Abs(point2.X - x1) < Math.Abs(point2.X - x2))
-                X = x1;
-            else
-                X = x2;
-
-            Y = temp.X * X + temp.Y;
-
-            return new Point(X, Y);
-        }
-
-        public static Boolean DoubleLT(Double a,Double b)
-        {
-            return a < b;
-        }
-        public static Boolean DoubleGT(Double a, Double b)
-        {
-            return a > b;
-        }
-        public static Boolean DoubleEQ(Double a, Double b)
-        {
-            return Math.Abs(a - b) < Double.Epsilon;
-        }
-        public static Boolean DoubleGE(Double a, Double b)
-        {
-            return DoubleGT(a, b) || DoubleEQ(a, b);
-        }
-        public static Boolean DoubleLE(Double a, Double b)
-        {
-            return DoubleLT(a, b) || DoubleEQ(a, b);
-        }
-        #endregion Static Methods
-    }
 }

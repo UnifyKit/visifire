@@ -136,6 +136,26 @@ namespace Visifire.Charts
             }
         }
 
+        public Brush GetDefaultFontColor()
+        {
+            Brush tempBrush = null;
+
+            if (Background == null)
+            {
+                if (_parent.Background != null && !DockInsidePlotArea) tempBrush = _parent.Background;
+                else if (_parent.PlotArea.Background != null && DockInsidePlotArea) tempBrush = _parent.PlotArea.Background;
+                else tempBrush = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                tempBrush = Background;
+            }
+
+            Double intensity = Parser.GetBrushIntensity(tempBrush);
+
+            return Parser.GetDefaultFontColor(intensity);
+        }
+
         public override void Init()
         {
             // Validate the parent
@@ -149,11 +169,11 @@ namespace Visifire.Charts
                 else
                     WrapSize = _parent.Width;
             }
-            base.Init();
 
             // Set a default name for the Title
             SetName();
 
+            base.Init();
 
             AttachToolTip();
             AttachHref();
@@ -185,28 +205,7 @@ namespace Visifire.Charts
             // if font color is not set then set font color
             if (_fontColor == null)
             {
-                Brush tempBrush = null;
-
-                if (Background == null)
-                {
-                    if (_parent.Background != null && !DockInsidePlotArea) tempBrush = Cloner.CloneBrush(_parent.Background);
-                    else if (_parent.PlotArea.Background != null && DockInsidePlotArea) tempBrush = Cloner.CloneBrush(_parent.PlotArea.Background);
-                    else tempBrush = new SolidColorBrush(Colors.Transparent);
-                }
-                else
-                {
-                    tempBrush = Cloner.CloneBrush(Background);
-                }
-
-
-                Double intensity = Parser.GetBrushIntensity(tempBrush);
-                if (intensity < 0.5)
-                {
-
-                    _textBlock.Foreground = Parser.ParseSolidColor("#BBBBBB");
-                }
-                else
-                    _textBlock.Foreground = new SolidColorBrush(Colors.Black);
+                _textBlock.Foreground = GetDefaultFontColor();
 
             }
             else
@@ -265,9 +264,7 @@ namespace Visifire.Charts
 
         public override void Render()
         {
-
             base.Render();
-
         }
 
         /// <summary>
@@ -277,7 +274,7 @@ namespace Visifire.Charts
         {
 
             Double left = 0;
-            bool flag = false;
+            Boolean flag = false;
 
             // As there can be multiple Title elements, place Title by looking at other Title elements.
             // Other title elements to be considered only if DockInsidePlotArea is false. This is because,
@@ -320,7 +317,6 @@ namespace Visifire.Charts
                         _parent._innerTitleBounds.X = left + Width;
                         _parent._innerTitleBounds.Width -= Width;
                     }
-
                 }
                 else
                     left = _parent.Padding + _parent.BorderThickness + (_parent.Width - this.Width - 2 * _parent.Padding - 2 * _parent.BorderThickness) * GetRelativePosX(AlignmentX);
@@ -351,11 +347,11 @@ namespace Visifire.Charts
         /// </summary>
         public override void SetTop()
         {
-
             Double top = 0;
             Double tempTop = _parent.Padding;
 
             Double childHeight = 0;
+
             if (!DockInsidePlotArea)
             {
                 top = _parent.Padding + _parent.BorderThickness + (_parent.Height - this.Height - _parent.Padding - _parent.BorderThickness) * GetRelativePosY(AlignmentY);
@@ -365,7 +361,7 @@ namespace Visifire.Charts
                 top = (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.Padding + (_parent.PlotArea.Height - this.Height - _parent.Padding) * GetRelativePosY(AlignmentY);
             }
             switch (AlignmentY)
-            {
+            {   
                 case AlignmentY.Top:
 
                     foreach (Title child in _parent.Titles)
@@ -385,7 +381,9 @@ namespace Visifire.Charts
                             }
                         }
                     }
+
                     tempTop += childHeight;
+
                     if (tempTop > top) top = tempTop;
                     this.SetValue(Canvas.TopProperty, top);
                     // Set the inner bounds
@@ -419,8 +417,10 @@ namespace Visifire.Charts
                                 }
                             }
                         }
+
                         tempTop += childHeight;
                         if (tempTop > top) top = tempTop;
+
                     }
                     this.SetValue(TopProperty, top);
                     break;
@@ -485,7 +485,7 @@ namespace Visifire.Charts
 
             // Get each title from the titles collection
             foreach (Title title in titles)
-            {
+            {   
                 // check for docking state
                 if (!title.DockInsidePlotArea)
                 {
@@ -545,7 +545,7 @@ namespace Visifire.Charts
 
         #endregion Public Properties
 
-        #region Private and Internal Methods
+        #region Private Methods
         
         /// <summary>
         /// Gives the horizontal position with respect to its parent on a Scale of 0 - 1 Depending on the AlignmentX property.
@@ -592,33 +592,6 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
-        
-
-        /// <summary>
         /// Checks if the two tiles overalp horizontlly
         /// </summary>
         /// <param name="title1"></param>
@@ -636,15 +609,36 @@ namespace Visifire.Charts
             return false;
         }
 
-        
-
-        
-
         #endregion Private Methods
+
+        #region Internal Methods
+
+        internal void PlaceOutsidePlotArea()
+        {
+            if (!DockInsidePlotArea)
+                PlaceTitle();
+        }
+
+        internal void PlaceInsidePlotArea()
+        {
+            if (DockInsidePlotArea)
+                PlaceTitle();
+        }
+
+        internal void PlaceTitle()
+        {
+            SetWidth();
+            SetHeight();
+            SetLeft();
+            SetTop();
+        }
+
+        #endregion Internal Methods
 
         #region Data
 
-        private Chart _parent;                                  // Parent should always be a Chart
+        // Parent should always be a Chart
+        private Chart _parent;                                  
         
         #endregion Data
 

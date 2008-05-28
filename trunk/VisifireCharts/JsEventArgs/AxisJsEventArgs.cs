@@ -18,12 +18,36 @@
  
 */
 
-
 using System;
-using System.Windows.Documents;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Browser;
+using Visifire.Charts;
 
-
-namespace Visifire.Charts
+namespace VisifireCharts
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    /// <summary>
+    /// JavaScript event arguments for AxisX
+    /// </summary>
+    [ScriptableType]
+    public class AxisJsEventArgs : JsEventArgs
+    {
+        #region Public Method
+
+        public AxisJsEventArgs(Axes axis, EventArgs e, String eventName)
+            : base(axis.Parent as Chart, axis, e, eventName)
+        {
+            Name = axis.Name;
+            Title = axis.Title;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public String Name { get; set; }
+        public String Title { get; set; }
+
+        #endregion
+    }
 }

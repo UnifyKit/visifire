@@ -119,11 +119,11 @@ namespace Visifire.Charts
                                 _minAxisXValue = item.XValue;
                         }
 
-                        if (_maxAxisYValue < item.YValue)
-                            _maxAxisYValue = item.YValue;
+                        if (_maxAxisYValue < item.CorrectedYValue)
+                            _maxAxisYValue = item.CorrectedYValue;
 
-                        if (_minAxisYValue > item.YValue)
-                            _minAxisYValue = item.YValue;
+                        if (_minAxisYValue > item.CorrectedYValue)
+                            _minAxisYValue = item.CorrectedYValue;
                     }
 
                 }
@@ -132,7 +132,7 @@ namespace Visifire.Charts
             else if (ChartType == ChartTypes.StackedColumn || ChartType == ChartTypes.StackedArea
                      || ChartType == ChartTypes.StackedBar)
             {
-                System.Collections.Generic.Dictionary<Double, Point> minMax = new System.Collections.Generic.Dictionary<double, Point>();
+                System.Collections.Generic.Dictionary<Double, Point> minMax = new System.Collections.Generic.Dictionary<Double, Point>();
 
 
                 // Point.X corresponds to minimum;
@@ -144,16 +144,16 @@ namespace Visifire.Charts
                     {
                         if (!minMax.ContainsKey(datapoint.XValue))
                         {
-                            minMax[datapoint.XValue] = new Point(0.00000001, 0);
+                            minMax[datapoint.XValue] = new Point(0, 0);
 
                         }
 
                         Point point = minMax[datapoint.XValue];
 
-                        if (datapoint.YValue > 0)
-                            point.Y += datapoint.YValue;
+                        if (datapoint.CorrectedYValue > 0)
+                            point.Y += datapoint.CorrectedYValue;
                         else
-                            point.X += datapoint.YValue;
+                            point.X += datapoint.CorrectedYValue;
 
                         minMax[datapoint.XValue] = point;
 
@@ -175,10 +175,10 @@ namespace Visifire.Charts
             else if (ChartType == ChartTypes.StackedColumn100 || ChartType == ChartTypes.StackedArea100
                     || ChartType == ChartTypes.StackedBar100)
             {
-                YValueSum = new System.Collections.Generic.Dictionary<double, double>();
+                YValueSum = new System.Collections.Generic.Dictionary<Double, Double>();
 
-                _maxAxisYValue = 100;
-                _minAxisYValue = 0.000001;
+                _maxAxisYValue = Double.MinValue;
+                _minAxisYValue = Double.MaxValue;
 
 
                 foreach (DataSeries dataseries in _dataSeries)
@@ -189,18 +189,19 @@ namespace Visifire.Charts
 
                         if (!YValueSum.ContainsKey(datapoint.XValue))
                         {
-                            YValueSum[datapoint.XValue] = Math.Abs(datapoint.YValue);
+                            YValueSum[datapoint.XValue] = Math.Abs(datapoint.CorrectedYValue);
                         }
                         else
                         {
-                            YValueSum[datapoint.XValue] = YValueSum[datapoint.XValue] + Math.Abs(datapoint.YValue);
+                            YValueSum[datapoint.XValue] = YValueSum[datapoint.XValue] + Math.Abs(datapoint.CorrectedYValue);
                         }
 
 
-                        if (datapoint.YValue >= 0)
-                            _maxAxisYValue = 99.99999;
-                        else
-                            _minAxisYValue = -99.9999;
+                        if (datapoint.CorrectedYValue > _maxAxisYValue)
+                            _maxAxisYValue = datapoint.CorrectedYValue;
+
+                        if (datapoint.CorrectedYValue < _minAxisYValue)
+                            _minAxisYValue = datapoint.CorrectedYValue;
 
                         if (_maxAxisXValue < datapoint.XValue)
                             _maxAxisXValue = datapoint.XValue;
@@ -209,12 +210,19 @@ namespace Visifire.Charts
                             _minAxisXValue = datapoint.XValue;
                     }
                 }
+
+                if (_maxAxisYValue > 0) _maxAxisYValue = 99.9999;
+                else _maxAxisYValue = 0;
+
+                if (_minAxisYValue >= 0) _minAxisYValue = 0;
+                else _minAxisYValue = -99.9999;
+
             }
         }
 
         private void CalcMinDifference()
         {
-            int totalDataPoints = 0;
+            Int32 totalDataPoints = 0;
 
             foreach (DataSeries ds in _dataSeries)
             {
@@ -248,6 +256,7 @@ namespace Visifire.Charts
         #endregion Private Methods
 
         #region Internal Properties
+
         internal Double MaxAxisXValue
         {
             get

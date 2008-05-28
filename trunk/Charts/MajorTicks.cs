@@ -47,17 +47,6 @@ namespace Visifire.Charts
 
         #region Line Properties
 
-        internal Brush LineBackground
-        {
-            get
-            {
-                return _lineBackground;
-            }
-            set
-            {
-                _lineBackground = value;
-            }
-        }
         public String LineColor
         {
             set
@@ -92,7 +81,7 @@ namespace Visifire.Charts
         }
         #endregion Line Properties
 
-        public bool Enabled
+        public Boolean Enabled
         {
             get;
             set;
@@ -122,7 +111,7 @@ namespace Visifire.Charts
             get
             {
                 if (Double.IsNaN(_tickLength) || _tickLength == 0)
-                    _tickLength = 10;
+                    _tickLength = 5;
                 return _tickLength;
             }
             set
@@ -131,6 +120,17 @@ namespace Visifire.Charts
             }
         }
 
+        internal Brush LineBackground
+        {
+            get
+            {
+                return _lineBackground;
+            }
+            set
+            {
+                _lineBackground = value;
+            }
+        }
         #endregion Internal properties
 
         #region Internal Methods
@@ -146,409 +146,15 @@ namespace Visifire.Charts
 
             if ((_parent.Parent as Chart).View3D && _parent.GetType().Name == "AxisX" && _parent.AxisOrientation == AxisOrientation.Column)
             {
-                this.Children.Clear();
-                Rectangle rectBase = new Rectangle();
-                Rectangle rectFront = new Rectangle();
-                Rectangle rectSide = new Rectangle();
-
-                Chart chart = _parent.Parent as Chart;
-
-                rectBase.Width = chart.AxisX.DoubleToPixel(chart.AxisX.AxisMaximum) - (Double)rectBase.GetValue(LeftProperty);
-                rectBase.Height = TickLength;
-
-
-                rectFront.SetValue(TopProperty, TickLength);
-                rectFront.SetValue(LeftProperty, -TickLength);
-
-
-                rectFront.Width = rectBase.Width;
-                rectFront.Height = _parent.PlankThickness;
-
-                rectSide.SetValue(LeftProperty, rectFront.Width - TickLength);
-                rectSide.SetValue(TopProperty, rectBase.Height);
-
-                rectSide.Width = TickLength;
-                rectSide.Height = rectFront.Height;
-
-                #region Color Gradient
-                Brush brush2 = null;
-                Brush brushShade = null;
-                Brush brushFront = null;
-                Brush tempBrush;
-                if ((_parent.Parent as Chart).PlotArea.Background != null)
-                    tempBrush = (_parent.Parent as Chart).PlotArea.Background;
-                else if ((_parent.Parent as Chart).Background != null)
-                    tempBrush = (_parent.Parent as Chart).Background;
-                else
-                    tempBrush = Parser.ParseLinearGradient("0;#afafaf,0;#efefef,1");
-
-
-
-                if (tempBrush.GetType().Name == "LinearGradientBrush")
-                {
-                    LinearGradientBrush brush = tempBrush as LinearGradientBrush;
-                    brush2 = Cloner.CloneBrush(tempBrush);
-                    String linBrush1 = "-90;", linBrush2 = "-90;";
-
-                    foreach (GradientStop grad in brush.GradientStops)
-                    {
-
-                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.9) + ",";
-                        linBrush1 += grad.Offset.ToString() + ";";
-
-                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                        linBrush2 += grad.Offset.ToString() + ";";
-                    }
-                    brushFront = Parser.ParseLinearGradient(linBrush1);
-                    brushShade = Parser.ParseLinearGradient(linBrush2);
-
-                }
-                else if (tempBrush.GetType().Name == "RadialGradientBrush")
-                {
-                    RadialGradientBrush brush = tempBrush as RadialGradientBrush;
-                    brush2 = Cloner.CloneBrush(tempBrush);
-                    String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
-
-                    foreach (GradientStop grad in brush.GradientStops)
-                    {
-
-                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                        linBrush1 += grad.Offset.ToString() + ";";
-
-                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                        linBrush2 += grad.Offset.ToString() + ";";
-                    }
-                    brushFront = Parser.ParseRadialGradient(linBrush1);
-                    brushShade = Parser.ParseRadialGradient(linBrush2);
-
-                }
-                else if (tempBrush.GetType().Name == "SolidColorBrush")
-                {
-                    SolidColorBrush brush = tempBrush as SolidColorBrush;
-
-                    //In case of video or image brush will have null
-                    String linbrush;
-                    linbrush = "-90;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
-                    linbrush += ",0;";
-                    linbrush += Parser.GetLighterColor(brush.Color, 0.35);
-                    linbrush += ",1";
-
-                    brush2 = Parser.ParseLinearGradient(linbrush);
-
-                    linbrush = "-90;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
-                    linbrush += ",0;";
-                    linbrush += Parser.GetLighterColor(brush.Color, 0.55);
-                    linbrush += ",1";
-
-
-                    brushFront = Parser.ParseLinearGradient(linbrush);
-
-                    linbrush = "-120;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
-                    linbrush += ",0;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
-                    linbrush += ",1";
-
-                    brushShade = Parser.ParseLinearGradient(linbrush);
-
-                }
-                #endregion Color Gradient
-
-                rectBase.Fill = Cloner.CloneBrush(brush2);
-                rectSide.Fill = Cloner.CloneBrush(brushShade);
-                rectFront.Fill = Cloner.CloneBrush(brushFront);
-
-                rectFront.StrokeThickness = 1;
-                rectBase.StrokeThickness = 1;
-                rectSide.StrokeThickness = 1;
-
-                rectFront.Opacity = 1;
-                rectBase.Opacity = 1;
-                rectSide.Opacity = 1;
-
-                SkewTransform st = new SkewTransform();
-                st.AngleX = -45;
-
-                rectBase.RenderTransform = st;
-
-
-                st = new SkewTransform();
-                st.AngleY = -45;
-
-                rectSide.RenderTransform = st;
-
-                this.Height = rectBase.Height + rectFront.Height;
-                this.Children.Add(rectBase);
-                this.Children.Add(rectFront);
-                this.Children.Add(rectSide);
-
-
+                DrawPlankColumnOrientation();
             }
             else if ((_parent.Parent as Chart).View3D && _parent.GetType().Name == "AxisX" && _parent.AxisOrientation == AxisOrientation.Bar)
             {
-                this.Children.Clear();
-                Rectangle rectBase = new Rectangle();
-                Rectangle rectFront = new Rectangle();
-                Rectangle rectSide = new Rectangle();
-
-                Chart chart = _parent.Parent as Chart;
-
-                rectBase.Width = _parent.PlankThickness;
-                rectBase.Height = TickLength;
-                rectBase.SetValue(TopProperty, 0);
-                rectBase.SetValue(LeftProperty, TickLength);
-
-                rectFront.SetValue(TopProperty, TickLength);
-                rectFront.SetValue(LeftProperty, 0);
-                rectFront.Height = chart.AxisX.DoubleToPixel(chart.AxisX.AxisMinimum) - chart.AxisX.DoubleToPixel(chart.AxisX.AxisMaximum);
-                rectFront.Width = _parent.PlankThickness;
-
-                rectSide.Height = rectFront.Height;
-                rectSide.Width = TickLength;
-                rectSide.SetValue(TopProperty, TickLength);
-                rectSide.SetValue(LeftProperty, _parent.PlankThickness);
-
-
-
-
-                #region Color Gradient
-                Brush brush2 = null;
-                Brush brushShade = null;
-                Brush brushFront = null;
-                Brush tempBrush;
-                if ((_parent.Parent as Chart).PlotArea.Background != null)
-                    tempBrush = (_parent.Parent as Chart).PlotArea.Background;
-                else if ((_parent.Parent as Chart).Background != null)
-                    tempBrush = (_parent.Parent as Chart).Background;
-                else
-                    tempBrush = Parser.ParseLinearGradient("0;#afafaf,0;#efefef,1");
-
-                if (tempBrush.GetType().Name == "LinearGradientBrush")
-                {
-                    LinearGradientBrush brush = tempBrush as LinearGradientBrush;
-                    brush2 = Cloner.CloneBrush(tempBrush);
-                    String linBrush1 = "0;", linBrush2 = "45;";
-
-                    foreach (GradientStop grad in brush.GradientStops)
-                    {
-
-                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                        linBrush1 += grad.Offset.ToString() + ";";
-
-                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                        linBrush2 += grad.Offset.ToString() + ";";
-                    }
-                    brushFront = Parser.ParseLinearGradient(linBrush1);
-                    brushShade = Parser.ParseLinearGradient(linBrush2);
-
-                }
-                else if (tempBrush.GetType().Name == "RadialGradientBrush")
-                {
-                    RadialGradientBrush brush = tempBrush as RadialGradientBrush;
-                    brush2 = Cloner.CloneBrush(tempBrush);
-                    String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
-
-                    foreach (GradientStop grad in brush.GradientStops)
-                    {
-
-                        linBrush1 += Parser.GetDarkerColor(grad.Color, 0.65) + ",";
-                        linBrush1 += grad.Offset.ToString() + ";";
-
-                        linBrush2 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                        linBrush2 += grad.Offset.ToString() + ";";
-                    }
-                    brushFront = Parser.ParseRadialGradient(linBrush1);
-                    brushShade = Parser.ParseRadialGradient(linBrush2);
-
-                }
-                else if (tempBrush.GetType().Name == "SolidColorBrush")
-                {
-                    SolidColorBrush brush = tempBrush as SolidColorBrush;
-
-                    //In case of video or image brush will have null
-                    String linbrush;
-                    linbrush = "135;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
-                    linbrush += ",0;";
-                    if(Parser.GetBrushIntensity(brush)>0.5)
-                        linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
-                    else
-                        linbrush += Parser.GetLighterColor(brush.Color, 0.35);
-                    linbrush += ",1";
-
-                    brush2 = Parser.ParseLinearGradient(linbrush);
-
-                    linbrush = "0;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
-                    linbrush += ",0;";
-                    if (Parser.GetBrushIntensity(brush) > 0.5)
-                        linbrush += Parser.GetLighterColor(brush.Color, 0.90);
-                    else
-                        linbrush += Parser.GetLighterColor(brush.Color, 0.55);
-                    linbrush += ",1";
-
-
-                    brushFront = Parser.ParseLinearGradient(linbrush);
-
-                    linbrush = "90;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
-                    linbrush += ",0;";
-                    linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
-                    linbrush += ",1";
-
-                    brushShade = Parser.ParseLinearGradient(linbrush);
-
-                }
-                #endregion Color Gradient
-
-                rectBase.Fill = Cloner.CloneBrush(brush2);
-                rectSide.Fill = Cloner.CloneBrush(brushShade);
-                rectFront.Fill = Cloner.CloneBrush(brushFront);
-
-                rectFront.StrokeThickness = 1;
-                rectBase.StrokeThickness = 1;
-                rectSide.StrokeThickness = 1;
-
-                rectFront.Opacity = 1;
-                rectBase.Opacity = 1;
-                rectSide.Opacity = 1;
-
-                SkewTransform st = new SkewTransform();
-                st.AngleY = -45;
-                rectSide.RenderTransform = st;
-
-                st = new SkewTransform();
-                st.AngleX = -45;
-                rectBase.RenderTransform = st;
-
-
-
-                this.Width = rectBase.Width + rectFront.Width;
-                this.Children.Add(rectBase);
-                this.Children.Add(rectFront);
-                this.Children.Add(rectSide);
+                DrawPlankBarOrientation();
             }
-
-
             else
             {
-                Int32 noOfIntervals;
-                Double interval;
-                Line ln = new Line();
-
-                if (!Enabled || !_parent.Enabled) return;
-
-                if (Interval > 0)
-                {
-                    interval = Interval;
-                    noOfIntervals = (int)Math.Ceiling((_parent.AxisMaximum - _parent.AxisMinimum) / Interval);
-                }
-                else
-                {
-                    noOfIntervals = _parent.NumberOfIntervals;
-                    interval = _parent.Interval;
-                }
-                this.Children.Clear();
-
-                PlotDetails plotDetails = (_parent.Parent as Chart).PlotDetails;
-
-                Double i = _parent.AxisMinimum;
-
-                if (_parent.GetType().Name == "AxisX")
-                    if (plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0)
-                    {
-                        System.Collections.Generic.Dictionary<Double, String>.Enumerator enumerator = plotDetails.AxisLabels.GetEnumerator();
-
-                        enumerator.MoveNext();
-                        int j = 0;
-                        for (i = enumerator.Current.Key; j < plotDetails.AxisLabels.Count - 1; j++)
-                        {
-                            enumerator.MoveNext();
-                            if (i > enumerator.Current.Key)
-                                i = enumerator.Current.Key;
-                        }
-                        enumerator.Dispose();
-                    }
-                Double vals;
-
-
-                Double minValue;
-                int countInterval = 0;
-                if (_parent.AxisOrientation == AxisOrientation.Bar)
-                {
-                    if ((Double)_parent.AxisManager.GetMinimumDataValue() - interval < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
-                        vals = (Double)_parent.AxisManager.GetMinimumDataValue();
-                    else
-                        vals = _parent.AxisMinimum;
-
-                    minValue = vals;
-
-                    while (vals <= _parent.AxisMaximum)
-                    {
-                        if (_parent.GetType().Name == "AxisX")
-                            if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > plotDetails.MaxAxisXValue)
-                                break;
-
-                        ln = new Line();
-
-                        if ((_parent.Parent as Chart).View3D)
-                            ln.X1 = (Double)this.GetValue(WidthProperty) * 1.5;
-                        else
-                            ln.X1 = 0;
-                        ln.X2 = ln.X1 + (Double)this.GetValue(WidthProperty);
-
-
-                        ln.Y1 = _parent.DoubleToPixel(vals);
-
-
-                        vals = minValue + interval * (++countInterval);
-
-                        ln.Y2 = ln.Y1;
-
-                        if (ln.Y1 < -0.5 || ln.Y1 > this.Height + 0.5) continue;
-
-                        ln.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
-                        ln.StrokeThickness = LineThickness;
-
-                        this.Children.Add(ln);
-                    }
-                }
-                else if (_parent.AxisOrientation == AxisOrientation.Column)
-                {
-                    if ((Double)_parent.AxisManager.GetMinimumDataValue() - interval < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
-                        vals = (Double)_parent.AxisManager.GetMinimumDataValue();
-                    else
-                        vals = _parent.AxisMinimum;
-
-                    minValue = vals;
-
-                    while (vals <= _parent.AxisMaximum)
-                    {
-                        if (_parent.GetType().Name == "AxisX")
-                            if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > plotDetails.MaxAxisXValue)
-                                break;
-
-                        ln = new Line();
-
-
-                        ln.X1 = _parent.DoubleToPixel(vals);
-
-
-                        vals = minValue + interval * (++countInterval);
-
-                        ln.X2 = ln.X1;
-                        ln.Y1 = 0;
-                        ln.Y2 = (Double)this.GetValue(HeightProperty);
-                        if (ln.X1 < -0.5 || ln.X1 >= this.Width + 0.5) continue;
-
-                        ln.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
-                        ln.StrokeThickness = LineThickness;
-
-                        this.Children.Add(ln);
-                    }
-                }
+                DrawMajorTicks();
             }
         }
 
@@ -610,6 +216,7 @@ namespace Visifire.Charts
 
             }
         }
+
         internal void SetTop()
         {
 
@@ -643,7 +250,7 @@ namespace Visifire.Charts
         private void SetDefaults()
         {
             LineBackground = new SolidColorBrush(Colors.LightGray);
-            LineThickness = 1.0;
+            LineThickness = 1;
             LineStyle = "Solid";
             TickLength = 5;
             Interval = Double.NaN;
@@ -658,23 +265,7 @@ namespace Visifire.Charts
         /// </summary>
         private void SetName()
         {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
+            Generic.SetNameAndTag(this);
         }
 
         /// <summary>
@@ -689,7 +280,381 @@ namespace Visifire.Charts
                 throw new Exception(this + "Parent should be an Axis");
         }
 
-        
+        private void DrawPlankBarOrientation()
+        {
+            this.Children.Clear();
+
+            if (!_parent.Enabled) return;
+
+            Rectangle rectBase = new Rectangle();
+            Rectangle rectFront = new Rectangle();
+            Rectangle rectSide = new Rectangle();
+
+            rectBase.Tag = _parent.Name;
+            rectFront.Tag = _parent.Name;
+            rectSide.Tag = _parent.Name;
+
+            Chart chart = _parent.Parent as Chart;
+
+            rectBase.Width = _parent.PlankThickness;
+            rectBase.Height = TickLength;
+            rectBase.SetValue(TopProperty, 0);
+            rectBase.SetValue(LeftProperty, TickLength);
+
+            rectFront.SetValue(TopProperty, TickLength);
+            rectFront.SetValue(LeftProperty, 0);
+            rectFront.Height = chart.AxisX.DoubleToPixel(chart.AxisX.AxisMinimum) - chart.AxisX.DoubleToPixel(chart.AxisX.AxisMaximum);
+            rectFront.Width = _parent.PlankThickness;
+
+            rectSide.Height = rectFront.Height;
+            rectSide.Width = TickLength;
+            rectSide.SetValue(TopProperty, TickLength);
+            rectSide.SetValue(LeftProperty, _parent.PlankThickness);
+
+            #region Color Gradient
+            Brush topBrush = null;
+            Brush sideBrush = null;
+            Brush frontBrush = null;
+            Brush tempBrush;
+            if ((_parent.Parent as Chart).PlotArea.Background != null)
+                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).PlotArea.Background);
+            else if ((_parent.Parent as Chart).Background != null)
+                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).Background);
+            else
+                tempBrush = Parser.ParseLinearGradient("0;#ffafafaf,0;#ffefefef,1");
+
+            if (tempBrush.GetType().Name == "LinearGradientBrush")
+            {
+                LinearGradientBrush brush = tempBrush as LinearGradientBrush;
+                topBrush = Cloner.CloneBrush(tempBrush);
+                String linBrush1 = "0;", linBrush2 = "45;";
+
+                foreach (GradientStop grad in brush.GradientStops)
+                {
+
+                    linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
+                    linBrush1 += grad.Offset.ToString() + ";";
+
+                    linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
+                    linBrush2 += grad.Offset.ToString() + ";";
+                }
+                frontBrush = Parser.ParseLinearGradient(linBrush1);
+                sideBrush = Parser.ParseLinearGradient(linBrush2);
+
+            }
+            else if (tempBrush.GetType().Name == "RadialGradientBrush")
+            {
+                RadialGradientBrush brush = tempBrush as RadialGradientBrush;
+                topBrush = Cloner.CloneBrush(tempBrush);
+                String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
+
+                foreach (GradientStop grad in brush.GradientStops)
+                {
+
+                    linBrush1 += Parser.GetDarkerColor(grad.Color, 0.65) + ",";
+                    linBrush1 += grad.Offset.ToString() + ";";
+
+                    linBrush2 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
+                    linBrush2 += grad.Offset.ToString() + ";";
+                }
+                frontBrush = Parser.ParseRadialGradient(linBrush1);
+                sideBrush = Parser.ParseRadialGradient(linBrush2);
+
+            }
+            else if (tempBrush.GetType().Name == "SolidColorBrush")
+            {
+                SolidColorBrush brush = tempBrush as SolidColorBrush;
+
+                brush.Color = Parser.RemoveAlpha(brush.Color);
+                //In case of video or image brush will have null
+                String linbrush;
+                linbrush = "135;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                linbrush += ",0;";
+                if (Parser.GetBrushIntensity(brush) > 0.5)
+                    linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                else
+                    linbrush += Parser.GetLighterColor(brush.Color, 0.35);
+                linbrush += ",1";
+
+                topBrush = Parser.ParseLinearGradient(linbrush);
+
+                linbrush = "0;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
+                linbrush += ",0;";
+                if (Parser.GetBrushIntensity(brush) > 0.5)
+                    linbrush += Parser.GetLighterColor(brush.Color, 0.90);
+                else
+                    linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                linbrush += ",1";
+
+
+                frontBrush = Parser.ParseLinearGradient(linbrush);
+
+                linbrush = "90;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.80);
+                linbrush += ",0;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
+                linbrush += ",1";
+
+                sideBrush = Parser.ParseLinearGradient(linbrush);
+
+            }
+            #endregion Color Gradient
+
+            rectBase.Fill = Cloner.CloneBrush(topBrush);
+            rectSide.Fill = Cloner.CloneBrush(sideBrush);
+            rectFront.Fill = Cloner.CloneBrush(frontBrush);
+
+            rectFront.StrokeThickness = 1;
+            rectBase.StrokeThickness = 1;
+            rectSide.StrokeThickness = 1;
+
+            rectFront.Opacity = 1;
+            rectBase.Opacity = 1;
+            rectSide.Opacity = 1;
+
+            SkewTransform st = new SkewTransform();
+            st.AngleY = -45;
+            rectSide.RenderTransform = st;
+
+            st = new SkewTransform();
+            st.AngleX = -45;
+            rectBase.RenderTransform = st;
+
+
+
+            this.Width = rectBase.Width + rectFront.Width;
+            this.Children.Add(rectBase);
+            this.Children.Add(rectFront);
+            this.Children.Add(rectSide);
+        }
+
+        private void DrawPlankColumnOrientation()
+        {
+            this.Children.Clear();
+
+            if (!_parent.Enabled) return;
+
+            Rectangle rectBase = new Rectangle();
+            Rectangle rectFront = new Rectangle();
+            Rectangle rectSide = new Rectangle();
+
+            rectBase.Tag = _parent.Name;
+            rectFront.Tag = _parent.Name;
+            rectSide.Tag = _parent.Name;
+
+            Chart chart = _parent.Parent as Chart;
+
+            rectBase.Width = chart.AxisX.DoubleToPixel(chart.AxisX.AxisMaximum) - (Double)rectBase.GetValue(LeftProperty);
+            rectBase.Height = TickLength;
+
+
+            rectFront.SetValue(TopProperty, TickLength);
+            rectFront.SetValue(LeftProperty, -TickLength);
+
+
+            rectFront.Width = rectBase.Width;
+            rectFront.Height = _parent.PlankThickness;
+
+            rectSide.SetValue(LeftProperty, rectFront.Width - TickLength);
+            rectSide.SetValue(TopProperty, rectBase.Height);
+
+            rectSide.Width = TickLength;
+            rectSide.Height = rectFront.Height;
+
+            #region Color Gradient
+            Brush brush2 = null;
+            Brush brushShade = null;
+            Brush brushFront = null;
+            Brush tempBrush;
+            if ((_parent.Parent as Chart).PlotArea.Background != null)
+                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).PlotArea.Background);
+            else if ((_parent.Parent as Chart).Background != null)
+                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).Background);
+            else
+                tempBrush = Parser.ParseLinearGradient("0;#ffafafaf,0;#ffefefef,1");
+
+
+
+            if (tempBrush.GetType().Name == "LinearGradientBrush")
+            {
+                LinearGradientBrush brush = tempBrush as LinearGradientBrush;
+                brush2 = Cloner.CloneBrush(tempBrush);
+                String linBrush1 = "-90;", linBrush2 = "-90;";
+
+                foreach (GradientStop grad in brush.GradientStops)
+                {
+
+                    linBrush1 += Parser.GetDarkerColor(grad.Color, 0.9) + ",";
+                    linBrush1 += grad.Offset.ToString() + ";";
+
+                    linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
+                    linBrush2 += grad.Offset.ToString() + ";";
+                }
+                brushFront = Parser.ParseLinearGradient(linBrush1);
+                brushShade = Parser.ParseLinearGradient(linBrush2);
+
+            }
+            else if (tempBrush.GetType().Name == "RadialGradientBrush")
+            {
+                RadialGradientBrush brush = tempBrush as RadialGradientBrush;
+                brush2 = Cloner.CloneBrush(tempBrush);
+                String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
+
+                foreach (GradientStop grad in brush.GradientStops)
+                {
+
+                    linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
+                    linBrush1 += grad.Offset.ToString() + ";";
+
+                    linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
+                    linBrush2 += grad.Offset.ToString() + ";";
+                }
+                brushFront = Parser.ParseRadialGradient(linBrush1);
+                brushShade = Parser.ParseRadialGradient(linBrush2);
+
+            }
+            else if (tempBrush.GetType().Name == "SolidColorBrush")
+            {
+                SolidColorBrush brush = tempBrush as SolidColorBrush;
+
+                brush.Color = Parser.RemoveAlpha(brush.Color);
+                //In case of video or image brush will have null
+                String linbrush;
+                linbrush = "-90;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.85);
+                linbrush += ",0;";
+                linbrush += Parser.GetLighterColor(brush.Color, 0.35);
+                linbrush += ",1";
+
+                brush2 = Parser.ParseLinearGradient(linbrush);
+
+                linbrush = "-90;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.65);
+                linbrush += ",0;";
+                linbrush += Parser.GetLighterColor(brush.Color, 0.55);
+                linbrush += ",1";
+
+
+                brushFront = Parser.ParseLinearGradient(linbrush);
+
+                linbrush = "-120;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.35);
+                linbrush += ",0;";
+                linbrush += Parser.GetDarkerColor(brush.Color, 0.75);
+                linbrush += ",1";
+
+                brushShade = Parser.ParseLinearGradient(linbrush);
+
+            }
+            #endregion Color Gradient
+
+            rectBase.Fill = Cloner.CloneBrush(brush2);
+            rectSide.Fill = Cloner.CloneBrush(brushShade);
+            rectFront.Fill = Cloner.CloneBrush(brushFront);
+
+            rectFront.StrokeThickness = 1;
+            rectBase.StrokeThickness = 1;
+            rectSide.StrokeThickness = 1;
+
+            rectFront.Opacity = 1;
+            rectBase.Opacity = 1;
+            rectSide.Opacity = 1;
+
+            SkewTransform st = new SkewTransform();
+            st.AngleX = -45;
+
+            rectBase.RenderTransform = st;
+
+
+            st = new SkewTransform();
+            st.AngleY = -45;
+
+            rectSide.RenderTransform = st;
+
+            this.Height = rectBase.Height + rectFront.Height;
+            this.Children.Add(rectBase);
+            this.Children.Add(rectFront);
+            this.Children.Add(rectSide);
+        }
+
+        private Line CreateLine(Point start, Point end)
+        {
+            Line line = new Line();
+
+            line.Tag = _parent.Name;
+
+            line.X1 = start.X;
+            line.Y1 = start.Y;
+
+            line.X2 = end.X;
+            line.Y2 = end.Y;
+
+            line.Stroke = Cloner.CloneBrush(LineBackground);
+            line.StrokeThickness = LineThickness;
+            line.StrokeDashArray = Parser.GetStrokeDashArray(LineStyle);
+
+            return line;
+        }
+
+        private void DrawMajorTicks()
+        {
+            if (!Enabled || !_parent.Enabled) return;
+
+            Decimal interval = (Decimal)((Interval > 0) ? Interval : _parent.Interval);
+
+            this.Children.Clear();
+
+            Decimal position;
+
+            if ((Double)(_parent.AxisManager.GetMinimumDataValue() - interval) < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
+                position = _parent.AxisManager.GetMinimumDataValue();
+            else
+                position = (Decimal)_parent.AxisMinimum;
+
+            Decimal minimumValue = position;
+            Int32 intervalCount = 0;
+
+            Point start = new Point();
+            Point end = new Point();
+
+            while (position <= (Decimal)_parent.AxisMaximum)
+            {
+                switch (_parent.AxisOrientation)
+                {
+                    case AxisOrientation.Column:
+                        start.X = _parent.DoubleToPixel((Double)position);
+                        start.Y = 0;
+
+                        end.X = start.X;
+                        end.Y = this.Height;
+
+                        if (start.X < -0.5 || start.X >= this.Width + 0.5) continue;
+
+                        this.Children.Add(CreateLine(start, end));
+                        break;
+                    case AxisOrientation.Bar:
+                        if (_parent._parent.View3D)
+                            start.X = (Double)_parent._parent.PlotArea.GetValue(LeftProperty) - (Double)this.GetValue(LeftProperty) - this.Width - TickLength / 2;
+                        else
+                            start.X = this.Width - TickLength;
+                        start.Y = _parent.DoubleToPixel((Double)position);
+
+                        end.X = start.X + TickLength;
+                        end.Y = start.Y;
+
+                        if (start.Y < -0.5 || start.Y > this.Height + 0.5) continue;
+
+                        this.Children.Add(CreateLine(start, end));
+                        break;
+                    default:
+                        break;
+                }
+                position = minimumValue + interval * (++intervalCount);
+            }
+
+        }
         #endregion Private Methods
 
         #region Data

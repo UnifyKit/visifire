@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisifireCharts", "VisifireC
 		{96D226F4-9FAD-45D3-884C-83FC219EAFC7} = {96D226F4-9FAD-45D3-884C-83FC219EAFC7}
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "VisifireCharts_Web", "VisifireCharts_Web\", "{6D3992DB-A1D1-476F-B657-EA21CE665835}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "VisifireCharts_Web", "VisifireCharts_Web", "{6D3992DB-A1D1-476F-B657-EA21CE665835}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "3.5"
 		Debug.AspNetCompiler.VirtualPath = "/VisifireCharts_Web"
@@ -27,7 +27,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "VisifireCharts_Web", "Visif
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "59752"
+		VWDPort = "61501"
 		DefaultWebSiteLanguage = "Visual C#"
 		ProjOutputReferences = "{76D89832-CC4E-4669-8B72-F6412CF11457}|;"
 	EndProjectSection

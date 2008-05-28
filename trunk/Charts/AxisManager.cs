@@ -18,8 +18,6 @@
  
 */
 
-
-
 using System;
 
 namespace Visifire.Charts
@@ -42,7 +40,7 @@ namespace Visifire.Charts
         /// <param name="maxValue">Maximum Value.</param>
         /// <param name="minValue">Minimum Value.</param>
 
-        public AxisManager(Decimal maxValue, Decimal minValue,Boolean startFromZero)
+        public AxisManager(Decimal maxValue, Decimal minValue,Boolean startFromZero,Boolean allowLimitOverflow)
         {
             if (maxValue < minValue)
                 throw (new ArgumentException("Invalid Argument:: Maximum Data value should be always greater than the minimum data value."));
@@ -52,9 +50,13 @@ namespace Visifire.Charts
             if (startFromZero)
             {
                 if (minValue >= 0) AxisMinimumValue = 0;
-                else if (maxValue < 0) AxisMaximumValue = 0;
+                else if (maxValue <= 0) AxisMaximumValue = 0;
             }
-            
+            if(!allowLimitOverflow)
+            {
+                if (minValue == 0) AxisMinimumValue = 0;
+                if (maxValue == 0) AxisMaximumValue = 0;
+            }
         }
         #endregion
 

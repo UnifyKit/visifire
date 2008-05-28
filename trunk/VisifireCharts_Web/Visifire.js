@@ -18,21 +18,32 @@
  
 */
 
-
 if(!window.Visifire)
 {
-    //  Visifire class
-    window.Visifire = function(pXapPath,pWidth,pHeight)
+    // Visifire class
+    window.Visifire = function(pXapPath, pId, pWidth,pHeight)
     {
+		this.id = null;
         this.logLevel = 1;                      //  Determines whether to log or not.
-        this.xapPath = "Visifire.xap";          // Default is taken as Visifire.xap in the same directory.
-        this.targetElement = null;
-        this.dataXml = null;                    //  Data xml
+        this.xapPath = "Visifire.xap";          //  Default is taken as Visifire.xap in the same directory.
+        this.targetElement = null;              
+        this.dataXml = null;                    
         this.dataUri = null;
-        
+        this.listeners = null;                  
+        this.elements = new Array("Chart", "DataPoint", "Title", "AxisX", "AxisY", "Legend");
+        this.events = new Array("MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", "MouseEnter", "MouseLeave");
+                
         this.width = null;
         this.height = null;
         
+		if(Number(pId))
+		{
+			pHeight = pWidth;
+			pWidth = pId; 
+		}
+		else
+			this.id = pId;
+				
         if(pXapPath)
             this.xapPath = pXapPath;
             
@@ -42,13 +53,14 @@ if(!window.Visifire)
         if(pHeight)
             this.height = pHeight;
                                             
-        this._uThisObject = this;                       // Reference to the Class Instance.
+        this._uThisObject = this;               
             
         this.index = ++Visifire._slCount;
     }
+    
     window.Visifire._slCount = 0;
     
-   Visifire.prototype.setDataXml = function(pDataXml)
+    Visifire.prototype.setDataXml = function(pDataXml)
     {
         var _uThisObject = this;
         this.dataXml = pDataXml;
@@ -65,10 +77,90 @@ if(!window.Visifire)
         {
             this.logLevel = level;
         }
+    }        
+    
+    Visifire.prototype._isString = function() 
+    {
+        if (typeof arguments[0] == 'string') return true; 
+        
+        if (typeof arguments[0] == 'object') 
+        {  
+            var criterion = arguments[0].constructor.toString().match(/string/i); 
+            return (criterion != null);  
+        }
+        
+        return false;
+    }
+    
+    Visifire.prototype._validateChartElement = function(pElement)
+    {
+        if(this.logLevel != 0)
+        {           
+            for(var i = 0; i < this.elements.length; i++)
+                if(this.elements[i] == pElement)
+                    return;
+             
+            alert('Error occurred while attaching event.\nUnknown element "' + pElement + '".');
+        }
+    }
+    
+    Visifire.prototype._validateEvent = function(pEvent)
+    {
+        if(this.logLevel != 0)
+        {
+            for(var i = 0; i < this.events.length; i++)
+                if(this.events[i] == pEvent)
+                    return;
+            
+            alert('Error occurred while attaching event.\nUnsupported event type "' + pEvent + '".');
+        }
+    }
+    
+    Visifire.prototype.attachEvent = function(pElement, pEvent, pCallBack)
+    {
+        var _uThisObject = this;
+        
+        _uThisObject._validateChartElement(pElement);
+        _uThisObject._validateEvent(pEvent);
+        
+        if(pEvent && pElement &&  pCallBack)
+        {   
+            if(_uThisObject.listeners == null)
+                _uThisObject.listeners =  {};
+                
+            if(_uThisObject.listeners[pEvent] == null)
+                _uThisObject.listeners[pEvent] = new Array(); 
+                
+            if(!window["dispatchEvent" + _uThisObject.index])
+                window["dispatchEvent" + _uThisObject.index] = function(args)
+                {   
+                    if(_uThisObject.listeners[args.Event] != null)
+                    {   
+                        var listener = _uThisObject.listeners[args.Event]; 
+                        if(listener.length != 0)               
+                        {
+                            for (var i = 0; i < listener.length; i++)
+                            {   
+	                            if ((listener[i].event == args.Event) && (listener[i].element == args.Element))
+	                            {
+									args.ControlId = _uThisObject.id;
+															
+                                    if(_uThisObject._isString(listener[i].fire))
+                                        eval(listener[i].fire + "(args)"); 
+                                    else
+                                        listener[i].fire(args); 
+	                            }
+                            }
+                        }
+                    }
+                };
+                
+            _uThisObject.listeners[pEvent].push({element: pElement, event: pEvent, fire: pCallBack});
+        }
     }
     
     Visifire.prototype.render = function(pTargetElement)
-    {
+    {   
         var _uThisObject = this;
         var width;
         var height;
@@ -81,49 +173,79 @@ if(!window.Visifire)
             width = _uThisObject.targerElement.offsetWidth;
         else
             width = 500;
-            
+        
         if(_uThisObject.height != null)
             height = _uThisObject.height;
         else if(_uThisObject.targerElement.offsetHeight != 0)
             height = _uThisObject.targerElement.offsetHeight;
         else
             height = 300;
-                
-        var html = '<object id="VisifirePlugin' + _uThisObject.index +'" data="data:application/x-silverlight," type="application/x-silverlight-2-b1" width="' + width +'" height="' + height +'">';
+				
+        if(!_uThisObject.id)
+		{
+		    _uThisObject.id = 'VisifireControl' + _uThisObject.index;
+		}
+        
+        var html = '<object id="' + _uThisObject.id + '" data="data:application/x-silverlight," type="application/x-silverlight-2-b1" width="' + width +'" height="' + height +'">';
         
         html    +=  '<param name="source" value="' + _uThisObject.xapPath +'"/>'
 		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>';
-		        
+	    
 		html += '<param name="initParams" value="';
 		
 		html += "logLevel=" + _uThisObject.logLevel + ",";
 		
         if(_uThisObject.dataXml != null)
-        {
-            window["getDataXml"+_uThisObject.index] = function(sender, args){ 
-                                                                            var _uThisObj = _uThisObject;
-                                                                            return _uThisObj.dataXml;
-                                                                     };
-                                                                     
+        {   
+            window["getDataXml"+_uThisObject.index] = function(sender, args)
+            {   
+                var _uThisObj = _uThisObject;
+                return _uThisObj.dataXml;
+            };
+                                             
             html +=	'dataXml=getDataXml'+ _uThisObject.index  +',';
         }
         else if(_uThisObject.dataUri != null)
-        {
+        {   
             html +=	'dataUri='+ _uThisObject.dataUri  +',';
         }
         
-        html    +=   'width=' + width + ',' + 'height=' + height + '';
+        if(_uThisObject.listeners != null)
+        {
+            html += 'EventDispatcher=dispatchEvent' + _uThisObject.index + ',';
+            
+            html += 'jsEvents=';
+            
+            var events = _uThisObject.events;
+
+            for(var i=0; i< events.length; i++)
+            {   
+                var listener = _uThisObject.listeners[events[i]]; 
+                
+                if(listener != null)
+                {
+                    for (var j = 0; j < listener.length; j++)
+                    {   
+                        html += listener[j].element + ' ' + listener[j].event + ';';
+                    }
+                }
+            }
+            
+            html += ','
+        }
+        
+        html    += 'width=' + width + ',' + 'height=' + height + '';
         html    += "\"/>";
-        html    +=   '<param name="enableHtmlAccess" value="true" />'
-		        +   '<param name="background" value="white" />'
-		        +   '<a href="http://go.microsoft.com/fwlink/?LinkID=108182" style="text-decoration: none;">'
-		        +   '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
-		        +   '<br/>You need Microsoft Silverlight to view Visifire Charts.'
-		        +   '<br/> You can install it by clicking on this link.'
-		        +   '<br/>Please restart the browser after installation.'
-		        +   '</a>'
-		        +   '</object>';
-		        
+        html    += '<param name="enableHtmlAccess" value="true" />'
+		        +  '<param name="background" value="white" />'
+		        +  '<a href="http://go.microsoft.com/fwlink/?LinkID=108182" style="text-decoration: none;">'
+		        +  '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
+		        +  '<br/>You need Microsoft Silverlight to view Visifire Charts.'
+		        +  '<br/> You can install it by clicking on this link.'
+		        +  '<br/>Please restart the browser after installation.'
+		        +  '</a>'
+		        +  '</object>';
+		
 		this.targerElement.innerHTML = html;
     }
 }

@@ -18,7 +18,6 @@
  
 */
 
-
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,71 +27,64 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Visifire.Commons;
 
 namespace Visifire.Charts
 {
-    public class Label : LabelBase
+    internal class ElementPositionData
     {
-
         #region Public Methods
 
-        public Label()
+        public ElementPositionData()
         {
-           
         }
 
-        public override void Init()
+        public ElementPositionData(FrameworkElement element, Double angle1, Double angle2)
         {
-            base.Init();
-            this.Text = "#YValue";
-
+            Element = element;
+            StartAngle = angle1;
+            StopAngle = angle2;
         }
 
-        public void SetTextWrap(Double sz)
+        public ElementPositionData(ElementPositionData m)
         {
-            
-            _textBlock.Width = sz;
-            _textBlock.TextWrapping = TextWrapping.Wrap;
-            
-        }
-
-        public override void SetLeft()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetTop()
-        {
-            throw new NotImplementedException();
+            Element = m.Element;
+            StartAngle = m.StartAngle;
+            StopAngle = m.StopAngle;
         }
 
         #endregion Public Methods
 
-        #region Private Methods
-        protected override void SetDefaults()
+        #region Static Methods
+
+        public static Int32 CompareAngle(ElementPositionData a, ElementPositionData b)
         {
-            
-            base.SetDefaults();
-            
-            Background = Parser.ParseSolidColor("Transparent");
-
-            this.SetValue(ZIndexProperty, 9999);
-
+            Double angle1 = (a.StartAngle + a.StopAngle) / 2;
+            Double angle2 = (b.StartAngle + b.StopAngle) / 2;
+            return angle1.CompareTo(angle2);
         }
 
-        private void SetTag(FrameworkElement element,String tag)
-        {
-            if(element != null)
-                element.Tag = tag;
-        }
-        #endregion Private Methods
+        #endregion Static Methods
 
-        #region Internal Methods
-        internal void SetTags(String tag)
+        #region Public Properties
+
+        public FrameworkElement Element
         {
-            SetTag(_textBlock,tag);
+            get;
+            set;
         }
-        #endregion Internal Methods
+
+        public Double StartAngle
+        {
+            get;
+            set;
+        }
+
+        public Double StopAngle
+        {
+            get;
+            set;
+        }
+
+        #endregion
     }
 }

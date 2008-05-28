@@ -34,6 +34,7 @@ namespace Visifire.Commons
     public abstract class PlotAreaBase : VisualObject
     {
         #region Public Methods
+
         public PlotAreaBase()
         {
             
@@ -49,22 +50,23 @@ namespace Visifire.Commons
         {
             base.Init();
         }
+
         public override void Render()
         {
             base.Render();
         }
-        
-        
 
         #endregion Public Methods
 
         #region Private Methods
+
         protected override void SetDefaults()
         {
            
             base.SetDefaults();
             this.SetValue(ZIndexProperty, 1);
         }
+
         #endregion Private Methods
     }
 }

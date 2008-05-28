@@ -70,7 +70,7 @@ namespace Visifire.Charts
 
         #region Public Properties
 
-        public bool ToolTipEnabled
+        public Boolean ToolTipEnabled
         {
             get;
             set;
@@ -106,13 +106,13 @@ namespace Visifire.Charts
             }
         }
 
-        public bool Enabled
+        public Boolean Enabled
         {
             get;
             set;
         }
 
-        public bool ShadowEnabled
+        public Boolean ShadowEnabled
         {
             get;
             set;
@@ -120,27 +120,14 @@ namespace Visifire.Charts
 
         #region Line Properties
 
-        internal Brush Color
-        {
-            get
-            {
-                if(_lineColor == null)
-                    return new SolidColorBrush(Colors.Orange);
-                return _lineColor;
-            }
-
-            set
-            {
-                _lineColor = value;
-            }
-        }
-        public string LineColor
+        public String LineColor
         {
             set
             {
                 _lineColor = Parser.ParseColor(value);
             }
         }
+
         public Double LineThickness
         {
             get
@@ -165,10 +152,38 @@ namespace Visifire.Charts
                 _lineStyle = value;
             }
         }
+
         #endregion Line Properties
+
         #endregion Public Properties
 
+        #region Internal Properties
+        internal Brush Color
+        {
+            get
+            {
+                if (_lineColor == null)
+                    return new SolidColorBrush(Colors.Orange);
+                return _lineColor;
+            }
+
+            set
+            {
+                _lineColor = value;
+            }
+        }
+        #endregion Internal Properties
+
         #region Internal Methods
+        internal void InitAndDraw()
+        {
+            Init();
+
+            SetDimensions();
+
+            AttachToolTip();
+        }
+
         internal void AttachToolTip()
         {
             String str;
@@ -200,9 +215,10 @@ namespace Visifire.Charts
         {
             ValidateParent();
 
-            
-
             SetName();
+
+            _line.Tag = this.Name;
+            _shadow.Tag = this.Name;
         }
 
         internal void SetDimensions()
@@ -364,23 +380,7 @@ namespace Visifire.Charts
         /// </summary>
         private void SetName()
         {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
+            Generic.SetNameAndTag(this);
         }
 
         /// <summary>

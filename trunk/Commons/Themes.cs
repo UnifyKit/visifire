@@ -34,19 +34,21 @@ namespace Visifire.Commons
     public class Themes
     {
         #region Public Methods
+
         public Themes()
         {
-            _themes = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>>>();
+            _themes = new System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>>>();
             System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> theme;
             System.Collections.Generic.Dictionary<String, Object> elmProperties;
             
             #region Theme1
-            theme = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>>();
+            theme = new System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, object>>();
             _themes["Theme1"] = theme;
           
             // Properties for Chart
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["Chart"] = elmProperties;
+
             elmProperties["Background"] = new SolidColorBrush(Colors.White);
             elmProperties["BorderThickness"] = .5;
             elmProperties["BorderColor"] = new SolidColorBrush(Colors.Black);
@@ -56,20 +58,20 @@ namespace Visifire.Commons
             elmProperties["AnimationEnabled"] = true;
 
             // Properties for DataSeries
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["DataSeries"] = elmProperties;
             elmProperties["Bevel"] = true;
             elmProperties["LightingEnabled"] = true;
             elmProperties["MarkerBorderThickness"] = 1;
 
             // Properties for AxisX
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisX"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
             elmProperties["LineColor"] = Parser.ParseColor("#333333");
 
             // Properties for AxisY
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisY"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
             elmProperties["LineColor"] = Parser.ParseColor("#333333");
@@ -78,11 +80,11 @@ namespace Visifire.Commons
             #endregion Theme1
 
             #region Theme2
-            theme = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>>();
+            theme = new System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, object>>();
             _themes["Theme2"] = theme;
 
             // Properties for Chart
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["Chart"] = elmProperties;
             elmProperties["Background"] = new SolidColorBrush(Colors.White);
             elmProperties["BorderThickness"] = 0.5;
@@ -93,20 +95,20 @@ namespace Visifire.Commons
             elmProperties["AnimationDuration"] = 1.25;
 
             // Properties for DataSeries
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["DataSeries"] = elmProperties;
             elmProperties["Bevel"] = false;
             elmProperties["LightingEnabled"] = true;
             elmProperties["MarkerBorderThickness"] = 1;
 
             // Properties for AxisX
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisX"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
             elmProperties["LineColor"] = Parser.ParseColor("#333333");
 
             // Properties for AxisY
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisY"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
             elmProperties["LineColor"] = Parser.ParseColor("#333333");
@@ -114,11 +116,11 @@ namespace Visifire.Commons
             #endregion Theme2
 
             #region Theme3
-            theme = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>>();
+            theme = new System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, object>>();
             _themes["Theme3"] = theme;
 
             // Properties for Chart
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["Chart"] = elmProperties;
             elmProperties["Background"] = new SolidColorBrush(Colors.Black);
             elmProperties["BorderThickness"] = 0.0;
@@ -128,7 +130,7 @@ namespace Visifire.Commons
             elmProperties["AnimationEnabled"] = true;
 
             // Properties for Plotarea
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["PlotArea"] = elmProperties;
             elmProperties["Background"] = new SolidColorBrush(Colors.Black);
             elmProperties["BorderThickness"] = 0.0;
@@ -136,7 +138,7 @@ namespace Visifire.Commons
             elmProperties["Bevel"] = false;
 
             // Properties for DataSeries
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["DataSeries"] = elmProperties;
             elmProperties["RadiusX"] = 0;
             elmProperties["RadiusY"] = 0;
@@ -145,12 +147,12 @@ namespace Visifire.Commons
 
 
             // Properties for AxisX
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisX"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
 
             // Properties for AxisY
-            elmProperties = new System.Collections.Generic.Dictionary<string, Object>();
+            elmProperties = new System.Collections.Generic.Dictionary<String, Object>();
             theme["AxisY"] = elmProperties;
             elmProperties["LineThickness"] = 0.5;
             #endregion Theme3
@@ -160,6 +162,7 @@ namespace Visifire.Commons
         #endregion Public Methods
 
         #region Public Properties
+
         public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> this[String str]
         {
             get
@@ -169,6 +172,7 @@ namespace Visifire.Commons
         }
         
         public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>>> _themes;  // Collection of Theme
-        #endregion Public Methods
+
+        #endregion 
     }
 }

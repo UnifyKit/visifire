@@ -77,11 +77,11 @@ namespace Visifire.Charts
         #endregion Public Methods
         
         #region Private Methods
-        private int CalculateFontSize()
+        private Int32 CalculateFontSize()
         {
-            int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Int32[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as Chart).Width * (Parent as Chart).Height;
-            int i = (int)(Math.Floor(((_parentSize + 10000) / 115000)));
+            Int32 i = (Int32)(Math.Floor(((_parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
             
@@ -114,7 +114,6 @@ namespace Visifire.Charts
 
         }
         #endregion Internal Methods
-
 
     }
     

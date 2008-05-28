@@ -20,10 +20,27 @@
 
 
 using System;
-using System.Windows.Documents;
+using System.Windows;
 
 
-namespace Visifire.Charts
+namespace Visifire.Commons
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    public class PathGeometryParams
+    {
+        #region Public Methods
+        public PathGeometryParams(Point endPoint)
+        {
+            EndPoint = endPoint;
+        }
+        #endregion Public Methods
+
+        #region Public Properties
+        public Point EndPoint
+        {
+            get;
+            set;
+        }
+        #endregion 
+
+    }
 }

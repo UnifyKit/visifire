@@ -18,16 +18,12 @@
  
 */
 
-
 using System;
 using System.Collections.Generic;
+using System.Windows.Documents;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Commons;
 
@@ -41,12 +37,6 @@ namespace Visifire.Charts
         /// </summary>
         public Axes()
         {
-            // Adds an event
-            this.Loaded += new RoutedEventHandler(OnLoaded);
-        }
-
-        public virtual void OnLoaded(Object sender, EventArgs e)
-        {
             
         }
 
@@ -55,71 +45,80 @@ namespace Visifire.Charts
         /// </summary>
         public new void Render()
         {
-            
-            this.Children.Add(_line);
+            if(Enabled)
+                this.Children.Add(_line);
         }
 
+        /// <summary>
+        /// Sets the width of the Axis
+        /// </summary>
         public override void SetWidth()
         {
             if (AxisOrientation == AxisOrientation.Bar)
             {
                 if (!Enabled)
                 {
-                    this.SetValue(WidthProperty, 0);
+                    this.Width = 0;
                     return;
                 }
                 if (_parent.View3D)
                 {
                     if (this.GetType().Name == "AxisX")
-                        this.SetValue(WidthProperty, (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength + PlankThickness + _parent.Padding);
+                        this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength + PlankThickness + _parent.Padding;
                     else
-                        this.SetValue(WidthProperty, (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + (Parent as Chart).AxisX.MajorTicks.TickLength);
+                        this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _parent.AxisX.MajorTicks.TickLength;
                 }
                 else
                 {
-                    this.SetValue(WidthProperty, (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength);
+                    this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength;
                 }
-
-
-
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-                this.SetValue(WidthProperty, _parent.PlotArea.GetValue(WidthProperty));
+                this.Width = _parent.PlotArea.Width;
             }
         }
+
+        /// <summary>
+        /// Sets the height of the axis
+        /// </summary>
         public override void SetHeight()
         {
 
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                this.SetValue(HeightProperty, _parent.PlotArea.GetValue(HeightProperty));
+                this.Height = _parent.PlotArea.Height;
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
                 if (!Enabled)
                 {
-                    this.SetValue(HeightProperty, 0);
+                    // If axis is not enabled then reset height and return
+                    this.Height = 0;
                     return;
                 }
 
                 if (_parent.View3D)
                 {
                     if (this.GetType().Name == "AxisX")
-                        this.SetValue(HeightProperty, (Double)AxisLabels.GetValue(HeightProperty) + _majorTicks.TickLength + PlankThickness);
+                        this.Height = AxisLabels.Height + _majorTicks.TickLength + PlankThickness;
                     else
-                        this.SetValue(HeightProperty, (Double)AxisLabels.GetValue(TopProperty) + (Double)AxisLabels.Height + _parent.Padding);
+                        this.Height = (Double)AxisLabels.GetValue(TopProperty) + AxisLabels.Height + _parent.Padding;
                 }
                 else
                 {
-                    this.SetValue(HeightProperty, (Double)AxisLabels.Height + _majorTicks.TickLength / 2);
+                    this.Height = AxisLabels.Height + _majorTicks.TickLength / 2;
                 }
+
+                // if Axis Title is given by user the increase the Axis height to include it
                 if (_titleTextBlock.Text.Length != 0)
-                    this.SetValue(HeightProperty, (Double)this.Height + _titleTextBlock.ActualHeight);
-
-
+                    this.Height = this.Height + _titleTextBlock.ActualHeight;
             }
         }
+
+        /// <summary>
+        /// Sets the left of the axis
+        /// </summary>
         public override void SetLeft()
         {
             if (AxisOrientation == AxisOrientation.Bar)
@@ -128,6 +127,7 @@ namespace Visifire.Charts
 
                 SetValue(LeftProperty, _parent._innerBounds.Left);
 
+                // if there is overflow due to long labels then adjust position accordingly
                 if (_parent.LabelPaddingLeft > (Double)this.GetValue(LeftProperty) + (Double)this.GetValue(WidthProperty))
                     this.SetValue(LeftProperty, _parent.LabelPaddingLeft - (Double)this.GetValue(WidthProperty) + _parent.Padding);
             }
@@ -137,6 +137,10 @@ namespace Visifire.Charts
 
             }
         }
+
+        /// <summary>
+        /// Sets the top of the axis
+        /// </summary>
         public override void SetTop()
         {
             Double tempTop = _parent.Height - _parent.Padding;
@@ -145,20 +149,22 @@ namespace Visifire.Charts
             {
                 this.SetValue(TopProperty, _parent.PlotArea.GetValue(TopProperty));
 
+                // if there is overflow due to long labels then adjust position accordingly
                 if (_parent.LabelPaddingTop > (Double)this.GetValue(TopProperty))
                     this.SetValue(TopProperty, _parent.LabelPaddingTop);
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
 
-
                 SetValue(TopProperty, _parent._innerBounds.Bottom - Height - _parent.Padding);
 
-                if (_parent.LabelPaddingBottom > ((Double)_parent.GetValue(HeightProperty) - (Double)this.GetValue(TopProperty)))
+                // if there is overflow due to long labels then adjust position accordingly
+                if (_parent.LabelPaddingBottom > (_parent.Height - (Double)this.GetValue(TopProperty)))
                     this.SetValue(TopProperty, tempTop - _parent.LabelPaddingBottom - _parent.Padding);
             }
 
         }
+
         /// <summary>
         /// This function is used to prepare the object before rendering
         /// </summary>
@@ -167,97 +173,93 @@ namespace Visifire.Charts
             // Checks if the parent for this object is valid
             ValidateParent();
 
-            if (Double.IsNaN(_titleFontSize))
-                _titleTextBlock.FontSize = CalculateTitleFontSize();
-
-
             // sets a default name to the object
             SetName();
+
+            // sets tag for all visual elements for this class
+            SetTags();
+
+            //Sets the default font size
+            if (Double.IsNaN(_titleFontSize))
+                _titleTextBlock.FontSize = CalculateTitleFontSize();
 
             // finds all the legend elements and makes all the references
             CreateReferences();
 
+            // Set specific settings for axisX
+            if (this.GetType().Name == "AxisX") 
+                AxisXSpecificSettings();
 
-            if (_parent.View3D && this.GetType().Name == "AxisX")
-            {
-                Double h = _parent.Height;
-                Double w = _parent.Width;
-                if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
-                {
-                    MajorTicks.TickLength = (h > w ? w : h) * (0.03 * _parent.Count);
-                    PlankThickness = (h > w ? w : h) * (0.03);
-                }
-                else
-                {
-                    MajorTicks.TickLength = (h > w ? w : h) * (0.015 * _parent.Count);
-                    PlankThickness = (h > w ? w : h) * (0.025);
-                }
-                
-            }
-
-            if (this.GetType().Name == "AxisX") StartFromZero = false;
-
+            // Set axis limit 
             if ( Double.IsInfinity(MaxDataValue) || Double.IsInfinity(MinDataValue) )
             {
+                // if AxisLabel limit is Not already available generate temporary limits
+                // This occours if there are no DataSeries
                 if (this.GetType().Name == "AxisX")
                 {
-                    Double xInterval = (Double.IsNaN(_interval) ? 1 : _interval);
-                    Double maxXValue = (Double.IsNaN(AxisMaximum) ? 9 : AxisMaximum - xInterval);
-                    Double minXValue = (Double.IsNaN(AxisMinimum) ? 1 : AxisMinimum + xInterval);
-
-                    _axisManager = new AxisManager((Decimal)maxXValue, (Decimal)minXValue, StartFromZero);
+                    Double xInterval = (Double.IsNaN(_interval) ? ChartConstants.AxisX.NoData.Interval : _interval);
+                    Double maxXValue = (Double.IsNaN(AxisMaximum) ? ChartConstants.AxisX.NoData.MaxValue : AxisMaximum - xInterval);
+                    Double minXValue = (Double.IsNaN(AxisMinimum) ? ChartConstants.AxisX.NoData.MinValue : AxisMinimum + xInterval);
+                    
+                    _axisManager = new AxisManager((Decimal)maxXValue, (Decimal)minXValue, StartFromZero,true);
                     _axisManager.Interval = (Decimal)xInterval;
                 }
                 else
                 {
-                    Double yInterval = (Double.IsNaN(_interval) ? 10: _interval);
-                    Double maxYValue = (Double.IsNaN(AxisMaximum) ? 90 : AxisMaximum - yInterval);
-                    Double minYValue = (Double.IsNaN(AxisMinimum) ? 10 : AxisMinimum + yInterval);
+                    Double yInterval = (Double.IsNaN(_interval) ? ChartConstants.AxisY.NoData.Interval: _interval);
+                    Double maxYValue = (Double.IsNaN(AxisMaximum) ? ChartConstants.AxisY.NoData.MaxValue : AxisMaximum - yInterval);
+                    Double minYValue = (Double.IsNaN(AxisMinimum) ? ChartConstants.AxisY.NoData.MinValue : AxisMinimum + yInterval);
 
-                    _axisManager = new AxisManager((Decimal)maxYValue, (Decimal)minYValue, StartFromZero);
+                    _axisManager = new AxisManager((Decimal)maxYValue, (Decimal)minYValue, StartFromZero,false);
                     _axisManager.Interval = (Decimal)yInterval;
                 }
             }
             else
             {
-                _axisManager = new AxisManager((Decimal)MaxDataValue, (Decimal)MinDataValue, StartFromZero);
+                // If axis limit is available then use it
+                _axisManager = new AxisManager((Decimal)MaxDataValue, (Decimal)MinDataValue, StartFromZero, this.GetType().Name == "AxisX");
             }
 
+            // if user has given interval then apply it
             if (Interval > 0)
                 AxisManager.Interval = (Decimal)Interval;
 
+            // apply current IncludeZero setting
             AxisManager.IncludeZero = IncludeZero;
 
-
+            // if user has given axis minimum limit then apply it
             if (!Double.IsNaN(AxisMinimum))
                 AxisManager.AxisMinimumValue = (Decimal)AxisMinimum;
 
-
+            // if user has given axis maximum limit then apply it
             if (!Double.IsNaN(AxisMaximum))
                 AxisManager.AxisMaximumValue = (Decimal)AxisMaximum;
 
-
+            // calculate the axis parameters
             AxisManager.Calculate();
 
+            // Settings specific to axis y
             if (this.GetType().Name == "AxisY")
             {
                 AxisMinimum = (Double)AxisManager.GetAxisMinimumValue();
                 AxisMaximum = (Double)AxisManager.GetAxisMaximumValue();
             }
+
+            // initialize child elements
             AxisLabels.Init();
-
             MajorGrids.Init();
-
             MajorTicks.Init();
 
+            // Attach toop tip and hyperlink
             AttachHref();
             AttachToolTip();
         }
+
         #endregion Public Methods
 
         #region Public Properties
 
-        #region Title Text Properties
+        #region Title Font Properties
         /// <summary>
         /// Title for the Axis
         /// </summary>
@@ -355,7 +357,7 @@ namespace Visifire.Charts
             }
         }
 
-        #endregion Title Text Properties
+        #endregion Title Font Properties
 
         /// <summary>
         /// To set how frequently the Ticks, Grid Lines and Axis Labels have to appear
@@ -394,7 +396,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// This decides how the given string gets formatted
+        /// This decides how the given String gets formatted
         /// </summary>
         public String ValueFormatString
         {
@@ -455,7 +457,7 @@ namespace Visifire.Charts
                 Double scale = 1;
                 Double parsedValue;
                 
-                for (int i = 0; i < pairs.Length; i++)
+                for (Int32 i = 0; i < pairs.Length; i++)
                 {
                     String[] sets = pairs[i].Split(',');
                     if (sets.Length != 2) continue;
@@ -524,7 +526,7 @@ namespace Visifire.Charts
                 else if (GetFromTheme("LineThickness") != null)
                     return Convert.ToDouble(GetFromTheme("LineThickness"));
                 else
-                    return 0.25;
+                    return ChartConstants.Axes.Default.LineThickness;
             }
             set
             {
@@ -710,49 +712,43 @@ namespace Visifire.Charts
 
             // Axis title
             _titleTextBlock = new TextBlock();
-            _titleTextBlock.Text = "";
 
-
-
-            // default format string
-            _valueFormatString = "###,##0.##";
-
+            // default format String
+            _valueFormatString = ChartConstants.Axes.Default.ValueFormatString;
 
             // default axis line color
             _lineBackground = null;
+            _titleFontColor = null;
+
+            // set title text to null
+            Title = null;
 
             // default axis line tickness
             LineThickness = Double.NaN;
 
-            // Number of intervals is set to a invalid vallue so that it can be verified later
+            // Number of intervals is set to a invalid value so that it can be verified later
             NumberOfIntervals = -1;
 
-
             Interval = Double.NaN;
-            AxisMinimum = Double.NaN;
             AxisMaximum = Double.NaN;
-            _titleFontColor = null;
+            AxisMinimum = Double.NaN;
+            
             _labelAngle = Double.NaN;
-            Enabled = true;
+            
             _titleFontSize = Double.NaN;
-            Title = null;
+            
+            Enabled = true;
 
-            StartFromZero = true;
-            this.SetValue(ZIndexProperty, 2);
-        }
-
-        /// <summary>
-        /// Function returns Maxximum value in the set of min differences of each plot type
-        /// </summary>
-        /// <returns></returns>
-        protected Double GetMaxOfMinDifference()
-        {
-            Double max = 0;
-            foreach (Plot p in _parent.PlotDetails.Plots)
+            if (this.GetType().Name == "AxisY")
             {
-                max = Math.Max(max, p.MinDifference);
+                StartFromZero = true;
             }
-            return max;
+            else
+            {
+                StartFromZero = false;
+            }
+
+            this.SetValue(ZIndexProperty, ChartConstants.Axes.Default.ZIndex);
         }
 
         #endregion Protected Methods
@@ -763,11 +759,11 @@ namespace Visifire.Charts
         /// Generates font size for title . currently not used
         /// </summary>
         /// <returns></returns>
-        private int CalculateTitleFontSize()
+        private Int32 CalculateTitleFontSize()
         {
-            int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Int32[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as Chart).Width * (Parent as Chart).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            Int32 i = (Int32)(Math.Ceiling(((_parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
@@ -814,31 +810,7 @@ namespace Visifire.Charts
             }
         }
 
-        /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
+        
         /// <summary>
         /// Validate Parent element and assign it to _parent.
         /// Parent element should be a Charts element. Else throw an exception.
@@ -851,6 +823,76 @@ namespace Visifire.Charts
                 throw new Exception(this + "Parent should be a Chart");
         }
 
+        private void AxisXSpecificSettings()
+        {
+
+            // if axis is axisX then this sets the 3D depth of the plank
+            if (_parent.View3D)
+            {
+                Double h = _parent.Height;
+                Double w = _parent.Width;
+                if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
+                {
+                    Double horizontalDepthFactor = ChartConstants.Plank.HorizontalDepthFactor;
+                    Double horizontalThicknessFactor = ChartConstants.Plank.HorizontalThicknessFactor;
+                    MajorTicks.TickLength = (h > w ? w : h) * (horizontalDepthFactor * _parent.Count);
+                    PlankThickness = (h > w ? w : h) * (horizontalThicknessFactor);
+                }
+                else
+                {
+                    Double verticalDepthFactor = ChartConstants.Plank.VerticalDepthFactor;
+                    Double verticalThicknessFactor = ChartConstants.Plank.VerticalThicknessFactor;
+                    MajorTicks.TickLength = (h > w ? w : h) * (verticalDepthFactor * _parent.Count);
+                    PlankThickness = (h > w ? w : h) * (verticalThicknessFactor);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function returns Maxximum value in the set of min differences of each plot type
+        /// </summary>
+        /// <returns></returns>
+        private Double GetMaxOfMinDifference()
+        {
+            Double max = 0;
+            foreach (Plot p in _parent.PlotDetails.Plots)
+            {
+                max = Math.Max(max, p.MinDifference);
+            }
+            return max;
+        }
+
+        private Brush GetDefaultFontColor()
+        {
+            Brush fontColorBrush = null;
+            Double intensity;
+
+            if (this.Background == null)
+            {
+                if (_parent.Background == null)
+                {
+                    fontColorBrush = new SolidColorBrush(Colors.Black);
+                }
+                else
+                {
+                    intensity = Parser.GetBrushIntensity(_parent.Background);
+                    fontColorBrush = Parser.GetDefaultFontColor(intensity);
+                }
+            }
+            else
+            {
+                intensity = Parser.GetBrushIntensity(this.Background);
+                fontColorBrush = Parser.GetDefaultFontColor(intensity);
+            }
+
+            return fontColorBrush;
+        }
+
+        private void SetTags()
+        {
+            _line.Tag = this.Name;
+            _titleTextBlock.Tag = this.Name;
+        }
         #endregion Private Methods
 
         #region Internal Methods
@@ -867,7 +909,7 @@ namespace Visifire.Charts
             {
                 Double sValue = _scaleValues[0];
                 String sUnit = _scaleUnits[0];
-                for (int i = 0; i < _scaleValues.Count; i++)
+                for (Int32 i = 0; i < _scaleValues.Count; i++)
                 {
                     if ((Math.Abs(value) / _scaleValues[i]) < 1)
                     {
@@ -888,7 +930,7 @@ namespace Visifire.Charts
 
         internal void SetAxisLimits()
         {
-            if (this.GetType().Name == "AxisX")
+            if (this.GetType().Name == "AxisX" && !StartFromZero)
             {
                 Decimal gap;
                 Double min = GetMaxOfMinDifference();
@@ -958,55 +1000,16 @@ namespace Visifire.Charts
         {
             if (!Enabled) return;
 
-
-
             this.Children.Add(_titleTextBlock);
-
 
             if (_titleFontColor == null)
             {
-
-                Double intensity;
-                if (this.Background == null)
-                {
-                    if ((this.Parent as Chart).Background == null)
-                    {
-                        _titleTextBlock.Foreground = new SolidColorBrush(Colors.Black);
-                    }
-                    else
-                    {
-
-                        intensity = Parser.GetBrushIntensity((this.Parent as Chart).Background);
-                        if (intensity <= 0.5)
-                        {
-                            _titleTextBlock.Foreground = Parser.ParseSolidColor("#BBBBBB");
-                        }
-                        else
-                        {
-                            _titleTextBlock.Foreground = new SolidColorBrush(Colors.Black);
-                        }
-                    }
-                }
-                else
-                {
-
-
-
-                    intensity = Parser.GetBrushIntensity(this.Background);
-                    if (intensity <= 0.5)
-                    {
-                        _titleTextBlock.Foreground = Parser.ParseSolidColor("#BBBBBB");
-                    }
-                    else
-                    {
-                        _titleTextBlock.Foreground = new SolidColorBrush(Colors.Black);
-                    }
-                }
+                _titleTextBlock.Foreground = GetDefaultFontColor();
             }
 
             RotateTransform rt = new RotateTransform();
-            Double offset = 0;
-            if (_parent.View3D) offset = _parent.AxisX.MajorTicks.TickLength;
+            Double offset = _parent.View3D ? _parent.AxisX.MajorTicks.TickLength : 0;
+
             if (AxisOrientation == AxisOrientation.Bar)
             {
                 rt.Angle = -90;
@@ -1019,6 +1022,7 @@ namespace Visifire.Charts
             {
                 rt.Angle = 0;
                 _titleTextBlock.RenderTransform = rt;
+
                 _titleTextBlock.Margin = new Thickness(0);
                 _titleTextBlock.SetValue(TopProperty, this.Height - _titleTextBlock.ActualHeight);
                 _titleTextBlock.SetValue(LeftProperty, this.Width / 2 - _titleTextBlock.ActualWidth / 2);
@@ -1028,7 +1032,6 @@ namespace Visifire.Charts
 
         internal void FixTitleSize()
         {
-
             if (this.AxisOrientation == AxisOrientation.Bar)
             {
                 _titleTextBlock.Width = _parent.Height * 0.8;
@@ -1066,38 +1069,22 @@ namespace Visifire.Charts
 
             _line.StrokeThickness = LineThickness;
 
-            switch (this._lineStyle)
-            {
-                case "Solid":
-                    break;
-
-                case "Dashed":
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    break;
-
-                case "Dotted":
-                    _line.StrokeDashArray.Add(1);
-                    _line.StrokeDashArray.Add(2);
-                    _line.StrokeDashArray.Add(1);
-                    _line.StrokeDashArray.Add(2);
-                    break;
-            }
+            _line.StrokeDashArray = Parser.GetStrokeDashArray(this._lineStyle);
+            
         }
 
         internal Double DoubleToPixel(Double value)
         {
             Double pixel;
-
+            Double max = (Double)AxisManager.GetAxisMaximumValue();
+            Double min = (Double)AxisManager.GetAxisMinimumValue();
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                pixel = (Double)this.GetValue(HeightProperty) - (Double)this.GetValue(HeightProperty) / ((Double)AxisManager.GetAxisMaximumValue() - (Double)AxisManager.GetAxisMinimumValue()) * (value - (Double)AxisManager.GetAxisMinimumValue());
+                pixel = this.Height - ((this.Height / (max - min)) * (value - min));
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-                pixel = (Double)this.GetValue(WidthProperty) / ((Double)AxisManager.GetAxisMaximumValue() - (Double)AxisManager.GetAxisMinimumValue()) * (value - (Double)AxisManager.GetAxisMinimumValue());
+                pixel = (this.Width / (max - min)) * (value - min);
             }
             else
                 pixel = 0;
@@ -1108,14 +1095,15 @@ namespace Visifire.Charts
         internal Double PixelToDouble(Double value)
         {
             Double res;
-
+            Double max = (Double)AxisManager.GetAxisMaximumValue();
+            Double min = (Double)AxisManager.GetAxisMinimumValue();
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                res = (Double)AxisManager.GetAxisMinimumValue() + (1 - value / (Double)this.GetValue(HeightProperty))* ((Double)AxisManager.GetAxisMaximumValue() - (Double)AxisManager.GetAxisMinimumValue()) ;
+                res = min + (1 - value / this.Height) * (max - min) ;
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-                res = ((Double)AxisManager.GetAxisMaximumValue() - (Double)AxisManager.GetAxisMinimumValue()) / (Double)this.GetValue(WidthProperty) * value + (Double)AxisManager.GetAxisMinimumValue();
+                res = (max - min) / this.Width * value + min;
             }
             else
                 res = 0;
@@ -1138,7 +1126,7 @@ namespace Visifire.Charts
 
         private String _valueFormatString;
 
-        protected Chart _parent;
+        internal Chart _parent;
         private Line _line;
         private Double _lineThickness;
         private Brush _lineBackground;

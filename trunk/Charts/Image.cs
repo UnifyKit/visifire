@@ -18,7 +18,6 @@
  
 */
 
-
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,22 +31,25 @@ using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Net;
 using Visifire.Commons;
+
 namespace Visifire.Charts
 {
     public class Image:Canvas
     {
         #region Public Methods
+
         public Image()
         {
             SetDefaults();
 
         }
-        
-        
+
         public void Render()
         {
             _parent = (Parent as Chart);
+
             if(_parent.ToolTip.Enabled==true && !String.IsNullOrEmpty(ToolTipText)) AttachToolTip();
+
             if (!String.IsNullOrEmpty(Href)) AttachHref();
             
             SetWidth();
@@ -69,7 +71,7 @@ namespace Visifire.Charts
                 };
                 this.MouseLeave += delegate(object sender, MouseEventArgs e)
                 {
-                    parent.Cursor = Cursors.Arrow;
+                    //parent.Cursor = Cursors.Arrow;
                 };
 
                 this.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
@@ -92,40 +94,6 @@ namespace Visifire.Charts
             return str;
         }
         
-        private void SetName()
-        {
-            if (this.Parent.GetType().Name == "Chart")
-                _parent = this.Parent as Chart;
-            else
-                throw new Exception(this + "Parent should be a Chart");
-        }
-
-        internal void Init()
-        {
-
-            if ((_imageHeightSet && !_imageWidthSet) || (!_imageHeightSet && _imageWidthSet))
-            {
-                throw new Exception("ImageWidth and ImageHeight; both must be set.");
-            }
-            else if (_imageWidthSet && _imageHeightSet)
-            {
-                imgBrush.Stretch = Stretch.Fill;
-            }
-            else
-            {
-                imgBrush.Stretch = Stretch.Uniform;
-            }
-        }
-
-        private void SetObjectSize(Object o,RoutedEventArgs e)
-        {
-            SetWidth();
-            SetHeight();
-            SetLeft();
-            SetTop();
-
-        }
-
         public void SetLeft()
         {
             Double logoLeft = ImageWidth;
@@ -193,20 +161,45 @@ namespace Visifire.Charts
                 this.Width = ImageWidth * Scale;
 
         }
+
         #endregion Public Methods
-        
+
+        #region Internal Methods
+        internal void Init()
+        {
+            ValidateParent();
+
+            Generic.SetNameAndTag(this);
+
+            if ((_imageHeightSet && !_imageWidthSet) || (!_imageHeightSet && _imageWidthSet))
+            {
+                throw new Exception("ImageWidth and ImageHeight; both must be set.");
+            }
+            else if (_imageWidthSet && _imageHeightSet)
+            {
+                imgBrush.Stretch = Stretch.Fill;
+            }
+            else
+            {
+                imgBrush.Stretch = Stretch.Uniform;
+            }
+        }
+        #endregion Internal Methods
+
         #region Public Properties
 
-        public bool Enabled
+        public Boolean Enabled
         {
             get;
             set;
         }
+
         public String ToolTipText
         {
             get;
             set;
         }
+
         public  String Href
         {
             get
@@ -215,9 +208,10 @@ namespace Visifire.Charts
             }
             set
             {
-                _href = value;
+                _href = Parser.BuildAbsolutePath(value);
             }
         }
+
         public Double ImageWidth
         {
             get
@@ -281,19 +275,8 @@ namespace Visifire.Charts
             }
             set
             {
-                _source = value;
-                Uri ur = new Uri(_source,UriKind.RelativeOrAbsolute);
-                if (ur.IsAbsoluteUri)
-                {
-                    _source = ur.AbsoluteUri;
-                }
-                else
-                {
-                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
-                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
-                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
-                    _source = ub2.ToString();
-                }
+                _source = Parser.BuildAbsolutePath(value);
+               
                 
                 String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _source + "\"/>";
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
@@ -316,6 +299,7 @@ namespace Visifire.Charts
                     this.SetValue(ZIndexProperty, 1);
             }
         }
+
         #endregion Public Properties
 
         #region Private Methods
@@ -350,11 +334,17 @@ namespace Visifire.Charts
             };
         }
 
+        private void ValidateParent()
+        {
+            if (this.Parent.GetType().Name == "Chart")
+                _parent = this.Parent as Chart;
+            else
+                throw new Exception(this + "Parent should be a Chart");
+        }
+
         #endregion Private Methods
 
         #region Data
-
-
         private Chart _parent;
         private String _source;
         private Double _scale;

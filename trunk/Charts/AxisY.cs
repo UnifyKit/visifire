@@ -20,14 +20,7 @@
 
 
 using System;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace Visifire.Charts
 {
@@ -52,11 +45,11 @@ namespace Visifire.Charts
             MinDataValue = _parent.PlotDetails.MinAxisYValue;
 
             base.Init();
+
+            FixTitleSize();
         }
         
         #endregion Public Methods
-
-
 
         #region Private Methods
                 
@@ -74,8 +67,6 @@ namespace Visifire.Charts
         }
 
         #endregion Private Methods
-
-        
 
     }
 }

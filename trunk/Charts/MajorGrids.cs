@@ -41,15 +41,11 @@ namespace Visifire.Charts
             SetDefaults();
         }
 
-
-
         #endregion Public Methods
 
         #region Public Properties
 
         #region Line Properties
-
-        
 
         public String LineColor
         {
@@ -88,6 +84,7 @@ namespace Visifire.Charts
                 _lineStyle = value;
             }
         }
+
         #endregion Line Properties
 
         public Double Interval
@@ -117,11 +114,7 @@ namespace Visifire.Charts
             }
         }
 
-
         #endregion Public Properties
-
-        #region Protected Methods
-        #endregion Protected Methods
 
         #region Internal Properties
         internal Brush LineBackground
@@ -143,186 +136,29 @@ namespace Visifire.Charts
         #endregion Internal Properties
 
         #region Internal Methods
+
         internal void DrawGrids()
         {
             if (!Enabled || !_parent.Enabled) return;
-            Int32 noOfIntervals;
-            Double interval;
-            Line ln = new Line();
-            Rectangle interlacedRectangle = new Rectangle();
 
+            Decimal interval;
 
-            interval = Interval;
+            interval = (Decimal)Interval;
 
-            noOfIntervals = (int)Math.Ceiling((_parent.AxisMaximum - _parent.AxisMinimum) / interval);
-
-            Double vals;
-            Double vals2;
             this.Children.Clear();
 
-            if (Enabled)
-            {
-
-                Double minValue;
-                int countIntervals = 0;
-                if (_parent.AxisOrientation == AxisOrientation.Bar)
-                {
-
-                    if ((Double)_parent.AxisManager.GetMinimumDataValue() - interval < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
-                        vals = (Double)_parent.AxisManager.GetMinimumDataValue();
-                    else
-                        vals = _parent.AxisMinimum;
-
-                    int i = 0;
-                    minValue = vals;
-                    while (vals <= _parent.AxisMaximum)
-                    {
-                        ln = new Line();
-
-                        ln.SetValue(ZIndexProperty, 4);
-                        ln.X1 = 0;
-                        ln.X2 = (Double)(this._parent.Parent as Chart).PlotArea.GetValue(WidthProperty);
-
-
-                        ln.Y1 = _parent.DoubleToPixel(vals);
-
-                        vals2 = vals + interval;
-                        ln.Y2 = ln.Y1;
-
-                        vals = minValue + interval * (++countIntervals);
-                        if (ln.Y1 < -0.5 || ln.Y1 > this.Height + 0.5) continue;
-
-
-                        if (i % 2 == 0)
-                        {
-                            interlacedRectangle = new Rectangle();
-
-
-                            (this._parent.Parent as Chart).PlotArea.Children.Add(interlacedRectangle);
-
-                            interlacedRectangle.Fill = Cloner.CloneBrush(_parent.InterlacedBackground);
-
-                            interlacedRectangle.SetValue(TopProperty, _parent.DoubleToPixel(vals2) + LineThickness / 2);
-                            interlacedRectangle.SetValue(LeftProperty, ln.X1);
-
-                            interlacedRectangle.SetValue(HeightProperty, ln.Y2 - (Double)interlacedRectangle.GetValue(TopProperty) - LineThickness / 2);
-
-
-                            interlacedRectangle.SetValue(WidthProperty, ln.X2 - ln.X1);
-
-                            interlacedRectangle.SetValue(ZIndexProperty, 0);
-
-
-                        }
-                        ln.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
-                        ln.StrokeThickness = LineThickness;
-
-
-                        switch (this._lineStyle)
-                        {
-                            case "Solid":
-                                break;
-
-                            case "Dashed":
-                                ln.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 12, 12, 12, 12 });
-                                break;
-
-                            case "Dotted":
-                                ln.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                                break;
-                        }
-
-                        this.Children.Add(ln);
-
-
-
-                        i++;
-                    }
-
-                }
-                else if (_parent.AxisOrientation == AxisOrientation.Column)
-                {
-                    if ((Double)_parent.AxisManager.GetMinimumDataValue() - interval < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
-                        vals = (Double)_parent.AxisManager.GetMinimumDataValue();
-                    else
-                        vals = _parent.AxisMinimum;
-
-                    int i = 0;
-                    minValue = vals;
-                    while (vals <= _parent.AxisMaximum)
-                    {
-                        ln = new Line();
-
-                        ln.SetValue(ZIndexProperty, 4);
-
-                        ln.X1 = _parent.DoubleToPixel(vals);
-
-
-                        ln.X2 = ln.X1;
-                        ln.Y1 = 0;
-                        ln.Y2 = -(Double)(this._parent.Parent as Chart).PlotArea.GetValue(HeightProperty);
-                        vals2 = vals;
-                        vals = minValue + interval * (++countIntervals);
-                        if (ln.X1 < -0.5 || ln.X1 > this.Width + 0.5) continue;
-
-
-                        if (i % 2 == 0)
-                        {
-                            interlacedRectangle = new Rectangle();
-
-                            (this._parent.Parent as Chart).PlotArea.Children.Add(interlacedRectangle);
-                            interlacedRectangle.Fill = Cloner.CloneBrush(_parent.InterlacedBackground);
-
-                            interlacedRectangle.SetValue(LeftProperty, _parent.DoubleToPixel(vals2) + LineThickness / 2);
-                            interlacedRectangle.SetValue(TopProperty, 0);
-
-
-                            interlacedRectangle.Width = Math.Abs(_parent.DoubleToPixel(vals) - _parent.DoubleToPixel(vals2) - LineThickness / 2);
-
-
-                            interlacedRectangle.SetValue(HeightProperty, Math.Abs(ln.Y1 - ln.Y2));
-                            interlacedRectangle.SetValue(ZIndexProperty, 0);
-
-                        }
-                        ln.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
-                        ln.StrokeThickness = LineThickness;
-
-
-                        switch (this._lineStyle)
-                        {
-                            case "Solid":
-                                break;
-
-                            case "Dashed":
-                                ln.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 12, 12, 12, 12 });
-                                break;
-
-                            case "Dotted":
-                                ln.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                                break;
-                        }
-
-                        this.Children.Add(ln);
-
-
-                        i++;
-                    }
-
-                }
-            }
+            GenerateMajorGrids((_parent.GetType().Name == "AxisX"), interval);
         }
 
         internal void Init()
         {
             ValidateParent();
 
-
             SetName();
         }
 
         internal void SetWidth()
         {
-
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
@@ -332,7 +168,6 @@ namespace Visifire.Charts
             {
                 this.SetValue(WidthProperty, _parent.GetValue(WidthProperty));
             }
-
 
         }
 
@@ -353,18 +188,19 @@ namespace Visifire.Charts
         internal void SetLeft()
         {
 
-
             if (_parent.AxisOrientation == AxisOrientation.Bar)
+            {
                 this.SetValue(LeftProperty, (Double)_parent.GetValue(WidthProperty));
+            }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
                 this.SetValue(LeftProperty, 0);
 
             }
         }
+
         internal void SetTop()
         {
-
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
@@ -376,33 +212,9 @@ namespace Visifire.Charts
             }
         }
 
-        internal void Render()
-        {
-
-        }
-
         #endregion Internal Methods
 
         #region Private Methods
-
-        private Container Root
-        {
-            get
-            {
-                FrameworkElement parent;
-
-                if (_root == null)
-                {
-                    parent = this;
-
-                    while (!(parent is Container))
-                        parent = (FrameworkElement)parent.Parent;
-
-                    _root = (Container)parent;
-                }
-                return _root;
-            }
-        }
 
         private Object GetFromTheme(String propertyName)
         {
@@ -420,7 +232,124 @@ namespace Visifire.Charts
 
             return obj;
         }
-        
+
+        private Rectangle CreateInterlacedRectangle(Rect rect, Int32 zindex, Brush color)
+        {
+            Rectangle interlacedRectangle = new Rectangle();
+
+            interlacedRectangle.Fill = Cloner.CloneBrush(color);
+
+            interlacedRectangle.SetValue(TopProperty, rect.Y);
+
+            interlacedRectangle.SetValue(LeftProperty, rect.X);
+
+            interlacedRectangle.Height = rect.Height;
+
+            interlacedRectangle.Width = rect.Width;
+
+            interlacedRectangle.SetValue(ZIndexProperty, 0);
+
+            return interlacedRectangle;
+        }
+
+        private Line CreateLine(Point start, Point end, Int32 zindex)
+        {
+            Line line = new Line();
+
+            line.X1 = start.X;
+            line.Y1 = start.Y;
+
+            line.X2 = end.X;
+            line.Y2 = end.Y;
+
+            line.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
+            line.StrokeThickness = LineThickness;
+            line.StrokeDashArray = Parser.GetStrokeDashArray(this._lineStyle);
+
+            return line;
+        }
+
+        private void GenerateMajorGrids(Boolean isAxisX, Decimal interval)
+        {
+            Decimal position;
+            Decimal rectPosition;
+
+            if ((Double)(_parent.AxisManager.GetMinimumDataValue() - interval) < _parent.AxisMinimum && isAxisX)
+            {
+                position = _parent.AxisManager.GetMinimumDataValue();
+            }
+            else
+            {
+                position = (Decimal)_parent.AxisMinimum;
+            }
+
+            Decimal minmumValue = position;
+
+            Point start = new Point();
+            Point end = new Point();
+            Rect rect = new Rect();
+
+            for (Int32 i = 0, intervalCount = 0; position <= (Decimal)_parent.AxisMaximum; i++)
+            {
+                if (_parent.AxisOrientation == AxisOrientation.Bar)
+                {
+                    start.X = 0;
+                    start.Y = _parent.DoubleToPixel((Double)position);
+
+                    end.X = (this._parent.Parent as Chart).PlotArea.Width;
+                    end.Y = start.Y;
+
+                    rectPosition = position + interval;
+                    position = minmumValue + interval * (++intervalCount);
+
+                    if (start.Y < -0.5 || start.Y > this.Height + 0.5) continue;
+
+                    this.Children.Add(CreateLine(start, end, 4));
+
+                    if (i % 2 == 0)
+                    {
+                        rect.X = start.X;
+                        rect.Y = _parent.DoubleToPixel((Double)rectPosition) + LineThickness / 2;
+
+                        rect.Height = end.Y - rect.Y - LineThickness / 2;
+                        rect.Width = end.X - start.X;
+
+                        (this._parent.Parent as Chart).PlotArea.Children.Add(CreateInterlacedRectangle(rect, 0, _parent.InterlacedBackground));
+                    }
+                }
+                else if (_parent.AxisOrientation == AxisOrientation.Column)
+                {
+                    start.X = _parent.DoubleToPixel((Double)position);
+                    start.Y = 0;
+
+                    end.X = start.X;
+                    end.Y = -(Double)(this._parent.Parent as Chart).PlotArea.Height;
+
+                    rectPosition = position;
+                    position = minmumValue + interval * (++intervalCount);
+
+                    if (start.X < -0.5 || start.X > this.Width + 0.5) continue;
+
+                    this.Children.Add(CreateLine(start, end, 4));
+
+                    if (i % 2 == 0)
+                    {
+                        rect.X = _parent.DoubleToPixel((Double)rectPosition) + LineThickness / 2;
+                        rect.Y = 0;
+
+                        rect.Height = Math.Abs(start.Y - end.Y);
+                        rect.Width = Math.Abs(_parent.DoubleToPixel((Double)position) - _parent.DoubleToPixel((Double)rectPosition) - LineThickness / 2);
+
+                        (this._parent.Parent as Chart).PlotArea.Children.Add(CreateInterlacedRectangle(rect, 0, _parent.InterlacedBackground));
+                    }
+                }
+                else
+                {
+                    // not a valid axis orientation
+                    break;
+                }
+            }
+        }
 
         private void SetDefaults()
         {
@@ -440,24 +369,9 @@ namespace Visifire.Charts
         /// </summary>
         private void SetName()
         {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
+            Generic.SetNameAndTag(this);
         }
+
 
         /// <summary>
         /// Validate Parent element and assign it to _parent.
@@ -473,6 +387,27 @@ namespace Visifire.Charts
 
         
         #endregion Private Methods
+
+        #region Private Properties
+        private Container Root
+        {
+            get
+            {
+                FrameworkElement parent;
+
+                if (_root == null)
+                {
+                    parent = this;
+
+                    while (!(parent is Container))
+                        parent = (FrameworkElement)parent.Parent;
+
+                    _root = (Container)parent;
+                }
+                return _root;
+            }
+        }
+        #endregion Private Properties
 
         #region Data
 

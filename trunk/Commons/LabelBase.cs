@@ -39,43 +39,40 @@ namespace Visifire.Commons
 
         public LabelBase()
         {
-
             this.Children.Add(_textBlock);
-            
-            
         }
 
         public override void Render()
         {
-            
             base.Render();
         }
 
         public void SetTop(Double top)
         {
-            Canvas _parent = (Parent as Canvas);
+            Canvas parent = (Parent as Canvas);
 
             Double limitTop, limitBottom;
             Double toolTipTop = top;
 
             limitTop = 0;
-            limitBottom = _parent.Height - this.Height;
+            limitBottom = parent.Height - this.Height;
 
             if (limitTop <= top && top <= limitBottom) toolTipTop = top;
             else if (limitTop > top) toolTipTop = limitTop + 30;
             else if (limitBottom < top) toolTipTop = limitBottom;
 
             this.SetValue(TopProperty, toolTipTop);
-            _textBlock.SetValue(TopProperty, Padding);
+            _textBlock.SetValue(TopProperty, _padding);
+
         }
 
         public void SetLeft(Double left)
         {
-            Canvas _parent = (Parent as Canvas);
+            Canvas parent = (Parent as Canvas);
             Double limitLeft, limitRight;
             Double toolTipLeft = left;
 
-            limitRight = _parent.Width - this.Width;
+            limitRight = parent.Width - this.Width;
             limitLeft = 0;
 
             if (limitLeft <= left && left <= limitRight) toolTipLeft = left;
@@ -83,19 +80,19 @@ namespace Visifire.Commons
             else if (limitRight < left) toolTipLeft = limitRight;
 
             this.SetValue(LeftProperty, toolTipLeft);
-            _textBlock.SetValue(LeftProperty, Padding);
+            _textBlock.SetValue(LeftProperty, _padding);
         }
 
         public override void SetHeight()
         {
-            this.SetValue(HeightProperty, _textBlock.ActualHeight + Padding * 2);
+            this.SetValue(HeightProperty, _textBlock.ActualHeight + _padding * 2);
 
             ApplyBorder();
         }
 
         public override void SetWidth()
         {
-            this.SetValue(WidthProperty, _textBlock.ActualWidth + Padding * 2);
+            this.SetValue(WidthProperty, _textBlock.ActualWidth + _padding * 2);
             ApplyBorder();
         }
 
@@ -107,10 +104,10 @@ namespace Visifire.Commons
             rt.CenterY = 0;
             rt.Angle = -90;
             _textBlock.RenderTransform = rt;
-            this.Width = _textBlock.ActualHeight + Padding * 2;
-            this.Height = _textBlock.ActualWidth + Padding * 2;
+            this.Width = _textBlock.ActualHeight + _padding * 2;
+            this.Height = _textBlock.ActualWidth + _padding * 2;
             _textBlock.SetValue(TopProperty, _textBlock.ActualWidth);
-            _textBlock.SetValue(LeftProperty, Padding);
+            _textBlock.SetValue(LeftProperty, _padding);
             ApplyBorder();
 
         }
@@ -118,10 +115,10 @@ namespace Visifire.Commons
         public void RotateLabelHorizontal()
         {
             _textBlock.RenderTransform = null;
-            this.Width = _textBlock.ActualWidth + Padding * 2;
-            this.Height = _textBlock.ActualHeight + Padding * 2;
-            _textBlock.SetValue(TopProperty, Padding);
-            _textBlock.SetValue(LeftProperty, Padding);
+            this.Width = _textBlock.ActualWidth + _padding * 2;
+            this.Height = _textBlock.ActualHeight + _padding * 2;
+            _textBlock.SetValue(TopProperty, _padding);
+            _textBlock.SetValue(LeftProperty, _padding);
             ApplyBorder();
 
         }
@@ -129,6 +126,7 @@ namespace Visifire.Commons
         #endregion Public Methods
 
         #region Public Properties
+
         public Double TextWrap
         {
             get
@@ -141,6 +139,7 @@ namespace Visifire.Commons
 
             }
         }
+
         public String Text
         {
             get
@@ -157,8 +156,8 @@ namespace Visifire.Commons
             }
         }
 
-        
         #region Font Properties
+
         public String FontFamily
         {
             get
@@ -224,9 +223,6 @@ namespace Visifire.Commons
 
         #endregion Font Properties
 
-              
-       
-
         #endregion Public Properties
 
         #region Private Methods
@@ -251,7 +247,7 @@ namespace Visifire.Commons
         #region Data
         protected TextBlock _textBlock;
 
-        private Double Padding = 1;
+        private Double _padding = 1;
         private Double _textWrap;
         protected Double _fontSize;
         protected Brush _fontColor;

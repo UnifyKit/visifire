@@ -28,7 +28,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-
+using System.Windows.Markup;
+using System.Net;
+using System.Windows.Resources;
 
 namespace Visifire.Commons
 {
@@ -46,7 +48,9 @@ namespace Visifire.Commons
             base.Init();
             _textBlock.SetValue(TopProperty, 0);
             _textBlock.SetValue(LeftProperty, 0);
-            
+
+            _textBlock.Tag = this.Name;
+
             _textBlock.Margin = new Thickness(Padding);
             FixTitleSize();
 
@@ -74,27 +78,24 @@ namespace Visifire.Commons
 
             
         }
-        /// <summary>
-        /// This functions sets the warp size for a title and applies the hyperlink
-        /// </summary>
-        
+
         public override void Render()
         {
             base.Render();
             this.Children.Add(_textBlock);
             _textBlock.SetValue(ZIndexProperty, 70);
-
         }
-        
 
         #endregion Public Methods
 
         #region Public Properties
+
         public Double TextWrap
         {
             get;
             set;
         }
+
         public Double Padding
         {
             get
@@ -252,12 +253,13 @@ namespace Visifire.Commons
             }
         }
 
+        #endregion
+
         public Boolean FullSize
         {
             get;
             set;
         }
-        #endregion
 
         public String Text
         {
@@ -270,6 +272,12 @@ namespace Visifire.Commons
                 _textBlock.Text = value;
                 
             }
+        }
+
+        public Int32 Index
+        {
+            get;
+            set;
         }
 
         #endregion Public Properties
@@ -305,14 +313,14 @@ namespace Visifire.Commons
 
             }
 
-
         }
 
-        protected int CalculateFontSize()
+        protected Int32 CalculateFontSize()
         {
-            int[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
-            Double _parentSize = (Parent as FrameworkElement).Width * (Parent as FrameworkElement).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            Int32[] fontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Double parentSize = (Parent as FrameworkElement).Width * (Parent as FrameworkElement).Height;
+
+            Int32 i = (Int32)(Math.Ceiling(((parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
@@ -341,17 +349,21 @@ namespace Visifire.Commons
             Enabled = true;
             TextWrap = 0.9;
         }
+
         #endregion Protected Methods
 
         #region Protected Properties
+
         protected Double WrapSize
         {
             get;
             set;
         }
+
         #endregion Protected Properties
 
         #region Data
+
         protected TextBlock _textBlock;
         private AlignmentX _alignmentX;                         // Horizontal Alignment.
         private AlignmentY _alignmentY;                         // Vertical Alignment
@@ -360,6 +372,7 @@ namespace Visifire.Commons
         protected Brush _fontColor;
         protected Boolean _alignmentXChanged = false;
         protected Boolean _alignmentYChanged = false;
+
         #endregion Data
 
     }

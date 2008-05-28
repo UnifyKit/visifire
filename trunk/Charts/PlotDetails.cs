@@ -31,12 +31,6 @@ using System.Windows.Shapes;
 
 namespace Visifire.Charts
 {
-    /// <summary>
-    /// AxisOrientation is classified into 4 general categories.
-    /// Orientation / Presence of AxisX and AxisY depends on this value.
-    /// Axes will not be present if AxisOrientation is Pie
-    /// </summary>
-    internal enum AxisOrientation { Undefined = 0, Bar = 1, Column = 2, Pie = 3 };
 
     /// <summary>
     /// Contains information about how the Chart is to be plotted. Like AxisOrientation, etc.
@@ -47,7 +41,7 @@ namespace Visifire.Charts
         public PlotDetails()
         {
             Plots = new System.Collections.Generic.List<Plot>();
-            _axisLabels = new System.Collections.Generic.Dictionary<double, string>();
+            _axisLabels = new System.Collections.Generic.Dictionary<Double, String>();
 
             SetDefaults();
         }
@@ -182,7 +176,6 @@ namespace Visifire.Charts
             set;
         }
         #endregion Internal Methods
-        
         
         #region Data
         /// <summary>

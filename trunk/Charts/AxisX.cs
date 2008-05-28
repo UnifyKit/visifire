@@ -20,19 +20,10 @@
 
 
 using System;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace Visifire.Charts
 {
-    public enum AxisTypes{Value,Category,Auto};
-
     public class AxisX : Axes
     {
         #region Public Methods
@@ -42,37 +33,24 @@ namespace Visifire.Charts
             
         }
 
-        void OnMouseMove(object sender, MouseEventArgs e)
-        {
-            
-        }
-
         public override void Init()
         {
             ValidateParent();
 
-
             if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-            {
                 AxisOrientation = AxisOrientation.Bar;
-                MaxDataValue = _parent.PlotDetails.MaxAxisXValue;
-                MinDataValue = _parent.PlotDetails.MinAxisXValue;
-
-            }
             else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
-            {
                 AxisOrientation = AxisOrientation.Column;
-                MaxDataValue = _parent.PlotDetails.MaxAxisXValue;
-                MinDataValue = _parent.PlotDetails.MinAxisXValue;
-            }
+
+            MaxDataValue = _parent.PlotDetails.MaxAxisXValue;
+            MinDataValue = _parent.PlotDetails.MinAxisXValue;
 
             base.Init();
 
+            FixTitleSize();
         }
 
         #endregion Public Methods
-
-        
 
         #region Private Methods
 
@@ -91,8 +69,5 @@ namespace Visifire.Charts
 
         #endregion Private Methods
 
-        
-
- 
     }
 }

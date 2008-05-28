@@ -18,7 +18,6 @@
  
 */
 
-
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,31 +35,14 @@ namespace Visifire.Commons
     /// <summary>
     /// Legend base
     /// </summary>
-    public abstract class LegendBase : Visifire.Commons.VisualObject
+    public abstract class LegendBase : VisualObject
     {
         #region Public Methods
 
         public LegendBase()
         {
-            lineStrokeXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke>
-			    <LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""0.174,0.273"" StartPoint=""0.826,0.727"">
-				    <GradientStop Color=""#FFD4D4D4"" Offset=""0""/>
-				    <GradientStop Color=""#FEE8E5E5"" Offset=""1""/>
-				    <GradientStop Color=""#FF000000"" Offset=""0.518""/>
-			    </LinearGradientBrush>
-		    </Path.Stroke>");
-            lineStrokeLeftXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
-			<LinearGradientBrush EndPoint=""0.008,0.833"" StartPoint=""0.998,0.833"">
-				<GradientStop Color=""#FF000000"" Offset=""1""/>
-				<GradientStop Color=""#FFFFFFFF"" Offset=""0""/>
-			</LinearGradientBrush>
-		</Path.Stroke>");
-            lineStrokeRightXaml = String.Format(CultureInfo.InvariantCulture, @"<Path.Stroke xmlns=""http://schemas.microsoft.com/client/2007"">
-			<LinearGradientBrush EndPoint=""0.998,0.833"" StartPoint=""0.008,0.833"">
-				<GradientStop Color=""#FF000000"" Offset=""1""/>
-				<GradientStop Color=""#FFFFFFFF"" Offset=""0""/>
-			</LinearGradientBrush>
-		</Path.Stroke>");
+            
+            
             SetDefaults();
 
         }
@@ -69,14 +51,17 @@ namespace Visifire.Commons
         {
             throw new NotImplementedException();
         }
+
         public override void SetWidth()
         {
             throw new NotImplementedException();
         }
+
         public override void SetLeft()
         {
             throw new NotImplementedException();
         }
+
         public override void SetTop()
         {
             throw new NotImplementedException();
@@ -92,17 +77,6 @@ namespace Visifire.Commons
             if (!_alignmentYChanged && DockInsidePlotArea) _alignmentY = AlignmentY.Top;
             this.MaxHeight = base.MaxHeight;
             this.MaxWidth = base.MaxWidth;
-        }
-
-        /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        public virtual void SetName()
-        {
-            this.SetValue(NameProperty, this.GetType().Name + Index.ToString());
-
-            _index++;
         }
 
         /// <summary>
@@ -149,8 +123,11 @@ namespace Visifire.Commons
             }
             else
             {
-                _entryCanvas.SetValue(TopProperty, (Double)_entryCanvas.GetValue(TopProperty) - Spacing + BorderThickness);
-                this.Height +=  Padding - Spacing;
+                if (_entryCanvas != null)
+                {
+                    _entryCanvas.SetValue(TopProperty, (Double)_entryCanvas.GetValue(TopProperty) - Spacing + BorderThickness);
+                    this.Height += Padding - Spacing;
+                }
             }
 
             this.Height += BorderThickness; 
@@ -334,7 +311,6 @@ namespace Visifire.Commons
         #endregion Public Methods
 
         #region Public properties
-
         
         /// <summary>
         /// Max width of the legend
@@ -473,31 +449,6 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Spacing among legend entries.
-        /// </summary>
-        protected Double Spacing
-        {
-            get
-            {
-                if (Double.IsNaN(_spacing))
-                {
-                    _spacing = Padding * 25 / 100 + 1;
-                }
-                else if (_spacing < 0)
-                {
-                    
-                    _spacing = 1;
-                }
-
-                return _spacing;
-            }
-            set
-            {
-                _spacing = value;
-            }
-        }
-
-        /// <summary>
         /// Background of legend
         /// </summary>
         public new Brush Background
@@ -515,7 +466,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Index of legend
         /// </summary>
-        public static Int32 Index
+        public Int32 Index
         {
             get
             {
@@ -599,10 +550,7 @@ namespace Visifire.Commons
         {
             get
             {
-                if (_titleFontColor == null)
-                    return new SolidColorBrush(Colors.Black);  // Default value
-                else
-                    return _titleFontColor;
+                return _titleFontColor;
             }
             set
             {
@@ -742,17 +690,44 @@ namespace Visifire.Commons
         
         #endregion Internal properties
 
+        #region Protected Properties
+        /// <summary>
+        /// Spacing among legend entries.
+        /// </summary>
+        protected Double Spacing
+        {
+            get
+            {
+                if (Double.IsNaN(_spacing))
+                {
+                    _spacing = Padding * 25 / 100 + 1;
+                }
+                else if (_spacing < 0)
+                {
+
+                    _spacing = 1;
+                }
+
+                return _spacing;
+            }
+            set
+            {
+                _spacing = value;
+            }
+        }
+        #endregion
+
         #region Private Methods
 
         /// <summary>
         /// Calculates font sizes from chart size for the Title
         /// </summary>
         /// <returns></returns>
-        private int CalculateTitleFontSize()
+        private Int32 CalculateTitleFontSize()
         {
-            int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Int32[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as FrameworkElement).Width * (Parent as FrameworkElement).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            Int32 i = (Int32)(Math.Ceiling(((_parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
@@ -763,33 +738,40 @@ namespace Visifire.Commons
         /// <returns></returns>
         private Brush GetTitleFontColor()
         {
-            if (TitleBackground == null)
+            if (TitleFontColor == null)
             {
                 
                 Double intensity;
-                if ((this.Parent as VisualObject).Background == null)
+                if (TitleBackground == null)
                 {
-                    return new SolidColorBrush(Colors.Black);
-                }
-                else
-                {
-                    
-                        
-                    intensity = Parser.GetBrushIntensity((this.Parent as VisualObject).Background);
-                    if (intensity <= 0.5)
+                    if (this.Background == null)
                     {
-                        
-                        return Parser.ParseSolidColor("#BBBBBB");
+                        if ((this.Parent as VisualObject).Background == null)
+                        {
+                            return new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            intensity = Parser.GetBrushIntensity((this.Parent as VisualObject).Background);
+                            return Parser.GetDefaultFontColor(intensity);
+                        }
                     }
                     else
                     {
-                        return new SolidColorBrush(Colors.Black);
+                        intensity = Parser.GetBrushIntensity(this.Background);
+                        return Parser.GetDefaultFontColor(intensity);
                     }
-                    
                 }
+                else
+                {
+                    intensity = Parser.GetBrushIntensity(TitleBackground);
+                    return Parser.GetDefaultFontColor(intensity);
+                }
+
+                
             }
             else
-                return TitleBackground;
+                return TitleFontColor;
         }
 
         /// <summary>
@@ -830,11 +812,11 @@ namespace Visifire.Commons
         /// Calculates font sizes from chart size for the Legend fonts
         /// </summary>
         /// <returns></returns>
-        private int CalculateFontSize()
+        private Int32 CalculateFontSize()
         {
-            int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Int32[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (Parent as FrameworkElement).Width * (Parent as FrameworkElement).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            Int32 i = (Int32)(Math.Ceiling(((_parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
@@ -878,18 +860,21 @@ namespace Visifire.Commons
             _title.SetValue(TopProperty, _currentTop);
 
             _titleUnderLine = new Line();
+            _titleUnderLine.Tag = this.Name;
             _titleUnderLine.StrokeThickness = 0.4;
 
             switch (TitleAlignmentX)
             {
                 case AlignmentX.Left:
-                    _titleUnderLine.Stroke = (Brush)XamlReader.Load(lineStrokeLeftXaml);
+                    _titleUnderLine.Stroke = Parser.ParseLinearGradient("#FFFFFFFF,0;#FF000000,1", new Point(0.998, 0.833), new Point(0.008, 0.833));
                     break;
+
                 case AlignmentX.Right:
-                    _titleUnderLine.Stroke = (Brush)XamlReader.Load(lineStrokeRightXaml);
+                    _titleUnderLine.Stroke = Parser.ParseLinearGradient("#FFFFFFFF,0;#FF000000,1",new Point(0.008, 0.833), new Point(0.998, 0.833));
                     break;
+
                 case AlignmentX.Center:
-                    _titleUnderLine.Stroke = (Brush)XamlReader.Load(lineStrokeXaml);
+                    _titleUnderLine.Stroke = Parser.ParseLinearGradient("#FFD4D4D4,0;#FF000000,0.518;#FEE8E5E5,1", new Point(0.826, 0.727), new Point(0.174, 0.273));
                     break;
             }
 
@@ -903,6 +888,7 @@ namespace Visifire.Commons
             if (TitleBackground != null)
             {
                 _titleBackground = new Rectangle();
+                _titleBackground.Tag = this.Name;
                 this.Children.Add(_titleBackground);
             }
 
@@ -948,12 +934,22 @@ namespace Visifire.Commons
             txt.SetValue(LeftProperty, symbol.Width + Spacing);
 
             // Set top property
-            
             symbol.SetValue(TopProperty, (symbol.Height < txt.ActualHeight) ? (txt.ActualHeight - symbol.Height) / 2 : 0);
 
             txt.SetValue(TopProperty, (txt.ActualHeight < symbol.Height) ? (symbol.Height - txt.ActualHeight) / 2 : 0);
 
+            //Make hit test null so that parent can be accessed
+            //entry.IsHitTestVisible = false;
+            symbol.IsHitTestVisible = false;
+            txt.IsHitTestVisible = false;
             
+            ////Add color to keep background from becoming null
+            entry.Background = new SolidColorBrush(Colors.Transparent);
+
+            entry.Tag = this.Name;
+            symbol.Tag = this.Name;
+            txt.Tag = this.Name;
+
             // Set size
             entry.Height = Math.Max(txt.ActualHeight, symbol.Height);
             entry.Width = symbol.Width + Spacing + txt.ActualWidth;
@@ -961,8 +957,6 @@ namespace Visifire.Commons
             // Add children
             entry.Children.Add(symbol);
             entry.Children.Add(txt);
-
-            
             
             return entry;
         }
@@ -1013,19 +1007,12 @@ namespace Visifire.Commons
         private FontWeight _titleFontWeight;                       // Title FontWeight
 
         private Canvas _entryCanvas;
-        public TextBlock _title = null;                             // Title object 
+        private TextBlock _title = null;                             // Title object 
         private Line _titleUnderLine;                               // Line object
         private Rectangle _titleBackground;                         // Background of the title
-        private static Int32 _index = 0;                            // Index of the legend
+        private Int32 _index = 0;                                   // Index of the legend
         private Boolean _alignmentYChanged = false;
         private Boolean _alignmentXChanged = false;
-        // Default stroke for the line bellow the title
-        private String lineStrokeXaml;
-
-        private String lineStrokeLeftXaml ;
-
-        private String lineStrokeRightXaml ;
-
 
         #endregion
     }

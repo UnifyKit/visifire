@@ -21,12 +21,9 @@
 
 using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
+using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Commons;
 
@@ -38,63 +35,23 @@ namespace Visifire.Charts
 
         public AxisLabel()
         {
-            this.Loaded += new RoutedEventHandler(OnLoaded);
-        }
 
-        void OnLoaded(object sender, EventArgs e)
-        {
         }
 
         public override void Init()
         {
 
             base.Init();
+
+            SetTags();
+
             _textBlock.FontFamily = new FontFamily((Parent as AxisLabels).FontFamily);
             _textBlock.FontSize = (Parent as AxisLabels).FontSize;
             _textBlock.Width = (Parent as AxisLabels).MaxLabelWidth;
 
             if ((Parent as AxisLabels)._fontColor == null)
             {
-
-                Double intensity;
-                if (((Parent as AxisLabels).Parent as Axes).Background == null)
-                {
-                    if ((((Parent as AxisLabels).Parent as Axes).Parent as Chart).Background == null)
-                    {
-                        _textBlock.Foreground = new SolidColorBrush(Colors.Black);
-                    }
-                    else
-                    {
-                        intensity = Parser.GetBrushIntensity((((Parent as AxisLabels).Parent as Axes).Parent as Chart).Background);
-
-                        if (intensity <= 0.5)
-                        {
-
-                            _textBlock.Foreground = Parser.ParseSolidColor("#BBBBBB");
-                        }
-                        else
-                        {
-                            _textBlock.Foreground = new SolidColorBrush(Colors.Black);
-                        }
-
-                    }
-                }
-                else
-                {
-
-                    intensity = Parser.GetBrushIntensity(((Parent as AxisLabels).Parent as Axes).Background);
-                    if (intensity <= 0.5)
-                    {
-
-                        _textBlock.Foreground = Parser.ParseSolidColor("#BBBBBB");
-                    }
-                    else
-                    {
-                        _textBlock.Foreground = new SolidColorBrush(Colors.Black);
-                    }
-
-
-                }
+                _textBlock.Foreground = GetDefaultFontcolor();
             }
             else
             {
@@ -106,14 +63,11 @@ namespace Visifire.Charts
 
         public override void SetWidth()
         {
-
             this.SetValue(WidthProperty, _textBlock.ActualWidth);
-
         }
 
         public override void SetHeight()
         {
-
             this.SetValue(HeightProperty, _textBlock.ActualHeight);
         }
 
@@ -135,7 +89,6 @@ namespace Visifire.Charts
         {
             get
             {
-                
                 Double width1 = Math.Abs(DiagonalLength * Math.Cos(DiagonalAngle * Math.PI / 180));
                 Double width2 = Math.Abs(DiagonalLength * Math.Cos((360 - DiagonalAngle + Angle * 2) * Math.PI / 180));
                 
@@ -143,7 +96,6 @@ namespace Visifire.Charts
                     return width1;
                 else
                     return width2;
-                
             }
         }
 
@@ -152,6 +104,7 @@ namespace Visifire.Charts
             get
             {
                 Double top = 0;
+
                 top = ((Parent as AxisLabels).Parent as Axes).DoubleToPixel(this.Position) - ((Double)this.GetValue(WidthProperty) * Math.Sin(Angle * Math.PI / 180)) - ((Double)this.GetValue(HeightProperty) / 2 * Math.Cos(Angle * Math.PI / 180));
 
                 if (Angle >= -90 && Angle < 0)
@@ -193,7 +146,7 @@ namespace Visifire.Charts
         internal new Double ActualHeight
         {
             get
-            {
+            {   
                 Double height1 = Math.Abs(DiagonalLength * Math.Sin((DiagonalAngle) * Math.PI / 180));
                 Double height2 = Math.Abs(DiagonalLength * Math.Sin((360 - DiagonalAngle + Angle * 2) * Math.PI / 180));
 
@@ -352,25 +305,56 @@ namespace Visifire.Charts
                 
         #endregion Internal Properties
 
-        #region Private Methods
+        #region Protected Methods
 
         protected override void SetDefaults()
         {
             base.SetDefaults();
 
             _textBlock = new TextBlock();
-            
-
 
             this.Children.Add(_textBlock);
-
-            toolTip = new TextBlock();
-            this.Children.Add(toolTip);
 
             Angle = 0;
             
             _textBlock.TextWrapping = TextWrapping.Wrap;
-            
+
+        }
+
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        private Brush GetDefaultFontcolor()
+        {
+            Brush fontColorBrush = null;
+            Double intensity;
+
+            if (((Parent as AxisLabels).Parent as Axes).Background == null)
+            {
+                if ((((Parent as AxisLabels).Parent as Axes).Parent as Chart).Background == null)
+                {
+                    fontColorBrush = new SolidColorBrush(Colors.Black);
+                }
+                else
+                {
+                    intensity = Parser.GetBrushIntensity((((Parent as AxisLabels).Parent as Axes).Parent as Chart).Background);
+                    fontColorBrush = Parser.GetDefaultFontColor(intensity);
+                }
+            }
+            else
+            {
+                intensity = Parser.GetBrushIntensity(((Parent as AxisLabels).Parent as Axes).Background);
+                fontColorBrush = Parser.GetDefaultFontColor(intensity);
+            }
+
+            return fontColorBrush;
+        }
+
+        private void SetTags()
+        {
+            // The tag for axislabel is the name of the axis
+            _textBlock.Tag = ((Parent as Canvas).Parent as Canvas).Name;
         }
 
         #endregion Private Methods
@@ -385,8 +369,6 @@ namespace Visifire.Charts
         private RotateTransform _rt;
 
         internal TextBlock _textBlock;
-
-        private TextBlock toolTip;
 
         #endregion Data
     }

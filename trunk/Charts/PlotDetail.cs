@@ -44,7 +44,6 @@ namespace Visifire.Charts
             SetDefaults();
         }
 
-
         // Type of the chart
         public ChartTypes ChartType
         {
@@ -79,8 +78,11 @@ namespace Visifire.Charts
         #endregion Private Methods
 
         #region Data
+
         private ChartTypes _chartType;
+
         private System.Collections.Generic.List<DataSeries> _dataSeries;
+
         #endregion Data
 
     }

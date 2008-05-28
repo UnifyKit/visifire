@@ -20,10 +20,38 @@
 
 
 using System;
-using System.Windows.Documents;
+using System.Windows;
 
 
-namespace Visifire.Charts
+namespace Visifire.Commons
 {
-    public enum BorderStyles { Solid, Dashed, Dotted }
+    public class EllipseGeometryParams
+    {
+        #region Public Methods
+        public EllipseGeometryParams(Point center, Double radiusX, Double radiusY)
+        {
+            Center = center;
+            RadiusX = radiusX;
+            RadiusY = radiusY;
+        }
+        #endregion Public Methods
+
+        #region Public Properties
+        public Point Center
+        {
+            get;
+            set;
+        }
+        public Double RadiusX
+        {
+            get;
+            set;
+        }
+        public Double RadiusY
+        {
+            get;
+            set;
+        }
+        #endregion
+    }
 }

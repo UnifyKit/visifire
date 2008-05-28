@@ -22,19 +22,16 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Net;
 using System.Windows.Browser;
-using System.Collections.Generic;
-using Visifire.Commons;
-using Visifire.Charts;
 using System.Windows.Markup;
+using System.Net;
+using System.Collections.Generic;
 using System.Globalization;
+using Visifire.Commons;
 
 namespace Visifire.Charts
 {
@@ -48,10 +45,19 @@ namespace Visifire.Charts
             
         }
 
-        public int CompareTo(Object o)
+        public Int32 CompareTo(Object o)
         {
             DataPoint dataPoint = (DataPoint)o;
-            return this.XValue.CompareTo(dataPoint.XValue);
+            Int32 compareResult;
+
+            if (Double.IsNaN(XValue) || Double.IsInfinity(XValue) || Double.IsNaN(dataPoint.XValue) || Double.IsInfinity(dataPoint.XValue))
+                compareResult = XValue.CompareTo(dataPoint.XValue);
+            else if (XValue <= dataPoint.XValue)
+                compareResult = -1;
+            else
+                compareResult = 1;
+
+            return compareResult;
         }
 
         public override void Init()
@@ -65,6 +71,7 @@ namespace Visifire.Charts
 
             SetName();
 
+            _correctedYValue = GetCorrectedYValue(_yValue);
 
             if (base.Background != null)
             {
@@ -101,7 +108,7 @@ namespace Visifire.Charts
             
         }
 
-        public Marker PlaceMarker()
+        public Marker PlaceMarker(Int32 zindex)
         {
             // This part of the code cause marker to be displayed by default
             if (_parent.RenderAs.ToLower() != "line" && _markerEnabled == "Undefined" && _parent._markerEnabled == "Undefined")
@@ -123,151 +130,82 @@ namespace Visifire.Charts
             marker.Color = MarkerBackground;
             marker.BorderThickness = MarkerBorderThickness;
             marker.BorderColor = MarkerBorderColor;
-            if (MarkerImage == null)
+            marker.SetValue(ZIndexProperty, zindex);
+            marker.Style = MarkerStyle;
+            marker.Size = MarkerSize;
+
+            if (_parent.RenderAs == "Bubble")
+                marker.Shadow = _parent.ShadowEnabled;
+
+            if (MarkerImage != null)
             {
-                if (_parent.RenderAs == "Bubble")
-                    marker.Shadow = _parent.ShadowEnabled;
-                marker.Style = MarkerStyle;
-                marker.Size = MarkerSize;
+                marker.ImagePath = MarkerImage;
+                marker.ImageStretch = MarkerImageStretch;
+            }
 
-
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
+            if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
+            {
+                top = (Double)GetValue(TopProperty) + (this.Height - marker.Height * MarkerScale) / 2;
+                if (this.CorrectedYValue >= 0)
                 {
-                    top = (Double)GetValue(TopProperty) + ((Double)GetValue(HeightProperty) - MarkerSize * MarkerScale) / 2;
-                    if (this.YValue >= 0)
-                    {
-                        left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) - MarkerSize * MarkerScale / 2;
-                    }
-                    else
-                    {
-                        left = (Double)GetValue(LeftProperty) - MarkerSize * MarkerScale / 2;
-                    }
-
+                    left = (Double)GetValue(LeftProperty) + this.Width - marker.Width * MarkerScale / 2;
                 }
                 else
                 {
-                    if (this.YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) - (marker.Height / 2 * MarkerScale);
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + this.Height - (marker.Height / 2 * MarkerScale);
-                    }
-
-                    left = (Double)GetValue(LeftProperty) + this.Width / 2 - (marker.Width / 2 * MarkerScale);
+                    left = (Double)GetValue(LeftProperty) - marker.Width * MarkerScale / 2;
                 }
-
 
             }
             else
             {
-
-                marker.ImagePath = MarkerImage;
-                marker.Style = MarkerStyle;
-
-
-                marker.Size = MarkerSize;
-
-                if (_parent._parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
+                if (this.CorrectedYValue >= 0)
                 {
-                    top = (Double)GetValue(TopProperty) + ((Double)GetValue(HeightProperty) - marker.Height * MarkerScale) / 2;
-                    if (this.YValue >= 0)
-                    {
-                        left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) - marker.Width * MarkerScale / 2;
-                    }
-                    else
-                    {
-                        left = (Double)GetValue(LeftProperty) - marker.Width / 2;
-                    }
-
+                    top = (Double)GetValue(TopProperty) - (marker.Height / 2 * MarkerScale);
                 }
                 else
                 {
-                    if (this.YValue >= 0)
-                    {
-                        top = (Double)GetValue(TopProperty) - marker.Height * MarkerScale / 2;
-                    }
-                    else
-                    {
-                        top = (Double)GetValue(TopProperty) + (Double)GetValue(HeightProperty) - (marker.Height * MarkerScale / 2);
-                    }
-                    left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) / 2 - (marker.Width * MarkerScale / 2);
+                    top = (Double)GetValue(TopProperty) + this.Height - (marker.Height / 2 * MarkerScale);
                 }
 
+                left = (Double)GetValue(LeftProperty) + this.Width / 2 - (marker.Width / 2 * MarkerScale);
             }
+
+            
             if (_parent._parent.View3D && _parent.RenderAs != "Point" && _parent.RenderAs != "Bubble")
             {
                 marker.SetValue(TopProperty, top + (Double)_parent._parent.PlotArea.GetValue(TopProperty));
                 marker.SetValue(LeftProperty, left + (Double)_parent._parent.PlotArea.GetValue(LeftProperty));
 
-                int chType = -1;
-
-                if (_parent.RenderAs.ToUpper() == "COLUMN")
-                    chType = (int)Surface3DCharts.Column;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDCOLUMN")
-                    chType = (int)Surface3DCharts.StackedColumn;
-                else if (_parent.RenderAs.ToUpper() == "BAR")
-                    chType = (int)Surface3DCharts.Bar;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDBAR")
-                    chType = (int)Surface3DCharts.StackedBar;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDBAR100")
-                    chType = (int)Surface3DCharts.StackedBar100;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDCOLUMN100")
-                    chType = (int)Surface3DCharts.StackedColumn100;
-                else if (_parent.RenderAs.ToUpper() == "AREA")
-                    chType = (int)Surface3DCharts.Area;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDAREA")
-                    chType = (int)Surface3DCharts.StackedArea;
-                else if (_parent.RenderAs.ToUpper() == "STACKEDAREA100")
-                    chType = (int)Surface3DCharts.StackedArea100;
-                else if (_parent.RenderAs.ToUpper() == "LINE")
-                    chType = (int)Surface3DCharts.Line;
-                else
+                if(_parent._drawingCanvas == null)
                     _parent._parent.Children.Add(marker);
-
-                if (chType >= 0) _parent._drawingCanvas.Children.Add(marker);
+                else
+                    _parent._drawingCanvas.Children.Add(marker);
 
             }
             else
             {
-
                 marker.SetValue(TopProperty, top);
                 marker.SetValue(LeftProperty, left);
                 _parent.Children.Add(marker);
-
-
             }
-
-
 
             marker.MouseEnter += delegate(object sender, MouseEventArgs e)
             {
                 ((Marker)sender).BorderColor = new SolidColorBrush(Colors.Red);
                 ((Marker)sender).BorderThickness = ((Marker)sender).BorderThickness * 1.5;
-                if (!String.IsNullOrEmpty(Href))
-                    _parent.Cursor = Cursors.Hand;
-
-
             };
 
             marker.MouseLeave += delegate(object sender, MouseEventArgs e)
             {
                 ((Marker)sender).BorderColor = Cloner.CloneBrush(MarkerBorderColor);
                 ((Marker)sender).BorderThickness = MarkerBorderThickness;
-                if (!String.IsNullOrEmpty(Href))
-                    _parent.Cursor = Cursors.Arrow;
-
-
-                _parent.ToolTip.Visibility = Visibility.Collapsed;
             };
-            if (!String.IsNullOrEmpty(Href))
-            {
-                marker.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-                {
-                    HtmlPage.Window.Navigate(new Uri(Href));
-                };
-            }
+
+            ApplyEventBasedSettings(marker);
+            
+            marker.Opacity = _parent.Opacity * Opacity;
+
+            marker.SetTags(this.Name);
 
             return marker;
         }
@@ -325,7 +263,7 @@ namespace Visifire.Charts
                         {
                             _parent._parent._areaLabelMarker = new Canvas();
                             _parent._parent.Children.Add(_parent._parent._areaLabelMarker);
-                            _parent._parent._areaLabelMarker.SetValue(ZIndexProperty, (int)_parent.GetValue(ZIndexProperty) + 1000);
+                            _parent._parent._areaLabelMarker.SetValue(ZIndexProperty, (Int32)_parent.GetValue(ZIndexProperty) + 1000);
                             _parent._parent._areaLabelMarker.SetValue(LeftProperty, _parent.GetValue(LeftProperty));
                             _parent._parent._areaLabelMarker.SetValue(TopProperty, _parent.GetValue(TopProperty));
                         }
@@ -348,7 +286,7 @@ namespace Visifire.Charts
                     factor = _parent._parent.View3D ? offset + 5 : 5;
 
                     top = (Double)GetValue(TopProperty) + ((Double)GetValue(HeightProperty) - (Double)Label.GetValue(HeightProperty)) / 2;
-                    if (this.YValue >= 0)
+                    if (this.CorrectedYValue >= 0)
                     {
                         left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) + factor;
 
@@ -389,7 +327,7 @@ namespace Visifire.Charts
                     {
                         left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) / 2 - (Double)Label.GetValue(WidthProperty) / 2 + offset;
                     }
-                    if (this.YValue >= 0)
+                    if (this.CorrectedYValue >= 0)
                     {
                         top = (Double)GetValue(TopProperty) - (Double)Label.GetValue(HeightProperty) - factor;
 
@@ -427,10 +365,11 @@ namespace Visifire.Charts
                     ApplyLabelFontColor(Label, true);
                     factor = _parent._parent.View3D ? 5 : 5;
 
-                    top = (Double)GetValue(TopProperty) + ((Double)GetValue(HeightProperty) - (Double)Label.GetValue(HeightProperty)) / 2;
-                    if (this.YValue >= 0)
+                    top = (Double)GetValue(TopProperty) + ((Double)GetValue(HeightProperty) - (Double)Label.Height) / 2;
+                    if (this.CorrectedYValue >= 0)
                     {
-                        left = (Double)GetValue(LeftProperty) + (Double)GetValue(WidthProperty) - Label.Width - factor - offset;
+                        left = (Double)GetValue(LeftProperty);
+                        left += this.Width - Label.Width - factor - offset;
                         if (left < (Double)GetValue(LeftProperty))
                             left = (Double)GetValue(LeftProperty) - offset;
                     }
@@ -452,7 +391,7 @@ namespace Visifire.Charts
                     if (_parent.RenderAs.ToLower() == "area" || _parent.RenderAs.ToLower() == "stackedarea" || _parent.RenderAs.ToLower() == "stackedarea100")
                     {
 
-                        if (this.YValue >= 0)
+                        if (this.CorrectedYValue >= 0)
                         {
                             top = (Double)GetValue(TopProperty) + factor / 2;
                             left = (Double)GetValue(LeftProperty) + this.Width / 2 - (Double)Label.GetValue(WidthProperty) / 2;
@@ -466,7 +405,7 @@ namespace Visifire.Charts
                     else
                     {
                         ApplyLabelFontColor(Label, true);
-                        if (this.YValue >= 0)
+                        if (this.CorrectedYValue >= 0)
                         {
                             top = (Double)GetValue(TopProperty) + factor / 2;
                             if (top + Label.Height > (Double)GetValue(TopProperty) + Height)
@@ -486,7 +425,9 @@ namespace Visifire.Charts
             }
             Label.SetValue(TopProperty, top + TopCorrection);
             Label.SetValue(LeftProperty, left + LeftCorrection);
-            Label.SetValue(ZIndexProperty, (int)element.GetValue(ZIndexProperty) + 1000);
+            Label.SetValue(ZIndexProperty, (Int32)element.GetValue(ZIndexProperty) + 1000);
+
+            Label.SetTags(this.Name);
         }
 
         public void AttachLabel(Double top, Double left, Double radius, Double angle, Point center, Double yScalingFactor)
@@ -550,8 +491,6 @@ namespace Visifire.Charts
             if (LabelLineEnabled.ToLower() == "true" && LabelStyle.ToLower() == "outside")
             {
                 Point[] points = new Point[3];
-
-
                 if (angle > (Math.PI / 2) && angle < (Math.PI * 3 / 2))
                 {
                     points[0].X = newLeft + Label.Width;
@@ -569,8 +508,13 @@ namespace Visifire.Charts
 
                 points[2].X = center.X + radius * Math.Cos(angle);
                 points[2].Y = center.Y + radius * Math.Sin(angle) * yScalingFactor;
-                String lineXAML = "<Polyline xmlns=\"http://schemas.microsoft.com/client/2007\" Points=\"" + points[0].ToString(CultureInfo.InvariantCulture) + " " + points[1].ToString(CultureInfo.InvariantCulture) + " " + points[2].ToString(CultureInfo.InvariantCulture) + "\"/>";
-                _labelLine = (Polyline)XamlReader.Load(lineXAML);
+
+                _labelLine = new Polyline();
+                _labelLine.Points = new PointCollection();
+                _labelLine.Points.Add(points[0]);
+                _labelLine.Points.Add(points[1]);
+                _labelLine.Points.Add(points[2]);
+
                 if (LabelLineColor != null)
                     _labelLine.Stroke = Cloner.CloneBrush(LabelLineColor);
                 else if (_labelFontColor != null)
@@ -578,20 +522,8 @@ namespace Visifire.Charts
                 else
                     _labelLine.Stroke = Cloner.CloneBrush(_label.FontColor);
                 _labelLine.StrokeThickness = LabelLineThickness;
-                switch (LabelLineStyle)
-                {
-                    case "Solid":
-                        break;
+                _labelLine.StrokeDashArray = Parser.GetStrokeDashArray(LabelLineStyle);
 
-                    case "Dashed":
-                        _labelLine.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                        break;
-
-                    case "Dotted":
-                        _labelLine.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                        break;
-                }
-                _labelLine.Points = Converter.ArrayToCollection(points);
                 _labelLine.Opacity = 1;
                 _labelLine.Visibility = Visibility.Visible;
 
@@ -601,17 +533,14 @@ namespace Visifire.Charts
                 this._parent.Children.Add(_labelLine);
             }
 
-
-
             Label.Visibility = Visibility.Visible;
-
 
             Label.SetValue(TopProperty, newTop);
             Label.SetValue(LeftProperty, newLeft);
             if (LabelStyle.ToLower() == "outside")
                 Label.SetValue(ZIndexProperty, 400);
             else
-                Label.SetValue(ZIndexProperty, 400);
+                Label.SetValue(ZIndexProperty, 1000);
         }
 
         public override String TextParser(String unParsed)
@@ -665,7 +594,7 @@ namespace Visifire.Charts
                 str = str.Replace("##Sum", "#Sum");
             else
             {
-                str = str.Replace("#Sum", _parent._parent.AxisY.GetFormattedText(_parent._parent._stackSum[XValue].X));//_stackSum[XValue].X contains sum of all data points with same X value
+                str = str.Replace("#Sum", _parent._parent.AxisY.GetFormattedText(_parent._parent._stackTotals[XValue].X));//_stackSum[XValue].X contains sum of all data points with same X value
             }
             return str;
         }
@@ -678,11 +607,15 @@ namespace Visifire.Charts
 
         public override void SetTop() { }
 
+        
+
         /// <summary>
-        /// Draws a border for the chart. Border itseld will become clipping region for the chart.
+        /// Draws a border for the Datapoint. Border itself will become clipping region
         /// </summary>
         public override void ApplyBorder()
         {
+            SetTag(_borderRectangle);
+
             _borderRectangle.Width = this.Width;
             _borderRectangle.Height = this.Height;
 
@@ -691,23 +624,10 @@ namespace Visifire.Charts
             _borderRectangle.RadiusX = RadiusX;
             _borderRectangle.RadiusY = RadiusY;
 
-
-            switch (this._borderStyle)
-            {
-                case "Solid":
-                    break;
-
-                case "Dashed":
-                    _borderRectangle.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 4, 4, 4, 4 });
-                    break;
-
-                case "Dotted":
-                    _borderRectangle.StrokeDashArray = Converter.ArrayToCollection(new Double[] { 1, 2, 1, 2 });
-                    break;
-            }
-
+            _borderRectangle.StrokeDashArray = Parser.GetStrokeDashArray(this._borderStyle);
+            
             RectangleGeometry rg = new RectangleGeometry();
-            rg.Rect = new Rect(0, 0, _borderRectangle.Width + 6, _borderRectangle.Height);
+            rg.Rect = new Rect(0, 0, _borderRectangle.Width + _parent.ShadowSize, _borderRectangle.Height);
             rg.RadiusX = RadiusX;
             rg.RadiusY = RadiusY;
 
@@ -753,172 +673,6 @@ namespace Visifire.Charts
 
         #endregion  Public Methods
 
-        #region Private Methods
-        protected override void SetDefaults()
-        {
-            base.SetDefaults();
-
-           
-            _borderRectangle = new Rectangle();
-            this.Children.Add(_borderRectangle);
-
-           
-
-            XValue = Double.NaN;
-            YValue = Double.NaN;
-
-            RadiusX = Double.NaN;
-            RadiusY = Double.NaN;
-
-            _borderThickness = Double.NaN;
-            BorderColor = null;
-            Enabled = true;
-            _markerBorderThickness = Double.NaN;
-            _markerSize = Double.NaN;
-            _markerScale = Double.NaN;
-            _labelText = "";
-            _labelEnabled = "Undefined";
-            _markerEnabled = "Undefined";
-            _labelLineEnabled = "Undefined";
-            _labelFontColor = null;
-            _labelFontSize = Double.NaN;
-            _explodeOffset = 0;
-            _showInLegend = "Undefined";
-            this.SetValue(ZIndexProperty, 0);
-        }
-
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
-        private int CalculateFontSize()
-        {
-            int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
-            Double _parentSize = _parent._parent.PlotArea.Width * _parent._parent.PlotArea.Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 161027.5) / 163840)) );
-            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
-            return fontSizes[i];
-        }
-
-        private void ApplyLabelFontColor(Label label, Boolean onDataPoint)
-        {
-            
-            Double intensity;
-            if (onDataPoint && _parent.RenderAs.ToLower() != "line")
-            {
-                if (LabelFontColor == null)
-                {
-                    intensity = Parser.GetBrushIntensity(Background);
-                    if (intensity <= 0.5)
-                    {
-                        label.FontColor = new SolidColorBrush(Colors.White);
-
-                    }
-                    else
-                    {
-                        label.FontColor = new SolidColorBrush(Colors.Black);
-                    }
-                }
-            }
-            else
-            {
-                if (LabelFontColor == null)
-                {
-
-                    if (_parent._parent.PlotArea.Background == null)
-                    {
-                        if (_parent._parent.Background == null)
-                        {
-                            label.FontColor = new SolidColorBrush(Colors.Black);
-                        }
-                        else
-                        {
-
-
-                            intensity = Parser.GetBrushIntensity(_parent._parent.Background);
-                            if (intensity <= 0.5)
-                            {
-
-                                label.FontColor = Parser.ParseSolidColor("#BBBBBB");
-                            }
-                            else
-                            {
-                                label.FontColor = new SolidColorBrush(Colors.Black);
-                            }
-
-                        }
-                    }
-                    else
-                    {
-
-                        intensity = Parser.GetBrushIntensity(_parent._parent.PlotArea.Background);
-                        if (intensity <= 0.5)
-                        {
-
-                            label.FontColor = Parser.ParseSolidColor("#BBBBBB");
-                        }
-                        else
-                        {
-                            label.FontColor = new SolidColorBrush(Colors.Black);
-                        }
-
-                    }
-                }
-                else
-                {
-                    label.FontColor = Cloner.CloneBrush(LabelFontColor);
-                }
-            }
-        }
-
-        private Double Percentage()
-        {
-            Double percentage = 0;
-            if (_parent.RenderAs.ToLower() == "pie" || _parent.RenderAs.ToLower() == "doughnut")
-            {
-                if (_parent._sum > 0) percentage = (YValue / _parent._sum * 100);
-                else percentage = 0;
-            }
-            else if (_parent.RenderAs.ToLower() == "stackedcolumn100" || _parent.RenderAs.ToLower() == "stackedbar100" || _parent.RenderAs.ToLower() == "stackedarea100")
-            {
-
-                percentage = YValue / _parent._parent._stackSum[XValue].Y * 100;// _stackSum[XValue].Y Contains Absolute sum
-            }
-            return percentage;
-        }
-
-        private String GetAxisLabelString()
-        {
-            String labelString;
-            if (_parent._parent.PlotDetails.AxisLabels.ContainsKey(XValue))
-            {
-                labelString = _parent._parent.PlotDetails.AxisLabels[XValue];
-            }
-            else
-            {
-                labelString = _parent._parent.AxisX.GetFormattedText(XValue);
-            }
-            return labelString;
-        }
-        #endregion Private Methods
-
         #region Public Properties
         /// <summary>
         /// The value that corresponds to Y-axis in a chart
@@ -927,25 +681,21 @@ namespace Visifire.Charts
         {
             get
             {
-                switch (_parent.RenderAs.ToLower())
-                {
-                    case "stackedarea100":
-                    case "stackedcolumn100":
-                    case "stackedbar100":
-                        // in case yvalue is not given this code returns 0
-                        return (Double.IsNaN(_yValue)?0:_yValue);
-                    case "pie":
-                    case "doughnut":
-                        // To return positive value always in case of pie and doughnut
-                        return (Double.IsNaN(_yValue)?0:Math.Abs(_yValue));
-                    default:
-                        return _yValue;
-                }
                 
+                return _yValue;
+
             }
             set
             {
                 _yValue = value;
+            }
+        }
+
+        public Double CorrectedYValue
+        {
+            get
+            {
+                return _correctedYValue;
             }
         }
 
@@ -973,7 +723,7 @@ namespace Visifire.Charts
             }
         }
 
-        public override bool Enabled
+        public override Boolean Enabled
         {
             get;
             set;
@@ -1006,6 +756,7 @@ namespace Visifire.Charts
                 _markerEnabled = value;
             }
         }
+
         public String MarkerStyle
         {
             get
@@ -1092,25 +843,6 @@ namespace Visifire.Charts
             }
         }
 
-        internal Brush MarkerBackground
-        {
-            get
-            {
-                if (_markerBackground != null)
-                    return _markerBackground;
-                else
-                    if (_parent.MarkerBackground != null)
-                        return Cloner.CloneBrush(_parent.MarkerBackground);
-                    else
-                        return new SolidColorBrush(Colors.White);
-            }
-            set
-            {
-                _markerBackground = value;
-            }
-
-        }
-
         public String MarkerColor
         {
             set
@@ -1118,6 +850,7 @@ namespace Visifire.Charts
                 MarkerBackground = Parser.ParseColor(value);
             }
         }
+
         public Brush MarkerBorderColor
         {
             get
@@ -1151,7 +884,21 @@ namespace Visifire.Charts
             }
         }
 
-        
+        public Stretch MarkerImageStretch
+        {
+            get
+            {
+                if (_markerImageStretchChanged)
+                    return _markerImageStretch;
+                else
+                    return _parent.MarkerImageStretch;
+            }
+            set
+            {
+                _markerImageStretch = value;
+                _markerImageStretchChanged = true;
+            }
+        }
 
         #endregion Marker Properties
 
@@ -1280,28 +1027,6 @@ namespace Visifire.Charts
             }
         }
 
-        internal Label Label
-        {
-            get
-            {
-                return _label;
-            }
-        }
-        internal Marker Marker
-        {
-            get
-            {
-                return _markerRef;
-            }
-        }
-        internal Polyline LabelLine
-        {
-            get
-            {
-                return _labelLine;
-            }
-        }
-
         public String LabelStyle
         {
             get
@@ -1411,19 +1136,7 @@ namespace Visifire.Charts
             }
             set
             {
-                _href = value;
-                Uri ur = new Uri(_href, UriKind.RelativeOrAbsolute);
-                if (ur.IsAbsoluteUri)
-                {
-                    _href = ur.AbsoluteUri;
-                }
-                else
-                {
-                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
-                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
-                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
-                    _href = ub2.ToString();
-                }
+                _href = Parser.BuildAbsolutePath(value);
             }
         }
 
@@ -1441,6 +1154,57 @@ namespace Visifire.Charts
             set
             {
                 this._background = value;
+            }
+        }
+
+        public override String Color
+        {
+            set
+            {
+                Background = Parser.ParseColor(value);
+                _color = value;
+            }
+            get
+            {
+                return _color;
+            }
+        }
+
+        public override String Image
+        {
+            get
+            {
+                return _image;
+            }
+            set
+            {
+                _image = Parser.BuildAbsolutePath(value);
+                ImageBrush imgBrush = new ImageBrush();
+                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
+
+                imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
+                imgBrush.Stretch = ImageStretch;
+                imgBrush.ImageFailed += new ExceptionRoutedEventHandler(imgBrush_ImageFailed);
+                _background = imgBrush;
+            }
+        }
+
+        public override Stretch ImageStretch
+        {
+            get
+            {
+                return _imageStretch;
+            }
+            set
+            {
+                _imageStretch = value;
+                if (_background != null)
+                {
+                    if (_background.GetType().Name == "ImageBrush")
+                    {
+                        (_background as ImageBrush).Stretch = value;
+                    }
+                }
             }
         }
 
@@ -1477,7 +1241,9 @@ namespace Visifire.Charts
                 
             }
         }
+
         #region Border Properties
+
         public override Double BorderThickness
         {
             get
@@ -1560,68 +1326,20 @@ namespace Visifire.Charts
             }
         }
 
-
-
-        public override String Color
-        {
-            set
-            {
-                Background = Parser.ParseColor(value);
-                _color = value;
-            }
-            get
-            {
-                return _color;
-            }
-        }
-        public override String Image
-        {
-            get
-            {
-                return _image;
-            }
-            set
-            {
-                _image = value;
-                ImageBrush imgBrush = new ImageBrush();
-                Uri ur = new Uri(_image, UriKind.RelativeOrAbsolute);
-                if (ur.IsAbsoluteUri)
-                {
-                    _image = ur.AbsoluteUri;
-                }
-                else
-                {
-                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
-                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
-                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
-                    _image = ub2.ToString();
-                }
-                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
-
-                imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
-                imgBrush.ImageFailed += new ExceptionRoutedEventHandler(imgBrush_ImageFailed);
-                _background = imgBrush;
-            }
-        }
-        public override Stretch ImageStretch
-        {
-            get
-            {
-                return _imageStretch;
-            }
-            set
-            {
-                _imageStretch = value;
-                if (_background != null)
-                {
-                    if (_background.GetType().Name == "ImageBrush")
-                    {
-                        (_background as ImageBrush).Stretch = value;
-                    }
-                }
-            }
-        }
         #endregion
+
+        public Int32 Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                _index = value;
+            }
+        }
+
         #endregion Public Properties
 
         #region Public Events
@@ -1640,28 +1358,60 @@ namespace Visifire.Charts
       
         #region Internal Properties
 
-        internal Int32 Index
+        internal Brush MarkerBackground
         {
             get
             {
-                return _index;
+                if (_markerBackground != null)
+                    return _markerBackground;
+                else
+                    if (_parent.MarkerBackground != null)
+                        return Cloner.CloneBrush(_parent.MarkerBackground);
+                    else
+                        return new SolidColorBrush(Colors.White);
             }
             set
             {
-                _index = value;
+                _markerBackground = value;
+            }
+
+        }
+
+        internal Label Label
+        {
+            get
+            {
+                return _label;
+            }
+        }
+
+        internal Marker Marker
+        {
+            get
+            {
+                return _markerRef;
+            }
+        }
+
+        internal Polyline LabelLine
+        {
+            get
+            {
+                return _labelLine;
             }
         }
 
         #endregion Internal Properties
 
         #region Internal Methods
-        internal void ApplyEffects(int ZIndex)
+        internal void ApplyEffects(Int32 ZIndex)
         {
             
             if (_parent.Bevel)
             {
                 String renderType = _parent.RenderAs.ToLower();
                 List<Point> bevelPoints = new List<Point>();
+
                 switch (renderType)
                 {
                     case "column":
@@ -1733,11 +1483,194 @@ namespace Visifire.Charts
                 
             }
         }
+
+        /// <summary>
+        /// Sets Tag as the name of the datapoint
+        /// </summary>
+        /// <param name="element"></param>
+        internal void ApplyTag(FrameworkElement element)
+        {
+            element.Tag = this.Name;
+        }
+
+        /// <summary>
+        /// This function applies some of the stroke values that are to be applied to a shape object
+        /// </summary>
+        /// <param name="shape">shape object for with the stroke setting are applied</param>
+        internal void ApplyStrokeSettings(Shape shape)
+        {
+            shape.Stroke = Cloner.CloneBrush(BorderColor);
+            shape.StrokeThickness = BorderThickness;
+            shape.StrokeDashArray = Parser.GetStrokeDashArray(BorderStyle);
+        }
+
+        /// <summary>
+        /// Attaches events, tooltip and href be calling corresponding function
+        /// </summary>
+        /// <param name="element">element to which the events will be attached</param>
+        internal void ApplyEventBasedSettings(FrameworkElement element)
+        {
+            AttachToolTip(element);
+
+            AttachEvents(element);
+
+            AttachHref(element);
+
+            ApplyTag(element);
+
+            //Set cursor type for events
+            element.Cursor = this.Cursor;
+        }
+
         #endregion Internal Methods
+
+        #region Private Methods
+
+        protected override void SetDefaults()
+        {
+            base.SetDefaults();
+
+            _borderRectangle = new Rectangle();
+            this.Children.Add(_borderRectangle);
+
+            XValue = Double.NaN;
+            YValue = Double.NaN;
+
+            RadiusX = Double.NaN;
+            RadiusY = Double.NaN;
+
+            _borderThickness = Double.NaN;
+            BorderColor = null;
+            Enabled = true;
+            _markerBorderThickness = Double.NaN;
+            _markerSize = Double.NaN;
+            _markerScale = Double.NaN;
+            _labelText = "";
+            _labelEnabled = "Undefined";
+            _markerEnabled = "Undefined";
+            _labelLineEnabled = "Undefined";
+            _labelFontColor = null;
+            _labelFontSize = Double.NaN;
+            _explodeOffset = 0;
+            _showInLegend = "Undefined";
+            this.SetValue(ZIndexProperty, 0);
+        }
+
+        private Int32 CalculateFontSize()
+        {
+            Int32[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Double _parentSize = _parent._parent.PlotArea.Width * _parent._parent.PlotArea.Height;
+            Int32 i = (Int32)(Math.Ceiling(((_parentSize + 161027.5) / 163840)));
+            i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
+            return fontSizes[i];
+        }
+
+        private void ApplyLabelFontColor(Label label, Boolean onDataPoint)
+        {
+
+            Double intensity;
+            if (onDataPoint && _parent.RenderAs.ToLower() != "line")
+            {
+                if (LabelFontColor == null)
+                {
+                    intensity = Parser.GetBrushIntensity(Background);
+                    label.FontColor = Parser.GetDefaultFontColor(intensity);
+                }
+            }
+            else
+            {
+                if (LabelFontColor == null)
+                {
+
+                    if (_parent._parent.PlotArea.Background == null)
+                    {
+                        if (_parent._parent.Background == null)
+                        {
+                            label.FontColor = new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            intensity = Parser.GetBrushIntensity(_parent._parent.Background);
+                            label.FontColor = Parser.GetDefaultFontColor(intensity);
+                        }
+                    }
+                    else
+                    {
+                        intensity = Parser.GetBrushIntensity(_parent._parent.PlotArea.Background);
+                        label.FontColor = Parser.GetDefaultFontColor(intensity);
+                    }
+                }
+                else
+                {
+                    label.FontColor = Cloner.CloneBrush(LabelFontColor);
+                }
+            }
+        }
+
+        private Double Percentage()
+        {
+            Double percentage = 0;
+            if (_parent.RenderAs.ToLower() == "pie" || _parent.RenderAs.ToLower() == "doughnut")
+            {
+                if (_parent._sum > 0) percentage = (CorrectedYValue / _parent._sum * 100);
+                else percentage = 0;
+            }
+            else if (_parent.RenderAs.ToLower() == "stackedcolumn100" || _parent.RenderAs.ToLower() == "stackedbar100" || _parent.RenderAs.ToLower() == "stackedarea100")
+            {
+                percentage = CorrectedYValue / _parent._parent._stackTotals[XValue].Y * 100;// _stackSum[XValue].Y Contains Absolute sum
+            }
+            return percentage;
+        }
+
+        private String GetAxisLabelString()
+        {
+            String labelString;
+
+            if (_parent._parent.PlotDetails.AxisLabels.ContainsKey(XValue))
+            {
+                labelString = _parent._parent.PlotDetails.AxisLabels[XValue];
+            }
+            else
+            {
+                labelString = _parent._parent.AxisX.GetFormattedText(XValue);
+            }
+
+            return labelString;
+        }
+
+        private void SetTag(FrameworkElement element)
+        {
+            if (element != null)
+                element.Tag = this.Name;
+        }
+
+        /// <summary>
+        /// Returns the YValue after checking conditions based on chart type
+        /// </summary>
+        /// <returns></returns>
+        private Double GetCorrectedYValue(Double yValue)
+        {
+            switch (_parent.RenderAs.ToLower())
+            {
+                case "stackedarea100":
+                case "stackedcolumn100":
+                case "stackedbar100":
+                    // in case yvalue is not given this code returns 0
+                    return (Double.IsNaN(yValue) ? 0 : yValue);
+                case "pie":
+                case "doughnut":
+                    // To return positive value always in case of pie and doughnut
+                    return (Double.IsNaN(yValue) ? 0 : Math.Abs(yValue));
+                default:
+                    return yValue;
+            }
+        }
+        #endregion Private Methods
 
         #region Data
         private Double _xValue;
         private Double _yValue;
+        private Double _correctedYValue;
         private String _axisLabel;
         private Int32 _index;
         
@@ -1793,6 +1726,8 @@ namespace Visifire.Charts
         private String _showInLegend;
         private String _image;
         private Stretch _imageStretch;
+        private Stretch _markerImageStretch;
+        private Boolean _markerImageStretchChanged = false;
         #endregion Data
     }
 }

@@ -53,6 +53,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JsEventArgs\DataPointJsEventArgs.cs" />
+    <Compile Include="JsEventArgs\TitleJsEventArgs.cs" />
+    <Compile Include="JsEventArgs\AxisJsEventArgs.cs" />
+    <Compile Include="JsEventArgs\LegendJsEventArgs.cs" />
+    <Compile Include="JsEventArgs\ChartJsEventArgs.cs" />
+    <Compile Include="JsEventArgs\JsEventArgs.cs" />
     <Compile Include="Wrapper.xaml.cs">
       <DependentUpon>Wrapper.xaml</DependentUpon>
     </Compile>

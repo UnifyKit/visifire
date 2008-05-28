@@ -23,10 +23,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Commons;
 
@@ -47,10 +44,13 @@ namespace Visifire.Charts
         public override void Init()
         {
             base.Init();
+
             ValidateParent();
 
             SetName();
+
             MaxLabelWidth = (_parent.Parent as Chart).Width * (TextWrap <= 0 ? 0.3 : TextWrap);
+
             AttachHref();
             AttachToolTip();
         }
@@ -86,15 +86,10 @@ namespace Visifire.Charts
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
                 maxHeight = (Double)_parent.GetValue(HeightProperty);
-
-
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-
-
                 maxHeight = _rowHeight * _numberOfCalculatedRows + (_parent.Parent as Chart).Padding;
-
             }
             this.SetValue(HeightProperty, maxHeight);
         }
@@ -233,6 +228,7 @@ namespace Visifire.Charts
             }
 
         }
+
         public String FontWeight
         {
             get
@@ -246,6 +242,7 @@ namespace Visifire.Charts
             }
 
         }
+
         #endregion
         
         public Double TextWrap
@@ -311,6 +308,7 @@ namespace Visifire.Charts
         #endregion Internal properties
 
         #region Internal Methods
+
         internal void CreateLabels()
         {
             if (!Enabled || !_parent.Enabled)
@@ -319,58 +317,59 @@ namespace Visifire.Charts
             Double calculatedFontSize = CalculateFontSize();
 
             Double position = 0;
+
             PlotDetails plotDetails = (_parent.Parent as Chart).PlotDetails;
 
             Double noOfIntervals = _parent.AxisManager.GetNoOfIntervals();
 
-            Double interval = Interval;
+            Decimal interval = (Decimal)Interval;
+
             AxisLabel lbl = new AxisLabel();
 
             this.LabelDictionary.Clear();
 
-            Double i = _parent.AxisMinimum;
-
+            Decimal i = (Decimal)_parent.AxisMinimum;
 
             if (_parent.GetType().Name == "AxisX")
             {
-                if ((Double)_parent.AxisManager.GetMinimumDataValue() - interval < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
-                    i = (Double)_parent.AxisManager.GetMinimumDataValue();
+                if ((Double)(_parent.AxisManager.GetMinimumDataValue() - interval) < _parent.AxisMinimum && _parent.GetType().Name == "AxisX")
+                    i = _parent.AxisManager.GetMinimumDataValue();
                 else
-                    i = _parent.AxisMinimum;
+                    i = (Decimal)_parent.AxisMinimum;
 
+                // To get the axis lable of the datapoint with smallest x value
                 if (plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0)
                 {
-
                     System.Collections.Generic.Dictionary<Double, String>.Enumerator enumerator = plotDetails.AxisLabels.GetEnumerator();
                     enumerator.MoveNext();
-                    int j = 0;
-                    for (i = enumerator.Current.Key; j < plotDetails.AxisLabels.Count - 1; j++)
+                    Int32 j = 0;
+                    for (i = (Decimal)enumerator.Current.Key; j < plotDetails.AxisLabels.Count - 1; j++)
                     {
                         enumerator.MoveNext();
-                        if (i > enumerator.Current.Key)
-                            i = enumerator.Current.Key;
+                        if (i > (Decimal)enumerator.Current.Key)
+                            i = (Decimal)enumerator.Current.Key;
                     }
                     enumerator.Dispose();
                 }
             }
 
-            int countIntervals = 0;
-            double minValue = i;
-            for (; i <= _parent.AxisMaximum; i = minValue + (++countIntervals) * interval)
+            Int32 countIntervals = 0;
+            Decimal minValue = i;
+            for (; i <= (Decimal)_parent.AxisMaximum; i = minValue + (++countIntervals) * interval)
             {
                 if (_parent.GetType().Name == "AxisX")
-                    if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > plotDetails.MaxAxisXValue)
+                    if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > (Decimal)plotDetails.MaxAxisXValue)
                         continue;
 
                 lbl = new AxisLabel();
                 lbl.FontStyle = FontStyle;
                 lbl.FontWeight = FontWeight;
-                position = i;
+                position = (Double)i;
 
                 // Here the axis label text is genereted, The condition below forces the AxisY to 
                 // be initialized with only formated numeric value
                 String text;
-                if (!plotDetails.AxisLabels.ContainsKey(i) || (_parent.GetType().Name == "AxisY"))
+                if (!plotDetails.AxisLabels.ContainsKey(position) || (_parent.GetType().Name == "AxisY"))
                 {
                     if (_parent.ValueFormatString != null)
                     {
@@ -384,25 +383,24 @@ namespace Visifire.Charts
                 else
                 {
                     // Here the axis labels given by the user is selected as text. only for Axis X
-                    text = plotDetails.AxisLabels[i];
+                    text = plotDetails.AxisLabels[position];
                 }
 
                 lbl.Text = text;
+
                 this.Children.Add(lbl);
 
                 lbl.Init();
+
                 lbl.Angle = LabelAngle;
 
                 lbl.Position = position;
+
                 if (Double.IsNaN(_fontSize))
                 {
-
                     lbl.FontSize = calculatedFontSize;
                 }
-
-
             }
-
         }
 
         internal void PositionLabels()
@@ -465,7 +463,7 @@ namespace Visifire.Charts
                     // This is to number of rows required to display the labels
                     if (overlapOccured == false)
                     {
-                        numberOfRows = (int)Math.Ceiling(totalLabelWidth / axisWidth);
+                        numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
                         if (numberOfRows == 1) break;
                     }
                 }
@@ -474,11 +472,11 @@ namespace Visifire.Charts
                 //if overlap occured then fore change of angle
                 if (overlapOccured)
                 {
-                    numberOfRows = (int)Math.Ceiling(totalLabelWidth / axisWidth);
+                    numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
                     Double[] prevLR = new Double[numberOfRows];
                     Double[] totalLW = new Double[numberOfRows];
                     Double curLL;
-                    int k, j = 0;
+                    Int32 k, j = 0;
                     prevLR.Initialize();
                     totalLW.Initialize();
 
@@ -539,7 +537,7 @@ namespace Visifire.Charts
                 }
             }
             // label index decides which label goes into which row
-            int index = 0;
+            Int32 index = 0;
 
             foreach (AxisLabel lbl in this.Children)
             {
@@ -609,9 +607,6 @@ namespace Visifire.Charts
                         // If multiplerows then move consecutive labels into different rows
                         lbl.Top += rowHeight * (index % numberOfRows);
                         index++;
-
-
-
                     }
 
 
@@ -641,35 +636,11 @@ namespace Visifire.Charts
                 throw new Exception(this + "Parent should be an Axis");
         }
 
-        /// <summary>
-        /// Set a default Name. This is usefull if user has not specified this object in data XML and it has been 
-        /// created by default.
-        /// </summary>
-        private void SetName()
-        {
-            if (this.Name.Length == 0)
-            {
-                int i = 0;
-
-                String type = this.GetType().Name;
-                String name = type;
-
-                // Check for an available name
-                while (FindName(name + i.ToString()) != null)
-                {
-                    i++;
-                }
-                name += i.ToString();
-
-                this.SetValue(NameProperty, name);
-            }
-        }
-
         protected override void SetDefaults()
         {
             base.SetDefaults();
             MaxLabelWidth = 0;
-            _labelDictionary = new System.Collections.Generic.Dictionary<double, AxisLabel>();
+            _labelDictionary = new System.Collections.Generic.Dictionary<Double, AxisLabel>();
             _fontSize = Double.NaN;
             _interval = Double.NaN;
             Enabled = true;
@@ -683,11 +654,11 @@ namespace Visifire.Charts
             
         }
 
-        private int CalculateFontSize()
+        private Int32 CalculateFontSize()
         {
-            int[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+            Int32[] fontSizes = { 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
             Double _parentSize = (_parent.Parent as Chart).Width * (_parent.Parent as Chart).Height;
-            int i = (int)(Math.Ceiling(((_parentSize + 10000) / 115000)));
+            Int32 i = (Int32)(Math.Ceiling(((_parentSize + 10000) / 115000)));
             i = (i >= fontSizes.Length ? fontSizes.Length - 1 : i);
             return fontSizes[i];
         }
@@ -707,8 +678,6 @@ namespace Visifire.Charts
                     {
                         Double overflow = ((lbl.ActualTop + lbl.ActualHeight) - (Double)this.GetValue(HeightProperty));
 
-
-
                         if (overflow > (Double)((_parent.Parent as Chart).LabelPaddingBottom))
                             ((_parent.Parent as Chart).LabelPaddingBottom) = overflow;
                     }
@@ -719,37 +688,27 @@ namespace Visifire.Charts
                     {
                         Double overflow = ((lbl.ActualLeft + lbl.ActualWidth) - (Double)this.GetValue(WidthProperty));
 
-
-
                         overflow = overflow / lbl.Position * (_parent.AxisMaximum - _parent.AxisMinimum);
-
-
 
                         if ((_parent.Parent as Chart).LabelPaddingRight < overflow)
                             (_parent.Parent as Chart).LabelPaddingRight = overflow;
-
 
                     }
                     else if (lbl.ActualLeft < 0)
                     {
                         Double overflow = Math.Abs(lbl.ActualLeft);
 
-
-
                         overflow = overflow / (_parent.AxisMaximum - lbl.Position) * (_parent.AxisMaximum - _parent.AxisMinimum);
-
-
 
                         if (overflow > (_parent.Parent as Chart).LabelPaddingLeft)
                             (_parent.Parent as Chart).LabelPaddingLeft = overflow;
 
-
                     }
                 }
 
-
             }
         }
+
         #endregion Private Methods
 
         #region Data
@@ -766,7 +725,7 @@ namespace Visifire.Charts
         
         private Axes _parent;
         private Double _rowHeight;
-        private int _numberOfCalculatedRows;
+        private Int32 _numberOfCalculatedRows;
         #endregion Data
     }
 }
