@@ -1,47 +1,22 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" AnimationType="Type4" Width="500" Height="300" View3D="True">
+Theme="Theme1" AnimationType="Type3" View3D="True">
 
-  <vc:Title Text="Visifire Multiseries Column Chart"/>
+  <vc:Title Text="Product Sales"/>
+  <vc:AxisY Title="Revenue" Prefix="$"/>
+  <vc:AxisY AxisType="Secondary" Title="Profit" Prefix="$"/>
 
-  <vc:DataSeries RenderAs="Column">
-    <vc:DataPoint AxisLabel="Feb2007" YValue="25"/>
-    <vc:DataPoint AxisLabel="Mar2007" YValue="22"/>
-    <vc:DataPoint AxisLabel="Apr2007" YValue="23"/>
-    <vc:DataPoint AxisLabel="May2007" YValue="24"/>
-    <vc:DataPoint AxisLabel="Jun2007" YValue="22"/>
+  <vc:DataSeries Name="Revenue" RenderAs="Column">
+    <vc:DataPoint AxisLabel="Product A" YValue="42000"/>
+    <vc:DataPoint AxisLabel="Product B" YValue="10293"/>
+    <vc:DataPoint AxisLabel="Product C" YValue="28745"/>
+    <vc:DataPoint AxisLabel="Product D" YValue="24365"/>
   </vc:DataSeries>
 
-  <vc:DataSeries RenderAs="Column">
-    <vc:DataPoint YValue="15.5"/>
-    <vc:DataPoint YValue="16"/>
-    <vc:DataPoint YValue="16"/>
-    <vc:DataPoint YValue="15"/>
-    <vc:DataPoint YValue="16"/>
-  </vc:DataSeries>
-
-  <vc:DataSeries RenderAs="Column">
-    <vc:DataPoint YValue="14.5"/>
-    <vc:DataPoint YValue="15"/>
-    <vc:DataPoint YValue="16"/>
-    <vc:DataPoint YValue="18"/>
-    <vc:DataPoint YValue="17.5"/>
-  </vc:DataSeries>
-
-  <vc:DataSeries RenderAs="Column">
-    <vc:DataPoint YValue="13.5"/>
-    <vc:DataPoint YValue="13"/>
-    <vc:DataPoint YValue="14"/>
-    <vc:DataPoint YValue="12"/>
-    <vc:DataPoint YValue="12"/>
-  </vc:DataSeries>
-
-  <vc:DataSeries RenderAs="Column">
-    <vc:DataPoint YValue="9"/>
-    <vc:DataPoint YValue="9.5"/>
-    <vc:DataPoint YValue="9.5"/>
-    <vc:DataPoint YValue="9.5"/>
-    <vc:DataPoint YValue="10"/>
+  <vc:DataSeries Name="Profit" RenderAs="Column" AxisYType="Secondary">
+    <vc:DataPoint YValue="22122"/>
+    <vc:DataPoint YValue="5600"/>
+    <vc:DataPoint YValue="15980"/>
+    <vc:DataPoint YValue="12039"/>
   </vc:DataSeries>
 
 </vc:Chart>
-

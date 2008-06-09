@@ -124,7 +124,7 @@ namespace Visifire.Charts
                 Double spaceToRight = 0; // Space remaining to the right of the PlotArea
 
 
-                Width = _parent._innerBounds.Right - (Double)GetValue(LeftProperty) - _parent.Padding;
+                Width = _parent._innerBounds.Right - (Double)GetValue(LeftProperty) - _parent.Padding - ((_parent.AxisYSecondary != null)? _parent.AxisYSecondary.Width : 0);
 
                 spaceToRight = (Double)_parent.GetValue(WidthProperty) -
                                     ((Double)this.GetValue(LeftProperty) +
@@ -154,23 +154,22 @@ namespace Visifire.Charts
         {
             if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
             {
-                SetValue(HeightProperty, (Double)_parent.AxisY.GetValue(TopProperty) - (Double)this.GetValue(TopProperty));
+                this.Height = (Double)_parent.AxisYPrimary.GetValue(TopProperty) - (Double)this.GetValue(TopProperty);
             }
             else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
             {
-                SetValue(HeightProperty, (Double)_parent.AxisX.GetValue(TopProperty) - (Double)this.GetValue(TopProperty));
+                this.Height = (Double)_parent.AxisX.GetValue(TopProperty) - (Double)this.GetValue(TopProperty);
             }
-
 
             Double bottomLimit = _parent._innerBounds.Bottom;
 
             if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Pie)
             {
 
-                SetValue(HeightProperty, bottomLimit - (Double)GetValue(TopProperty) - _parent.Padding);
+                this.Height = bottomLimit - (Double)GetValue(TopProperty) - _parent.Padding;
             }
             else if (_parent.LabelPaddingBottom > (bottomLimit - (this.Height + (Double)this.GetValue(TopProperty))))
-                SetValue(HeightProperty, bottomLimit - _parent.LabelPaddingBottom - (Double)GetValue(TopProperty));
+                this.Height = bottomLimit - _parent.LabelPaddingBottom - (Double)GetValue(TopProperty);
         }
 
         public override void SetLeft()
@@ -181,24 +180,30 @@ namespace Visifire.Charts
             }
             else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
             {
-                SetValue(LeftProperty, (Double)_parent.AxisY.GetValue(LeftProperty) + (Double)_parent.AxisY.GetValue(WidthProperty));
+                SetValue(LeftProperty, (Double)_parent.AxisYPrimary.GetValue(LeftProperty) + (Double)_parent.AxisYPrimary.GetValue(WidthProperty));
 
 
             }
             else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Pie)
             {
 
-                this.SetValue(LeftProperty, _parent._innerBounds.Left);
+                this.SetValue(LeftProperty, (Double) _parent._innerBounds.Left);
 
             }
         }
 
         public override void SetTop()
         {
-
-            SetValue(TopProperty, _parent._innerBounds.Top + _parent.Padding);
-            if (_parent.LabelPaddingTop > (Double)this.GetValue(TopProperty))
-                this.SetValue(TopProperty, _parent.LabelPaddingTop + _parent.Padding);
+            if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Bar && _parent.AxisYSecondary!= null)
+            {
+                SetValue(TopProperty, (Double)_parent.AxisYSecondary.GetValue(TopProperty) + _parent.AxisYSecondary.Height);   
+            }
+            else
+            {
+                SetValue(TopProperty, _parent._innerBounds.Top + _parent.Padding);
+                if (_parent.LabelPaddingTop > (Double)this.GetValue(TopProperty))
+                    this.SetValue(TopProperty, (Double) ( _parent.LabelPaddingTop + _parent.Padding));
+            }
         }
 
         public override void Render()
@@ -238,10 +243,12 @@ namespace Visifire.Charts
                     plot3d.Points = Converter.ArrayToCollection(effect.ToArray());
 
                     plot3d.Opacity = 1;
-                    plot3d.SetValue(ZIndexProperty, 60);
-                    plot3d.SetValue(LeftProperty, GetValue(LeftProperty));
-                    plot3d.SetValue(TopProperty, GetValue(TopProperty));
+                    plot3d.SetValue(ZIndexProperty, 1);
+                    plot3d.SetValue(LeftProperty, (Double) GetValue(LeftProperty));
+                    plot3d.SetValue(TopProperty, (Double) GetValue(TopProperty));
+
                     _parent.Children.Add(plot3d);
+
                     ApplyClipRegion = false;
                     RectangleGeometry rg = new RectangleGeometry();
                     rg.Rect = new Rect(0, 0, Width + 3, Height);
@@ -282,9 +289,9 @@ namespace Visifire.Charts
                     plot3d.Points = Converter.ArrayToCollection(effect.ToArray());
 
                     plot3d.Opacity = 1;
-                    plot3d.SetValue(ZIndexProperty, 60);
-                    plot3d.SetValue(LeftProperty, GetValue(LeftProperty));
-                    plot3d.SetValue(TopProperty, GetValue(TopProperty));
+                    plot3d.SetValue(ZIndexProperty, 1);
+                    plot3d.SetValue(LeftProperty, (Double) GetValue(LeftProperty));
+                    plot3d.SetValue(TopProperty, (Double) GetValue(TopProperty));
                     _parent.Children.Add(plot3d);
                     ApplyClipRegion = false;
                     RectangleGeometry rg = new RectangleGeometry();

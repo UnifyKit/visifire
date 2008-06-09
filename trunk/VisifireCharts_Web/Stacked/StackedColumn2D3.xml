@@ -1,0 +1,52 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
+Theme="Theme1" AnimationType="Type3">
+
+  <vc:Title Text="Total Revenues"/>
+  <vc:AxisY Prefix="$" Title="Products Revenue"/>
+  <vc:AxisY AxisType="Secondary" Prefix="$" Title="Services Revenue"/>
+
+  <vc:DataSeries Name="Product A" RenderAs="StackedColumn" ToolTipText="Product A, #AxisLabel, #YValue">
+    <vc:DataPoint AxisLabel="2001" YValue="32024"/>
+    <vc:DataPoint AxisLabel="2002" YValue="24021"/>
+    <vc:DataPoint AxisLabel="2003" YValue="40534"/>
+    <vc:DataPoint AxisLabel="2004" YValue="34036"/>
+    <vc:DataPoint AxisLabel="2005" YValue="42000"/>
+    <vc:DataPoint AxisLabel="2006" YValue="10293"/>
+    <vc:DataPoint AxisLabel="2007" YValue="28745"/>
+    <vc:DataPoint AxisLabel="2008" YValue="24365"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Product B" RenderAs="StackedColumn" ToolTipText="Product B, #AxisLabel, #YValue">
+    <vc:DataPoint YValue="21038"/>
+    <vc:DataPoint YValue="32018"/>
+    <vc:DataPoint YValue="27362"/>
+    <vc:DataPoint YValue="18363"/>
+    <vc:DataPoint YValue="23980"/>
+    <vc:DataPoint YValue="17362"/>
+    <vc:DataPoint YValue="23463"/>
+    <vc:DataPoint YValue="13280"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Service A" RenderAs="StackedColumn" AxisYType="Secondary" ToolTipText="Service A, #AxisLabel, #YValue">
+    <vc:DataPoint YValue="19273"/>
+    <vc:DataPoint YValue="25342"/>
+    <vc:DataPoint YValue="32435"/>
+    <vc:DataPoint YValue="23435"/>
+    <vc:DataPoint YValue="12325"/>
+    <vc:DataPoint YValue="10002"/>
+    <vc:DataPoint YValue="9000"/>
+    <vc:DataPoint YValue="8802"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Service B" RenderAs="StackedColumn" AxisYType="Secondary" ToolTipText="Service B, #AxisLabel, #YValue">
+    <vc:DataPoint YValue="30020"/>
+    <vc:DataPoint YValue="42001"/>
+    <vc:DataPoint YValue="50023"/>
+    <vc:DataPoint YValue="40020"/>
+    <vc:DataPoint YValue="52122"/>
+    <vc:DataPoint YValue="18329"/>
+    <vc:DataPoint YValue="32889"/>
+    <vc:DataPoint YValue="26030"/>
+  </vc:DataSeries>
+
+</vc:Chart

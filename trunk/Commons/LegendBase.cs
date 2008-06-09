@@ -85,7 +85,7 @@ namespace Visifire.Commons
         /// <Tips> Call this function after rendering the legend and before setting the border of legend. </Tips>
         public void SetTitleOfLegendPosition()
         {
-            if (!String.IsNullOrEmpty(Title))
+            if (!String.IsNullOrEmpty(Title) && _title !=null)
             {
                 if (this.Width < _title.ActualWidth)
                 {
@@ -93,7 +93,7 @@ namespace Visifire.Commons
                     _title.Width = this.Width;
                     _title.TextWrapping = TextWrapping.Wrap;
 
-                    _entryCanvas.SetValue(TopProperty, (Double)_entryCanvas.GetValue(TopProperty) + _title.ActualHeight - titleHeight);
+                    _entryCanvas.SetValue(TopProperty, (Double) ( (Double)_entryCanvas.GetValue(TopProperty) + _title.ActualHeight - titleHeight));
                     this.Height += _title.ActualHeight - titleHeight;
 
                     _titleUnderLine.Y1 += _title.ActualHeight - titleHeight;
@@ -102,11 +102,11 @@ namespace Visifire.Commons
 
                 // Set title left position. Note: top of title is already set while adding title
                 if (TitleAlignmentX == AlignmentX.Center)
-                    _title.SetValue(LeftProperty, (this.Width - _title.ActualWidth) / 2);
+                    _title.SetValue(LeftProperty, (Double) ( (this.Width - _title.ActualWidth) / 2));
                 else if (TitleAlignmentX == AlignmentX.Left)
-                    _title.SetValue(LeftProperty, Padding);
+                    _title.SetValue(LeftProperty, (Double) Padding);
                 else
-                    _title.SetValue(LeftProperty, (this.Width - _title.ActualWidth - Padding));
+                    _title.SetValue(LeftProperty, (Double) (this.Width - _title.ActualWidth - Padding));
 
                 // Set the under line width
                 _titleUnderLine.X2 = this.Width;
@@ -115,17 +115,17 @@ namespace Visifire.Commons
                 if (_titleBackground != null)
                 {
                     _titleBackground.Fill = TitleBackground;
-                    _titleBackground.SetValue(TopProperty, (Double)_title.GetValue(TopProperty) - 0.05);
+                    _titleBackground.SetValue(TopProperty, (Double) ( (Double)_title.GetValue(TopProperty) - 0.05));
                     _titleBackground.Height = _title.ActualHeight + 0.09;
                     _titleBackground.Width = this.Width; 
-                    _titleBackground.SetValue(LeftProperty, 0);
+                    _titleBackground.SetValue(LeftProperty, (Double) 0);
                 }
             }
             else
             {
                 if (_entryCanvas != null)
                 {
-                    _entryCanvas.SetValue(TopProperty, (Double)_entryCanvas.GetValue(TopProperty) - Spacing + BorderThickness);
+                    _entryCanvas.SetValue(TopProperty, (Double) ( (Double)_entryCanvas.GetValue(TopProperty) - Spacing + BorderThickness));
                     this.Height += Padding - Spacing;
                 }
             }
@@ -191,7 +191,7 @@ namespace Visifire.Commons
 
                 // Place title at center
                 if (_title == null && !String.IsNullOrEmpty(Title))
-                    _title.SetValue(LeftProperty, (this.Width - _title.ActualHeight) / 2);
+                    _title.SetValue(LeftProperty, (Double) ( (this.Width - _title.ActualHeight) / 2));
 
                 return false;
             }
@@ -217,8 +217,8 @@ namespace Visifire.Commons
             _currentHeight = ((_currentTop + entry.Height + Padding) > _maxHeight) ? _currentHeight : _currentTop + entry.Height + Spacing;
 
             // Set entry position 
-            entry.SetValue(LeftProperty, _currentLeft);
-            entry.SetValue(TopProperty, _currentTop);
+            entry.SetValue(LeftProperty, (Double) _currentLeft);
+            entry.SetValue(TopProperty, (Double) _currentTop);
 
             _currentTop += entry.Height + Spacing;
             this.Width = _currentLeft + ((_currentWidth == 0) ? entry.Width : _currentWidth) + Padding;
@@ -260,7 +260,7 @@ namespace Visifire.Commons
 
                 // Place title at center
                 if (_title == null && !String.IsNullOrEmpty(Title))
-                    _title.SetValue(LeftProperty, (this.Width - _title.ActualWidth) / 2);
+                    _title.SetValue(LeftProperty, (Double) ( (this.Width - _title.ActualWidth) / 2));
 
                 if (_currentTop < this.Height)
                     // legend height is fixed Farther changes in legend height is not allowed
@@ -292,8 +292,8 @@ namespace Visifire.Commons
 
             _currentWidth = ((_currentLeft + entry.Width + Padding) > _maxWidth) ? _currentWidth : _currentLeft + entry.Width + Spacing;
 
-            entry.SetValue(TopProperty, _currentTop);
-            entry.SetValue(LeftProperty, _currentLeft);
+            entry.SetValue(TopProperty, (Double) _currentTop);
+            entry.SetValue(LeftProperty, (Double) _currentLeft);
 
             _currentLeft += entry.Width + Spacing;
 
@@ -856,8 +856,8 @@ namespace Visifire.Commons
             
 
             _currentLeft = Padding;
-            _title.SetValue(LeftProperty, _currentLeft);
-            _title.SetValue(TopProperty, _currentTop);
+            _title.SetValue(LeftProperty, (Double) _currentLeft);
+            _title.SetValue(TopProperty, (Double) _currentTop);
 
             _titleUnderLine = new Line();
             _titleUnderLine.Tag = this.Name;
@@ -931,12 +931,12 @@ namespace Visifire.Commons
 
             // Set left property
             // for symbol -- already set
-            txt.SetValue(LeftProperty, symbol.Width + Spacing);
+            txt.SetValue(LeftProperty, (Double) symbol.Width + Spacing);
 
             // Set top property
-            symbol.SetValue(TopProperty, (symbol.Height < txt.ActualHeight) ? (txt.ActualHeight - symbol.Height) / 2 : 0);
+            symbol.SetValue(TopProperty, (Double) ( (symbol.Height < txt.ActualHeight) ? (txt.ActualHeight - symbol.Height) / 2 : 0));
 
-            txt.SetValue(TopProperty, (txt.ActualHeight < symbol.Height) ? (symbol.Height - txt.ActualHeight) / 2 : 0);
+            txt.SetValue(TopProperty, (Double) ( (txt.ActualHeight < symbol.Height) ? (symbol.Height - txt.ActualHeight) / 2 : 0));
 
             //Make hit test null so that parent can be accessed
             //entry.IsHitTestVisible = false;

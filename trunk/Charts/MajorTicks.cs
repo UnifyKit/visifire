@@ -28,6 +28,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Globalization;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -200,19 +201,19 @@ namespace Visifire.Charts
                 if ((_parent.Parent as Chart).View3D)
                 {
                     if (_parent.GetType().Name == "AxisX")
-                        this.SetValue(LeftProperty, (Double)_parent.AxisLabels.GetValue(LeftProperty) + _parent.AxisLabels.Width + (_parent.Parent as Chart).Padding);
+                        this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisLabels.GetValue(LeftProperty) + _parent.AxisLabels.Width + (_parent.Parent as Chart).Padding));
                     else
-                        this.SetValue(LeftProperty, (Double)_parent.GetValue(WidthProperty) - TickLength - (_parent.Parent as Chart).Padding);
+                        this.SetValue(LeftProperty, (Double) ( (Double)_parent.GetValue(WidthProperty) - TickLength - (_parent.Parent as Chart).Padding));
                 }
                 else
                 {
                     //This will bring the ticks to the left of the plot area for the vertcal axis
-                    this.SetValue(LeftProperty, (Double)_parent.GetValue(WidthProperty) - TickLength);
+                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.GetValue(WidthProperty) - TickLength));
                 }
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                this.SetValue(LeftProperty, 0);
+                this.SetValue(LeftProperty, (Double) 0);
 
             }
         }
@@ -223,18 +224,18 @@ namespace Visifire.Charts
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                this.SetValue(TopProperty, 0);
+                this.SetValue(TopProperty, (Double)0);
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
                 if ((_parent.Parent as Chart).View3D)
                 {
 
-                    this.SetValue(TopProperty, 0);
+                    this.SetValue(TopProperty, (Double) 0);
                 }
                 else
                 {
-                    this.SetValue(TopProperty, 0);
+                    this.SetValue(TopProperty, (Double) 0);
                 }
             }
         }
@@ -298,18 +299,18 @@ namespace Visifire.Charts
 
             rectBase.Width = _parent.PlankThickness;
             rectBase.Height = TickLength;
-            rectBase.SetValue(TopProperty, 0);
-            rectBase.SetValue(LeftProperty, TickLength);
+            rectBase.SetValue(TopProperty, (Double)0);
+            rectBase.SetValue(LeftProperty, (Double)  TickLength);
 
-            rectFront.SetValue(TopProperty, TickLength);
-            rectFront.SetValue(LeftProperty, 0);
+            rectFront.SetValue(TopProperty, (Double) TickLength);
+            rectFront.SetValue(LeftProperty, (Double)  0);
             rectFront.Height = chart.AxisX.DoubleToPixel(chart.AxisX.AxisMinimum) - chart.AxisX.DoubleToPixel(chart.AxisX.AxisMaximum);
             rectFront.Width = _parent.PlankThickness;
 
             rectSide.Height = rectFront.Height;
             rectSide.Width = TickLength;
-            rectSide.SetValue(TopProperty, TickLength);
-            rectSide.SetValue(LeftProperty, _parent.PlankThickness);
+            rectSide.SetValue(TopProperty, (Double) TickLength);
+            rectSide.SetValue(LeftProperty, (Double) _parent.PlankThickness);
 
             #region Color Gradient
             Brush topBrush = null;
@@ -333,10 +334,10 @@ namespace Visifire.Charts
                 {
 
                     linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                    linBrush1 += grad.Offset.ToString() + ";";
+                    linBrush1 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
 
                     linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                    linBrush2 += grad.Offset.ToString() + ";";
+                    linBrush2 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
                 }
                 frontBrush = Parser.ParseLinearGradient(linBrush1);
                 sideBrush = Parser.ParseLinearGradient(linBrush2);
@@ -352,10 +353,10 @@ namespace Visifire.Charts
                 {
 
                     linBrush1 += Parser.GetDarkerColor(grad.Color, 0.65) + ",";
-                    linBrush1 += grad.Offset.ToString() + ";";
+                    linBrush1 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
 
                     linBrush2 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                    linBrush2 += grad.Offset.ToString() + ";";
+                    linBrush2 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
                 }
                 frontBrush = Parser.ParseRadialGradient(linBrush1);
                 sideBrush = Parser.ParseRadialGradient(linBrush2);
@@ -450,15 +451,15 @@ namespace Visifire.Charts
             rectBase.Height = TickLength;
 
 
-            rectFront.SetValue(TopProperty, TickLength);
-            rectFront.SetValue(LeftProperty, -TickLength);
+            rectFront.SetValue(TopProperty, (Double) TickLength);
+            rectFront.SetValue(LeftProperty, (Double) ( -TickLength));
 
 
             rectFront.Width = rectBase.Width;
             rectFront.Height = _parent.PlankThickness;
 
-            rectSide.SetValue(LeftProperty, rectFront.Width - TickLength);
-            rectSide.SetValue(TopProperty, rectBase.Height);
+            rectSide.SetValue(LeftProperty, (Double) ( rectFront.Width - TickLength));
+            rectSide.SetValue(TopProperty, (Double) rectBase.Height);
 
             rectSide.Width = TickLength;
             rectSide.Height = rectFront.Height;
@@ -487,10 +488,10 @@ namespace Visifire.Charts
                 {
 
                     linBrush1 += Parser.GetDarkerColor(grad.Color, 0.9) + ",";
-                    linBrush1 += grad.Offset.ToString() + ";";
+                    linBrush1 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
 
                     linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                    linBrush2 += grad.Offset.ToString() + ";";
+                    linBrush2 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
                 }
                 brushFront = Parser.ParseLinearGradient(linBrush1);
                 brushShade = Parser.ParseLinearGradient(linBrush2);
@@ -506,10 +507,10 @@ namespace Visifire.Charts
                 {
 
                     linBrush1 += Parser.GetDarkerColor(grad.Color, 0.75) + ",";
-                    linBrush1 += grad.Offset.ToString() + ";";
+                    linBrush1 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
 
                     linBrush2 += Parser.GetDarkerColor(grad.Color, 0.85) + ",";
-                    linBrush2 += grad.Offset.ToString() + ";";
+                    linBrush2 += grad.Offset.ToString(CultureInfo.InvariantCulture) + ";";
                 }
                 brushFront = Parser.ParseRadialGradient(linBrush1);
                 brushShade = Parser.ParseRadialGradient(linBrush2);
@@ -625,10 +626,13 @@ namespace Visifire.Charts
                 {
                     case AxisOrientation.Column:
                         start.X = _parent.DoubleToPixel((Double)position);
-                        start.Y = 0;
+                        if (_parent.AxisType == AxisType.Primary)
+                            start.Y = 0;
+                        else
+                            start.Y = _parent.Height - TickLength;
 
                         end.X = start.X;
-                        end.Y = this.Height;
+                        end.Y = start.Y + TickLength;
 
                         if (start.X < -0.5 || start.X >= this.Width + 0.5) continue;
 
@@ -636,9 +640,19 @@ namespace Visifire.Charts
                         break;
                     case AxisOrientation.Bar:
                         if (_parent._parent.View3D)
-                            start.X = (Double)_parent._parent.PlotArea.GetValue(LeftProperty) - (Double)this.GetValue(LeftProperty) - this.Width - TickLength / 2;
+                        {
+                            if(_parent.AxisType == AxisType.Primary)
+                                start.X = (Double)_parent._parent.PlotArea.GetValue(LeftProperty) - (Double)this.GetValue(LeftProperty) - this.Width - TickLength / 2;
+                            else
+                                start.X = TickLength * 1.5 - _parent.Width;
+                        }
                         else
-                            start.X = this.Width - TickLength;
+                        {
+                            if (_parent.AxisType == AxisType.Primary)
+                                start.X = this.Width - TickLength;
+                            else
+                                start.X = TickLength - _parent.Width;
+                        }
                         start.Y = _parent.DoubleToPixel((Double)position);
 
                         end.X = start.X + TickLength;

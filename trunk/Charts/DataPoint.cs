@@ -173,8 +173,8 @@ namespace Visifire.Charts
             
             if (_parent._parent.View3D && _parent.RenderAs != "Point" && _parent.RenderAs != "Bubble")
             {
-                marker.SetValue(TopProperty, top + (Double)_parent._parent.PlotArea.GetValue(TopProperty));
-                marker.SetValue(LeftProperty, left + (Double)_parent._parent.PlotArea.GetValue(LeftProperty));
+                marker.SetValue(TopProperty, (Double) ( top + (Double)_parent._parent.PlotArea.GetValue(TopProperty)));
+                marker.SetValue(LeftProperty, (Double) ( left + (Double)_parent._parent.PlotArea.GetValue(LeftProperty)));
 
                 if(_parent._drawingCanvas == null)
                     _parent._parent.Children.Add(marker);
@@ -184,8 +184,8 @@ namespace Visifire.Charts
             }
             else
             {
-                marker.SetValue(TopProperty, top);
-                marker.SetValue(LeftProperty, left);
+                marker.SetValue(TopProperty, (Double) top);
+                marker.SetValue(LeftProperty, (Double) left);
                 _parent.Children.Add(marker);
             }
 
@@ -215,7 +215,7 @@ namespace Visifire.Charts
             return points;
         }
 
-        public void AttachLabel(FrameworkElement element, Double depth)
+        public void AttachLabel(FrameworkElement element, Double depth, Int32 zIndex)
         {
             if (element == null) return;
             _label = new Label();
@@ -264,8 +264,8 @@ namespace Visifire.Charts
                             _parent._parent._areaLabelMarker = new Canvas();
                             _parent._parent.Children.Add(_parent._parent._areaLabelMarker);
                             _parent._parent._areaLabelMarker.SetValue(ZIndexProperty, (Int32)_parent.GetValue(ZIndexProperty) + 1000);
-                            _parent._parent._areaLabelMarker.SetValue(LeftProperty, _parent.GetValue(LeftProperty));
-                            _parent._parent._areaLabelMarker.SetValue(TopProperty, _parent.GetValue(TopProperty));
+                            _parent._parent._areaLabelMarker.SetValue(LeftProperty, (Double)  _parent.GetValue(LeftProperty));
+                            _parent._parent._areaLabelMarker.SetValue(TopProperty, (Double)_parent.GetValue(TopProperty));
                         }
                         _parent._parent._areaLabelMarker.Children.Add(_label);
                         break;
@@ -423,9 +423,9 @@ namespace Visifire.Charts
 
                 }
             }
-            Label.SetValue(TopProperty, top + TopCorrection);
-            Label.SetValue(LeftProperty, left + LeftCorrection);
-            Label.SetValue(ZIndexProperty, (Int32)element.GetValue(ZIndexProperty) + 1000);
+            Label.SetValue(TopProperty, (Double) ( top + TopCorrection));
+            Label.SetValue(LeftProperty, (Double) ( left + LeftCorrection));
+            Label.SetValue(ZIndexProperty, zIndex + 1000);
 
             Label.SetTags(this.Name);
         }
@@ -535,8 +535,8 @@ namespace Visifire.Charts
 
             Label.Visibility = Visibility.Visible;
 
-            Label.SetValue(TopProperty, newTop);
-            Label.SetValue(LeftProperty, newLeft);
+            Label.SetValue(TopProperty, (Double)  newTop);
+            Label.SetValue(LeftProperty, (Double)  newLeft);
             if (LabelStyle.ToLower() == "outside")
                 Label.SetValue(ZIndexProperty, 400);
             else
@@ -562,7 +562,7 @@ namespace Visifire.Charts
             else
             {
                 if (String.IsNullOrEmpty(_parent.YValueFormatString))
-                    str = str.Replace("#YValue", _parent._parent.AxisY.GetFormattedText((Double.IsNaN(_yValue) ? 0 : _yValue)));
+                    str = str.Replace("#YValue", _parent.AxisY.GetFormattedText((Double.IsNaN(_yValue) ? 0 : _yValue)));
                 else
                     str = str.Replace("#YValue", YValue.ToString(_parent.YValueFormatString));
             }
@@ -594,7 +594,7 @@ namespace Visifire.Charts
                 str = str.Replace("##Sum", "#Sum");
             else
             {
-                str = str.Replace("#Sum", _parent._parent.AxisY.GetFormattedText(_parent._parent._stackTotals[XValue].X));//_stackSum[XValue].X contains sum of all data points with same X value
+                str = str.Replace("#Sum", _parent.AxisY.GetFormattedText(_parent._parent._stackTotals[XValue].X));//_stackSum[XValue].X contains sum of all data points with same X value
             }
             return str;
         }
@@ -1184,7 +1184,7 @@ namespace Visifire.Charts
 
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
                 imgBrush.Stretch = ImageStretch;
-                imgBrush.ImageFailed += new ExceptionRoutedEventHandler(imgBrush_ImageFailed);
+                imgBrush.ImageFailed +=new EventHandler<ExceptionRoutedEventArgs>(imgBrush_ImageFailed);
                 _background = imgBrush;
             }
         }

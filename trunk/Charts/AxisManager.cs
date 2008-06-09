@@ -19,6 +19,7 @@
 */
 
 using System;
+using System.Globalization;
 
 namespace Visifire.Charts
 {
@@ -436,7 +437,7 @@ namespace Visifire.Charts
             mantissa = GetMantissaOrExponent(MantissaOrExponent.Mantissa, number);
             exponent = GetMantissaOrExponent(MantissaOrExponent.Exponent, number);
 
-            return mantissa.ToString().Length + (Int32)(exponent - 1);
+            return mantissa.ToString(CultureInfo.InvariantCulture).Length + (Int32)(exponent - 1);
 
         }
 

@@ -55,10 +55,10 @@ namespace Visifire.Charts
             // AxisOrientation should be Undefined by default. Else it'll not run properly.
             AxisOrientation = AxisOrientation.Undefined;
 
-            _maxAxisXValue = Double.NaN;
-            _minAxisXValue = Double.NaN;
-            _maxAxisYValue = Double.NaN;
-            _minAxisYValue = Double.NaN;
+            _maxAxisXDataValue = Double.NaN;
+            _minAxisXDataValue = Double.NaN;
+            _maxAxisYDataValue = Double.NaN;
+            _minAxisYDataValue = Double.NaN;
 
             MaxDataPoints = 0;
 
@@ -67,27 +67,41 @@ namespace Visifire.Charts
             
         }
 
-        private void FindMaxMin()
+        private void FindMaxMinAxisXValues()
         {
-            _maxAxisXValue = Double.NegativeInfinity;
-            _minAxisXValue = Double.PositiveInfinity;
-            _maxAxisYValue = Double.NegativeInfinity;
-            _minAxisYValue = Double.PositiveInfinity;
+            _maxAxisXDataValue = Double.NegativeInfinity;
+            _minAxisXDataValue = Double.PositiveInfinity;
 
             foreach (Plot plot in Plots)
             {
-                if (_maxAxisXValue < plot.MaxAxisXValue)
-                    _maxAxisXValue = plot.MaxAxisXValue;
+                _maxAxisXDataValue = Math.Max(_maxAxisXDataValue, plot.MaxAxisXValue);
 
-                if (_minAxisXValue > plot.MinAxisXValue)
-                    _minAxisXValue = plot.MinAxisXValue;
-
-                if (_maxAxisYValue < plot.MaxAxisYValue)
-                    _maxAxisYValue = plot.MaxAxisYValue;
-
-                if (_minAxisYValue > plot.MinAxisYValue)
-                    _minAxisYValue = plot.MinAxisYValue;
+                _minAxisXDataValue = Math.Min(_minAxisXDataValue, plot.MinAxisXValue);
             }
+
+        }
+
+        private void FindMaxMinAxisYValues(AxisY axisY)
+        {
+            _maxAxisYDataValue = Double.NegativeInfinity;
+            _minAxisYDataValue = Double.PositiveInfinity;
+
+            foreach (Plot plot in Plots)
+            {
+                if (plot.AxisY.GetHashCode().Equals(axisY.GetHashCode()))
+                {
+                    _maxAxisYDataValue = Math.Max(_maxAxisYDataValue, plot.MaxAxisYValue);
+
+                    _minAxisYDataValue = Math.Min(_minAxisYDataValue, plot.MinAxisYValue);
+                }
+            }
+        }
+        internal void FindMaxMinForAxis(Axes axes)
+        {
+            if (axes.GetType().Name == "AxisX")
+                FindMaxMinAxisXValues();
+            else if (axes.GetType().Name == "AxisY")
+                FindMaxMinAxisYValues(axes as AxisY);
         }
         
         #endregion Private Methods
@@ -106,67 +120,55 @@ namespace Visifire.Charts
             set;
         }
 
-        internal Double MaxAxisXValue
+        internal Double MaxAxisXDataValue
         {
             get
             {
-                if (Double.IsNaN(_maxAxisXValue))
-                    FindMaxMin();
-
-                return _maxAxisXValue;
+                return _maxAxisXDataValue;
             }
 
             set
             {
-                _maxAxisXValue = value;
+                _maxAxisXDataValue = value;
             }
         }
 
-        internal Double MaxAxisYValue
+        internal Double MaxAxisYDataValue
         {
             get
             {
-                if (Double.IsNaN(_maxAxisYValue))
-                    FindMaxMin();
-
-                return _maxAxisYValue;
+                return _maxAxisYDataValue;
             }
 
             set
             {
-                _maxAxisYValue = value;
+                _maxAxisYDataValue = value;
             }
         }
 
-        internal Double MinAxisXValue
+        internal Double MinAxisXDataValue
         {
             get
             {
-                if (Double.IsNaN(_minAxisXValue))
-                    FindMaxMin();
-
-                return _minAxisXValue;
+                return _minAxisXDataValue;
             }
 
             set
             {
-                _minAxisXValue = value;
+                _minAxisXDataValue = value;
             }
         }
 
-        internal Double MinAxisYValue
+        internal Double MinAxisYDataValue
         {
             get
             {
-                if (Double.IsNaN(_minAxisYValue))
-                    FindMaxMin();
-
-                return _minAxisYValue;
+                return _minAxisYDataValue;
             }
 
             set
             {
-                _minAxisYValue = value;
+                _minAxisYDataValue = value;
             }
         }
 
@@ -175,6 +177,7 @@ namespace Visifire.Charts
             get;
             set;
         }
+
         #endregion Internal Methods
         
         #region Data
@@ -183,13 +186,13 @@ namespace Visifire.Charts
         /// For example, Plots Collection can have a Plot with ChartTpye Bar and one Plot with ChartType Line. Then it becomes
         /// a combinatioinal chart.
         /// </summary>
-        public System.Collections.Generic.List<Plot> Plots
+        internal System.Collections.Generic.List<Plot> Plots
         {
             get;
             set;
         }
 
-        public System.Collections.Generic.Dictionary<Double,String> AxisLabels
+        internal System.Collections.Generic.Dictionary<Double,String> AxisLabels
         {
             get
             {
@@ -201,7 +204,7 @@ namespace Visifire.Charts
             }
         }
 
-        public Boolean AllAxisLabels
+        internal Boolean AllAxisLabels
         {
             get
             {
@@ -213,14 +216,12 @@ namespace Visifire.Charts
             }
         }
 
-       
-
         private System.Collections.Generic.Dictionary<Double, String> _axisLabels;
         private Boolean _allAxisLabels;
-        private Double _maxAxisYValue;
-        private Double _minAxisYValue;
-        private Double _maxAxisXValue;
-        private Double _minAxisXValue;
+        private Double _maxAxisYDataValue;
+        private Double _minAxisYDataValue;
+        private Double _maxAxisXDataValue;
+        private Double _minAxisXDataValue;
 
         #endregion Data
     }

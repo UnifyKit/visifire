@@ -52,7 +52,6 @@
     <Compile Include="GeometricMath.cs" />
     <Compile Include="LabelBase.cs" />
     <Compile Include="LegendBase.cs" />
-    <Compile Include="LogoBase.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="PlotAreaBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

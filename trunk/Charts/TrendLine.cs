@@ -61,7 +61,7 @@ namespace Visifire.Charts
             else
             {
                 if (!Double.IsNaN(YValue))
-                    str = str.Replace("#YValue", _parent.AxisY.GetFormattedText(YValue));
+                    str = str.Replace("#YValue", _parent.AxisYPrimary.GetFormattedText(YValue));
             }
             return str;
         }
@@ -69,12 +69,6 @@ namespace Visifire.Charts
         #endregion Public Methods
 
         #region Public Properties
-
-        public Boolean ToolTipEnabled
-        {
-            get;
-            set;
-        }
 
         public String ToolTipText
         {
@@ -251,7 +245,7 @@ namespace Visifire.Charts
             }
             if (!Double.IsNaN(_yValue))
             {
-                if (_yValue >= _parent.AxisY.AxisMaximum || _yValue <= _parent.AxisY.AxisMinimum)
+                if (_yValue >= _parent.AxisYPrimary.AxisMaximum || _yValue <= _parent.AxisYPrimary.AxisMinimum)
                 {
                     this.SetValue(WidthProperty, 0);
                     this.SetValue(HeightProperty, 0);
@@ -263,9 +257,9 @@ namespace Visifire.Charts
                     this.SetValue(HeightProperty, LineThickness + 3);
 
 
-                    this.SetValue(TopProperty, (Double)_parent.AxisY.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2);
+                    this.SetValue(TopProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2));
                     
-                    this.SetValue(LeftProperty, _parent.PlotArea.GetValue(LeftProperty));
+                    this.SetValue(LeftProperty, (Double) _parent.PlotArea.GetValue(LeftProperty));
                     _line.X1 = 0;
                     _line.Y1 = Height / 2;
                     _line.X2 = Width;
@@ -282,9 +276,9 @@ namespace Visifire.Charts
                     this.SetValue(HeightProperty, _parent.PlotArea.GetValue(HeightProperty));
                     this.SetValue(WidthProperty, LineThickness + 3);
 
-                    this.SetValue(LeftProperty, (Double)_parent.AxisY.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2);
+                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2));
                     
-                    this.SetValue(TopProperty, _parent.PlotArea.GetValue(TopProperty));
+                    this.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
                     _line.Y1 = 0;
                     _line.X1 = Width / 2;
                     _line.Y2 = Height;
@@ -314,9 +308,9 @@ namespace Visifire.Charts
                 {
                     this.SetValue(WidthProperty, _parent.PlotArea.GetValue(WidthProperty));
                     this.SetValue(HeightProperty, LineThickness + 3);
-                    this.SetValue(LeftProperty, (Double)_parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) + (Double)_parent.PlotArea.GetValue(LeftProperty));
+                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_parent.AxisYPrimary.AxisMinimum) + (Double)_parent.PlotArea.GetValue(LeftProperty)));
                     
-                    this.SetValue(TopProperty, (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2);
+                    this.SetValue(TopProperty, (Double) ( (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2));
                     _line.X1 = 0;
                     _line.Y1 = Height / 2;
                     _line.X2 = Width;
@@ -333,9 +327,9 @@ namespace Visifire.Charts
                     this.SetValue(HeightProperty, _parent.PlotArea.GetValue(HeightProperty));
                     this.SetValue(WidthProperty, LineThickness + 3);
 
-                    this.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
+                    this.SetValue(TopProperty, (Double) _parent.PlotArea.GetValue(TopProperty));
                     
-                    this.SetValue(LeftProperty, (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2);
+                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2));
                     _line.Y1 = 0;
                     _line.X1 = Width / 2;
                     _line.Y2 = Height;

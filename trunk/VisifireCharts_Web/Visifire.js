@@ -15,7 +15,6 @@
     under a flexible commercial license designed to meet your specific usage and 
     distribution requirements. If you have already obtained a commercial license 
     from Webyog, you can use this file under those license terms.
- 
 */
 
 if(!window.Visifire)
@@ -186,7 +185,7 @@ if(!window.Visifire)
 		    _uThisObject.id = 'VisifireControl' + _uThisObject.index;
 		}
         
-        var html = '<object id="' + _uThisObject.id + '" data="data:application/x-silverlight," type="application/x-silverlight-2-b1" width="' + width +'" height="' + height +'">';
+        var html = '<object id="' + _uThisObject.id + '" data="data:application/x-silverlight," type="application/x-silverlight-2-b2" width="' + width +'" height="' + height +'">';
         
         html    +=  '<param name="source" value="' + _uThisObject.xapPath +'"/>'
 		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>';
@@ -238,7 +237,7 @@ if(!window.Visifire)
         html    += "\"/>";
         html    += '<param name="enableHtmlAccess" value="true" />'
 		        +  '<param name="background" value="white" />'
-		        +  '<a href="http://go.microsoft.com/fwlink/?LinkID=108182" style="text-decoration: none;">'
+		        +  '<a href="http://go.microsoft.com/fwlink/?LinkID=115261" style="text-decoration: none;">'
 		        +  '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
 		        +  '<br/>You need Microsoft Silverlight to view Visifire Charts.'
 		        +  '<br/> You can install it by clicking on this link.'

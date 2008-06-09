@@ -21,6 +21,7 @@
 
 using System;
 using System.Windows;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -61,19 +62,16 @@ namespace Visifire.Charts
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                Double padding = (_parent.Parent as Chart).Padding;
+
                 foreach (AxisLabel lbl in this.Children)
                 {
-                    if (maxWidth < ((Double)lbl.ActualWidth + lbl.Left))
-                        maxWidth = (Double)lbl.ActualWidth + lbl.Left;
+                    maxWidth = Math.Max(maxWidth, lbl.ActualWidth);
                 }
-
-                maxWidth += padding;
-
+                maxWidth += _parent._parent.Padding;
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                maxWidth = (Double)_parent.GetValue(WidthProperty);
+                maxWidth = _parent.Width;
 
             }
             this.SetValue(WidthProperty, maxWidth);
@@ -85,11 +83,11 @@ namespace Visifire.Charts
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                maxHeight = (Double)_parent.GetValue(HeightProperty);
+                maxHeight = _parent.Height;
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                maxHeight = _rowHeight * _numberOfCalculatedRows + (_parent.Parent as Chart).Padding;
+                maxHeight = _rowHeight * _numberOfCalculatedRows + _parent._parent.Padding;
             }
             this.SetValue(HeightProperty, maxHeight);
         }
@@ -103,26 +101,38 @@ namespace Visifire.Charts
                     if (_parent.GetType().Name == "AxisX")
                     {
                         if (!String.IsNullOrEmpty(_parent.Title))
-                            this.SetValue(LeftProperty, _parent._titleTextBlock.ActualHeight);
+                            this.SetValue(LeftProperty, (Double) _parent._titleTextBlock.ActualHeight);
                         else
-                            this.SetValue(LeftProperty, (_parent.Parent as Chart).Padding);
+                            this.SetValue(LeftProperty, (Double) 0);
                     }
                     else
                     {
-
-                        if (!String.IsNullOrEmpty(_parent.Title))
-                            this.SetValue(LeftProperty, _parent._titleTextBlock.ActualHeight);
+                        if (_parent.AxisType == AxisType.Primary)
+                        {
+                            if (!String.IsNullOrEmpty(_parent.Title))
+                                this.SetValue(LeftProperty, (Double) _parent._titleTextBlock.ActualHeight);
+                            else
+                                this.SetValue(LeftProperty, (Double) 0);
+                        }
                         else
-                            this.SetValue(LeftProperty, (_parent.Parent as Chart).Padding);
+                        {
+                            this.SetValue(LeftProperty, (Double) 0);
+                        }
                     }
                 }
                 else
                 {
-
-                    if (!String.IsNullOrEmpty(_parent.Title))
-                        this.SetValue(LeftProperty, _parent._titleTextBlock.ActualHeight);
+                    if (_parent.AxisType == AxisType.Primary)
+                    {
+                        if (!String.IsNullOrEmpty(_parent.Title))
+                            this.SetValue(LeftProperty, (Double) _parent._titleTextBlock.ActualHeight);
+                        else
+                            this.SetValue(LeftProperty, (Double) 0);
+                    }
                     else
-                        this.SetValue(LeftProperty, (_parent.Parent as Chart).Padding);
+                    {
+                        this.SetValue(LeftProperty, (Double) 0);
+                    }
                 }
 
             }
@@ -130,11 +140,11 @@ namespace Visifire.Charts
             {
                 if ((_parent.Parent as Chart).View3D)
                 {
-                    this.SetValue(LeftProperty, -_parent.MajorTicks.TickLength);
+                    this.SetValue(LeftProperty, (Double) ( -_parent.MajorTicks.TickLength));
                 }
                 else
                 {
-                    this.SetValue(LeftProperty, 0);
+                    this.SetValue(LeftProperty, (Double) 0);
                 }
             }
         }
@@ -143,27 +153,37 @@ namespace Visifire.Charts
         {
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                if ((_parent.Parent as Chart).View3D)
+                if ((_parent.Parent as Chart).View3D && _parent.AxisType== AxisType.Primary)
                 {
-                    this.SetValue(TopProperty, _parent.MajorTicks.TickLength);
+                    this.SetValue(TopProperty, (Double) _parent.MajorTicks.TickLength);
                 }
                 else
                 {
-                    this.SetValue(TopProperty, 0);
+                    
+                    this.SetValue(TopProperty, (Double) 0);
+                    
                 }
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                if ((_parent.Parent as Chart).View3D)
+                if ((_parent.Parent as Chart).View3D && _parent.AxisType == AxisType.Primary)
                 {
                     if (_parent.GetType().Name == "AxisX")
-                        this.SetValue(TopProperty, (Double)_parent.MajorTicks.Height);
+                        this.SetValue(TopProperty, (Double) _parent.MajorTicks.Height);
                     else
-                        this.SetValue(TopProperty, (Double)_parent.MajorTicks.Height + (_parent.Parent as Chart).AxisX.MajorTicks.TickLength);
+                        this.SetValue(TopProperty, (Double) ( (Double)_parent.MajorTicks.Height + _parent._parent.AxisX.MajorTicks.TickLength));
                 }
                 else
                 {
-                    this.SetValue(TopProperty, (Double)_parent.MajorTicks.GetValue(HeightProperty));
+                    if (_parent.AxisType == AxisType.Primary)
+                        this.SetValue(TopProperty, (Double) _parent.MajorTicks.Height);
+                    else
+                    {
+                        if(_parent._titleTextBlock.Text.Length != 0)
+                            this.SetValue(TopProperty, (Double) _parent._titleTextBlock.ActualHeight);
+                        else
+                            this.SetValue(TopProperty, (Double) 0);
+                    }
                 }
             }
         }
@@ -309,22 +329,62 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        private void CreateLabel(Double position, Double calculatedFontSize)
+        {
+            AxisLabel lbl = new AxisLabel();
+            PlotDetails plotDetails = (_parent.Parent as Chart).PlotDetails;
+
+            // Here the axis label text is genereted, The condition below forces the AxisY to 
+            // be initialized with only formated numeric value
+            String text;
+            if (!plotDetails.AxisLabels.ContainsKey(position) || (_parent.GetType().Name == "AxisY"))
+            {
+                if (_parent.ValueFormatString != null)
+                {
+                    text = _parent.GetFormattedText(position);
+                }
+                else
+                {
+                    text = _parent.Prefix + position.ToString() + _parent.Suffix;
+                }
+            }
+            else
+            {
+                // Here the axis labels given by the user is selected as text. only for Axis X
+                text = plotDetails.AxisLabels[position];
+            }
+
+            lbl.Text = text;
+
+            this.Children.Add(lbl);
+
+            lbl.Init();
+
+            lbl.Angle = LabelAngle;
+
+            lbl.Position = position;
+
+            if (Double.IsNaN(_fontSize))
+            {
+                lbl.TextBlock.FontSize = calculatedFontSize;
+            }
+
+            lbl.UpdateSize();
+        }
+
         internal void CreateLabels()
         {
             if (!Enabled || !_parent.Enabled)
                 return;
 
-            Double calculatedFontSize = CalculateFontSize();
 
-            Double position = 0;
+            Double calculatedFontSize = CalculateFontSize();
 
             PlotDetails plotDetails = (_parent.Parent as Chart).PlotDetails;
 
             Double noOfIntervals = _parent.AxisManager.GetNoOfIntervals();
 
             Decimal interval = (Decimal)Interval;
-
-            AxisLabel lbl = new AxisLabel();
 
             this.LabelDictionary.Clear();
 
@@ -355,52 +415,203 @@ namespace Visifire.Charts
 
             Int32 countIntervals = 0;
             Decimal minValue = i;
-            for (; i <= (Decimal)_parent.AxisMaximum; i = minValue + (++countIntervals) * interval)
+
+
+            if (_parent.GetType().Name == "AxisX")
             {
-                if (_parent.GetType().Name == "AxisX")
-                    if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > (Decimal)plotDetails.MaxAxisXValue)
-                        continue;
-
-                lbl = new AxisLabel();
-                lbl.FontStyle = FontStyle;
-                lbl.FontWeight = FontWeight;
-                position = (Double)i;
-
-                // Here the axis label text is genereted, The condition below forces the AxisY to 
-                // be initialized with only formated numeric value
-                String text;
-                if (!plotDetails.AxisLabels.ContainsKey(position) || (_parent.GetType().Name == "AxisY"))
+                for (; i <= (Decimal)(_parent.AxisMaximum ); i = minValue + (++countIntervals) * interval)
                 {
-                    if (_parent.ValueFormatString != null)
-                    {
-                        text = _parent.GetFormattedText(position);
-                    }
-                    else
-                    {
-                        text = _parent.Prefix + position.ToString() + _parent.Suffix;
-                    }
+                    if (_parent.GetType().Name == "AxisX")
+                        if ((plotDetails.AllAxisLabels && plotDetails.AxisLabels.Count > 0) && i > (Decimal)plotDetails.MaxAxisXDataValue)
+                            continue;
+
+                    CreateLabel((Double)i, calculatedFontSize);
+                }
+            }
+            else
+            {
+                CreateLabel((Double)minValue, calculatedFontSize);
+
+                i = minValue + (++countIntervals) * interval;
+
+                for (; i <= (Decimal)(_parent.AxisMaximum - (Double)(interval / 2)); i = minValue + (++countIntervals) * interval)
+                {
+                    CreateLabel((Double)i, calculatedFontSize);
+                }
+
+                CreateLabel((Double)_parent.AxisMaximum, calculatedFontSize);
+            }
+            
+        }
+
+        private void PositionLabelsVertically()
+        {
+            Point position;
+
+            foreach (AxisLabel lbl in this.Children)
+            {
+                
+                if (_parent.AxisType == AxisType.Primary)
+                {
+                    position = new Point(this.Width - _parent.MajorTicks.TickLength / 2, (Double)this._parent.DoubleToPixel(lbl.Position));
+
+                    lbl.UpdatePositionLeft(position);
                 }
                 else
                 {
-                    // Here the axis labels given by the user is selected as text. only for Axis X
-                    text = plotDetails.AxisLabels[position];
-                }
+                    position = new Point(_parent.MajorTicks.TickLength , (Double)this._parent.DoubleToPixel(lbl.Position)+ lbl.TextBlock.ActualHeight/2);
 
-                lbl.Text = text;
-
-                this.Children.Add(lbl);
-
-                lbl.Init();
-
-                lbl.Angle = LabelAngle;
-
-                lbl.Position = position;
-
-                if (Double.IsNaN(_fontSize))
-                {
-                    lbl.FontSize = calculatedFontSize;
+                    lbl.UpdatePositionRight(position);
                 }
             }
+            
+        }
+
+        private void PositionLabelsHorizontally()
+        {
+            Double textSize;
+            Double rowHeight = 0;
+            Int32 numberOfRows = 1;
+
+            Double totalLabelWidth = 0;
+            Double axisWidth = (_parent.DoubleToPixel(_parent.AxisMaximum) - _parent.DoubleToPixel(_parent.AxisMinimum));
+            Double labelHeight = 0, tempHeight;
+
+            Double prevLabelRight = 0, curLabelLeft;
+            Boolean overlapOccured = false;
+
+            Double gapBetweenText = 0;
+            TextBlock textBlock = new TextBlock() { Text = "AB" };
+
+            Double textMinimum = 8;
+
+            if (Double.IsNaN(_fontSize))
+            {
+                textSize = CalculateFontSize();
+            }
+            else
+            {
+                textSize = _fontSize;
+                textMinimum = _fontSize;
+            }
+
+            for (; textSize >= textMinimum; textSize -= 2)
+            {
+                totalLabelWidth = 0;
+                labelHeight = 0;
+                overlapOccured = false;
+                textBlock.FontSize = textSize;
+                gapBetweenText = textBlock.ActualWidth;
+
+                foreach (AxisLabel lbl in this.Children)
+                {
+                    lbl.TextBlock.FontSize = textSize;
+                    lbl.Angle = 0;
+                    lbl.UpdateSize();
+
+                    curLabelLeft = (Double)this._parent.DoubleToPixel(lbl.Position) - lbl.ActualWidth / 2;
+
+                    // if there is a overlap then add the overlap region to the label list
+
+                    if (((prevLabelRight - curLabelLeft) > 0) && totalLabelWidth > 0)
+                        overlapOccured = true;
+
+                    totalLabelWidth += (lbl.ActualWidth + gapBetweenText);
+                    tempHeight = lbl.ActualHeight;
+
+                    labelHeight = Math.Max(labelHeight, tempHeight);
+                    prevLabelRight = (Double)this._parent.DoubleToPixel(lbl.Position) + lbl.ActualWidth / 2;
+                }
+
+                // This is to number of rows required to display the labels
+                if (overlapOccured == false)
+                {
+                    numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
+                    if (numberOfRows == 1) break;
+                }
+            }
+
+            //if overlap occured then fore change of angle
+            if (overlapOccured)
+            {
+                numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
+                Double[] prevLR = new Double[numberOfRows];
+                Double[] totalLW = new Double[numberOfRows];
+                Double curLL;
+                Int32 k, j = 0;
+                prevLR.Initialize();
+                totalLW.Initialize();
+
+                overlapOccured = false;
+                foreach (AxisLabel lbl in this.Children)
+                {
+                    k = j++ % numberOfRows;
+                    curLL = (Double)this._parent.DoubleToPixel(lbl.Position) - lbl.ActualWidth / 2;
+
+                    // if there is a overlap then add the overlap region to the label list
+
+                    if (((prevLR[k] - curLL) > 0) && totalLW[k] > 0)
+                        overlapOccured = true;
+
+                    totalLW[k] += (lbl.ActualWidth + gapBetweenText);
+                    prevLR[k] = (Double)this._parent.DoubleToPixel(lbl.Position) + lbl.ActualWidth / 2;
+                }
+            }
+
+            // If Number of rows is given by the user then overide the previous setting
+            if (Rows > 0)
+            {
+                numberOfRows = Rows;
+            }
+            else if ((numberOfRows > 2 || overlapOccured) && Double.IsNaN(_labelAngle) && Double.IsNaN(_parent._labelAngle))
+            {
+                labelHeight = 0;
+                totalLabelWidth = 0;
+                numberOfRows = 1;
+                foreach (AxisLabel lbl in this.Children)
+                {
+                    lbl.Angle = -45;
+                    lbl.UpdateSize();
+
+                    totalLabelWidth += lbl.ActualWidth;
+                    tempHeight = lbl.ActualHeight;
+                    labelHeight = Math.Max(labelHeight, tempHeight);
+                }
+            }
+            // this is the height of each row
+            rowHeight = labelHeight;
+
+            //These variables will be used to update the height of the row
+            _rowHeight = rowHeight;
+            _numberOfCalculatedRows = numberOfRows;
+
+            SetHeight();
+
+            // label index decides which label goes into which row
+            Int32 index = 0;
+            Point position;
+            foreach (AxisLabel lbl in this.Children)
+            {
+                if (_parent.AxisType == AxisType.Primary)
+                {
+                    if (lbl.Angle > 0 && lbl.Angle <= 90)
+                        position = new Point((Double)this._parent.DoubleToPixel(lbl.Position), rowHeight * (index % numberOfRows) + lbl.TextBlock.ActualHeight / 2 * Math.Abs(Math.Cos(lbl.Angle * Math.PI / 180)));
+                    else
+                        position = new Point((Double)this._parent.DoubleToPixel(lbl.Position), rowHeight * (index % numberOfRows));
+                    index++;
+
+                    lbl.UpdatePositionBottom(position);
+                }
+                else
+                {
+                    position = new Point((Double)this._parent.DoubleToPixel(lbl.Position),this.Height -( rowHeight * (index % numberOfRows)) - _parent.MajorTicks.TickLength/2);
+                    index++;
+
+                    lbl.UpdatePositionTop(position);
+                }
+            }
+            
+
         }
 
         internal void PositionLabels()
@@ -408,215 +619,11 @@ namespace Visifire.Charts
             if (!Enabled || !_parent.Enabled)
                 return;
 
-            Double rowHeight = 0;
-            Double totalLabelWidth = 0;
-            Double axisWidth = (_parent.DoubleToPixel(_parent.AxisMaximum) - _parent.DoubleToPixel(_parent.AxisMinimum));
-            Double labelHeight = 0, tempHeight;
-            Double textSize;
-            Int32 numberOfRows = 1;
-            Double prevLabelRight = 0, curLabelLeft;
-            Boolean overlapOccured = false;
-
-            Double gapBetweenText = 0;
-            TextBlock tb = new TextBlock();
-            tb.Text = "AB";
-
             if (_parent.AxisOrientation == AxisOrientation.Column)
-            {
-                // To check if multiple rows of titles is necessary or not
-                Double textMinimum = 8;
-                if (Double.IsNaN(_fontSize))
-                {
-                    textSize = CalculateFontSize();
-                }
-                else
-                {
-                    textSize = _fontSize;
-                    textMinimum = _fontSize;
-                }
-
-                for (; textSize >= textMinimum; textSize -= 2)
-                {
-                    totalLabelWidth = 0;
-                    labelHeight = 0;
-                    overlapOccured = false;
-                    tb.FontSize = textSize;
-                    gapBetweenText = tb.ActualWidth;
-
-                    foreach (AxisLabel lbl in this.Children)
-                    {
-                        lbl.FontSize = textSize;
-                        curLabelLeft = (Double)this._parent.DoubleToPixel(lbl.Position) - lbl.Width / 2;
-
-                        // if there is a overlap then add the overlap region to the label list
-
-                        if (((prevLabelRight - curLabelLeft) > 0) && totalLabelWidth > 0)
-                            overlapOccured = true;
-
-                        totalLabelWidth += (lbl.ActualWidth + gapBetweenText);
-                        tempHeight = Math.Abs((Math.Sqrt(Math.Pow(lbl.ActualWidth, 2) + Math.Pow(lbl.ActualHeight, 2))) * Math.Sin(lbl.Angle * Math.PI / 180));
-                        if (tempHeight == 0) tempHeight = lbl.ActualHeight;
-                        labelHeight = Math.Max(labelHeight, tempHeight);
-                        prevLabelRight = (Double)this._parent.DoubleToPixel(lbl.Position) + lbl.Width / 2;
-                    }
-
-                    // This is to number of rows required to display the labels
-                    if (overlapOccured == false)
-                    {
-                        numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
-                        if (numberOfRows == 1) break;
-                    }
-                }
-
-
-                //if overlap occured then fore change of angle
-                if (overlapOccured)
-                {
-                    numberOfRows = (Int32)Math.Ceiling(totalLabelWidth / axisWidth);
-                    Double[] prevLR = new Double[numberOfRows];
-                    Double[] totalLW = new Double[numberOfRows];
-                    Double curLL;
-                    Int32 k, j = 0;
-                    prevLR.Initialize();
-                    totalLW.Initialize();
-
-                    overlapOccured = false;
-                    foreach (AxisLabel lbl in this.Children)
-                    {
-                        k = j++ % numberOfRows;
-                        curLL = (Double)this._parent.DoubleToPixel(lbl.Position) - lbl.Width / 2;
-
-                        // if there is a overlap then add the overlap region to the label list
-
-                        if (((prevLR[k] - curLL) > 0) && totalLW[k] > 0)
-                            overlapOccured = true;
-
-                        totalLW[k] += (lbl.ActualWidth + 10);
-                        prevLR[k] = (Double)this._parent.DoubleToPixel(lbl.Position) + lbl.Width / 2;
-                    }
-                }
-
-                // If Number of rows is given by the user then overide the previous setting
-                if (Rows > 0)
-                {
-                    numberOfRows = Rows;
-                }
-                else if ((numberOfRows > 2 || overlapOccured) && Double.IsNaN(_labelAngle) && Double.IsNaN(_parent._labelAngle))
-                {
-                    labelHeight = 0;
-                    totalLabelWidth = 0;
-                    numberOfRows = 1;
-                    foreach (AxisLabel lbl in this.Children)
-                    {
-                        lbl.Angle = -45;
-                        totalLabelWidth += lbl.ActualWidth;
-                        tempHeight = Math.Abs(Math.Sqrt(Math.Pow(lbl.ActualWidth, 2) + Math.Pow(lbl.ActualHeight, 2)) * Math.Sin(lbl.Angle * Math.PI / 180));
-                        if (tempHeight == 0) tempHeight = lbl.ActualHeight;
-                        labelHeight = Math.Max(labelHeight, tempHeight);
-                    }
-                }
-                // this is the height of each row
-                rowHeight = labelHeight;
-
-                //These variables will be used to update the height of the row
-                _rowHeight = rowHeight;
-                _numberOfCalculatedRows = numberOfRows;
-
-                SetHeight();
-            }
+                PositionLabelsHorizontally();
             else
-            {
-                if (Double.IsNaN(_fontSize))
-                {
-                    textSize = CalculateFontSize();
-                    foreach (AxisLabel lbl in this.Children)
-                    {
-                        lbl.FontSize = textSize;
-                    }
+                PositionLabelsVertically();
 
-                }
-            }
-            // label index decides which label goes into which row
-            Int32 index = 0;
-
-            foreach (AxisLabel lbl in this.Children)
-            {
-                Double height1 = Math.Abs(lbl.DiagonalLength * Math.Sin((lbl.DiagonalAngle) * Math.PI / 180));
-                Double height2 = Math.Abs(lbl.DiagonalLength * Math.Sin((360 - lbl.DiagonalAngle + lbl.Angle * 2) * Math.PI / 180));
-                Double width1 = Math.Abs(lbl.DiagonalLength * Math.Cos(lbl.DiagonalAngle * Math.PI / 180));
-                Double width2 = Math.Abs(lbl.DiagonalLength * Math.Cos((360 - lbl.DiagonalAngle + lbl.Angle * 2) * Math.PI / 180));
-
-
-                if (_parent.AxisOrientation == AxisOrientation.Bar)
-                {
-                    if ((lbl.Angle >= 0 && lbl.Angle <= 90))
-                        lbl.Left = (Double)this.GetValue(WidthProperty) - lbl.Width * Math.Cos((lbl.Angle) * Math.PI / 180);
-                    else
-                        lbl.Left = (Double)this.GetValue(WidthProperty) - lbl.ActualWidth;
-
-
-                    lbl.Top = (Double)this._parent.DoubleToPixel(lbl.Position);
-
-                    if (lbl.Angle >= 0 && lbl.Angle < 90)
-                    {
-                        lbl.Top += -lbl.ActualHeight + ((Double)lbl.GetValue(HeightProperty) / 2 * Math.Cos((lbl.Angle) * Math.PI / 180));
-                    }
-                    else if (lbl.Angle > -90 && lbl.Angle < 0)
-                    {
-
-                        lbl.Top += lbl.ActualHeight - ((Double)lbl.GetValue(HeightProperty) / 2 * Math.Cos((lbl.Angle) * Math.PI / 180) * 3);
-                    }
-                    else if (lbl.Angle == -90)
-                        lbl.Top += (Double)lbl.GetValue(WidthProperty) / 2;
-                    else
-                        lbl.Top -= (Double)lbl.GetValue(WidthProperty) / 2;
-
-
-
-                }
-                else if (_parent.AxisOrientation == AxisOrientation.Column)
-                {
-                    lbl.Left = (Double)this._parent.DoubleToPixel(lbl.Position);
-
-                    if (lbl.Angle > 0 && lbl.Angle <= 90)
-                    {
-                        lbl.Left += ((Double)lbl.GetValue(HeightProperty) / 2 * Math.Cos((90 - lbl.Angle) * Math.PI / 180));
-                    }
-                    else if (lbl.Angle >= -90 && lbl.Angle < 0)
-                    {
-                        lbl.Left += -lbl.ActualWidth + ((Double)lbl.GetValue(HeightProperty) / 2 * Math.Cos((90 + lbl.Angle) * Math.PI / 180));
-                    }
-                    else
-                        lbl.Left -= lbl.Width / 2;
-
-                    if (lbl.Angle >= 0 && lbl.Angle <= 90)
-                    {
-
-                        // If multiplerows then move consecutive labels into different rows
-                        lbl.Top = rowHeight * (index % numberOfRows);
-                        index++;
-
-
-                    }
-                    else if (lbl.Angle >= -90 && lbl.Angle < 0)
-                    {
-
-
-                        lbl.Top = ((Double)lbl.GetValue(WidthProperty) * Math.Sin((-lbl.Angle) * Math.PI / 180));
-
-                        // If multiplerows then move consecutive labels into different rows
-                        lbl.Top += rowHeight * (index % numberOfRows);
-                        index++;
-                    }
-
-
-
-                }
-
-
-                lbl.SetValue(LeftProperty, lbl.Left);
-                lbl.SetValue(TopProperty, lbl.Top);
-            }
             CheckOutOfBounds();
         }
 
@@ -726,6 +733,8 @@ namespace Visifire.Charts
         private Axes _parent;
         private Double _rowHeight;
         private Int32 _numberOfCalculatedRows;
+
+
         #endregion Data
     }
 }

@@ -92,30 +92,46 @@ namespace Visifire.Charts
              
             if (PlotDetails.AxisOrientation == AxisOrientation.Column )
             {
-                if (_innerBounds.X < AxisX.MajorTicks.TickLength && !AxisY.Enabled)
+                if (_innerBounds.X < AxisX.MajorTicks.TickLength && !AxisYPrimary.Enabled)
                     _innerBounds.X = AxisX.MajorTicks.TickLength;
 
                 PlotArea.SetTop();
-                AxisY.SetTop();
-
+                AxisYPrimary.SetTop();
+                if (AxisYSecondary != null) AxisYSecondary.SetTop();
 
                 AxisX.AxisLabels.SetHeight();
                 AxisX.AxisLabels.SetLeft();
                 AxisX.SetHeight();
                 AxisX.SetTop();
 
-                AxisY.AxisLabels.CreateLabels();
-                AxisY.AxisLabels.SetWidth();
-                AxisY.SetWidth();
-                AxisY.AxisLabels.SetLeft();
-                AxisY.SetLeft();
+                AxisYPrimary.AxisLabels.CreateLabels();
+                AxisYPrimary.AxisLabels.SetWidth();
+                AxisYPrimary.SetWidth();
+                AxisYPrimary.AxisLabels.SetLeft();
+                AxisYPrimary.SetLeft();
+
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.AxisLabels.CreateLabels();
+                    AxisYSecondary.AxisLabels.SetWidth();
+                    AxisYSecondary.SetWidth();
+                    AxisYSecondary.AxisLabels.SetLeft();
+                    AxisYSecondary.SetLeft();
+                }
 
                 PlotArea.SetLeft();
                 PlotArea.SetHeight();
                 PlotArea.SetWidth();
 
-                AxisY.SetHeight();
-                AxisY.AxisLabels.SetHeight();
+                AxisYPrimary.SetHeight();
+                AxisYPrimary.AxisLabels.SetHeight();
+
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.AxisLabels.SetHeight();
+                }
+
                 AxisX.SetLeft();
                 AxisX.SetWidth();
 
@@ -127,21 +143,31 @@ namespace Visifire.Charts
                 AxisX.AxisLabels.PositionLabels();
                 AxisX.AxisLabels.SetHeight();
                 AxisX.SetHeight();
-                AxisY.SetLeft();
-                AxisY.SetWidth();
+                AxisYPrimary.SetLeft();
+                AxisYPrimary.SetWidth();
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetLeft();
+                    AxisYSecondary.SetWidth();
+                }
 
                 PlotArea.SetLeft();
                 PlotArea.SetWidth();
 
-                AxisY.AxisLabels.PositionLabels();
+                AxisYPrimary.AxisLabels.PositionLabels();
+                if (AxisYSecondary != null)  AxisYSecondary.AxisLabels.PositionLabels();
                 AxisX.SetTop();
                 PlotArea.SetTop();
                 PlotArea.SetHeight();
-                AxisY.SetTop();
-                AxisY.SetHeight();
-                AxisY.AxisLabels.SetHeight();
-
-
+                AxisYPrimary.SetTop();
+                AxisYPrimary.SetHeight();
+                AxisYPrimary.AxisLabels.SetHeight();
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetTop();
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.AxisLabels.SetHeight();
+                }
                 AxisX.SetLeft();
                 AxisX.SetWidth();
                 AxisX.AxisLabels.SetWidth();
@@ -152,36 +178,52 @@ namespace Visifire.Charts
                 AxisX.SetHeight();
                 AxisX.SetTop();
                 PlotArea.SetHeight();
-                AxisY.SetHeight();
-                AxisY.AxisLabels.PositionLabels();
+                AxisYPrimary.SetHeight();
+                AxisYPrimary.AxisLabels.PositionLabels();
 
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.AxisLabels.PositionLabels();
+                }
 
                 AxisX.MajorGrids.SetWidth();
-                AxisY.MajorGrids.SetHeight();
-                AxisX.MajorGrids.SetLeft();
-                AxisY.MajorGrids.SetLeft();
+                AxisYPrimary.MajorGrids.SetHeight();
 
-                AxisY.MajorGrids.DrawGrids();
+                AxisX.MajorGrids.SetLeft();
+                AxisYPrimary.MajorGrids.SetLeft();
+                if (AxisYSecondary != null) AxisYSecondary.MajorGrids.SetLeft();
+
                 AxisX.MajorGrids.DrawGrids();
+                AxisYPrimary.MajorGrids.DrawGrids();
+                if (AxisYSecondary != null)  AxisYSecondary.MajorGrids.DrawGrids();
 
                 AxisX.MajorTicks.SetLeft();
                 AxisX.MajorTicks.SetWidth();
                 AxisX.MajorTicks.SetHeight();
                 AxisX.MajorTicks.SetTop();
-
-                AxisY.MajorTicks.SetLeft();
-                AxisY.MajorTicks.SetHeight();
-                AxisY.MajorTicks.SetWidth();
-                AxisY.MajorTicks.SetTop();
-
-                AxisY.MajorTicks.DrawTicks();
                 AxisX.MajorTicks.DrawTicks();
-
-                AxisY.DrawAxisLine();
                 AxisX.DrawAxisLine();
-
                 AxisX.AxisLabels.SetTop();
-                AxisY.AxisLabels.SetLeft();
+
+                AxisYPrimary.MajorTicks.SetLeft();
+                AxisYPrimary.MajorTicks.SetHeight();
+                AxisYPrimary.MajorTicks.SetWidth();
+                AxisYPrimary.MajorTicks.SetTop();
+                AxisYPrimary.MajorTicks.DrawTicks();
+                AxisYPrimary.DrawAxisLine();
+                AxisYPrimary.AxisLabels.SetLeft();
+
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.MajorTicks.SetLeft();
+                    AxisYSecondary.MajorTicks.SetHeight();
+                    AxisYSecondary.MajorTicks.SetWidth();
+                    AxisYSecondary.MajorTicks.SetTop();
+                    AxisYSecondary.MajorTicks.DrawTicks();
+                    AxisYSecondary.DrawAxisLine();
+                    AxisYSecondary.AxisLabels.SetLeft();
+                }
 
                 // Positions titles that have to be placed outside PlotArea
                 _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
@@ -197,7 +239,8 @@ namespace Visifire.Charts
                 RemoveUnMarkedLegends();
 
                 AxisX.PlaceTitle();
-                AxisY.PlaceTitle();
+                AxisYPrimary.PlaceTitle();
+                if (AxisYSecondary != null)  AxisYSecondary.PlaceTitle();
 
                 PlotArea.ApplyBorder();
 
@@ -208,15 +251,24 @@ namespace Visifire.Charts
 
             else if (PlotDetails.AxisOrientation == AxisOrientation.Bar)
             {
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetTop();
+                    AxisYSecondary.AxisLabels.CreateLabels();
+                    AxisYSecondary.AxisLabels.SetHeight();
+                    AxisYSecondary.AxisLabels.SetTop();
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.SetTop();
+                }
+
                 PlotArea.SetTop();
                 AxisX.SetTop();
 
-                AxisY.AxisLabels.CreateLabels();
-                AxisY.AxisLabels.SetHeight();
-                AxisY.AxisLabels.SetTop();
-                AxisY.SetHeight();
-                AxisY.SetTop();
-
+                AxisYPrimary.AxisLabels.CreateLabels();
+                AxisYPrimary.AxisLabels.SetHeight();
+                AxisYPrimary.AxisLabels.SetTop();
+                AxisYPrimary.SetHeight();
+                AxisYPrimary.SetTop();
 
                 AxisX.AxisLabels.SetWidth();
                 AxisX.SetWidth();
@@ -229,8 +281,14 @@ namespace Visifire.Charts
 
                 AxisX.SetHeight();
                 AxisX.AxisLabels.SetHeight();
-                AxisY.SetLeft();
-                AxisY.SetWidth();
+                AxisYPrimary.SetLeft();
+                AxisYPrimary.SetWidth();
+                
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetLeft();
+                    AxisYSecondary.SetWidth();
+                }
 
                 AxisX.SetAxisLimits();
 
@@ -239,54 +297,66 @@ namespace Visifire.Charts
                 AxisX.AxisLabels.SetWidth();
                 AxisX.SetWidth();
 
-                AxisY.AxisLabels.SetWidth();
-                AxisY.AxisLabels.PositionLabels();
-                AxisY.AxisLabels.SetHeight();
-                AxisY.SetHeight();
+                AxisYPrimary.AxisLabels.SetWidth();
+                AxisYPrimary.AxisLabels.PositionLabels();
+                AxisYPrimary.AxisLabels.SetHeight();
+                AxisYPrimary.SetHeight();
+
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.AxisLabels.SetWidth();
+                    AxisYSecondary.AxisLabels.PositionLabels();
+                    AxisYSecondary.AxisLabels.SetHeight();
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.SetTop();
+                }
+
                 AxisX.SetLeft();
 
                 PlotArea.SetLeft();
                 PlotArea.SetWidth();
 
                 AxisX.AxisLabels.PositionLabels();
-                AxisY.SetTop();
+                AxisYPrimary.SetTop();
                 PlotArea.SetTop();
                 PlotArea.SetHeight();
                 AxisX.SetTop();
                 AxisX.SetHeight();
                 AxisX.AxisLabels.SetHeight();
 
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.SetLeft();
+                    AxisYSecondary.SetWidth();
+                    AxisYSecondary.AxisLabels.SetWidth();
 
+                    //test
+                    AxisYSecondary.AxisLabels.PositionLabels();
+                    AxisYSecondary.AxisLabels.SetHeight();
+                    AxisYSecondary.SetHeight();
+                    AxisYSecondary.SetTop();
+                }
 
-                AxisY.SetLeft();
-                AxisY.SetWidth();
-                AxisY.AxisLabels.SetWidth();
+                AxisYPrimary.SetLeft();
+                AxisYPrimary.SetWidth();
+                AxisYPrimary.AxisLabels.SetWidth();
 
                 //test
-                AxisY.AxisLabels.PositionLabels();
-                AxisY.AxisLabels.SetHeight();
-                AxisY.SetHeight();
-                AxisY.SetTop();
+                AxisYPrimary.AxisLabels.PositionLabels();
+                AxisYPrimary.AxisLabels.SetHeight();
+                AxisYPrimary.SetHeight();
+                AxisYPrimary.SetTop();
+                PlotArea.SetTop();
                 PlotArea.SetHeight();
                 AxisX.SetHeight();
                 AxisX.AxisLabels.PositionLabels();
                 AxisX.AxisLabels.SetTop();
 
+                
 
-
-                AxisY.MajorGrids.SetWidth();
                 AxisX.MajorGrids.SetHeight();
-                AxisY.MajorGrids.SetLeft();
                 AxisX.MajorGrids.SetLeft();
-
                 AxisX.MajorGrids.DrawGrids();
-                AxisY.MajorGrids.DrawGrids();
-
-                AxisY.MajorTicks.SetLeft();
-                AxisY.MajorTicks.SetWidth();
-                AxisY.MajorTicks.SetHeight();
-                AxisY.MajorTicks.SetTop();
-
 
                 AxisX.MajorTicks.SetLeft();
                 AxisX.MajorTicks.SetHeight();
@@ -294,15 +364,42 @@ namespace Visifire.Charts
                 AxisX.MajorTicks.SetTop();
 
                 AxisX.MajorTicks.DrawTicks();
-                AxisY.MajorTicks.DrawTicks();
-
-
+                
                 AxisX.DrawAxisLine();
-                AxisY.DrawAxisLine();
 
-                AxisY.AxisLabels.SetTop();
                 AxisX.AxisLabels.SetLeft();
 
+
+                AxisYPrimary.MajorGrids.SetWidth();
+                AxisYPrimary.MajorGrids.SetLeft();
+                AxisYPrimary.MajorGrids.DrawGrids();
+
+                AxisYPrimary.MajorTicks.SetLeft();
+                AxisYPrimary.MajorTicks.SetWidth();
+                AxisYPrimary.MajorTicks.SetHeight();
+                AxisYPrimary.MajorTicks.SetTop();
+
+                AxisYPrimary.MajorTicks.DrawTicks();
+                AxisYPrimary.DrawAxisLine();
+
+                AxisYPrimary.AxisLabels.SetTop();
+
+                if (AxisYSecondary != null)
+                {
+                    AxisYSecondary.MajorGrids.SetWidth();
+                    AxisYSecondary.MajorGrids.SetLeft();
+                    AxisYSecondary.MajorGrids.DrawGrids();
+
+                    AxisYSecondary.MajorTicks.SetLeft();
+                    AxisYSecondary.MajorTicks.SetWidth();
+                    AxisYSecondary.MajorTicks.SetHeight();
+                    AxisYSecondary.MajorTicks.SetTop();
+
+                    AxisYSecondary.MajorTicks.DrawTicks();
+                    AxisYSecondary.DrawAxisLine();
+
+                    AxisYSecondary.AxisLabels.SetTop();
+                }
 
                 // Positions titles that have to be placed outside PlotArea
                 _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
@@ -318,13 +415,15 @@ namespace Visifire.Charts
                 RemoveUnMarkedLegends();
 
                 AxisX.PlaceTitle();
-                AxisY.PlaceTitle();
+                AxisYPrimary.PlaceTitle();
+                if (AxisYSecondary != null)  AxisYSecondary.PlaceTitle();
 
                 PlotArea.ApplyBorder();
 
                 // Position trend lines
                 _trendLines.ForEach(delegate(TrendLine trendLine) { trendLine.InitAndDraw(); });
 
+                
             }
             else if (PlotDetails.AxisOrientation == AxisOrientation.Pie)
             {
@@ -334,7 +433,7 @@ namespace Visifire.Charts
                 PlotArea.SetWidth();
 
                 AxisX.SetValue(VisibilityProperty, Visibility.Collapsed);
-                AxisY.SetValue(VisibilityProperty, Visibility.Collapsed);
+                AxisYPrimary.SetValue(VisibilityProperty, Visibility.Collapsed);
 
                 // Positions titles that have to be placed outside PlotArea
                 _titles.ForEach(delegate(Title child) { child.PlaceInsidePlotArea(); });
@@ -388,7 +487,9 @@ namespace Visifire.Charts
             if (PlotDetails.AxisOrientation != AxisOrientation.Pie)
             {
                 AxisX.Render();
-                AxisY.Render();
+                AxisYPrimary.Render();
+
+                if (AxisYSecondary != null) AxisYSecondary.Render();
             }
 
 
@@ -444,8 +545,8 @@ namespace Visifire.Charts
             _watermark.Text = "Powered by Visifire";
             _watermark.FontSize = 10;
             _watermark.Opacity = 0.3;
-            _watermark.SetValue(LeftProperty, this.Width - _watermark.ActualWidth - 6);
-            _watermark.SetValue(TopProperty, 3);
+            _watermark.SetValue(LeftProperty, (Double) ( this.Width - _watermark.ActualWidth - 6));
+            _watermark.SetValue(TopProperty, (Double) 3);
 
             _watermark.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
             {
@@ -594,6 +695,7 @@ namespace Visifire.Charts
                 return _toolTip;
             }
         }
+
         
         #endregion Public Properties
 
@@ -711,11 +813,19 @@ namespace Visifire.Charts
             }
         }
 
-        public AxisY AxisY
+        public AxisY AxisYPrimary
         {
             get
             {
-                return _axisY;
+                return _axisYPrimary;
+            }
+        }
+
+        public AxisY AxisYSecondary
+        {
+            get
+            {
+                return _axisYSecondary;
             }
         }
 
@@ -818,17 +928,18 @@ namespace Visifire.Charts
 
             Storyboard.SetTarget(doubleAnimation, target);
 
-            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+
+            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(targetProperty));
 
             doubleAnimation.From = from;
 
             doubleAnimation.To = to;
-
-            this.Resources.Add(storyboard);
+            
+            this.Resources.Add(storyboard.GetHashCode().ToString(), storyboard);
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove(sender as Storyboard);
+                this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
                 _storyboardEndCounter++;
                 ApplyPostAnimationSettings();
             };
@@ -847,7 +958,7 @@ namespace Visifire.Charts
 
             Storyboard.SetTarget(doubleAnimation, target);
 
-            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(targetProperty));
 
             for (Int32 i = 0; i < valueSet.Length; i++)
             {
@@ -873,11 +984,11 @@ namespace Visifire.Charts
 
                 doubleAnimation.KeyFrames.Add(splineKeyframe);
             }
-            this.Resources.Add(storyboard);
+            this.Resources.Add(storyboard.GetHashCode().ToString(), storyboard);
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove(sender as Storyboard);
+                this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
                 _storyboardEndCounter++;
                 ApplyPostAnimationSettings();
             };
@@ -917,6 +1028,7 @@ namespace Visifire.Charts
 
             //Restore Hit test state
             this.IsHitTestVisible = _chartHitTestState;
+
         }
 
         private void ApplyPostAnimationSettings()
@@ -940,10 +1052,12 @@ namespace Visifire.Charts
         {
             Storyboard sb;
             sb = (Storyboard)XamlReader.Load(storyboard);
-            this.Resources.Add(sb);
+            
+            this.Resources.Add(sb.GetHashCode().ToString(), sb);
+
             sb.Completed += delegate(object sender1, EventArgs e1)
             {
-                this.Resources.Remove(sb);
+                this.Resources.Remove((sender1 as Storyboard).GetHashCode().ToString());
                 _storyboardEndCounter++;
                 ApplyPostAnimationSettings();
             };
@@ -952,62 +1066,8 @@ namespace Visifire.Charts
 
         private void AnimationType1(Double initialTime)
         {
-
-            if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
-            {
-                ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
-                ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
-                AxisX.Opacity = 0;
-                AxisY.Opacity = 0;
-                AxisY.MajorGrids.Opacity = 0;
-                PlotArea.Opacity = 0;
-            }
-
-
-            if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
-            {
-                for (Int32 i = 0; i < Surface3D.Length; i++)
-                {
-                    if (Surface3D[i] == null) continue;
-                    Surface3D[i].SetValue(NameProperty, GetNewObjectName(Surface3D[i]));
-                    ApplyDoubleAnimation(Surface3D[i], "Opacity", 0, Surface3D[i].Opacity, AnimationDuration, initialTime);
-                    Surface3D[i].Opacity = 0;
-                }
-                for (Int32 i = 0; i < AreaLine3D.Count; i++)
-                {
-                    if (AreaLine3D[i] == null) continue;
-                    AreaLine3D[i].SetValue(NameProperty, GetNewObjectName(AreaLine3D[i]));
-                    ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, initialTime);
-                    AreaLine3D[i].Opacity = 0;
-                }
-                foreach (DataSeries child in DataSeries)
-                {
-                    if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
-                    {
-                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, AnimationDuration, initialTime);
-                        child.Opacity = 0;
-                    }
-                }
-            }
-            else
-            {
-                Int32 i = 0;
-                foreach (DataSeries child in _dataSeries)
-                {
-                    if (DataSeries.Count > 2)
-                    {
-                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, initialTime);
-                    }
-                    else
-                    {
-                        ApplyDoubleAnimation(child, "Opacity", 0, child.Opacity, (Double)AnimationDuration / (Double)_dataSeries.Count, (Double)i / (Double)_dataSeries.Count + initialTime);
-                    }
-                    child.Opacity = 0;
-                    i++;
-                }
-            }
+            ApplyDoubleAnimation(this, "Opacity", 0, 1, AnimationDuration, initialTime);
+            this.Opacity = 0;
         }
 
         private void AnimationType2(Double initialTime,Double initialShootup)
@@ -1038,11 +1098,22 @@ namespace Visifire.Charts
             if (PlotDetails.AxisOrientation == AxisOrientation.Bar || PlotDetails.AxisOrientation == AxisOrientation.Column)
             {
                 ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary, "Opacity", 0, AxisYPrimary.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary.MajorGrids, "Opacity", 0, AxisYPrimary.MajorGrids.Opacity, AnimationDuration, 0);
+                if (AxisYSecondary != null)
+                {
+                    ApplyDoubleAnimation(AxisYSecondary, "Opacity", 0, AxisYSecondary.Opacity, AnimationDuration, 0);
+                    ApplyDoubleAnimation(AxisYSecondary.MajorGrids, "Opacity", 0, AxisYSecondary.MajorGrids.Opacity, AnimationDuration, 0);
+                }
                 ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
             }
 
+            // Layer containing the label and marker for area charts
+            if (_areaLabelMarker != null)
+            {
+                ApplyDoubleAnimation(_areaLabelMarker, "Opacity", 0, 1, 0.1, initialTime + AnimationDuration);
+                _areaLabelMarker.Opacity = 0;
+            }
 
             ScaleTransform st = new ScaleTransform();
 
@@ -1080,6 +1151,7 @@ namespace Visifire.Charts
                     ApplyDoubleAnimation(AreaLine3D[i], "Opacity", 0, AreaLine3D[i].Opacity, AnimationDuration, 0);
                     AreaLine3D[i].Opacity = 0;
                 }
+                
                 foreach (DataSeries child in DataSeries)
                 {
                     if (child.RenderAs.ToLower() == "point" || child.RenderAs.ToLower() == "bubble")
@@ -1114,7 +1186,6 @@ namespace Visifire.Charts
                     st = new ScaleTransform();
                     i++;
                 }
-
             }
 
         }
@@ -1147,18 +1218,26 @@ namespace Visifire.Charts
             {
 
                 ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary, "Opacity", 0, AxisYPrimary.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary.MajorGrids, "Opacity", 0, AxisYPrimary.MajorGrids.Opacity, AnimationDuration, 0);
+
+                if (AxisYSecondary != null)
+                {
+                    ApplyDoubleAnimation(AxisYSecondary, "Opacity", 0, AxisYSecondary.Opacity, AnimationDuration, 0);
+                    ApplyDoubleAnimation(AxisYSecondary.MajorGrids, "Opacity", 0, AxisYSecondary.MajorGrids.Opacity, AnimationDuration, 0);
+                }
+
                 ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
             }
 
-
-
+            // Layer containing the label and marker for area charts
+            if (_areaLabelMarker != null)
+            {
+                ApplyDoubleAnimation(_areaLabelMarker, "Opacity", 0, 1, 0.1, initialTime + AnimationDuration);
+                _areaLabelMarker.Opacity = 0;
+            }
 
             ScaleTransform st = new ScaleTransform();
-
-
-
 
             if (View3D && PlotDetails.AxisOrientation != AxisOrientation.Pie)
             {
@@ -1277,16 +1356,31 @@ namespace Visifire.Charts
             {
 
                 ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, initialTime);
-                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, initialTime);
-                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisYPrimary, "Opacity", 0, AxisYPrimary.Opacity, AnimationDuration, initialTime);
+                ApplyDoubleAnimation(AxisYPrimary.MajorGrids, "Opacity", 0, AxisYPrimary.MajorGrids.Opacity, AnimationDuration, initialTime);
+
+                if (AxisYSecondary != null)
+                {
+                    ApplyDoubleAnimation(AxisYSecondary, "Opacity", 0, AxisYSecondary.Opacity, AnimationDuration, initialTime);
+                    ApplyDoubleAnimation(AxisYSecondary.MajorGrids, "Opacity", 0, AxisYSecondary.MajorGrids.Opacity, AnimationDuration, initialTime);
+                    AxisYSecondary.Opacity = 0;
+                    AxisYSecondary.MajorGrids.Opacity = 0;
+
+                }
+
                 ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, initialTime);
                 AxisX.Opacity = 0;
-                AxisY.Opacity = 0;
-                AxisY.MajorGrids.Opacity = 0;
+                AxisYPrimary.Opacity = 0;
+                AxisYPrimary.MajorGrids.Opacity = 0;
                 PlotArea.Opacity = 0;
             }
 
-
+            // Layer containing the label and marker for area charts
+            if (_areaLabelMarker != null)
+            {
+                ApplyDoubleAnimation(_areaLabelMarker, "Opacity", 0, 1, 0.1, initialTime);
+                _areaLabelMarker.Opacity = 0;
+            }
 
             System.Collections.Generic.List<Double> rx = new System.Collections.Generic.List<Double>();
             System.Collections.Generic.List<Double> ry = new System.Collections.Generic.List<Double>();
@@ -1697,9 +1791,22 @@ namespace Visifire.Charts
             {
 
                 ApplyDoubleAnimation(AxisX, "Opacity", 0, AxisX.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY, "Opacity", 0, AxisY.Opacity, AnimationDuration, 0);
-                ApplyDoubleAnimation(AxisY.MajorGrids, "Opacity", 0, AxisY.MajorGrids.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary, "Opacity", 0, AxisYPrimary.Opacity, AnimationDuration, 0);
+                ApplyDoubleAnimation(AxisYPrimary.MajorGrids, "Opacity", 0, AxisYPrimary.MajorGrids.Opacity, AnimationDuration, 0);
+                if (AxisYSecondary != null)
+                {
+                    ApplyDoubleAnimation(AxisYSecondary, "Opacity", 0, AxisYSecondary.Opacity, AnimationDuration, 0);
+                    ApplyDoubleAnimation(AxisYSecondary.MajorGrids, "Opacity", 0, AxisYSecondary.MajorGrids.Opacity, AnimationDuration, 0);
+
+                }
                 ApplyDoubleAnimation(PlotArea, "Opacity", 0, PlotArea.Opacity, AnimationDuration, 0);
+            }
+
+            // Layer containing the label and marker for area charts
+            if (_areaLabelMarker != null)
+            {
+                ApplyDoubleAnimation(_areaLabelMarker, "Opacity", 0, 1, 0.1, initialTime + AnimationDuration);
+                _areaLabelMarker.Opacity = 0;
             }
 
             ScaleTransform st = new ScaleTransform();
@@ -1881,6 +1988,8 @@ namespace Visifire.Charts
             Int32 dataSeriesIndex = 0;
             Int32 legendIndex = 0;
             Int32 titleIndex = 0;
+            Boolean PrimaryYAxis = false;
+            Boolean SecondaryYAxis = false;
             foreach (FrameworkElement child in Children)
             {
                 switch (child.GetType().Name)
@@ -1900,10 +2009,20 @@ namespace Visifire.Charts
                         break;
 
                     case "AxisY":
-                        if (_axisY != null)
-                            throw new Exception("There can be only one AxisY");
+                        if ((child as AxisY).AxisType == AxisType.Primary)
+                        {
+                            if(_axisYPrimary != null)
+                                throw new Exception("There can be only one Primary AxisY");
 
-                        _axisY = child as AxisY;
+                            _axisYPrimary = child as AxisY;
+                        }
+                        else if ((child as AxisY).AxisType == AxisType.Secondary)
+                        {
+                            if(_axisYSecondary != null)
+                                throw new Exception("There can be only one Secondary AxisY");
+
+                            _axisYSecondary = child as AxisY;
+                        }
                         break;
 
                     case "Title":
@@ -1926,7 +2045,8 @@ namespace Visifire.Charts
                         _dataSeries.Add(child as DataSeries);
                         child.SetValue(ZIndexProperty, dataSeriesIndex + (Int32)child.GetValue(ZIndexProperty));
                         (child as DataSeries).DrawingIndex = dataSeriesIndex++;
-                        AccumalateChartCount((child as DataSeries).RenderAs.ToLower());
+                        if ((child as DataSeries).AxisYType == AxisType.Primary) PrimaryYAxis = true;
+                        else SecondaryYAxis = true;
                         break;
 
                     case "TrendLine":
@@ -1967,10 +2087,19 @@ namespace Visifire.Charts
             }
 
             // If user has not specified AxisY, then create one and add to the children collection
-            if (_axisY == null)
+            if (_axisYPrimary == null)
             {
-                _axisY = new AxisY();
-                this.Children.Add(_axisY);
+                _axisYPrimary = new AxisY();
+                if (!PrimaryYAxis)
+                    _axisYPrimary.Enabled = false;
+                this.Children.Add(_axisYPrimary);
+            }
+
+            if (_axisYSecondary == null && SecondaryYAxis)
+            {
+                _axisYSecondary = new AxisY();
+                _axisYSecondary.AxisType = AxisType.Secondary;
+                this.Children.Add(_axisYSecondary);
             }
 
             // If user has not specified AxisY, then create one and add to the children collection
@@ -2017,33 +2146,90 @@ namespace Visifire.Charts
             
         }
 
+        private Plot FindPlot(ChartTypes chartType, AxisType axisYType)
+        {
+            foreach (Plot plot in PlotDetails.Plots)
+            {
+                if (plot.ChartType == chartType && plot.AxisY.AxisType == axisYType)
+                {
+                    return plot;
+                }
+            }
+            return null;
+        }
+
+        private Plot CreatePlot(ChartTypes chartType, AxisType axisYType)
+        {
+            Plot plot = new Plot();
+            plot.ChartType = chartType;
+            plot.AxisY = (axisYType == AxisType.Primary) ? AxisYPrimary : AxisYSecondary;
+            return plot;
+        }
+
+        private Int32 FindDataSeriesCountByChartType(ChartTypes chartType)
+        {
+            Int32 count = 0;
+            foreach (Plot plot in PlotDetails.Plots)
+            {
+                if (plot.ChartType == chartType)
+                {
+                    count += plot.DataSeries.Count;
+                }
+            }
+            return count;
+        }
+
+        private void GeneratePlotDetailsForDatsSeries(ChartTypes chartType,DataSeries dataSeries)
+        {
+            Plot plot = null;
+
+            plot = FindPlot(chartType, dataSeries.AxisYType);
+
+            if (plot == null)
+            {
+                plot = CreatePlot(chartType, dataSeries.AxisYType);
+                PlotDetails.Plots.Add(plot);
+            }
+
+            plot.DataSeries.Add(dataSeries);
+
+            dataSeries.Index = FindDataSeriesCountByChartType(chartType) - 1;
+            dataSeries.Plot = plot;
+            
+        }
+
+        private Int32 GetAxisCount(ChartTypes chartType)
+        {
+            Int32 count = 0;
+            Boolean primaryAxisUsed = false;
+            Boolean secondaryAxisUsed = false;
+
+            foreach (DataSeries dataSeries in DataSeries)
+            {
+                if (dataSeries.RenderAs.ToLower() == chartType.ToString().ToLower())
+                {
+                    if (dataSeries.AxisYType == AxisType.Primary)
+                        primaryAxisUsed = true;
+                    else if (dataSeries.AxisYType == AxisType.Secondary)
+                        secondaryAxisUsed = true;
+                }
+            }
+
+            if (primaryAxisUsed) count++;
+            if (secondaryAxisUsed) count++;
+
+            return count;
+        }
+
         /// <summary>
         /// Creates summary out of all DataSeries present.
         /// </summary>
         private void GeneratePlotDetails()
         {
-            Plot plot = new Plot();
-            Boolean stacked = false, stacked100 = false;
-            Int32 normal = 0;
-            foreach (DataSeries dataSeries in _dataSeries)
+            PlotDetails.TotalNoOfSeries = DataSeries.Count;
+
+            foreach (DataSeries dataSeries in DataSeries)
             {
-
-                if (_plotDetails.MaxDataPoints < dataSeries.DataPoints.Count)
-                    _plotDetails.MaxDataPoints = dataSeries.DataPoints.Count;
-
-                foreach (DataPoint item in dataSeries.DataPoints)
-                {
-                    if (!Double.IsNaN(item.XValue))
-                    {
-
-
-                        if (!PlotDetails.AxisLabels.ContainsKey(item.XValue))
-                            if (item.AxisLabel != null)
-                                PlotDetails.AxisLabels.Add(item.XValue, item.AxisLabel);
-                    }
-
-
-                }
 
                 switch (dataSeries.RenderAs.ToUpper())
                 {
@@ -2051,31 +2237,8 @@ namespace Visifire.Charts
 
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Bar)
                         {
-                            plot = null;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Bar, dataSeries);
 
-                            _plotDetails.TotalNoOfSeries++;
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Bar)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Bar;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
-                            normal++;
                             PlotDetails.AxisOrientation = AxisOrientation.Bar;
                         }
                         else
@@ -2085,32 +2248,9 @@ namespace Visifire.Charts
                     case "COLUMN":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
+                            
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Column, dataSeries);
 
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Column)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Column;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-
-                            dataSeries.Plot = plot;
-                            normal++;
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
                         else
@@ -2120,98 +2260,34 @@ namespace Visifire.Charts
                     case "POINT":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Point)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Point;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Point, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
                         else
                             throw new Exception("Wrong Chart Combination. Point chart cannot be combined with Bar chart, Pie or Doughnut chart");
                         break;
+
                     case "BUBBLE":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Point)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Point;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Bubble, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
                         else
                             throw new Exception("Wrong Chart Combination. Bubble chart cannot be combined with Bar chart, Pie or Doughnut chart");
                         break;
+
                     case "STACKEDCOLUMN":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedColumn, dataSeries);
 
-                            stacked = true;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedColumn)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedColumn;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            
-                            dataSeries.Plot = plot;
+                            if (GetAxisCount(ChartTypes.StackedColumn) > 1)
+                                dataSeries.Index = (dataSeries.Plot.AxisY.AxisType == AxisType.Primary) ? 0 : 1;
+                            else
+                                dataSeries.Index = 0;
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2221,68 +2297,28 @@ namespace Visifire.Charts
                     case "STACKEDBAR":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Bar)
                         {
-                            plot = null;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedBar, dataSeries);
 
-
-                            stacked = true;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedBar)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedBar;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            if (GetAxisCount(ChartTypes.StackedBar) > 1)
+                                dataSeries.Index = (dataSeries.Plot.AxisY.AxisType == AxisType.Primary) ? 1 : 0;
+                            else
+                                dataSeries.Index = 0;
 
                             PlotDetails.AxisOrientation = AxisOrientation.Bar;
                         }
                         else
                             throw new Exception("Wrong Chart Combination. Stacked bar chart cannot be combined with Column chart, Pie or Doughnut chart");
                         break;
+
                     case "STACKEDBAR100":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Bar)
                         {
-                            plot = null;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedBar100, dataSeries);
 
-                            stacked100 = true;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedBar100)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedBar100;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            if (GetAxisCount(ChartTypes.StackedBar100) > 1)
+                                dataSeries.Index = (dataSeries.Plot.AxisY.AxisType == AxisType.Primary) ? 1 : 0;
+                            else
+                                dataSeries.Index = 0;
 
                             PlotDetails.AxisOrientation = AxisOrientation.Bar;
                         }
@@ -2293,32 +2329,12 @@ namespace Visifire.Charts
                     case "STACKEDCOLUMN100":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedColumn100, dataSeries);
 
-                            stacked100 = true;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedColumn100)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedColumn100;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            
-                            dataSeries.Plot = plot;
+                            if (GetAxisCount(ChartTypes.StackedColumn100) > 1)
+                                dataSeries.Index = (dataSeries.Plot.AxisY.AxisType == AxisType.Primary) ? 0 : 1;
+                            else
+                                dataSeries.Index = 0;
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2329,71 +2345,29 @@ namespace Visifire.Charts
                     case "PIE":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined)
                         {
-                            _plotDetails.TotalNoOfSeries++;
-                            
-
-                            plot = new Plot();
-                            plot.ChartType = ChartTypes.Pie;
-
-                            _plotDetails.Plots.Add(plot);
-                            
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Pie, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Pie;
                         }
                         else
                             throw new Exception("Wrong Chart Combination. Pie chart cannot be combined with Bar chart, Column or Doughnut chart");
                         break;
+
                     case "DOUGHNUT":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined)
                         {
-                            _plotDetails.TotalNoOfSeries++;
-                            
-                            plot = new Plot();
-                            plot.ChartType = ChartTypes.Doughnut;
-
-                            _plotDetails.Plots.Add(plot);
-                            
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Doughnut, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Pie;
                         }
                         else
                             throw new Exception("Wrong Chart Combination. Doughnut chart cannot be combined with any other chart type");
                         break;
+
                     case "LINE":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Line)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Line;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Line, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2404,30 +2378,7 @@ namespace Visifire.Charts
                     case "AREA":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.Area)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.Area;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.Area, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2438,30 +2389,7 @@ namespace Visifire.Charts
                     case "STACKEDAREA":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedArea)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedArea;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedArea, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2472,30 +2400,7 @@ namespace Visifire.Charts
                     case "STACKEDAREA100":
                         if (PlotDetails.AxisOrientation == AxisOrientation.Undefined || PlotDetails.AxisOrientation == AxisOrientation.Column)
                         {
-                            plot = null;
-
-                            _plotDetails.TotalNoOfSeries++;
-
-                            foreach (Plot p in _plotDetails.Plots)
-                            {
-                                if (p.ChartType == ChartTypes.StackedArea100)
-                                {
-                                    plot = p;
-                                    break;
-                                }
-                            }
-
-                            if (plot == null)
-                            {
-                                plot = new Plot();
-                                plot.ChartType = ChartTypes.StackedArea100;
-
-                                _plotDetails.Plots.Add(plot);
-                            }
-
-                            plot.DataSeries.Add(dataSeries);
-                            dataSeries.Index = plot.DataSeries.Count - 1;
-                            dataSeries.Plot = plot;
+                            GeneratePlotDetailsForDatsSeries(ChartTypes.StackedArea100, dataSeries);
 
                             PlotDetails.AxisOrientation = AxisOrientation.Column;
                         }
@@ -2503,26 +2408,76 @@ namespace Visifire.Charts
                             throw new Exception("Wrong Chart Combination. 100% Stacked area chart cannot be combined with Bar chart, Pie or Doughnut chart");
                         break;
 
-
-
                     default:
                         System.Diagnostics.Debug.WriteLine("Unknown Chart Type");
                         throw new Exception("Unknown Chart Type");
                 }
             }
             
-            if ((stacked || stacked100)&& normal==0) normal++;
-
-            foreach (Plot p in PlotDetails.Plots)
+            foreach (Plot plot in PlotDetails.Plots)
             {
-                foreach (DataSeries ds in p.DataSeries)
+                Int32 siblingCount = CalculateSiblingCountByChartType(plot.ChartType);
+
+                SetSiblingCountByChartType(plot.ChartType, siblingCount);
+
+                foreach (DataSeries dataSeries in plot.DataSeries)
                 {
-                    ds.TotalSiblings = normal;
-                    ds.MinDifference = p.MinDifference;
+                    dataSeries.MinDifference = plot.MinDifference;
                 }
             }
-            TotalSiblings = normal;
+
+
+            if (PlotDetails.AxisOrientation == AxisOrientation.Bar)
+                TotalSiblings = Math.Max(CalculateSiblingCountByChartType(ChartTypes.Bar),Math.Max(GetPlotCountByChartType(ChartTypes.StackedBar),GetPlotCountByChartType(ChartTypes.StackedBar100)));
+            else if (PlotDetails.AxisOrientation == AxisOrientation.Column)
+                TotalSiblings = Math.Max(CalculateSiblingCountByChartType(ChartTypes.Column), Math.Max(GetPlotCountByChartType(ChartTypes.StackedColumn), GetPlotCountByChartType(ChartTypes.StackedColumn100)));
+            else
+                TotalSiblings = 0;
             
+        }
+
+        internal Int32 CalculateSiblingCountByChartType(ChartTypes chartType)
+        {
+            Int32 count = 0;
+            foreach (Plot plot in PlotDetails.Plots)
+            {
+                if (plot.ChartType == chartType)
+                    count += plot.DataSeries.Count;
+            }
+
+            return count;
+        }
+
+        private void SetSiblingCountByChartType(ChartTypes chartType, Int32 count)
+        {
+            foreach (Plot plot in PlotDetails.Plots)
+            {
+                if (plot.ChartType == chartType)
+                {
+                    foreach (DataSeries dataSeries in plot.DataSeries)
+                    {
+                        dataSeries.TotalSiblings = count;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Since each plot contains dataseries of same chart type and same axis
+        /// we get  more than one plot for a chart type when a dataseries points to more than one axis
+        /// </summary>
+        /// <returns></returns>
+        internal Int32 GetPlotCountByChartType(ChartTypes chartType)
+        {
+            Int32 count = 0;
+
+            foreach (Plot plot in PlotDetails.Plots)
+            {
+                if (plot.ChartType == chartType)
+                    count++;
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -2550,108 +2505,200 @@ namespace Visifire.Charts
 
         }
 
-        private void AccumalateChartCount(String chartType)
+        
+
+        private Boolean IsChartTypePresent(ChartTypes chartType)
         {
-            if (ChartCounts.ContainsKey(chartType))
+            foreach (Plot plot in PlotDetails.Plots)
             {
-                ChartCounts[chartType] = ChartCounts[chartType] + 1;
+                if (plot.ChartType == chartType)
+                    return true;
             }
-            else
+
+            return false;
+        }
+
+        private Int32 CompareIndex(KeyValuePair<DataSeries, Int32> entry1, KeyValuePair<DataSeries, Int32> entry2)
+        {
+            return entry1.Value.CompareTo(entry2.Value);
+        }
+
+        private Int32 GetHighestIndexForChartType(ChartTypes chartType, List<KeyValuePair<DataSeries, Int32>> seriesIndex)
+        {
+            Int32 index = Int32.MinValue;
+            seriesIndex.ForEach(delegate(KeyValuePair<DataSeries, Int32> entry)
             {
-                ChartCounts.Add(chartType, 1);
+                if (entry.Key.Plot.ChartType == chartType)
+                    index = Math.Max(index, entry.Value);
+            });
+            return index;
+        }
+
+        private Int32 GetHighestIndexForChartType(ChartTypes chartType,AxisType axisType, List<KeyValuePair<DataSeries, Int32>> seriesIndex)
+        {
+            Int32 index = Int32.MinValue;
+            seriesIndex.ForEach(delegate(KeyValuePair<DataSeries, Int32> entry)
+            {
+                if (entry.Key.Plot.ChartType == chartType && entry.Key.AxisYType == axisType)
+                    index = Math.Max(index, entry.Value);
+            });
+            return index;
+        }
+
+        private List<KeyValuePair<DataSeries, Int32>> SetIndexForChartType(ChartTypes chartType, List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
+        {
+            for (Int32 i = 0; i < seriesIndex.Count; i++)
+            {
+                if (seriesIndex[i].Key.Plot.ChartType == chartType)
+                {
+                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
+                }
             }
+            return seriesIndex;
+        }
+
+        private List<KeyValuePair<DataSeries, Int32>> SetIndexForChartType(ChartTypes chartType,AxisType axisType, List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
+        {
+            for (Int32 i = 0; i < seriesIndex.Count; i++)
+            {
+                if (seriesIndex[i].Key.Plot.ChartType == chartType && seriesIndex[i].Key.AxisYType == axisType)
+                {
+                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
+                }
+            }
+            return seriesIndex;
+        }
+
+        private Boolean SetDrawingIndexByChartType(ChartTypes chartType, ref List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
+        {
+            Boolean found = false;
+            for (Int32 i = 0; i < seriesIndex.Count; i++)
+            {
+                if (seriesIndex[i].Key.Plot.ChartType == chartType)
+                {
+                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
+                    found = true;
+                }
+            }
+            return found;
+        }
+
+        private Boolean SetDrawingIndexByChartType(ChartTypes chartType, AxisType axisType, ref List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
+        {
+            Boolean found = false;
+            for (Int32 i = 0; i < seriesIndex.Count; i++)
+            {
+                if (seriesIndex[i].Key.Plot.ChartType == chartType && seriesIndex[i].Key.AxisYType == axisType)
+                {
+                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
+                    found = true;
+                }
+            }
+            return found;
+        }
+
+        private List<KeyValuePair<DataSeries, Int32>> SetHighestIndexToAllSeriesByChartType(ChartTypes chartType, List<KeyValuePair<DataSeries, Int32>> seriesIndex)
+        {
+            Int32 index = GetHighestIndexForChartType(chartType,seriesIndex);
+            seriesIndex = SetIndexForChartType(chartType,seriesIndex,index);
+            return seriesIndex;
+        }
+
+        private List<KeyValuePair<DataSeries, Int32>> SetHighestIndexToAllSeriesByChartType(ChartTypes chartType,AxisType axisType, List<KeyValuePair<DataSeries, Int32>> seriesIndex)
+        {
+            Int32 index = GetHighestIndexForChartType(chartType,axisType, seriesIndex);
+            seriesIndex = SetIndexForChartType(chartType,axisType, seriesIndex, index);
+            return seriesIndex;
+        }
+
+        private Int32 GetLowestIndexFromList(List<KeyValuePair<DataSeries, Int32>> seriesIndex)
+        {
+            Int32 index = Int32.MaxValue;
+            foreach (KeyValuePair<DataSeries, Int32> entry in seriesIndex)
+            {
+                index = Math.Min(index, entry.Value);
+            }
+            return index;
         }
 
         private void GenerateIndexTable()
         {
-            Int32 depthcounter = 0;
+            Int32 depthCount = 0;
 
-            if (ChartCounts.ContainsKey("column")) depthcounter++;
-            if (ChartCounts.ContainsKey("stackedcolumn")) depthcounter++;
-            if (ChartCounts.ContainsKey("stackedcolumn100")) depthcounter++;
-            if (ChartCounts.ContainsKey("area")) depthcounter += ChartCounts["area"];
-            if (ChartCounts.ContainsKey("stackedarea")) depthcounter++;
-            if (ChartCounts.ContainsKey("stackedarea100")) depthcounter++;
-            if (ChartCounts.ContainsKey("bar")) depthcounter++;
-            if (ChartCounts.ContainsKey("stackedbar")) depthcounter++;
-            if (ChartCounts.ContainsKey("stackedbar100")) depthcounter++;
-            Count = depthcounter;
-            // Index for column
-            Dictionary<String, Int32> ZIndexTable = new Dictionary<String, Int32>();
-            Dictionary<String, Int32> ZIndexArea = new Dictionary<String, Int32>();
-            String rendertype;
-            foreach (DataSeries ds in DataSeries)
+            depthCount += IsChartTypePresent(ChartTypes.Column) ? 1 : 0;
+            depthCount += IsChartTypePresent(ChartTypes.StackedColumn) ? 1 : 0;
+            depthCount += IsChartTypePresent(ChartTypes.StackedColumn100) ? 1 : 0;
+            depthCount += IsChartTypePresent(ChartTypes.Bar) ? 1 : 0;
+            depthCount += IsChartTypePresent(ChartTypes.StackedBar) ? 1 : 0;
+            depthCount += IsChartTypePresent(ChartTypes.StackedBar100) ? 1 : 0;
+
+            depthCount += CalculateSiblingCountByChartType(ChartTypes.Area);
+            depthCount += GetPlotCountByChartType(ChartTypes.StackedArea);
+            depthCount += GetPlotCountByChartType(ChartTypes.StackedArea100);
+
+            Count = depthCount;
+
+            List<KeyValuePair<DataSeries, Int32>> seriesIndex = new List<KeyValuePair<DataSeries, Int32>>();
+
+            foreach (DataSeries dataSeries in DataSeries)
             {
-                rendertype = ds.RenderAs.ToLower();
-                if (rendertype != "area" && rendertype != "line" && rendertype != "point" && rendertype != "bubble")
-                {
-                    if (ZIndexTable.ContainsKey(rendertype))
-                    {
-                        if (ZIndexTable[rendertype] < (Int32)ds.GetValue(ZIndexProperty))
-                        {
-                            ZIndexTable[rendertype] = (Int32)ds.GetValue(ZIndexProperty);
-                        }
-
-                    }
-                    else
-                    {
-                        ZIndexTable.Add(rendertype, (Int32)ds.GetValue(ZIndexProperty));
-                    }
-                }
-                else
-                {
-                    if (ZIndexArea.ContainsKey(rendertype + ds.DrawingIndex.ToString()))
-                    {
-                        ZIndexArea[rendertype + ds.DrawingIndex.ToString()] = (Int32)ds.GetValue(ZIndexProperty);
-                    }
-                    else
-                    {
-                        ZIndexArea.Add(rendertype + ds.DrawingIndex.ToString(), (Int32)ds.GetValue(ZIndexProperty));
-                    }
-                }
+                seriesIndex.Add(new KeyValuePair<DataSeries, Int32>(dataSeries, dataSeries.ZIndex));
             }
 
-
-            List<String> ZITableStr = new List<String>(ZIndexArea.Keys);
-
- 
-            List<Int32> ZITableInt = new List<Int32>(ZIndexArea.Values);
-
-            ZITableStr.InsertRange(ZITableStr.Count, ZIndexTable.Keys);
-            ZITableInt.InsertRange(ZITableInt.Count, ZIndexTable.Values);
-
-            String[] ZITableStrArr = ZITableStr.ToArray();
-            Int32[] ZITableIntArr = ZITableInt.ToArray();
-            Array.Sort<Int32, String>(ZITableIntArr, ZITableStrArr);
+            seriesIndex.Sort(CompareIndex);
 
             
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.Column, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedColumn, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedColumn100, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.Bar, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedBar, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedBar100, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedArea,AxisType.Primary, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedArea,AxisType.Secondary, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedArea100,AxisType.Primary, seriesIndex);
+            seriesIndex = SetHighestIndexToAllSeriesByChartType(ChartTypes.StackedArea100,AxisType.Secondary, seriesIndex);
 
-            Int32 j = 0;
-            for (Int32 i = 0; j< ZITableStrArr.Length;j++ )
+            seriesIndex.Sort(CompareIndex);
+
+            //seriesIndex = SetIndexForChartType(ChartTypes.Line, seriesIndex, 0);
+            //seriesIndex = SetIndexForChartType(ChartTypes.Bubble, seriesIndex, 0);
+            //seriesIndex = SetIndexForChartType(ChartTypes.Point, seriesIndex, 0);
+
+            Int32 depth = 0;
+            List<KeyValuePair<DataSeries, Int32>> seriesIndex2 = new List<KeyValuePair<DataSeries, Int32>>();
+            List<KeyValuePair<DataSeries, Int32>> seriesIndexFinal = new List<KeyValuePair<DataSeries, Int32>>();
+            Int32 lowestIndex;
+            Boolean ignoreIncrement = false;
+            while (seriesIndex.Count > 0)
             {
-                if (ZITableStrArr[j].ToLower().Contains("line") || ZITableStrArr[j].ToLower().Contains("point") || ZITableStrArr[j].ToLower().Contains("bubble"))
+                ignoreIncrement = false;
+                lowestIndex = GetLowestIndexFromList(seriesIndex);
+
+                for (Int32 i = 0; i < seriesIndex.Count; i++)
                 {
-                    IndexList.Add(ZITableStrArr[j], i);
-                    foreach (DataSeries ds in DataSeries)
+                    if (seriesIndex[i].Value == lowestIndex)
                     {
-                        if (ds.RenderAs.ToLower() == ZITableStrArr[j])
-                            ds.SetValue(ZIndexProperty, ZITableIntArr[j] + 3);
-                        else if (ds.RenderAs.ToLower() + ds.DrawingIndex.ToString() == ZITableStrArr[j])
-                            ds.SetValue(ZIndexProperty, ZITableIntArr[j] + 3);
+                        seriesIndexFinal.Add(new KeyValuePair<DataSeries, Int32>(seriesIndex[i].Key, depth));
+                        if (seriesIndex[i].Key.Plot.ChartType == ChartTypes.Line || seriesIndex[i].Key.Plot.ChartType == ChartTypes.Point
+                            || seriesIndex[i].Key.Plot.ChartType == ChartTypes.Bubble)
+                            ignoreIncrement = true;
                     }
+                    else
+                        seriesIndex2.Add(new KeyValuePair<DataSeries, Int32>(seriesIndex[i].Key, seriesIndex[i].Value));
                 }
-                else
-                {
-                    IndexList.Add(ZITableStrArr[j], i);
-                    foreach (DataSeries ds in DataSeries)
-                    {
-                        if (ds.RenderAs.ToLower() == ZITableStrArr[j])
-                            ds.SetValue(ZIndexProperty, ZITableIntArr[j] + 3);
-                        else if (ds.RenderAs.ToLower() + ds.DrawingIndex.ToString() == ZITableStrArr[j])
-                            ds.SetValue(ZIndexProperty, ZITableIntArr[j] + 3);
-                    }
-                    i++;
-                }
+
+                seriesIndex.Clear();
+                seriesIndex = seriesIndex2;
+
+                seriesIndex2 = new List<KeyValuePair<DataSeries, Int32>>();
+                
+                if(!ignoreIncrement) depth++;
+            }
+
+            foreach (KeyValuePair<DataSeries, Int32> entry in seriesIndexFinal)
+            {
+                IndexList.Add(entry.Key.Name, entry.Value);
             }
 
         }
@@ -2673,8 +2720,7 @@ namespace Visifire.Charts
         private void SetTags()
         {
             SetTag(_plotAreaBorder);
-            SetTag(_zeroPlankBorderFront);
-            SetTag(_zeroPlankBorderSide);
+
             SetTag(_watermark);
 
             SetTag(Surface3D);
@@ -2785,19 +2831,21 @@ namespace Visifire.Charts
 
                 AxisX.Init();
 
-                AxisY.Init();
+                AxisYPrimary.Init();
 
+                if (AxisYSecondary != null)
+                    AxisYSecondary.Init();
             }
 
             // Positions titles that have to be placed outside PlotArea
             _titles.ForEach(delegate(Title child) { child.PlaceOutsidePlotArea(); });
 
             // Copy titles inner bounds to inner bounds to be used by legend
-            if (Padding <= 4)
+            if (Padding <= 4 && !_paddingOverride)
             {
                 _innerBounds = new Rect(_innerTitleBounds.X + 5, _innerTitleBounds.Y + 10, _innerTitleBounds.Width - 10, _innerTitleBounds.Height - 10);
                 Padding = 5;
-            }
+             }
             else
             {
                 _innerBounds = new Rect(_innerTitleBounds.X, _innerTitleBounds.Y, _innerTitleBounds.Width, _innerTitleBounds.Height);
@@ -2812,8 +2860,6 @@ namespace Visifire.Charts
                 if (!legend.EntriesPresent)
                     _innerBounds = previousBounds;
             }
-
-
 
         }
 
@@ -2893,23 +2939,23 @@ namespace Visifire.Charts
         private List<TrendLine> _trendLines;
         private List<ColorSet> _colorSets;
 
-        internal Boolean[] _plankDrawState = new Boolean[10];
+        internal Boolean[] _plankDrawState = new Boolean[12];
 
         private Canvas _parent;
-        internal Canvas[] Surface3D = new Canvas[10];
+        internal Canvas[] Surface3D = new Canvas[12];
         internal Canvas _areaLabelMarker = null;
 
         private PlotDetails _plotDetails;
         private PlotArea _plotArea;
         private AxisX _axisX;
-        private AxisY _axisY;
+        private AxisY _axisYPrimary;
+        private AxisY _axisYSecondary;
         private ToolTip _toolTip;
         private Label _label;
         private Image _logo;
 
         internal Rect _innerBounds;
         internal Rect _innerTitleBounds;
-
 
         private String _animationType;
         private String _colorSet;
@@ -2918,10 +2964,10 @@ namespace Visifire.Charts
         private String _animationEnabled;
 
         internal Rectangle _plotAreaBorder;
-        private Rectangle _zeroPlankBorderFront;
-        private Rectangle _zeroPlankBorderSide;
+
         private TextBlock _watermark;
         private Boolean _chartHitTestState;
+
         #endregion Data
     }
 }

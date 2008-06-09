@@ -1,27 +1,45 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" Width="500" Height="300">
+Theme="Theme1" AnimationType="Type4" UniqueColors="False" >
 
-  <vc:Title Text="Company Revenue and Profits 2007"/>
-  <vc:AxisY Title="Revenue" Prefix="$" Suffix="K"/>
+  <vc:Title Text="Performance of the Integrated Oil Companies"/>
 
-  <vc:DataSeries Name="Product A" RenderAs="Area">
-    <vc:DataPoint AxisLabel="01/01/2008" YValue="12"/>
-    <vc:DataPoint AxisLabel="02/01/2008" YValue="16"/>
-    <vc:DataPoint AxisLabel="03/01/2008" YValue="23"/>
-    <vc:DataPoint AxisLabel="04/01/2008" YValue="28"/>
-    <vc:DataPoint AxisLabel="05/01/2008" YValue="32"/>
-    <vc:DataPoint AxisLabel="06/01/2008" YValue="23"/>
-    <vc:DataPoint AxisLabel="07/01/2008" YValue="17"/>
+  <vc:AxisY Title="Amount (millions of dollars)"/>
+  <vc:AxisY AxisType="Secondary" Title="% Change in Revenue" Suffix="%"/>
+
+  <vc:DataSeries Name="Revenue" RenderAs="Column">
+    <vc:DataPoint AxisLabel="ExxonMobil" YValue="370998"/>
+    <vc:DataPoint AxisLabel="Shell" YValue="306731"/>
+    <vc:DataPoint AxisLabel="BP" YValue="253621"/>
+    <vc:DataPoint AxisLabel="Chevron" YValue="198200"/>
+    <vc:DataPoint AxisLabel="Conoco" YValue="183364"/>
+    <vc:DataPoint AxisLabel="Marathon" YValue="63673"/>
+    <vc:DataPoint AxisLabel="Amerada" YValue="22747"/>
+    <vc:DataPoint AxisLabel="Occidental" YValue="15208"/>
+    <vc:DataPoint AxisLabel="Murphy" YValue="11877"/>
   </vc:DataSeries>
 
-  <vc:DataSeries Name="Product B" RenderAs="Column">
-    <vc:DataPoint YValue="8"/>
-    <vc:DataPoint YValue="12"/>
-    <vc:DataPoint YValue="19"/>
-    <vc:DataPoint YValue="25"/>
-    <vc:DataPoint YValue="26"/>
-    <vc:DataPoint YValue="21"/>
-    <vc:DataPoint YValue="16"/>
+  <vc:DataSeries Name="Net Income" RenderAs="Column">
+    <vc:DataPoint YValue="36130"/>
+    <vc:DataPoint YValue="22940"/>
+    <vc:DataPoint YValue="19314"/>
+    <vc:DataPoint YValue="14099"/>
+    <vc:DataPoint YValue="13529"/>
+    <vc:DataPoint YValue="3022"/>
+    <vc:DataPoint YValue="1242"/>
+    <vc:DataPoint YValue="5281"/>
+    <vc:DataPoint YValue="846"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="% Change in Revenue" RenderAs="Line" AxisYType="Secondary">
+    <vc:DataPoint YValue="24.5"/>
+    <vc:DataPoint YValue="15.1"/>
+    <vc:DataPoint YValue="25.1"/>
+    <vc:DataPoint YValue="27.6"/>
+    <vc:DataPoint YValue="33.9"/>
+    <vc:DataPoint YValue="27.6"/>
+    <vc:DataPoint YValue="35.9"/>
+    <vc:DataPoint YValue="33.8"/>
+    <vc:DataPoint YValue="42.1"/>
   </vc:DataSeries>
 
 </vc:Chart>

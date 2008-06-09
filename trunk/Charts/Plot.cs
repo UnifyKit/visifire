@@ -104,7 +104,8 @@ namespace Visifire.Charts
 
             if (ChartType == ChartTypes.Area || ChartType == ChartTypes.Bar ||
                 ChartType == ChartTypes.Column || ChartType == ChartTypes.Line ||
-                ChartType == ChartTypes.Point || ChartType == ChartTypes.Pie || ChartType == ChartTypes.Doughnut)
+                ChartType == ChartTypes.Point || ChartType == ChartTypes.Pie || 
+                ChartType == ChartTypes.Doughnut || ChartType == ChartTypes.Bubble)
             {
                 foreach (DataSeries child in _dataSeries)
                 {
@@ -332,23 +333,33 @@ namespace Visifire.Charts
             }
         }
 
+        internal AxisY AxisY
+        {
+            get
+            {
+                return _axisY;
+            }
+            set
+            {
+                _axisY = value;
+            }
+        }
+
         #endregion Internal Properties
 
         #region Data
-        private Double _minDifference;
 
-        
+        private Double _minDifference;
 
         private ChartTypes _chartType;
         private System.Collections.Generic.List<DataSeries> _dataSeries;
-
-        
-    
 
         private Double _maxAxisYValue;
         private Double _minAxisYValue;
         private Double _maxAxisXValue;
         private Double _minAxisXValue;
+
+        private AxisY _axisY;
         #endregion Data
     }
 }

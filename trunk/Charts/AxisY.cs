@@ -41,8 +41,10 @@ namespace Visifire.Charts
             else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
                 AxisOrientation = AxisOrientation.Bar;
 
-            MaxDataValue = _parent.PlotDetails.MaxAxisYValue;
-            MinDataValue = _parent.PlotDetails.MinAxisYValue;
+            _parent.PlotDetails.FindMaxMinForAxis(this);
+
+            MaxDataValue = _parent.PlotDetails.MaxAxisYDataValue;
+            MinDataValue = _parent.PlotDetails.MinAxisYDataValue;
 
             base.Init();
 

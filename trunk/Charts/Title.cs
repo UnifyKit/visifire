@@ -67,13 +67,13 @@ namespace Visifire.Charts
                     switch (AlignmentX)
                     {
                         case AlignmentX.Right:
-                            _textBlock.SetValue(LeftProperty, Width - _textBlock.ActualWidth - Padding);
+                            _textBlock.SetValue(LeftProperty, (Double) ( Width - _textBlock.ActualWidth - Padding));
                             break;
                         case AlignmentX.Left:
-                            _textBlock.SetValue(LeftProperty, Padding);
+                            _textBlock.SetValue(LeftProperty, (Double) Padding);
                             break;
                         case AlignmentX.Center:
-                            _textBlock.SetValue(LeftProperty, Width / 2 - _textBlock.ActualWidth / 2 + Padding);
+                            _textBlock.SetValue(LeftProperty, (Double) ( Width / 2 - _textBlock.ActualWidth / 2 + Padding));
                             break;
                     }
                 }
@@ -115,11 +115,11 @@ namespace Visifire.Charts
 
                 if (AlignmentY == AlignmentY.Center && AlignmentX == AlignmentX.Left)
                 {
-                    _textBlock.SetValue(TopProperty, Height / 2 + _textBlock.ActualWidth / 2);
+                    _textBlock.SetValue(TopProperty, (Double) ( Height / 2 + _textBlock.ActualWidth / 2));
                 }
                 else if (AlignmentY == AlignmentY.Center && AlignmentX == AlignmentX.Right)
                 {
-                    _textBlock.SetValue(TopProperty, Height / 2 - _textBlock.ActualWidth / 2);
+                    _textBlock.SetValue(TopProperty, (Double) ( Height / 2 - _textBlock.ActualWidth / 2));
                 }
             }
             else
@@ -330,13 +330,13 @@ namespace Visifire.Charts
             {
                 if (!DockInsidePlotArea && AlignmentX == AlignmentX.Left && AlignmentY == AlignmentY.Center)
                 {
-                    _textBlock.SetValue(TopProperty, _textBlock.ActualWidth);
-                    _textBlock.SetValue(LeftProperty, 0);
+                    _textBlock.SetValue(TopProperty, (Double) _textBlock.ActualWidth);
+                    _textBlock.SetValue(LeftProperty, (Double)  0);
                 }
                 else if (!DockInsidePlotArea && AlignmentX == AlignmentX.Right && AlignmentY == AlignmentY.Center)
                 {
-                    _textBlock.SetValue(TopProperty, 0);
-                    _textBlock.SetValue(LeftProperty, _textBlock.ActualHeight);
+                    _textBlock.SetValue(TopProperty, (Double)0);
+                    _textBlock.SetValue(LeftProperty, (Double) _textBlock.ActualHeight);
                 }
             }
             this.SetValue(Canvas.LeftProperty, left);
@@ -422,7 +422,7 @@ namespace Visifire.Charts
                         if (tempTop > top) top = tempTop;
 
                     }
-                    this.SetValue(TopProperty, top);
+                    this.SetValue(TopProperty, (Double) top);
                     break;
                 case AlignmentY.Bottom:
                     if (DockInsidePlotArea)

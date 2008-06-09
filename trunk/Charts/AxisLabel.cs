@@ -29,73 +29,64 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
-    internal class AxisLabel : VisualObject
+    internal class AxisLabel : Canvas
     {
         #region Public Methods
 
         public AxisLabel()
         {
+            this.Children.Add(_textBlock);
+
+            _transformGroup.Children.Add(_rotateTransform);
+
+            _textBlock.RenderTransform = _transformGroup;
+
+            this.RenderTransformOrigin = new Point(0.5, 0.5);
+        }
+
+        private void SetFontProperties(AxisLabels parent)
+        {
+            _textBlock.FontFamily = new FontFamily(parent.FontFamily);
+
+            _textBlock.FontSize = parent.FontSize;
+
+            _textBlock.FontStyle = Converter.StringToFontStyle(parent.FontStyle);
+
+            _textBlock.FontWeight = Converter.StringToFontWeight(parent.FontWeight);
+
+            if (parent._fontColor == null)
+                _textBlock.Foreground = GetDefaultFontcolor();
+            else
+                _textBlock.Foreground = Cloner.CloneBrush(parent.FontColor);
 
         }
 
-        public override void Init()
+        public void Init()
         {
-
-            base.Init();
 
             SetTags();
 
-            _textBlock.FontFamily = new FontFamily((Parent as AxisLabels).FontFamily);
-            _textBlock.FontSize = (Parent as AxisLabels).FontSize;
-            _textBlock.Width = (Parent as AxisLabels).MaxLabelWidth;
+            SetFontProperties(Parent as AxisLabels);
 
-            if ((Parent as AxisLabels)._fontColor == null)
-            {
-                _textBlock.Foreground = GetDefaultFontcolor();
-            }
-            else
-            {
-                _textBlock.Foreground = Cloner.CloneBrush((Parent as AxisLabels).FontColor);
-            }
-            this.SetWidth();
-            this.SetHeight();
-        }
+            TextBlock.Width = (Parent as AxisLabels).MaxLabelWidth;
+            TextBlock.TextWrapping = TextWrapping.Wrap;
 
-        public override void SetWidth()
-        {
-            this.SetValue(WidthProperty, _textBlock.ActualWidth);
-        }
 
-        public override void SetHeight()
-        {
-            this.SetValue(HeightProperty, _textBlock.ActualHeight);
-        }
-
-        public override void SetLeft()
-        {
-            this.SetValue(LeftProperty, 0);
-        }
-
-        public override void SetTop()
-        {
-            this.SetValue(TopProperty, 0);
         }
 
         #endregion Public Methods
 
         #region Internal Properties
 
-        internal new Double ActualWidth
+        internal Double ActualLeft
         {
             get
             {
-                Double width1 = Math.Abs(DiagonalLength * Math.Cos(DiagonalAngle * Math.PI / 180));
-                Double width2 = Math.Abs(DiagonalLength * Math.Cos((360 - DiagonalAngle + Angle * 2) * Math.PI / 180));
-                
-                if (width1 > width2)
-                    return width1;
-                else
-                    return width2;
+                return _left;
+            }
+            set
+            {
+                _left = value;
             }
         }
 
@@ -103,99 +94,23 @@ namespace Visifire.Charts
         {
             get
             {
-                Double top = 0;
-
-                top = ((Parent as AxisLabels).Parent as Axes).DoubleToPixel(this.Position) - ((Double)this.GetValue(WidthProperty) * Math.Sin(Angle * Math.PI / 180)) - ((Double)this.GetValue(HeightProperty) / 2 * Math.Cos(Angle * Math.PI / 180));
-
-                if (Angle >= -90 && Angle < 0)
-                {
-                    if (Angle == -90)
-                        top = ((Parent as AxisLabels).Parent as Axes).DoubleToPixel(this.Position) - this.ActualHeight / 2;
-                    else
-                        top -= (this.ActualHeight - ((Double)this.GetValue(HeightProperty) * Math.Cos(Angle * Math.PI / 180)));
-                }
-
-                return top;
-            }
-        }
-
-        internal Double ActualLeft
-        {
-            get
-            {
-                Double left = 0;
-
-                left = ((Parent as AxisLabels).Parent as Axes).DoubleToPixel(this.Position) - ((Double)this.GetValue(HeightProperty) / 2 * Math.Sin(Angle * Math.PI / 180));
-
-                if (Angle >= -90 && Angle < 0)
-                    left -= this.ActualWidth;
-                else if (Angle == 0)
-                    left -= this.ActualWidth / 2;
-
-                return left;
-            }
-        }
-
-        // Represents whether its a AxisLabel or not.
-        internal Boolean IsAxisLabel
-        {
-            get;
-            set;
-        }
-
-        internal new Double ActualHeight
-        {
-            get
-            {   
-                Double height1 = Math.Abs(DiagonalLength * Math.Sin((DiagonalAngle) * Math.PI / 180));
-                Double height2 = Math.Abs(DiagonalLength * Math.Sin((360 - DiagonalAngle + Angle * 2) * Math.PI / 180));
-
-                if (height1 > height2)
-                    return height1;
-                else
-                    return height2;
-            }
-        }
-
-        internal Double DiagonalAngle
-        {
-            get
-            {
-                return 180 - (Math.Atan((Double)this.GetValue(HeightProperty) / (Double)this.GetValue(WidthProperty)) * 180 / Math.PI) + Angle;
-            }
-        }
-
-        internal Double DiagonalLength
-        {
-            get
-            {
-                return Math.Sqrt(Math.Pow((Double)this.GetValue(WidthProperty), 2) + Math.Pow((Double)this.GetValue(HeightProperty), 2));
-            }
-        }
-
-        internal String FontStyle
-        {
-            get
-            {
-                return _textBlock.FontStyle.ToString();
-
+                return _top;
             }
             set
             {
-                _textBlock.FontStyle = Converter.StringToFontStyle(value);
+                _top = value;
             }
         }
 
-        internal String FontWeight
+        internal Double Angle
         {
             get
             {
-                return _textBlock.FontWeight.ToString();
-
+                return _angle;
             }
             set
             {
-                _textBlock.FontWeight = Converter.StringToFontWeight(value);
+                _angle = GetAngle(value);
             }
         }
 
@@ -208,45 +123,32 @@ namespace Visifire.Charts
             set
             {
                 _textBlock.Text = value;
-
-                this.SetWidth();
-                this.SetHeight();
-
+                _textBlock.Width = _textBlock.ActualWidth;
+                _textBlock.Height = _textBlock.ActualHeight;
             }
         }
 
-        internal Double Angle
+        internal new Double ActualHeight
         {
             get
             {
-                return _angle;
+                return _height;
             }
-            set
+        }
+
+        internal new Double ActualWidth
+        {
+            get
             {
-                value %= 360;
-                value += 360;
-                value %= 360;
+                return _width;
+            }
+        }
 
-                if (value > 90 && value < 270)
-                {
-                    _angle = -180 + value;
-                }
-                else if (value >= 270 && value <= 360)
-                {
-                    _angle = value - 360;
-                }
-                else
-                    _angle = value;
-
-                _angle %= 360;
-
-                _rt = new RotateTransform();
-
-                _rt.Angle = _angle;
-
-                this.RenderTransform = _rt;
-
-
+        internal TextBlock TextBlock
+        {
+            get
+            {
+                return _textBlock;
             }
         }
 
@@ -254,66 +156,210 @@ namespace Visifire.Charts
         {
             get
             {
-                return _left;
+                return (Double)this.GetValue(LeftProperty);
             }
             set
             {
-                _left = value;
+                SetValue(LeftProperty, value);
             }
-
         }
 
         internal Double Top
         {
             get
             {
-                return _top;
+                return (Double)this.GetValue(TopProperty);
             }
             set
             {
-                _top = value;
+                SetValue(TopProperty, value);
             }
-
         }
 
         internal Double Position
         {
-            get
-            {
-                return _position;
-            }
-            set
-            {
-                _position = value;
-            }
+            get;
+            set;
         }
 
-        internal Double FontSize
-        {
-            get
-            {
-                return _textBlock.FontSize;
-            }
-            set
-            {
-                _textBlock.FontSize = value;
-                SetHeight();
-                SetWidth();
-            }
-        }
-
-                
         #endregion Internal Properties
+
+        #region Internal Methods
+        internal void UpdatePositionRight(Point newPos)
+        {
+            Double left;
+            Double top;
+            Double relativeAngle = Math.Atan(_textBlock.ActualHeight / (2 * _textBlock.ActualWidth));
+            Double length = Math.Sqrt(Math.Pow(_textBlock.ActualHeight / 2, 2) + Math.Pow(_textBlock.ActualWidth, 2));
+
+            _rotateTransform.Angle = Angle;
+
+            _rotateTransform.CenterX = 0;
+            _rotateTransform.CenterY = 0.5;
+
+            top = (_textBlock.Height / 2) * Math.Cos(GetRadians(Angle));
+
+            left = -(_textBlock.Height / 2) * Math.Sin(GetRadians(Angle));
+
+            this.SetValue(LeftProperty, (Double) ( newPos.X - left));
+            this.SetValue(TopProperty, (Double) ( newPos.Y - top));
+
+            CalculateSize(GetRadians(Angle));
+
+            if (Angle > 90)
+            {
+                _top = (Double)this.GetValue(TopProperty) - top + length * Math.Sin(GetRadians(Angle) + relativeAngle);
+                _left = (Double)this.GetValue(LeftProperty);
+            }
+            else
+            {
+                _top = (Double)this.GetValue(TopProperty);
+                _left = (Double)this.GetValue(LeftProperty) + left - (_textBlock.Height / 2) * Math.Cos(GetRadians(90 - Angle));
+            }
+        }
+
+        internal void UpdatePositionLeft(Point newPos)
+        {
+
+            _rotateTransform.Angle = Angle;
+
+            _rotateTransform.CenterX = 0;
+            _rotateTransform.CenterY = 0.5;
+
+            Double left;
+            Double top;
+            Double radians = GetRadians(Angle);
+            Double relativeAngle = Math.Atan(_textBlock.ActualHeight / (2 * _textBlock.ActualWidth));
+            Double length = Math.Sqrt(Math.Pow(_textBlock.ActualHeight / 2, 2) + Math.Pow(_textBlock.ActualWidth, 2));
+
+            left = length * Math.Cos(radians + relativeAngle);
+            top = length * Math.Sin(radians + relativeAngle);
+
+            this.SetValue(LeftProperty, (Double) ( newPos.X - left));
+            this.SetValue(TopProperty, (Double) ( newPos.Y - top));
+
+            CalculateSize(GetRadians(Angle));
+
+            if (Angle > 90)
+            {
+                _top = (Double)this.GetValue(TopProperty) + top - ((_textBlock.Height / 2) * Math.Sin(GetRadians(90 - Angle)));
+                _left = (Double)this.GetValue(LeftProperty);
+            }
+            else
+            {
+                _top = (Double)this.GetValue(TopProperty);
+                _left = (Double)this.GetValue(LeftProperty) + left - ((_textBlock.Height / 2) * Math.Cos(GetRadians(90 - Angle))); ;
+            }
+        }
+
+        internal void UpdatePositionTop(Point newPos)
+        {
+            Double left;
+            Double top;
+
+            if (Angle == 0)
+            {
+                left = _textBlock.ActualWidth / 2;
+                top = _textBlock.ActualHeight;
+
+                _rotateTransform.Angle = 0;
+
+                this.SetValue(LeftProperty, (Double) ( newPos.X - left));
+                this.SetValue(TopProperty, (Double) ( newPos.Y - top));
+
+                _top = (Double)this.GetValue(TopProperty);
+                _left = (Double)this.GetValue(LeftProperty);
+
+                CalculateSize(GetRadians(Angle));
+            }
+            else if (Angle > 90)
+            {
+                UpdatePositionRight(newPos);
+
+            }
+            else
+            {
+                UpdatePositionLeft(newPos);
+            }
+
+        }
+
+
+        internal void UpdatePositionBottom(Point newPos)
+        {
+
+            Double left;
+            Double top;
+
+            if (Angle == 0)
+            {
+                left = _textBlock.ActualWidth / 2;
+                top = 0;
+
+                _rotateTransform.Angle = 0;
+
+                this.SetValue(LeftProperty, (Double) ( newPos.X - left));
+                this.SetValue(TopProperty, (Double) ( newPos.Y + top));
+
+                _top = (Double)this.GetValue(TopProperty);
+                _left = (Double)this.GetValue(LeftProperty);
+
+                CalculateSize(GetRadians(Angle));
+            }
+            else if (Angle > 90)
+            {
+                UpdatePositionLeft(newPos);
+            }
+            else
+            {
+                UpdatePositionRight(newPos);
+            }
+
+            
+        }
+
+        internal void UpdateSize()
+        {
+            CalculateSize(GetRadians(Angle));
+        }
+
+        private void CalculateSize(Double radianAngle)
+        {
+            Double length = Math.Sqrt(Math.Pow(_textBlock.ActualHeight, 2) + Math.Pow(_textBlock.ActualWidth, 2));
+            Double beta = Math.Atan(_textBlock.ActualHeight / _textBlock.ActualWidth);
+            Double height1 = Math.Abs(length * Math.Sin(radianAngle + beta));
+            Double height2 = Math.Abs(length * Math.Sin(radianAngle - beta));
+            Double width1 = Math.Abs(length * Math.Cos(radianAngle + beta));
+            Double width2 = Math.Abs(length * Math.Cos(radianAngle - beta));
+
+            _height = Math.Max(height1, height2);
+
+            _width = Math.Max(width1, width2);
+
+        }
+
+        private Double GetRadians(Double angle)
+        {
+            return angle * Math.PI / 180;
+        }
+
+        private Double GetAngle(Double angle)
+        {
+            Double newAngle = angle;
+
+            while (newAngle < 0) { newAngle += 360; }
+
+            return newAngle;
+        }
+
+        #endregion Internal Methods
 
         #region Protected Methods
 
-        protected override void SetDefaults()
+        private void SetDefaults()
         {
-            base.SetDefaults();
 
             _textBlock = new TextBlock();
-
-            this.Children.Add(_textBlock);
 
             Angle = 0;
             
@@ -361,14 +407,14 @@ namespace Visifire.Charts
 
         #region Data
 
-        private Double _position;
-        private Double _angle;
         private Double _left;
         private Double _top;
-        
-        private RotateTransform _rt;
-
-        internal TextBlock _textBlock;
+        private Double _angle;
+        private Double _height;
+        private Double _width;
+        private TextBlock _textBlock = new TextBlock();
+        private TransformGroup _transformGroup = new TransformGroup();
+        private RotateTransform _rotateTransform = new RotateTransform();
 
         #endregion Data
     }

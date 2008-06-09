@@ -61,8 +61,8 @@ namespace Visifire.Commons
             else if (limitTop > top) toolTipTop = limitTop + 30;
             else if (limitBottom < top) toolTipTop = limitBottom;
 
-            this.SetValue(TopProperty, toolTipTop);
-            _textBlock.SetValue(TopProperty, _padding);
+            this.SetValue(TopProperty, (Double) toolTipTop);
+            _textBlock.SetValue(TopProperty, (Double) _padding);
 
         }
 
@@ -79,8 +79,8 @@ namespace Visifire.Commons
             else if (limitLeft > left) toolTipLeft = limitLeft;
             else if (limitRight < left) toolTipLeft = limitRight;
 
-            this.SetValue(LeftProperty, toolTipLeft);
-            _textBlock.SetValue(LeftProperty, _padding);
+            this.SetValue(LeftProperty, (Double) toolTipLeft);
+            _textBlock.SetValue(LeftProperty, (Double) _padding);
         }
 
         public override void SetHeight()
@@ -106,8 +106,8 @@ namespace Visifire.Commons
             _textBlock.RenderTransform = rt;
             this.Width = _textBlock.ActualHeight + _padding * 2;
             this.Height = _textBlock.ActualWidth + _padding * 2;
-            _textBlock.SetValue(TopProperty, _textBlock.ActualWidth);
-            _textBlock.SetValue(LeftProperty, _padding);
+            _textBlock.SetValue(TopProperty, (Double) _textBlock.ActualWidth);
+            _textBlock.SetValue(LeftProperty, (Double) _padding);
             ApplyBorder();
 
         }
@@ -117,8 +117,8 @@ namespace Visifire.Commons
             _textBlock.RenderTransform = null;
             this.Width = _textBlock.ActualWidth + _padding * 2;
             this.Height = _textBlock.ActualHeight + _padding * 2;
-            _textBlock.SetValue(TopProperty, _padding);
-            _textBlock.SetValue(LeftProperty, _padding);
+            _textBlock.SetValue(TopProperty, (Double)  _padding);
+            _textBlock.SetValue(LeftProperty, (Double) _padding);
             ApplyBorder();
 
         }

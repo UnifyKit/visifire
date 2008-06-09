@@ -46,8 +46,8 @@ namespace Visifire.Commons
         public override void Init()
         {
             base.Init();
-            _textBlock.SetValue(TopProperty, 0);
-            _textBlock.SetValue(LeftProperty, 0);
+            _textBlock.SetValue(TopProperty, (Double) 0);
+            _textBlock.SetValue(LeftProperty, (Double) 0);
 
             _textBlock.Tag = this.Name;
 
@@ -64,15 +64,15 @@ namespace Visifire.Commons
             {
                 rt.Angle = -90;
                 _textBlock.RenderTransform = rt;
-                _textBlock.SetValue(TopProperty, _textBlock.ActualWidth);
-                _textBlock.SetValue(LeftProperty, 0);
+                _textBlock.SetValue(TopProperty, (Double) _textBlock.ActualWidth);
+                _textBlock.SetValue(LeftProperty, (Double)  0);
             }
             else if (!DockInsidePlotArea && AlignmentX == AlignmentX.Right && AlignmentY == AlignmentY.Center)
             {
                 rt.Angle = +90;
                 _textBlock.RenderTransform = rt;
-                _textBlock.SetValue(LeftProperty, _textBlock.ActualHeight);
-                _textBlock.SetValue(TopProperty, 0);
+                _textBlock.SetValue(LeftProperty, (Double) _textBlock.ActualHeight);
+                _textBlock.SetValue(TopProperty, (Double) 0);
                 
             }
 
@@ -292,26 +292,9 @@ namespace Visifire.Commons
                 System.Diagnostics.Debug.WriteLine("Text wrap value is invalid, must be between (0 - 1)");
                 throw (new Exception("Invalid TextWrap value"));
             }
-            if (!DockInsidePlotArea)
-            {
-                if ((AlignmentX == AlignmentX.Left || AlignmentX == AlignmentX.Right) && (AlignmentY == AlignmentY.Center))
-                {
-                    _textBlock.Width = WrapSize * TextWrap;
-                    _textBlock.TextWrapping = TextWrapping.Wrap;
-
-                }
-                else
-                {
-                    _textBlock.Width = WrapSize * TextWrap;
-                    _textBlock.TextWrapping = TextWrapping.Wrap;
-                }
-            }
-            else
-            {
-                _textBlock.Width = WrapSize * TextWrap;
-                _textBlock.TextWrapping = TextWrapping.Wrap;
-
-            }
+            
+            _textBlock.Width = WrapSize * TextWrap;
+            _textBlock.TextWrapping = TextWrapping.Wrap;
 
         }
 

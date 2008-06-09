@@ -254,7 +254,7 @@ namespace Visifire.Charts
                         tempTop += childHeight;
                         if (tempTop > top) top = tempTop;
                     }
-                    this.SetValue(TopProperty, top);
+                    this.SetValue(TopProperty, (Double) top);
                     break;
                 case AlignmentY.Bottom:
                     if (!DockInsidePlotArea)
@@ -630,8 +630,8 @@ namespace Visifire.Charts
                                         marker.Width = size;
                                         marker.Height = size;
                                         marker.Size = size / 2;
-                                        marker.SetValue(LeftProperty, marker.Size / 2);
-                                        marker.SetValue(TopProperty, marker.Size / 2);
+                                        marker.SetValue(LeftProperty, (Double) ( marker.Size / 2));
+                                        marker.SetValue(TopProperty, (Double) marker.Size / 2);
                                         marker.SetValue(ZIndexProperty, (Int32)line.GetValue(ZIndexProperty) + 1);
                                     }
                                     linemarker.Width = size;
@@ -864,8 +864,8 @@ namespace Visifire.Charts
                                     marker.Width = size;
                                     marker.Height = size;
                                     marker.Size = size/2;
-                                    marker.SetValue(LeftProperty, lineLength / 2- marker.Size/2);
-                                    marker.SetValue(TopProperty, marker.Size / 2);
+                                    marker.SetValue(LeftProperty, (Double) ( lineLength / 2- marker.Size/2));
+                                    marker.SetValue(TopProperty, (Double) ( marker.Size / 2));
                                     marker.SetValue(ZIndexProperty, (Int32)line.GetValue(ZIndexProperty) + 1);
                                 }
                                 linemarker.Width =lineLength;

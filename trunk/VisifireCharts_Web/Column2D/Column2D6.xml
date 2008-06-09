@@ -1,34 +1,24 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" AnimationType="Type2" View3D="False" Width="500" Height="300" >
+Theme="Theme1" AnimationType="Type2">
 
-  <vc:Title Text="Visifire Multiseries 2D Column Chart"/>
+  <vc:Title Text="Search Engine Market Share"/>
+  <vc:AxisY Title="Market Share Percentage" Suffix="%"/>
+  <vc:AxisY AxisType="Secondary" Title="Query Volume (millions)"/>
 
-  <vc:DataSeries RenderAs="Column" Bevel="False">
-    <vc:DataPoint AxisLabel="2/9/2007" YValue="60"/>
-    <vc:DataPoint AxisLabel="2/10/2007" YValue="30"/>
-    <vc:DataPoint AxisLabel="2/11/2007" YValue="68"/>
-    <vc:DataPoint AxisLabel="2/12/2008" YValue="75"/>
-    <vc:DataPoint AxisLabel="2/1/2008" YValue="90"/>
-    <vc:DataPoint AxisLabel="2/2/2008" YValue="50"/>
+  <vc:DataSeries Name="Market Share" RenderAs="Column" Bevel="False" ToolTipText="#AxisLabel, MarketShare: #YValue">
+    <vc:DataPoint AxisLabel="Google" YValue="68.6"/>
+    <vc:DataPoint AxisLabel="Yahoo" YValue="16.7"/>
+    <vc:DataPoint AxisLabel="MSN/Live" YValue="8.7"/>
+    <vc:DataPoint AxisLabel="Ask" YValue="3.7"/>
+    <vc:DataPoint AxisLabel="AOL" YValue="1.7"/>
   </vc:DataSeries>
 
-  <vc:DataSeries RenderAs="Column" Bevel="False">
-    <vc:DataPoint YValue="45"/>
-    <vc:DataPoint YValue="40"/>
-    <vc:DataPoint YValue="50"/>
-    <vc:DataPoint YValue="90"/>
-    <vc:DataPoint YValue="70"/>
-    <vc:DataPoint YValue="80"/>
-  </vc:DataSeries>
-
-  <vc:DataSeries RenderAs="Column" Bevel="False">
-    <vc:DataPoint YValue="40"/>
-    <vc:DataPoint YValue="55"/>
-    <vc:DataPoint YValue="80"/>
-    <vc:DataPoint YValue="50"/>
-    <vc:DataPoint YValue="50"/>
-    <vc:DataPoint YValue="66"/>
+  <vc:DataSeries Name="Query Volume" RenderAs="Column" Bevel="False" AxisYType="Secondary" ToolTipText="#AxisLabel, Query Volume: #YValue">
+    <vc:DataPoint YValue="5886"/>
+    <vc:DataPoint YValue="1430"/>
+    <vc:DataPoint YValue="743"/>
+    <vc:DataPoint YValue="298"/>
+    <vc:DataPoint YValue="137"/>
   </vc:DataSeries>
 
 </vc:Chart>
-

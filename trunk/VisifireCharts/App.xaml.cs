@@ -81,13 +81,13 @@ namespace VisifireCharts
             if (e.InitParams.ContainsKey("width"))
             {   
                 if(!e.InitParams["width"].Contains("%"))
-                    chartWidth = Double.Parse(e.InitParams["width"]);
+                    chartWidth = Double.Parse(e.InitParams["width"], CultureInfo.InvariantCulture);
             }
 
             if (e.InitParams.ContainsKey("height"))
             {
                 if (!e.InitParams["height"].Contains("%"))
-                    chartHeight = Double.Parse(e.InitParams["height"]);
+                    chartHeight = Double.Parse(e.InitParams["height"], CultureInfo.InvariantCulture);
             }
 
             if (e.InitParams.ContainsKey("EventDispatcher"))
@@ -123,7 +123,7 @@ namespace VisifireCharts
                 if (!String.IsNullOrEmpty(dataUri))
                 {   
                     webclient = new System.Net.WebClient();
-                    webclient.BaseAddress = new Uri(baseUri);
+                    webclient.BaseAddress = baseUri;
 
                     webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
 
@@ -183,10 +183,10 @@ namespace VisifireCharts
             canvasXaml += "xmlns=\"http://schemas.microsoft.com/client/2007\"";
 
             if (!Double.IsNaN(chartWidth))
-                canvasXaml += " Width=\"" + chartWidth.ToString() + "\"";
+                canvasXaml += " Width=\"" + chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
 
             if (!Double.IsNaN(chartHeight))
-                canvasXaml += " Height=\"" + chartHeight.ToString() + "\"";
+                canvasXaml += " Height=\"" + chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
 
             canvasXaml += ">\n";
 
@@ -295,13 +295,13 @@ namespace VisifireCharts
                 if (jsEvents.ContainsKey("AxisY"))
                 {
                     if (jsEvents["AxisY"].Contains("MouseEnter"))
-                        chart.AxisY.MouseEnter += delegate(object sender, MouseEventArgs e)
+                        chart.AxisYPrimary.MouseEnter += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseEnter");
                         };
                         
                     if (jsEvents["AxisY"].Contains("MouseLeave"))
-                        chart.AxisY.MouseLeave += delegate(object sender, MouseEventArgs e)
+                        chart.AxisYPrimary.MouseLeave += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseLeave");
                         };

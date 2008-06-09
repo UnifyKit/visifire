@@ -25,10 +25,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Globalization;
 using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    public enum AxisType { Primary, Secondary }
+
     public abstract class Axes : VisualObject
     {
         #region Public Methods
@@ -66,11 +69,19 @@ namespace Visifire.Charts
                     if (this.GetType().Name == "AxisX")
                         this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength + PlankThickness + _parent.Padding;
                     else
-                        this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _parent.AxisX.MajorTicks.TickLength;
+                    {
+                        if(AxisType == AxisType.Primary)
+                            this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _parent.AxisX.MajorTicks.TickLength;
+                        else
+                            this.Width = MajorTicks.TickLength / 2 + AxisLabels.Width + ((_titleTextBlock.Text.Length==0)? 0 :_titleTextBlock.ActualHeight);
+                    }
                 }
                 else
                 {
-                    this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + _majorTicks.TickLength;
+                    if (AxisType == AxisType.Primary)
+                        this.Width = (Double)AxisLabels.GetValue(LeftProperty) + AxisLabels.Width + MajorTicks.TickLength;
+                    else
+                        this.Width = MajorTicks.TickLength / 2 + AxisLabels.Width + ((_titleTextBlock.Text.Length == 0) ? 0 : _titleTextBlock.ActualHeight);
                 }
             }
             else if (AxisOrientation == AxisOrientation.Column)
@@ -103,7 +114,12 @@ namespace Visifire.Charts
                     if (this.GetType().Name == "AxisX")
                         this.Height = AxisLabels.Height + _majorTicks.TickLength + PlankThickness;
                     else
-                        this.Height = (Double)AxisLabels.GetValue(TopProperty) + AxisLabels.Height + _parent.Padding;
+                    {
+                        if(AxisType == AxisType.Primary)
+                            this.Height = (Double)AxisLabels.GetValue(TopProperty) + AxisLabels.Height + _parent.Padding;
+                        else
+                            this.Height = AxisLabels.Height + _majorTicks.TickLength / 2;
+                    }
                 }
                 else
                 {
@@ -125,15 +141,22 @@ namespace Visifire.Charts
             {
                 Double tempLeft = _parent.Padding;
 
-                SetValue(LeftProperty, _parent._innerBounds.Left);
+                if (AxisType == AxisType.Primary)
+                {
+                    SetValue(LeftProperty, _parent._innerBounds.Left);
 
-                // if there is overflow due to long labels then adjust position accordingly
-                if (_parent.LabelPaddingLeft > (Double)this.GetValue(LeftProperty) + (Double)this.GetValue(WidthProperty))
-                    this.SetValue(LeftProperty, _parent.LabelPaddingLeft - (Double)this.GetValue(WidthProperty) + _parent.Padding);
+                    // if there is overflow due to long labels then adjust position accordingly
+                    if (_parent.LabelPaddingLeft > (Double)this.GetValue(LeftProperty) + (Double)this.Width)
+                        this.SetValue(LeftProperty, (Double) ( _parent.LabelPaddingLeft - (Double)this.Width + _parent.Padding));
+                }
+                else
+                {
+                    SetValue(LeftProperty, _parent._innerBounds.Right - this.Width - _parent.Padding);
+                }
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-                this.SetValue(LeftProperty, _parent.PlotArea.GetValue(LeftProperty));
+                this.SetValue(LeftProperty, (Double) _parent.PlotArea.GetValue(LeftProperty));
 
             }
         }
@@ -147,20 +170,26 @@ namespace Visifire.Charts
 
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                this.SetValue(TopProperty, _parent.PlotArea.GetValue(TopProperty));
-
+                
+                this.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
+                
                 // if there is overflow due to long labels then adjust position accordingly
                 if (_parent.LabelPaddingTop > (Double)this.GetValue(TopProperty))
-                    this.SetValue(TopProperty, _parent.LabelPaddingTop);
+                    this.SetValue(TopProperty, (Double) _parent.LabelPaddingTop);
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-
-                SetValue(TopProperty, _parent._innerBounds.Bottom - Height - _parent.Padding);
-
+                if (AxisType == AxisType.Secondary)
+                {
+                    SetValue(TopProperty, _parent._innerBounds.Top);
+                }
+                else
+                {
+                    SetValue(TopProperty, _parent._innerBounds.Bottom - Height - _parent.Padding);
+                }
                 // if there is overflow due to long labels then adjust position accordingly
                 if (_parent.LabelPaddingBottom > (_parent.Height - (Double)this.GetValue(TopProperty)))
-                    this.SetValue(TopProperty, tempTop - _parent.LabelPaddingBottom - _parent.Padding);
+                    this.SetValue(TopProperty, (Double) ( tempTop - _parent.LabelPaddingBottom - _parent.Padding));
             }
 
         }
@@ -223,6 +252,7 @@ namespace Visifire.Charts
             // if user has given interval then apply it
             if (Interval > 0)
                 AxisManager.Interval = (Decimal)Interval;
+            
 
             // apply current IncludeZero setting
             AxisManager.IncludeZero = IncludeZero;
@@ -239,8 +269,28 @@ namespace Visifire.Charts
             AxisManager.Calculate();
 
             // Settings specific to axis y
-            if (this.GetType().Name == "AxisY")
+            if (this.GetType().Name == "AxisY" && AxisType == AxisType.Primary)
             {
+                AxisMinimum = (Double)AxisManager.GetAxisMinimumValue();
+                AxisMaximum = (Double)AxisManager.GetAxisMaximumValue();
+
+            }
+            else if (AxisType == AxisType.Secondary && this.GetType().Name == "AxisY")
+            {
+                if (Double.IsNaN(_interval))
+                {
+                    // number of interval in the primary axis
+                    Double primaryAxisIntervalCount = (_parent.AxisYPrimary.AxisMaximum - _parent.AxisYPrimary.AxisMinimum) / _parent.AxisYPrimary.Interval;
+
+                    AxisManager.AxisMinimumValue = AxisManager.GetAxisMinimumValue();
+                    AxisManager.AxisMaximumValue = AxisManager.GetAxisMaximumValue();
+
+                    // This interval will reflect the interval in primary axis it is not same as that of primary axis
+                    AxisManager.Interval = (AxisManager.GetAxisMaximumValue() - AxisManager.GetAxisMinimumValue()) / (Decimal)primaryAxisIntervalCount;
+
+                    AxisManager.Calculate();
+                }
+
                 AxisMinimum = (Double)AxisManager.GetAxisMinimumValue();
                 AxisMaximum = (Double)AxisManager.GetAxisMaximumValue();
             }
@@ -462,20 +512,13 @@ namespace Visifire.Charts
                     String[] sets = pairs[i].Split(',');
                     if (sets.Length != 2) continue;
 
-                    parsedValue = Double.Parse(sets[0]);
+                    parsedValue = Double.Parse(sets[0],CultureInfo.InvariantCulture);
                     _scaleValues.Add(parsedValue * scale);
                     _scaleUnits.Add(sets[1]);
                     scale *= parsedValue;
                     
                 }
-                ScalingEnabled = true;
             }
-        }
-
-        public Boolean ScalingEnabled
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -575,6 +618,17 @@ namespace Visifire.Charts
             }
         }
 
+        public AxisType AxisType
+        {
+            get
+            {
+                return _axisType;
+            }
+            set
+            {
+                _axisType = value;
+            }
+        }
         #endregion Public Properties
 
         #region Internal Properties
@@ -732,7 +786,9 @@ namespace Visifire.Charts
             Interval = Double.NaN;
             AxisMaximum = Double.NaN;
             AxisMinimum = Double.NaN;
-            
+
+            _axisType = AxisType.Primary;
+
             _labelAngle = Double.NaN;
             
             _titleFontSize = Double.NaN;
@@ -845,6 +901,10 @@ namespace Visifire.Charts
                     MajorTicks.TickLength = (h > w ? w : h) * (verticalDepthFactor * _parent.Count);
                     PlankThickness = (h > w ? w : h) * (verticalThicknessFactor);
                 }
+
+                //if(_parent.Depth > 0)
+                //    MajorTicks.TickLength = _parent.Depth * _parent.Count;
+
             }
         }
 
@@ -905,7 +965,7 @@ namespace Visifire.Charts
         internal String GetFormattedText(Double value)
         {
             String str = value.ToString();
-            if (ScalingEnabled && _scaleValues.Count>0 && _scaleUnits.Count>0 )
+            if ( _scaleValues.Count>0 && _scaleUnits.Count>0 )
             {
                 Double sValue = _scaleValues[0];
                 String sUnit = _scaleUnits[0];
@@ -1012,11 +1072,22 @@ namespace Visifire.Charts
 
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                rt.Angle = -90;
-                _titleTextBlock.RenderTransform = rt;
+                if (AxisType == AxisType.Primary)
+                {
+                    rt.Angle = -90;
+                    _titleTextBlock.RenderTransform = rt;
 
-                _titleTextBlock.SetValue(TopProperty, (Double)this.GetValue(HeightProperty) / 2 + _titleTextBlock.ActualWidth / 2 + offset);
-                _titleTextBlock.SetValue(LeftProperty, 0);
+                    _titleTextBlock.SetValue(TopProperty, (Double) ( this.Height / 2 + _titleTextBlock.ActualWidth / 2 ));
+                    _titleTextBlock.SetValue(LeftProperty, (Double) 0);
+                }
+                else
+                {
+                    rt.Angle = 90;
+                    _titleTextBlock.RenderTransform = rt;
+
+                    _titleTextBlock.SetValue(TopProperty, (Double) ( this.Height/2 - _titleTextBlock.ActualWidth / 2));
+                    _titleTextBlock.SetValue(LeftProperty, (Double) this.Width);
+                }
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
@@ -1024,8 +1095,17 @@ namespace Visifire.Charts
                 _titleTextBlock.RenderTransform = rt;
 
                 _titleTextBlock.Margin = new Thickness(0);
-                _titleTextBlock.SetValue(TopProperty, this.Height - _titleTextBlock.ActualHeight);
-                _titleTextBlock.SetValue(LeftProperty, this.Width / 2 - _titleTextBlock.ActualWidth / 2);
+
+                if (AxisType == AxisType.Primary)
+                {
+                    _titleTextBlock.SetValue(TopProperty, (Double) ( this.Height - _titleTextBlock.ActualHeight));
+                    _titleTextBlock.SetValue(LeftProperty, (Double) ( this.Width / 2 - _titleTextBlock.ActualWidth / 2));
+                }
+                else
+                {
+                    _titleTextBlock.SetValue(TopProperty, (Double) 0);
+                    _titleTextBlock.SetValue(LeftProperty, (Double) ( this.Width / 2 - _titleTextBlock.ActualWidth / 2));
+                }
 
             }
         }
@@ -1047,17 +1127,37 @@ namespace Visifire.Charts
         {
             if (AxisOrientation == AxisOrientation.Bar)
             {
-                _line.X1 = 0 + (Double)this.GetValue(WidthProperty);
-                _line.X2 = 0 + (Double)this.GetValue(WidthProperty);
-                _line.Y1 = 0;
-                _line.Y2 = (Double)this.GetValue(HeightProperty);
+                if (AxisType == AxisType.Primary)
+                {
+                    _line.X1 = this.Width;
+                    _line.X2 = this.Width;
+                    _line.Y1 = 0;
+                    _line.Y2 = this.Height;
+                }
+                else
+                {
+                    _line.X1 = 0;
+                    _line.X2 = 0;
+                    _line.Y1 = 0;
+                    _line.Y2 = this.Height;
+                }
             }
             else if (AxisOrientation == AxisOrientation.Column)
             {
-                _line.X1 = 0;
-                _line.X2 = 0 + (Double)this.GetValue(WidthProperty);
-                _line.Y1 = 0;
-                _line.Y2 = 0;
+                if (AxisType == AxisType.Primary)
+                {
+                    _line.X1 = 0;
+                    _line.X2 = this.Width;
+                    _line.Y1 = 0;
+                    _line.Y2 = 0;
+                }
+                else
+                {
+                    _line.X1 = 0;
+                    _line.X2 = this.Width;
+                    _line.Y1 = this.Height;
+                    _line.Y2 = this.Height;
+                }
 
             }
 
@@ -1114,7 +1214,7 @@ namespace Visifire.Charts
         #endregion Internal Methods
 
         #region Data
-
+        private AxisType _axisType;
         private Double _interval;
         internal Double _labelAngle;
         private Double _maxDataValue;

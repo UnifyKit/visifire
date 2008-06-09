@@ -22,6 +22,7 @@
 using System;
 using System.Windows;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Visifire.Commons
 {
@@ -159,7 +160,7 @@ namespace Visifire.Commons
             Double k = Math.Abs(n);
             Double r = Math.Round(k * 100);
             Double b = Math.Floor(r / 5);
-            Double t = Double.Parse((r - b * 5).ToString());
+            Double t = Double.Parse((r - b * 5).ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
             Double m = (t > 2) ? b * 5 + 5 : b * 5;
             return s * (m / 100);
         }

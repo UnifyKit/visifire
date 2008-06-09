@@ -72,7 +72,7 @@ namespace Visifire.Charts
 
         public override void SetLeft()
         {
-            this.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty));
+            this.SetValue(LeftProperty, (Double) _parent.PlotArea.GetValue(LeftProperty));
 
 
         }
@@ -271,9 +271,19 @@ namespace Visifire.Charts
                     if (_parent.View3D)
                     {
                         if (RenderAs.ToUpper() == "STACKEDAREA")
-                            chType = (Int32)Surface3DCharts.StackedArea;
+                        {
+                            if (AxisYType == AxisType.Primary)
+                                chType = (Int32)Surface3DCharts.StackedAreaPrimary;
+                            else
+                                chType = (Int32)Surface3DCharts.StackedAreaSecondary;
+                        }
                         else
-                            chType = (Int32)Surface3DCharts.StackedArea100;
+                        {
+                            if (AxisYType == AxisType.Primary)
+                                chType = (Int32)Surface3DCharts.StackedArea100Primary;
+                            else
+                                chType = (Int32)Surface3DCharts.StackedArea100Secondary;
+                        }
 
                         _drawingCanvas = CreateAndInitialize3DDrawingCanvas(chType);
 
@@ -309,6 +319,18 @@ namespace Visifire.Charts
         #endregion Public Methods
 
         #region Public Properties
+
+        public AxisType AxisYType
+        {
+            get
+            {
+                return _axisYType;
+            }
+            set
+            {
+                _axisYType = value;
+            }
+        }
 
         public String XValueFormatString
         {
@@ -411,7 +433,7 @@ namespace Visifire.Charts
                 String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
 
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
-                imgBrush.ImageFailed += new ExceptionRoutedEventHandler(imgBrush_ImageFailed);
+                imgBrush.ImageFailed +=new EventHandler<ExceptionRoutedEventArgs>(imgBrush_ImageFailed);
                 _background = imgBrush;
             }
         }
@@ -1067,7 +1089,8 @@ namespace Visifire.Charts
 
             _startAngle = 0;
 
-            
+            _axisYType = AxisType.Primary;
+
             ShadowSize = 6;
             
             _borderRectangle.Stroke = new SolidColorBrush(Colors.Black);
@@ -1102,7 +1125,7 @@ namespace Visifire.Charts
         {
             Int32 i;
             Double OffsetX=0, OffsetY=0;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["point" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList[this.Name] - (_parent.Count == 0 ? 0 : 1));
             Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
 
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
@@ -1117,8 +1140,8 @@ namespace Visifire.Charts
             {
                 if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
 
-                DataPoints[i].SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + OffsetX);
-                DataPoints[i].SetValue(TopProperty, _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + OffsetY);
+                DataPoints[i].SetValue(LeftProperty, (Double) ( _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + OffsetX));
+                DataPoints[i].SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + OffsetY));
                 DataPoints[i].Width = 1;
                 DataPoints[i].Height = 1;
 
@@ -1131,7 +1154,7 @@ namespace Visifire.Charts
                 DataPoints[i].PlaceMarker((Int32) GetValue(ZIndexProperty) + 20);
 
                 if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i],depth);
+                    DataPoints[i].AttachLabel(DataPoints[i],depth,DataPoints[i].ZIndex);
             }
 
             
@@ -1162,7 +1185,7 @@ namespace Visifire.Charts
             Double slope = (maxSize - minSize) / (maxZ - minZ);
             Double intercept = minSize - minZ * slope;
             Double offsetX=0, offsetY=0;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["bubble" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList[this.Name] - (_parent.Count == 0 ? 0 : 1));
             Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
 
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
@@ -1178,8 +1201,8 @@ namespace Visifire.Charts
             {
                 if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
 
-                DataPoints[i].SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - offsetX);
-                DataPoints[i].SetValue(TopProperty, _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + offsetY);
+                DataPoints[i].SetValue(LeftProperty, (Double) ( _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - offsetX));
+                DataPoints[i].SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + offsetY));
                 DataPoints[i].Width = 1;
                 DataPoints[i].Height = 1;
 
@@ -1212,7 +1235,7 @@ namespace Visifire.Charts
                 DataPoints[i].PlaceMarker((Int32)GetValue(ZIndexProperty) + 20);
 
                 if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i],0);
+                    DataPoints[i].AttachLabel(DataPoints[i], 0, DataPoints[i].ZIndex);
             }
         }
 
@@ -1806,8 +1829,8 @@ namespace Visifire.Charts
                 Ellipse lighting = new Ellipse();
                 lighting.Width = radius * 2;
                 lighting.Height = radius * 2;
-                lighting.SetValue(LeftProperty, startPos.X - radius);
-                lighting.SetValue(TopProperty, startPos.Y - radius);
+                lighting.SetValue(LeftProperty, (Double) ( startPos.X - radius));
+                lighting.SetValue(TopProperty, (Double) ( startPos.Y - radius));
                 gradient = "0.5;0.5;";
                 gradient += "#00000000,0;";
                 gradient += "#22000000,0.7;";
@@ -1868,8 +1891,8 @@ namespace Visifire.Charts
                 Ellipse lighting = new Ellipse();
                 lighting.Width = radius * 2;
                 lighting.Height = radius * 2;
-                lighting.SetValue(LeftProperty, startPos.X - radius);
-                lighting.SetValue(TopProperty, startPos.Y - radius);
+                lighting.SetValue(LeftProperty, (Double) ( startPos.X - radius));
+                lighting.SetValue(TopProperty, (Double) ( startPos.Y - radius));
                 gradient = "0.5;0.5;";
                 gradient += "#00000000,0;";
                 gradient += "#22000000,0.7;";
@@ -2176,7 +2199,7 @@ namespace Visifire.Charts
 
             Storyboard.SetTarget(doubleAnimation, target);
 
-            Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
+            Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(targetProperty));
 
             SplineDoubleKeyFrame splineKeyframe = new SplineDoubleKeyFrame();
 
@@ -2198,12 +2221,12 @@ namespace Visifire.Charts
             Spline.ControlPoint2 = new Point(0.75, 1);
             splineKeyframe.KeySpline = Spline;
             doubleAnimation.KeyFrames.Add(splineKeyframe);
-            
-            this.Resources.Add(storyboard);
+
+            this.Resources.Add(storyboard.GetHashCode().ToString(), storyboard);
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove(sender as Storyboard);
+                this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
             };
 
             return storyboard;
@@ -2606,8 +2629,8 @@ namespace Visifire.Charts
                     Ellipse lighting = new Ellipse();
                     lighting.Width = radius * 2;
                     lighting.Height = radius * 2;
-                    lighting.SetValue(LeftProperty, centerX - radius);
-                    lighting.SetValue(TopProperty, centerY - radius);
+                    lighting.SetValue(LeftProperty, (Double) ( centerX - radius));
+                    lighting.SetValue(TopProperty, (Double) ( centerY - radius));
                     gradient = "0.5;0.5;";
                     gradient += "#00000000,0;";
                     gradient += "#22000000,0.7;";
@@ -2846,8 +2869,8 @@ namespace Visifire.Charts
                     Ellipse lighting = new Ellipse();
                     lighting.Width = radius * 2;
                     lighting.Height = radius * 2;
-                    lighting.SetValue(LeftProperty, centerX - radius);
-                    lighting.SetValue(TopProperty, centerY - radius);
+                    lighting.SetValue(LeftProperty, (Double) ( centerX - radius));
+                    lighting.SetValue(TopProperty, (Double)( centerY - radius));
                     gradient = "0.5;0.5;";
                     gradient += "#00000000,0;";
                     gradient += "#7F000000,0.5;";
@@ -4143,141 +4166,141 @@ namespace Visifire.Charts
 
         private void PlotStackedArea()
         {
-            Int32 i;
+            Int32 index;
             Double height = 0;
 
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedarea"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
             Point[] points = new Point[4]; // Points for the Plolygon
             Double labeldepth = (depth + initialDepth);
             
-            for (i = 0; i < 4; i++) points[i] = new Point();
+            for (index = 0; index < 4; index++) points[index] = new Point();
 
-            if (Index == 0)
+            if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            for (i = 0; i < _areas.Length; i++)
+            for (index = 0; index < _areas.Length; index++)
             {
                 //Ignore current datapoint
-                if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
+                if (Double.IsNaN(DataPoints[index].CorrectedYValue)) continue;
                 
 
                 if (_parent.View3D)
                 {
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (depth + initialDepth);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue) - (depth + initialDepth);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) - (depth + initialDepth);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue) - (depth + initialDepth);
                     points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (depth + initialDepth);
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) - (depth + initialDepth);
                 }
                 else
                 {
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) ;
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) ;
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue);
                     points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) ;
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) ;
                 }
 
 
-                points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue);
-                points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].CorrectedYValue);
-                points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0);
+                points[0].Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue);
+                points[1].Y = AxisY.DoubleToPixel(DataPoints[index + 1].CorrectedYValue);
+                points[2].Y = AxisY.DoubleToPixel(AxisY.AxisMinimum > 0 ? AxisY.AxisMinimum : 0);
                 points[3].Y = points[2].Y;
 
 
-                if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                 {
                     height = (points[3].Y - points[0].Y);
 
-                    points[3].Y = Plot.TopBottom[DataPoints[i].XValue].Y;
+                    points[3].Y = Plot.TopBottom[DataPoints[index].XValue].Y;
                     points[0].Y = points[3].Y - height;
 
-                    Plot.TopBottom[DataPoints[i].XValue] = new Point(0, points[0].Y);
+                    Plot.TopBottom[DataPoints[index].XValue] = new Point(0, points[0].Y);
                 }
                 else
                 {
-                    Plot.TopBottom[DataPoints[i].XValue] = new Point(0, points[0].Y);
+                    Plot.TopBottom[DataPoints[index].XValue] = new Point(0, points[0].Y);
                 }
 
                 // Ignore the next data point, also skip drawing the area
-                if (Double.IsNaN(DataPoints[i + 1].CorrectedYValue))
+                if (Double.IsNaN(DataPoints[index + 1].CorrectedYValue))
                 {
-                    i++;
+                    index++;
                     continue;
                 }
 
 
-                if (Plot.TopBottom.ContainsKey(DataPoints[i + 1].XValue))
+                if (Plot.TopBottom.ContainsKey(DataPoints[index + 1].XValue))
                 {
                     height = (points[2].Y - points[1].Y);
 
-                    points[2].Y = Plot.TopBottom[DataPoints[i + 1].XValue].Y;
+                    points[2].Y = Plot.TopBottom[DataPoints[index + 1].XValue].Y;
                     points[1].Y = points[2].Y - height;
 
-                    if (DataPoints[i].Index == DataPoints.Count - 2)
-                        Plot.TopBottom[DataPoints[i + 1].XValue] = new Point(0, points[1].Y);
+                    if (DataPoints[index].Index == DataPoints.Count - 2)
+                        Plot.TopBottom[DataPoints[index + 1].XValue] = new Point(0, points[1].Y);
                 }
                 else
                 {
-                    if (DataPoints[i].Index == DataPoints.Count - 2)
-                        Plot.TopBottom[DataPoints[i + 1].XValue] = new Point(0, points[1].Y);
+                    if (DataPoints[index].Index == DataPoints.Count - 2)
+                        Plot.TopBottom[DataPoints[index + 1].XValue] = new Point(0, points[1].Y);
                 }
 
 
-                DataPoints[i].Width = 1;
-                DataPoints[i].Height = 1;
+                DataPoints[index].Width = 1;
+                DataPoints[index].Height = 1;
                 if (!_parent.View3D)
                 {
 
-                    DataPoints[i].SetValue(LeftProperty, points[0].X);
-                    DataPoints[i + 1].SetValue(LeftProperty, points[1].X);
+                    DataPoints[index].SetValue(LeftProperty, (Double) points[0].X);
+                    DataPoints[index + 1].SetValue(LeftProperty, (Double) points[1].X);
 
-                    DataPoints[i].SetValue(TopProperty, points[0].Y);
-                    DataPoints[i + 1].SetValue(TopProperty, points[1].Y);
+                    DataPoints[index].SetValue(TopProperty, (Double) points[0].Y);
+                    DataPoints[index + 1].SetValue(TopProperty, (Double) points[1].Y);
 
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    Double left = (Double)DataPoints[i].GetValue(LeftProperty);
-                    Double top = (Double)DataPoints[i].GetValue(TopProperty);
-                    DataPoints[i].points.Add(new Point(points[0].X - left, points[0].Y - top));
-                    DataPoints[i].points.Add(new Point(points[1].X - left, points[1].Y - top));
-                    DataPoints[i].points.Add(new Point(points[2].X - left, points[2].Y - top));
-                    DataPoints[i].points.Add(new Point(points[3].X - left, points[3].Y - top));
+                    Double left = (Double)DataPoints[index].GetValue(LeftProperty);
+                    Double top = (Double)DataPoints[index].GetValue(TopProperty);
+                    DataPoints[index].points.Add(new Point(points[0].X - left, points[0].Y - top));
+                    DataPoints[index].points.Add(new Point(points[1].X - left, points[1].Y - top));
+                    DataPoints[index].points.Add(new Point(points[2].X - left, points[2].Y - top));
+                    DataPoints[index].points.Add(new Point(points[3].X - left, points[3].Y - top));
 
 
-                    _areas[i].SetValue(TopProperty, -top);
-                    _areas[i].SetValue(LeftProperty, -left);
+                    _areas[index].SetValue(TopProperty, (Double) (-top));
+                    _areas[index].SetValue(LeftProperty, (Double) ( -left));
 
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
+                    if (DataPoints[index].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         String linbrush;
                         linbrush = "-90;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
                         linbrush += ",0;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
                         linbrush += ",1";
-                        _areas[i].Fill = Parser.ParseLinearGradient(linbrush);
+                        _areas[index].Fill = Parser.ParseLinearGradient(linbrush);
                     }
                     else
                     {
-                        _areas[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
                     }
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
 
-                    DataPoints[i].ApplyEventBasedSettings(_areas[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_areas[index]);
 
-                    DataPoints[i].ApplyEffects((Int32)_areas[i].GetValue(ZIndexProperty)+1);
+                    DataPoints[index].ApplyEffects((Int32)_areas[index].GetValue(ZIndexProperty)+1);
                 }
                 else
                 {
                     
 
-                    DataPoints[i].SetValue(LeftProperty, points[0].X);
-                    DataPoints[i + 1].SetValue(LeftProperty, points[1].X);
+                    DataPoints[index].SetValue(LeftProperty, (Double) points[0].X);
+                    DataPoints[index + 1].SetValue(LeftProperty, (Double) points[1].X);
 
-                    DataPoints[i].SetValue(TopProperty, points[0].Y + (depth + initialDepth));
-                    DataPoints[i + 1].SetValue(TopProperty, points[1].Y + (depth + initialDepth));
+                    DataPoints[index].SetValue(TopProperty, (Double) ( points[0].Y + (depth + initialDepth)));
+                    DataPoints[index + 1].SetValue(TopProperty, (Double) ( points[1].Y + (depth + initialDepth)));
 
                     points[0].X += (Double)_parent.PlotArea.GetValue(LeftProperty);
                     points[1].X += (Double)_parent.PlotArea.GetValue(LeftProperty);
@@ -4289,33 +4312,33 @@ namespace Visifire.Charts
                     points[2].Y += (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
                     points[3].Y += (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
 
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-
-
-                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaTops[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-                    _areas[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaShadows[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaTops[i].Opacity = Opacity * DataPoints[i].Opacity;
+                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
 
 
-                    _areaShadows[i].Height = points[2].Y - points[1].Y;
-                    _areaShadows[i].Width = depth;
-                    _areaShadows[i].SetValue(TopProperty, points[1].Y);
-                    _areaShadows[i].SetValue(LeftProperty, points[1].X);
+                    _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaShadows[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaTops[index].StrokeThickness = DataPoints[index].BorderThickness;
+
+                    _areas[index].Opacity = Opacity * DataPoints[index].Opacity;
+                    _areaShadows[index].Opacity = Opacity * DataPoints[index].Opacity;
+                    _areaTops[index].Opacity = Opacity * DataPoints[index].Opacity;
+
+
+                    _areaShadows[index].Height = points[2].Y - points[1].Y;
+                    _areaShadows[index].Width = depth;
+                    _areaShadows[index].SetValue(TopProperty, (Double) points[1].Y);
+                    _areaShadows[index].SetValue(LeftProperty, (Double) points[1].X);
 
                     SkewTransform st1 = new SkewTransform();
                     st1.AngleY = -45;
                     st1.CenterX = 0;
                     st1.CenterY = 0;
                     st1.AngleX = 0;
-                    _areaShadows[i].RenderTransform = st1;
+                    _areaShadows[index].RenderTransform = st1;
 
 
                     points[0].X += depth;
@@ -4327,18 +4350,18 @@ namespace Visifire.Charts
                     points[1].Y -= depth;
 
 
-                    _areaTops[i].Points = Converter.ArrayToCollection(points);
+                    _areaTops[index].Points = Converter.ArrayToCollection(points);
 
                     //This part of the code generates the 3D gradient
                     #region Color Gradient
                     Brush brush2 = null;
                     Brush brushShade = null;
                     Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
+                    Brush tempBrush = DataPoints[index].Background;
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -4354,8 +4377,8 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -4366,7 +4389,7 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "SolidColorBrush")
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         if (LightingEnabled)
                         {
                             String linbrush;
@@ -4400,192 +4423,206 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[i].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[i].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[i].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = Cloner.CloneBrush(brush2);
+                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
+                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
 
-                    _areas[i].SetValue(ZIndexProperty, 10);
-                    _areaShadows[i].SetValue(ZIndexProperty, 5);
-                    _areaTops[i].SetValue(ZIndexProperty, 5);
+                    _areas[index].SetValue(ZIndexProperty, 10);
+                    _areaShadows[index].SetValue(ZIndexProperty, 5);
+                    _areaTops[index].SetValue(ZIndexProperty, 5);
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaShadows[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaTops[i]);
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaShadows[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaTops[index]);
 
-                    DataPoints[i].ApplyEventBasedSettings(_areas[i]);
-                    DataPoints[i].ApplyEventBasedSettings(_areaShadows[i]);
-                    DataPoints[i].ApplyEventBasedSettings(_areaTops[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_areas[index]);
+                    DataPoints[index].ApplyEventBasedSettings(_areaShadows[index]);
+                    DataPoints[index].ApplyEventBasedSettings(_areaTops[index]);
                 }
                 
-                DataPoints[i].PlaceMarker((Int32)_areas[i].GetValue(ZIndexProperty) + 1);
+                DataPoints[index].PlaceMarker((Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i],labeldepth);
+                if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                    DataPoints[index].AttachLabel(DataPoints[index], labeldepth, (Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
             }
-            i = _areas.Length;
+            index = _areas.Length;
 
-            DataPoints[i].Width = 1;
-            DataPoints[i].Height = 1;
+            DataPoints[index].Width = 1;
+            DataPoints[index].Height = 1;
 
-            DataPoints[i].PlaceMarker((Int32)_areas[i - 1].GetValue(ZIndexProperty) + 1);
-
-            if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                DataPoints[i].AttachLabel(DataPoints[i],labeldepth);
-
-            if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedArea])
+            Int32 zIndex = 0;
+            //If data series contains only one datapoint no area exists hence draw the marker and label only
+            if (DataPoints.Count == 1)
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                zIndex = (Int32)DataPoints[index].ZIndex + 1;
+            }
+            else
+            {
+                zIndex = (Int32)_areas[index - 1].GetValue(ZIndexProperty) + 1;
+            }
+
+            DataPoints[index].PlaceMarker(zIndex);
+
+            if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                DataPoints[index].AttachLabel(DataPoints[index], labeldepth, zIndex);
+
+            Int32 chartType = (AxisYType == AxisType.Primary) ? (Int32)Surface3DCharts.StackedAreaPrimary : (Int32)Surface3DCharts.StackedAreaSecondary;
+
+            if (!_parent._plankDrawState[chartType])
+            {
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Horizontal);
-                    _parent._plankDrawState[(Int32)Surface3DCharts.StackedArea] = true;
+                    _parent._plankDrawState[chartType] = true;
                 }
             }
+            
         }
 
         private void PlotStackedArea100()
         {
-            Int32 i;
+            Int32 index;
             Double height = 0;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedarea100"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
             Point[] points = new Point[4]; // Points for the Plolygon
             Double labelDepth = (depth + initialDepth);
 
 
-            for (i = 0; i < 4; i++) points[i] = new Point();
+            for (index = 0; index < 4; index++) points[index] = new Point();
 
             if (Index == 0)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            for (i = 0; i < _areas.Length; i++)
+            for (index = 0; index < _areas.Length; index++)
             {
 
                 
                 if (_parent.View3D)
                 {
 
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (depth + initialDepth);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue) - (depth + initialDepth);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) - (depth + initialDepth);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue) - (depth + initialDepth);
                     points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (depth + initialDepth);
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) - (depth + initialDepth);
                 }
                 else
                 {
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) ;
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) ;
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue);
                     points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) ;
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) ;
                 }
 
-                points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue / Plot.YValueSum[DataPoints[i].XValue] * 100);
-                points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].CorrectedYValue / Plot.YValueSum[DataPoints[i + 1].XValue] * 100);
-                points[2].Y = _parent.AxisY.DoubleToPixel((_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0));
+                points[0].Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue / Plot.YValueSum[DataPoints[index].XValue] * 100);
+                points[1].Y = AxisY.DoubleToPixel(DataPoints[index + 1].CorrectedYValue / Plot.YValueSum[DataPoints[index + 1].XValue] * 100);
+                points[2].Y = AxisY.DoubleToPixel((AxisY.AxisMinimum > 0 ? AxisY.AxisMinimum : 0));
                 points[3].Y = points[2].Y;
 
 
-                if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                 {
                     height = (points[3].Y - points[0].Y);
 
-                    points[3].Y = Plot.TopBottom[DataPoints[i].XValue].Y;
+                    points[3].Y = Plot.TopBottom[DataPoints[index].XValue].Y;
                     points[0].Y = points[3].Y - height;
 
-                    Plot.TopBottom[DataPoints[i].XValue] = new Point(0, points[0].Y);
+                    Plot.TopBottom[DataPoints[index].XValue] = new Point(0, points[0].Y);
                 }
                 else
                 {
-                    Plot.TopBottom[DataPoints[i].XValue] = new Point(0, points[0].Y);
+                    Plot.TopBottom[DataPoints[index].XValue] = new Point(0, points[0].Y);
                 }
 
                 
 
-                if (Plot.TopBottom.ContainsKey(DataPoints[i + 1].XValue))
+                if (Plot.TopBottom.ContainsKey(DataPoints[index + 1].XValue))
                 {
                     height = (points[2].Y - points[1].Y);
 
-                    points[2].Y = Plot.TopBottom[DataPoints[i + 1].XValue].Y;
+                    points[2].Y = Plot.TopBottom[DataPoints[index + 1].XValue].Y;
                     points[1].Y = points[2].Y - height;
 
-                    if (DataPoints[i].Index == DataPoints.Count - 2)
-                        Plot.TopBottom[DataPoints[i + 1].XValue] = new Point(0, points[1].Y);
+                    if (DataPoints[index].Index == DataPoints.Count - 2)
+                        Plot.TopBottom[DataPoints[index + 1].XValue] = new Point(0, points[1].Y);
                 }
                 else
                 {
-                    if (DataPoints[i].Index == DataPoints.Count - 2)
-                        Plot.TopBottom[DataPoints[i + 1].XValue] = new Point(0, points[1].Y);
+                    if (DataPoints[index].Index == DataPoints.Count - 2)
+                        Plot.TopBottom[DataPoints[index + 1].XValue] = new Point(0, points[1].Y);
                 }
 
-                DataPoints[i].Width = 1;
-                DataPoints[i].Height = 1;
+                DataPoints[index].Width = 1;
+                DataPoints[index].Height = 1;
                 if (!_parent.View3D)
                 {
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
 
-                    DataPoints[i].SetValue(LeftProperty, points[0].X);
-                    DataPoints[i + 1].SetValue(LeftProperty, points[1].X);
+                    DataPoints[index].SetValue(LeftProperty, (Double) points[0].X);
+                    DataPoints[index + 1].SetValue(LeftProperty, (Double) points[1].X);
 
-                    DataPoints[i].SetValue(TopProperty, points[0].Y);
-                    DataPoints[i + 1].SetValue(TopProperty, points[1].Y);
-
-
-                    Double left = (Double)DataPoints[i].GetValue(LeftProperty);
-                    Double top = (Double)DataPoints[i].GetValue(TopProperty);
-                    DataPoints[i].points.Add(new Point(points[0].X - left, points[0].Y - top));
-                    DataPoints[i].points.Add(new Point(points[1].X - left, points[1].Y - top));
-                    DataPoints[i].points.Add(new Point(points[2].X - left, points[2].Y - top));
-                    DataPoints[i].points.Add(new Point(points[3].X - left, points[3].Y - top));
+                    DataPoints[index].SetValue(TopProperty, (Double) points[0].Y);
+                    DataPoints[index + 1].SetValue(TopProperty, (Double) points[1].Y);
 
 
-                    _areas[i].SetValue(TopProperty, -top);
-                    _areas[i].SetValue(LeftProperty, -left);
+                    Double left = (Double)DataPoints[index].GetValue(LeftProperty);
+                    Double top = (Double)DataPoints[index].GetValue(TopProperty);
+                    DataPoints[index].points.Add(new Point(points[0].X - left, points[0].Y - top));
+                    DataPoints[index].points.Add(new Point(points[1].X - left, points[1].Y - top));
+                    DataPoints[index].points.Add(new Point(points[2].X - left, points[2].Y - top));
+                    DataPoints[index].points.Add(new Point(points[3].X - left, points[3].Y - top));
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
 
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
+                    _areas[index].SetValue(TopProperty, (Double) (-top));
+                    _areas[index].SetValue(LeftProperty, (Double) ( -left));
+
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
+
+                    if (DataPoints[index].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         String linbrush;
                         linbrush = "-90;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
                         linbrush += ",0;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
                         linbrush += ",1";
-                        _areas[i].Fill = Parser.ParseLinearGradient(linbrush);
+                        _areas[index].Fill = Parser.ParseLinearGradient(linbrush);
                     }
                     else
                     {
-                        _areas[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
                     }
                     
 
-                    DataPoints[i].ApplyEventBasedSettings(_areas[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_areas[index]);
 
-                    DataPoints[i].ApplyEffects((Int32)_areas[i].GetValue(ZIndexProperty) + 1);
+                    DataPoints[index].ApplyEffects((Int32)_areas[index].GetValue(ZIndexProperty) + 1);
                 }
                 else
                 {
                     
 
-                    DataPoints[i].SetValue(LeftProperty, points[0].X);
-                    DataPoints[i + 1].SetValue(LeftProperty, points[1].X);
+                    DataPoints[index].SetValue(LeftProperty, (Double) points[0].X);
+                    DataPoints[index + 1].SetValue(LeftProperty, (Double) points[1].X);
 
-                    DataPoints[i].SetValue(TopProperty, points[0].Y + (depth + initialDepth));
-                    DataPoints[i + 1].SetValue(TopProperty, points[1].Y + (depth + initialDepth));
+                    DataPoints[index].SetValue(TopProperty, (Double) ( points[0].Y + (depth + initialDepth)));
+                    DataPoints[index + 1].SetValue(TopProperty, (Double) ( points[1].Y + (depth + initialDepth)));
 
                     points[0].X += (Double)_parent.PlotArea.GetValue(LeftProperty);
                     points[1].X += (Double)_parent.PlotArea.GetValue(LeftProperty);
@@ -4597,32 +4634,32 @@ namespace Visifire.Charts
                     points[2].Y += (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
                     points[3].Y += (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
 
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
 
 
-                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaTops[i].StrokeThickness = DataPoints[i].BorderThickness;
+                    _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaShadows[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaTops[index].StrokeThickness = DataPoints[index].BorderThickness;
 
-                    _areas[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaShadows[i].Opacity = Opacity * DataPoints[i].Opacity;
-                    _areaTops[i].Opacity = Opacity * DataPoints[i].Opacity;
+                    _areas[index].Opacity = Opacity * DataPoints[index].Opacity;
+                    _areaShadows[index].Opacity = Opacity * DataPoints[index].Opacity;
+                    _areaTops[index].Opacity = Opacity * DataPoints[index].Opacity;
 
-                    _areaShadows[i].Height = points[2].Y - points[1].Y;
-                    _areaShadows[i].Width = depth;
-                    _areaShadows[i].SetValue(TopProperty, points[1].Y);
-                    _areaShadows[i].SetValue(LeftProperty, points[1].X);
+                    _areaShadows[index].Height = points[2].Y - points[1].Y;
+                    _areaShadows[index].Width = depth;
+                    _areaShadows[index].SetValue(TopProperty, (Double) points[1].Y);
+                    _areaShadows[index].SetValue(LeftProperty, (Double) points[1].X);
 
                     SkewTransform st1 = new SkewTransform();
                     st1.AngleY = -45;
                     st1.CenterX = 0;
                     st1.CenterY = 0;
                     st1.AngleX = 0;
-                    _areaShadows[i].RenderTransform = st1;
+                    _areaShadows[index].RenderTransform = st1;
 
 
                     points[0].X += depth;
@@ -4634,18 +4671,18 @@ namespace Visifire.Charts
                     points[1].Y -= depth;
 
 
-                    _areaTops[i].Points = Converter.ArrayToCollection(points);
+                    _areaTops[index].Points = Converter.ArrayToCollection(points);
 
                     //This part of the code generates the 3D gradient
                     #region Color Gradient
                     Brush brush2 = null;
                     Brush brushShade = null;
                     Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
+                    Brush tempBrush = DataPoints[index].Background;
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -4661,8 +4698,8 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -4673,7 +4710,7 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "SolidColorBrush")
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         if (LightingEnabled)
                         {
                             String linbrush;
@@ -4707,56 +4744,70 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[i].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[i].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[i].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = Cloner.CloneBrush(brush2);
+                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
+                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
 
-                    _areas[i].SetValue(ZIndexProperty, 10);
-                    _areaShadows[i].SetValue(ZIndexProperty, 5);
-                    _areaTops[i].SetValue(ZIndexProperty, 5);
+                    _areas[index].SetValue(ZIndexProperty, 10);
+                    _areaShadows[index].SetValue(ZIndexProperty, 5);
+                    _areaTops[index].SetValue(ZIndexProperty, 5);
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaShadows[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaTops[i]);
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaShadows[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaTops[index]);
 
-                    DataPoints[i].ApplyEventBasedSettings(_areas[i]);
-                    DataPoints[i].ApplyEventBasedSettings(_areaShadows[i]);
-                    DataPoints[i].ApplyEventBasedSettings(_areaTops[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_areas[index]);
+                    DataPoints[index].ApplyEventBasedSettings(_areaShadows[index]);
+                    DataPoints[index].ApplyEventBasedSettings(_areaTops[index]);
                 }
-                DataPoints[i].PlaceMarker((Int32)_areas[i].GetValue(ZIndexProperty) + 1);
+                DataPoints[index].PlaceMarker((Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i],depth);
+                if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                    DataPoints[index].AttachLabel(DataPoints[index], depth, (Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
             }
-            i = _areas.Length;
+            index = _areas.Length;
 
-            DataPoints[i].PlaceMarker((Int32)_areas[i - 1].GetValue(ZIndexProperty) + 1);
-            
-            DataPoints[i].Width = 1;
-            DataPoints[i].Height = 1;
-            if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                DataPoints[i].AttachLabel(DataPoints[i],depth);
+            DataPoints[index].Width = 1;
+            DataPoints[index].Height = 1;
 
-            if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedArea100])
+            Int32 zIndex = 0;
+            //If data series contains only one datapoint no area exists hence draw the marker and label only
+            if (DataPoints.Count == 1)
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                zIndex = (Int32)DataPoints[index].ZIndex + 1;
+            }
+            else
+            {
+                zIndex = (Int32)_areas[index - 1].GetValue(ZIndexProperty) + 1;
+            }
+
+            DataPoints[index].PlaceMarker(zIndex);
+
+            if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                DataPoints[index].AttachLabel(DataPoints[index], depth, zIndex);
+
+            Int32 chartType = (AxisYType == AxisType.Primary) ? (Int32)Surface3DCharts.StackedArea100Primary : (Int32)Surface3DCharts.StackedArea100Secondary;
+
+            if (!_parent._plankDrawState[chartType])
+            {
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Horizontal);
-                    _parent._plankDrawState[(Int32)Surface3DCharts.StackedArea100] = true;
+                    _parent._plankDrawState[chartType] = true;
                 }
             }
         }
@@ -5051,23 +5102,48 @@ namespace Visifire.Charts
             return false;
         }
 
+        private Double GetColumnWidthDivisionFactor()
+        {
+            Double factor = 1;
+            switch (Plot.ChartType)
+            {
+                case ChartTypes.Column:
+
+                    factor = TotalSiblings;
+
+                    break;
+
+                case ChartTypes.StackedColumn:
+                case ChartTypes.StackedColumn100:
+
+                    //Double tempFactor = _parent.CalculateSiblingCountByChartType(ChartTypes.Column);
+
+                    factor = _parent.GetPlotCountByChartType(Plot.ChartType);
+
+                    //if (tempFactor > factor)
+                    //    factor = tempFactor;
+
+                    break;
+
+            }
+            return factor;
+        }
+
         private Double CalculateColumnWidth()
         {
             Double width = 10;
+
+            Double divisionFactor = GetColumnWidthDivisionFactor();
+
             if (Double.IsNaN(MinDifference) || MinDifference == 0)
             {
-                width = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+                width = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / divisionFactor);
             }
             else
             {
-                width = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
+                width = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / divisionFactor);
 
             }
-
-            //Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
-            //temp *= 2;
-            //if (width > temp)
-            //    width = temp;
 
             width -= width * 0.1;
 
@@ -5076,10 +5152,11 @@ namespace Visifire.Charts
 
         private void PlotStackedColumn()
         {
-            Double width = 10;
+            Double width;
             Double height;
             Double left;
             Double top;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             if (_parent.View3D)
@@ -5090,11 +5167,12 @@ namespace Visifire.Charts
             }
 
             width = CalculateColumnWidth();
+            factor = GetColumnWidthDivisionFactor();
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedcolumn"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
             for (Int32 i = 0; i < DataPoints.Count; i++)
@@ -5103,16 +5181,17 @@ namespace Visifire.Charts
                 if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
 
                 point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                point.Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue);
+                point.Y = AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue);
 
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    height = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                if (AxisY.AxisMinimum > 0)
+                    height = AxisY.DoubleToPixel(AxisY.AxisMinimum) - point.Y;
                 else
-                    height = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+                    height = Math.Abs(AxisY.DoubleToPixel(0) - point.Y);
 
 
-                left = (point.X - width / 2);
+                //left = (point.X - width / 2);
+                left = (point.X + Index * width - (factor * width) / 2);
 
                 if (DataPoints[i].CorrectedYValue >= 0)
                 {
@@ -5131,7 +5210,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    top = _parent.AxisY.DoubleToPixel(0);
+                    top = AxisY.DoubleToPixel(0);
 
                     if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
                     {
@@ -5145,8 +5224,8 @@ namespace Visifire.Charts
 
                 DataPoints[i].SetValue(WidthProperty, width);
                 DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[i].SetValue(LeftProperty, (Double) left);
+                DataPoints[i].SetValue(TopProperty, (Double) top);
 
                 if (_parent.View3D)
                 {
@@ -5164,7 +5243,7 @@ namespace Visifire.Charts
             }
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedColumn])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Horizontal);
                     _parent._plankDrawState[(Int32)Surface3DCharts.StackedColumn] = true;
@@ -5174,10 +5253,11 @@ namespace Visifire.Charts
 
         private void PlotStackedColumn100()
         {
-            Double width = 10;
+            Double width;
             Double height;
             Double left;
             Double top;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             
@@ -5189,11 +5269,12 @@ namespace Visifire.Charts
             }
 
             width = CalculateColumnWidth();
+            factor = GetColumnWidthDivisionFactor();
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedcolumn100"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
             for (Int32 i = 0; i < DataPoints.Count; i++)
@@ -5203,15 +5284,16 @@ namespace Visifire.Charts
                 if (Double.IsNaN(sum) || sum == 0) sum = 1;
 
                 point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                point.Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue / sum * 100);
+                point.Y = AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue / sum * 100);
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    height = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                if (AxisY.AxisMinimum > 0)
+                    height = AxisY.DoubleToPixel(AxisY.AxisMinimum) - point.Y;
                 else
-                    height = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+                    height = Math.Abs(AxisY.DoubleToPixel(0) - point.Y);
 
 
-                left = (point.X - width / 2);
+                //left = (point.X - width / 2);
+                left = (point.X + Index * width - (factor * width) / 2);
 
                 if (DataPoints[i].CorrectedYValue >= 0)
                 {
@@ -5230,7 +5312,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    top = _parent.AxisY.DoubleToPixel(0);
+                    top = AxisY.DoubleToPixel(0);
 
                     if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
                     {
@@ -5244,8 +5326,8 @@ namespace Visifire.Charts
 
                 DataPoints[i].SetValue(WidthProperty, width);
                 DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[i].SetValue(LeftProperty, (Double) left);
+                DataPoints[i].SetValue(TopProperty, (Double) top);
 
                 if (_parent.View3D)
                 {
@@ -5261,7 +5343,7 @@ namespace Visifire.Charts
             }
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedColumn100])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Horizontal);
                     _parent._plankDrawState[(Int32)Surface3DCharts.StackedColumn100] = true;
@@ -5271,10 +5353,11 @@ namespace Visifire.Charts
 
         private void PlotColumn()
         {
-            Double width = 10;
+            Double width;
             Double height;
             Double left;
             Double top;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             if (_parent.View3D)
@@ -5285,11 +5368,12 @@ namespace Visifire.Charts
             }
 
             width = CalculateColumnWidth();
+            factor = GetColumnWidthDivisionFactor();
 
             List<Double> checkDrawPositive = new List<Double>();
             List<Double> checkDrawNegetive = new List<Double>();
             Double finalYValue;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["column"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
             for (Int32 i = 0; i < DataPoints.Count; i++)
@@ -5318,27 +5402,27 @@ namespace Visifire.Charts
                         continue;
                     }
                 }
-                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
+                point.Y = AxisY.DoubleToPixel(finalYValue);
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    height = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                if (AxisY.AxisMinimum > 0)
+                    height = AxisY.DoubleToPixel(AxisY.AxisMinimum) - point.Y;
                 else
-                    height = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+                    height = Math.Abs(AxisY.DoubleToPixel(0) - point.Y);
 
 
-                left = (point.X + Index * width - (TotalSiblings * width) / 2);
+                left = (point.X + Index * width - (factor * width) / 2);
 
 
                 if (DataPoints[i].CorrectedYValue >= 0)
                     top = point.Y;
                 else
-                    top = _parent.AxisY.DoubleToPixel(0);
+                    top = AxisY.DoubleToPixel(0);
 
 
                 DataPoints[i].SetValue(WidthProperty, width);
                 DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[i].SetValue(LeftProperty, (Double) left);
+                DataPoints[i].SetValue(TopProperty, (Double)  top);
                 
                 
 
@@ -5357,7 +5441,7 @@ namespace Visifire.Charts
             //Draw Zero plank
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.Column])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth,depth,0, Orientation.Horizontal);
                     _parent._plankDrawState[(Int32)Surface3DCharts.Column] = true;
@@ -5365,7 +5449,7 @@ namespace Visifire.Charts
             }
         }
 
-        private void RenderColumn3D(int index, Double left, Double top, Double width, Double height, Double depth, Double initialDepth, ChartTypes chartType)
+        private void RenderColumn3D(Int32 index, Double left, Double top, Double width, Double height, Double depth, Double initialDepth, ChartTypes chartType)
         {
             Boolean ignoreMarkerAndLabel = false;
 
@@ -5386,10 +5470,10 @@ namespace Visifire.Charts
 
 
             left -= (depth + initialDepth);
-            DataPoints[index].SetValue(LeftProperty, left);
+            DataPoints[index].SetValue(LeftProperty, (Double) left);
 
-            _canvas3D[index].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty));
-            _canvas3D[index].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty) + depth + initialDepth);
+            _canvas3D[index].SetValue(LeftProperty, (Double) ( left + (Double)_parent.PlotArea.GetValue(LeftProperty)));
+            _canvas3D[index].SetValue(TopProperty, (Double) ( top + (Double)_parent.PlotArea.GetValue(TopProperty) + depth + initialDepth));
 
             _columns[index].Data = Get3DFront(0, 0, width3d, height, depth);
 
@@ -5398,11 +5482,11 @@ namespace Visifire.Charts
 
             _columnTops[index].Data = Get3DTop(0, 0, width3d, depth, depth);
 
-            _shadows[index].SetValue(TopProperty, -depth - ShadowSize);
-            _shadows[index].SetValue(LeftProperty, depth + ShadowSize);
+            _shadows[index].SetValue(TopProperty, (Double) ( -depth - ShadowSize));
+            _shadows[index].SetValue(LeftProperty, (Double) ( depth + ShadowSize));
 
             if ((Double)_shadows[index].GetValue(LeftProperty) + width3d > _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMaximum))
-                _shadows[index].Width = width3d - ShadowSize;
+                _shadows[index].Width = Math.Abs( width3d - ShadowSize);
             else
                 _shadows[index].Width = width3d;
             
@@ -5414,9 +5498,9 @@ namespace Visifire.Charts
 
                 case ChartTypes.StackedColumn:
                 case ChartTypes.StackedColumn100:
-                    if (-depth - ShadowSize + height > _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum))
+                    if (-depth - ShadowSize + height > AxisY.DoubleToPixel(AxisY.AxisMinimum))
                     {
-                        _shadows[index].Height = height - ShadowSize;
+                        _shadows[index].Height = Math.Abs( height - ShadowSize);
                     }
                     else
                     {
@@ -5463,14 +5547,14 @@ namespace Visifire.Charts
 
             DataPoints[index].ApplyEventBasedSettings(_canvas3D[index]);
 
-            DataPoints[index].SetValue(TopProperty, (Double)DataPoints[index].GetValue(TopProperty) + depth + initialDepth);
+            DataPoints[index].SetValue(TopProperty, (Double) ( (Double)DataPoints[index].GetValue(TopProperty) + depth + initialDepth));
 
             if (!ignoreMarkerAndLabel)
             {
                 DataPoints[index].PlaceMarker((Int32)_columns[index].GetValue(ZIndexProperty) + 1);
 
                 if (DataPoints[index].LabelEnabled.ToLower() == "true")
-                    DataPoints[index].AttachLabel(DataPoints[index], depth);
+                    DataPoints[index].AttachLabel(DataPoints[index], depth,(Int32)_canvas3D[index].GetValue(ZIndexProperty));
             }
 
         }
@@ -5510,16 +5594,16 @@ namespace Visifire.Charts
                     yRadiusLimit = DataPoints[index].RadiusY;
 
                     if (DataPoints[index].CorrectedYValue >= 0)
-                        shadow.Height = height - ShadowSize;
+                        shadow.Height = Math.Abs(height - ShadowSize);
                     else
                         shadow.Height = height + ShadowSize;
 
-                    shadow.SetValue(TopProperty, ShadowSize);
+                    shadow.SetValue(TopProperty, (Double) ShadowSize);
                 }
                 else
                 {
                     shadow.Height = height;
-                    shadow.SetValue(TopProperty, 0);
+                    shadow.SetValue(TopProperty, (Double) 0);
                 }
             }
 
@@ -5533,17 +5617,17 @@ namespace Visifire.Charts
             // set the basic size settings for the shape object
             column.Width = width;
             column.Height = height;
-            column.SetValue(TopProperty, 0);
-            column.SetValue(LeftProperty, 0);
+            column.SetValue(TopProperty, (Double) 0);
+            column.SetValue(LeftProperty, (Double) 0);
 
             // create the shape of the column shadow
             shadow.Data = Get2DColumnPathGeometry(width, height, xRadiusLimit, yRadiusLimit);
 
             // set the basic size settings for the shape object
             shadow.Width = width;
-            shadow.Height = height - ShadowSize;
-            shadow.SetValue(TopProperty, ShadowSize);
-            shadow.SetValue(LeftProperty, ShadowSize);
+            shadow.Height = Math.Abs( height - ShadowSize);
+            shadow.SetValue(TopProperty, (Double) ShadowSize);
+            shadow.SetValue(LeftProperty, (Double) ShadowSize);
 
             // in case the column has to be drawn for the negaive side then use transform to flip the column
             if (DataPoints[index].CorrectedYValue < 0)
@@ -5563,14 +5647,14 @@ namespace Visifire.Charts
                 shadow.RenderTransform = st;
                 if (chartType == ChartTypes.Column)
                 {
-                    shadow.SetValue(TopProperty, ShadowSize);
+                    shadow.SetValue(TopProperty, (Double) ShadowSize);
                 }
                 else
                 {
                     if (maxDS == this.Name && maxDP == DataPoints[index].Name)
-                        shadow.SetValue(TopProperty, -ShadowSize);
+                        shadow.SetValue(TopProperty, (Double) (-ShadowSize));
                     else
-                        shadow.SetValue(TopProperty, 0);
+                        shadow.SetValue(TopProperty, (Double) 0);
                 }
             }
 
@@ -5596,7 +5680,7 @@ namespace Visifire.Charts
 
             // Create and Position label
             if (DataPoints[index].LabelEnabled.ToLower() == "true")
-                DataPoints[index].AttachLabel(DataPoints[index], 0);
+                DataPoints[index].AttachLabel(DataPoints[index], 0, DataPoints[index].ZIndex);
 
             // Add Bevel,... effects
             DataPoints[index].ApplyEffects((Int32)column.GetValue(ZIndexProperty) + 1);
@@ -5670,8 +5754,8 @@ namespace Visifire.Charts
                 // Plank
                 zeroPlank.Width = (Double)_parent.PlotArea.Width;
                 zeroPlank.Height = depth;
-                zeroPlank.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + offset);
-                zeroPlank.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty) - offset);
+                zeroPlank.SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + offset));
+                zeroPlank.SetValue(LeftProperty, (Double) ( (Double)_parent.PlotArea.GetValue(LeftProperty) - offset));
 
                 SkewTransform transform = new SkewTransform();
                 transform.AngleX = -45;
@@ -5682,15 +5766,15 @@ namespace Visifire.Charts
                 // Front border
                 zeroPlankFront.Width = _parent.PlotArea.Width;
                 zeroPlankFront.Height = 2;
-                zeroPlankFront.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + offset + depth);
-                zeroPlankFront.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty) - offset - depth);
+                zeroPlankFront.SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + offset + depth));
+                zeroPlankFront.SetValue(LeftProperty, (Double) ( (Double)_parent.PlotArea.GetValue(LeftProperty) - offset - depth));
                 zeroPlankFront.Fill = Parser.ParseColor("#B6B6B6");
 
                 // Side border
                 zeroPlankSide.Width = _parent.AxisX.MajorTicks.TickLength;
                 zeroPlankSide.Height = 2;
-                zeroPlankSide.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.AxisX.MajorTicks.TickLength);
-                zeroPlankSide.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty) + (Double)_parent.PlotArea.Width - _parent.AxisX.MajorTicks.TickLength);
+                zeroPlankSide.SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.AxisX.MajorTicks.TickLength));
+                zeroPlankSide.SetValue(LeftProperty, (Double) ( (Double)_parent.PlotArea.GetValue(LeftProperty) + (Double)_parent.PlotArea.Width - _parent.AxisX.MajorTicks.TickLength));
 
                 transform = new SkewTransform();
                 transform.AngleY = -45;
@@ -5702,8 +5786,8 @@ namespace Visifire.Charts
             {
                 zeroPlank.Width = depth;
                 zeroPlank.Height = (Double)_parent.PlotArea.Height;
-                zeroPlank.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty) + offset + depth);
-                zeroPlank.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty) + _parent.AxisY.DoubleToPixel(0) - offset - depth);
+                zeroPlank.SetValue(TopProperty, (Double) ( (Double)_parent.PlotArea.GetValue(TopProperty) + offset + depth));
+                zeroPlank.SetValue(LeftProperty, (Double) ( (Double)_parent.PlotArea.GetValue(LeftProperty) + AxisY.DoubleToPixel(0) - offset - depth));
 
                 SkewTransform transform = new SkewTransform();
                 transform.AngleY = -45;
@@ -5715,16 +5799,16 @@ namespace Visifire.Charts
                 // Front border
                 zeroPlankFront.Width = 2;
                 zeroPlankFront.Height = _parent.PlotArea.Height;
-                zeroPlankFront.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.AxisX.MajorTicks.TickLength);
-                zeroPlankFront.SetValue(LeftProperty, _parent.AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(LeftProperty) - _parent.AxisX.MajorTicks.TickLength);
+                zeroPlankFront.SetValue(TopProperty, (Double) ( (Double)_parent.PlotArea.GetValue(TopProperty) + _parent.AxisX.MajorTicks.TickLength));
+                zeroPlankFront.SetValue(LeftProperty, (Double) ( AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(LeftProperty) - _parent.AxisX.MajorTicks.TickLength));
 
                 zeroPlankFront.Fill = Parser.ParseColor("#B6B6B6");
 
                 // Side border
                 zeroPlankSide.Width = 2;
                 zeroPlankSide.Height = _parent.AxisX.MajorTicks.TickLength;
-                zeroPlankSide.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
-                zeroPlankSide.SetValue(LeftProperty, _parent.AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(LeftProperty));
+                zeroPlankSide.SetValue(TopProperty, (Double) _parent.PlotArea.GetValue(TopProperty));
+                zeroPlankSide.SetValue(LeftProperty, (Double) ( AxisY.DoubleToPixel(0) + (Double)_parent.PlotArea.GetValue(LeftProperty)));
 
                 transform = new SkewTransform();
                 transform.AngleX = -45;
@@ -5754,10 +5838,10 @@ namespace Visifire.Charts
             }
 
             top += (depth + initialDepth);
-            DataPoints[index].SetValue(TopProperty, top);
+            DataPoints[index].SetValue(TopProperty, (Double) top);
 
-            _canvas3D[index].SetValue(LeftProperty, left + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth));
-            _canvas3D[index].SetValue(TopProperty, top + (Double)_parent.PlotArea.GetValue(TopProperty));
+            _canvas3D[index].SetValue(LeftProperty, (Double) ( left + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth)));
+            _canvas3D[index].SetValue(TopProperty, (Double) ( top + (Double)_parent.PlotArea.GetValue(TopProperty)));
 
             _columns[index].Data = Get3DFront(0, 0, width, height3d, depth);
 
@@ -5766,8 +5850,8 @@ namespace Visifire.Charts
 
             _columnTops[index].Data = Get3DTop(0, 0, width, depth, depth);
 
-            _shadows[index].SetValue(TopProperty,  -depth - height3d * 0.1);
-            _shadows[index].SetValue(LeftProperty, depth);
+            _shadows[index].SetValue(TopProperty, (Double) (  -depth - height3d * 0.1));
+            _shadows[index].SetValue(LeftProperty, (Double) depth);
             
             _shadows[index].Height = height3d;
             switch (chartType)
@@ -5778,7 +5862,7 @@ namespace Visifire.Charts
 
                 case ChartTypes.StackedBar:
                 case ChartTypes.StackedBar100:
-                    if (left < _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum))
+                    if (left < AxisY.DoubleToPixel(AxisY.AxisMinimum))
                     {
                         _shadows[index].Width = width + ShadowSize;
                     }
@@ -5830,7 +5914,7 @@ namespace Visifire.Charts
             _shadows[index].SetValue(ZIndexProperty, 0);
 
 
-            DataPoints[index].SetValue(LeftProperty, (Double)DataPoints[index].GetValue(LeftProperty) - (depth + initialDepth));
+            DataPoints[index].SetValue(LeftProperty, (Double) ( (Double)DataPoints[index].GetValue(LeftProperty) - (depth + initialDepth)));
 
             DataPoints[index].ApplyStrokeSettings(_columns[index]);
             DataPoints[index].ApplyStrokeSettings(_columnSides[index]);
@@ -5843,7 +5927,7 @@ namespace Visifire.Charts
                 DataPoints[index].PlaceMarker((Int32)_columns[index].GetValue(ZIndexProperty) + 1);
 
                 if (DataPoints[index].LabelEnabled.ToLower() == "true")
-                    DataPoints[index].AttachLabel(DataPoints[index], depth);
+                    DataPoints[index].AttachLabel(DataPoints[index], depth,(Int32)_canvas3D[index].GetValue(ZIndexProperty));
             }
         }
 
@@ -5884,15 +5968,15 @@ namespace Visifire.Charts
 
             bar.Width = width;
             bar.Height = height;
-            bar.SetValue(TopProperty, 0);
-            bar.SetValue(LeftProperty, 0);
+            bar.SetValue(TopProperty, (Double) 0);
+            bar.SetValue(LeftProperty, (Double) 0);
 
             bar.Data = Get2DBarPathGeometry(width, height, xRadiusLimit, yRadiusLimit);
 
             shadow.Width = width;
             shadow.Height = height;
-            shadow.SetValue(TopProperty, ShadowSize);
-            shadow.SetValue(LeftProperty, 0);
+            shadow.SetValue(TopProperty, (Double) ShadowSize);
+            shadow.SetValue(LeftProperty, (Double) 0);
 
             shadow.Data = Get2DBarPathGeometry(width, height, xRadiusLimit, yRadiusLimit);
 
@@ -5928,25 +6012,50 @@ namespace Visifire.Charts
             DataPoints[index].PlaceMarker((Int32)bar.GetValue(ZIndexProperty) + 1);
 
             if (DataPoints[index].LabelEnabled.ToLower() == "true")
-                DataPoints[index].AttachLabel(DataPoints[index], 0);
+                DataPoints[index].AttachLabel(DataPoints[index], 0,DataPoints[index].ZIndex);
 
 
             if (width > 10 && height > 10)
                 DataPoints[index].ApplyEffects((Int32)bar.GetValue(ZIndexProperty) + 1);
         }
 
+        private Double GetBarHeightDivisionFactor()
+        {
+            Double factor = 1;
+            switch (Plot.ChartType)
+            {
+                case ChartTypes.Bar:
+
+                    factor = TotalSiblings;
+
+                    break;
+
+                case ChartTypes.StackedBar:
+                case ChartTypes.StackedBar100:
+
+                    //Double tempFactor = _parent.CalculateSiblingCountByChartType(ChartTypes.Bar);
+
+                    factor = _parent.GetPlotCountByChartType(Plot.ChartType);
+
+                    //if (tempFactor > factor)
+                    //    factor = tempFactor;
+
+                    break;
+
+            }
+            return factor;
+        }
+
         private Double CalculateBarHeight()
         {
             Double height = 10;
-            if (Double.IsNaN(MinDifference) || MinDifference == 0)
-                height = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
-            else
-                height = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / TotalSiblings);
 
-            //Double temp = Math.Abs(_parent.AxisX.DoubleToPixel(Plot.MinAxisXValue) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum));
-            //temp *= 2;
-            //if (height > temp)
-            //    height = temp;
+            Double divisionFactor = GetBarHeightDivisionFactor();
+
+            if (Double.IsNaN(MinDifference) || MinDifference == 0)
+                height = Math.Abs((_parent.AxisX.DoubleToPixel(_parent.AxisX.Interval + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / divisionFactor);
+            else
+                height = Math.Abs((_parent.AxisX.DoubleToPixel(((MinDifference < _parent.AxisX.Interval) ? MinDifference : _parent.AxisX.Interval) + _parent.AxisX.AxisMinimum) - _parent.AxisX.DoubleToPixel(_parent.AxisX.AxisMinimum)) / divisionFactor);
 
             height -= height * 0.3;
 
@@ -5959,6 +6068,7 @@ namespace Visifire.Charts
             Double width;
             Double top;
             Double left;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             if (_parent.View3D)
@@ -5969,43 +6079,46 @@ namespace Visifire.Charts
             }
 
             height = CalculateBarHeight();
+            factor = GetBarHeightDivisionFactor();
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedbar100"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
-            for (Int32 i = 0; i < DataPoints.Count; i++)
+            for (Int32 index = 0; index < DataPoints.Count; index++)
             {
-                Double sum = Plot.YValueSum[DataPoints[i].XValue];
+                Double sum = Plot.YValueSum[DataPoints[index].XValue];
 
                 if (Double.IsNaN(sum) || sum == 0) sum = 1;
 
-                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                point.Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue / sum * 100);
+                point.X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue);
+                point.Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue / sum * 100);
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    width = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                if (AxisY.AxisMinimum > 0)
+                    width = AxisY.DoubleToPixel(AxisY.AxisMinimum) - point.Y;
                 else
-                    width = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+                    width = Math.Abs(AxisY.DoubleToPixel(0) - point.Y);
 
 
-                top = (point.X - height / 2);
+                //top = (point.X - height / 2);
+                top = point.X + Index * height - (factor * height) / 2;
 
-                if (DataPoints[i].CorrectedYValue >= 0)
+
+                if (DataPoints[index].CorrectedYValue >= 0)
                 {
 
-                    left = _parent.AxisY.DoubleToPixel(0);
+                    left = AxisY.DoubleToPixel(0);
 
-                    if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                    if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                     {
-                        left = Plot.TopBottom[DataPoints[i].XValue].X;
+                        left = Plot.TopBottom[DataPoints[index].XValue].X;
 
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, Plot.TopBottom[DataPoints[i].XValue].Y);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, Plot.TopBottom[DataPoints[index].XValue].Y);
                     }
                     else
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, left);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, left);
 
                 }
                 else
@@ -6013,38 +6126,38 @@ namespace Visifire.Charts
 
                     left = point.Y;
 
-                    if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                    if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                     {
-                        left = Plot.TopBottom[DataPoints[i].XValue].Y - width;
+                        left = Plot.TopBottom[DataPoints[index].XValue].Y - width;
 
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(Plot.TopBottom[DataPoints[i].XValue].X, left);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(Plot.TopBottom[DataPoints[index].XValue].X, left);
                     }
                     else
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, left);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, left);
                 }
 
-                DataPoints[i].SetValue(WidthProperty, width);
-                DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[index].SetValue(WidthProperty, width);
+                DataPoints[index].SetValue(HeightProperty, height);
+                DataPoints[index].SetValue(LeftProperty, (Double) left);
+                DataPoints[index].SetValue(TopProperty, (Double) top);
 
                 if (_parent.View3D)
                 {
                     if (IsBarOutOfPlotRange(top, height)) continue;
 
-                    RenderBar3D(i, left, top, width, height, depth, initialDepth, ChartTypes.StackedBar100);
+                    RenderBar3D(index, left, top, width, height, depth, initialDepth, ChartTypes.StackedBar100);
 
                 }
                 else
                 {
-                    RenderBar2D(i, left, top, width, height, ChartTypes.StackedBar100);
+                    RenderBar2D(index, left, top, width, height, ChartTypes.StackedBar100);
                 }
 
             }
             //Draw Zero plank
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedBar100])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Vertical);
                     _parent._plankDrawState[(Int32)Surface3DCharts.StackedBar100] = true;
@@ -6058,6 +6171,7 @@ namespace Visifire.Charts
             Double width;
             Double top;
             Double left;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             if (_parent.View3D)
@@ -6068,81 +6182,81 @@ namespace Visifire.Charts
             }
 
             height = CalculateBarHeight();
+            factor = GetBarHeightDivisionFactor();
 
             if (Plot.TopBottom == null)
                 Plot.TopBottom = new System.Collections.Generic.Dictionary<Double, Point>();
 
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["stackedbar"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
-            for (Int32 i = 0; i < DataPoints.Count; i++)
+            for (Int32 index = 0; index < DataPoints.Count; index++)
             {
-                if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
+                if (Double.IsNaN(DataPoints[index].CorrectedYValue)) continue;
 
-                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                point.Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue);
+                point.X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue);
+                point.Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue);
 
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    width = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum) - point.Y;
+                if (AxisY.AxisMinimum > 0)
+                    width = AxisY.DoubleToPixel(AxisY.AxisMinimum) - point.Y;
                 else
-                    width = Math.Abs(_parent.AxisY.DoubleToPixel(0) - point.Y);
+                    width = Math.Abs(AxisY.DoubleToPixel(0) - point.Y);
 
 
-                top = (point.X - height / 2);
+                //top = (point.X - height / 2);
+                top = point.X + Index * height - (factor * height) / 2;
 
-                if (DataPoints[i].CorrectedYValue >= 0)
+                if (DataPoints[index].CorrectedYValue >= 0)
                 {
 
-                    left = _parent.AxisY.DoubleToPixel(0);
+                    left = AxisY.DoubleToPixel(0);
 
-                    if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                    if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                     {
-                        left = Plot.TopBottom[DataPoints[i].XValue].X;
+                        left = Plot.TopBottom[DataPoints[index].XValue].X;
 
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, Plot.TopBottom[DataPoints[i].XValue].Y);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, Plot.TopBottom[DataPoints[index].XValue].Y);
                     }
                     else
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, left);
-
-
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, left);
 
                 }
                 else
                 {
                     left = point.Y;
 
-                    if (Plot.TopBottom.ContainsKey(DataPoints[i].XValue))
+                    if (Plot.TopBottom.ContainsKey(DataPoints[index].XValue))
                     {
-                        left = Plot.TopBottom[DataPoints[i].XValue].Y - width;
+                        left = Plot.TopBottom[DataPoints[index].XValue].Y - width;
 
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(Plot.TopBottom[DataPoints[i].XValue].X, left);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(Plot.TopBottom[DataPoints[index].XValue].X, left);
                     }
                     else
-                        Plot.TopBottom[DataPoints[i].XValue] = new Point(left + width, left);
+                        Plot.TopBottom[DataPoints[index].XValue] = new Point(left + width, left);
                 }
 
-                DataPoints[i].SetValue(WidthProperty, width);
-                DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[index].SetValue(WidthProperty, width);
+                DataPoints[index].SetValue(HeightProperty, height);
+                DataPoints[index].SetValue(LeftProperty, (Double) left);
+                DataPoints[index].SetValue(TopProperty, (Double) top);
 
                 if (_parent.View3D)
                 {
                     if (IsBarOutOfPlotRange(top, height)) continue;
 
-                    RenderBar3D(i, left, top, width, height, depth, initialDepth, ChartTypes.StackedBar);
+                    RenderBar3D(index, left, top, width, height, depth, initialDepth, ChartTypes.StackedBar);
                 }
                 else
                 {
-                    RenderBar2D(i, left, top, width, height, ChartTypes.StackedBar);
+                    RenderBar2D(index, left, top, width, height, ChartTypes.StackedBar);
                 }
 
             }
             //Draw Zero plank
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.StackedBar])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Vertical);
                     _parent._plankDrawState[(Int32)Surface3DCharts.StackedBar] = true;
@@ -6156,6 +6270,7 @@ namespace Visifire.Charts
             Double height;
             Double left;
             Double top;
+            Double factor;
             Point point = new Point(); // This is the X and Y co-ordinate of the XValue and Yvalue combined.
 
             if (_parent.View3D)
@@ -6166,80 +6281,81 @@ namespace Visifire.Charts
             }
 
             height = CalculateBarHeight();
+            factor = GetBarHeightDivisionFactor();
 
             List<Double> checkDrawPositive = new List<Double>();
             List<Double> checkDrawNegetive = new List<Double>();
             Double finalYValue;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["bar"];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
 
-            for (Int32 i = 0; i < DataPoints.Count; i++)
+            for (Int32 index = 0; index < DataPoints.Count; index++)
             {
-                if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
+                if (Double.IsNaN(DataPoints[index].CorrectedYValue)) continue;
 
-                point.X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
+                point.X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue);
 
-                if (!checkDrawPositive.Contains(DataPoints[i].XValue) && DataPoints[i].CorrectedYValue >= 0)
+                if (!checkDrawPositive.Contains(DataPoints[index].XValue) && DataPoints[index].CorrectedYValue >= 0)
                 {
-                    finalYValue = _maxVals[DataPoints[i].XValue].X;
-                    if (DataPoints[i].CorrectedYValue != finalYValue) continue;
-                    checkDrawPositive.Add(DataPoints[i].XValue);
+                    finalYValue = _maxVals[DataPoints[index].XValue].X;
+                    if (DataPoints[index].CorrectedYValue != finalYValue) continue;
+                    checkDrawPositive.Add(DataPoints[index].XValue);
                 }
-                else if (!checkDrawNegetive.Contains(DataPoints[i].XValue) && DataPoints[i].CorrectedYValue < 0)
+                else if (!checkDrawNegetive.Contains(DataPoints[index].XValue) && DataPoints[index].CorrectedYValue < 0)
                 {
-                    finalYValue = _maxVals[DataPoints[i].XValue].Y;
-                    if (DataPoints[i].CorrectedYValue != finalYValue) continue;
-                    checkDrawNegetive.Add(DataPoints[i].XValue);
+                    finalYValue = _maxVals[DataPoints[index].XValue].Y;
+                    if (DataPoints[index].CorrectedYValue != finalYValue) continue;
+                    checkDrawNegetive.Add(DataPoints[index].XValue);
                 }
                 else
                 {
                     continue;
                 }
-                point.Y = _parent.AxisY.DoubleToPixel(finalYValue);
+                point.Y = AxisY.DoubleToPixel(finalYValue);
 
-                top = point.X + Index * height - (TotalSiblings * height) / 2;
+                top = point.X + Index * height - (factor * height) / 2;
 
-                if (_parent.AxisY.AxisMinimum > 0)
-                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum));
+                if (AxisY.AxisMinimum > 0)
+                    width = Math.Abs(point.Y - AxisY.DoubleToPixel(AxisY.AxisMinimum));
                 else
-                    width = Math.Abs(point.Y - _parent.AxisY.DoubleToPixel(0));
+                    width = Math.Abs(point.Y - AxisY.DoubleToPixel(0));
 
 
-                if (_parent.AxisY.AxisMinimum > 0)
+                if (AxisY.AxisMinimum > 0)
                 {
-                    left = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum);
+                    left = AxisY.DoubleToPixel(AxisY.AxisMinimum);
                 }
                 else
                 {
-                    if (DataPoints[i].CorrectedYValue > 0)
-                        left = _parent.AxisY.DoubleToPixel(0);
+                    if (DataPoints[index].CorrectedYValue > 0)
+                        left = AxisY.DoubleToPixel(0);
                     else
-                        left = _parent.AxisY.DoubleToPixel(0) - width;
+                        left = AxisY.DoubleToPixel(0) - width;
                 }
 
-                DataPoints[i].SetValue(WidthProperty, width);
-                DataPoints[i].SetValue(HeightProperty, height);
-                DataPoints[i].SetValue(LeftProperty, left);
-                DataPoints[i].SetValue(TopProperty, top);
+                DataPoints[index].SetValue(WidthProperty, width);
+                DataPoints[index].SetValue(HeightProperty, height);
+                DataPoints[index].SetValue(LeftProperty, (Double) left);
+                DataPoints[index].SetValue(TopProperty, (Double)top);
 
                 if (_parent.View3D)
                 {
                     if (IsBarOutOfPlotRange(top, height)) continue;
 
-                    RenderBar3D(i,left,top,width,height,depth,initialDepth,ChartTypes.Bar);
+                    RenderBar3D(index,left,top,width,height,depth,initialDepth,ChartTypes.Bar);
                     
                 }
                 else
                 {
 
-                    RenderBar2D(i,left,top,width,height,ChartTypes.Bar);
+                    RenderBar2D(index,left,top,width,height,ChartTypes.Bar);
                 }
 
             }
             //Draw Zero plank
             if (!_parent._plankDrawState[(Int32)Surface3DCharts.Bar])
             {
-                if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+                if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
                 {
                     DrawZeroPlank(initialDepth, depth, 0, Orientation.Vertical);
                     _parent._plankDrawState[(Int32)Surface3DCharts.Bar] = true;
@@ -6261,11 +6377,12 @@ namespace Visifire.Charts
         {
             Double zOffset = Math.Pow(10, (Int32)(Math.Log10(_parent.PlotArea.Width) - 1));
             Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
-            Int32 zindex = (Int32)(_parent.PlotArea.Height - top) + iOffset;
+            Int32 zindex = (Int32)((_parent.PlotArea.Height - top)*zOffset) + iOffset;
             if (isPositive)
                 return zindex;
             else
                 return Int32.MinValue + zindex;
+
         }
 
         private Int32 GetStackedBar100ZIndex(Double left, Double top, Boolean isPositive)
@@ -6294,9 +6411,9 @@ namespace Visifire.Charts
                 this.Children.Add(_lineShadow);
             }
 
-            Int32 i;
+            Int32 index;
             Double strokeThickness = ((_parent.Width * _parent.Height) + 25000) / 35000;
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList["line" + DrawingIndex.ToString()] - (_parent.Count == 0 ? 0 : 1));
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count) * (_parent.IndexList[this.Name] - (_parent.Count == 0 ? 0 : 1));
             Double depth = _parent.AxisX.MajorTicks.TickLength / (_parent.Count == 0 ? 1 : _parent.Count);
 
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
@@ -6342,21 +6459,21 @@ namespace Visifire.Charts
                 offsetY = (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
             }
 
-            for (i = 0; i < DataPoints.Count; i++)
+            for (index = 0; index < DataPoints.Count; index++)
             {
-                if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
-                points.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX, _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + offsetY));
-                points2.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + offsetX + strokeThickness / 2, _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + offsetY + strokeThickness / 2));
+                if (Double.IsNaN(DataPoints[index].CorrectedYValue)) continue;
+                points.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[index].XValue) + offsetX, AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue) + offsetY));
+                points2.Add(new Point(_parent.AxisX.DoubleToPixel(DataPoints[index].XValue) + offsetX + strokeThickness / 2, AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue) + offsetY + strokeThickness / 2));
 
-                DataPoints[i].SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) - (_parent.View3D ? (depth + initialDepth) : 0));
-                DataPoints[i].SetValue(TopProperty, _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + (_parent.View3D ? (depth + initialDepth) : 0));
-                DataPoints[i].Width = 1;
-                DataPoints[i].Height = 1;
+                DataPoints[index].SetValue(LeftProperty, (Double) ( _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) - (_parent.View3D ? (depth + initialDepth) : 0)));
+                DataPoints[index].SetValue(TopProperty, (Double) ( AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue) + (_parent.View3D ? (depth + initialDepth) : 0)));
+                DataPoints[index].Width = 1;
+                DataPoints[index].Height = 1;
 
-                DataPoints[i].PlaceMarker((Int32)_line.GetValue(ZIndexProperty) + 1);
+                DataPoints[index].PlaceMarker((Int32)_line.GetValue(ZIndexProperty) + 1);
 
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i], depth);
+                if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                    DataPoints[index].AttachLabel(DataPoints[index], depth, DataPoints[index].ZIndex);
             }
             _line.Points = Converter.ArrayToCollection(points.ToArray());
             _lineShadow.Points = Converter.ArrayToCollection(points2.ToArray());
@@ -6369,135 +6486,135 @@ namespace Visifire.Charts
 
         private void PlotArea()
         {
-            Int32 i;
+            Int32 index;
             Point[] points = new Point[4];
-            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList["area" + DrawingIndex.ToString()];
+            Double initialDepth = _parent.AxisX.MajorTicks.TickLength / _parent.Count * _parent.IndexList[this.Name];
             Double depth = _parent.AxisX.MajorTicks.TickLength / _parent.Count;
             Double labeldepth = _parent.View3D ? 0 : depth;
-            for (i = 0; i < 4; i++) points[i] = new Point();
+            for (index = 0; index < 4; index++) points[index] = new Point();
 
             foreach (DataPoint datapoint in DataPoints)
             {
                 if (_parent.View3D)
                 {
-                    datapoint.SetValue(LeftProperty, (Double)_parent.AxisX.DoubleToPixel(datapoint.XValue) + (Double)_parent.GetValue(LeftProperty) - (depth + initialDepth));
-                    datapoint.SetValue(TopProperty, (Double)_parent.AxisY.DoubleToPixel(datapoint.CorrectedYValue) + (Double)_parent.GetValue(TopProperty) + (depth + initialDepth));
+                    datapoint.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisX.DoubleToPixel(datapoint.XValue) + (Double)_parent.GetValue(LeftProperty) - (depth + initialDepth)));
+                    datapoint.SetValue(TopProperty, (Double) ( (Double)AxisY.DoubleToPixel(datapoint.CorrectedYValue) + (Double)_parent.GetValue(TopProperty) + (depth + initialDepth)));
                 }
                 else
                 {
-                    datapoint.SetValue(LeftProperty, _parent.AxisX.DoubleToPixel(datapoint.XValue));
-                    datapoint.SetValue(TopProperty, _parent.AxisY.DoubleToPixel(datapoint.CorrectedYValue));
+                    datapoint.SetValue(LeftProperty, (Double) _parent.AxisX.DoubleToPixel(datapoint.XValue));
+                    datapoint.SetValue(TopProperty, (Double) AxisY.DoubleToPixel(datapoint.CorrectedYValue));
                 }
                 datapoint.Width = 1;
                 datapoint.Height = 1;
             }
 
-            for (i = 0; i < _areas.Length; i++)
+            for (index = 0; index < _areas.Length; index++)
             {
-                if (Double.IsNaN(DataPoints[i].CorrectedYValue)) continue;
-                if (Double.IsNaN(DataPoints[i + 1].CorrectedYValue))
+                if (Double.IsNaN(DataPoints[index].CorrectedYValue)) continue;
+                if (Double.IsNaN(DataPoints[index + 1].CorrectedYValue))
                 {
-                    i++;
+                    index++;
                     continue;
                 }
 
                 if (!_parent.View3D)
                 {
 
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue);
                     points[2].X = points[1].X;
                     points[3].X = points[0].X;
 
-                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue);
-                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].CorrectedYValue);
-                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0);
+                    points[0].Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue);
+                    points[1].Y = AxisY.DoubleToPixel(DataPoints[index + 1].CorrectedYValue);
+                    points[2].Y = AxisY.DoubleToPixel(AxisY.AxisMinimum > 0 ? AxisY.AxisMinimum : 0);
                     points[3].Y = points[2].Y;
 
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    Double left = (Double)DataPoints[i].GetValue(LeftProperty);
-                    Double top = (Double)DataPoints[i].GetValue(TopProperty);
-                    DataPoints[i].points.Add(new Point(points[0].X - left, points[0].Y - top));
-                    DataPoints[i].points.Add(new Point(points[1].X - left, points[1].Y - top));
-                    DataPoints[i].points.Add(new Point(points[2].X - left, points[2].Y - top));
-                    DataPoints[i].points.Add(new Point(points[3].X - left, points[3].Y - top));
+                    Double left = (Double)DataPoints[index].GetValue(LeftProperty);
+                    Double top = (Double)DataPoints[index].GetValue(TopProperty);
+                    DataPoints[index].points.Add(new Point(points[0].X - left, points[0].Y - top));
+                    DataPoints[index].points.Add(new Point(points[1].X - left, points[1].Y - top));
+                    DataPoints[index].points.Add(new Point(points[2].X - left, points[2].Y - top));
+                    DataPoints[index].points.Add(new Point(points[3].X - left, points[3].Y - top));
 
 
-                    _areas[i].SetValue(TopProperty, -top);
-                    _areas[i].SetValue(LeftProperty, -left);
+                    _areas[index].SetValue(TopProperty, (Double) (-top));
+                    _areas[index].SetValue(LeftProperty, (Double) ( -left));
 
-                    if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
+                    if (DataPoints[index].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         String linbrush;
                         linbrush = "-90;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.745);
                         linbrush += ",0;";
                         linbrush += Parser.GetDarkerColor(brush.Color, 0.99);
                         linbrush += ",1";
-                        _areas[i].Fill = Parser.ParseLinearGradient(linbrush);
+                        _areas[index].Fill = Parser.ParseLinearGradient(linbrush);
                     }
                     else
                     {
-                        _areas[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
                     }
 
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
 
-                    DataPoints[i].ApplyEventBasedSettings(_areas[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_areas[index]);
 
-                    DataPoints[i].ApplyEffects((Int32)_areas[i].GetValue(ZIndexProperty) + 1);
+                    DataPoints[index].ApplyEffects((Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
                 }
                 else
                 {
 
-                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
-                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[i + 1].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                    points[0].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                    points[1].X = _parent.AxisX.DoubleToPixel(DataPoints[index + 1].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
                     points[2].X = points[1].X;
-                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[i].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
+                    points[3].X = _parent.AxisX.DoubleToPixel(DataPoints[index].XValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - (depth + initialDepth);
 
-                    points[0].Y = _parent.AxisY.DoubleToPixel(DataPoints[i].CorrectedYValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-                    points[1].Y = _parent.AxisY.DoubleToPixel(DataPoints[i + 1].CorrectedYValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
-                    points[2].Y = _parent.AxisY.DoubleToPixel(_parent.AxisY.AxisMinimum > 0 ? _parent.AxisY.AxisMinimum : 0) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[0].Y = AxisY.DoubleToPixel(DataPoints[index].CorrectedYValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[1].Y = AxisY.DoubleToPixel(DataPoints[index + 1].CorrectedYValue) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
+                    points[2].Y = AxisY.DoubleToPixel(AxisY.AxisMinimum > 0 ? AxisY.AxisMinimum : 0) + (Double)_parent.PlotArea.GetValue(TopProperty) + (depth + initialDepth);
                     points[3].Y = points[2].Y;
 
-                    _areas[i].Points = Converter.ArrayToCollection(points);
+                    _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaShadows[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-                    _areaTops[i].Stroke = Cloner.CloneBrush(DataPoints[i].BorderColor);
-
-
-                    _areas[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaShadows[i].StrokeThickness = DataPoints[i].BorderThickness;
-                    _areaTops[i].StrokeThickness = DataPoints[i].BorderThickness;
-
-                    _canvas3D[i].Opacity = this.Opacity * DataPoints[i].Opacity;
+                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
 
 
-                    _areaShadows[i].Height = Math.Abs(points[2].Y - points[1].Y);
-                    _areaShadows[i].Width = depth;
-                    if (DataPoints[i + 1].CorrectedYValue >= 0)
-                        _areaShadows[i].SetValue(TopProperty, points[1].Y);
+                    _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaShadows[index].StrokeThickness = DataPoints[index].BorderThickness;
+                    _areaTops[index].StrokeThickness = DataPoints[index].BorderThickness;
+
+                    _canvas3D[index].Opacity = this.Opacity * DataPoints[index].Opacity;
+
+
+                    _areaShadows[index].Height = Math.Abs(points[2].Y - points[1].Y);
+                    _areaShadows[index].Width = depth;
+                    if (DataPoints[index + 1].CorrectedYValue >= 0)
+                        _areaShadows[index].SetValue(TopProperty, (Double) points[1].Y);
                     else
-                        _areaShadows[i].SetValue(TopProperty, points[2].Y);
-                    _areaShadows[i].SetValue(LeftProperty, points[1].X);
+                        _areaShadows[index].SetValue(TopProperty, (Double) points[2].Y);
+                    _areaShadows[index].SetValue(LeftProperty, (Double) points[1].X);
 
                     SkewTransform st1 = new SkewTransform();
                     st1.AngleY = -45;
                     st1.CenterX = 0;
                     st1.CenterY = 0;
                     st1.AngleX = 0;
-                    _areaShadows[i].RenderTransform = st1;
+                    _areaShadows[index].RenderTransform = st1;
 
 
                     points[0].X += depth;
                     points[1].X += depth;
 
-                    if (DataPoints[i + 1].CorrectedYValue < 0 && DataPoints[i].CorrectedYValue < 0)
+                    if (DataPoints[index + 1].CorrectedYValue < 0 && DataPoints[index].CorrectedYValue < 0)
                     {
                         points[2].Y = points[3].Y;
                         points[3].Y = points[2].Y;
@@ -6511,18 +6628,18 @@ namespace Visifire.Charts
                         points[0].Y -= depth;
                         points[1].Y -= depth;
                     }
-                    _areaTops[i].Points = Converter.ArrayToCollection(points);
+                    _areaTops[index].Points = Converter.ArrayToCollection(points);
 
                     //This part of the code generates the 3D gradient
                     #region Color Gradient
                     Brush brush2 = null;
                     Brush brushShade = null;
                     Brush brushTop = null;
-                    Brush tempBrush = DataPoints[i].Background;
+                    Brush tempBrush = DataPoints[index].Background;
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
-                        LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -6538,8 +6655,8 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
-                        RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
+                        RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -6550,7 +6667,7 @@ namespace Visifire.Charts
                     }
                     else if (tempBrush.GetType().Name == "SolidColorBrush")
                     {
-                        SolidColorBrush brush = DataPoints[i].Background as SolidColorBrush;
+                        SolidColorBrush brush = DataPoints[index].Background as SolidColorBrush;
                         if (LightingEnabled)
                         {
                             String linbrush;
@@ -6584,53 +6701,63 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.75));
-                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[i].Background).Color, 0.85));
+                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
+                            brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[i].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[i].Background);
+                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
+                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[i].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[i].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[i].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = Cloner.CloneBrush(brush2);
+                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
+                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
 
                     Int32 zindex = (Int32)(points[0].X + _parent.AxisX.MajorTicks.TickLength);
 
-                    _areas[i].SetValue(ZIndexProperty, 5);
-                    _areaShadows[i].SetValue(ZIndexProperty, 0);
-                    _areaTops[i].SetValue(ZIndexProperty, 0);
-                    _canvas3D[i].SetValue(ZIndexProperty, zindex);
+                    _areas[index].SetValue(ZIndexProperty, 5);
+                    _areaShadows[index].SetValue(ZIndexProperty, 0);
+                    _areaTops[index].SetValue(ZIndexProperty, 0);
+                    _canvas3D[index].SetValue(ZIndexProperty, zindex);
 
-                    DataPoints[i].ApplyStrokeSettings(_areas[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaShadows[i]);
-                    DataPoints[i].ApplyStrokeSettings(_areaTops[i]);
+                    DataPoints[index].ApplyStrokeSettings(_areas[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaShadows[index]);
+                    DataPoints[index].ApplyStrokeSettings(_areaTops[index]);
 
-                    DataPoints[i].ApplyEventBasedSettings(_canvas3D[i]);
+                    DataPoints[index].ApplyEventBasedSettings(_canvas3D[index]);
 
                 }
 
-                DataPoints[i].PlaceMarker((Int32)_areas[i].GetValue(ZIndexProperty) + 1);
+                DataPoints[index].PlaceMarker((Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
-                if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                    DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
+                if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                    DataPoints[index].AttachLabel(DataPoints[index], labeldepth, (Int32)_areas[index].GetValue(ZIndexProperty) + 1);
 
             }
-            i = _areas.Length;
+            index = _areas.Length;
             
-            DataPoints[i].PlaceMarker((Int32)_areas[i - 1].GetValue(ZIndexProperty) + 1);
+            Int32 zIndex=0;
+            //If data series contains only one datapoint no area exists hence draw the marker and label only
+            if (DataPoints.Count == 1)
+            {
+                zIndex = (Int32)DataPoints[index].ZIndex + 1;
+            }
+            else
+            {
+                zIndex =(Int32)_areas[index - 1].GetValue(ZIndexProperty) + 1;
+            }
 
-            if (DataPoints[i].LabelEnabled.ToLower() == "true")
-                DataPoints[i].AttachLabel(DataPoints[i], labeldepth);
+            DataPoints[index].PlaceMarker(zIndex);
 
-            
-            if (_parent.AxisY.AxisMaximum > 0 && _parent.AxisY.AxisMinimum < 0 && _parent.View3D)
+            if (DataPoints[index].LabelEnabled.ToLower() == "true")
+                DataPoints[index].AttachLabel(DataPoints[index], labeldepth, zIndex);
+
+            if (AxisY.AxisMaximum > 0 && AxisY.AxisMinimum < 0 && _parent.View3D)
             {
                 DrawZeroPlank(initialDepth, depth, 0, Orientation.Horizontal);
             }
@@ -6671,14 +6798,24 @@ namespace Visifire.Charts
             {
                 if (child.GetType().Name == "DataPoint")
                 {
-
                     dataPoint = (child as DataPoint);
+
                     if (!dataPoint.Enabled) continue;
+
                     dataPoint.Index = dataPointIndex;
                     dataPointIndex++;
                     dataPoint.Init();
                     DataPoints.Add(dataPoint);
+
                     _parent.CollectStackContent(dataPoint.XValue, dataPoint.CorrectedYValue);
+
+                    if (!Double.IsNaN(dataPoint.XValue) && !_parent.PlotDetails.AxisLabels.ContainsKey(dataPoint.XValue))
+                    {
+                        if (!String.IsNullOrEmpty(dataPoint.AxisLabel))
+                        {
+                            _parent.PlotDetails.AxisLabels.Add(dataPoint.XValue, dataPoint.AxisLabel);
+                        }
+                    }
                     if (_maxVals.ContainsKey(dataPoint.XValue))
                     {
                         if (dataPoint.CorrectedYValue > 0)
@@ -6693,9 +6830,13 @@ namespace Visifire.Charts
                         else
                             _maxVals.Add(dataPoint.XValue, new Point(0, dataPoint.CorrectedYValue));
                     }
+
                 }
             }
             DataPoints.Sort();
+
+            _parent.PlotDetails.MaxDataPoints = Math.Max(_parent.PlotDetails.MaxDataPoints, DataPoints.Count);
+
         }
 
         private void SetTag(FrameworkElement element,String tag)
@@ -6896,6 +7037,14 @@ namespace Visifire.Charts
 
         }
 
+        internal AxisY AxisY
+        {
+            get
+            {
+                return Plot.AxisY;
+            }
+        }
+
         #endregion Internal Properties
 
         #region Data
@@ -6905,6 +7054,8 @@ namespace Visifire.Charts
         private String _lightingEnabled;
         private String _shadowEnabled;
         private String _color;
+
+        private AxisType _axisYType;
 
         internal Canvas _drawingCanvas;
 
@@ -6986,8 +7137,9 @@ namespace Visifire.Charts
         {
             Bar = 0, Column = 1, Line = 2, Area = 3,
             StackedColumn = 4, StackedColumn100 = 5,
-            StackedArea = 6, StackedArea100 = 7, StackedBar = 8,
-            StackedBar100 = 9
+            StackedAreaPrimary = 6, StackedAreaSecondary = 7, 
+            StackedArea100Primary = 8, StackedArea100Secondary=9, 
+            StackedBar = 10, StackedBar100 = 11
         }
 
         private struct PieDoughnutParams
@@ -7006,6 +7158,7 @@ namespace Visifire.Charts
             public Point _plotCenter;
         }
 
+        
         #endregion Data
 
     }

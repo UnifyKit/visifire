@@ -190,11 +190,11 @@ namespace Visifire.Charts
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                this.SetValue(LeftProperty, (Double)_parent.GetValue(WidthProperty));
+                this.SetValue(LeftProperty, (Double) _parent.GetValue(WidthProperty));
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                this.SetValue(LeftProperty, 0);
+                this.SetValue(LeftProperty, (Double) 0);
 
             }
         }
@@ -204,11 +204,11 @@ namespace Visifire.Charts
 
             if (_parent.AxisOrientation == AxisOrientation.Bar)
             {
-                this.SetValue(TopProperty, 0);
+                this.SetValue(TopProperty, (Double) 0);
             }
             else if (_parent.AxisOrientation == AxisOrientation.Column)
             {
-                this.SetValue(TopProperty, 0);
+                this.SetValue(TopProperty, (Double) 0);
             }
         }
 
@@ -239,9 +239,9 @@ namespace Visifire.Charts
 
             interlacedRectangle.Fill = Cloner.CloneBrush(color);
 
-            interlacedRectangle.SetValue(TopProperty, rect.Y);
+            interlacedRectangle.SetValue(TopProperty, (Double)rect.Y);
 
-            interlacedRectangle.SetValue(LeftProperty, rect.X);
+            interlacedRectangle.SetValue(LeftProperty, (Double) rect.X);
 
             interlacedRectangle.Height = rect.Height;
 
@@ -293,10 +293,18 @@ namespace Visifire.Charts
             {
                 if (_parent.AxisOrientation == AxisOrientation.Bar)
                 {
-                    start.X = 0;
+                    if (_parent.AxisType == AxisType.Primary)
+                    {
+                        start.X = 0;
+                        end.X = (this._parent.Parent as Chart).PlotArea.Width;
+                    }
+                    else
+                    {
+                        start.X = -_parent.Width - (this._parent.Parent as Chart).PlotArea.Width;
+                        end.X = -_parent.Width;
+                    }
+                    
                     start.Y = _parent.DoubleToPixel((Double)position);
-
-                    end.X = (this._parent.Parent as Chart).PlotArea.Width;
                     end.Y = start.Y;
 
                     rectPosition = position + interval;
@@ -319,11 +327,21 @@ namespace Visifire.Charts
                 }
                 else if (_parent.AxisOrientation == AxisOrientation.Column)
                 {
+                    if (_parent.AxisType == AxisType.Primary)
+                    {
+                        start.Y = 0;
+                        end.Y = -_parent._parent.PlotArea.Height;
+                    }
+                    else
+                    {
+                        start.Y = _parent.Height;
+                        end.Y = start.Y + _parent._parent.PlotArea.Height;
+                    }
                     start.X = _parent.DoubleToPixel((Double)position);
-                    start.Y = 0;
+                    
 
                     end.X = start.X;
-                    end.Y = -(Double)(this._parent.Parent as Chart).PlotArea.Height;
+                    
 
                     rectPosition = position;
                     position = minmumValue + interval * (++intervalCount);

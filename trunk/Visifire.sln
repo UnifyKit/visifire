@@ -27,7 +27,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "VisifireCharts_Web", "Visif
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "61501"
+		VWDPort = "51158"
 		DefaultWebSiteLanguage = "Visual C#"
 		ProjOutputReferences = "{76D89832-CC4E-4669-8B72-F6412CF11457}|;"
 	EndProjectSection

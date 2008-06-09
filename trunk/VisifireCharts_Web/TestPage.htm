@@ -4,24 +4,20 @@
     <title>Visifire Test Page</title>
     <!-- Helper files for initializing and creating the Silverlight plug-in -->
     <script type="text/javascript" src="Visifire.js"></script>
-    <script type="text/javascript" >
-    function callBack(e)
-    {
-    alert(e.Element);
-    }
-    </script>
+
 </head>
 <body>
     <div id="VisifireChart0">
 
         <script type="text/javascript"> 
-                var vChart1 = new Visifire('ClientBin/Visifire.xap', 500,300);
-                //vChart1.setLogLevel(1); // If you want to disable logging.
-                vChart1.setDataUri("Column2D/Column2D1.xml");
-                
-                vChart1.render("VisifireChart0");
+         
+            var vChart1 = new Visifire('ClientBin/Visifire.xap', "Area Chart", 500,300);
+            //vChart1.setLogLevel(1); // If you want to disable logging.
+            vChart1.setDataUri("Column2D/Column2D1.xml");
+            
+            vChart1.render("VisifireChart0");
+            
         </script>
-
     </div>
 
 </body>

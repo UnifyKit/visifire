@@ -1,38 +1,54 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" AnimationType="Type4" UniqueColors="False" Width="500" Height="300">
+Theme="Theme1" AnimationType="Type4" UniqueColors="False" >
 
-    <vc:Title Text="Worldwide Hybrid Vehicle Sales"/>
-    <vc:AxisX Interval="1" Title="Month"/>
-    <vc:AxisY Title="Units (thousand)"/>
+  <vc:Title Text="Worldwide Hybrid Vehicle Sales"/>
+  <vc:AxisX Interval="1" Title="Month"/>
+  <vc:AxisY Title="Units (thousand)"/>
+  <vc:AxisY AxisType="Secondary" AxisMaximum="60" Title="Percentage Sales" Suffix="%"/>
 
-    <vc:DataSeries Name="2007" RenderAs="Area">
-      <vc:DataPoint AxisLabel="Jan" YValue="29.3"/>
-      <vc:DataPoint AxisLabel="Feb" YValue="35.1"/>
-      <vc:DataPoint AxisLabel="Mar" YValue="51.2"/>
-      <vc:DataPoint AxisLabel="Apr" YValue="38.2"/>
-      <vc:DataPoint AxisLabel="May" YValue="57.6"/>
-      <vc:DataPoint AxisLabel="Jun" YValue="49.8"/>
-      <vc:DataPoint AxisLabel="Jul" YValue="43.4"/>
-      <vc:DataPoint AxisLabel="Aug" YValue="36.7"/>
-      <vc:DataPoint AxisLabel="Sep" YValue="38.2"/>
-      <vc:DataPoint AxisLabel="Oct" YValue="38.3"/>
-      <vc:DataPoint AxisLabel="Nov" YValue="40.2"/>
-      <vc:DataPoint AxisLabel="Dec" YValue="41.1"/>
-    </vc:DataSeries>
+  <vc:DataSeries Name="2007" RenderAs="Area">
+    <vc:DataPoint AxisLabel="Jan" YValue="29.3"/>
+    <vc:DataPoint AxisLabel="Feb" YValue="35.1"/>
+    <vc:DataPoint AxisLabel="Mar" YValue="51.2"/>
+    <vc:DataPoint AxisLabel="Apr" YValue="38.2"/>
+    <vc:DataPoint AxisLabel="May" YValue="57.6"/>
+    <vc:DataPoint AxisLabel="Jun" YValue="49.8"/>
+    <vc:DataPoint AxisLabel="Jul" YValue="43.4"/>
+    <vc:DataPoint AxisLabel="Aug" YValue="36.7"/>
+    <vc:DataPoint AxisLabel="Sep" YValue="38.2"/>
+    <vc:DataPoint AxisLabel="Oct" YValue="38.3"/>
+    <vc:DataPoint AxisLabel="Nov" YValue="40.2"/>
+    <vc:DataPoint AxisLabel="Dec" YValue="41.1"/>
+  </vc:DataSeries>
 
-    <vc:DataSeries Name="2006" RenderAs="Area">
-      <vc:DataPoint YValue="23.7"/>
-      <vc:DataPoint YValue="22.3"/>
-      <vc:DataPoint YValue="28.7"/>
-      <vc:DataPoint YValue="29.2"/>
-      <vc:DataPoint YValue="38.3"/>
-      <vc:DataPoint YValue="32.2"/>
-      <vc:DataPoint YValue="30.1"/>
-      <vc:DataPoint YValue="28.1"/>
-      <vc:DataPoint YValue="35.7"/>
-      <vc:DataPoint YValue="31.6"/>
-      <vc:DataPoint YValue="31.2"/>
-      <vc:DataPoint YValue="34.9"/>
-    </vc:DataSeries>
+  <vc:DataSeries Name="2006" RenderAs="Area">
+    <vc:DataPoint YValue="23.7"/>
+    <vc:DataPoint YValue="22.3"/>
+    <vc:DataPoint YValue="28.7"/>
+    <vc:DataPoint YValue="29.2"/>
+    <vc:DataPoint YValue="38.3"/>
+    <vc:DataPoint YValue="32.2"/>
+    <vc:DataPoint YValue="30.1"/>
+    <vc:DataPoint YValue="28.1"/>
+    <vc:DataPoint YValue="35.7"/>
+    <vc:DataPoint YValue="31.6"/>
+    <vc:DataPoint YValue="31.2"/>
+    <vc:DataPoint YValue="34.9"/>
+  </vc:DataSeries>
+
+  <vc:DataSeries Name="Total Percentage Sales" RenderAs="Area" AxisYType="Secondary" ToolTipText="#AxisLabel, #YValue">
+    <vc:DataPoint YValue="6.36"/>
+    <vc:DataPoint YValue="6.88"/>
+    <vc:DataPoint YValue="9.58"/>
+    <vc:DataPoint YValue="8.08"/>
+    <vc:DataPoint YValue="11.50"/>
+    <vc:DataPoint YValue="9.84"/>
+    <vc:DataPoint YValue="8.82"/>
+    <vc:DataPoint YValue="7.77"/>
+    <vc:DataPoint YValue="8.86"/>
+    <vc:DataPoint YValue="8.38"/>
+    <vc:DataPoint YValue="8.56"/>
+    <vc:DataPoint YValue="9.12"/>
+  </vc:DataSeries>
 
 </vc:Chart>

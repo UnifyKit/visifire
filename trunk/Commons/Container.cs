@@ -39,15 +39,12 @@ namespace Visifire.Commons
         {
             get
             {
-                if (_margin < 0)
-                {
-                    _margin = 5;
-                }
                 return _margin;
             }
             set
             {
                 _margin = value;
+                _paddingOverride = true;
             }
         }
 
@@ -91,7 +88,7 @@ namespace Visifire.Commons
         public Themes Themes = new Themes();
         private String _theme;
         public System.Collections.Generic.Dictionary<String, System.Collections.Generic.Dictionary<String, Object>> _appliedTheme;
-
+        protected Boolean _paddingOverride = false;
         #endregion Data
     }
 }

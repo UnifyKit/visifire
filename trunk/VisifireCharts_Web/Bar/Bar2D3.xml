@@ -1,25 +1,27 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=Visifire.Charts"
-          Theme="Theme1" AnimationType="Type2" Width="350" Height="400">
+Theme="Theme1" AnimationType="Type2" >
 
-  <vc:Title Text="Visifire Multiseries 2D Bar Chart"/>
-  <vc:AxisY InterlacedColor="#f1f1f1"/>
+  <vc:PlotArea Color="#f1f1f1"/>
+  <vc:Title Text="Monthly Production"/>
+  <vc:AxisY InterlacedColor="White"/>
+  <vc:AxisY AxisType="Secondary" Suffix="%"/>
 
-  <vc:DataSeries RenderAs="Bar">
-    <vc:DataPoint AxisLabel="5/10/07" YValue="220"/>
-    <vc:DataPoint AxisLabel="5/11/07" YValue="450"/>
-    <vc:DataPoint AxisLabel="5/12/07" YValue="550"/>
-    <vc:DataPoint AxisLabel="5/1/08" YValue="650"/>
-    <vc:DataPoint AxisLabel="5/2/08" YValue="620"/>
-    <vc:DataPoint AxisLabel="5/3/08" YValue="446"/>
+  <vc:DataSeries Name="Product A" RenderAs="Bar">
+    <vc:DataPoint AxisLabel="Jan-08" YValue="220"/>
+    <vc:DataPoint AxisLabel="Feb-08" YValue="450"/>
+    <vc:DataPoint AxisLabel="Mar-08" YValue="550"/>
+    <vc:DataPoint AxisLabel="Apr-08" YValue="650"/>
+    <vc:DataPoint AxisLabel="May-08" YValue="620"/>
+    <vc:DataPoint AxisLabel="Jun-08" YValue="446"/>
   </vc:DataSeries>
 
-  <vc:DataSeries RenderAs="Bar">
-    <vc:DataPoint YValue="330"/>
-    <vc:DataPoint YValue="400"/>
-    <vc:DataPoint YValue="653"/>
-    <vc:DataPoint YValue="756"/>
-    <vc:DataPoint YValue="545"/>
-    <vc:DataPoint YValue="334"/>
+  <vc:DataSeries Name="Product B" RenderAs="Bar" AxisYType="Secondary">
+    <vc:DataPoint YValue="8"/>
+    <vc:DataPoint YValue="14"/>
+    <vc:DataPoint YValue="20"/>
+    <vc:DataPoint YValue="32"/>
+    <vc:DataPoint YValue="28"/>
+    <vc:DataPoint YValue="16"/>
   </vc:DataSeries>
 
 </vc:Chart>

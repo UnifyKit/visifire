@@ -179,8 +179,8 @@ namespace Visifire.Charts
             
             _path.SetValue(ZIndexProperty, 2);
             _shadow.SetValue(ZIndexProperty, 1);
-            _shadow.SetValue(LeftProperty, 3);
-            _shadow.SetValue(TopProperty, 3);
+            _shadow.SetValue(LeftProperty, (Double) 3);
+            _shadow.SetValue(TopProperty, (Double) 3);
             _shadow.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0x7f, 0x7f, 0x7f, 0x7f));
 
             List<PathGeometryParams> pathGeometryList;

@@ -38,7 +38,7 @@ namespace Visifire.Commons
 
         public LogoBase()
         {
-            
+            _image.Loaded += new RoutedEventHandler(_image_Loaded);
             
         }
 
@@ -154,16 +154,19 @@ namespace Visifire.Commons
 
         private void _timer_Tick(object sender, EventArgs e)
         {
-            if (_image.DownloadProgress == 1)
-            {
-                _timer.Stop();
-                SetHeight();
-                SetWidth();
-                SetLeft();
-                SetTop();
-                Render();
-                _image.Opacity = 1;
-            }
+            
+            
+        }
+
+        void _image_Loaded(object sender, RoutedEventArgs e)
+        {
+            _timer.Stop();
+            SetHeight();
+            SetWidth();
+            SetLeft();
+            SetTop();
+            Render();
+            _image.Opacity = 1;
         }
 
         protected override void SetDefaults()

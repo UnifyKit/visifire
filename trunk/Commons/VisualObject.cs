@@ -235,8 +235,8 @@ namespace Visifire.Commons
         public virtual void ApplyShadow()
         {
             Rectangle rect = new Rectangle();
-            rect.SetValue(LeftProperty, (Double)this.GetValue(LeftProperty) + 4);
-            rect.SetValue(TopProperty, (Double)this.GetValue(TopProperty) + 4);
+            rect.SetValue(LeftProperty, (Double) ( (Double)this.GetValue(LeftProperty) + 4));
+            rect.SetValue(TopProperty, (Double) ( (Double)this.GetValue(TopProperty) + 4));
             rect.Width = this.Width;
             rect.Height = this.Height;
             rect.RadiusX = RadiusX;
@@ -487,7 +487,7 @@ namespace Visifire.Commons
                 String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
 
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
-                imgBrush.ImageFailed += new ExceptionRoutedEventHandler(imgBrush_ImageFailed);
+                imgBrush.ImageFailed +=new EventHandler<ExceptionRoutedEventArgs>(imgBrush_ImageFailed);
 
                 imgBrush.Stretch = ImageStretch;
                 base.Background = imgBrush;

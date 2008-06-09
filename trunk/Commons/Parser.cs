@@ -125,7 +125,7 @@ namespace Visifire.Commons
         /// <returns></returns>
         public static Brush ParseLinearGradient(String str, Color color,Double angle)
         {
-            String linearGrad = angle.ToString() + ";";
+            String linearGrad = angle.ToString(CultureInfo.InvariantCulture) + ";";
 
             String[] shadeValues = str.Split(';');
             
@@ -134,8 +134,8 @@ namespace Visifire.Commons
                 String[] splitValue = value.Split(',');
                 if (splitValue.Length <= 2) continue;
 
-                Double intensity = Double.Parse(splitValue[1]);
-                Double stops = Double.Parse(splitValue[2]);
+                Double intensity = Double.Parse(splitValue[1], CultureInfo.InvariantCulture);
+                Double stops = Double.Parse(splitValue[2], CultureInfo.InvariantCulture);
 
                 switch (splitValue[0])
                 {
@@ -445,11 +445,11 @@ namespace Visifire.Commons
                 {
                     case "l":
                     case "L":
-                        Parser.GenerateDarkerGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._radialGradientParams._intensity);
+                        Parser.GenerateDarkerGradientBrush(brush, generatedBrush as RadialGradientBrush, gradientParams._radialGradientParams._intensity);
                         break;
                     case "d":
                     case "D":
-                        Parser.GenerateLighterGradientBrush(brush, generatedBrush as LinearGradientBrush, gradientParams._radialGradientParams._intensity);
+                        Parser.GenerateLighterGradientBrush(brush, generatedBrush as RadialGradientBrush, gradientParams._radialGradientParams._intensity);
                         break;
                 }
             }
