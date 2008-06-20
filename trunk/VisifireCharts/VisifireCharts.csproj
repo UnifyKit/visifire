@@ -57,13 +57,13 @@
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataXMLEventArgs.cs" />
     <Compile Include="JsEventArgs\DataPointJsEventArgs.cs" />
     <Compile Include="JsEventArgs\TitleJsEventArgs.cs" />
     <Compile Include="JsEventArgs\AxisJsEventArgs.cs" />

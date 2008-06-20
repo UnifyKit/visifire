@@ -21,86 +21,157 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Visifire.Charts;
+using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Browser;
 using System.Globalization;
+using System.Net;
+
+using Visifire.Charts;
 
 namespace VisifireCharts
 {
     public partial class App : Application
     {
         #region Public Methods
-            
-            public App()
+
+        public App()
+        {
+            this.Startup += this.Application_Startup;
+
+            this.UnhandledException += this.Application_UnhandledException;
+
+            String fullName = System.Reflection.Assembly.GetExecutingAssembly().FullName;
+
+            _version = fullName.Split(',')[1];
+
+            _version = (_version.Substring(0, _version.LastIndexOf('.')) + " Beta").Trim();
+
+            InitializeComponent();
+
+            _wrapper.DataXML += new EventHandler<DataXMLEventArgs>(_wrapper_DataXML);
+
+            _wrapper.ReRender += new EventHandler(_wrapper_ReRender);
+
+            HtmlPage.RegisterScriptableObject("wrapper", _wrapper);
+
+        }
+
+        void _wrapper_DataXML(object sender, DataXMLEventArgs e)
+        {
+            if (e.DataXML != null)
+                _xmlQueue.Enqueue(e.DataXML);
+
+            if (e.DataUri != null)
             {
-                this.Startup += this.Application_Startup;
-                                        
-                this.UnhandledException += this.Application_UnhandledException;
-
-                String fullName = System.Reflection.Assembly.GetExecutingAssembly().FullName;
-
-                version = fullName.Split(',')[1];
-
-                version = (version.Substring(0, version.LastIndexOf('.')) + " Beta").Trim();
-
-                InitializeComponent();
-
+                _uriQueue.Enqueue(e.DataUri);
+                if (!_downloadBusy)
+                    DownloadXML();
             }
-            
+
+        }
+
+        void _wrapper_ReRender(object sender, EventArgs e)
+        {
+
+            RenderEngine();
+        }
+
+
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// Handle display of single and multiple charts
+        /// </summary>
+        private void RenderEngine()
+        {
+            if (_firstChart)
+            {
+                _chartCanv = CreateChart();
+
+                _wrapper.LayoutRoot.Children.Add(_chartCanv);
+
+                _firstChart = false;
+            }
+            else if (_xmlQueue.Count > 0 && _chartReady)
+            {
+
+                _chartCanv = CreateChart();
+
+                _wrapper.LayoutRoot.Children.Add(_chartCanv);
+
+                if (_wrapper.LayoutRoot.Children.Count > 2)
+                {
+                    for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
+                    {
+                        if (_wrapper.LayoutRoot.Children[i].GetType().Name == "Chart") ;
+                            _wrapper.LayoutRoot.Children.RemoveAt(i);
+                    }
+                }
+
+                GC.Collect();
+
+            }
+        }
+
+        private void DownloadXML()
+        {
+            if (_uriQueue.Count > 0)
+            {
+
+                WebClient webclient = new WebClient();
+                webclient.BaseAddress = _baseUri;
+
+                webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
+
+                webclient.DownloadStringAsync(new Uri(_uriQueue.Dequeue(), UriKind.RelativeOrAbsolute));
+
+                _downloadBusy = true;
+            }
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            this.RootVisual = wrapper;
-            
-            System.Net.WebClient webclient;
+            this.RootVisual = _wrapper;
 
-            wrapper.KeyDown += new KeyEventHandler(wrapper_KeyDown);
+            _wrapper.KeyDown += new KeyEventHandler(wrapper_KeyDown);
 
-            baseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
-            baseUri = baseUri.Substring(0, baseUri.LastIndexOf("/") + 1);
+            _baseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
+            _baseUri = _baseUri.Substring(0, _baseUri.LastIndexOf("/") + 1);
 
             if (e.InitParams.ContainsKey("logLevel"))
             {
-                logLevel = Int32.Parse(e.InitParams["logLevel"].Trim());
+                _logLevel = Int32.Parse(e.InitParams["logLevel"].Trim());
 
-                AddLogViewer(wrapper);
+                AddLogViewer(_wrapper);
             }
 
             if (e.InitParams.ContainsKey("width"))
-            {   
-                if(!e.InitParams["width"].Contains("%"))
-                    chartWidth = Double.Parse(e.InitParams["width"], CultureInfo.InvariantCulture);
+            {
+                if (!e.InitParams["width"].Contains("%"))
+                    _chartWidth = Double.Parse(e.InitParams["width"], CultureInfo.InvariantCulture);
             }
 
             if (e.InitParams.ContainsKey("height"))
             {
                 if (!e.InitParams["height"].Contains("%"))
-                    chartHeight = Double.Parse(e.InitParams["height"], CultureInfo.InvariantCulture);
+                    _chartHeight = Double.Parse(e.InitParams["height"], CultureInfo.InvariantCulture);
             }
 
             if (e.InitParams.ContainsKey("EventDispatcher"))
             {
-                jsEventDispatcher = e.InitParams["EventDispatcher"];
+                _jsEventDispatcher = e.InitParams["EventDispatcher"];
             }
 
             if (e.InitParams.ContainsKey("jsEvents"))
             {
-                jsEvents = new Dictionary<string, System.Collections.Generic.List<String>>();
+                _jsEvents = new Dictionary<string, System.Collections.Generic.List<String>>();
 
                 String[] attachedJsEvents = e.InitParams["jsEvents"].Split(';');
-                
+
                 foreach (String st in attachedJsEvents)
                 {
                     if (String.IsNullOrEmpty(st))
@@ -108,51 +179,61 @@ namespace VisifireCharts
 
                     String[] temp = st.Split(' ');
 
-                    if (!jsEvents.ContainsKey(temp[0]))
-                        jsEvents.Add(temp[0],new List<string>());
+                    if (!_jsEvents.ContainsKey(temp[0]))
+                        _jsEvents.Add(temp[0], new List<string>());
 
-                    if(!jsEvents[temp[0]].Contains(temp[1]))
-                        jsEvents[temp[0]].Add(temp[1]);
+                    if (!_jsEvents[temp[0]].Contains(temp[1]))
+                        _jsEvents[temp[0]].Add(temp[1]);
                 }
             }
-            
+
             if (e.InitParams.ContainsKey("dataUri"))
             {
-                dataUri = e.InitParams["dataUri"];
+                _dataUri = e.InitParams["dataUri"];
 
-                if (!String.IsNullOrEmpty(dataUri))
-                {   
-                    webclient = new System.Net.WebClient();
-                    webclient.BaseAddress = baseUri;
+                if (!String.IsNullOrEmpty(_dataUri))
+                {
+                    _uriQueue.Enqueue(_dataUri);
 
-                    webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
-
-                    webclient.DownloadStringAsync(new Uri(dataUri, UriKind.RelativeOrAbsolute));
+                    DownloadXML();
                 }
             }
             else if (e.InitParams.ContainsKey("dataXml"))
             {
-                dataXml = (String)System.Windows.Browser.HtmlPage.Window.Invoke(e.InitParams["dataXml"]);
-                CreateChart();
+                _xmlQueue.Enqueue((String)System.Windows.Browser.HtmlPage.Window.Invoke(e.InitParams["dataXml"]));
+                RenderEngine();
+                //CreateChart();
             }
 
-            wrapper.LayoutRoot.Children.Add(tb);
+            _wrapper.LayoutRoot.Children.Add(_textBlock);
 
-           // TestAttachedJsEvents();
+            // TestAttachedJsEvents();
+
+
         }
-        
+
         private void wrapper_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.F8)
-                System.Windows.Browser.HtmlPage.Window.Alert("Visifire " + version);
+            if (e.Key == Key.F8)
+                System.Windows.Browser.HtmlPage.Window.Alert("Visifire " + _version);
         }
 
         private void webclient_DownloadStringCompleted(object sender, System.Net.DownloadStringCompletedEventArgs e)
         {
             if (e.Error == null)
             {
-                dataXml = e.Result;
-                CreateChart();
+                _downloadBusy = false;
+                _xmlQueue.Enqueue(e.Result);
+
+                if (_firstChart)
+                {
+                    RenderEngine();
+
+                }
+
+                //download Next XML
+                DownloadXML();
+
             }
             else
             {
@@ -162,56 +243,64 @@ namespace VisifireCharts
 
         private void AddLogViewer(Wrapper wrapper)
         {
-            logTextBox = new TextBox();
-            logTextBox.FontSize = 12;
-            logTextBox.TextAlignment = TextAlignment.Left;
-            logTextBox.Visibility = Visibility.Collapsed;
+            _logTextBox = new TextBox();
+            _logTextBox.FontSize = 12;
+            _logTextBox.TextAlignment = TextAlignment.Left;
+            _logTextBox.Visibility = Visibility.Collapsed;
 
-            logTextBox.BorderThickness = new Thickness(0);
+            _logTextBox.BorderThickness = new Thickness(0);
 
-            logTextBox.MaxHeight = 300;
-            logTextBox.MaxWidth = 500;
+            _logTextBox.MaxHeight = 300;
+            _logTextBox.MaxWidth = 500;
 
-            logTextBox.Text = "Error Log (" + version + ") :\n";
+            _logTextBox.Text = "Error Log (" + _version + ") :\n";
 
-            wrapper.LayoutRoot.Children.Add(logTextBox);
+            wrapper.LayoutRoot.Children.Add(_logTextBox);
         }
 
-        private void CreateChart()
+        private Canvas CreateChart()
         {
+
+            Canvas chartCanvas;
+
             String canvasXaml = "<Canvas ";
+
             canvasXaml += "xmlns=\"http://schemas.microsoft.com/client/2007\"";
 
-            if (!Double.IsNaN(chartWidth))
-                canvasXaml += " Width=\"" + chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
+            if (!Double.IsNaN(_chartWidth))
+                canvasXaml += " Width=\"" + _chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
 
-            if (!Double.IsNaN(chartHeight))
-                canvasXaml += " Height=\"" + chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
+            if (!Double.IsNaN(_chartHeight))
+                canvasXaml += " Height=\"" + _chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
 
             canvasXaml += ">\n";
 
-            canvasXaml += dataXml;
+            _dataXml = _xmlQueue.Dequeue();
+
+            canvasXaml += _dataXml;
 
             canvasXaml += "</Canvas>";
 
-            chartCanv = (Canvas)XamlReader.Load(canvasXaml);
+            chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
 
-            chartCanv.Loaded += new RoutedEventHandler(chartCanv_Loaded);
+            chartCanvas.Loaded += new RoutedEventHandler(chartCanv_Loaded);
 
-            wrapper.LayoutRoot.Children.Add(chartCanv);
+            _chartReady = false;
 
+            return chartCanvas;
         }
 
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
         {
             AttachJsEvents(sender as Canvas);
+            _chartReady = true;
         }
 
         #region "Js Events"
-            
+
         private void AttachJsEvents(Canvas chartCanv)
         {
-            if (jsEvents != null)
+            if (_jsEvents != null)
             {
                 chartCanv.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
                 {
@@ -231,44 +320,44 @@ namespace VisifireCharts
                 List<UIElement> charts = new List<UIElement>();
 
                 Visifire.Commons.VisualObject.FindByType(ref charts, chartCanv, typeof(Chart));
-                
+
                 foreach (Chart chart in charts)
-                   AttachJsEvents(chart);
+                    AttachJsEvents(chart);
             }
         }
-        
+
         private void AttachJsEvents(Chart chart)
         {
             if (chart != null)
             {
-                if (jsEvents.ContainsKey("Chart"))
+                if (_jsEvents.ContainsKey("Chart"))
                 {
-                    if (jsEvents["Chart"].Contains("MouseEnter"))
+                    if (_jsEvents["Chart"].Contains("MouseEnter"))
                         chart.MouseEnter += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseEnter");
                         };
 
-                    if (jsEvents["Chart"].Contains("MouseLeave"))
+                    if (_jsEvents["Chart"].Contains("MouseLeave"))
                         chart.MouseLeave += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseLeave");
                         };
                 }
 
-                if (jsEvents.ContainsKey("DataPoint"))
+                if (_jsEvents.ContainsKey("DataPoint"))
                 {
                     foreach (DataSeries ds in chart.DataSeries)
                     {
                         foreach (DataPoint dp in ds.DataPoints)
                         {
-                            if (jsEvents["DataPoint"].Contains("MouseEnter"))
+                            if (_jsEvents["DataPoint"].Contains("MouseEnter"))
                                 dp.MouseEnter += delegate(object sender, MouseEventArgs e)
                                 {
                                     DispatchJsEvent(sender, e, "MouseEnter");
                                 };
 
-                            if (jsEvents["DataPoint"].Contains("MouseLeave"))
+                            if (_jsEvents["DataPoint"].Contains("MouseLeave"))
                                 dp.MouseLeave += delegate(object sender, MouseEventArgs e)
                                 {
                                     DispatchJsEvent(sender, e, "MouseLeave");
@@ -277,47 +366,47 @@ namespace VisifireCharts
                     }
                 }
 
-                if (jsEvents.ContainsKey("AxisX"))
+                if (_jsEvents.ContainsKey("AxisX"))
                 {
-                    if (jsEvents["AxisX"].Contains("MouseEnter"))
+                    if (_jsEvents["AxisX"].Contains("MouseEnter"))
                         chart.AxisX.MouseEnter += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseEnter");
                         };
-                        
-                    if (jsEvents["AxisX"].Contains("MouseLeave"))
+
+                    if (_jsEvents["AxisX"].Contains("MouseLeave"))
                         chart.AxisX.MouseLeave += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseLeave");
                         };
                 }
 
-                if (jsEvents.ContainsKey("AxisY"))
+                if (_jsEvents.ContainsKey("AxisY"))
                 {
-                    if (jsEvents["AxisY"].Contains("MouseEnter"))
+                    if (_jsEvents["AxisY"].Contains("MouseEnter"))
                         chart.AxisYPrimary.MouseEnter += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseEnter");
                         };
-                        
-                    if (jsEvents["AxisY"].Contains("MouseLeave"))
+
+                    if (_jsEvents["AxisY"].Contains("MouseLeave"))
                         chart.AxisYPrimary.MouseLeave += delegate(object sender, MouseEventArgs e)
                         {
                             DispatchJsEvent(sender, e, "MouseLeave");
                         };
                 }
 
-                if (jsEvents.ContainsKey("Title"))
-                {   
+                if (_jsEvents.ContainsKey("Title"))
+                {
                     foreach (Title title in chart.Titles)
                     {
-                        if (jsEvents["Title"].Contains("MouseEnter"))
+                        if (_jsEvents["Title"].Contains("MouseEnter"))
                             title.MouseEnter += delegate(object sender, MouseEventArgs e)
                             {
                                 DispatchJsEvent(sender, e, "MouseEnter");
                             };
 
-                        if (jsEvents["Title"].Contains("MouseLeave"))
+                        if (_jsEvents["Title"].Contains("MouseLeave"))
                             title.MouseLeave += delegate(object sender, MouseEventArgs e)
                             {
                                 DispatchJsEvent(sender, e, "MouseLeave");
@@ -325,17 +414,17 @@ namespace VisifireCharts
                     }
                 }
 
-                if (jsEvents.ContainsKey("Legend"))
+                if (_jsEvents.ContainsKey("Legend"))
                 {
                     foreach (Legend legend in chart.Legends)
                     {
-                        if (jsEvents["Legend"].Contains("MouseEnter"))
+                        if (_jsEvents["Legend"].Contains("MouseEnter"))
                             legend.MouseEnter += delegate(object sender, MouseEventArgs e)
                             {
                                 DispatchJsEvent(sender, e, "MouseEnter");
                             };
 
-                        if (jsEvents["Legend"].Contains("MouseLeave"))
+                        if (_jsEvents["Legend"].Contains("MouseLeave"))
                             legend.MouseLeave += delegate(object sender, MouseEventArgs e)
                             {
                                 DispatchJsEvent(sender, e, "MouseLeave");
@@ -344,7 +433,7 @@ namespace VisifireCharts
                 }
             }
         }
-        
+
         private FrameworkElement GetTaggedElement(FrameworkElement fe)
         {
             if (fe.Tag != null)
@@ -359,7 +448,7 @@ namespace VisifireCharts
             else
                 return null;
         }
-        
+
         private void CatchBubbledEvents(Object sender, EventArgs e, String eventName)
         {
             if (e.GetType().Name == "MouseButtonEventArgs")
@@ -372,39 +461,39 @@ namespace VisifireCharts
             else if (e.GetType().Name == "MouseEventArgs")
             {
                 FrameworkElement fe = GetTaggedElement((e as MouseEventArgs).Source as FrameworkElement);
-                
-                if(fe != null)
+
+                if (fe != null)
                     DispatchJsEvent(fe, e, eventName);
             }
         }
 
         private void DispatchJsEvent(Object sender, EventArgs e, String eventName)
         {
-            if (!String.IsNullOrEmpty(jsEventDispatcher))
-            {   
+            if (!String.IsNullOrEmpty(_jsEventDispatcher))
+            {
                 try
-                {   
-                    if (jsEvents.ContainsKey("DataPoint") && jsEvents["DataPoint"].Contains(eventName) && typeof(DataPoint).Equals(sender.GetType()))
-                        System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new DataPointJsEventArgs(sender as DataPoint, e, eventName));
-                    else if (jsEvents.ContainsKey("Title") && jsEvents["Title"].Contains(eventName) && typeof(Title).Equals(sender.GetType()))
-                        System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new TitleJsEventArgs(sender as Title, e, eventName));
-                    else if (jsEvents.ContainsKey("AxisX") && jsEvents["AxisX"].Contains(eventName) && typeof(AxisX).Equals(sender.GetType()))
-                        System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new AxisJsEventArgs(sender as AxisX, e, eventName));
-                    else if (jsEvents.ContainsKey("AxisY") && jsEvents["AxisY"].Contains(eventName) && typeof(AxisY).Equals(sender.GetType()))
-                        System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new AxisJsEventArgs(sender as AxisY, e, eventName));
-                    else if (jsEvents.ContainsKey("Legend") && jsEvents["Legend"].Contains(eventName) && typeof(Legend).Equals(sender.GetType()))
-                        System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new LegendJsEventArgs(sender as Legend, e, eventName));
+                {
+                    if (_jsEvents.ContainsKey("DataPoint") && _jsEvents["DataPoint"].Contains(eventName) && typeof(DataPoint).Equals(sender.GetType()))
+                        System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new DataPointJsEventArgs(sender as DataPoint, e, eventName));
+                    else if (_jsEvents.ContainsKey("Title") && _jsEvents["Title"].Contains(eventName) && typeof(Title).Equals(sender.GetType()))
+                        System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new TitleJsEventArgs(sender as Title, e, eventName));
+                    else if (_jsEvents.ContainsKey("AxisX") && _jsEvents["AxisX"].Contains(eventName) && typeof(AxisX).Equals(sender.GetType()))
+                        System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new AxisJsEventArgs(sender as AxisX, e, eventName));
+                    else if (_jsEvents.ContainsKey("AxisY") && _jsEvents["AxisY"].Contains(eventName) && typeof(AxisY).Equals(sender.GetType()))
+                        System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new AxisJsEventArgs(sender as AxisY, e, eventName));
+                    else if (_jsEvents.ContainsKey("Legend") && _jsEvents["Legend"].Contains(eventName) && typeof(Legend).Equals(sender.GetType()))
+                        System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new LegendJsEventArgs(sender as Legend, e, eventName));
 
-                    if (jsEvents.ContainsKey("Chart") && jsEvents["Chart"].Contains(eventName))
+                    if (_jsEvents.ContainsKey("Chart") && _jsEvents["Chart"].Contains(eventName))
                     {
                         if (typeof(Chart).Equals(sender.GetType()))
-                            System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new ChartJsEventArgs(sender as Chart, e, eventName));
+                            System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new ChartJsEventArgs(sender as Chart, e, eventName));
                         else if (eventName != "MouseEnter" && eventName != "MouseLeave") // No bubbled up
                         {
                             Chart chart = (typeof(DataPoint).Equals(sender.GetType())) ? ((sender as DataPoint).Parent as DataSeries).Parent as Chart : (sender as FrameworkElement).Parent as Chart;
 
                             if (chart != null)
-                                System.Windows.Browser.HtmlPage.Window.Invoke(jsEventDispatcher, new ChartJsEventArgs(chart, e, eventName));
+                                System.Windows.Browser.HtmlPage.Window.Invoke(_jsEventDispatcher, new ChartJsEventArgs(chart, e, eventName));
                         }
                     }
                 }
@@ -419,7 +508,7 @@ namespace VisifireCharts
         {
             System.Diagnostics.Debug.WriteLine("The following events attached from the Javascript.");
 
-            foreach (System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>> de in jsEvents)
+            foreach (System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>> de in _jsEvents)
             {
                 System.Diagnostics.Debug.WriteLine(de.Key.ToString());
 
@@ -434,15 +523,15 @@ namespace VisifireCharts
 
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
-            if (logLevel == 1)
+            if (_logLevel == 1)
             {
-                logTextBox.Text += e.ExceptionObject.Message + "\n" + e.ExceptionObject.StackTrace + "\n";
-                logTextBox.BorderThickness = new Thickness(1);
-                logTextBox.Visibility = Visibility.Visible;
+                _logTextBox.Text += e.ExceptionObject.Message + "\n" + e.ExceptionObject.StackTrace + "\n";
+                _logTextBox.BorderThickness = new Thickness(1);
+                _logTextBox.Visibility = Visibility.Visible;
 
-                foreach (FrameworkElement child in wrapper.LayoutRoot.Children)
+                foreach (FrameworkElement child in _wrapper.LayoutRoot.Children)
                 {
-                    if (child != logTextBox)
+                    if (child != _logTextBox)
                         child.Visibility = Visibility.Collapsed;
                 }
             }
@@ -452,20 +541,28 @@ namespace VisifireCharts
 
         #region Data
 
-            private String version = null;
-            private Int32 logLevel = 0;
-            private String dataUri = null;
-            private String dataXml = null;
-            private String baseUri = null;
-            private TextBox logTextBox;
-            private Double chartWidth = Double.NaN;
-            private Double chartHeight = Double.NaN;
-            private Canvas chartCanv;
-            private TextBlock tb = new TextBlock();
-            private String jsEventDispatcher = null;
-            private  System.Collections.Generic.Dictionary<String, System.Collections.Generic.List<String>> jsEvents;
-            private Wrapper wrapper = new Wrapper();
+        private String _version = null;
+        private Int32 _logLevel = 0;
+        private String _dataUri = null;
+        private String _dataXml = null;
+        private String _baseUri = null;
+        private TextBox _logTextBox;
+        private Double _chartWidth = Double.NaN;
+        private Double _chartHeight = Double.NaN;
+        private Canvas _chartCanv;
+        private TextBlock _textBlock = new TextBlock();
+        private String _jsEventDispatcher = null;
+        private Dictionary<String, List<String>> _jsEvents;
+        private Wrapper _wrapper = new Wrapper();
 
+        private Queue<String> _xmlQueue = new Queue<string>();
+        private Queue<String> _uriQueue = new Queue<string>();
+
+        private Boolean _chartReady = false;
+        private Boolean _firstChart = true;
+        private Boolean _downloadBusy;
+
+        private Int64 initial, current;
         #endregion
     }
 }

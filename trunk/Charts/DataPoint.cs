@@ -1519,6 +1519,8 @@ namespace Visifire.Charts
             ApplyTag(element);
 
             //Set cursor type for events
+            if (this.Cursor == null)
+                this.Cursor = _parent.Cursor;
             element.Cursor = this.Cursor;
         }
 

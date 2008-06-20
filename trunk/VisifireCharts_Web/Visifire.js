@@ -59,14 +59,40 @@ if(!window.Visifire)
     
     window.Visifire._slCount = 0;
     
-    Visifire.prototype.setDataXml = function(pDataXml)
+    Visifire.prototype._getSlControl = function ()
     {
         var _uThisObject = this;
+        if(_uThisObject.id != null)
+        {
+            var slControl = document.getElementById(_uThisObject.id);
+            return slControl;
+        }
+        
+        return null;        
+    }
+    
+    Visifire.prototype.setDataXml = function(pDataXml)
+    {
+        var slControl = this._getSlControl();
+        
+        if(slControl != null && this.dataXml != null)
+        {
+            slControl.Content.wrapper.AddDataXML(pDataXml);
+        }
+        
         this.dataXml = pDataXml;
     }
     
+   
     Visifire.prototype.setDataUri = function(pDataUri)
     {
+        var slControl = this._getSlControl();
+        
+        if(slControl != null && this.dataUri != null)
+        {
+            slControl.Content.wrapper.AddDataUri(pDataUri);
+        }
+        
         this.dataUri = pDataUri;
     }
     
@@ -158,8 +184,8 @@ if(!window.Visifire)
         }
     }
     
-    Visifire.prototype.render = function(pTargetElement)
-    {   
+    Visifire.prototype._render = function(pTargetElement)
+    {
         var _uThisObject = this;
         var width;
         var height;
@@ -246,5 +272,24 @@ if(!window.Visifire)
 		        +  '</object>';
 		
 		this.targerElement.innerHTML = html;
+    }
+    
+    Visifire.prototype._reRender = function(pSlControl)
+    {
+        pSlControl.Content.wrapper.ReRenderChart();
+    }
+    
+    Visifire.prototype.render = function(pTargetElement)
+    {
+        var slControl = this._getSlControl();
+        
+        if(slControl == null)
+        {   
+            this._render(pTargetElement);       
+		}
+		else
+		{
+		    this._reRender(slControl);
+		}
     }
 }

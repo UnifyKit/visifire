@@ -506,7 +506,7 @@ namespace Visifire.Charts
                 foreach (AxisLabel lbl in this.Children)
                 {
                     lbl.TextBlock.FontSize = textSize;
-                    lbl.Angle = 0;
+                    lbl.Angle = LabelAngle;
                     lbl.UpdateSize();
 
                     curLabelLeft = (Double)this._parent.DoubleToPixel(lbl.Position) - lbl.ActualWidth / 2;
