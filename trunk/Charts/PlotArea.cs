@@ -229,7 +229,7 @@ namespace Visifire.Charts
                         }
                         else if (Background.GetType().Name == "LinearGradientBrush" || Background.GetType().Name == "RadialGradientBrush")
                         {
-                            plot3d.Fill = Cloner.CloneBrush(Background);
+                            plot3d.Fill = (Background);
                             (plot3d.Fill as GradientBrush).GradientStops.Clear();
                             Parser.GenerateDarkerGradientBrush(Background as GradientBrush, plot3d.Fill as GradientBrush, 0.75);
                         }
@@ -275,7 +275,7 @@ namespace Visifire.Charts
                         }
                         else if (Background.GetType().Name == "LinearGradientBrush" || Background.GetType().Name == "RadialGradientBrush")
                         {
-                            plot3d.Fill = Cloner.CloneBrush(Background);
+                            plot3d.Fill = (Background);
                             (plot3d.Fill as GradientBrush).GradientStops.Clear();
                             Parser.GenerateDarkerGradientBrush(Background as GradientBrush, plot3d.Fill as GradientBrush, 0.75);
                         }

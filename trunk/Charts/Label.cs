@@ -69,6 +69,16 @@ namespace Visifire.Charts
 
         #endregion Public Methods
 
+        #region Internal Properties
+        internal String FontString
+        {
+            get
+            {
+                return base.FontString;
+            }
+        }
+        #endregion
+
         #region Private Methods
         protected override void SetDefaults()
         {

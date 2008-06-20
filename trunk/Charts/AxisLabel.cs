@@ -46,7 +46,7 @@ namespace Visifire.Charts
 
         private void SetFontProperties(AxisLabels parent)
         {
-            _textBlock.FontFamily = new FontFamily(parent.FontFamily);
+            _textBlock.FontFamily = Parser.GetFont(parent.FontFamily, _textBlock);
 
             _textBlock.FontSize = parent.FontSize;
 
@@ -57,7 +57,7 @@ namespace Visifire.Charts
             if (parent._fontColor == null)
                 _textBlock.Foreground = GetDefaultFontcolor();
             else
-                _textBlock.Foreground = Cloner.CloneBrush(parent.FontColor);
+                _textBlock.Foreground = (parent.FontColor);
 
         }
 

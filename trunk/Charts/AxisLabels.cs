@@ -341,17 +341,17 @@ namespace Visifire.Charts
             {
                 if (_parent.ValueFormatString != null)
                 {
-                    text = _parent.GetFormattedText(position);
+                    text = Parser.GetFormattedText(_parent.GetFormattedText(position));
                 }
                 else
                 {
-                    text = _parent.Prefix + position.ToString() + _parent.Suffix;
+                    text = Parser.GetFormattedText(_parent.Prefix + position.ToString() + _parent.Suffix);
                 }
             }
             else
             {
                 // Here the axis labels given by the user is selected as text. only for Axis X
-                text = plotDetails.AxisLabels[position];
+                text = Parser.GetFormattedText(plotDetails.AxisLabels[position]);
             }
 
             lbl.Text = text;

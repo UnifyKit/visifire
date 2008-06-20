@@ -193,11 +193,11 @@ namespace Visifire.Charts
                 {
                     if (!DockInsidePlotArea)
                     {
-                        this.Background = Cloner.CloneBrush(_parent.BorderColor);
+                        this.Background = (_parent.BorderColor);
                     }
                     else
                     {
-                        this.Background = Cloner.CloneBrush(_parent.PlotArea.BorderColor);
+                        this.Background = (_parent.PlotArea.BorderColor);
                     }
                 }
             }
@@ -210,7 +210,7 @@ namespace Visifire.Charts
             }
             else
             {
-                _textBlock.Foreground = Cloner.CloneBrush(_fontColor);
+                _textBlock.Foreground = (_fontColor);
             }
 
             if (BorderColor == null)

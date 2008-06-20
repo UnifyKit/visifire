@@ -17,7 +17,6 @@
           </StartCmdLineArguments>
           <StartWorkingDirectory>
           </StartWorkingDirectory>
-          <EnableENC>False</EnableENC>
           <ShowWebRefOnDebugPrompt>True</ShowWebRefOnDebugPrompt>
         </SilverlightProjectProperties>
       </FlavorProperties>

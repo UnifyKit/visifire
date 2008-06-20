@@ -29,7 +29,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
-using System.Net;
 using System.Windows.Resources;
 
 namespace Visifire.Commons
@@ -186,7 +185,6 @@ namespace Visifire.Commons
         }
 
         #region Font Properties
-
         public String FontFamily
         {
             get
@@ -196,7 +194,8 @@ namespace Visifire.Commons
 
             set
             {
-                _textBlock.FontFamily = new FontFamily(value);
+                _textBlock.FontFamily = Parser.GetFont(value,_textBlock);
+                
             }
         }
 
@@ -269,8 +268,7 @@ namespace Visifire.Commons
             }
             set
             {
-                _textBlock.Text = value;
-                
+                _textBlock.Text = Parser.GetFormattedText(value) ;
             }
         }
 
@@ -280,6 +278,7 @@ namespace Visifire.Commons
             set;
         }
 
+        
         #endregion Public Properties
 
         #region Protected Methods
@@ -345,6 +344,16 @@ namespace Visifire.Commons
 
         #endregion Protected Properties
 
+        #region Internal Properties
+        internal TextBlock TextBlock
+        {
+            get
+            {
+                return _textBlock;
+            }
+        }
+        #endregion 
+
         #region Data
 
         protected TextBlock _textBlock;
@@ -355,7 +364,8 @@ namespace Visifire.Commons
         protected Brush _fontColor;
         protected Boolean _alignmentXChanged = false;
         protected Boolean _alignmentYChanged = false;
-
+        private String _fontFile;
+        private String _fontName;
         #endregion Data
 
     }

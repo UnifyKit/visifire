@@ -68,7 +68,7 @@ namespace Visifire.Commons
             _borderRectangle.Width = (Double)this.GetValue(WidthProperty);
             _borderRectangle.Height = Math.Abs((Double)this.GetValue(HeightProperty));
 
-            _borderRectangle.Stroke = Cloner.CloneBrush(BorderColor);
+            _borderRectangle.Stroke = BorderColor;
             _borderRectangle.StrokeThickness = BorderThickness;
             _borderRectangle.RadiusX = RadiusX;
             _borderRectangle.RadiusY = RadiusY;
@@ -108,7 +108,7 @@ namespace Visifire.Commons
 
                 this.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    HtmlPage.Window.Navigate(new Uri(link));
+                    HtmlPage.Window.Navigate(new Uri(link),this.HrefTarget.ToString());
                 };
             }
         }
@@ -132,7 +132,7 @@ namespace Visifire.Commons
 
                 element.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    HtmlPage.Window.Navigate(new Uri(link));
+                    HtmlPage.Window.Navigate(new Uri(link),this.HrefTarget.ToString());
                 };
             }
         }
@@ -608,6 +608,18 @@ namespace Visifire.Commons
                 _href = Parser.BuildAbsolutePath(value);
             }
         }
+
+        public virtual HrefTarget HrefTarget
+        {
+            get
+            {
+                return _hrefTarget;
+            }
+            set
+            {
+                _hrefTarget = value;
+            }
+        }
         
         public virtual String ToolTipText
         {
@@ -792,7 +804,7 @@ namespace Visifire.Commons
         private String _lightingEnabled;
         private String _image;
         private Stretch _imageStretch = Stretch.Fill;
-
+        private HrefTarget _hrefTarget = HrefTarget._self;
         #endregion Data
 
     }

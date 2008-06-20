@@ -36,6 +36,16 @@ namespace VisifireCharts
         }
 
         #region Scriptable methods
+        [ScriptableMember()]
+        public void Resize(Double width, Double height)
+        {
+            ResizeEventArgs e = new ResizeEventArgs();
+            e.Width = width;
+            e.Height = height;
+
+            if (OnResize != null)
+                OnResize(this, e);
+        }
 
         [ScriptableMember()]
         public void AddDataXML(String dataXML)
@@ -67,12 +77,20 @@ namespace VisifireCharts
                 ReRender(this, null);
         }
 
+        [ScriptableMember()]
+        public Boolean IsDataLoaded
+        {
+            get;
+            set;
+        }
         #endregion Scriptable methods
 
         #region Public Events
         public event EventHandler<DataXMLEventArgs> DataXML;
 
         public event EventHandler ReRender;
+
+        public event EventHandler<ResizeEventArgs> OnResize;
         #endregion Public Events
     }
 }

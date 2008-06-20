@@ -70,6 +70,7 @@
     <Compile Include="JsEventArgs\LegendJsEventArgs.cs" />
     <Compile Include="JsEventArgs\ChartJsEventArgs.cs" />
     <Compile Include="JsEventArgs\JsEventArgs.cs" />
+    <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="Wrapper.xaml.cs">
       <DependentUpon>Wrapper.xaml</DependentUpon>
     </Compile>

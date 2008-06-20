@@ -581,8 +581,8 @@ namespace Visifire.Charts
                                 case "STACKEDCOLUMN100":
                                     Rectangle rect = new Rectangle();
                                     rect.Tag = this.Name;
-                                    rect.Stroke = Cloner.CloneBrush(dataPoint.BorderColor);
-                                    rect.Fill = Cloner.CloneBrush(dataPoint.Background);
+                                    rect.Stroke = (dataPoint.BorderColor);
+                                    rect.Fill = (dataPoint.Background);
                                     rect.StrokeThickness = dataPoint.BorderThickness;
                                     rect.Height = size;
                                     rect.Width = size;
@@ -603,7 +603,7 @@ namespace Visifire.Charts
                                     linemarker.Tag = this.Name;
                                     line.Tag = this.Name;
 
-                                    line.Stroke = Cloner.CloneBrush(dataPoint.Background);
+                                    line.Stroke = (dataPoint.Background);
                                     line.StrokeThickness = 5;
 
                                     line.X1 = 0;
@@ -620,9 +620,9 @@ namespace Visifire.Charts
                                     linemarker.Children.Add(marker);
                                     if (Boolean.Parse(dataSeries.MarkerEnabled))
                                     {
-                                        marker.BorderColor = Cloner.CloneBrush(dataSeries.MarkerBorderColor);
+                                        marker.BorderColor = (dataSeries.MarkerBorderColor);
                                         if (dataSeries.MarkerBackground != null)
-                                            marker.Color = Cloner.CloneBrush(dataSeries.MarkerBackground);
+                                            marker.Color = (dataSeries.MarkerBackground);
                                         else
                                             marker.Color = new SolidColorBrush(Colors.White);
                                         marker.BorderThickness = dataSeries.MarkerBorderThickness;
@@ -679,8 +679,8 @@ namespace Visifire.Charts
                                     }
 
                                     marker.Tag = this.Name;
-                                    marker.BorderColor = Cloner.CloneBrush(dataPoint.BorderColor);
-                                    marker.Color = Cloner.CloneBrush(dataPoint.Background);
+                                    marker.BorderColor = (dataPoint.BorderColor);
+                                    marker.Color = (dataPoint.Background);
                                     marker.BorderThickness = dataPoint.BorderThickness;
                                     marker.Style = dataPoint.MarkerStyle;
                                     marker.Width = marker.Size;
@@ -696,8 +696,8 @@ namespace Visifire.Charts
 
                                     point.Tag = this.Name;
                                     point.Size = size;
-                                    point.BorderColor = Cloner.CloneBrush(dataPoint.BorderColor);
-                                    point.Color = Cloner.CloneBrush(dataPoint.Background);
+                                    point.BorderColor = (dataPoint.BorderColor);
+                                    point.Color = (dataPoint.Background);
                                     point.BorderThickness = dataPoint.BorderThickness;
                                     point.Style = dataPoint.MarkerStyle;
                                     point.Width = size;
@@ -716,8 +716,8 @@ namespace Visifire.Charts
 
                                     ellipse.Height = size;
                                     ellipse.Width = size;
-                                    ellipse.Stroke = Cloner.CloneBrush(dataPoint.BorderColor);
-                                    ellipse.Fill = Cloner.CloneBrush(dataPoint.Background);
+                                    ellipse.Stroke = (dataPoint.BorderColor);
+                                    ellipse.Fill = (dataPoint.Background);
                                     ellipse.StrokeDashArray = Parser.GetStrokeDashArray(dataPoint.BorderStyle);
 
                                    
@@ -765,8 +765,8 @@ namespace Visifire.Charts
                                 can.Tag = this.Name; 
                                 rect.Tag = this.Name; 
 
-                                rect.Stroke = Cloner.CloneBrush(dataSeries.BorderColor);
-                                rect.Fill = Cloner.CloneBrush(dataSeries.Background);
+                                rect.Stroke = (dataSeries.BorderColor);
+                                rect.Fill = (dataSeries.Background);
                                 rect.StrokeThickness = dataSeries.BorderThickness;
                                 rect.Height = size;
                                 rect.Width = size;
@@ -835,7 +835,7 @@ namespace Visifire.Charts
                                 linemarker.Tag = this.Name;
                                 line.Tag = this.Name;
 
-                                line.Stroke = Cloner.CloneBrush(dataSeries.Background);
+                                line.Stroke = (dataSeries.Background);
                                 line.StrokeThickness = 3;
                                 Double lineLength = size * 1.5;
 
@@ -852,11 +852,11 @@ namespace Visifire.Charts
                                 linemarker.Children.Add(marker);
                                 if (dataSeries._markerEnabled.ToLower() != "false")
                                 {
-                                    marker.BorderColor = Cloner.CloneBrush(dataSeries.MarkerBorderColor);
+                                    marker.BorderColor = (dataSeries.MarkerBorderColor);
                                     if (marker.BorderColor == null)
-                                        marker.BorderColor = Cloner.CloneBrush(dataSeries.Background);
+                                        marker.BorderColor = (dataSeries.Background);
                                     if (dataSeries.MarkerBackground != null)
-                                        marker.Color = Cloner.CloneBrush(dataSeries.MarkerBackground);
+                                        marker.Color = (dataSeries.MarkerBackground);
                                     else
                                         marker.Color = new SolidColorBrush(Colors.White);
                                     marker.BorderThickness = dataSeries.MarkerBorderThickness;
@@ -884,8 +884,8 @@ namespace Visifire.Charts
                                 marker.Tag = this.Name;
 
                                 marker.Size = size;
-                                marker.BorderColor = Cloner.CloneBrush(dataSeries.BorderColor);
-                                marker.Color = Cloner.CloneBrush(dataSeries.Background);
+                                marker.BorderColor = (dataSeries.BorderColor);
+                                marker.Color = (dataSeries.Background);
                                 marker.BorderThickness = dataSeries.BorderThickness;
                                 marker.Style = dataSeries.MarkerStyle;
                                 marker.Width = size;
@@ -903,8 +903,8 @@ namespace Visifire.Charts
 
                                 ellipse.Height = size;
                                 ellipse.Width = size;
-                                ellipse.Stroke = Cloner.CloneBrush(dataSeries.BorderColor);
-                                ellipse.Fill = Cloner.CloneBrush(dataSeries.Background);
+                                ellipse.Stroke = (dataSeries.BorderColor);
+                                ellipse.Fill = (dataSeries.Background);
                                 ellipse.StrokeDashArray = Parser.GetStrokeDashArray(dataSeries.BorderStyle);
                                 
                                 if ((this.AlignmentY == AlignmentY.Top || this.AlignmentY == AlignmentY.Bottom) && DockInsidePlotArea == false)

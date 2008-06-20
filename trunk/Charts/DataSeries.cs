@@ -98,7 +98,7 @@ namespace Visifire.Charts
                     {
                         if (Background == null && _parent.DataSeries.Count > 1)
                         {
-                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
+                            Background = (_parent.ColorSetReference.GetColor());
                         }
                         else if (Background == null)
                         {
@@ -109,7 +109,7 @@ namespace Visifire.Charts
                     {
                         if (Background == null)
                         {
-                            Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor());
+                            Background = (_parent.ColorSetReference.GetColor());
                         }
                     }
                 }
@@ -171,7 +171,7 @@ namespace Visifire.Charts
 
             if (Background == null)
             {
-                Background = Cloner.CloneBrush(ColorSetReference.GetColor(Index));
+                Background = (ColorSetReference.GetColor(Index));
             }
 
 
@@ -319,6 +319,12 @@ namespace Visifire.Charts
         #endregion Public Methods
 
         #region Public Properties
+
+        public String LineStyle
+        {
+            get;
+            set;
+        }
 
         public AxisType AxisYType
         {
@@ -576,7 +582,7 @@ namespace Visifire.Charts
                 if (_labelFontFamily != null)
                     return _labelFontFamily;
                 else
-                    return _parent.Label.FontFamily;
+                    return _parent.Label.FontString;
             }
             set
             {
@@ -606,7 +612,7 @@ namespace Visifire.Charts
                 if (_labelFontColor != null)
                     return _labelFontColor;
                 else
-                    return Cloner.CloneBrush(_parent.Label.FontColor);
+                    return (_parent.Label.FontColor);
             }
             set
             {
@@ -651,7 +657,7 @@ namespace Visifire.Charts
                 if (_labelBackground != null)
                     return _labelBackground;
                 else if (_parent.Label.Background != null)
-                    return Cloner.CloneBrush(_parent.Label.Background);
+                    return (_parent.Label.Background);
                 else
                     return null;
             }
@@ -768,8 +774,8 @@ namespace Visifire.Charts
         {
             get
             {
-                if (!String.IsNullOrEmpty(_toolTipText))
-                    return _toolTipText;
+                if (!String.IsNullOrEmpty(base.ToolTipText))
+                    return base.ToolTipText;
                 else
                 {
                     switch(RenderAs.ToLower())
@@ -789,37 +795,11 @@ namespace Visifire.Charts
             }
             set
             {
-                _toolTipText = value;
+                base.ToolTipText = value;
             }
         }
        
-        public override String Href
-        {
-            get
-            {
-                if (!String.IsNullOrEmpty(_href))
-                    return _href;
-                else
-                    return "";
-            }
-            set
-            {
-                _href = Parser.BuildAbsolutePath(value);
-                Uri ur = new Uri(_href, UriKind.RelativeOrAbsolute);
-                if (ur.IsAbsoluteUri)
-                {
-                    _href = ur.AbsoluteUri;
-                }
-                else
-                {
-                    UriBuilder ub = new UriBuilder(Application.Current.Host.Source);
-                    String sourcePath = ub.Path.Substring(0, ub.Path.LastIndexOf('/') + 1);
-                    UriBuilder ub2 = new UriBuilder(ub.Scheme, ub.Host, ub.Port, sourcePath + value);
-                    _href = ub2.ToString();
-                }
-            }
-        }
-
+        
         public Double LineThickness
         {
             get;
@@ -1092,7 +1072,9 @@ namespace Visifire.Charts
             _axisYType = AxisType.Primary;
 
             ShadowSize = 6;
-            
+
+            LineStyle = "Solid";
+
             _borderRectangle.Stroke = new SolidColorBrush(Colors.Black);
             _borderRectangle.StrokeThickness = .4;
 
@@ -1146,9 +1128,9 @@ namespace Visifire.Charts
                 DataPoints[i].Height = 1;
 
                 DataPoints[i].MarkerEnabled = "true";
-                DataPoints[i].MarkerBackground = Cloner.CloneBrush(DataPoints[i].Background);
+                DataPoints[i].MarkerBackground = (DataPoints[i].Background);
                 DataPoints[i].MarkerBorderThickness = DataPoints[i].BorderThickness;
-                DataPoints[i].MarkerBorderColor = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                DataPoints[i].MarkerBorderColor = (DataPoints[i].BorderColor);
 
 
                 DataPoints[i].PlaceMarker((Int32) GetValue(ZIndexProperty) + 20);
@@ -1210,7 +1192,7 @@ namespace Visifire.Charts
                 if (DataPoints[i].Background.GetType().Name == "SolidColorBrush" && LightingEnabled)
                 {
 
-                    SolidColorBrush tempBrush = Cloner.CloneBrush(DataPoints[i].Background) as SolidColorBrush;
+                    SolidColorBrush tempBrush = (DataPoints[i].Background) as SolidColorBrush;
                     String brush = "-60;";
                     brush += Parser.GetDarkerColor(tempBrush.Color, 0.65) + ",0;";
                     brush += Parser.GetLighterColor(tempBrush.Color, 0.55) + ",1";
@@ -1218,11 +1200,11 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    DataPoints[i].MarkerBackground = Cloner.CloneBrush(DataPoints[i].Background);
+                    DataPoints[i].MarkerBackground = (DataPoints[i].Background);
 
                 }
                 DataPoints[i].MarkerBorderThickness = DataPoints[i].BorderThickness;
-                DataPoints[i].MarkerBorderColor = Cloner.CloneBrush(DataPoints[i].BorderColor);
+                DataPoints[i].MarkerBorderColor = (DataPoints[i].BorderColor);
                 if (Double.IsNaN(DataPoints[i].ZValue) || Double.IsInfinity(DataPoints[i].ZValue))
                 {
                     DataPoints[i].MarkerEnabled = "false";
@@ -1842,7 +1824,7 @@ namespace Visifire.Charts
             }
             else
             {
-                _pies[id].Fill = Cloner.CloneBrush(DataPoints[id].Background);
+                _pies[id].Fill = (DataPoints[id].Background);
             }
             if (Bevel)
             {
@@ -1904,7 +1886,7 @@ namespace Visifire.Charts
             }
             else
             {
-                _doughnut[id].Fill = Cloner.CloneBrush(DataPoints[id].Background);
+                _doughnut[id].Fill = (DataPoints[id].Background);
             }
             if (Bevel)
             {
@@ -1969,7 +1951,7 @@ namespace Visifire.Charts
             if (tempBrush.GetType().Name == "LinearGradientBrush")
             {
                 LinearGradientBrush brush = DataPoints[id].Background as LinearGradientBrush;
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
 
                 brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
                 Parser.GenerateDarkerGradientBrush(brush, brushSide as LinearGradientBrush, 0.75);
@@ -1981,7 +1963,7 @@ namespace Visifire.Charts
             else if (tempBrush.GetType().Name == "RadialGradientBrush")
             {
                 RadialGradientBrush brush = DataPoints[id].Background as RadialGradientBrush;
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
 
                 brushSide = new RadialGradientBrush();
 
@@ -2018,14 +2000,14 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    brushPie = Cloner.CloneBrush(brush);
+                    brushPie = (brush);
                     brushSide = new SolidColorBrush(Parser.GetLighterColor(brush.Color, 0.6));
                 }
             }
             else
             {
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
-                brushSide = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
+                brushSide = (DataPoints[id].Background);
             }
             _pies[id].Fill = brushPie;
             _pieSides[id].Fill = brushSide;
@@ -2091,7 +2073,7 @@ namespace Visifire.Charts
             if (tempBrush.GetType().Name == "LinearGradientBrush")
             {
                 LinearGradientBrush brush = DataPoints[id].Background as LinearGradientBrush;
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
 
                 brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
                 Parser.GenerateDarkerGradientBrush(brush, brushSide as LinearGradientBrush, 0.75);
@@ -2103,7 +2085,7 @@ namespace Visifire.Charts
             else if (tempBrush.GetType().Name == "RadialGradientBrush")
             {
                 RadialGradientBrush brush = DataPoints[id].Background as RadialGradientBrush;
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
 
                 brushSide = new RadialGradientBrush();
 
@@ -2140,14 +2122,14 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    brushPie = Cloner.CloneBrush(brush);
+                    brushPie = (brush);
                     brushSide = new SolidColorBrush(Parser.GetLighterColor(brush.Color, 0.6));
                 }
             }
             else
             {
-                brushPie = Cloner.CloneBrush(DataPoints[id].Background);
-                brushSide = Cloner.CloneBrush(DataPoints[id].Background);
+                brushPie = (DataPoints[id].Background);
+                brushSide = (DataPoints[id].Background);
             }
             _doughnut[id].Fill = brushPie;
             _pieSides[id].Fill = brushSide;
@@ -2157,37 +2139,6 @@ namespace Visifire.Charts
             DataPoints[id].ApplyEventBasedSettings(_pies[id]);
             DataPoints[id].ApplyEventBasedSettings(_pieSides[id]);
         }
-
-        //private Storyboard ApplyDoubleAnimation(DependencyObject target, String targetProperty, Double from, Double to, Double duration, Double beginTime)
-        //{
-        //    TimeSpan durationTimeSpan = new TimeSpan(0, 0, 0, 0, (Int32)(1000 * duration));
-        //    TimeSpan beginTimeSpan = new TimeSpan(0, 0, 0, 0, (Int32)(1000 * beginTime));
-
-        //    Storyboard storyboard = new Storyboard();
-        //    DoubleAnimation doubleAnimation = new DoubleAnimation();
-
-        //    doubleAnimation.Duration = durationTimeSpan;
-
-        //    doubleAnimation.BeginTime = beginTimeSpan;
-
-        //    storyboard.Children.Add(doubleAnimation);
-
-        //    Storyboard.SetTarget(doubleAnimation, target);
-
-        //    Storyboard.SetTargetProperty(doubleAnimation, targetProperty);
-
-        //    doubleAnimation.From = from;
-
-        //    doubleAnimation.To = to;
-
-        //    this.Resources.Add(storyboard);
-
-        //    storyboard.Completed += delegate(object sender, EventArgs e)
-        //    {
-        //        this.Resources.Remove(sender as Storyboard);
-        //    };
-        //    return storyboard;
-        //}
 
         private Storyboard ApplySplineDoubleKeyFrameAnimation(DependencyObject target, String targetProperty, Double from, Double to, Double duration, Double beginTime)
         {
@@ -2227,9 +2178,21 @@ namespace Visifire.Charts
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
                 this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
+
+                PostInteractiveSteps();
             };
 
             return storyboard;
+        }
+
+        private void PreInteractivitySteps()
+        {
+            _parent.IsHitTestVisible = false;
+        }
+
+        private void PostInteractiveSteps()
+        {
+            _parent.IsHitTestVisible = true;
         }
 
         private void AnimatePosition(FrameworkElement element,FrameworkElement index)
@@ -2244,6 +2207,8 @@ namespace Visifire.Charts
 
         private void AnimateSlice(object sender)
         {
+            PreInteractivitySteps();
+
             FrameworkElement element = (sender as FrameworkElement).Parent as FrameworkElement;
 
             AnimatePosition(element, element);
@@ -2274,7 +2239,10 @@ namespace Visifire.Charts
 
         private void AnimateSlice3D(Int32 i)
         {
+            PreInteractivitySteps();
+
             FrameworkElement element = DataPoints[i] as FrameworkElement;
+
             if (_pies[i] != null)
             {
                 AnimatePosition(_pies[i], element);
@@ -2643,7 +2611,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    _pies[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                    _pies[i].Fill = (DataPoints[i].Background);
                 }
                 #endregion Lighting
 
@@ -2725,7 +2693,7 @@ namespace Visifire.Charts
                     }
                     else 
                     {
-                        _bevel.Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _bevel.Fill = (DataPoints[i].Background);
                     }
                     
                     _bevel.SetValue(ZIndexProperty, (Int32)_pies[i].GetValue(ZIndexProperty) + 3);
@@ -2884,7 +2852,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    _doughnut[i].Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                    _doughnut[i].Fill = (DataPoints[i].Background);
                 }
 
                 if (Bevel)
@@ -2975,7 +2943,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        _bevel.Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _bevel.Fill = (DataPoints[i].Background);
                     }
 
                     _bevel.SetValue(ZIndexProperty, (Int32)_doughnut[i].GetValue(ZIndexProperty) + 1);
@@ -3011,7 +2979,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        _bevel.Fill = Cloner.CloneBrush(DataPoints[i].Background);
+                        _bevel.Fill = (DataPoints[i].Background);
                     }
 
                     _bevel.SetValue(ZIndexProperty, (Int32)_doughnut[i].GetValue(ZIndexProperty) + 1);
@@ -3128,7 +3096,7 @@ namespace Visifire.Charts
                 if (tempBrush.GetType().Name == "LinearGradientBrush")
                 {
                     LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
 
                     brushSide = new LinearGradientBrush();
                     (brushSide as LinearGradientBrush).StartPoint = new Point(0, 1);
@@ -3154,7 +3122,7 @@ namespace Visifire.Charts
                 else if (tempBrush.GetType().Name == "RadialGradientBrush")
                 {
                     RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
 
                     brushSide = new RadialGradientBrush();
                     brushLeft = new RadialGradientBrush();
@@ -3204,7 +3172,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        brushPie = Cloner.CloneBrush(brush);
+                        brushPie = (brush);
 
                         brushLeft = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, 0.6));
                         brushRight = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, 0.6));
@@ -3214,10 +3182,10 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushLeft = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushRight = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushSide = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
+                    brushLeft = (DataPoints[i].Background);
+                    brushRight = (DataPoints[i].Background);
+                    brushSide = (DataPoints[i].Background);
                 }
                 #endregion Color Gradient
 
@@ -3441,7 +3409,7 @@ namespace Visifire.Charts
                         pathGeometryList.Add(new ArcSegmentParams(new Size(horizontalRadius, verticalRadius), 0, (stopAngle - startAngle >= Math.PI), SweepDirection.Counterclockwise, new Point(end1.X, end1.Y)));
                         _pieSides[i].Data = Parser.GetPathGeometryFromList(FillRule.Nonzero, new Point(end1.X, end1.Y), pathGeometryList);
 
-                        _pieSides[i].Fill = Cloner.CloneBrush(brushSide);
+                        _pieSides[i].Fill = (brushSide);
                     }
 
                 }
@@ -3467,9 +3435,9 @@ namespace Visifire.Charts
 
                 #endregion Pie Right
 
-                _pies[i].Fill = Cloner.CloneBrush(brushPie);
-                _pieLeft[i].Fill = Cloner.CloneBrush(brushLeft);
-                _pieRight[i].Fill = Cloner.CloneBrush(brushRight);
+                _pies[i].Fill = (brushPie);
+                _pieLeft[i].Fill = (brushLeft);
+                _pieRight[i].Fill = (brushRight);
 
                 _pies[i].Opacity = Opacity * DataPoints[i].Opacity;
                 _pieSides[i].Opacity = Opacity * DataPoints[i].Opacity;
@@ -3650,7 +3618,7 @@ namespace Visifire.Charts
                 if (tempBrush.GetType().Name == "LinearGradientBrush")
                 {
                     LinearGradientBrush brush = DataPoints[i].Background as LinearGradientBrush;
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
 
                     brushSide = new LinearGradientBrush();
                     (brushSide as LinearGradientBrush).StartPoint = new Point(0, 1);
@@ -3676,7 +3644,7 @@ namespace Visifire.Charts
                 else if (tempBrush.GetType().Name == "RadialGradientBrush")
                 {
                     RadialGradientBrush brush = DataPoints[i].Background as RadialGradientBrush;
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
 
                     brushSide = new RadialGradientBrush();
                     brushLeft = new RadialGradientBrush();
@@ -3728,7 +3696,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        brushPie = Cloner.CloneBrush(brush);
+                        brushPie = (brush);
 
                         brushLeft = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, 0.6));
                         brushRight = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, 0.6));
@@ -3738,10 +3706,10 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    brushPie = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushLeft = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushRight = Cloner.CloneBrush(DataPoints[i].Background);
-                    brushSide = Cloner.CloneBrush(DataPoints[i].Background);
+                    brushPie = (DataPoints[i].Background);
+                    brushLeft = (DataPoints[i].Background);
+                    brushRight = (DataPoints[i].Background);
+                    brushSide = (DataPoints[i].Background);
                 }
                 #endregion Color Gradient
 
@@ -4070,7 +4038,7 @@ namespace Visifire.Charts
                         pathGeometryList.Add(new ArcSegmentParams(new Size(horizontalRadius, verticalRadius), 0, (stopAngle - startAngle >= Math.PI), SweepDirection.Counterclockwise, new Point(end1.X, end1.Y)));
                         _pieSides[i].Data = Parser.GetPathGeometryFromList(FillRule.Nonzero, new Point(end1.X, end1.Y), pathGeometryList);
 
-                        _pieSides[i].Fill = Cloner.CloneBrush(brushSide);
+                        _pieSides[i].Fill = (brushSide);
                     }
                     #region InnerFace
                     if (startAngle >= Math.PI && startAngle <= Math.PI * 2 && stopAngle >= Math.PI && stopAngle <= Math.PI * 2)
@@ -4102,11 +4070,11 @@ namespace Visifire.Charts
                 pathGeometryList.Add(new LineSegmentParams(new Point(end3.X, end3.Y)));
                 _pieRight[i].Data = Parser.GetPathGeometryFromList(FillRule.Nonzero, new Point(end3.X, end3.Y), pathGeometryList);
                 
-                _pies[i].Fill = Cloner.CloneBrush(brushPie);
-                _pieSides[i].Fill = Cloner.CloneBrush(brushSide);
-                _pieLeft[i].Fill = Cloner.CloneBrush(brushLeft);
-                _pieRight[i].Fill = Cloner.CloneBrush(brushRight);
-                _doughnut[i].Fill = Cloner.CloneBrush(brushPie);
+                _pies[i].Fill = (brushPie);
+                _pieSides[i].Fill = (brushSide);
+                _pieLeft[i].Fill = (brushLeft);
+                _pieRight[i].Fill = (brushRight);
+                _doughnut[i].Fill = (brushPie);
 
                 _pies[i].Opacity = Opacity * DataPoints[i].Opacity;
                 _pieSides[i].Opacity = Opacity * DataPoints[i].Opacity;
@@ -4283,7 +4251,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
+                        _areas[index].Fill = (DataPoints[index].Background);
                     }
 
                     DataPoints[index].ApplyStrokeSettings(_areas[index]);
@@ -4314,9 +4282,9 @@ namespace Visifire.Charts
 
                     _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areas[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = (DataPoints[index].BorderColor);
 
 
                     _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
@@ -4361,7 +4329,7 @@ namespace Visifire.Charts
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -4378,7 +4346,7 @@ namespace Visifire.Charts
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
                         RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -4423,22 +4391,22 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brush2 = (DataPoints[index].Background);
                             brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
                             brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
+                        brushTop = (DataPoints[index].Background);
+                        brushShade = (DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[index].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = (brush2);
+                    _areaShadows[index].Fill = (brushShade);
+                    _areaTops[index].Fill = (brushTop);
 
                     _areas[index].SetValue(ZIndexProperty, 10);
                     _areaShadows[index].SetValue(ZIndexProperty, 5);
@@ -4606,7 +4574,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
+                        _areas[index].Fill = (DataPoints[index].Background);
                     }
                     
 
@@ -4636,9 +4604,9 @@ namespace Visifire.Charts
 
                     _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areas[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = (DataPoints[index].BorderColor);
 
 
                     _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
@@ -4682,7 +4650,7 @@ namespace Visifire.Charts
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -4699,7 +4667,7 @@ namespace Visifire.Charts
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
                         RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -4744,22 +4712,22 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brush2 = (DataPoints[index].Background);
                             brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
                             brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
+                        brushTop = (DataPoints[index].Background);
+                        brushShade = (DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[index].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = (brush2);
+                    _areaShadows[index].Fill = (brushShade);
+                    _areaTops[index].Fill = (brushTop);
 
                     _areas[index].SetValue(ZIndexProperty, 10);
                     _areaShadows[index].SetValue(ZIndexProperty, 5);
@@ -5035,7 +5003,7 @@ namespace Visifire.Charts
             }
             else
             {
-                generatedBrush = Cloner.CloneBrush(baseBrush);
+                generatedBrush = (baseBrush);
             }
             return generatedBrush;
         }
@@ -5535,9 +5503,9 @@ namespace Visifire.Charts
             Brush topBrush = null;
             Get3DColumnColor(DataPoints[index].Background, ref frontBrush, ref sideBrush, ref topBrush);
 
-            _columns[index].Fill = Cloner.CloneBrush(frontBrush);
-            _columnSides[index].Fill = Cloner.CloneBrush(sideBrush);
-            _columnTops[index].Fill = Cloner.CloneBrush(topBrush);
+            _columns[index].Fill = (frontBrush);
+            _columnSides[index].Fill = (sideBrush);
+            _columnTops[index].Fill = (topBrush);
             _shadows[index].Fill = Parser.ParseSolidColor("#66000000");
 
             DataPoints[index].ApplyStrokeSettings(_columns[index]);
@@ -5885,9 +5853,9 @@ namespace Visifire.Charts
             Get3DBarColor(DataPoints[index].Background, ref frontBrush, ref sideBrush, ref topBrush);
 
 
-            _columns[index].Fill = Cloner.CloneBrush(frontBrush);
-            _columnSides[index].Fill = Cloner.CloneBrush(sideBrush);
-            _columnTops[index].Fill = Cloner.CloneBrush(topBrush);
+            _columns[index].Fill = (frontBrush);
+            _columnSides[index].Fill = (sideBrush);
+            _columnTops[index].Fill = (topBrush);
             _shadows[index].Fill = Parser.ParseSolidColor("#66000000");
 
             switch (chartType)
@@ -6419,8 +6387,11 @@ namespace Visifire.Charts
             if (Double.IsNaN(initialDepth)) initialDepth = 0;
             if (Double.IsNaN(depth)) depth = _parent.AxisX.MajorTicks.TickLength;
 
-            _line.Stroke = Cloner.CloneBrush(Background);
+            _line.Stroke = (Background);
             _lineShadow.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(127, 127, 127, 127));
+
+            _line.StrokeDashArray = Parser.GetStrokeDashArray(LineStyle);
+            _lineShadow.StrokeDashArray = Parser.GetStrokeDashArray(LineStyle);
 
             if (!Double.IsNaN(LineThickness) && LineThickness <= 0)
             {
@@ -6557,7 +6528,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        _areas[index].Fill = Cloner.CloneBrush(DataPoints[index].Background);
+                        _areas[index].Fill = (DataPoints[index].Background);
                     }
 
 
@@ -6583,9 +6554,9 @@ namespace Visifire.Charts
 
                     _areas[index].Points = Converter.ArrayToCollection(points);
 
-                    _areas[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaShadows[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
-                    _areaTops[index].Stroke = Cloner.CloneBrush(DataPoints[index].BorderColor);
+                    _areas[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaShadows[index].Stroke = (DataPoints[index].BorderColor);
+                    _areaTops[index].Stroke = (DataPoints[index].BorderColor);
 
 
                     _areas[index].StrokeThickness = DataPoints[index].BorderThickness;
@@ -6639,7 +6610,7 @@ namespace Visifire.Charts
                     if (tempBrush.GetType().Name == "LinearGradientBrush")
                     {
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
@@ -6656,7 +6627,7 @@ namespace Visifire.Charts
                     else if (tempBrush.GetType().Name == "RadialGradientBrush")
                     {
                         RadialGradientBrush brush = DataPoints[index].Background as RadialGradientBrush;
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
 
                         brushShade = new RadialGradientBrush();
                         brushTop = new RadialGradientBrush();
@@ -6701,22 +6672,22 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            brush2 = Cloner.CloneBrush(DataPoints[index].Background);
+                            brush2 = (DataPoints[index].Background);
                             brushTop = new SolidColorBrush(Parser.GetLighterColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.75));
                             brushShade = new SolidColorBrush(Parser.GetDarkerColor(((SolidColorBrush)DataPoints[index].Background).Color, 0.85));
                         }
                     }
                     else
                     {
-                        brush2 = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushTop = Cloner.CloneBrush(DataPoints[index].Background);
-                        brushShade = Cloner.CloneBrush(DataPoints[index].Background);
+                        brush2 = (DataPoints[index].Background);
+                        brushTop = (DataPoints[index].Background);
+                        brushShade = (DataPoints[index].Background);
                     }
                     #endregion Color Gradient
 
-                    _areas[index].Fill = Cloner.CloneBrush(brush2);
-                    _areaShadows[index].Fill = Cloner.CloneBrush(brushShade);
-                    _areaTops[index].Fill = Cloner.CloneBrush(brushTop);
+                    _areas[index].Fill = (brush2);
+                    _areaShadows[index].Fill = (brushShade);
+                    _areaTops[index].Fill = (brushTop);
 
                     Int32 zindex = (Int32)(points[0].X + _parent.AxisX.MajorTicks.TickLength);
 
@@ -6767,7 +6738,7 @@ namespace Visifire.Charts
         private void CreateAuxPath(ref Path path, Int32 index, Brush brush)
         {
             path = new Path();
-            path.Fill = Cloner.CloneBrush(brush);
+            path.Fill = (brush);
             path.Opacity = Opacity * DataPoints[index].Opacity;
             DataPoints[index].AttachHref(path);
             DataPoints[index].AttachToolTip(path);
@@ -6854,7 +6825,7 @@ namespace Visifire.Charts
             _borderRectangle.Width = this.Width;
             _borderRectangle.Height = Math.Abs(this.Height);
 
-            _borderRectangle.Stroke = Cloner.CloneBrush(_parent.PlotArea.BorderColor);
+            _borderRectangle.Stroke = (_parent.PlotArea.BorderColor);
             _borderRectangle.StrokeThickness = _parent.PlotArea.BorderThickness;
             _borderRectangle.RadiusX = _parent.PlotArea.RadiusX;
             _borderRectangle.RadiusY = _parent.PlotArea.RadiusY;
@@ -7132,6 +7103,7 @@ namespace Visifire.Charts
         private Dictionary<Double, Point> _maxVals = new Dictionary<Double, Point>();
         private Dictionary<FrameworkElement, Point> _positionOffset = new Dictionary<FrameworkElement, Point>();
         private Dictionary<FrameworkElement, Point> _labelPosOffset = new Dictionary<FrameworkElement, Point>();
+        
 
         private enum Surface3DCharts
         {

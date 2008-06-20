@@ -321,7 +321,7 @@ namespace Visifire.Charts
             }
             set
             {
-                _titleTextBlock.Text = value;
+                _titleTextBlock.Text = Parser.GetFormattedText(value);
             }
         }
 
@@ -340,7 +340,7 @@ namespace Visifire.Charts
             set
             {
                 _titleFontColor = value;
-                _titleTextBlock.Foreground = Cloner.CloneBrush(_titleFontColor);
+                _titleTextBlock.Foreground = (_titleFontColor);
             }
 
         }
@@ -403,7 +403,7 @@ namespace Visifire.Charts
             }
             set
             {
-                _titleTextBlock.FontFamily = new FontFamily(value);
+                _titleTextBlock.FontFamily = Parser.GetFont(value,_titleTextBlock);
             }
         }
 
@@ -1164,7 +1164,7 @@ namespace Visifire.Charts
             if (LineBackground == null)
                 _line.Stroke = new SolidColorBrush(Colors.Gray);
             else
-                _line.Stroke = Cloner.CloneBrush(LineBackground);
+                _line.Stroke = (LineBackground);
 
 
             _line.StrokeThickness = LineThickness;

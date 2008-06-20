@@ -115,7 +115,7 @@ namespace Visifire.Charts
         /// <returns></returns>
         internal Brush GetColor()
         {
-            return Cloner.CloneBrush((Children[_iterator++ % Children.Count] as Color).Background);
+            return ((Children[_iterator++ % Children.Count] as Color).Background);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Visifire.Charts
         internal Brush GetColor(Int32 index)
         {
 
-            return Cloner.CloneBrush((Children[index % Children.Count] as Color).Background);
+            return ((Children[index % Children.Count] as Color).Background);
 
         }
 

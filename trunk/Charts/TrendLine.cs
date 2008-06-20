@@ -70,6 +70,12 @@ namespace Visifire.Charts
 
         #region Public Properties
 
+        public AxisType AxisYType
+        {
+            get;
+            set;
+        }
+
         public String ToolTipText
         {
             get;
@@ -203,7 +209,6 @@ namespace Visifire.Charts
 
             };
         }
-        
 
         internal void Init()
         {
@@ -218,141 +223,92 @@ namespace Visifire.Charts
         internal void SetDimensions()
         {
             _line.StrokeThickness = LineThickness;
-            _line.Stroke = Cloner.CloneBrush(Color);
+            _line.Stroke = (Color);
             _shadow.StrokeThickness = LineThickness;
             _shadow.Stroke = Parser.ParseSolidColor("#7f7f7f");
+            _line.StrokeDashArray = Parser.GetStrokeDashArray(LineStyle);
 
-            switch (LineStyle)
-            {
-                case "Solid":
-                    break;
-
-                case "Dashed":
-                    
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    _line.StrokeDashArray.Add(4);
-                    break;
-
-                case "Dotted":
-                    
-                    _line.StrokeDashArray.Add(1);
-                    _line.StrokeDashArray.Add(2);
-                    _line.StrokeDashArray.Add(1);
-                    _line.StrokeDashArray.Add(2);
-                    break;
-            }
+            Axes axis;
+            Orientation orientation = Orientation.Horizontal;
+            Double value = 0;
             if (!Double.IsNaN(_yValue))
             {
-                if (_yValue >= _parent.AxisYPrimary.AxisMaximum || _yValue <= _parent.AxisYPrimary.AxisMinimum)
+                if (AxisYType == AxisType.Primary)
                 {
-                    this.SetValue(WidthProperty, 0);
-                    this.SetValue(HeightProperty, 0);
-
-                }
-                else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
-                {
-                    this.SetValue(WidthProperty, _parent.PlotArea.GetValue(WidthProperty));
-                    this.SetValue(HeightProperty, LineThickness + 3);
-
-
-                    this.SetValue(TopProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2));
-                    
-                    this.SetValue(LeftProperty, (Double) _parent.PlotArea.GetValue(LeftProperty));
-                    _line.X1 = 0;
-                    _line.Y1 = Height / 2;
-                    _line.X2 = Width;
-                    _line.Y2 = Height / 2;
-
-                    _shadow.X1 = _line.X1;
-                    _shadow.X2 = _line.X2;
-                    _shadow.Y1 = _line.Y1 + LineThickness / 2;
-                    _shadow.Y2 = _line.Y2 + LineThickness / 2;
-
-                }
-                else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    this.SetValue(HeightProperty, _parent.PlotArea.GetValue(HeightProperty));
-                    this.SetValue(WidthProperty, LineThickness + 3);
-
-                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_yValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2));
-                    
-                    this.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
-                    _line.Y1 = 0;
-                    _line.X1 = Width / 2;
-                    _line.Y2 = Height;
-                    _line.X2 = Width / 2;
-
-                    _shadow.X1 = _line.X1 + LineThickness / 2;
-                    _shadow.X2 = _line.X2 + LineThickness / 2;
-                    _shadow.Y1 = _line.Y1;
-                    _shadow.Y2 = _line.Y2;
-
+                    axis = _parent.AxisYPrimary;
                 }
                 else
                 {
-                    this.SetValue(WidthProperty, 0);
-                    this.SetValue(HeightProperty, 0);
+                    axis = _parent.AxisYSecondary;
                 }
+                value = _yValue;
+                if(_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
+                    orientation = Orientation.Horizontal;
+                else
+                    orientation = Orientation.Vertical;
             }
             else if (!Double.IsNaN(_xValue))
             {
-                if (_xValue >= _parent.AxisX.AxisMaximum || _xValue <= _parent.AxisX.AxisMinimum)
-                {
-                    this.SetValue(WidthProperty, 0);
-                    this.SetValue(HeightProperty, 0);
-
-                }
-                else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Bar)
-                {
-                    this.SetValue(WidthProperty, _parent.PlotArea.GetValue(WidthProperty));
-                    this.SetValue(HeightProperty, LineThickness + 3);
-                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisYPrimary.DoubleToPixel(_parent.AxisYPrimary.AxisMinimum) + (Double)_parent.PlotArea.GetValue(LeftProperty)));
-                    
-                    this.SetValue(TopProperty, (Double) ( (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2));
-                    _line.X1 = 0;
-                    _line.Y1 = Height / 2;
-                    _line.X2 = Width;
-                    _line.Y2 = Height / 2;
-
-                    _shadow.X1 = _line.X1;
-                    _shadow.X2 = _line.X2;
-                    _shadow.Y1 = _line.Y1 + LineThickness / 2;
-                    _shadow.Y2 = _line.Y2 + LineThickness / 2;
-
-                }
-                else if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
-                {
-                    this.SetValue(HeightProperty, _parent.PlotArea.GetValue(HeightProperty));
-                    this.SetValue(WidthProperty, LineThickness + 3);
-
-                    this.SetValue(TopProperty, (Double) _parent.PlotArea.GetValue(TopProperty));
-                    
-                    this.SetValue(LeftProperty, (Double) ( (Double)_parent.AxisX.DoubleToPixel(_xValue) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2));
-                    _line.Y1 = 0;
-                    _line.X1 = Width / 2;
-                    _line.Y2 = Height;
-                    _line.X2 = Width / 2;
-
-                    _shadow.X1 = _line.X1 + LineThickness / 2;
-                    _shadow.X2 = _line.X2 + LineThickness / 2;
-                    _shadow.Y1 = _line.Y1;
-                    _shadow.Y2 = _line.Y2;
-
-                }
+                axis = _parent.AxisX;
+                value = _xValue;
+                if (_parent.PlotDetails.AxisOrientation == AxisOrientation.Column)
+                    orientation = Orientation.Vertical;
                 else
-                {
-                    this.SetValue(WidthProperty, 0);
-                    this.SetValue(HeightProperty, 0);
-                }
+                    orientation = Orientation.Horizontal;
             }
             else
             {
-                this.SetValue(WidthProperty, 0);
-                this.SetValue(HeightProperty, 0);
+                return;
             }
 
+            if (value <= axis.AxisMinimum || value >= axis.AxisMaximum)
+            {
+                this.Width = 0;
+                this.Height = 0;
+            }
+            else if (orientation == Orientation.Horizontal)
+            {
+                this.Width = _parent.PlotArea.Width;
+                this.Height = LineThickness + 3;
+
+                this.SetValue(TopProperty, (Double)(axis.DoubleToPixel(value) + (Double)_parent.PlotArea.GetValue(TopProperty) - Height / 2));
+
+                this.SetValue(LeftProperty, (Double)_parent.PlotArea.GetValue(LeftProperty));
+
+                _line.X1 = 0;
+                _line.Y1 = Height / 2;
+                _line.X2 = Width;
+                _line.Y2 = Height / 2;
+
+                _shadow.X1 = _line.X1;
+                _shadow.X2 = _line.X2;
+                _shadow.Y1 = _line.Y1 + LineThickness / 2;
+                _shadow.Y2 = _line.Y2 + LineThickness / 2;
+            }
+            else if (orientation == Orientation.Vertical)
+            {
+                this.Height = _parent.PlotArea.Height;
+                this.Width = LineThickness + 3;
+
+                this.SetValue(LeftProperty, (Double)(axis.DoubleToPixel(value) + (Double)_parent.PlotArea.GetValue(LeftProperty) - Width / 2));
+
+                this.SetValue(TopProperty, (Double)_parent.PlotArea.GetValue(TopProperty));
+
+                _line.Y1 = 0;
+                _line.X1 = Width / 2;
+                _line.Y2 = Height;
+                _line.X2 = Width / 2;
+
+                _shadow.X1 = _line.X1 + LineThickness / 2;
+                _shadow.X2 = _line.X2 + LineThickness / 2;
+                _shadow.Y1 = _line.Y1;
+                _shadow.Y2 = _line.Y2;
+            }
+            else
+            {
+                this.Width = 0;
+                this.Height = 0;
+            }
 
             if (!ShadowEnabled)
                 _shadow.Opacity = 0;
@@ -398,6 +354,9 @@ namespace Visifire.Charts
             _xValue = Double.NaN;
             _yValue = Double.NaN;
             Enabled = true;
+
+            AxisYType = AxisType.Primary;
+
             this.SetValue(ZIndexProperty, 3);
             _line.SetValue(ZIndexProperty, 10);
             _shadow.SetValue(ZIndexProperty, 1);

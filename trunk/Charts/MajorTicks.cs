@@ -318,16 +318,16 @@ namespace Visifire.Charts
             Brush frontBrush = null;
             Brush tempBrush;
             if ((_parent.Parent as Chart).PlotArea.Background != null)
-                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).PlotArea.Background);
+                tempBrush = ((_parent.Parent as Chart).PlotArea.Background);
             else if ((_parent.Parent as Chart).Background != null)
-                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).Background);
+                tempBrush = ((_parent.Parent as Chart).Background);
             else
                 tempBrush = Parser.ParseLinearGradient("0;#ffafafaf,0;#ffefefef,1");
 
             if (tempBrush.GetType().Name == "LinearGradientBrush")
             {
                 LinearGradientBrush brush = tempBrush as LinearGradientBrush;
-                topBrush = Cloner.CloneBrush(tempBrush);
+                topBrush = (tempBrush);
                 String linBrush1 = "0;", linBrush2 = "45;";
 
                 foreach (GradientStop grad in brush.GradientStops)
@@ -346,7 +346,7 @@ namespace Visifire.Charts
             else if (tempBrush.GetType().Name == "RadialGradientBrush")
             {
                 RadialGradientBrush brush = tempBrush as RadialGradientBrush;
-                topBrush = Cloner.CloneBrush(tempBrush);
+                topBrush = (tempBrush);
                 String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
 
                 foreach (GradientStop grad in brush.GradientStops)
@@ -403,9 +403,9 @@ namespace Visifire.Charts
             }
             #endregion Color Gradient
 
-            rectBase.Fill = Cloner.CloneBrush(topBrush);
-            rectSide.Fill = Cloner.CloneBrush(sideBrush);
-            rectFront.Fill = Cloner.CloneBrush(frontBrush);
+            rectBase.Fill = (topBrush);
+            rectSide.Fill = (sideBrush);
+            rectFront.Fill = (frontBrush);
 
             rectFront.StrokeThickness = 1;
             rectBase.StrokeThickness = 1;
@@ -470,9 +470,9 @@ namespace Visifire.Charts
             Brush brushFront = null;
             Brush tempBrush;
             if ((_parent.Parent as Chart).PlotArea.Background != null)
-                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).PlotArea.Background);
+                tempBrush = ((_parent.Parent as Chart).PlotArea.Background);
             else if ((_parent.Parent as Chart).Background != null)
-                tempBrush = Cloner.CloneBrush((_parent.Parent as Chart).Background);
+                tempBrush = ((_parent.Parent as Chart).Background);
             else
                 tempBrush = Parser.ParseLinearGradient("0;#ffafafaf,0;#ffefefef,1");
 
@@ -481,7 +481,7 @@ namespace Visifire.Charts
             if (tempBrush.GetType().Name == "LinearGradientBrush")
             {
                 LinearGradientBrush brush = tempBrush as LinearGradientBrush;
-                brush2 = Cloner.CloneBrush(tempBrush);
+                brush2 = (tempBrush);
                 String linBrush1 = "-90;", linBrush2 = "-90;";
 
                 foreach (GradientStop grad in brush.GradientStops)
@@ -500,7 +500,7 @@ namespace Visifire.Charts
             else if (tempBrush.GetType().Name == "RadialGradientBrush")
             {
                 RadialGradientBrush brush = tempBrush as RadialGradientBrush;
-                brush2 = Cloner.CloneBrush(tempBrush);
+                brush2 = (tempBrush);
                 String linBrush1 = "0.5;0.5;", linBrush2 = "0.5;0.5;";
 
                 foreach (GradientStop grad in brush.GradientStops)
@@ -551,9 +551,9 @@ namespace Visifire.Charts
             }
             #endregion Color Gradient
 
-            rectBase.Fill = Cloner.CloneBrush(brush2);
-            rectSide.Fill = Cloner.CloneBrush(brushShade);
-            rectFront.Fill = Cloner.CloneBrush(brushFront);
+            rectBase.Fill = (brush2);
+            rectSide.Fill = (brushShade);
+            rectFront.Fill = (brushFront);
 
             rectFront.StrokeThickness = 1;
             rectBase.StrokeThickness = 1;
@@ -592,7 +592,7 @@ namespace Visifire.Charts
             line.X2 = end.X;
             line.Y2 = end.Y;
 
-            line.Stroke = Cloner.CloneBrush(LineBackground);
+            line.Stroke = (LineBackground);
             line.StrokeThickness = LineThickness;
             line.StrokeDashArray = Parser.GetStrokeDashArray(LineStyle);
 

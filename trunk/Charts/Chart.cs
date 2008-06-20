@@ -1066,7 +1066,7 @@ namespace Visifire.Charts
 
         private void AnimationType1(Double initialTime)
         {
-            ApplyDoubleAnimation(this, "Opacity", 0, 1, AnimationDuration, initialTime);
+            ApplyDoubleAnimation(this, "Opacity", 0, 1, AnimationDuration - initialTime, 0);
             this.Opacity = 0;
         }
 

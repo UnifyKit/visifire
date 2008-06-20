@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Net" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -44,12 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GradientParams.cs" />
-    <Compile Include="Cloner.cs" />
     <Compile Include="ColorSetDefault.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="GeometricMath.cs" />
+    <Compile Include="HrefTarget.cs" />
     <Compile Include="LabelBase.cs" />
     <Compile Include="LegendBase.cs" />
     <Compile Include="Parser.cs" />

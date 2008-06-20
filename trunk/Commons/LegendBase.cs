@@ -827,8 +827,8 @@ namespace Visifire.Commons
         /// <param name="line"></param>
         private void ApplyTitleFontStyle()
         {
-            _title.FontFamily = new FontFamily(TitleFontFamily);
-            _title.Foreground = Cloner.CloneBrush(GetTitleFontColor());
+            _title.FontFamily = Parser.GetFont(TitleFontFamily,_title);
+            _title.Foreground = GetTitleFontColor();
             _title.FontStyle = Converter.StringToFontStyle(TitleFontStyle);
             _title.FontWeight = Converter.StringToFontWeight(TitleFontWeight);
             if (Double.IsNaN(_titleFontSize))
@@ -846,7 +846,7 @@ namespace Visifire.Commons
         private void DrawTitleEntry()
         {
             _title = new TextBlock();
-            _title.Text = Title;
+            _title.Text = Parser.GetFormattedText(Title);
             ApplyTitleFontStyle();
 
             this.Children.Add(_title);
@@ -903,8 +903,8 @@ namespace Visifire.Commons
         /// <param name="line"></param>
         private void ApplyFontStyle(TextBlock textBlock)
         {
-            textBlock.FontFamily = new FontFamily(FontFamily);
-            textBlock.Foreground = Cloner.CloneBrush(GetFontColor());
+            textBlock.FontFamily = Parser.GetFont(FontFamily,textBlock);
+            textBlock.Foreground = GetFontColor();
             textBlock.FontStyle = Converter.StringToFontStyle(FontStyle);
             textBlock.FontWeight = Converter.StringToFontWeight(FontWeight);
             if (Double.IsNaN(_fontSize))
@@ -926,7 +926,7 @@ namespace Visifire.Commons
 
             // Create label for legend entry
             TextBlock txt = new TextBlock();
-            txt.Text = legendText;
+            txt.Text = Parser.GetFormattedText(legendText);
             ApplyFontStyle(txt);
 
             // Set left property

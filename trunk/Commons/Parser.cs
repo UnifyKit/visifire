@@ -31,6 +31,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Globalization;
+using System.Net;
+using System.IO;
 
 namespace Visifire.Commons
 {
@@ -402,7 +404,7 @@ namespace Visifire.Commons
             if (baseBrush.GetType().Name == "LinearGradientBrush")
             {
                 if (replicateBrush)
-                    return Cloner.CloneBrush(baseBrush);
+                    return baseBrush;
 
                 LinearGradientBrush brush = baseBrush as LinearGradientBrush;
                 generatedBrush = new LinearGradientBrush();
@@ -433,7 +435,7 @@ namespace Visifire.Commons
             else if (baseBrush.GetType().Name == "RadialGradientBrush")
             {
                 if (replicateBrush)
-                    return Cloner.CloneBrush(baseBrush);
+                    return baseBrush;
 
                 RadialGradientBrush brush = baseBrush as RadialGradientBrush;
 
@@ -473,14 +475,14 @@ namespace Visifire.Commons
                             generatedBrush = new SolidColorBrush(Parser.GetDarkerColor(brush.Color, gradientParams._solidBrushParams._intensity));
                             break;
                         default:
-                            generatedBrush = Cloner.CloneBrush(brush);
+                            generatedBrush = brush;
                             break;
                     }
                 }
             }
             else
             {
-                generatedBrush = Cloner.CloneBrush(baseBrush);
+                generatedBrush = baseBrush;
             }
 
             return generatedBrush;
@@ -614,6 +616,60 @@ namespace Visifire.Commons
                 UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + path);
                 return newUri.ToString();
             }
+        }
+
+
+        public static String GetFormattedText(String text)
+        {
+            if (String.IsNullOrEmpty(text)) 
+                return "";
+
+            String[] split = { "\\n" };
+            String[] lines = text.Split(split, StringSplitOptions.RemoveEmptyEntries);
+            String multiLineText = "";
+            foreach (String line in lines)
+            {
+                if (line.EndsWith("\\"))
+                {
+                    multiLineText += line + "n";
+                }
+                else
+                {
+                    multiLineText += line + "\n";
+                }
+            }
+
+            if (text.EndsWith("\\n"))
+                return multiLineText;
+            else 
+                return multiLineText.Substring(0,multiLineText.Length-1);
+        }
+
+
+        public static FontFamily GetFont(String fontFamily, TextBlock element)
+        {
+            if (String.IsNullOrEmpty(fontFamily) || element == null)
+                return null;
+
+            if (fontFamily.Contains("#"))
+            {
+                String[] split = fontFamily.Split('#');
+
+                WebClient webClient = new WebClient();
+                webClient.OpenReadCompleted += delegate(object sender, OpenReadCompletedEventArgs e)
+                {
+                    (e.UserState as TextBlock).FontSource = new FontSource(e.Result as Stream);
+                };
+                webClient.OpenReadAsync(new Uri(split[0], UriKind.RelativeOrAbsolute), element);
+
+                return new FontFamily(split[1]);
+            }
+            else
+            {
+                return new FontFamily(fontFamily);
+            }
+
+            
         }
 
         #endregion Static Methods

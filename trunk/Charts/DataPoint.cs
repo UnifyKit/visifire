@@ -75,12 +75,12 @@ namespace Visifire.Charts
 
             if (base.Background != null)
             {
-                this.Background = Cloner.CloneBrush(base.Background);
+                this.Background = (base.Background);
                 base.Background = null;
             }
             else if (this.Background == null)
             {
-                this.Background = Cloner.CloneBrush(_parent.ColorSetReference.GetColor(Index));
+                this.Background = (_parent.ColorSetReference.GetColor(Index));
             }
 
 
@@ -197,7 +197,7 @@ namespace Visifire.Charts
 
             marker.MouseLeave += delegate(object sender, MouseEventArgs e)
             {
-                ((Marker)sender).BorderColor = Cloner.CloneBrush(MarkerBorderColor);
+                ((Marker)sender).BorderColor = (MarkerBorderColor);
                 ((Marker)sender).BorderThickness = MarkerBorderThickness;
             };
 
@@ -220,7 +220,7 @@ namespace Visifire.Charts
             if (element == null) return;
             _label = new Label();
 
-            _label.Background = Cloner.CloneBrush(LabelBackground);
+            _label.Background = (LabelBackground);
 
             _label.SetTextWrap(_parent._parent.Width * _parent._parent.Label.TextWrap);
 
@@ -434,7 +434,7 @@ namespace Visifire.Charts
         {
             _label = new Label();
 
-            _label.Background = Cloner.CloneBrush(LabelBackground);
+            _label.Background = (LabelBackground);
 
             _label.SetTextWrap(_parent._parent.Width * _parent._parent.Label.TextWrap);
             _label.IsHitTestVisible = false;
@@ -516,11 +516,11 @@ namespace Visifire.Charts
                 _labelLine.Points.Add(points[2]);
 
                 if (LabelLineColor != null)
-                    _labelLine.Stroke = Cloner.CloneBrush(LabelLineColor);
+                    _labelLine.Stroke = (LabelLineColor);
                 else if (_labelFontColor != null)
-                    _labelLine.Stroke = Cloner.CloneBrush(LabelFontColor);
+                    _labelLine.Stroke = (LabelFontColor);
                 else
-                    _labelLine.Stroke = Cloner.CloneBrush(_label.FontColor);
+                    _labelLine.Stroke = (_label.FontColor);
                 _labelLine.StrokeThickness = LabelLineThickness;
                 _labelLine.StrokeDashArray = Parser.GetStrokeDashArray(LabelLineStyle);
 
@@ -606,8 +606,6 @@ namespace Visifire.Charts
         public override void SetLeft() { }
 
         public override void SetTop() { }
-
-        
 
         /// <summary>
         /// Draws a border for the Datapoint. Border itself will become clipping region
@@ -859,9 +857,9 @@ namespace Visifire.Charts
                     return _markerBorderColor;
                 else
                     if (_parent.MarkerBorderColor != null)
-                        return Cloner.CloneBrush(_parent.MarkerBorderColor);
+                        return (_parent.MarkerBorderColor);
                     else
-                        return Cloner.CloneBrush(Background);
+                        return (Background);
             }
             set
             {
@@ -1113,14 +1111,14 @@ namespace Visifire.Charts
         {
             get
             {
-                if (!String.IsNullOrEmpty(_toolTipText))
-                    return _toolTipText;
+                if (!String.IsNullOrEmpty(base.ToolTipText))
+                    return base.ToolTipText;
                 else
                     return _parent.ToolTipText;
             }
             set
             {
-                _toolTipText = value;
+                base.ToolTipText = value;
             }
 
         }
@@ -1129,14 +1127,30 @@ namespace Visifire.Charts
         {
             get
             {
-                if (!String.IsNullOrEmpty(_href))
-                    return _href;
+                if (!String.IsNullOrEmpty(base.Href))
+                    return base.Href;
                 else
                     return _parent.Href;
             }
             set
             {
-                _href = Parser.BuildAbsolutePath(value);
+                base.Href = Parser.BuildAbsolutePath(value);
+            }
+        }
+
+        public override HrefTarget HrefTarget
+        {
+            get
+            {
+                if (_hrefTargetChanged)
+                    return base.HrefTarget;
+                else
+                    return _parent.HrefTarget;
+            }
+            set
+            {
+                _hrefTargetChanged = true;
+                base.HrefTarget = value;
             }
         }
 
@@ -1366,7 +1380,7 @@ namespace Visifire.Charts
                     return _markerBackground;
                 else
                     if (_parent.MarkerBackground != null)
-                        return Cloner.CloneBrush(_parent.MarkerBackground);
+                        return (_parent.MarkerBackground);
                     else
                         return new SolidColorBrush(Colors.White);
             }
@@ -1499,7 +1513,7 @@ namespace Visifire.Charts
         /// <param name="shape">shape object for with the stroke setting are applied</param>
         internal void ApplyStrokeSettings(Shape shape)
         {
-            shape.Stroke = Cloner.CloneBrush(BorderColor);
+            shape.Stroke = (BorderColor);
             shape.StrokeThickness = BorderThickness;
             shape.StrokeDashArray = Parser.GetStrokeDashArray(BorderStyle);
         }
@@ -1604,7 +1618,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    label.FontColor = Cloner.CloneBrush(LabelFontColor);
+                    label.FontColor = (LabelFontColor);
                 }
             }
         }
@@ -1716,10 +1730,8 @@ namespace Visifire.Charts
         private Label _label;
         private Polyline _labelLine;
 
-        private String _toolTipText;
-
         private Brush _background;
-        private String _href;
+        private Boolean _hrefTargetChanged = false;
 
         internal System.Collections.Generic.List<Point> points = new System.Collections.Generic.List<Point>();
         private Double _radiusX;

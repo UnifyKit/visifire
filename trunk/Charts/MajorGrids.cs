@@ -237,7 +237,7 @@ namespace Visifire.Charts
         {
             Rectangle interlacedRectangle = new Rectangle();
 
-            interlacedRectangle.Fill = Cloner.CloneBrush(color);
+            interlacedRectangle.Fill = (color);
 
             interlacedRectangle.SetValue(TopProperty, (Double)rect.Y);
 
@@ -262,7 +262,7 @@ namespace Visifire.Charts
             line.X2 = end.X;
             line.Y2 = end.Y;
 
-            line.Stroke = Visifire.Commons.Cloner.CloneBrush(LineBackground);
+            line.Stroke = (LineBackground);
             line.StrokeThickness = LineThickness;
             line.StrokeDashArray = Parser.GetStrokeDashArray(this._lineStyle);
 

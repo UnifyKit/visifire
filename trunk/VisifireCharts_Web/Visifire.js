@@ -71,6 +71,41 @@ if(!window.Visifire)
         return null;        
     }
     
+    Visifire.prototype.isLoaded = function()
+    {
+        var slControl = this._getSlControl();
+        try
+        {
+            if(slControl.Content.wrapper != null)
+                return true;
+        }
+        catch(ex)
+        {
+            return false;
+        }
+    }
+    Visifire.prototype.isDataLoaded = function()
+    {
+        var slControl = this._getSlControl();
+        
+        return slControl.Content.wrapper.IsDataLoaded;
+    }
+    Visifire.prototype.setSize = function(pWidth,pHeight)
+    {
+        var slControl = this._getSlControl();
+        if(slControl != null)
+        {
+            slControl.width = pWidth;
+            slControl.height = pHeight;
+            slControl.Content.wrapper.Resize(pWidth,pHeight);
+        }
+        else
+        {
+            this.width = pWidth;
+            this.height = pHeight;
+        }
+    }
+    
     Visifire.prototype.setDataXml = function(pDataXml)
     {
         var slControl = this._getSlControl();
@@ -215,7 +250,7 @@ if(!window.Visifire)
         
         html    +=  '<param name="source" value="' + _uThisObject.xapPath +'"/>'
 		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>';
-	    
+	            +   '<param name="onResize" value="slResized' + _uThisObject.index +'"/>';
 		html += '<param name="initParams" value="';
 		
 		html += "logLevel=" + _uThisObject.logLevel + ",";

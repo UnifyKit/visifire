@@ -55,8 +55,15 @@ namespace VisifireCharts
 
             _wrapper.ReRender += new EventHandler(_wrapper_ReRender);
 
+            _wrapper.OnResize += new EventHandler<ResizeEventArgs>(_wrapper_OnResize);
             HtmlPage.RegisterScriptableObject("wrapper", _wrapper);
 
+        }
+
+        void _wrapper_OnResize(object sender, ResizeEventArgs e)
+        {
+            _chartWidth = e.Width;
+            _chartHeight = e.Height;
         }
 
         void _wrapper_DataXML(object sender, DataXMLEventArgs e)
@@ -75,7 +82,6 @@ namespace VisifireCharts
 
         void _wrapper_ReRender(object sender, EventArgs e)
         {
-
             RenderEngine();
         }
 
@@ -115,6 +121,7 @@ namespace VisifireCharts
                 GC.Collect();
 
             }
+            
         }
 
         private void DownloadXML()
@@ -123,6 +130,7 @@ namespace VisifireCharts
             {
 
                 WebClient webclient = new WebClient();
+
                 webclient.BaseAddress = _baseUri;
 
                 webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
@@ -200,7 +208,8 @@ namespace VisifireCharts
             }
             else if (e.InitParams.ContainsKey("dataXml"))
             {
-                _xmlQueue.Enqueue((String)System.Windows.Browser.HtmlPage.Window.Invoke(e.InitParams["dataXml"]));
+                Enqueue((String)System.Windows.Browser.HtmlPage.Window.Invoke(e.InitParams["dataXml"]));
+
                 RenderEngine();
                 //CreateChart();
             }
@@ -223,7 +232,7 @@ namespace VisifireCharts
             if (e.Error == null)
             {
                 _downloadBusy = false;
-                _xmlQueue.Enqueue(e.Result);
+                Enqueue(e.Result);
 
                 if (_firstChart)
                 {
@@ -248,14 +257,15 @@ namespace VisifireCharts
             _logTextBox.TextAlignment = TextAlignment.Left;
             _logTextBox.Visibility = Visibility.Collapsed;
 
-            _logTextBox.BorderThickness = new Thickness(0);
-
-            _logTextBox.MaxHeight = 300;
-            _logTextBox.MaxWidth = 500;
-
             _logTextBox.Text = "Error Log (" + _version + ") :\n";
 
-            wrapper.LayoutRoot.Children.Add(_logTextBox);
+            _scrollViewer = new ScrollViewer();
+            _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+            _scrollViewer.SetValue(ScrollViewer.ContentProperty,_logTextBox);
+
+            wrapper.LayoutRoot.Children.Add(_scrollViewer);
         }
 
         private Canvas CreateChart()
@@ -275,7 +285,7 @@ namespace VisifireCharts
 
             canvasXaml += ">\n";
 
-            _dataXml = _xmlQueue.Dequeue();
+            _dataXml = Dequeue();
 
             canvasXaml += _dataXml;
 
@@ -289,7 +299,19 @@ namespace VisifireCharts
 
             return chartCanvas;
         }
+        private void Enqueue(String data)
+        {
+            _xmlQueue.Enqueue(data);
+            _wrapper.IsDataLoaded = true;
 
+        }
+        private String Dequeue()
+        {
+            String data = _xmlQueue.Dequeue();
+            if (_xmlQueue.Count == 0)
+                _wrapper.IsDataLoaded = false;
+            return data;
+        }
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
         {
             AttachJsEvents(sender as Canvas);
@@ -519,21 +541,40 @@ namespace VisifireCharts
             }
 
         }
+
         #endregion "Js Events"
 
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
             if (_logLevel == 1)
             {
-                _logTextBox.Text += e.ExceptionObject.Message + "\n" + e.ExceptionObject.StackTrace + "\n";
-                _logTextBox.BorderThickness = new Thickness(1);
+                _logTextBox.Text += "Copy & Paste the contents of this log in www.visifire.com/forums for support.\n\n";
+                _logTextBox.Text += "Message: " + e.ExceptionObject.Message + "\n\n";
+                _logTextBox.Text += "XML: \n" + _dataXml + "\n";
+                _logTextBox.Text += "StackTrace: \n" + e.ExceptionObject.StackTrace + "\n";
+
+                TextBlock tb = new TextBlock();
+                tb.FontSize = 12;
+                tb.Text = _logTextBox.Text;
+                tb.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+                tb.LineHeight = 14;
+
                 _logTextBox.Visibility = Visibility.Visible;
 
+                _logTextBox.Height = tb.ActualHeight;
+                _logTextBox.Width = tb.ActualWidth;
+
+                _scrollViewer.Height = Double.IsNaN(_chartHeight)? 300 :_chartHeight;
+                _scrollViewer.Width = Double.IsNaN(_chartWidth) ? 300 : _chartWidth ;
+
+                
                 foreach (FrameworkElement child in _wrapper.LayoutRoot.Children)
                 {
-                    if (child != _logTextBox)
+                    if (child != _scrollViewer)
                         child.Visibility = Visibility.Collapsed;
                 }
+
+                
             }
             e.Handled = true;
         }
@@ -546,7 +587,10 @@ namespace VisifireCharts
         private String _dataUri = null;
         private String _dataXml = null;
         private String _baseUri = null;
+
         private TextBox _logTextBox;
+        private ScrollViewer _scrollViewer;
+
         private Double _chartWidth = Double.NaN;
         private Double _chartHeight = Double.NaN;
         private Canvas _chartCanv;

@@ -29,6 +29,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Markup;
+using System.Windows.Browser;
 using System.Net;
 using Visifire.Commons;
 
@@ -50,7 +51,7 @@ namespace Visifire.Charts
 
             if(_parent.ToolTip.Enabled==true && !String.IsNullOrEmpty(ToolTipText)) AttachToolTip();
 
-            if (!String.IsNullOrEmpty(Href)) AttachHref();
+            AttachHref();
             
             SetWidth();
             SetHeight();
@@ -76,7 +77,7 @@ namespace Visifire.Charts
 
                 this.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(link));
+                    HtmlPage.Window.Navigate(new Uri(link),this.HrefTarget.ToString());
                 };
             }
         }
@@ -200,7 +201,7 @@ namespace Visifire.Charts
             set;
         }
 
-        public  String Href
+        public String Href
         {
             get
             {
@@ -209,6 +210,18 @@ namespace Visifire.Charts
             set
             {
                 _href = Parser.BuildAbsolutePath(value);
+            }
+        }
+
+        public HrefTarget HrefTarget
+        {
+            get
+            {
+                return _hrefTarget;
+            }
+            set
+            {
+                _hrefTarget = value;
             }
         }
 
@@ -356,6 +369,7 @@ namespace Visifire.Charts
         private Boolean _imageWidthSet = false;
         private String _href;
         private ImageBrush imgBrush;
+        private HrefTarget _hrefTarget = HrefTarget._self;
         #endregion Data
     }
 }

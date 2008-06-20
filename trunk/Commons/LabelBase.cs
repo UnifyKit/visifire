@@ -148,7 +148,7 @@ namespace Visifire.Commons
             }
             set
             {
-                _textBlock.Text = value;
+                _textBlock.Text = Parser.GetFormattedText(value);
 
                 SetWidth();
                 SetHeight();
@@ -166,7 +166,8 @@ namespace Visifire.Commons
             }
             set
             {
-                _textBlock.FontFamily = new FontFamily(value);
+                _fontString = value;
+                _textBlock.FontFamily = Parser.GetFont(value,_textBlock);
             }
         }
 
@@ -193,7 +194,7 @@ namespace Visifire.Commons
             set
             {
                 _fontColor = value;
-                _textBlock.Foreground = Cloner.CloneBrush(_fontColor);
+                _textBlock.Foreground = _fontColor;
             }
         }
 
@@ -225,16 +226,29 @@ namespace Visifire.Commons
 
         #endregion Public Properties
 
+        #region Protected Property
+        protected String FontString
+        {
+            get
+            {
+                return _fontString;
+            }
+        }
+        #endregion
+
         #region Private Methods
 
         protected override void SetDefaults()
         {
             base.SetDefaults();
             base.Background = null;
+
+            _fontString = "Verdana";
+
             _textBlock = new TextBlock();
             _textBlock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255,118, 118, 118));
-            _textBlock.FontFamily = new FontFamily("Verdana");
-
+            _textBlock.FontFamily = new FontFamily(FontString);
+            
             _fontSize = Double.NaN;
             _fontColor = null;
 
@@ -251,6 +265,7 @@ namespace Visifire.Commons
         private Double _textWrap;
         protected Double _fontSize;
         protected Brush _fontColor;
+        private String _fontString;
         #endregion Data
     }
 }
