@@ -31,6 +31,7 @@ using System.Windows.Markup;
 using System.Net;
 using System.Collections.Generic;
 using System.Globalization;
+using System.ComponentModel;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -675,6 +676,7 @@ namespace Visifire.Charts
         /// <summary>
         /// The value that corresponds to Y-axis in a chart
         /// </summary>
+        [TypeConverter(typeof(DoubleConverter))]
         public Double YValue
         {
             get
@@ -700,12 +702,14 @@ namespace Visifire.Charts
         /// <summary>
         /// This value is used only by Bubble chart. it controls the size of the bubble
         /// </summary>
+        [TypeConverter(typeof(DoubleConverter))]
         public Double ZValue
         {
             set;
             get;
         }
 
+        [TypeConverter(typeof(DoubleConverter))]
         public Double XValue
         {
             get

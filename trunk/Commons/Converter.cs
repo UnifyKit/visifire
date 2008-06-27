@@ -23,6 +23,8 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Reflection;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace Visifire.Commons
 {
@@ -77,6 +79,20 @@ namespace Visifire.Commons
         private delegate FontStyle FontStyleMethod();
 
         #endregion Delegate
+
+    }
+
+    public sealed partial class DoubleConverter : TypeConverter
+    {
+        public override object ConvertFromString(string text)
+        {
+            return Double.Parse(text, CultureInfo.InvariantCulture);
+        }
+
+        public override object ConvertFrom(object value)
+        {
+            return Double.Parse(value.ToString(), CultureInfo.InvariantCulture);
+        }
 
     }
 }

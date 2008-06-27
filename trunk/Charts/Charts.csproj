@@ -51,7 +51,6 @@
     <Compile Include="AxisOrientation.cs" />
     <Compile Include="AxisX.cs" />
     <Compile Include="AxisY.cs" />
-    <Compile Include="BorderStyles.cs" />
     <Compile Include="Chart.cs" />
     <Compile Include="ChartTypes.cs" />
     <Compile Include="Color.cs" />

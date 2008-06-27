@@ -47,6 +47,9 @@ namespace Visifire.Charts
 
         public void OnLoaded(Object sender, EventArgs e)
         {
+            if (_isLoaded)
+                return;
+
             Init();
 
             Render();
@@ -72,7 +75,9 @@ namespace Visifire.Charts
             {
                 ApplyPostAnimationSettings();
             }
-            
+
+            // Set flag to indicate load complete
+            _isLoaded = true;
         }
 
         public override System.Collections.Generic.List<Point> GetBoundingPoints()
@@ -2919,7 +2924,7 @@ namespace Visifire.Charts
 
         #region Data
         private Int32 _storyboardEndCounter = 0;
-
+        private Boolean _isLoaded = false;
         private Double _labelPaddingTop;
         private Double _labelPaddingBottom;
         private Double _labelPaddingRight;
