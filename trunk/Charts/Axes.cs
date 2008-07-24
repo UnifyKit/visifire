@@ -25,6 +25,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Globalization;
 using Visifire.Commons;
 
@@ -905,6 +907,23 @@ namespace Visifire.Charts
                 //if(_parent.Depth > 0)
                 //    MajorTicks.TickLength = _parent.Depth * _parent.Count;
 
+            }
+
+            if (Double.IsNaN(_interval) && Double.IsNaN(AxisLabels._interval) && _parent.PlotDetails.AllAxisLabels)
+            {
+                List<Double> uniqueXValues = (from entry in _parent.PlotDetails.AxisLabels orderby entry.Key select entry.Key).ToList();
+
+                if (uniqueXValues.Count > 0)
+                {
+                    Double minDiff = Double.MaxValue;
+
+                    for (Int32 i = 0; i < uniqueXValues.Count - 1; i++)
+                    {
+                        minDiff = Math.Min(minDiff, Math.Abs(uniqueXValues[i] - uniqueXValues[i + 1]));
+                    }
+
+                    Interval = minDiff;
+                }
             }
         }
 

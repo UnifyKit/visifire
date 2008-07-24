@@ -436,7 +436,7 @@ namespace Visifire.Charts
                 _image = Parser.BuildAbsolutePath(value);
                 ImageBrush imgBrush = new ImageBrush();
                 
-                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
+                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"   ImageSource=\"" + _image + "\"/>";
 
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
                 imgBrush.ImageFailed +=new EventHandler<ExceptionRoutedEventArgs>(imgBrush_ImageFailed);
@@ -1953,7 +1953,7 @@ namespace Visifire.Charts
                 LinearGradientBrush brush = DataPoints[id].Background as LinearGradientBrush;
                 brushPie = (DataPoints[id].Background);
 
-                brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+                brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""   EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
                 Parser.GenerateDarkerGradientBrush(brush, brushSide as LinearGradientBrush, 0.75);
                 RotateTransform rt = new RotateTransform();
                 rt.Angle = -45;
@@ -2075,7 +2075,7 @@ namespace Visifire.Charts
                 LinearGradientBrush brush = DataPoints[id].Background as LinearGradientBrush;
                 brushPie = (DataPoints[id].Background);
 
-                brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+                brushSide = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
                 Parser.GenerateDarkerGradientBrush(brush, brushSide as LinearGradientBrush, 0.75);
                 RotateTransform rt = new RotateTransform();
                 rt.Angle = -45;
@@ -4331,9 +4331,9 @@ namespace Visifire.Charts
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
                         brush2 = (DataPoints[index].Background);
 
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""   EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""   StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
 
                         Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
                         Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
@@ -4652,9 +4652,9 @@ namespace Visifire.Charts
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
                         brush2 = (DataPoints[index].Background);
 
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
 
                         Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
                         Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);
@@ -5029,7 +5029,7 @@ namespace Visifire.Charts
             GradientParams topParams = new GradientParams(linearParams, radialParams, solidParams);
             top = Parser.GenerateBrush(baseBrush, false, topParams);
 
-            
+
         }
 
         private void Get3DBarColor(Brush baseBrush, ref Brush front, ref Brush side, ref Brush top)
@@ -6612,9 +6612,9 @@ namespace Visifire.Charts
                         LinearGradientBrush brush = DataPoints[index].Background as LinearGradientBrush;
                         brush2 = (DataPoints[index].Background);
 
-                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
+                        brushShade = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""   EndPoint=""1,0"" StartPoint=""0,1""></LinearGradientBrush>");
 
-                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
+                        brushTop = (LinearGradientBrush)XamlReader.Load(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""   StartPoint=""-0.5,1.5"" EndPoint=""0.5,0"" ></LinearGradientBrush>");
 
                         Parser.GenerateDarkerGradientBrush(brush, brushShade as LinearGradientBrush, 0.75);
                         Parser.GenerateLighterGradientBrush(brush, brushTop as LinearGradientBrush, 0.85);

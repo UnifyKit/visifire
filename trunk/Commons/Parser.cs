@@ -39,6 +39,22 @@ namespace Visifire.Commons
     public class Parser
     {
         #region Static Methods
+        public static String GetGradientStopString(String[] gradStops)
+        {
+            String stopsString = "";
+            foreach (String colorOffset in gradStops)
+            {
+                String[] colorOffsetSplit = colorOffset.Split(',');
+
+                if (colorOffsetSplit.Length > 1)
+                {
+                    stopsString += String.Format(@"<GradientStop Color=""" + colorOffsetSplit[0] + @""" Offset=""" + colorOffsetSplit[1] + @"""/>");
+                }
+            }
+
+            return stopsString;
+        }
+
         /// <summary>
         /// This converts a given String of angle;color,stop;.... String to a linear gradient brush
         /// </summary>
@@ -47,45 +63,25 @@ namespace Visifire.Commons
         public static Brush ParseLinearGradient(String str)
         {
             Double angle;
-            
+
             String[] strSplit = str.Split(';');
-            angle = Double.Parse(strSplit[0],CultureInfo.InvariantCulture);
+            angle = Double.Parse(strSplit[0], CultureInfo.InvariantCulture);
 
-            //rt.Angle = angle;
-            //rt.CenterX = .5;
-            //rt.CenterY = .5;
+            String brushString = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""1,0"" StartPoint=""0,0"">");
 
-            //tg.Children.Add(rt);
-            //brush.RelativeTransform = tg;
+            brushString += GetGradientStopString(strSplit);
 
-            GradientStopCollection gsc = new GradientStopCollection();
-            foreach (String colorOffset in strSplit)
-            {
-                String[] colorOffsetSplit = colorOffset.Split(',');
-                
-                if (colorOffsetSplit.Length > 1)
-                {
-                    GradientStop gs = (GradientStop)XamlReader.Load(@"<GradientStop xmlns=""http://schemas.microsoft.com/client/2007"" Color=""" + colorOffsetSplit[0] + @""" Offset=""" + colorOffsetSplit[1] + @"""/>");
-                    gsc.Add(gs);
-                    
-                }
-            }
+            brushString += "</LinearGradientBrush>";
 
-            LinearGradientBrush brush = new LinearGradientBrush();
+            Brush brush = (Brush)XamlReader.Load(brushString);
 
-            brush.GradientStops = gsc;
-            brush.StartPoint = new Point(0, 0);
-            brush.EndPoint = new Point(1, 0);
-
-            // Rotate brush
-            TransformGroup tg = new TransformGroup();
             RotateTransform rt = new RotateTransform();
             rt.Angle = angle;
             rt.CenterX = .5;
             rt.CenterY = .5;
 
-            tg.Children.Add(rt);
-            brush.RelativeTransform = tg;
+            // tg.Children.Add(rt);
+            brush.RelativeTransform = rt;
 
             return brush;
         }
@@ -99,22 +95,19 @@ namespace Visifire.Commons
         /// <returns></returns>
         public static Brush ParseLinearGradient(String str, Point start, Point end)
         {
-            LinearGradientBrush linearGradient = new LinearGradientBrush();
+            String[] colorStopSet = str.Split(';');
+
+            String brushString = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >");
+
+            brushString += GetGradientStopString(colorStopSet);
+
+            brushString += "</LinearGradientBrush>";
+
+            LinearGradientBrush linearGradient = (LinearGradientBrush)XamlReader.Load(brushString);
 
             linearGradient.StartPoint = start;
             linearGradient.EndPoint = end;
-
-            String[] colorStopSet = str.Split(';');
-
-            for (Int32 i = 0; i < colorStopSet.Length; i++)
-            {
-                String[] colorStop = colorStopSet[i].Split(',');
-                if (colorStop.Length > 1)
-                {
-                    GradientStop stops = (GradientStop)XamlReader.Load(@"<GradientStop xmlns=""http://schemas.microsoft.com/client/2007"" Color=""" + colorStop[0] + @""" Offset=""" + colorStop[1] + @"""/>");
-                    linearGradient.GradientStops.Add(stops);
-                }
-            }
+            
             return linearGradient;
         }
 
@@ -162,25 +155,17 @@ namespace Visifire.Commons
         /// <returns></returns>
         public static Brush ParseRadialGradient(String str)
         {
-            
-            RadialGradientBrush brush = new RadialGradientBrush();
-            
-            String[] strSplit = str.Split(';');
+            String[] colorStopSet = str.Split(';');
 
+            String brushString = String.Format(@"<RadialGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >");
 
-            brush.GradientOrigin = new Point(Double.Parse(strSplit[0], CultureInfo.InvariantCulture), Double.Parse(strSplit[1], CultureInfo.InvariantCulture));
+            brushString += GetGradientStopString(colorStopSet);
 
+            brushString += "</RadialGradientBrush>";
 
-            foreach (String colorOffset in strSplit)
-            {
-                String[] colorOffsetSplit = colorOffset.Split(',');
+            RadialGradientBrush brush = (RadialGradientBrush)XamlReader.Load(brushString);
 
-                if (colorOffsetSplit.Length > 1)
-                {
-                    GradientStop gs = (GradientStop)XamlReader.Load(@"<GradientStop xmlns=""http://schemas.microsoft.com/client/2007"" Color=""" + colorOffsetSplit[0] + @""" Offset=""" + colorOffsetSplit[1] + @"""/>");
-                    brush.GradientStops.Add(gs);
-                }
-            }
+            brush.GradientOrigin = new Point(Double.Parse(colorStopSet[0], CultureInfo.InvariantCulture), Double.Parse(colorStopSet[1], CultureInfo.InvariantCulture));
 
             return brush;
         }
@@ -192,7 +177,7 @@ namespace Visifire.Commons
         /// <returns></returns>
         public static Brush ParseSolidColor(String colorCode)
         {
-            return (SolidColorBrush)XamlReader.Load(String.Format(CultureInfo.InvariantCulture, @"<SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" Color=""{0}""></SolidColorBrush>",colorCode));
+            return (Brush)XamlReader.Load(String.Format(CultureInfo.InvariantCulture, @"<SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" Color=""{0}""></SolidColorBrush>",colorCode));
         }
 
         /// <summary>
@@ -333,16 +318,15 @@ namespace Visifire.Commons
             {
                 color = (brush as SolidColorBrush).Color;
                 intensity = (Double)(color.R + color.G + color.B) / (3 * 255);
-                
             }
             else if (brush.GetType().Name == "LinearGradientBrush" || brush.GetType().Name == "RadialGradientBrush")
             {
-
                 foreach (GradientStop grad in (brush as GradientBrush).GradientStops)
                 {
                     color = grad.Color;
                     intensity += (Double)(color.R + color.G + color.B) / (3 * 255);
                 }
+
                 intensity /= (brush as GradientBrush).GradientStops.Count;
             }
             else
@@ -350,6 +334,8 @@ namespace Visifire.Commons
                 intensity = 1;
             }
             return intensity;
+
+           
         }
 
         public static Brush ParseColor(String colorString)

@@ -27,6 +27,9 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Windows.Shapes;
 
 namespace Visifire.Charts
@@ -63,7 +66,7 @@ namespace Visifire.Charts
             MaxDataPoints = 0;
 
             TotalNoOfSeries = 0;
-
+            _uniqueValueCount = -1;
             
         }
 
@@ -79,6 +82,21 @@ namespace Visifire.Charts
                 _minAxisXDataValue = Math.Min(_minAxisXDataValue, plot.MinAxisXValue);
             }
 
+        }
+
+        private Int32 GetUniqueXValuesCount()
+        {
+            List<DataPoint> dataPoints = new List<DataPoint>();
+
+            foreach (Plot plot in Plots)
+            {
+                foreach (DataSeries dataSeries in plot.DataSeries)
+                {
+                    dataPoints.InsertRange(dataPoints.Count, dataSeries.DataPoints);
+                }
+            }
+
+            return (from dataPoint in dataPoints orderby dataPoint.XValue group dataPoint by dataPoint.XValue).Count();
         }
 
         private void FindMaxMinAxisYValues(AxisY axisY)
@@ -208,7 +226,8 @@ namespace Visifire.Charts
         {
             get
             {
-                return (_axisLabels.Count == MaxDataPoints);
+                if(_uniqueValueCount <0) _uniqueValueCount = GetUniqueXValuesCount();
+                return (_axisLabels.Count == _uniqueValueCount);
             }
             set
             {
@@ -222,7 +241,7 @@ namespace Visifire.Charts
         private Double _minAxisYDataValue;
         private Double _maxAxisXDataValue;
         private Double _minAxisXDataValue;
-
+        private Double _uniqueValueCount;
         #endregion Data
     }
 }

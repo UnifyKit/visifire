@@ -939,12 +939,14 @@ namespace Visifire.Charts
             doubleAnimation.From = from;
 
             doubleAnimation.To = to;
-            
-            this.Resources.Add(storyboard.GetHashCode().ToString(), storyboard);
+
+            storyboard.SetValue(NameProperty, typeof(Storyboard).Name + this.Resources.Count);
+
+            this.Resources.Add(storyboard.GetValue(NameProperty).ToString(), storyboard);
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
+                this.Resources.Remove((sender as Storyboard).GetValue(NameProperty).ToString());
                 _storyboardEndCounter++;
                 ApplyPostAnimationSettings();
             };
@@ -989,11 +991,14 @@ namespace Visifire.Charts
 
                 doubleAnimation.KeyFrames.Add(splineKeyframe);
             }
-            this.Resources.Add(storyboard.GetHashCode().ToString(), storyboard);
+
+            storyboard.SetValue(NameProperty, typeof(Storyboard).Name + this.Resources.Count);
+
+            this.Resources.Add(storyboard.GetValue(NameProperty).ToString(), storyboard);
 
             storyboard.Completed += delegate(object sender, EventArgs e)
             {
-                this.Resources.Remove((sender as Storyboard).GetHashCode().ToString());
+                this.Resources.Remove((sender as Storyboard).GetValue(NameProperty).ToString());
                 _storyboardEndCounter++;
                 ApplyPostAnimationSettings();
             };
@@ -2572,34 +2577,6 @@ namespace Visifire.Charts
                 }
             }
             return seriesIndex;
-        }
-
-        private Boolean SetDrawingIndexByChartType(ChartTypes chartType, ref List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
-        {
-            Boolean found = false;
-            for (Int32 i = 0; i < seriesIndex.Count; i++)
-            {
-                if (seriesIndex[i].Key.Plot.ChartType == chartType)
-                {
-                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
-                    found = true;
-                }
-            }
-            return found;
-        }
-
-        private Boolean SetDrawingIndexByChartType(ChartTypes chartType, AxisType axisType, ref List<KeyValuePair<DataSeries, Int32>> seriesIndex, Int32 index)
-        {
-            Boolean found = false;
-            for (Int32 i = 0; i < seriesIndex.Count; i++)
-            {
-                if (seriesIndex[i].Key.Plot.ChartType == chartType && seriesIndex[i].Key.AxisYType == axisType)
-                {
-                    seriesIndex[i] = new KeyValuePair<DataSeries, int>(seriesIndex[i].Key, index);
-                    found = true;
-                }
-            }
-            return found;
         }
 
         private List<KeyValuePair<DataSeries, Int32>> SetHighestIndexToAllSeriesByChartType(ChartTypes chartType, List<KeyValuePair<DataSeries, Int32>> seriesIndex)

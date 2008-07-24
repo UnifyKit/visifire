@@ -721,7 +721,7 @@ namespace Visifire.Charts
         #region Data
         
         private Double _labelAngle;
-        private Double _interval;
+        internal Double _interval;
         private System.Collections.Generic.Dictionary<Double, AxisLabel> _labelDictionary;
 
         private String _fontFamily;

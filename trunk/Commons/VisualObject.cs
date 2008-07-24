@@ -484,7 +484,7 @@ namespace Visifire.Commons
             {
                 _image = Parser.BuildAbsolutePath(value);
                 ImageBrush imgBrush;
-                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" ImageSource=\"" + _image + "\"/>";
+                String XAMLimage = "<ImageBrush xmlns=\"http://schemas.microsoft.com/client/2007\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"   ImageSource=\"" + _image + "\"/>";
 
                 imgBrush = (ImageBrush)XamlReader.Load(XAMLimage);
                 imgBrush.ImageFailed +=new EventHandler<ExceptionRoutedEventArgs>(imgBrush_ImageFailed);

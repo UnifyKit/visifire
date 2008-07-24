@@ -56,6 +56,7 @@ namespace VisifireCharts
             _wrapper.ReRender += new EventHandler(_wrapper_ReRender);
 
             _wrapper.OnResize += new EventHandler<ResizeEventArgs>(_wrapper_OnResize);
+
             HtmlPage.RegisterScriptableObject("wrapper", _wrapper);
 
         }
@@ -74,7 +75,7 @@ namespace VisifireCharts
             if (e.DataUri != null)
             {
                 _uriQueue.Enqueue(e.DataUri);
-                if (!_downloadBusy)
+                if (_webclient != null && !_webclient.IsBusy )
                     DownloadXML();
             }
 
@@ -94,6 +95,8 @@ namespace VisifireCharts
         /// </summary>
         private void RenderEngine()
         {
+            Canvas tempChartCanvas;
+
             if (_firstChart)
             {
                 _chartCanv = CreateChart();
@@ -104,38 +107,52 @@ namespace VisifireCharts
             }
             else if (_xmlQueue.Count > 0 && _chartReady)
             {
-
                 _chartCanv = CreateChart();
 
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
+
+                tempChartCanvas = (Canvas) XamlReader.Load(String.Format(@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
 
                 if (_wrapper.LayoutRoot.Children.Count > 2)
                 {
                     for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
                     {
-                        if (_wrapper.LayoutRoot.Children[i].GetType().Name == "Chart") ;
-                            _wrapper.LayoutRoot.Children.RemoveAt(i);
+                        Canvas chartCanvas = _wrapper.LayoutRoot.Children[i] as Canvas;
+                        try
+                        {
+                            if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
+                            {
+                                _wrapper.LayoutRoot.Children.RemoveAt(i);
+                                chartCanvas.Loaded -= chartCanv_Loaded;
+                                tempChartCanvas.Children.Add(chartCanvas);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e.Message);
+                        }
                     }
                 }
 
+                tempChartCanvas.Children.Clear();
+                tempChartCanvas = null;
                 GC.Collect();
-
             }
-            
         }
 
         private void DownloadXML()
         {
             if (_uriQueue.Count > 0)
             {
+                if (_webclient == null)
+                {
+                    _webclient = new WebClient();
+                    _webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
+                }
 
-                WebClient webclient = new WebClient();
+                _webclient.BaseAddress = _baseUri;
 
-                webclient.BaseAddress = _baseUri;
-
-                webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
-
-                webclient.DownloadStringAsync(new Uri(_uriQueue.Dequeue(), UriKind.RelativeOrAbsolute));
+                _webclient.DownloadStringAsync(new Uri(_uriQueue.Dequeue(), UriKind.RelativeOrAbsolute));
 
                 _downloadBusy = true;
             }
@@ -144,14 +161,13 @@ namespace VisifireCharts
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             this.RootVisual = _wrapper;
-
             _wrapper.KeyDown += new KeyEventHandler(wrapper_KeyDown);
 
             _baseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
             _baseUri = _baseUri.Substring(0, _baseUri.LastIndexOf("/") + 1);
 
             if (e.InitParams.ContainsKey("logLevel"))
-            {
+            {   
                 _logLevel = Int32.Parse(e.InitParams["logLevel"].Trim());
 
                 AddLogViewer(_wrapper);
@@ -175,13 +191,13 @@ namespace VisifireCharts
             }
 
             if (e.InitParams.ContainsKey("jsEvents"))
-            {
+            {   
                 _jsEvents = new Dictionary<string, System.Collections.Generic.List<String>>();
 
                 String[] attachedJsEvents = e.InitParams["jsEvents"].Split(';');
 
                 foreach (String st in attachedJsEvents)
-                {
+                {   
                     if (String.IsNullOrEmpty(st))
                         break;
 
@@ -207,7 +223,7 @@ namespace VisifireCharts
                 }
             }
             else if (e.InitParams.ContainsKey("dataXml"))
-            {
+            {   
                 Enqueue((String)System.Windows.Browser.HtmlPage.Window.Invoke(e.InitParams["dataXml"]));
 
                 RenderEngine();
@@ -217,8 +233,6 @@ namespace VisifireCharts
             _wrapper.LayoutRoot.Children.Add(_textBlock);
 
             // TestAttachedJsEvents();
-
-
         }
 
         private void wrapper_KeyDown(object sender, KeyEventArgs e)
@@ -228,7 +242,7 @@ namespace VisifireCharts
         }
 
         private void webclient_DownloadStringCompleted(object sender, System.Net.DownloadStringCompletedEventArgs e)
-        {
+        {   
             if (e.Error == null)
             {
                 _downloadBusy = false;
@@ -242,7 +256,6 @@ namespace VisifireCharts
 
                 //download Next XML
                 DownloadXML();
-
             }
             else
             {
@@ -270,12 +283,11 @@ namespace VisifireCharts
 
         private Canvas CreateChart()
         {
-
             Canvas chartCanvas;
 
             String canvasXaml = "<Canvas ";
 
-            canvasXaml += "xmlns=\"http://schemas.microsoft.com/client/2007\"";
+            canvasXaml += "xmlns=\"http://schemas.microsoft.com/client/2007\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" ";
 
             if (!Double.IsNaN(_chartWidth))
                 canvasXaml += " Width=\"" + _chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
@@ -283,7 +295,7 @@ namespace VisifireCharts
             if (!Double.IsNaN(_chartHeight))
                 canvasXaml += " Height=\"" + _chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
 
-            canvasXaml += ">\n";
+            canvasXaml += " Tag=\"Chart\" >\n";
 
             _dataXml = Dequeue();
 
@@ -299,12 +311,13 @@ namespace VisifireCharts
 
             return chartCanvas;
         }
+
         private void Enqueue(String data)
         {
             _xmlQueue.Enqueue(data);
             _wrapper.IsDataLoaded = true;
-
         }
+
         private String Dequeue()
         {
             String data = _xmlQueue.Dequeue();
@@ -312,6 +325,7 @@ namespace VisifireCharts
                 _wrapper.IsDataLoaded = false;
             return data;
         }
+
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
         {
             AttachJsEvents(sender as Canvas);
@@ -545,15 +559,16 @@ namespace VisifireCharts
         #endregion "Js Events"
 
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
-        {
+        {   
             if (_logLevel == 1)
-            {
+            {   
                 _logTextBox.Text += "Copy & Paste the contents of this log in www.visifire.com/forums for support.\n\n";
                 _logTextBox.Text += "Message: " + e.ExceptionObject.Message + "\n\n";
                 _logTextBox.Text += "XML: \n" + _dataXml + "\n";
                 _logTextBox.Text += "StackTrace: \n" + e.ExceptionObject.StackTrace + "\n";
 
                 TextBlock tb = new TextBlock();
+
                 tb.FontSize = 12;
                 tb.Text = _logTextBox.Text;
                 tb.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
@@ -578,6 +593,7 @@ namespace VisifireCharts
             }
             e.Handled = true;
         }
+
         #endregion
 
         #region Data
@@ -606,7 +622,7 @@ namespace VisifireCharts
         private Boolean _firstChart = true;
         private Boolean _downloadBusy;
 
-        private Int64 initial, current;
+        WebClient _webclient;
         #endregion
     }
 }
