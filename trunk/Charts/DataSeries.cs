@@ -4296,7 +4296,7 @@ namespace Visifire.Charts
                     _areaTops[index].Opacity = Opacity * DataPoints[index].Opacity;
 
 
-                    _areaShadows[index].Height = points[2].Y - points[1].Y;
+                    _areaShadows[index].Height = Math.Abs(points[2].Y - points[1].Y);
                     _areaShadows[index].Width = depth;
                     _areaShadows[index].SetValue(TopProperty, (Double) points[1].Y);
                     _areaShadows[index].SetValue(LeftProperty, (Double) points[1].X);
@@ -5391,8 +5391,6 @@ namespace Visifire.Charts
                 DataPoints[i].SetValue(HeightProperty, height);
                 DataPoints[i].SetValue(LeftProperty, (Double) left);
                 DataPoints[i].SetValue(TopProperty, (Double)  top);
-                
-                
 
                 if (_parent.View3D)
                 {

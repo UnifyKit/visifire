@@ -47,7 +47,7 @@ namespace VisifireCharts
 
             _version = fullName.Split(',')[1];
 
-            _version = (_version.Substring(0, _version.LastIndexOf('.')) + " Beta").Trim();
+            _version = (_version.Substring(0, _version.LastIndexOf('.'))).Trim();
 
             InitializeComponent();
 

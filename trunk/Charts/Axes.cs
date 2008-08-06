@@ -922,7 +922,8 @@ namespace Visifire.Charts
                         minDiff = Math.Min(minDiff, Math.Abs(uniqueXValues[i] - uniqueXValues[i + 1]));
                     }
 
-                    Interval = minDiff;
+                    if(minDiff != Double.MaxValue)
+                        Interval = minDiff;
                 }
             }
         }
