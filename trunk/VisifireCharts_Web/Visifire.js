@@ -31,7 +31,7 @@ if(!window.Visifire)
         this.listeners = null;                  
         this.elements = new Array("Chart", "DataPoint", "Title", "AxisX", "AxisY", "Legend");
         this.events = new Array("MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", "MouseEnter", "MouseLeave");
-                
+        this.windowless = false;        
         this.width = null;
         this.height = null;
         
@@ -58,6 +58,14 @@ if(!window.Visifire)
     }
     
     window.Visifire._slCount = 0;
+    
+    Visifire.prototype.setWindowlessState = function(pWindowless)
+    {
+        if(pWindowless != null)
+        {
+            this.windowless = Boolean(pWindowless);
+        }
+    }
     
     Visifire.prototype._getSlControl = function ()
     {
@@ -249,7 +257,7 @@ if(!window.Visifire)
         var html = '<object id="' + _uThisObject.id + '" data="data:application/x-silverlight," type="application/x-silverlight-2-b2" width="' + width +'" height="' + height +'">';
         
         html    +=  '<param name="source" value="' + _uThisObject.xapPath +'"/>'
-		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>';
+		        +	'<param name="onLoad" value="slLoaded' + _uThisObject.index +'"/>'
 	            +   '<param name="onResize" value="slResized' + _uThisObject.index +'"/>';
 		html += '<param name="initParams" value="';
 		
@@ -297,7 +305,8 @@ if(!window.Visifire)
         html    += 'width=' + width + ',' + 'height=' + height + '';
         html    += "\"/>";
         html    += '<param name="enableHtmlAccess" value="true" />'
-		        +  '<param name="background" value="white" />'
+		        +  '<param name="background" value="transparent" />'
+		        +  '<param name="windowless" value="' + this.windowless + '" />'
 		        +  '<a href="http://go.microsoft.com/fwlink/?LinkID=115261" style="text-decoration: none;">'
 		        +  '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
 		        +  '<br/>You need Microsoft Silverlight to view Visifire Charts.'
