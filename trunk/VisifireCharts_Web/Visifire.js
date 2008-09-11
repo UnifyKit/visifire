@@ -20,7 +20,7 @@
 if(!window.Visifire)
 {
     // Visifire class
-    window.Visifire = function(pXapPath, pId, pWidth,pHeight)
+    window.Visifire = function(pXapPath, pId, pWidth, pHeight, pBackground)
     {
 		this.id = null;
         this.logLevel = 1;                      //  Determines whether to log or not.
@@ -34,14 +34,24 @@ if(!window.Visifire)
         this.windowless = false;        
         this.width = null;
         this.height = null;
-        
+        this.background = null;
+
+        // pId not present
 		if(Number(pId))
 		{
-			pHeight = pWidth;
+			if(pHeight)
+                this.background = pHeight;
+            
+            pHeight = pWidth;
 			pWidth = pId; 
 		}
-		else
-			this.id = pId;
+		else // pId present
+		{
+		    this.id = pId;
+		    
+		    if(pBackground)
+                this.background = pBackground;
+		}
 				
         if(pXapPath)
             this.xapPath = pXapPath;
@@ -51,7 +61,7 @@ if(!window.Visifire)
             
         if(pHeight)
             this.height = pHeight;
-                                            
+                                 
         this._uThisObject = this;               
             
         this.index = ++Visifire._slCount;
@@ -302,10 +312,14 @@ if(!window.Visifire)
             html += ','
         }
         
+         
+        if(_uThisObject.background == null)
+            _uThisObject.background = "White";
+        
         html    += 'width=' + width + ',' + 'height=' + height + '';
         html    += "\"/>";
         html    += '<param name="enableHtmlAccess" value="true" />'
-		        +  '<param name="background" value="transparent" />'
+		        +  '<param name="background" value="' + _uThisObject.background + '" />'
 		        +  '<param name="windowless" value="' + this.windowless + '" />'
 		        +  '<a href="http://go.microsoft.com/fwlink/?LinkID=115261" style="text-decoration: none;">'
 		        +  '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
