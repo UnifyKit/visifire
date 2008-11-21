@@ -1,0 +1,100 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+    >
+
+    <Style x:Key="Chart" TargetType="{x:Type vc:Chart}">
+        <Setter Property="AnimationEnabled" Value="true"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="BorderThickness" Value="0.0"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="ColorSet" Value="Visifire1"/>
+    </Style>
+
+    <Style x:Key="DataSeries" TargetType="{x:Type vc:DataSeries}">
+        <Setter Property="Bevel" Value="true"/>
+    </Style>
+
+    <Style x:Key="MainTitle" TargetType="{x:Type vc:Title}" >
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="SubTitle" TargetType="{x:Type vc:Title}" >
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="AxisX"  TargetType="{x:Type vc:Axis}">
+        <Setter Property="LineThickness" Value="0.5" />
+        <Setter Property="LineColor" Value="Gray" />
+        <Setter Property="TitleFontSize" Value="11"/>
+        <Setter Property="TitleFontFamily" Value="Verdana"/>
+    </Style>
+
+    <Style x:Key="AxisY"  TargetType="{x:Type vc:Axis}">
+        <Setter Property="LineThickness" Value="0.5" />
+        <Setter Property="LineColor" Value="Gray" />
+        <Setter Property="TitleFontSize" Value="11"/>
+        <Setter Property="TitleFontFamily" Value="Verdana"/>
+    </Style>
+
+    <Style x:Key="PlotArea" TargetType="{x:Type vc:PlotArea}">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderColor" Value="Gray"/>
+        <Setter Property="Color" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="AxisXLabels" TargetType="{x:Type vc:AxisLabels}">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+    </Style>
+
+    <Style x:Key="AxisYLabels" TargetType="{x:Type vc:AxisLabels}">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+    </Style>
+
+    <Style x:Key="AxisXTicks" TargetType="{x:Type vc:Ticks}">
+        <Setter Property="LineColor" Value="Gray"/>
+        <Setter Property="LineThickness" Value="0.5"/>
+    </Style>
+
+    <Style x:Key="AxisYTicks" TargetType="{x:Type vc:Ticks}">
+        <Setter Property="LineColor" Value="Gray"/>
+        <Setter Property="LineThickness" Value="0.5"/>
+    </Style>
+
+    <Style x:Key="Legend" TargetType="{x:Type vc:Legend}">
+        <Setter Property="Background" Value="Red"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="EntryMargin" Value="3"/>
+        <Setter Property="LabelMargin" Value="6"/>
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="9"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderColor" Value="White"/>
+        <Setter Property="CornerRadius" Value="1"/>
+        <Setter Property="Enabled" Value="true"/>
+        <Setter Property="LightingEnabled" Value="true"/>
+        <Setter Property="TitleFontSize" Value="10"/>
+        <Setter Property="TitleBackground" Value="LightGray"/>
+        <Setter Property="TitleAlignmentX" Value="Stretch"/>
+        <Setter Property="TitleTextAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Enabled" Value="true"/>
+    </Style>
+
+
+</ResourceDictionary>
+    

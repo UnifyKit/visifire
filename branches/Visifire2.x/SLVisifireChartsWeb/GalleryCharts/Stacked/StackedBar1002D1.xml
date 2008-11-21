@@ -1,0 +1,33 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray" Padding="8">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire 100% Stacked Bar Chart" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="2005" RenderAs="StackedBar100" ToolTipText="#Percentage%" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="A" YValue="39"/>
+        <vc:DataPoint AxisXLabel="B" YValue="47"/>
+        <vc:DataPoint AxisXLabel="C" YValue="35"/>
+        <vc:DataPoint AxisXLabel="D" YValue="48"/>
+        <vc:DataPoint AxisXLabel="E" YValue="62"/>
+        <vc:DataPoint AxisXLabel="F" YValue="57"/>
+        <vc:DataPoint AxisXLabel="G" YValue="65"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries LegendText="2006" RenderAs="StackedBar100" ToolTipText="#Percentage%" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="66"/>
+        <vc:DataPoint YValue="82"/>
+        <vc:DataPoint YValue="71"/>
+        <vc:DataPoint YValue="119" Color="#dd5555"/>
+        <vc:DataPoint YValue="65"/>
+        <vc:DataPoint YValue="97"/>
+        <vc:DataPoint YValue="72"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

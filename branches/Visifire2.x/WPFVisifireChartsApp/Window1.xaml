@@ -1,0 +1,43 @@
+﻿<Window x:Class="WPFVisifireChartsApp.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Window1" Height="456" Width="676" Background="#FFD9CDCD"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+    >
+
+    <Grid x:Name="LayoutRoot" Width="654" Height="426" Background="White"  >
+
+        <vc:Chart Theme="Theme2" BorderBrush="Gray" Margin="0,0,0,12">
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Bubble Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Legends>
+                <vc:Legend EntryMargin="5" LabelMargin="5"/>
+            </vc:Chart.Legends>
+            <vc:Chart.AxesX>
+                <vc:Axis Interval="1"/>
+            </vc:Chart.AxesX>
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="6009" ZValue="300"/>
+                        <vc:DataPoint YValue="2547" ZValue="200"/>
+                        <vc:DataPoint YValue="5047" ZValue="400"/>
+                        <vc:DataPoint YValue="8208" ZValue="600"/>
+                        <vc:DataPoint YValue="2222" ZValue="450"/>
+                        <vc:DataPoint YValue="2009" ZValue="340"/>
+                        <vc:DataPoint YValue="2527" ZValue="100"/>
+                        <vc:DataPoint YValue="3047" ZValue="230"/>
+                        <vc:DataPoint YValue="6248" ZValue="330"/>
+                        <vc:DataPoint YValue="3422" ZValue="422"/>
+
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+
+        </vc:Chart>
+    </Grid>
+</Window>

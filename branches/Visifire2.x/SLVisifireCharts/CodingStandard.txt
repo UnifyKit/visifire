@@ -1,0 +1,39 @@
+﻿#region Public Methods
+
+#endregion
+
+#region Public Properties
+
+#endregion
+
+#region Public Events
+
+#endregion
+
+#region Protected Methods
+
+#endregion
+
+#region Internal Properties
+
+#endregion
+
+#region Private Delegates
+
+#endregion
+
+#region Private Methods
+
+#endregion
+
+#region Internal Methods
+
+#endregion
+
+#region Internal Events
+
+#endregion
+
+#region Data
+    
+#endregion

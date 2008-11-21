@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="SLVisifireApp.Doughnut2D2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Doughnut Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Legends>
+                <vc:Legend x:Name="Legend1" EntryMargin="6" LabelMargin="5" FontSize="10"/>
+            </vc:Chart.Legends>
+            
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="2005" StartAngle="80" RenderAs="Doughnut" Cursor="Hand" Legend="Legend1" LabelLineStyle="Dashed" LabelLineColor="Black">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="550"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="704"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="200"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="850"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="602"/>
+                        <vc:DataPoint AxisXLabel="Jun" YValue="904"/>
+                        <vc:DataPoint AxisXLabel="Jul" YValue="750"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="SLVisifireApp.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"   
+    Width="700" Height="500" 
+    >
+
+
+    <Grid x:Name="LayoutRoot" Width="Auto" Height="Auto" Background="White">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Width="350" Height="400" Theme="Theme2" ToolTipEnabled="False" BorderBrush="Gray" ColorSet="Visifire2" Margin="166,66.5,176,26.5" >
+
+            <vc:Chart.PlotArea>
+                <vc:PlotArea Color="#f1f1f1"/>
+            </vc:Chart.PlotArea>
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Worldwide Box office Grosses"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Movie" Prefix="$" Suffix="%"/>
+            </vc:Chart.AxesX>
+
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Total Gross (millions)" ValueFormatString="$#0.##">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid InterlacedColor="White"/>
+                    </vc:Axis.Grids>
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels Angle="-30"/>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Pie" Bevel="True" Cursor="Hand" Color="Aqua">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Transformers" YValue="706.5" Color="AliceBlue"/>
+                        <vc:DataPoint AxisXLabel="Ratatouille" YValue="620.4"/>
+                        <vc:DataPoint AxisXLabel="I Am Legend" YValue="582.4" Color="AliceBlue"/>
+                        <vc:DataPoint AxisXLabel="Simpsons Movie" YValue="525.5"/>
+                        <vc:DataPoint AxisXLabel="The Bourne Ultimatum" YValue="442.6"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid>
+   
+</UserControl>

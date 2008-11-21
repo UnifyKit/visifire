@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="SLVisifireApp.Line6"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme3" AnimationEnabled="False">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Milk Production by World Region"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.AxesX>
+                <vc:Axis Interval="1" Title="Year">
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels Angle="-30"/>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+            
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Production (million tonnes)"/>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Legends>
+                <vc:Legend x:Name="Legend1" Background="Black" LightingEnabled="False" FontSize="10"/>
+            </vc:Chart.Legends>
+            
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="Africa" Legend="Legend1" RenderAs="Line" MarkerSize="8" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="1997" YValue="37.1"/>
+                        <vc:DataPoint AxisXLabel="1998" YValue="38.5"/>
+                        <vc:DataPoint AxisXLabel="1999" YValue="38.9"/>
+                        <vc:DataPoint AxisXLabel="2000" YValue="41.9"/>
+                        <vc:DataPoint AxisXLabel="2001" YValue="41.9"/>
+                        <vc:DataPoint AxisXLabel="2002" YValue="43.3"/>
+                        <vc:DataPoint AxisXLabel="2003" YValue="44.7"/>
+                        <vc:DataPoint AxisXLabel="2004" YValue="42.6"/>
+                        <vc:DataPoint AxisXLabel="2005" YValue="46.1"/>
+                        <vc:DataPoint AxisXLabel="2006" YValue="46.3"/>
+                        <vc:DataPoint AxisXLabel="2007" YValue="46.5"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="North America" Legend="Legend1" RenderAs="Line" MarkerType="Triangle" MarkerSize="8" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="78.9"/>
+                        <vc:DataPoint YValue="79.5"/>
+                        <vc:DataPoint YValue="82.1"/>
+                        <vc:DataPoint YValue="85.9"/>
+                        <vc:DataPoint YValue="83.2"/>
+                        <vc:DataPoint YValue="85.2"/>
+                        <vc:DataPoint YValue="82.3"/>
+                        <vc:DataPoint YValue="84.7"/>
+                        <vc:DataPoint YValue="88.3"/>
+                        <vc:DataPoint YValue="90.3"/>
+                        <vc:DataPoint YValue="90.5"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Central America" Legend="Legend1" RenderAs="Line" MarkerType="Diamond" MarkerSize="10" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="11.8"/>
+                        <vc:DataPoint YValue="10.3"/>
+                        <vc:DataPoint YValue="13.2"/>
+                        <vc:DataPoint YValue="15.1"/>
+                        <vc:DataPoint YValue="14.2"/>
+                        <vc:DataPoint YValue="15.7"/>
+                        <vc:DataPoint YValue="12.7"/>
+                        <vc:DataPoint YValue="15.8"/>
+                        <vc:DataPoint YValue="15.8"/>
+                        <vc:DataPoint YValue="11.9"/>
+                        <vc:DataPoint YValue="16.2"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="South America" Legend="Legend1" RenderAs="Line" MarkerType="Square" MarkerSize="8" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="42.5"/>
+                        <vc:DataPoint YValue="43.5"/>
+                        <vc:DataPoint YValue="44.6"/>
+                        <vc:DataPoint YValue="36.6"/>
+                        <vc:DataPoint YValue="46.8"/>
+                        <vc:DataPoint YValue="48.0"/>
+                        <vc:DataPoint YValue="44.5"/>
+                        <vc:DataPoint YValue="46.7"/>
+                        <vc:DataPoint YValue="48.3"/>
+                        <vc:DataPoint YValue="49.5"/>
+                        <vc:DataPoint YValue="50.5"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Asia" Legend="Legend1" RenderAs="Line" MarkerType="Cross" MarkerSize="8" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="54.7"/>
+                        <vc:DataPoint YValue="56.2"/>
+                        <vc:DataPoint YValue="58.4"/>
+                        <vc:DataPoint YValue="60.1"/>
+                        <vc:DataPoint YValue="63.2"/>
+                        <vc:DataPoint YValue="67.2"/>
+                        <vc:DataPoint YValue="71.8"/>
+                        <vc:DataPoint YValue="78.0"/>
+                        <vc:DataPoint YValue="84.2"/>
+                        <vc:DataPoint YValue="91.5"/>
+                        <vc:DataPoint YValue="97.0"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Oceania" Legend="Legend1" RenderAs="Line" MarkerType="Circle" MarkerSize="8" LineThickness="4" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="20.7"/>
+                        <vc:DataPoint YValue="21.0"/>
+                        <vc:DataPoint YValue="23.1"/>
+                        <vc:DataPoint YValue="23.6"/>
+                        <vc:DataPoint YValue="24.9"/>
+                        <vc:DataPoint YValue="24.5"/>
+                        <vc:DataPoint YValue="25.0"/>
+                        <vc:DataPoint YValue="24.5"/>
+                        <vc:DataPoint YValue="25.0"/>
+                        <vc:DataPoint YValue="25.0"/>
+                        <vc:DataPoint YValue="25.0"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid>
+</UserControl>

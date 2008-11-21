@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="SLVisifireApp.Bar2D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray" Padding="6" >
+
+            <vc:Chart.Titles>
+                <vc:Title Text="5 Largest Oil Producers in the World" Padding="2"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Field, Country"/>
+            </vc:Chart.AxesX>
+            
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Size Estimate (billion barrels)">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid InterlacedColor="#f7f7f7"/>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Safania-Khafzi, Saudi-Arabia" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="Bolivar Coastal, Venezuela" YValue="32"/>
+                        <vc:DataPoint AxisXLabel="Cantarell, Mexico" YValue="35"/>
+                        <vc:DataPoint AxisXLabel="Burgan, Kuwait" YValue="66"/>
+                        <vc:DataPoint AxisXLabel="Ghawar,Saudi Arabia" YValue="75"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid> 
+</UserControl>

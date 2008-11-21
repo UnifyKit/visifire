@@ -1,0 +1,205 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Visifire.Charts</RootNamespace>
+    <AssemblyName>SLVisifire.Charts</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SLVisifireCharts.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;SL</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SL;</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AreaChart.cs">
+      <Link>AreaChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Axis.cs">
+      <Link>Axis.cs</Link>
+    </Compile>
+    <Compile Include="..\AxisLabel.cs">
+      <Link>AxisLabel.cs</Link>
+    </Compile>
+    <Compile Include="..\AxisLabels.cs">
+      <Link>AxisLabels.cs</Link>
+    </Compile>
+    <Compile Include="..\AxisManager.cs">
+      <Link>AxisManager.cs</Link>
+    </Compile>
+    <Compile Include="..\BarChart.cs">
+      <Link>BarChart.cs</Link>
+    </Compile>
+    <Compile Include="..\BubbleChart.cs">
+      <Link>BubbleChart.cs</Link>
+    </Compile>
+    <Compile Include="..\ChartArea.cs">
+      <Link>ChartArea.cs</Link>
+    </Compile>
+    <Compile Include="..\ChartGrid.cs">
+      <Link>ChartGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\ColorSet.cs">
+      <Link>ColorSet.cs</Link>
+    </Compile>
+    <Compile Include="..\ColorSets.cs">
+      <Link>ColorSets.cs</Link>
+    </Compile>
+    <Compile Include="..\ColumnChart.cs">
+      <Link>ColumnChart.cs</Link>
+    </Compile>
+    <Compile Include="..\DataPoint.cs">
+      <Link>DataPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\DataSeries.cs">
+      <Link>DataSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\DataSeriesCollection.cs">
+      <Link>DataSeriesCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Enums.cs">
+      <Link>Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\Graphics.cs">
+      <Link>Graphics.cs</Link>
+    </Compile>
+    <Compile Include="..\Legend.cs">
+      <Link>Legend.cs</Link>
+    </Compile>
+    <Compile Include="..\LineChart.cs">
+      <Link>LineChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Marker.cs">
+      <Link>Marker.cs</Link>
+    </Compile>
+    <Compile Include="..\ObservableObject.cs">
+      <Link>ObservableObject.cs</Link>
+    </Compile>
+    <Compile Include="..\PartialChart.cs">
+      <Link>PartialChart.cs</Link>
+    </Compile>
+    <Compile Include="..\PieChart.cs">
+      <Link>PieChart.cs</Link>
+    </Compile>
+    <Compile Include="..\PlotArea.cs">
+      <Link>PlotArea.cs</Link>
+    </Compile>
+    <Compile Include="..\PlotDetails.cs">
+      <Link>PlotDetails.cs</Link>
+    </Compile>
+    <Compile Include="..\PlotGroup.cs">
+      <Link>PlotGroup.cs</Link>
+    </Compile>
+    <Compile Include="..\PointChart.cs">
+      <Link>PointChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Ticks.cs">
+      <Link>Ticks.cs</Link>
+    </Compile>
+    <Compile Include="..\Title.cs">
+      <Link>Title.cs</Link>
+    </Compile>
+    <Compile Include="..\TrendLine.cs">
+      <Link>TrendLine.cs</Link>
+    </Compile>
+    <Compile Include="..\VisifireControl.cs">
+      <Link>VisifireControl.cs</Link>
+    </Compile>
+    <Compile Include="..\XWiseData.cs">
+      <Link>XWiseData.cs</Link>
+    </Compile>
+    <Compile Include="Chart.cs" />
+    <Compile Include="Converters.cs" />
+    <Compile Include="Logger.xaml.cs">
+      <DependentUpon>Logger.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodingStandard.txt" />
+    <Content Include="Scratch.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SLVisifireCharts.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ColorSets.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Page Include="Themes\generic.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Logger.xaml">
+      <SubType>Page</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+    <EmbeddedResource Include="Theme1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Theme2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Theme3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

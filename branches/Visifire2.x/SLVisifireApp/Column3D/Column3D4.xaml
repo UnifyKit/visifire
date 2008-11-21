@@ -1,0 +1,42 @@
+﻿    <UserControl x:Class="SLVisifireApp.Column3D4"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Multiseries 3D Column Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Legends>
+                <vc:Legend x:Name="Legend1" FontSize="10" Title="Legend" TitleBackground="Transparent" TitleAlignmentX="Center"/>
+            </vc:Chart.Legends>
+
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="2005" RenderAs="Column" Cursor="Hand" Legend="Legend1">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="220"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="450"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="550"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="650"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="620"/>
+                        <vc:DataPoint AxisXLabel="June" YValue="446"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="2006" RenderAs="Column" Cursor="Hand" Legend="Legend1">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="330"/>
+                        <vc:DataPoint YValue="400"/>
+                        <vc:DataPoint YValue="653"/>
+                        <vc:DataPoint YValue="756"/>
+                        <vc:DataPoint YValue="545"/>
+                        <vc:DataPoint YValue="334"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid>
+</UserControl>

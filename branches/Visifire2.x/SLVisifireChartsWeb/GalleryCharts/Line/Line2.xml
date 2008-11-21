@@ -1,0 +1,253 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Line Chart"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis Interval="1">
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineThickness="0.25"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="2005" RenderAs="Line" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0"/>
+        <vc:DataPoint YValue="0"/>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.3"/>
+        <vc:DataPoint YValue="0.4"/>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.6"/>
+        <vc:DataPoint YValue="0.8"/>
+        <vc:DataPoint YValue="0.9"/>
+        <vc:DataPoint YValue="1"/>
+        <vc:DataPoint YValue="1.3"/>
+        <vc:DataPoint YValue="1.5"/>
+        <vc:DataPoint YValue="1.7"/>
+        <vc:DataPoint YValue="1.9"/>
+        <vc:DataPoint YValue="2.1"/>
+        <vc:DataPoint YValue="2.2"/>
+        <vc:DataPoint YValue="2.4"/>
+        <vc:DataPoint YValue="2.5"/>
+        <vc:DataPoint YValue="2.6"/>
+        <vc:DataPoint YValue="2.8"/>
+        <vc:DataPoint YValue="2.9"/>
+        <vc:DataPoint YValue="3.0"/>
+        <vc:DataPoint YValue="3.1"/>
+        <vc:DataPoint YValue="3.2"/>
+        <vc:DataPoint YValue="3.4"/>
+        <vc:DataPoint YValue="3.6"/>
+        <vc:DataPoint YValue="3.8"/>
+        <vc:DataPoint YValue="3.9"/>
+        <vc:DataPoint YValue="4.1"/>
+        <vc:DataPoint YValue="4.3"/>
+        <vc:DataPoint YValue="4.5"/>
+        <vc:DataPoint YValue="4.7"/>
+        <vc:DataPoint YValue="4.9"/>
+        <vc:DataPoint YValue="5.1"/>
+        <vc:DataPoint YValue="5.2"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="2006" RenderAs="Line" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.3"/>
+        <vc:DataPoint YValue="0.3"/>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.6"/>
+        <vc:DataPoint YValue="0.7"/>
+        <vc:DataPoint YValue="0.7"/>
+        <vc:DataPoint YValue="0.8"/>
+        <vc:DataPoint YValue="0.9"/>
+        <vc:DataPoint YValue="1"/>
+        <vc:DataPoint YValue="1.2"/>
+        <vc:DataPoint YValue="1.2"/>
+        <vc:DataPoint YValue="1.3"/>
+        <vc:DataPoint YValue="1.3"/>
+        <vc:DataPoint YValue="1.5"/>
+        <vc:DataPoint YValue="1.6"/>
+        <vc:DataPoint YValue="1.7"/>
+        <vc:DataPoint YValue="1.7"/>
+        <vc:DataPoint YValue="1.8"/>
+        <vc:DataPoint YValue="1.9"/>
+        <vc:DataPoint YValue="2"/>
+        <vc:DataPoint YValue="2.1"/>
+        <vc:DataPoint YValue="2.2"/>
+        <vc:DataPoint YValue="2.3"/>
+        <vc:DataPoint YValue="2.4"/>
+        <vc:DataPoint YValue="2.6"/>
+        <vc:DataPoint YValue="2.8"/>
+        <vc:DataPoint YValue="2.9"/>
+        <vc:DataPoint YValue="3.0"/>
+        <vc:DataPoint YValue="3.1"/>
+        <vc:DataPoint YValue="3.2"/>
+        <vc:DataPoint YValue="3.3"/>
+        <vc:DataPoint YValue="3.4"/>
+        <vc:DataPoint YValue="3.5"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="2007" RenderAs="Line" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0.1"/>
+        <vc:DataPoint YValue="0.1"/>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.8"/>
+        <vc:DataPoint YValue="1"/>
+        <vc:DataPoint YValue="1.6"/>
+        <vc:DataPoint YValue="1.9"/>
+        <vc:DataPoint YValue="2.4"/>
+        <vc:DataPoint YValue="2.8"/>
+        <vc:DataPoint YValue="3.4"/>
+        <vc:DataPoint YValue="3.8"/>
+        <vc:DataPoint YValue="4.2"/>
+        <vc:DataPoint YValue="4.6"/>
+        <vc:DataPoint YValue="5.0"/>
+        <vc:DataPoint YValue="5.4"/>
+        <vc:DataPoint YValue="5.8"/>
+        <vc:DataPoint YValue="6.2"/>
+        <vc:DataPoint YValue="6.6"/>
+        <vc:DataPoint YValue="7.0"/>
+        <vc:DataPoint YValue="7.4"/>
+        <vc:DataPoint YValue="7.8"/>
+        <vc:DataPoint YValue="8.2"/>
+        <vc:DataPoint YValue="8.4"/>
+        <vc:DataPoint YValue="8.6"/>
+        <vc:DataPoint YValue="8.8"/>
+        <vc:DataPoint YValue="9.2"/>
+        <vc:DataPoint YValue="9.6"/>
+        <vc:DataPoint YValue="9.9"/>
+        <vc:DataPoint YValue="10.2"/>
+        <vc:DataPoint YValue="10.5"/>
+        <vc:DataPoint YValue="10.8"/>
+        <vc:DataPoint YValue="11.0"/>
+        <vc:DataPoint YValue="11.3"/>
+        <vc:DataPoint YValue="11.5"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="2008" RenderAs="Line" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.2"/>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.8"/>
+        <vc:DataPoint YValue="1"/>
+        <vc:DataPoint YValue="1.6"/>
+        <vc:DataPoint YValue="2.3"/>
+        <vc:DataPoint YValue="2.6"/>
+        <vc:DataPoint YValue="3.2"/>
+        <vc:DataPoint YValue="3.7"/>
+        <vc:DataPoint YValue="4.2"/>
+        <vc:DataPoint YValue="4.8"/>
+        <vc:DataPoint YValue="5.2"/>
+        <vc:DataPoint YValue="5.7"/>
+        <vc:DataPoint YValue="6.0"/>
+        <vc:DataPoint YValue="6.4"/>
+        <vc:DataPoint YValue="6.8"/>
+        <vc:DataPoint YValue="7.2"/>
+        <vc:DataPoint YValue="7.5"/>
+        <vc:DataPoint YValue="7.9"/>
+        <vc:DataPoint YValue="8.4"/>
+        <vc:DataPoint YValue="8.6"/>
+        <vc:DataPoint YValue="8.8"/>
+        <vc:DataPoint YValue="9.0"/>
+        <vc:DataPoint YValue="9.2"/>
+        <vc:DataPoint YValue="9.4"/>
+        <vc:DataPoint YValue="9.8"/>
+        <vc:DataPoint YValue="10.2"/>
+        <vc:DataPoint YValue="10.5"/>
+        <vc:DataPoint YValue="10.7"/>
+        <vc:DataPoint YValue="10.9"/>
+        <vc:DataPoint YValue="11.2"/>
+        <vc:DataPoint YValue="11.5"/>
+        <vc:DataPoint YValue="11.9"/>
+        <vc:DataPoint YValue="12.2"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="2009" RenderAs="Line" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.5"/>
+        <vc:DataPoint YValue="0.6"/>
+        <vc:DataPoint YValue="0.9"/>
+        <vc:DataPoint YValue="1.4"/>
+        <vc:DataPoint YValue="2.1"/>
+        <vc:DataPoint YValue="2.7"/>
+        <vc:DataPoint YValue="3.2"/>
+        <vc:DataPoint YValue="3.8"/>
+        <vc:DataPoint YValue="4.2"/>
+        <vc:DataPoint YValue="4.8"/>
+        <vc:DataPoint YValue="5.4"/>
+        <vc:DataPoint YValue="6.0"/>
+        <vc:DataPoint YValue="6.6"/>
+        <vc:DataPoint YValue="7.0"/>
+        <vc:DataPoint YValue="7.4"/>
+        <vc:DataPoint YValue="7.8"/>
+        <vc:DataPoint YValue="8.2"/>
+        <vc:DataPoint YValue="8.6"/>
+        <vc:DataPoint YValue="8.9"/>
+        <vc:DataPoint YValue="9.2"/>
+        <vc:DataPoint YValue="9.5"/>
+        <vc:DataPoint YValue="9.8"/>
+        <vc:DataPoint YValue="10.1"/>
+        <vc:DataPoint YValue="10.4"/>
+        <vc:DataPoint YValue="10.7"/>
+        <vc:DataPoint YValue="11.0"/>
+        <vc:DataPoint YValue="11.4"/>
+        <vc:DataPoint YValue="11.8"/>
+        <vc:DataPoint YValue="12.1"/>
+        <vc:DataPoint YValue="12.6"/>
+        <vc:DataPoint YValue="12.8"/>
+        <vc:DataPoint YValue="13.2"/>
+        <vc:DataPoint YValue="13.6"/>
+        <vc:DataPoint YValue="14.0"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="2010" RenderAs="Line" Cursor="Hand" MarkerBorderColor="Black" MarkerBorderThickness="1" MarkerSize="8">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="0.4"/>
+        <vc:DataPoint YValue="0.6"/>
+        <vc:DataPoint YValue="1"/>
+        <vc:DataPoint YValue="1.4"/>
+        <vc:DataPoint YValue="2.6"/>
+        <vc:DataPoint YValue="3.2"/>
+        <vc:DataPoint YValue="3.9"/>
+        <vc:DataPoint YValue="4.5"/>
+        <vc:DataPoint YValue="4.8"/>
+        <vc:DataPoint YValue="5.5"/>
+        <vc:DataPoint YValue="5.9"/>
+        <vc:DataPoint YValue="6.3"/>
+        <vc:DataPoint YValue="6.7"/>
+        <vc:DataPoint YValue="7.3"/>
+        <vc:DataPoint YValue="7.8"/>
+        <vc:DataPoint YValue="8.4"/>
+        <vc:DataPoint YValue="8.8"/>
+        <vc:DataPoint YValue="9.3"/>
+        <vc:DataPoint YValue="9.8"/>
+        <vc:DataPoint YValue="10.3"/>
+        <vc:DataPoint YValue="10.8"/>
+        <vc:DataPoint YValue="11.5"/>
+        <vc:DataPoint YValue="11.9"/>
+        <vc:DataPoint YValue="12.4"/>
+        <vc:DataPoint YValue="12.8"/>
+        <vc:DataPoint YValue="13.3"/>
+        <vc:DataPoint YValue="13.8"/>
+        <vc:DataPoint YValue="14.5"/>
+        <vc:DataPoint YValue="14.8"/>
+        <vc:DataPoint YValue="15.1"/>
+        <vc:DataPoint YValue="15.5"/>
+        <vc:DataPoint YValue="15.9"/>
+        <vc:DataPoint YValue="16.2"/>
+        <vc:DataPoint YValue="16.6"/>
+        <vc:DataPoint YValue="17.2"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

@@ -1,0 +1,30 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme3" AnimationEnabled="False" ColorSet="Visifire2" View3D="False">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Bubble Chart" />
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis>
+      <vc:Axis.AxisLabels>
+        <vc:AxisLabels Angle="-30"/>
+      </vc:Axis.AxisLabels>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="2001" YValue="320" ZValue="300"/>
+        <vc:DataPoint AxisXLabel="2002" YValue="230" ZValue="250"/>
+        <vc:DataPoint AxisXLabel="2003" YValue="546" ZValue="400"/>
+        <vc:DataPoint AxisXLabel="2004" YValue="208" ZValue="500"/>
+        <vc:DataPoint AxisXLabel="2005" YValue="478" ZValue="450"/>
+        <vc:DataPoint AxisXLabel="2006" YValue="342" ZValue="400"/>
+        <vc:DataPoint AxisXLabel="2007" YValue="320" ZValue="550"/>
+        <vc:DataPoint AxisXLabel="2008" YValue="450" ZValue="350"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

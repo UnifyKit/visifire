@@ -1,0 +1,43 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" AnimationEnabled="False" Padding="8" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Multiseries Charts" Margin="2"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Legends>
+    <vc:Legend Enabled="False"/>
+  </vc:Chart.Legends>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Cursor="Hand" LightingEnabled="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="2008 Feb" YValue="25"/>
+        <vc:DataPoint AxisXLabel="2008 Mar" YValue="22"/>
+        <vc:DataPoint AxisXLabel="2008 Apr" YValue="23"/>
+        <vc:DataPoint AxisXLabel="2008 May" YValue="24"/>
+        <vc:DataPoint AxisXLabel="2008 Jun" YValue="22"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Column" Cursor="Hand" LightingEnabled="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="15.5"/>
+        <vc:DataPoint YValue="16"/>
+        <vc:DataPoint YValue="16"/>
+        <vc:DataPoint YValue="15"/>
+        <vc:DataPoint YValue="16"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Column" Cursor="Hand" LightingEnabled="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="14.5"/>
+        <vc:DataPoint YValue="15"/>
+        <vc:DataPoint YValue="17"/>
+        <vc:DataPoint YValue="18"/>
+        <vc:DataPoint YValue="17.5"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
