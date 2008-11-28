@@ -104,14 +104,14 @@ namespace Visifire.Charts
             Canvas markerCanvas = new Canvas();
             markerCanvas.Width = columnParams.Size.Width;
             markerCanvas.Height = columnParams.Size.Height;
-            
+
             markerCanvas.SetValue(Canvas.LeftProperty, left);
             markerCanvas.SetValue(Canvas.TopProperty, top);
 
             if (columnParams.IsMarkerEnabled || columnParams.IsLabelEnabled)
             {
                 Size markerSize = new Size(columnParams.MarkerSize, columnParams.MarkerSize);
-             
+
                 String labelText = columnParams.IsLabelEnabled ? columnParams.LabelText : "";
                 Boolean markerBevel = false;
 
@@ -133,7 +133,7 @@ namespace Visifire.Charts
                 dataPoint.Marker.FontStyle = columnParams.LabelFontStyle;
                 dataPoint.Marker.FontWeight = columnParams.LabelFontWeight;
                 dataPoint.Marker.TextBackground = columnParams.LabelBackground;
-                
+
                 Point positionXY = new Point();
 
                 if (columnParams.IsPositive)
@@ -150,18 +150,37 @@ namespace Visifire.Charts
                 if (columnParams.IsLabelEnabled && !String.IsNullOrEmpty(labelText))
                 {
                     dataPoint.Marker.CreateVisual();
-                    
+
+                    if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
+                    else
+                        dataPoint.Marker.TextOrientation = Orientation.Horizontal;
+
                     if (columnParams.IsPositive)
                     {
-                        if (top < dataPoint.Marker.MarkerActualSize.Height)
+                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
                         {
-                            columnParams.LabelStyle = LabelStyles.Inside;
+                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < chart.Height - chart.PlotArea.PlotAreaBorderElement.Height)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                        else
+                        {
+                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < (chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
+                                columnParams.LabelStyle = LabelStyles.Inside;
                         }
                     }
                     else
                     {
-                        if (top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height)
-                            columnParams.LabelStyle = LabelStyles.Inside;
+                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                        {
+                            if ((chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness + dataPoint.Marker.MarkerSize.Height)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                        else
+                        {
+                            if ((chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2 + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
                     }
 
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
@@ -171,7 +190,12 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             if (columnParams.LabelStyle == LabelStyles.OutSide)
-                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness, markerSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness);
+                            {
+                                if (columnParams.IsPositive)
+                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness, markerSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness);
+                                else
+                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
+                            }
                             else
                                 dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
                         }
@@ -189,19 +213,15 @@ namespace Visifire.Charts
                     else
                         dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Top : AlignmentY.Bottom;
 
-                    if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
-                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
-                    else
-                        dataPoint.Marker.TextOrientation = Orientation.Horizontal;
-
                 }
+
 
                 dataPoint.Marker.CreateVisual();
 
                 dataPoint.Marker.AddToParent(markerCanvas, positionXY.X, positionXY.Y, new Point(0.5, 0.5));
 
             }
-            
+
             return markerCanvas;
         }
 

@@ -163,6 +163,9 @@
     <Compile Include="..\VisifireControl.cs">
       <Link>VisifireControl.cs</Link>
     </Compile>
+    <Compile Include="..\VisifireElement.cs">
+      <Link>VisifireElement.cs</Link>
+    </Compile>
     <Compile Include="..\XWiseData.cs">
       <Link>XWiseData.cs</Link>
     </Compile>

@@ -108,6 +108,8 @@ namespace Visifire.Charts
 
         }
 
+
+
         /// <summary>
         /// Sets value for specific property of chart
         /// This function is used for setting property from JavaScript only
@@ -215,6 +217,7 @@ namespace Visifire.Charts
             get;
             set;
         }
+
         #endregion
 
         #region Public Events
@@ -250,7 +253,7 @@ namespace Visifire.Charts
         {
             
             // Render the chart with new size
-            Render();
+            CallRender();
         }
 
         /// <summary>
@@ -259,7 +262,7 @@ namespace Visifire.Charts
         private void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Render the chart with new size
-            Render();
+            CallRender();
         }
 
         #endregion
@@ -271,19 +274,22 @@ namespace Visifire.Charts
         /// </summary>
         internal void CreateLogViewer()
         {   
-            // Create new Logger
-            LoggerWindow = new Logger();
+            if (_rootElement != null)
+            {   
+                // Create new Logger
+                LoggerWindow = new Logger();
 
-            // Set Logger properties
-            LoggerWindow.HorizontalAlignment = HorizontalAlignment.Stretch;
-            LoggerWindow.VerticalAlignment = VerticalAlignment.Stretch;
-            LoggerWindow.Visibility = Visibility.Collapsed;
-            LoggerWindow.SetValue(Canvas.ZIndexProperty, 6);
+                // Set Logger properties
+                LoggerWindow.HorizontalAlignment = HorizontalAlignment.Stretch;
+                LoggerWindow.VerticalAlignment = VerticalAlignment.Stretch;
+                LoggerWindow.Visibility = Visibility.Collapsed;
+                LoggerWindow.SetValue(Canvas.ZIndexProperty, 6);
 
-            LoggerWindow.Log("Copy & Paste the contents of this log in www.visifire.com/forums for support.");
+                LoggerWindow.Log("Copy & Paste the contents of this log in www.visifire.com/forums for support.");
 
-            // Add Logger to root element
-            _rootElement.Children.Add(LoggerWindow);
+                // Add Logger to root element
+                _rootElement.Children.Add(LoggerWindow);
+            }
         }
 
         #endregion

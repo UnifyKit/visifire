@@ -1543,7 +1543,7 @@ namespace WPFVisifireChartsTest
             if (isLoaded)
             {
                 dataSeries.MarkerEnabled = true;
-                Assert.IsTrue(dataSeries.MarkerEnabled);
+                Assert.IsTrue((Boolean)dataSeries.MarkerEnabled);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -2554,7 +2554,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (isLoaded)
             {
-                Assert.IsTrue(dataSeries.MarkerEnabled);
+                Assert.IsTrue((Boolean)dataSeries.MarkerEnabled);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

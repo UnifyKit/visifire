@@ -1838,8 +1838,10 @@ DOWN:
                     Visual.Children.Add(AxisLabels.Visual);
             }
             else
-            {
-                InternalStackPanel.Children.Add(AxisLabels.Visual);
+            {   
+                if(AxisLabels.Visual != null)
+                    InternalStackPanel.Children.Add(AxisLabels.Visual);
+
                 ScrollViewerElement.Content = InternalStackPanel;
                 Visual.Children.Add(ScrollViewerElement);
             }
@@ -1929,14 +1931,12 @@ DOWN:
             if (!String.IsNullOrEmpty(Title))
                 Visual.Children.Add(AxisTitleElement.Visual);
 
-            if (Width == ScrollableSize)
+            if (AxisLabels.Visual != null)
             {
-                if (AxisLabels.Visual != null)
+                if (Width == ScrollableSize)
                     Visual.Children.Add(AxisLabels.Visual);
-            }
-            else
-            {
-                InternalStackPanel.Children.Add(AxisLabels.Visual);
+                else
+                    InternalStackPanel.Children.Add(AxisLabels.Visual);
             }
 
             foreach (Ticks tick in Ticks)

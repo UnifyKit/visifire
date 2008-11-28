@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Collections;
 using System.Windows.Media.Animation;
+
 #else
 
 using System;
@@ -42,10 +43,10 @@ using System.Collections.ObjectModel;
 using System.Windows.Browser;
 
 #endif
+
 using System.ComponentModel;
 using Visifire.Commons;
 using System.Windows.Controls.Primitives;
-
 
 namespace Visifire.Charts
 {
@@ -181,14 +182,13 @@ namespace Visifire.Charts
 
             if(StyleDictionary == null)
                 LoadTheme("Theme1");
-
-
+            
             IsTemplateApplied = true;
 
             ObservableObject.AttachToolTip(this, this, ToolTipText);
             AttachEvents2Visual(this, this, this._rootElement);
-
-
+            AttachEvents2Visual(this, this, this._plotCanvas);
+            
             System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
             binding.Source = this;
             binding.Mode = System.Windows.Data.BindingMode.OneWay;
@@ -198,10 +198,19 @@ namespace Visifire.Charts
             binding1.Source = this;
             binding1.Mode = System.Windows.Data.BindingMode.OneWay;
             base.SetBinding(InternalBorderThicknessProperty, binding1);
+
+            this.EventChanged += delegate
+            {
+                AttachEvents2Visual(this, this, this._rootElement);
+#if WPF
+                AttachEvents2Visual(this, this, this._plotCanvas);
+#endif
+            };
+
+            if (AnimationEnabled)
+                _rootElement.IsHitTestVisible = false;
         }
-
-       
-
+        
         #endregion
 
         #region Public Properties
@@ -239,18 +248,7 @@ namespace Visifire.Charts
         private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             Chart c = d as Chart;
-
-            if (c.IsTemplateApplied)
-            {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                else
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                c.Render();
-#endif          
-            }
+            c.CallRender();  
         }
 
         /// <summary>
@@ -283,18 +281,7 @@ namespace Visifire.Charts
         private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-
-            if (c.IsTemplateApplied)
-            {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                else
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                c.Render();
-#endif
-            }
+            c.CallRender();
         }
         
         /// <summary>
@@ -334,18 +321,7 @@ namespace Visifire.Charts
         private static void OnScrollingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-
-            if (c.IsTemplateApplied)
-            {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                else
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                c.Render();
-#endif          
-            }
+            c.CallRender();  
         }
 
         /// <summary>
@@ -377,18 +353,7 @@ namespace Visifire.Charts
         private static void OnView3DPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-
-            if (c.IsTemplateApplied)
-            {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                else
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                c.Render();
-#endif
-            }
+            c.CallRender();
         }
 
         public HrefTargets HrefTarget
@@ -487,18 +452,7 @@ namespace Visifire.Charts
         private static void OnRefreshEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-
-            if (c.IsTemplateApplied)
-            {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                else
-                    c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                c.Render();
-#endif
-            }
+            c.CallRender();
         }
 
         #endregion
@@ -525,15 +479,7 @@ namespace Visifire.Charts
         {
             Chart c = d as Chart;
             c.LoadTheme((String)e.NewValue);
-
-#if WPF     
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-            else
-                c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else       
-            c.Render();
-#endif      
+            c.CallRender();
         }
         
         internal void LoadTheme(String themeName)
@@ -592,10 +538,8 @@ namespace Visifire.Charts
                 {
                     Style myStyle = StyleDictionary["Chart"] as Style;
 
-                    //if (myStyle != null)
-                    {
+                    if (myStyle != null)
                         Style = myStyle;
-                    }
                 }
             }
             else
@@ -758,17 +702,7 @@ namespace Visifire.Charts
             {
                 if ((Boolean)c.Bevel == true)
                 {
-                    if (c.IsTemplateApplied)
-                    {
-#if WPF
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                    else
-                        c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                        c.Render();
-#endif
-                    }
+                    c.CallRender();
                 }
                 else
                 {
@@ -805,17 +739,7 @@ namespace Visifire.Charts
             c.ApplyChartBevel();
             if ((Boolean)e.NewValue == true)
             {
-                if (c.IsTemplateApplied)
-                {
-#if WPF
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-                    else
-                        c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-                    c.Render();
-#endif
-                }
+                c.CallRender();
             }
             else
             {
@@ -826,9 +750,6 @@ namespace Visifire.Charts
         /// <summary>
         /// Set of colors that will be used for the DataPoints
         /// </summary>
-#if SL
-        //[System.ComponentModel.TypeConverter(typeof(Converters.ColorSetNameConverter))]
-#endif
         public ColorSetNames ColorSet
         {
             get
@@ -850,15 +771,7 @@ namespace Visifire.Charts
         private static void OnColorSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            
-#if WPF
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(c.Render));
-            else
-                c.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(c.Render));
-#else
-            c.Render();
-#endif
+            c.CallRender();
         }
 
         /// <summary>
@@ -1084,19 +997,8 @@ namespace Visifire.Charts
         
         void PlotArea_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
-
+            CallRender();
         }
-
-
-
 
         #region Series Property
 
@@ -1135,104 +1037,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Events
-
-        /// <summary>
-        /// Event handler for the MouseLeftButtonDown event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event MouseButtonEventHandler MouseLeftButtonDown
-        {
-            remove
-            {
-                _onMouseLeftButtonDown -= value;
-            }
-            add
-            {
-                _onMouseLeftButtonDown += value;
-                Render();
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseLeftButtonUp event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event MouseButtonEventHandler MouseLeftButtonUp
-        {
-            remove
-            {
-                _onMouseLeftButtonUp -= value;
-            }
-            add
-            {
-                _onMouseLeftButtonUp += value;
-                Render();
-            }
-        }
-
-
-        /// <summary>
-        /// Event handler for the MouseEnter event 
-        /// </summary>
-
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseEnter
-        {
-            remove
-            {
-                _onMouseEnter -= value;
-            }
-            add
-            {
-                _onMouseEnter += value;
-                Render();
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseLeave event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseLeave
-        {
-            remove
-            {
-                _onMouseLeave -= value;
-            }
-            add
-            {
-                _onMouseLeave += value;
-                Render();
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseMove event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseMove
-        {
-            remove
-            {
-                _onMouseMove -= value;
-            }
-            add
-            {
-                _onMouseMove += value;
-                Render();
-            }
-        }
-
+        
         #endregion
 
         #region Protected Methods
@@ -1269,19 +1074,12 @@ namespace Visifire.Charts
         /// </summary>
         private void RemoveShadow()
         {
-            if (!ShadowEnabled)
+            if (IsTemplateApplied && !ShadowEnabled)
             {
                 _chartBorder.Margin = new Thickness(0, 0, 0, 0);
                 _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
                 IsShadowApplied = false;
             }
-        }
-
-        void obj_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-#if WPF
-            MessageBox.Show("Clicked");
-#endif
         }
 
         private void LoadWatermark()
@@ -1337,7 +1135,6 @@ namespace Visifire.Charts
         {
             this._rootElement.MouseMove += new MouseEventHandler(Chart_MouseMoveSetToolTipPosition);
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
-
         }
 
         void Chart_MouseLeave(object sender, MouseEventArgs e)
@@ -1368,22 +1165,25 @@ namespace Visifire.Charts
                 Double x = e.GetPosition(this).X;
                 Double y = e.GetPosition(this).Y;
 
-                x = x - _toolTip.ActualWidth / 2;
-                y = y - (_toolTip.ActualHeight + 5);
+                Double toolTipWidth = (Double.IsNaN(_toolTip.ActualWidth) || _toolTip.ActualWidth == 0)?14:_toolTip.ActualWidth;
+                Double toolTipHeight = (Double.IsNaN(_toolTip.ActualHeight) || _toolTip.ActualHeight == 0) ? 26 : _toolTip.ActualHeight;
+                
+                x = x - toolTipWidth / 2;
+                y = y - (toolTipHeight + 5);
 
                 if (x <= 0)
                 {
                     x = e.GetPosition(this).X + 10;
                     y = e.GetPosition(this).Y + 20;
 
-                    if ((y + _toolTip.ActualHeight) >= this.ActualHeight)
-                        y = this.ActualHeight - _toolTip.ActualHeight;
+                    if ((y + toolTipHeight) >= this.ActualHeight)
+                        y = this.ActualHeight - toolTipHeight;
                 }
 
-                if ((x + _toolTip.ActualWidth) >= this.ActualWidth)
+                if ((x + toolTipWidth) >= this.ActualWidth)
                 {
-                    x = e.GetPosition(this).X - _toolTip.ActualWidth;
-                    y = e.GetPosition(this).Y - _toolTip.ActualHeight;
+                    x = e.GetPosition(this).X - toolTipWidth;
+                    y = e.GetPosition(this).Y - toolTipHeight;
                 }
                 if (y <= 0)
                     y = e.GetPosition(this).Y + 20;
@@ -1415,40 +1215,18 @@ namespace Visifire.Charts
                         title.Chart = this;
                         title.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Title_PropertyChanged);
                     }
-#if WPF                 
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else                   
-                    Render();
-#endif
+                    CallRender();
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
+                CallRender();
             }
         }
 
         void Title_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF                 
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
-              
+            CallRender();
         }
 
         void Legends_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -1458,7 +1236,7 @@ namespace Visifire.Charts
                 foreach (Legend legend in e.NewItems)
                 {
                     if (Legends.Count > 0)
-                    {
+                    {   
                         if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
                             legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
                     }
@@ -1468,39 +1246,18 @@ namespace Visifire.Charts
                 }
 
 
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
+                CallRender();
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
+                CallRender();
             }
            
         }
 
         void legend_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else       
-                Render();
-#endif  
+            CallRender();
         }
 
         void TrendLines_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -1523,41 +1280,17 @@ namespace Visifire.Charts
                     }
                 }
 
-                if (IsTemplateApplied)
-                {
-#if WPF
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
-                }
+                CallRender();
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
+                CallRender();
             }
         }
 
         void trendLine_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF     
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
+            CallRender();
         }
 
         /// <summary>
@@ -1584,39 +1317,18 @@ namespace Visifire.Charts
                         ds.PropertyChanged -= Series_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Series_PropertyChanged);
                     }
-
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
+                    
+                CallRender();
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
+                CallRender();
             }
         }
 
         void Series_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
+            CallRender();
         }
 
         /// <summary>
@@ -1668,14 +1380,7 @@ namespace Visifire.Charts
 
                 if (!isAutoAxis)
                 {
-#if WPF
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
+                    CallRender();
                 }
 
             }
@@ -1683,29 +1388,14 @@ namespace Visifire.Charts
             {
                 if (!isAutoAxis)
                 {
-#if WPF
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
+                    CallRender();
                 }
             }
         }
 
         void AxesY_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-
-#if WPF     
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
+            CallRender();
         }
 
         /// <summary>
@@ -1753,43 +1443,21 @@ namespace Visifire.Charts
 
                 if (!isAutoAxis)
                 {
-#if WPF
-
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
+                    CallRender();
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
                 if (!isAutoAxis)
                 {
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    Render();
-#endif
+                    CallRender();
                 }
             }
         }
 
         void AxesX_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-#if WPF
-            if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
-#endif
+            CallRender();
         }
 
         /// <summary>
@@ -1808,40 +1476,27 @@ namespace Visifire.Charts
 
         void ChartArea_PropertyChanged(object sender, EventArgs e)
         {
-            if (IsTemplateApplied)
-            {
-#if WPF
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                Render();
-#endif
-            }
+            CallRender();
+        }
+
+        internal void Render()
+        {
+            Render(null);
         }
 
         /// <summary>
         /// Render() replace the existing Chart with a new Chart
         /// </summary>
-        public void Render()
+        internal void Render(object arg)
         {   
             if (IsTemplateApplied)
             {
-#if WPF         
-                if (!RENDER_LOCK && _rootElement != null)
-#else
-                if ((!RENDER_LOCK ) && _rootElement != null)
-#endif          
+                if ((!RENDER_LOCK ) && _rootElement != null)    
                 {
-                    System.Diagnostics.Debug.WriteLine("Debug Start");
+                    System.Diagnostics.Debug.WriteLine("Render______");
                     RENDER_LOCK = true;
                     try
                     {
-                        if (PlotArea != null)
-                        {
-                            PlotArea.Chart = this;
-                            PlotArea.PropertyChanged -= PlotArea_PropertyChanged;
-                            PlotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(PlotArea_PropertyChanged);
-                        }
-
                         if(ChartArea == null)
                             ChartArea = CreateVisualTree();
 
@@ -1856,7 +1511,7 @@ namespace Visifire.Charts
 
                         ChartArea.Draw(this);
 
-                        System.Diagnostics.Debug.WriteLine("Debug End");
+                       // System.Diagnostics.Debug.WriteLine("Debug End");
 
                     }
                     catch (Exception e)
@@ -1890,14 +1545,6 @@ namespace Visifire.Charts
             set;
         }
 
-        // Hides the BorderBrush property in control
-        //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        //private new Brush BorderBrush
-        //{
-        //    get;
-        //    set;
-        //}
-
         #endregion
 
         #region Internal Property
@@ -1917,48 +1564,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
-        
-        /// <summary>
-        /// Attach Events to Visual element
-        /// </summary>
-        /// <param name="control">Control</param>
-        /// <param name="Sender">Sender</param>
-        /// <param name="Visual">Visual as FrameworkElement</param>
-        internal void AttachEvents2Visual(Chart control, Chart Sender, FrameworkElement Visual)
-        {
-            if (Visual == null)
-                return;
-
-            if (control._onMouseEnter != null)
-                Visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    control._onMouseEnter(Sender, e);
-                };
-
-            if (control._onMouseLeave != null)
-                Visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-                {
-                    control._onMouseLeave(Sender, e);
-                };
-
-            if (control._onMouseLeftButtonDown != null)
-                Visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
-                {
-                    control._onMouseLeftButtonDown(Sender, e);
-                };
-
-            if (control._onMouseLeftButtonUp != null)
-                Visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-                {
-                    control._onMouseLeftButtonUp(Sender, e);
-                };
-
-            if (control._onMouseMove != null)
-                Visual.MouseMove += delegate(object sender, MouseEventArgs e)
-                {
-                    control._onMouseMove(Sender, e);
-                };
-        }
 
         /// <summary>
         /// Apply Bevel effect to Chart
@@ -2008,8 +1613,11 @@ namespace Visifire.Charts
 
         internal void RemoveChartBevel()
         {
-            if (BevelVisual != null && _bevelCanvas != null)
-                _bevelCanvas.Children.Clear();
+            if (IsTemplateApplied)
+            {
+                if (BevelVisual != null && _bevelCanvas != null)
+                    _bevelCanvas.Children.Clear();
+            }
         }
 
         internal Grid ChartShadowGrid
@@ -2057,8 +1665,12 @@ namespace Visifire.Charts
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
             else
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-            Render();
+#else       
+            //System.Threading.SendOrPostCallback k = new System.Threading.SendOrPostCallback(Render);
+            //System.Windows.Threading.DispatcherSynchronizationContext sc = new System.Windows.Threading.DispatcherSynchronizationContext();
+            //sc.Send(k, this);
+
+            this.Dispatcher.BeginInvoke(Render);
 #endif
         }
 
@@ -2187,12 +1799,6 @@ namespace Visifire.Charts
         internal static Double BEVEL_DEPTH = 5;                             // Bevel Depth for chart
         internal Int32 _renderLapsedCounter;                                // Noumber of time UI render is not done called due to RENDER_LOCK
         private Thickness _chartAreaOriginalMargin;
-        private event MouseButtonEventHandler _onMouseLeftButtonDown;       // Handler for MouseLeftButtonDown event
-        private event MouseButtonEventHandler _onMouseLeftButtonUp;         // Handler for MouseLeftButtonUp event
-        private event EventHandler<MouseEventArgs> _onMouseEnter;           // Handler for MouseEnter event
-        private event EventHandler<MouseEventArgs> _onMouseLeave;           // Handler for MouseLeave event
-        private event EventHandler<MouseEventArgs> _onMouseMove;            // Handler for MouseMove event
-        
         #endregion
     }
 }

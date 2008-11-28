@@ -37,7 +37,7 @@
 
             //vChart1.setLogLevel(0); // If you want to disable logging.
 
-            var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" AnimationEnabled="False" BorderThickness="0.5" Background="White" BorderBrush="Black" Padding="3">'
+            var chartXml = '<vc:Chart ScrollingEnabled="False" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" AnimationEnabled="False" BorderThickness="0.5" Background="White" BorderBrush="Black" Padding="3">'
                + '     <vc:Chart.Titles>'
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
                + '     </vc:Chart.Titles>'
@@ -48,7 +48,7 @@
                + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
                + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
                + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
-               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'              
                + '             </vc:DataSeries.DataPoints>'
                + '         </vc:DataSeries>'
                + '     </vc:Chart.Series>'
@@ -74,15 +74,15 @@
             
             // Function to update YValue property of a DataPoint
             function updateYValue(newValue, dataPointIndex)
-            {
+            {   
                 if (chart != null)
                 {
                     try
                     {
                         chart.Series[0].DataPoints[dataPointIndex].SetPropertyFromJs("YValue", newValue);
                     }
-                    catch(e)
-                    {
+                    catch (e) {
+                        //alert(e);
                     }
                 }
             };
@@ -91,7 +91,7 @@
             {
                 updateYValue(Math.abs(Math.random() * 100 - 10 * dataPointIndex), dataPointIndex++);
                 dataPointIndex = (dataPointIndex > 4) ? 0 : dataPointIndex;
-                setTimeout(timer, 1000);
+                setTimeout(timer, 100);
             };
             
         </script>

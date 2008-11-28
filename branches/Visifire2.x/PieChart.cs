@@ -2937,11 +2937,16 @@ namespace Visifire.Charts
             #endregion Animating Label
 
             #region Animating Label Line
-            PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
-            PathSegmentCollection segments = figure.Segments;
-            storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
-            storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
+            if (labelLine != null)
+            {
+                PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
+                PathSegmentCollection segments = figure.Segments;
+                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
+            }
+
             #endregion Animating Label Line
+
             return storyboard;
         }
 
@@ -2988,10 +2993,15 @@ namespace Visifire.Charts
             #endregion Animating Label
 
             #region Animating Label Line
-            PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
-            PathSegmentCollection segments = figure.Segments;
-            storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
-            storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
+
+            if (labelLine != null)
+            {
+                PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
+                PathSegmentCollection segments = figure.Segments;
+                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
+            }
+
             #endregion Animating Label Line
             return storyboard;
         }

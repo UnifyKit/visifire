@@ -107,7 +107,7 @@ namespace Visifire.Charts
 
         void Chart_Loaded(object sender, RoutedEventArgs e)
         {
-            Render();
+            Render(null);
         }
 
         #endregion
@@ -150,14 +150,7 @@ namespace Visifire.Charts
             if (IsTemplateApplied)
             {
                 // Call Render
-#if WPF
-                if (Application.Current != null && Application.Current.Dispatcher.Thread != System.Threading.Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.SystemIdle, new RenderDelegate(Render));
-#else           
-                Render();
-#endif
+                CallRender();
             }
         }
 

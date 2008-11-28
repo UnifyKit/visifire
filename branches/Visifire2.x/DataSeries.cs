@@ -1112,14 +1112,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Sets the MarkerEnabled property
         /// </summary>
-        public Boolean MarkerEnabled
+        [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
+        public Nullable<Boolean> MarkerEnabled
         {
             get
-            {
+            {   
                 if (this.RenderAs == RenderAs.Line)
-                    return true;
+                    return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? true : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
                 else
-                    return (Boolean)GetValue(MarkerEnabledProperty);
+                    return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? false : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
             }
             set
             {   
@@ -1129,7 +1130,7 @@ namespace Visifire.Charts
 
         private static readonly DependencyProperty MarkerEnabledProperty = DependencyProperty.Register
             ("MarkerEnabled",
-            typeof(Boolean),
+            typeof(Nullable<Boolean>),
             typeof(DataSeries),
             new PropertyMetadata(OnMarkerEnabledPropertyChanged));
 

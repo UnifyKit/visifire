@@ -60,6 +60,8 @@ namespace Visifire.Charts
 
         public void Draw(Chart chart)
         {
+            _redrawCount = 0;
+
             Chart = chart;
 
             SetSeriesStyleFromTheme(chart);
@@ -71,6 +73,8 @@ namespace Visifire.Charts
             CloneAxisX();
             CloneAxisY();
             CloneDataSeries();
+            
+            System.Diagnostics.Debug.WriteLine("______________PlotDetails______");
 
             // Generate plot details
             PlotDetails = new PlotDetails(chart);
@@ -151,7 +155,7 @@ namespace Visifire.Charts
                         
             ObservableObject.AttachHref(Chart, PlotAreaCanvas.Children[0] as Border, Chart.PlotArea.Href, Chart.PlotArea.HrefTarget);
             ObservableObject.AttachToolTip(Chart, PlotAreaCanvas.Children[0] as Border, Chart.PlotArea.ToolTipText);
-            ObservableObject.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
+            Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
 
             //chart._drawingCanvas.Children.Clear();
             if(!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
@@ -181,7 +185,7 @@ namespace Visifire.Charts
             }
 
             if (DockInsidePlotArea)
-            {
+            {   
                 retVal.Height = PlotAreaCanvas.Height - retVal.Height;
                 retVal.Width = PlotAreaCanvas.ActualWidth - retVal.Width;
             }
@@ -195,109 +199,41 @@ namespace Visifire.Charts
         }
 
         private void CloneAxisX()
-        {
-            if (Chart.InternalAxesX == null)
-                Chart.InternalAxesX = new List<Axis>();
-            else
-                Chart.InternalAxesY.Clear();
+        {   
+            if (Chart.InternalAxesX != null)
+                Chart.InternalAxesX.Clear();
 
-            foreach (Axis axis in Chart.AxesX)
-            {   
-                Axis axisNew = ObservableObject.Clone<Axis>(axis);
-                axisNew.Chart = Chart;
-                axisNew._target = axis;
-                axisNew.InternalMouseLeftButtonUp = axis.InternalMouseLeftButtonUp;
-                axisNew.InternalMouseLeftButtonDown = axis.InternalMouseLeftButtonDown;
-                axisNew.InternalMouseEnter = axis.InternalMouseEnter;
-                axisNew.InternalMouseMove = axis.InternalMouseMove;
-                axisNew.InternalMouseLeave = axis.InternalMouseLeave;
-
-                Chart.InternalAxesX.Add(axisNew);
-            }
+            Chart.InternalAxesX = Chart.AxesX.ToList();
         }
 
         private void CloneAxisY()
-        {
-            if (Chart.InternalAxesY == null)
-                Chart.InternalAxesY = new List<Axis>();
-            else
+        {   
+            if (Chart.InternalAxesY != null)
                 Chart.InternalAxesY.Clear();
 
-            foreach (Axis axis in Chart.AxesY)
-            {
-                Axis axisNew = ObservableObject.Clone<Axis>(axis);
-                axisNew.Chart = Chart;
-                axisNew._target = axis;
-                axisNew.InternalMouseLeftButtonUp = axis.InternalMouseLeftButtonUp;
-                axisNew.InternalMouseLeftButtonDown = axis.InternalMouseLeftButtonDown;
-                axisNew.InternalMouseEnter = axis.InternalMouseEnter;
-                axisNew.InternalMouseMove = axis.InternalMouseMove;
-                axisNew.InternalMouseLeave = axis.InternalMouseLeave;
-
-                Chart.InternalAxesY.Add(axisNew);
-            }
+            Chart.InternalAxesY = Chart.AxesY.ToList();
         }
 
         private void CloneDataSeries()
         {
-            if (Chart.IsInDesignMode)
+            if (Chart.InternalSeries != null)
+                Chart.InternalSeries.Clear();
+
+            if (Chart.Series.Count == 0)
             {
                 Chart.InternalSeries = new List<DataSeries>();
 
-                if (Chart.Series.Count != 0)
-                    Chart.InternalSeries = Chart.Series.ToList();
-                else
+                if (Chart.IsInDesignMode)
                 {
                     AddDefaultChart4Blend();
                     SetDefaultChartDataPointColorFromColorSet(Chart);
                 }
-            }
-            else
-            {
-                Chart.InternalSeries = new List<DataSeries>();
-
-                if (Chart.Series.Count != 0)
-                {
-#if SL
-                foreach (DataSeries ds in Chart.Series)
-                {
-                    DataSeries ds1 = ObservableObject.Clone<DataSeries>(ds);
-                    ds1.SetValue(DataSeries.NameProperty, ds.GetValue(DataSeries.NameProperty));
-
-                    ds1.Chart = Chart;
-                    ds1._target = ds;
-                    ds1.InternalMouseLeftButtonUp = ds.InternalMouseLeftButtonUp;
-                    ds1.InternalMouseLeftButtonDown = ds.InternalMouseLeftButtonDown;
-                    ds1.InternalMouseEnter = ds.InternalMouseEnter;
-                    ds1.InternalMouseMove = ds.InternalMouseMove;
-                    ds1.InternalMouseLeave = ds.InternalMouseLeave;
-                    
-                    ds1.DataPoints = new ObservableCollection<DataPoint>();
-                    foreach (DataPoint dp in ds.DataPoints)
-                    {   
-                        DataPoint dp1 = ObservableObject.Clone<DataPoint>(dp);
-                        dp1.Chart = Chart;
-                        dp1.SetValue(DataPoint.NameProperty, dp.GetValue(DataPoint.NameProperty));
-                        dp1.Parent = ds1;
-                        dp1._target = dp;
-                        dp1.InternalMouseLeftButtonUp = dp.InternalMouseLeftButtonUp;
-                        dp1.InternalMouseLeftButtonDown = dp.InternalMouseLeftButtonDown;
-                        dp1.InternalMouseEnter = dp.InternalMouseEnter;
-                        dp1.InternalMouseMove = dp.InternalMouseMove;
-                        dp1.InternalMouseLeave = dp.InternalMouseLeave;
-
-                        ds1.DataPoints.Add(dp1);
-                    }
-
-                    Chart.InternalSeries.Add(ds1);
-                }   
-#else
-                    Chart.InternalSeries = Chart.Series.ToList();
-#endif
-                }
                 else
                     SetBlankSeries();
             }
+            else
+                Chart.InternalSeries = Chart.Series.ToList();
+        
         }
 
         internal void AddDefaultChart4Blend()
@@ -453,6 +389,14 @@ namespace Visifire.Charts
 
         void RedrawChart(Size NewSize, Size PreviousSize)
         {
+
+            if ( _oldPlotSize.Height == NewSize.Height && _oldPlotSize.Width == NewSize.Width && _redrawCount >1)
+                return;
+
+            _oldPlotSize = NewSize;
+
+            _redrawCount++;
+
             Chart._drawingCanvas.Height = NewSize.Height;
             Chart._drawingCanvas.Width = NewSize.Width;
 
@@ -697,9 +641,7 @@ namespace Visifire.Charts
 
             SetChartAreaCenterGridMargin();
 
-            ClearPlotAreaChildren();
-
-            Render(NewSize);
+            Render(PreviousSize,NewSize);
 
             Chart._centerDockOutsidePlotAreaPanel.Children.Clear();
 
@@ -1192,11 +1134,23 @@ namespace Visifire.Charts
             }
         }
 
+       
+
         /// <summary>
         /// Renders charts based on the orientation type
         /// </summary>
-        void Render(Size NewSize)
+        void Render(Size PreviousSize, Size NewSize)
         {
+
+            // if (oldPlotSize.Height == NewSize.Height && oldPlotSize.Width == NewSize.Width && count >1)
+            //    return;
+            // oldPlotSize = NewSize;
+            // count++;
+
+            System.Diagnostics.Debug.WriteLine("Count ==" + _redrawCount.ToString() + ", NewSize H=" + NewSize.Height.ToString() + ", W=" + NewSize.Width.ToString() + "|Previous| H=" + PreviousSize.Height.ToString() + ", W=" + PreviousSize.Width.ToString());
+
+            ClearPlotAreaChildren();
+
             ChartScrollViewer = Chart._plotAreaScrollViewer;
             ChartScrollViewer.Background = new SolidColorBrush(Colors.Transparent);
 
@@ -1484,7 +1438,7 @@ namespace Visifire.Charts
             if (Chart.AnimationEnabled && !Chart.IsInDesignMode)
             {
                 try
-                {
+                {   
                     if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                     {
                         foreach (ChartGrid chartGrid in AxisX.Grids)
@@ -1529,6 +1483,7 @@ namespace Visifire.Charts
                             series.Storyboard.Completed += delegate
                             {
                                 _isAnimationFired = true;
+                                Chart._rootElement.IsHitTestVisible = true;
                             };
 #if WPF
                         if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
@@ -1544,7 +1499,7 @@ namespace Visifire.Charts
                                 
                             };
                         }
-
+                        
                         series.Storyboard.Begin(series as FrameworkElement, true);
 #else
                             if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
@@ -1667,7 +1622,6 @@ namespace Visifire.Charts
                         
                         dp.IsNotificationEnable = true;
                     }
-
                 }
                 else
                 {   
@@ -1675,15 +1629,19 @@ namespace Visifire.Charts
                     {
                         dp.IsNotificationEnable = false;
 
-                        //if (dp.Color == null)
-                           //dp.Color = colorSet.GetNewColorFromColorSet();
+                        // if (dp.Color == null)
+                        // dp.Color = colorSet.GetNewColorFromColorSet();
 
                         if (!dp.IsExternalColorApplied)
-                            if(dp.Parent.IsExternalColorApplied)
+                        {
+                            if (dp.Parent.IsExternalColorApplied)
+                            {
                                 dp.SetValue(DataPoint.ColorProperty, dp.Parent.Color);
+                            }
                             else
                                 dp.SetValue(DataPoint.ColorProperty, colorSet.GetNewColorFromColorSet());
-                        
+                        }
+
                         dp.IsNotificationEnable = true;
                     }
                 }
@@ -1693,6 +1651,7 @@ namespace Visifire.Charts
                 ColorSet colorSet4MultiSeries = null;
                 Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false;   // Unique color for each DataPoint
                 Brush seriesColor = null;
+
                 if(colorSet != null)
                     colorSet.ReSet();
 
@@ -1764,7 +1723,7 @@ namespace Visifire.Charts
         }
 
         private void SetDefaultChartDataPointColorFromColorSet(Chart chart)
-        {
+        {   
             ColorSet colorSet = null;
 
             // Load chart colorSet
@@ -1823,6 +1782,9 @@ namespace Visifire.Charts
         {
             foreach (DataPoint dataPoint in dataPoints)
             {
+                if (!(Boolean)dataPoint.Enabled)
+                    continue;
+
                 String legendText = (String.IsNullOrEmpty(dataPoint.LegendText) ? dataPoint.Name : dataPoint.LegendText);
 
                 Brush markerColor = dataPoint.MarkerBorderColor;
@@ -1898,7 +1860,7 @@ namespace Visifire.Charts
             {
                 List<DataSeries> seriesToBeShownInLegend =
                     (from entry in chart.InternalSeries
-                     where entry.ShowInLegend == true select entry).ToList();
+                     where entry.ShowInLegend == true && entry.Enabled == true select entry).ToList();
 
                 if (seriesToBeShownInLegend.Count > 0)
                 {
@@ -2759,10 +2721,9 @@ namespace Visifire.Charts
             if (Chart._renderLapsedCounter > 1)
             {
                 Chart._renderLapsedCounter = 0;
-                Chart.Render();
-
+                Chart.Render(null);
             }
-             
+            
             Animate();
         }
         
@@ -2876,13 +2837,16 @@ namespace Visifire.Charts
         {
             return ((position) / (positionMax - positionMin) * (valueMax - valueMin)) + valueMin;
         }
+
         #endregion
 
         #region Data
 
-        bool _isAnimationFired = false;
         static Double GRID_ANIMATION_DURATION = 1;
-        
+        Int32 _redrawCount = 0;                         // No of redrawing chart for a single render call    
+        bool _isAnimationFired = false;
+        Size _oldPlotSize = new Size();                 // PlotAreaCanvas OldSize
+
         #endregion
     }
 }

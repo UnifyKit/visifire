@@ -3120,7 +3120,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue(dataSeries.MarkerEnabled));
+                () => Assert.IsTrue((Boolean)dataSeries.MarkerEnabled));
 
             EnqueueTestComplete();
         }
@@ -3277,7 +3277,7 @@ namespace SLVisifireChartsTest
                 dataSeries = new DataSeries();
                 dataSeries.RenderAs = RenderAs.Column;
 
-                for (Int32 i = 0; i < 1500; i++)
+                for (Int32 i = 0; i < 1000; i++)
                 {
                     DataPoint dataPoint = new DataPoint();
                     dataPoint.AxisXLabel = "a" + i;

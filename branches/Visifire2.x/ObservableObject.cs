@@ -26,11 +26,16 @@ namespace Visifire.Commons
     /// <summary>
     /// ObservableObject Implements INotifyPropertyChanged Interface
     /// </summary>
-    public abstract class ObservableObject : Control, INotifyPropertyChanged
+    public abstract class ObservableObject : VisifireElement, INotifyPropertyChanged
     {
         public ObservableObject()
             : base()
         {
+            this.EventChanged += delegate
+            {
+                FirePropertyChanged("MouseEvent");
+            };
+
             IsNotificationEnable = true;
         }
 
@@ -42,7 +47,7 @@ namespace Visifire.Commons
         /// <param name="control">Control reference</param>
         /// <param name="element">FrameworkElement</param>
         /// <param name="toolTipText">Tooltip text</param>
-        public static void AttachToolTip(VisifireControl Control, FrameworkElement Element, String ToolTipText)
+        internal static void AttachToolTip(VisifireControl Control, FrameworkElement Element, String ToolTipText)
         {
             if (Element == null)
                 return;
@@ -67,61 +72,6 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Clone a object to a new Object
-        /// </summary>
-        /// <typeparam name="T">System.Type</typeparam>
-        /// <param name="source">Source Type</param>
-        /// <returns>Specified Type</returns>
-        public static T Clone<T>(T source)
-        {
-            T cloned = (T)Activator.CreateInstance(source.GetType());
-
-            foreach (System.Reflection.PropertyInfo curPropInfo in source.GetType().GetProperties())
-            {
-                if (curPropInfo.GetGetMethod() != null && (curPropInfo.GetSetMethod() != null))
-                {
-                    // Handle Non-indexer properties
-                    if (curPropInfo.Name != "Item")
-                    {
-                        // get property from source
-                        object getValue = curPropInfo.GetGetMethod().Invoke(source, new object[] { });
-
-                        // clone if needed
-                        if (getValue != null && getValue is DependencyObject)
-                            getValue = Clone((DependencyObject)getValue);
-
-                        // set property on cloned
-                        curPropInfo.GetSetMethod().Invoke(cloned, new object[] { getValue });
-
-                    }
-                    else  // handle indexer
-                    {
-                        // get count for indexer
-                        int numberofItemInColleciton = (int)curPropInfo.ReflectedType.GetProperty("Count").GetGetMethod().Invoke(source, new object[] { });
-
-                        // run on indexer
-                        for (int i = 0; i < numberofItemInColleciton; i++)
-                        {
-                            // get item through Indexer
-                            object getValue = curPropInfo.GetGetMethod().Invoke(source, new object[] { i });
-
-                            // clone if needed
-                            if (getValue != null && getValue is DependencyObject)
-                                getValue = Clone((DependencyObject)getValue);
-
-                            // add item to collection
-                            curPropInfo.ReflectedType.GetMethod("Add").Invoke(cloned, new object[] { getValue });
-                        }
-
-                    }
-                }
-            }
-
-          
-            return cloned;
-        }
-
-        /// <summary>
         /// Attach tooltip with a framework element
         /// </summary>
         /// <param name="control">Control reference</param>
@@ -133,24 +83,7 @@ namespace Visifire.Commons
             {
                 // Show ToolTip on mouse move over the chart element
                 foreach (FrameworkElement element in Elements)
-                {
-                    if (element != null)
-                    {
-                        element.MouseEnter += delegate(object sender, MouseEventArgs e)
-                        {
-                            Control._toolTipTextBlock.Text = ToolTipText;
-
-                            if(Control.ToolTipEnabled)
-                                Control._toolTip.Visibility = Visibility.Visible;
-                        };
-
-                        // Hide ToolTip on mouse out from the chart element
-                        element.MouseLeave += delegate(object sender, MouseEventArgs e)
-                        {
-                            Control._toolTip.Visibility = Visibility.Collapsed;
-                        };
-                    }
-                }
+                    AttachToolTip(Control, element, ToolTipText);
             }
         }
 
@@ -189,7 +122,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="Handler"></param>
         public void DetachEvents(EventHandler Handler)
-        {
+        {   
             if (Handler != null)
             {
                 Delegate[] invList = Handler.GetInvocationList();
@@ -220,72 +153,7 @@ namespace Visifire.Commons
                 }
         }
 
-        /// <summary>
-        /// Attach events to a visual
-        /// </summary>
-        /// <param name="Object">Object with which event is attached</param>
-        /// <param name="Sender">Sender will be passed as sender whiling firing event</param>
-        /// <param name="Visual">Visual object with which event will be attached</param>
-        public static void AttachEvents2Visual(ObservableObject Object, ObservableObject Sender, FrameworkElement Visual)
-        {
-            if (Visual == null)
-                return;
-
-            if (Object._onMouseEnter != null)
-                Visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    if (Sender._target != null)
-                        Object._onMouseEnter(Sender._target, e);
-                    else
-                        Object._onMouseEnter(Sender, e);
-                };
-
-            if (Object._onMouseLeave != null)
-                Visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-                {
-                    if (Sender._target != null)
-                        Object._onMouseLeave(Sender._target, e);
-                    else
-                        Object._onMouseLeave(Sender, e);
-                };
-
-            if (Object._onMouseLeftButtonDown != null)
-                Visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
-                {
-                    if (Sender._target != null)
-                        Object._onMouseLeftButtonDown(Sender._target, e);
-                    else
-                        Object._onMouseLeftButtonDown(Sender, e);
-                };
- 
-            if (Object._onMouseLeftButtonUp != null)
-                Visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-                {
-                    if (Sender._target != null)
-                        Object._onMouseLeftButtonUp(Sender._target, e);
-                    else
-                        Object._onMouseLeftButtonUp(Sender, e);
-                };
-
-            if (Object._onMouseMove != null)
-                Visual.MouseMove += delegate(object sender, MouseEventArgs e)
-                {
-                    if (Sender._target != null)
-                        Object._onMouseMove(Sender._target, e);
-                    else
-                        Object._onMouseMove(Sender, e);
-                };
-        }
-
-        /// <summary>
-        /// Attach events to a visual
-        /// </summary>
-        /// <param name="Visual"></param>
-        public static void AttachEvents2Visual(ObservableObject Object, FrameworkElement Visual)
-        {
-            if (Visual != null)
-                AttachEvents2Visual(Object, Object, Visual);
-        }
+        
 
 #if SL
         /// <summary>
@@ -320,8 +188,7 @@ namespace Visifire.Commons
                 {
                     throw new Exception("Property not found.");
                 }
-
-
+                
                 System.Reflection.PropertyInfo property = obj.First<System.Reflection.PropertyInfo>();
 
                 if (property.PropertyType.Name == "Brush")
@@ -363,14 +230,13 @@ namespace Visifire.Commons
                 {
                     // If Log viewer is not present create it.
                     chart.CreateLogViewer();
-
-                    if (chart.LogLevel == 1)
-                        chart.LoggerWindow.Visibility = Visibility.Visible;
-                    else
-                    {
-                        chart.Visibility = Visibility.Collapsed;
-                    }
                 }
+
+                if (chart.LogLevel == 1)
+                    chart.LoggerWindow.Visibility = Visibility.Visible;
+                else
+                    chart.Visibility = Visibility.Collapsed;
+               
 
                 chart.LoggerWindow.Log("\n\nError Message:\n");
 
@@ -389,8 +255,7 @@ namespace Visifire.Commons
             }
         }
 #endif
-
-
+        
         #endregion
 
         #region Public Properties
@@ -422,175 +287,11 @@ namespace Visifire.Commons
 
         #endregion
 
-        #region Public Events
+        #region Public Event
 
-        /// <summary>
-        /// Event handler for the MouseLeftButtonDown event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event MouseButtonEventHandler MouseLeftButtonDown
-        {
-            remove
-            {
-                _onMouseLeftButtonDown += value;
-            }
-            add
-            {
-                _onMouseLeftButtonDown += value;
-                FirePropertyChanged("OnMouseLeftButtonDown");
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseLeftButtonUp event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event MouseButtonEventHandler MouseLeftButtonUp
-        {
-            remove 
-            { 
-                _onMouseLeftButtonUp -= value; 
-            }
-            add
-            {
-                _onMouseLeftButtonUp += value;
-                FirePropertyChanged("OnMouseLeftButtonUp");
-            }
-        }
-
-
-        /// <summary>
-        /// Event handler for the MouseEnter event 
-        /// </summary>
-
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseEnter
-        {
-            remove 
-            {  
-                _onMouseEnter -= value; 
-            }
-            add
-            {
-                _onMouseEnter += value;
-                FirePropertyChanged("OnMouseEnter");
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseLeave event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseLeave
-        {
-            remove 
-            {  
-                _onMouseLeave -= value; 
-            }
-            add
-            {
-                _onMouseLeave += value;
-                FirePropertyChanged("OnMouseLeave");
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseMove event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<MouseEventArgs> MouseMove
-        {
-            remove 
-            { 
-                _onMouseMove -= value; 
-            }
-            add
-            {
-                _onMouseMove += value;
-                FirePropertyChanged("OnMouseMove");
-            }
-        }
-
-        /// <summary>
-        /// Property change event
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
-
-
-        internal MouseButtonEventHandler InternalMouseLeftButtonUp
-        {
-            get
-            {
-                return _onMouseLeftButtonUp;
-            }
-            set
-            {
-                _onMouseLeftButtonUp = value;
-            }
-        }
-
-        internal MouseButtonEventHandler InternalMouseLeftButtonDown
-        {
-            get 
-            { 
-                return _onMouseLeftButtonDown; 
-            }
-            set 
-            { 
-                _onMouseLeftButtonDown = value; 
-            }
-        }
-        
-        internal EventHandler<MouseEventArgs> InternalMouseEnter
-        {
-            get
-            {
-                return _onMouseEnter;
-            }
-            set
-            {
-                _onMouseEnter = value;
-            }
-        }
-
-        internal EventHandler<MouseEventArgs> InternalMouseLeave
-        {
-            get
-            {
-                return _onMouseLeave;
-            }
-            set
-            {
-                _onMouseLeave = value;
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseMove event 
-        /// </summary>
-        internal EventHandler<MouseEventArgs> InternalMouseMove
-        {
-            get
-            {
-                return _onMouseMove;
-            }
-            set
-            {
-                _onMouseMove = value;
-            }
-        }
 
         #region Protected Methods
 
@@ -670,7 +371,7 @@ namespace Visifire.Commons
                             {
                                 System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
                                 if (currentDispatcher.CheckAccess())
-                                    (Chart as Chart).Render();
+                                    (Chart as Chart).CallRender();
                                 else
                                     currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
                             }
@@ -868,12 +569,7 @@ namespace Visifire.Commons
         #region Data
 
         private String _toolTipText;
-        internal event MouseButtonEventHandler _onMouseLeftButtonDown;       // Handler for MouseLeftButtonDown event
-        internal event MouseButtonEventHandler _onMouseLeftButtonUp;         // Handler for MouseLeftButtonUp event
-        internal event EventHandler<MouseEventArgs> _onMouseEnter;           // Handler for MouseEnter event
-        internal event EventHandler<MouseEventArgs> _onMouseLeave;           // Handler for MouseLeave event
-        internal event EventHandler<MouseEventArgs> _onMouseMove;            // Handler for MouseMove event
-        internal ObservableObject _target;                                   // Reference of the TargetObject for event
-        #endregion
+
+       #endregion
     }
 }

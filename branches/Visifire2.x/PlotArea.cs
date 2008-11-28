@@ -131,7 +131,6 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("HrefTarget");
 
             if((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender(); 
@@ -158,7 +157,6 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("Href");
 
             if ((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender(); 
@@ -188,8 +186,7 @@ namespace Visifire.Charts
         private static void OnBevelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("Bevel");
-
+  
             if ((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender(); 
         }
@@ -215,7 +212,6 @@ namespace Visifire.Charts
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("BorderColor");
             
             if ((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender();
@@ -300,7 +296,6 @@ namespace Visifire.Charts
             if ((plotArea.Chart as Chart) != null)
             {
                 (plotArea.Chart as Chart).CallRender();
-                //plotArea.ApplyLighting();
             }
         }
         
@@ -330,18 +325,11 @@ namespace Visifire.Charts
         private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("CornerRadius");
 
             if ((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender(); 
         }
-
-        //private new Brush Background
-        //{
-        //    get;
-        //    set;
-        //}
-        
+                
         public Boolean ShadowEnabled
         {
             get
@@ -363,7 +351,6 @@ namespace Visifire.Charts
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            //plotArea.FirePropertyChanged("ShadowEnabled");
 
             if ((plotArea.Chart as Chart) != null)
                 (plotArea.Chart as Chart).CallRender(); 
@@ -417,9 +404,7 @@ namespace Visifire.Charts
             PlotAreaBorderElement.Child = BevelGrid;
 
             ApplyProperties();
-
-           
-
+            
             return PlotAreaBorderElement;
         }
 
@@ -440,8 +425,6 @@ namespace Visifire.Charts
             Visual.Margin = new Thickness(0);
             Visual.Cursor = (Cursor == null) ? Cursors.Arrow : Cursor;
 
-            //PlotAreaBorderElement.Child = PlotAreaLightingBorder;
-
             PlotAreaBorderElement.Opacity = this.Opacity;
 
             if (Color != null)
@@ -453,11 +436,6 @@ namespace Visifire.Charts
             if (BorderThickness != null)
             {
                 PlotAreaBorderElement.BorderThickness = BorderThickness;
-
-                //System.Windows.Data.Binding binding = new System.Windows.Data.Binding("BorderThickness");
-                //binding.Source = this;
-                //binding.Mode = System.Windows.Data.BindingMode.OneWay;
-                //PlotAreaBorderElement.SetBinding(Border.BorderThicknessProperty, binding);
             }
 
             if (CornerRadius != null)
@@ -501,8 +479,6 @@ namespace Visifire.Charts
                 Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(width, height, new CornerRadius(10), new CornerRadius(10), 6);
                 shadowGrid.SetValue(Canvas.TopProperty, shadowDepth.Bottom);
                 shadowGrid.SetValue(Canvas.LeftProperty, shadowDepth.Right);
-                
-                // Visual.Children.Add(shadowGrid);
 
                 PlotAreaShadowCanvas.Children.Add(shadowGrid);
 

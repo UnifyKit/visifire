@@ -4,12 +4,12 @@
     Title="Window1" Height="456" Width="676" Background="#FFD9CDCD"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-        xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     >
 
     <Grid x:Name="LayoutRoot" Width="654" Height="426" Background="White"  >
 
-        <vc:Chart Theme="Theme2" BorderBrush="Gray" Margin="0,0,0,12">
+        <vc:Chart Theme="Theme2" x:Name="MyChart" BorderBrush="Gray" Margin="0,0,0,12">
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Bubble Chart"/>
             </vc:Chart.Titles>

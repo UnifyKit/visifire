@@ -309,7 +309,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(9, chart.Legends[0].FontSize, Common.HighPrecisionDelta));
+                () => Assert.AreEqual(11, chart.Legends[0].FontSize, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }
@@ -534,7 +534,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(9, chart.Legends[0].TitleFontSize));
+                () => Assert.AreEqual(12, chart.Legends[0].TitleFontSize));
 
             EnqueueTestComplete();
         }

@@ -6,24 +6,6 @@
     <script type="text/javascript" src="./Visifire2.js"></script>
 
     <style type="text/css">
-        
-        #VC1
-        {
-            width: 500px;
-            height: 300px;
-        }
-        #num
-        {
-            width: 439px;
-        }
-        #But_Change_DataPoints
-        {
-            width: 98px;
-        }
-        #Text1
-        {
-            width: 80px;
-        }
         #Div1
         {
             height: 302px;
@@ -42,14 +24,12 @@
             vChart.preLoad = function(args) {
                 var chart = args[0];
 
-                chart.MouseLeftButtonUp = function(e) {
+                chart.MouseLeftButtonUp = function(e) 
+                {
                     chart.SetPropertyFromJs("ColorSet", "Visifire2");
                 }
-
-                chart.Series[0].DataPoints[0].MouseLeftButtonUp = function(e1) {
-                    chart.Series[0].DataPoints[0].SetPropertyFromJs("YValue", "20");
-                }
             }
+            
             vChart.render("Div1");
             
         </script>

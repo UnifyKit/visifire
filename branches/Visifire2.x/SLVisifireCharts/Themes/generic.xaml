@@ -31,7 +31,7 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-
+                                
                                 <Rectangle x:Name="ChartLightingBorder" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Visibility="Collapsed" Margin="0,0,0,0" Canvas.ZIndex="2" StrokeThickness="{TemplateBinding BorderThickness}" >
                                     <Rectangle.Fill>
                                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -183,7 +183,7 @@
                         <StackPanel x:Name="CenterDockInsidePlotAreaPanel" Canvas.ZIndex="3" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
-                            <Border x:Name="ToolTip" Visibility="Collapsed" HorizontalAlignment="Left" CornerRadius="4,4,4,4" BorderBrush="#FF000000" BorderThickness="0.25,0.25,0.25,1" Padding="10,5,10,5">
+                            <Border x:Name="ToolTip" IsHitTestVisible="False" Visibility="Collapsed" HorizontalAlignment="Left" CornerRadius="4,4,4,4" BorderBrush="#FF000000" BorderThickness="0.25,0.25,0.25,1" Padding="10,5,10,5">
                                 <Border.Background>
                                     <LinearGradientBrush Opacity=".999" EndPoint="0.5,1" StartPoint="0.5,0">
                                         <GradientStop Color="#FFC8C8C4" Offset="0.156"/>

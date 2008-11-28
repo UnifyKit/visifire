@@ -2,23 +2,19 @@
 Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" ScrollingEnabled="False">
   
   <vc:Chart.Titles>
-    <vc:Title Text="Visifire" FontFamily="../ClientBin/MTCORSVA.TTF#Monotype Corsiva"/>
+    <vc:Title Text="Visifire"/>
   </vc:Chart.Titles>
-
-  <vc:Chart.AxesY>
-    <vc:Axis/>
-  </vc:Chart.AxesY>
 
   <vc:Chart.AxesX>
     <vc:Axis>
       <vc:Axis.Grids>
-        <vc:ChartGrid Enabled="True" Interval="2" LineThickness="2" LineColor="Red"/>
+        <vc:ChartGrid Enabled="True" LineThickness="2" LineColor="Gray"/>
       </vc:Axis.Grids>
       <vc:Axis.Ticks>
-        <vc:Ticks Interval="3" LineThickness="2" LineColor="Red"/>
+        <vc:Ticks LineThickness="2" LineColor="Gray"/>
       </vc:Axis.Ticks>
       <vc:Axis.AxisLabels>
-        <vc:AxisLabels FontFamily="MTCORSVA.TTF#Monotype Corsiva" FontColor="Red"/>
+        <vc:AxisLabels FontColor="Black"/>
       </vc:Axis.AxisLabels>
     </vc:Axis>
   </vc:Chart.AxesX>
@@ -26,31 +22,6 @@ Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" Sc
   <vc:Chart.Series>
     <vc:DataSeries RenderAs="Column">
       <vc:DataSeries.DataPoints>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
         <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
         <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
         <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>

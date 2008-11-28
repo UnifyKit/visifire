@@ -54,7 +54,7 @@ namespace Visifire.Charts
         #region Public Methods
 
         public PlotDetails(Chart chart)
-        {
+        {   
             // create a plot groups list
             this.PlotGroups = new List<PlotGroup>();
 
@@ -420,11 +420,14 @@ namespace Visifire.Charts
 
         private void CreateLegends()
         {
-            
-            List<DataSeries> SeriesToBeShownInLegend = (from entry in Chart.InternalSeries where (Boolean)entry.ShowInLegend == true select entry).ToList();
+            foreach (Legend oldLegends in Chart.Legends)
+                oldLegends.Entries.Clear();
+
+            List<DataSeries> SeriesToBeShownInLegend = (from entry in Chart.InternalSeries where entry.Enabled == true && (Boolean)entry.ShowInLegend == true select entry).ToList();
+
             Legend legend = null;
             if (SeriesToBeShownInLegend.Count > 0)
-            {
+            {   
                 List<DataSeries> SeriesWithNoReferingLegend = (from entry in SeriesToBeShownInLegend where String.IsNullOrEmpty(entry.Legend) select entry).ToList();
                 List<DataSeries> SeriesWithReferingLegend = (from entry in SeriesToBeShownInLegend where !String.IsNullOrEmpty(entry.Legend) select entry).ToList();
                 if (SeriesWithNoReferingLegend.Count > 0)

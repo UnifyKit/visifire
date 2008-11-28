@@ -45,7 +45,7 @@ namespace Visifire.Commons
     /// <summary>
     /// Visifire Control interface
     /// </summary>
-    public abstract class VisifireControl: Control
+    public abstract class VisifireControl : VisifireElement
     {
         public VisifireControl()
         {

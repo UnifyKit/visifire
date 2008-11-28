@@ -4,11 +4,10 @@
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"   
     Width="700" Height="500" 
     >
-
-
+    
     <Grid x:Name="LayoutRoot" Width="Auto" Height="Auto" Background="White">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Width="350" Height="400" Theme="Theme2" ToolTipEnabled="False" BorderBrush="Gray" ColorSet="Visifire2" Margin="166,66.5,176,26.5" >
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" x:Name="MyChart"
+          Width="500" Height="300" Theme="Theme2" BorderBrush="Gray" ColorSet="Visifire2">
 
             <vc:Chart.PlotArea>
                 <vc:PlotArea Color="#f1f1f1"/>
@@ -17,21 +16,6 @@
             <vc:Chart.Titles>
                 <vc:Title Text="Worldwide Box office Grosses"/>
             </vc:Chart.Titles>
-
-            <vc:Chart.AxesX>
-                <vc:Axis Title="Movie" Prefix="$" Suffix="%"/>
-            </vc:Chart.AxesX>
-
-            <vc:Chart.AxesY>
-                <vc:Axis Title="Total Gross (millions)" ValueFormatString="$#0.##">
-                    <vc:Axis.Grids>
-                        <vc:ChartGrid InterlacedColor="White"/>
-                    </vc:Axis.Grids>
-                    <vc:Axis.AxisLabels>
-                        <vc:AxisLabels Angle="-30"/>
-                    </vc:Axis.AxisLabels>
-                </vc:Axis>
-            </vc:Chart.AxesY>
 
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Pie" Bevel="True" Cursor="Hand" Color="Aqua">
@@ -45,7 +29,6 @@
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
    
 </UserControl>

@@ -282,7 +282,6 @@ namespace Visifire.Charts
             {
                 IsExternalColorApplied = true;
                 SetValue(ColorProperty, value);
-                
             }
         }
 
@@ -1459,12 +1458,14 @@ namespace Visifire.Charts
                             {
                                 foreach (FrameworkElement element in Faces.VisualComponents)
                                 {
+                                    AttachEvents2Visual(Object, this, element);
                                     element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                                     element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                                 }
                             }
                             else
                             {
+                                AttachEvents2Visual(Object, this, Faces.Visual);
                                 Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                                 Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                             }
@@ -1525,6 +1526,7 @@ namespace Visifire.Charts
                         this.ExplodeAnimation.Begin();
 #endif
                     }
+
                     if (true == _interactiveExplodeState)
                     {
                         _interativityAnimationState = true;
@@ -1541,7 +1543,9 @@ namespace Visifire.Charts
             {
                 _interactiveExplodeState = true;
                 _interativityAnimationState = false;
+                Chart._rootElement.IsHitTestVisible = true;
             }
+
             void UnExplodeAnimation_Completed(object sender, EventArgs e)
             {
                 _interactiveExplodeState = false;

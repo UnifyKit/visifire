@@ -275,7 +275,7 @@ namespace Visifire.Charts
                 // check if data series is enabled
                 if (dataSeries.Enabled == true)
                 {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList();
 
                     // Concatinate the lists of DataPoints
                     dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);

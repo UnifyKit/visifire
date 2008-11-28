@@ -143,21 +143,6 @@ namespace Visifire.Commons
             }
         }
 
-        //public class ColorSetNameConverter : TypeConverter
-        //{
-        //    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-        //    {
-        //        return true;
-        //    }
-
-        //    public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-        //    {
-        //        ColorSetNames data = (ColorSetNames)Enum.Parse(typeof(ColorSetNames), value.ToString(), true);
-        //        return data;
-        //    }
-        //}
-
-
         public class CornerRadiusConverter : TypeConverter
         {
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

@@ -36,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SL;</DefineConstants>
+    <DefineConstants>SL;</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -143,6 +143,9 @@
     </Compile>
     <Compile Include="..\VisifireControl.cs">
       <Link>VisifireControl.cs</Link>
+    </Compile>
+    <Compile Include="..\VisifireElement.cs">
+      <Link>VisifireElement.cs</Link>
     </Compile>
     <Compile Include="..\XWiseData.cs">
       <Link>XWiseData.cs</Link>
