@@ -827,7 +827,7 @@ namespace WPFVisifireChartsTest
             if (isLoaded)
             {
                 dataSeries.ColorSet = ColorSetNames.Visifire2;
-                Assert.AreEqual("Visifire2", dataSeries.ColorSet);
+                Assert.AreEqual(ColorSetNames.Visifire2, dataSeries.ColorSet);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -2727,7 +2727,7 @@ namespace WPFVisifireChartsTest
                 DataSeries dataSeries = new DataSeries();
                 dataSeries.RenderAs = RenderAs.Column;
 
-                for (Int32 i = 0; i < 2500; i++)
+                for (Int32 i = 0; i < 1000; i++)
                 {
                     DataPoint dataPoint = new DataPoint();
                     dataPoint.AxisXLabel = "a" + i;

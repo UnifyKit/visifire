@@ -1141,12 +1141,6 @@ namespace Visifire.Charts
         /// </summary>
         void Render(Size PreviousSize, Size NewSize)
         {
-
-            // if (oldPlotSize.Height == NewSize.Height && oldPlotSize.Width == NewSize.Width && count >1)
-            //    return;
-            // oldPlotSize = NewSize;
-            // count++;
-
             System.Diagnostics.Debug.WriteLine("Count ==" + _redrawCount.ToString() + ", NewSize H=" + NewSize.Height.ToString() + ", W=" + NewSize.Width.ToString() + "|Previous| H=" + PreviousSize.Height.ToString() + ", W=" + PreviousSize.Width.ToString());
 
             ClearPlotAreaChildren();
@@ -1160,8 +1154,7 @@ namespace Visifire.Charts
             PlottingCanvas = new Canvas();
             PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
             PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
-            PlotAreaCanvas.Children.Add(PlottingCanvas);
-
+            
             if (Double.IsNaN(NewSize.Height) || NewSize.Height <= 0 || Double.IsNaN(NewSize.Width) || NewSize.Width <= 0)
             {
                 return;
@@ -1237,6 +1230,8 @@ namespace Visifire.Charts
 
             Chart._plotCanvas.Width = PlottingCanvas.Width;
             Chart._plotCanvas.Height = PlottingCanvas.Height;
+
+            PlotAreaCanvas.Children.Add(PlottingCanvas);
         }
 
         internal void AxesXScrollBarElement_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
@@ -1244,13 +1239,14 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 Double offset = e.NewValue;
-               
+
 #if SL
                 AxisX.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ViewportWidth;
                 AxisX.ScrollBarElement.ViewportSize = ChartScrollViewer.ViewportWidth;
 #else
                 AxisX.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ActualWidth;
                 AxisX.ScrollBarElement.ViewportSize = ChartScrollViewer.ActualWidth;
+
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
@@ -1299,7 +1295,6 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 Double offset = e.NewValue;
-      
 #if SL
                 AxisX2.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ViewportHeight;
                 AxisX2.ScrollBarElement.ViewportSize = ChartScrollViewer.ViewportHeight;
@@ -2720,26 +2715,12 @@ namespace Visifire.Charts
 
             if (Chart._renderLapsedCounter > 1)
             {
-                Chart._renderLapsedCounter = 0;
-                Chart.Render(null);
+                Chart.Render();
             }
             
             Animate();
         }
         
-        void PlotAreaCanvas_Loaded(object sender, RoutedEventArgs e)
-        {   
-            Chart.RENDER_LOCK = false;
-
-            //if (Chart._renderLapsedCounter > 1)
-            //{   
-            //    Chart._renderLapsedCounter = 0;
-            //    Chart.Render();
-            //}
-
-            Animate();
-        }
-
         /// <summary>
         /// Add Title visual to DrawingArea
         /// </summary>

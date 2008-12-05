@@ -993,12 +993,13 @@ namespace Visifire.Charts
             {
                 if ((Boolean)LabelEnabled)
                 {
-                    if (GetValue(LabelLineEnabledProperty) == null)
-                    {
-                        if (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut)
-                            return true;
-                    }
-                    else return (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
+                    //if (GetValue(LabelLineEnabledProperty) == null)
+                    //{
+                    //    //if (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut)
+                    //    //    return true;
+                    //}
+                    //else 
+                        return (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
                 }
                 return false;
             }

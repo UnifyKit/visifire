@@ -476,7 +476,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (isLoaded)
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Background);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Background);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();

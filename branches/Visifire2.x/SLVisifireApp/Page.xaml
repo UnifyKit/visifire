@@ -5,20 +5,16 @@
     Width="700" Height="500" 
     >
     
-    <Grid x:Name="LayoutRoot" Width="Auto" Height="Auto" Background="White">
+    <Grid x:Name="LayoutRoot" Width="500" Height="300" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" x:Name="MyChart"
-          Width="500" Height="300" Theme="Theme2" BorderBrush="Gray" ColorSet="Visifire2">
-
-            <vc:Chart.PlotArea>
-                <vc:PlotArea Color="#f1f1f1"/>
-            </vc:Chart.PlotArea>
+            Width="500" Height="300" Theme="Theme1" View3D="False" BorderBrush="Gray">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Worldwide Box office Grosses"/>
             </vc:Chart.Titles>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie" Bevel="True" Cursor="Hand" Color="Aqua">
+                <vc:DataSeries RenderAs="Pie" Bevel="False" ShowInLegend="True" MarkerEnabled="False" LabelStyle="OutSide" Cursor="Hand" Color="Aqua" LineThickness="1">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="Transformers" YValue="706.5" Color="AliceBlue"/>
                         <vc:DataPoint AxisXLabel="Ratatouille" YValue="620.4"/>
@@ -29,6 +25,7 @@
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+
     </Grid>
    
 </UserControl>

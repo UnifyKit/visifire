@@ -23,17 +23,16 @@
             <vc:Chart.Series>
                 <vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="6009" ZValue="300"/>
-                        <vc:DataPoint YValue="2547" ZValue="200"/>
-                        <vc:DataPoint YValue="5047" ZValue="400"/>
-                        <vc:DataPoint YValue="8208" ZValue="600"/>
-                        <vc:DataPoint YValue="2222" ZValue="450"/>
-                        <vc:DataPoint YValue="2009" ZValue="340"/>
-                        <vc:DataPoint YValue="2527" ZValue="100"/>
-                        <vc:DataPoint YValue="3047" ZValue="230"/>
-                        <vc:DataPoint YValue="6248" ZValue="330"/>
-                        <vc:DataPoint YValue="3422" ZValue="422"/>
-
+                        <vc:DataPoint YValue="60019" ZValue="300"/>
+                        <vc:DataPoint YValue="25147" ZValue="200"/>
+                        <vc:DataPoint YValue="50147" ZValue="400"/>
+                        <vc:DataPoint YValue="82108" ZValue="600"/>
+                        <vc:DataPoint YValue="22122" ZValue="450"/>
+                        <vc:DataPoint YValue="20109" ZValue="340"/>
+                        <vc:DataPoint YValue="25127" ZValue="100"/>
+                        <vc:DataPoint YValue="30147" ZValue="230"/>
+                        <vc:DataPoint YValue="62418" ZValue="330"/>
+                        <vc:DataPoint YValue="34122" ZValue="422"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

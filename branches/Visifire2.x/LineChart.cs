@@ -99,19 +99,22 @@ namespace Visifire.Charts
 
                 dataPoint.Marker.CreateVisual();
 
-                //dataPoint.Marker.MouseEnter += delegate(object sender, MouseEventArgs e)
-                //{
-                //    (sender as Marker).BorderColor = new SolidColorBrush(Colors.Red);
-                //    (sender as Marker).BorderThickness = dataPoint.Marker.BorderThickness * 1.5;
-                //};
+                dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
+                {
+                    Shape shape = sender as Shape;
+                    shape.Stroke = new SolidColorBrush(Colors.Red);
+                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                };
 
-                //dataPoint.Marker.MouseLeave += delegate(object sender, MouseEventArgs e)
-                //{
-                //    (sender as Marker).BorderColor = dataPoint.MarkerBorderColor;
-                //    (sender as Marker).BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
-                //};
+                dataPoint.Marker.MarkerShape.MouseLeave += delegate(object sender, MouseEventArgs e)
+                {
+                    Shape shape = sender as Shape;
+                    shape.Stroke = dataPoint.Marker.BorderColor;
+                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                };
 
-                //Visifire.Commons.ObservableObject.AttachEvents2Visual(dataPoint, dataPoint.Marker.Visual);
+                // Visifire.Commons.ObservableObject.AttachEvents2Visual(dataPoint, dataPoint.Marker.Visual);
+
                 return dataPoint.Marker;
             }
             return null;
@@ -202,6 +205,8 @@ namespace Visifire.Charts
                 //if (seriesList[0].Storyboard == null)
                 //    seriesList[0].Storyboard = new Storyboard();
                 // Apply animation to the label canvas
+                DataSeriesRef = seriesList[0];
+
                 seriesList[0].Storyboard = ApplyLineChartAnimation(labelCanvas, seriesList[0].Storyboard, false);
             }
 

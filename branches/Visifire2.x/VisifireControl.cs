@@ -257,9 +257,24 @@ namespace Visifire.Commons
         internal const string ToolTipTextBlockName = "ToolTipTextBlock";
         #endregion
 
+       
+#if SL
+        /// <summary>
+        /// Sliverlight Object Id
+        /// </summary>
+        [System.Windows.Browser.ScriptableMember]
+        public String ControlId
+        {
+            get;
+            set;
+        }
+#endif        
         /// <summary>
         /// Enables or disables the ToolTip
         /// </summary>
+#if SL
+        [System.Windows.Browser.ScriptableMember]
+#endif
         public Boolean ToolTipEnabled
         {
             get
@@ -281,7 +296,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static String GetAbsolutePath(String path)
+        internal static String GetAbsolutePath(String path)
         {
 #if SL
             String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
@@ -326,7 +341,14 @@ namespace Visifire.Commons
             }
         }
 #endif
-
+        /// <summary>
+        /// Is Auto Render is paushed
+        /// </summary>
+        internal Boolean IsRenderPaused
+        {
+            get;
+            set;
+        }
     }
 
 }

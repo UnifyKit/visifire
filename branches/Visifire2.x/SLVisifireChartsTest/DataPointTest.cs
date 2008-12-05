@@ -530,7 +530,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.View3D = false;
-            //chart.ScrollingEnabled = false;
+            chart.ScrollingEnabled = false;
             //chart.AnimationEnabled = false;
 
             bool isPropertyChanged = false;

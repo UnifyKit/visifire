@@ -1,8 +1,8 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" ScrollingEnabled="False">
+Name="Chart" Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" ScrollingEnabled="False">
   
   <vc:Chart.Titles>
-    <vc:Title Text="Visifire"/>
+    <vc:Title Name="Title" Text="Visifire"/>
   </vc:Chart.Titles>
 
   <vc:Chart.AxesX>
@@ -18,9 +18,9 @@ Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" Sc
       </vc:Axis.AxisLabels>
     </vc:Axis>
   </vc:Chart.AxesX>
-  
+
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column">
+    <vc:DataSeries RenderAs="Column" ShowInLegend="True">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
         <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>

@@ -95,9 +95,6 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
       <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
       <Name>SLVisifireCharts</Name>

@@ -187,8 +187,9 @@ namespace Visifire.Charts
 
             ObservableObject.AttachToolTip(this, this, ToolTipText);
             AttachEvents2Visual(this, this, this._rootElement);
-            AttachEvents2Visual(this, this, this._plotCanvas);
-            
+
+            AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
+        
             System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
             binding.Source = this;
             binding.Mode = System.Windows.Data.BindingMode.OneWay;
@@ -198,19 +199,38 @@ namespace Visifire.Charts
             binding1.Source = this;
             binding1.Mode = System.Windows.Data.BindingMode.OneWay;
             base.SetBinding(InternalBorderThicknessProperty, binding1);
-
+/*
             this.EventChanged += delegate
             {
-                AttachEvents2Visual(this, this, this._rootElement);
+                 AttachEvents2Visual(this, this, this._rootElement);
 #if WPF
-                AttachEvents2Visual(this, this, this._plotCanvas);
+                 AttachEvents2Visual(this, this, this._plotCanvas);
 #endif
             };
+*/
 
             if (AnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
         }
-        
+
+        /// <summary>
+        /// Pause auto Render of the Chart
+        /// </summary>
+        internal void PauseRender()
+        {
+            IsRenderPaused = true;
+        }
+
+        /// <summary>
+        /// Start auto render of the Chart
+        /// </summary>
+        internal void StartRender()
+        {
+            IsRenderPaused = false;
+            RENDER_LOCK = false;
+            CallRender();
+        }
+
         #endregion
 
         #region Public Properties
@@ -1479,22 +1499,20 @@ namespace Visifire.Charts
             CallRender();
         }
 
-        internal void Render()
-        {
-            Render(null);
-        }
-
         /// <summary>
         /// Render() replace the existing Chart with a new Chart
         /// </summary>
-        internal void Render(object arg)
+        internal void Render()
         {   
             if (IsTemplateApplied)
-            {
+            {   
                 if ((!RENDER_LOCK ) && _rootElement != null)    
                 {
                     System.Diagnostics.Debug.WriteLine("Render______");
+
+                    _renderLapsedCounter = 0;
                     RENDER_LOCK = true;
+
                     try
                     {
                         if(ChartArea == null)
@@ -1519,11 +1537,7 @@ namespace Visifire.Charts
                         RENDER_LOCK = false;
                         throw new Exception(e.Message, e);
                     }
-
                 }
-                else
-                if (RENDER_LOCK == true)
-                    _renderLapsedCounter++;
             }
         }
 
@@ -1661,16 +1675,22 @@ namespace Visifire.Charts
         internal void CallRender()
         {
 #if WPF
-            if (Application.Current != null && Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
+            if (RENDER_LOCK)
+                _renderLapsedCounter++;
+            else if (Application.Current != null && Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
             else
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
 #else       
-            //System.Threading.SendOrPostCallback k = new System.Threading.SendOrPostCallback(Render);
-            //System.Windows.Threading.DispatcherSynchronizationContext sc = new System.Windows.Threading.DispatcherSynchronizationContext();
-            //sc.Send(k, this);
-
-            this.Dispatcher.BeginInvoke(Render);
+            if (RENDER_LOCK)
+                _renderLapsedCounter++;
+            else
+            {
+                if (IsInDesignMode)
+                    Render();
+                else
+                    this.Dispatcher.BeginInvoke(Render);
+            }
 #endif
         }
 

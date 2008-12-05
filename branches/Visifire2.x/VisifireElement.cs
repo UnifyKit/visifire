@@ -7,12 +7,31 @@ using System.Windows.Browser;
 #endif
 namespace Visifire.Commons
 {
-    public abstract class VisifireElement: System.Windows.Controls.ContentControl
+    public abstract class VisifireElement: System.Windows.Controls.Control
     {
         public VisifireElement()
         {
 
         }
+
+        /// <summary>
+        /// Name of the object
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif 
+        public new String Name
+        {
+            get
+            {
+                return (String)GetValue(NameProperty);
+            }
+            set
+            {
+                SetValue(NameProperty, value);
+            }
+        }
+
 
         #region Public Events
 
@@ -144,8 +163,7 @@ namespace Visifire.Commons
         internal event EventHandler EventChanged;
 
         #endregion
-
-
+        
         /// <summary>
         /// Attach events to a visual
         /// </summary>
@@ -157,38 +175,55 @@ namespace Visifire.Commons
             if (Visual == null)
                 return;
 
-            if (Object._onMouseEnter != null)
-                Visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    Object._onMouseEnter(Sender, e);
-                };
-
-            if (Object._onMouseLeave != null)
+            Visual.MouseEnter += delegate(object sender, MouseEventArgs e)
             {
-                Visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-                {
+                if (Object._onMouseEnter != null)
+                    Object._onMouseEnter(Sender, e);
+            };
+
+            Visual.MouseLeave += delegate(object sender, MouseEventArgs e)
+            {
+                if (Object._onMouseLeave != null)
                     Object._onMouseLeave(Sender, e);
-                };
-            }
+            };
 
-            if (Object._onMouseLeftButtonDown != null)
-                Visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
-                {
+            Visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+            {
+                if (Object._onMouseLeftButtonDown != null)
                     Object._onMouseLeftButtonDown(Sender, e);
-                };
-
-            if (Object._onMouseLeftButtonUp != null)
-                Visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-                {   
+            };
+            
+            Visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+            {
+                if (Object._onMouseLeftButtonUp != null)
                     Object._onMouseLeftButtonUp(Sender, e);
-                };
-
-            if (Object._onMouseMove != null)
-                Visual.MouseMove += delegate(object sender, MouseEventArgs e)
-                {
+            };
+            
+            Visual.MouseMove += delegate(object sender, MouseEventArgs e)
+            {
+                if (Object._onMouseMove != null)
                     Object._onMouseMove(Sender, e);
-                };
+            };
         }
+
+        /// <summary>
+        /// Attach events to a visual
+        /// </summary>
+        /// <param name="Object">Object with which event is attached</param>
+        /// <param name="Sender">Sender will be passed as sender whiling firing event</param>
+        /// <param name="Visual">Visual object with which event will be attached</param>
+        public static void AttachEvents2Visual4MouseDownEvent(VisifireElement Object, VisifireElement Sender, FrameworkElement Visual)
+        {
+            if (Visual == null)
+                return;
+
+            Visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+            {
+                if (Object._onMouseLeftButtonDown != null)
+                    Object._onMouseLeftButtonDown(Sender, e);
+            };
+        }
+
         
         /// <summary>
         /// Attach events to a visual

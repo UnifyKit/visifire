@@ -69,25 +69,34 @@
                         Events can be can attached to chart elements. And required customization can be done here.
                         Default Chart element references won’t be available on preload event.
                         */
-                        vChart.preLoad = function(args)
-                        {
+                        vChart.preLoad = function(args) {
                             var chart = args[0];   // Chart Reference.
 
                             // Attach an event handler with 1st DataSeries of the 1st chart on MouseLeftButtonUp event.
                             // DataPoint reference is received as event argument.
-                            chart.Series[0].MouseLeftButtonUp = function(dataPoint)
-                            {
+                            chart.Series[0].MouseLeftButtonUp = function(dataPoint) {
                                 alert("AxisXLabel =" + dataPoint.AxisXLabel + " YValue = " + dataPoint.YValue);
                                 dataPoint.SetPropertyFromJs("YValue", dataPoint.YValue + 10);
                             };
 
                             // Attach Events to a Title. Title reference is received as event argument.
-                            chart.Titles[0].MouseLeftButtonUp = function(title)
-                            {
+                            chart.Titles[0].MouseLeftButtonUp = function(title) {
                                 alert(title.Text);
                             }
-                        }
 
+                            chart.Series[0].DataPoints[0].MouseEnter = function(dataPoint) {
+                                chart.Titles[0].SetPropertyFromJs("Text", "Enter");
+                                dataPoint.YValue = 30;
+                            };
+
+                            chart.Series[0].DataPoints[0].MouseLeave = function(dataPoint) {
+                                chart.Titles[0].SetPropertyFromJs("Text", "Leave");
+                                dataPoint.YValue = 34343;
+                                alert(dataPoint.Chart.ControlId);
+                            };
+
+                        }
+                        
                         /* 
                         On loaded event, array of charts can be received as event arguments.  
                         Events can be can attached to chart elements. And do require customization.

@@ -445,7 +445,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(LabelEnabledProperty, value);
-                LabelLineEnabled = value;
             }
         }
 
@@ -719,14 +718,21 @@ namespace Visifire.Charts
         public Nullable<Boolean> LabelLineEnabled
         {
             get
-            {
+            {   
                 if ((Boolean)LabelEnabled)
-                {                   
+                {   
+                    Nullable<Boolean> retVal = null;
                     if ((Nullable<Boolean>) GetValue(LabelLineEnabledProperty) == null)
-                        return ((_parent != null)?_parent.LabelLineEnabled : true);
+                        retVal = (_parent != null) ? _parent.LabelLineEnabled: null;
                     else
-                        return (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
+                        retVal = (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
+ 
+                    if(retVal == null)
+                        retVal = ((_parent.RenderAs == RenderAs.Pie || _parent.RenderAs == RenderAs.Doughnut) && (LabelStyle == LabelStyles.OutSide)) ? true : false;
+
+                    return retVal;
                 }
+
                 return false;
             }
             set

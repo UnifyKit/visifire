@@ -546,16 +546,15 @@ namespace Visifire.Commons
             {
                  
                 case MarkerTypes.Circle:
-                    xaml = String.Format(@"<Ellipse xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Stroke=""#FF000000"">
-    		        <Ellipse.Fill>
-    			        <LinearGradientBrush EndPoint=""0.5,1"" StartPoint=""0.5,0"">
-    				        <GradientStop Color=""#FFB94343"" Offset=""0""/>
-    				        <GradientStop Color=""#FFDE2E2E"" Offset=""1""/>
-    			        </LinearGradientBrush>
-    		        </Ellipse.Fill>
-    	            </Ellipse>");
 
-                    break;
+                    Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
+
+                    GradientStopCollection gsc = new GradientStopCollection();
+                    gsc.Add(new GradientStop() { Offset = 0, Color = Colors.White });
+                    gsc.Add(new GradientStop() { Offset = 1, Color = Colors.Gray });
+                    ellipse.Fill = new LinearGradientBrush() { GradientStops = gsc, StartPoint = new Point(0.5, 1), EndPoint = new Point(0.5, 0) };
+
+                    return ellipse;
 
                 case MarkerTypes.Cross:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" />");
@@ -580,7 +579,6 @@ namespace Visifire.Commons
                 case MarkerTypes.Line:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Data=""M188.63132,258.42844 L188.63132,258.42847 C188.9104,278.91281 201.84741,278.91315 202.18343,258.49094 203.19153,235.62109 187.90231,234.79944 188.63132,258.42844 z M202.56129,256.09153 C202.26549,256.27575 202.32971,260.25791 202.54637,260.48211 202.68528,260.62585 208.86081,260.26716 212.77637,260.48211 214.29462,260.56545 214.56375,256.40657 212.8964,256.19363 211.16966,255.97311 202.56129,256.09153 202.56129,256.09153 z M188.24223,260.6353 L177.59218,260.65346 C176.06613,260.87177 176.17243,255.97066 177.43324,255.91033 L188.28842,255.91961"" Stretch=""Fill"" Width=""18"" Height=""8"" VerticalAlignment=""Center"" HorizontalAlignment=""Center"" Stroke=""#FF000000"" Fill=""#FFFFFFFF"" />");
                     break;
-
             }
 
 #if WPF
@@ -600,26 +598,22 @@ namespace Visifire.Commons
             String xaml = null;
             Brush topBrush = ColumnChart.GetBevelTopBrush(MarkerFillColor);
             String color;
-
-
+            
             switch (MarkerType)
             {
                 case MarkerTypes.Circle:
 
-                    color = (topBrush as LinearGradientBrush).GradientStops[1].Color.ToString();
+                    Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
 
-                    xaml = String.Format(@"<Ellipse xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Stroke=""#00000000"">
-    		        <Ellipse.Fill>
-    			       <RadialGradientBrush>
-        			       <GradientStop Color=""{0}"" Offset=""0""/>
-                            <GradientStop Color=""{0}"" Offset=""0.6""/>
-        			        <GradientStop Color=""{1}"" Offset=""0.8""/>
-        			        <GradientStop Color=""{1}"" Offset=""1""/>
-        		        </RadialGradientBrush>
-    		        </Ellipse.Fill>
-    	            </Ellipse>", Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[1].Color,.8).ToString(), color);
-                    
-                    break;
+                    GradientStopCollection gsc = new GradientStopCollection();
+                    gsc.Add(new GradientStop() { Offset = 0, Color = Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[1].Color,.8) });
+                    gsc.Add(new GradientStop() { Offset = 0.6, Color = Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[1].Color, .8) });
+                    gsc.Add(new GradientStop() { Offset = 0.8, Color = (topBrush as LinearGradientBrush).GradientStops[1].Color });
+                    gsc.Add(new GradientStop() { Offset = 1, Color = (topBrush as LinearGradientBrush).GradientStops[1].Color });
+
+                    ellipse.Fill = new LinearGradientBrush() { GradientStops = gsc, StartPoint = new Point(0.5, 1), EndPoint = new Point(0.5, 0) };
+
+                    return ellipse;
 
                 case MarkerTypes.Cross:
 
@@ -637,7 +631,6 @@ namespace Visifire.Commons
     		        </Path.Stroke>
     	            </Path>", Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[2].Color, .8).ToString(), color);
 
-                    
                     break;
 
                 case MarkerTypes.Diamond:

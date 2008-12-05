@@ -179,6 +179,11 @@ namespace SLVisifireChartsXap
             _baseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
             _baseUri = _baseUri.Substring(0, _baseUri.LastIndexOf("/") + 1);
 
+            if (e.InitParams.ContainsKey("controlId"))
+            {
+                _controlId = e.InitParams["controlId"].ToString(CultureInfo.InvariantCulture);
+            }
+            
             if (e.InitParams.ContainsKey("setVisifireChartsRef"))
             {
                 _setVisifireChartsRefFunctionName = e.InitParams["setVisifireChartsRef"].ToString(CultureInfo.InvariantCulture);
@@ -300,6 +305,7 @@ namespace SLVisifireChartsXap
             String version = fullName.Split(',')[1];
 
             version = (version.Substring(0, version.LastIndexOf('.')) + " Beta").Trim();
+
             return version;
         }
 
@@ -377,10 +383,23 @@ namespace SLVisifireChartsXap
 
             chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
 
-            Charts = FindByType(chartCanvas, typeof(Chart));
+            if (_charts == null)
+                _charts = new List<UIElement>();
 
-            foreach (Chart chart in Charts)
+            if (Charts == null)
+                Charts = new List<Chart>();
+
+            _charts.Clear();
+            Charts.Clear();
+
+            FindByType(ref _charts, chartCanvas as Panel, typeof(Chart));
+
+            foreach (Chart chart in _charts)
+            {
+                Charts.Add(chart);
                 chart.LogLevel = _logLevel;
+                chart.ControlId = _controlId;
+            }
 
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
             {
@@ -413,24 +432,46 @@ namespace SLVisifireChartsXap
             return chartCanvas;
         }
 
+        ///// <summary>
+        ///// Finds list of objects of specified type.
+        ///// </summary>
+        //private List<Chart> FindByType(Panel parent, Type objType)
+        //{
+        //    if (parent != null && parent.Children != null)
+        //    {
+        //        var objs = from child in parent.Children where objType.Equals(child.GetType()) select child;
+
+        //        List<Chart> charts = new List<Chart>();
+
+        //        foreach (Chart chart in objs)
+        //            charts.Add(chart);
+
+        //        return charts;
+        //    }
+        //    else
+        //        return null;
+        //}
+        
         /// <summary>
         /// Finds list of objects of specified type.
         /// </summary>
-        private List<Chart> FindByType(Panel parent, Type objType)
+        public static void FindByType(ref List<UIElement> tResult, Panel parent, Type objType)
         {
-            if (parent != null && parent.Children != null)
+            if (parent != null)
             {
                 var objs = from child in parent.Children where objType.Equals(child.GetType()) select child;
 
-                List<Chart> charts = new List<Chart>();
+                foreach (UIElement uiElement in objs)
+                {
+                    tResult.Add(uiElement);
+                    FindByType(ref tResult, uiElement as Panel, objType);
+                }
 
-                foreach (Chart chart in objs)
-                    charts.Add(chart);
+                var panels = from child in parent.Children where (!objType.Equals(child.GetType()) && ((child as Panel) != null)) select child;
 
-                return charts;
+                foreach (Panel f in panels)
+                    FindByType(ref tResult, f, objType);
             }
-            else
-                return null;
         }
 
         /// <summary>
@@ -538,8 +579,9 @@ namespace SLVisifireChartsXap
         private String _onChartLoadedFunctionName;                  // Function to be invoked to fire loaded event for chart
         private String _onChartPreLoadedFunctionName;               // Function to be invoked to fire pre loaded event for chart
         private String _setVisifireChartsRefFunctionName;           // After loading the chart this function should be always fired to set the array of charts in Visifire2 class
-
+        private String _controlId;                                  // Silverlight Object Id
         WebClient _webclient;
+        private List<UIElement> _charts;                            // List of Charts
         #endregion
     }
 }

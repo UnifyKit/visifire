@@ -370,10 +370,14 @@ namespace Visifire.Commons
                             if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
                             {
                                 System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
-                                if (currentDispatcher.CheckAccess())
-                                    (Chart as Chart).CallRender();
-                                else
-                                    currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
+                                
+                                if(!Chart.IsRenderPaused)
+                                {
+                                    if (currentDispatcher.CheckAccess())
+                                        (Chart as Chart).CallRender();
+                                    else
+                                        currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
+                                }
                             }
                             else // if we did not get the Dispatcher throw an exception
                             {
@@ -381,7 +385,8 @@ namespace Visifire.Commons
                             }
                         }
                     }
-#else           
+#else
+                if (Chart != null && !Chart.IsRenderPaused)
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 #endif
             }
@@ -435,7 +440,10 @@ namespace Visifire.Commons
         /// <summary>
         /// Visifire Control reference
         /// </summary>
-        internal VisifireControl Chart
+#if SL
+        [System.Windows.Browser.ScriptableMember]
+#endif
+        public VisifireControl Chart
         {
             get;
             set;

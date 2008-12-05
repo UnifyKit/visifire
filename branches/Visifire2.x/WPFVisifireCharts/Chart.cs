@@ -107,7 +107,7 @@ namespace Visifire.Charts
 
         void Chart_Loaded(object sender, RoutedEventArgs e)
         {
-            Render(null);
+            Render();
         }
 
         #endregion

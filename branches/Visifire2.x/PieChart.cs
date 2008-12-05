@@ -238,6 +238,7 @@ namespace Visifire.Charts
                 FontSize = (Double)dataPoint.LabelFontSize,
                 FontStyle = (FontStyle)dataPoint.LabelFontStyle,
                 FontWeight = (FontWeight)dataPoint.LabelFontWeight,
+                Foreground = Graphics.ApplyLabelFontColor((dataPoint.Chart as Chart), dataPoint, dataPoint.LabelFontColor, (LabelStyles)dataPoint.LabelStyle),
                 Text = dataPoint.TextParser(dataPoint.LabelText)
             };
 
@@ -293,7 +294,14 @@ namespace Visifire.Charts
             Double gapLeft = 0;
             Double gapRight = 0;
 
-
+            if(!is3D)
+            foreach (DataPoint dataPoint in dataPoints)
+                if (dataPoint.LabelStyle == LabelStyles.Inside)
+                {
+                    hInnerEllipseRadius -= hInnerEllipseRadius * 0.2; // ExploredRatio
+                    break;
+                }
+            
             foreach (DataPoint dataPoint in dataPoints)
             {
                 stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoint.YValue) / totalSum;
@@ -304,9 +312,17 @@ namespace Visifire.Charts
 
                 if (dataPoint.LabelStyle == LabelStyles.Inside)
                 {
+                    if (is3D)
+                    {
+                        xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle) - labels[dataPoint].DesiredSize.Width;
+                        yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle) - labels[dataPoint].DesiredSize.Height * 2;
+                    }
+                    else
+                    {
+                        xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle) - labels[dataPoint].DesiredSize.Width  / 2;
+                        yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle) - labels[dataPoint].DesiredSize.Height / 2;
+                    }
 
-                    xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle) - labels[dataPoint].DesiredSize.Width / 2;
-                    yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle) - labels[dataPoint].DesiredSize.Height / 2;
                     labels[dataPoint].SetValue(Canvas.TopProperty, yPos);
                     labels[dataPoint].SetValue(Canvas.LeftProperty, xPos);
                 }
@@ -319,7 +335,7 @@ namespace Visifire.Charts
 
                     if (xPos < centerX)
                     {
-                        xPos -= labels[dataPoint].DesiredSize.Width + 10;
+                        xPos -= labels[dataPoint].DesiredSize.Width +10;
                         leftPositionData.Add(leftIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle });
                         gapLeft = Math.Max(gapLeft, labels[dataPoint].DesiredSize.Height);
                     }
@@ -335,8 +351,6 @@ namespace Visifire.Charts
                 index++;
 
             }
-
-
 
             PostionData tempData;
 
@@ -356,6 +370,7 @@ namespace Visifire.Charts
 
             Double maxGapBetweenLabels = ((maximumY - minimumY) - (gapLeft * leftPositionData.Count)) / leftPositionData.Count;
             PositionLabels(minimumY, maximumY, 0, maxGapBetweenLabels, leftIndex, leftPositionData, false);
+
             for (Int32 i = 0; i < leftIndex; i++)
             {
                 leftPositionData.TryGetValue(i, out tempData);
@@ -386,7 +401,6 @@ namespace Visifire.Charts
 
                 }
             }
-
 
             PostionData[] dataForSorting = rightPositionData.Values.ToArray();
             Array.Sort(dataForSorting, PostionData.CompareYPosition);
@@ -579,9 +593,6 @@ namespace Visifire.Charts
                 minLength = Math.Min(minLength, height);
             }
 
-
-
-
             if (isLabelEnabled)
             {
                 if (isLabelOutside)
@@ -623,451 +634,12 @@ namespace Visifire.Charts
                 return null;
         }
 
-        internal static Canvas GetVisualObjectForPieChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
-        {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
-
-            Debug.WriteLine("PieStart: " + DateTime.Now.ToLongTimeString());
-
-            Canvas visual = new Canvas();
-            visual.Width = width;
-            visual.Height = height;
-            DataSeries series = seriesList[0];
-
-            if (series.Enabled == false)
-                return visual;
-
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
-            Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
-            absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
-
-            Double centerX = width / 2;
-            Double centerY = height / 2;
-
-            Double offsetX = 0;
-            Double offsetY = 0;
-            Boolean IsLabelEnabled;
-
-            Size pieCanvas = new Size();
-            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
-
-            Debug.WriteLine("Labels Positioning over: " + DateTime.Now.ToLongTimeString());
-
-            if (labelCanvas == null)
-                IsLabelEnabled = false;
-            else
-                IsLabelEnabled = true;
-
-            Double radius = Math.Min(pieCanvas.Width, pieCanvas.Height) / (chart.View3D ? 1 : 2);
-            Double startAngle = series.StartAngle;
-            Double endAngle = 0;
-            Double angle;
-            Double absoluteYValue;
-            Double meanAngle = 0;
-            Int32 zindex = 0;
-
-            if (chart.View3D)
-                _elementPositionData = new List<ElementPositionData>();
-
-            if (series.Storyboard == null)
-                series.Storyboard = new Storyboard();
-
-            DataSeriesRef = series;
-
-            foreach (DataPoint dataPoint in enabledDataPoints)
-            {
-                DataPointRef = dataPoint;
-
-                if (Double.IsNaN(dataPoint.YValue))
-                    continue;
-
-                absoluteYValue = Math.Abs(dataPoint.YValue);
-
-                angle = (absoluteYValue / absoluteSum) * Math.PI * 2;
-
-                endAngle = startAngle + angle;
-                meanAngle = (startAngle + endAngle) / 2;
-
-                SectorChartShapeParams pieParams = new SectorChartShapeParams();
-                pieParams.Storyboard = series.Storyboard;
-                pieParams.AnimationEnabled = animationEnabled;
-                pieParams.Center = new Point(centerX, centerY);
-                pieParams.ExplodeRatio = 0.2;
-                pieParams.InnerRadius = 0;
-                pieParams.OuterRadius = radius;
-                pieParams.StartAngle = (startAngle) % (Math.PI * 2);
-                pieParams.StopAngle = (endAngle) % (Math.PI * 2);
-                pieParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                pieParams.Bevel = series.Bevel;
-                pieParams.IsLargerArc = (angle / (Math.PI)) > 1;
-                pieParams.Background = dataPoint.Color;
-                pieParams.Width = width;
-                pieParams.Height = height;
-                pieParams.TiltAngle = Math.Asin(0.4);
-                pieParams.Depth = 20 / pieParams.YAxisScaling;
-
-                pieParams.MeanAngle = meanAngle;
-                pieParams.LabelLineEnabled = (Boolean)dataPoint.LabelLineEnabled;
-                pieParams.LabelLineColor = dataPoint.LabelLineColor;
-                pieParams.LabelLineThickness = (Double)dataPoint.LabelLineThickness;
-                pieParams.LabelLineStyle = dataPoint.GetDashArray((LineStyles)dataPoint.LabelLineStyle);
-                pieParams.IsZero = (dataPoint.YValue == 0);
-
-                offsetX = radius * pieParams.ExplodeRatio * Math.Cos(meanAngle);
-                offsetY = radius * pieParams.ExplodeRatio * Math.Sin(meanAngle);
-                pieParams.OffsetX = offsetX;
-                pieParams.OffsetY = offsetY * (chart.View3D ? pieParams.YAxisScaling : 1);
-
-                if (dataPoint.LabelVisual != null)
-                {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                    {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                    }
-                    else
-                    {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                    }
-
-                    // apply animation to the labels
-                    if (animationEnabled)
-                    {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
-                        dataPoint.LabelVisual.Opacity = 0;
-                    }
-                }
-
-                Faces faces = new Faces();
-
-                if (chart.View3D)
-                {
-                    PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
-                    PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
-                    List<Path> pieFaces = GetPie3D(pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
-
-                    foreach (Path path in pieFaces)
-                    {
-                        if (path != null)
-                        {
-                            visual.Children.Add(path);
-                            faces.VisualComponents.Add(path);
-                            path.RenderTransform = new TranslateTransform();
-                            // apply animation to the 3D sections
-                            if (animationEnabled)
-                            {
-                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
-                                path.Opacity = 0;
-                            }
-                        }
-
-                    }
-                    if (dataPoint._labelLine != null)
-                    {
-                        dataPoint._labelLine.RenderTransform = new TranslateTransform();
-                        visual.Children.Add(dataPoint._labelLine);
-                        faces.VisualComponents.Add(dataPoint._labelLine);
-                    }
-                    faces.Visual = visual;
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                    }
-
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
-                }
-                else
-                {
-                    PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
-                    PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
-
-                    Canvas pieVisual = GetPie2D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
-
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                    }
-                    TranslateTransform translateTransform = new TranslateTransform();
-                    pieVisual.RenderTransform = translateTransform;
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-
-
-                    pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
-                    pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
-                    visual.Children.Add(pieVisual);
-                    faces.VisualComponents.Add(pieVisual);
-                    faces.Visual = pieVisual;
-                }
-
-                Debug.WriteLine("Datapoint" + enabledDataPoints.IndexOf(dataPoint) + ": " + DateTime.Now.ToLongTimeString());
-
-                dataPoint.Faces = faces;
-
-                startAngle = endAngle;
-            }
-
-            if (chart.View3D)
-            {
-                Int32 zindex1, zindex2;
-
-                _elementPositionData.Sort(ElementPositionData.CompareAngle);
-                zindex1 = 1000;
-                zindex2 = -1000;
-                
-                for (Int32 i = 0; i < _elementPositionData.Count; i++)
-                {
-                    SetZIndex(_elementPositionData[i].Element, ref zindex1, ref zindex2, _elementPositionData[i].StartAngle);
-                }
-            }
-
-
-            if (IsLabelEnabled)
-                visual.Children.Add(labelCanvas);
-
-            return visual;
-        }
-
-        internal static Canvas GetVisualObjectForDoughnutChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
-        {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
-
-            Canvas visual = new Canvas();
-            visual.Width = width;
-            visual.Height = height;
-
-            DataSeries series = seriesList[0];
-            if (series.Enabled == false)
-                return visual;
-
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
-            Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
-
-            absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
-
-            Double centerX = width / 2;
-            Double centerY = height / 2;
-
-            Double offsetX = 0;
-            Double offsetY = 0;
-
-            Size pieCanvas = new Size();
-            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
-
-            Double radius = Math.Min(pieCanvas.Width, pieCanvas.Height) / (chart.View3D ? 1 : 2);
-            Double startAngle = series.StartAngle;
-            Double endAngle = 0;
-            Double angle;
-            Double meanAngle;
-            Double absoluteYValue;
-            Double radiusDiff = 0;
-
-            var explodedDataPoints = (from datapoint in series.DataPoints where datapoint.Exploded == true select datapoint);
-            radiusDiff = (explodedDataPoints.Count() > 0) ? radius * 0.3 : 0;
-
-            //radius -= radiusDiff;
-            if (chart.View3D)
-                _elementPositionData = new List<ElementPositionData>();
-
-
-            if (series.Storyboard == null)
-                series.Storyboard = new Storyboard();
-
-            DataSeriesRef = series;
-
-            foreach (DataPoint dataPoint in enabledDataPoints)
-            {
-                DataPointRef = dataPoint;
-
-                if (Double.IsNaN(dataPoint.YValue))
-                    continue;
-
-                absoluteYValue = Math.Abs(dataPoint.YValue);
-
-                angle = (absoluteYValue / absoluteSum) * Math.PI * 2;
-
-                endAngle = startAngle + angle;
-                meanAngle = (startAngle + endAngle) / 2;
-
-                SectorChartShapeParams pieParams = new SectorChartShapeParams();
-                pieParams.AnimationEnabled = animationEnabled;
-                pieParams.Storyboard = series.Storyboard;
-                pieParams.ExplodeRatio = 0.2;
-                pieParams.Center = new Point(centerX, centerY);
-
-                pieParams.InnerRadius = radius / 2;
-                pieParams.OuterRadius = radius;
-                pieParams.StartAngle = (startAngle) % (Math.PI * 2);
-                pieParams.StopAngle = (endAngle) % (Math.PI * 2);
-                pieParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                pieParams.Bevel = series.Bevel;
-                pieParams.IsLargerArc = (angle / (Math.PI)) > 1;
-                pieParams.Background = dataPoint.Color;
-                pieParams.Width = width;
-                pieParams.Height = height;
-                pieParams.TiltAngle = Math.Asin(0.4);
-                pieParams.Depth = 20 / pieParams.YAxisScaling;
-
-                pieParams.MeanAngle = meanAngle;
-                pieParams.LabelLineEnabled = (Boolean)dataPoint.LabelLineEnabled;
-                pieParams.LabelLineColor = dataPoint.LabelLineColor;
-                pieParams.LabelLineThickness = (Double)dataPoint.LabelLineThickness;
-                pieParams.LabelLineStyle = dataPoint.GetDashArray((LineStyles)dataPoint.LabelLineStyle);
-
-                offsetX = radius * pieParams.ExplodeRatio * Math.Cos(meanAngle);
-                offsetY = radius * pieParams.ExplodeRatio * Math.Sin(meanAngle);
-                pieParams.OffsetX = offsetX;
-                pieParams.OffsetY = offsetY * (chart.View3D ? pieParams.YAxisScaling : 1);
-
-                if (dataPoint.LabelVisual != null)
-                {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                    {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                    }
-                    else
-                    {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                    }
-                    // apply animation to the labels
-                    if (animationEnabled)
-                    {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
-                        dataPoint.LabelVisual.Opacity = 0;
-                    }
-                }
-
-                Faces faces = new Faces();
-                if (chart.View3D)
-                {
-                    PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
-                    PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
-                    List<Path> pieFaces = GetDoughnut3D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
-
-                    foreach (Path path in pieFaces)
-                    {
-                        if (path != null)
-                        {
-                            visual.Children.Add(path);
-                            faces.VisualComponents.Add(path);
-                            path.RenderTransform = new TranslateTransform();
-                            // apply animation to the 3D sections
-                            if (animationEnabled)
-                            {
-                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
-                                path.Opacity = 0;
-                            }
-                        }
-
-                    }
-                    if (dataPoint._labelLine != null)
-                    {
-                        dataPoint._labelLine.RenderTransform = new TranslateTransform();
-                        visual.Children.Add(dataPoint._labelLine);
-                        faces.VisualComponents.Add(dataPoint._labelLine);
-                    }
-                    faces.Visual = visual;
-
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                    }
-
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
-                }
-                else
-                {
-                    PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
-                    PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
-
-                    Canvas pieVisual = GetDoughnut2D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
-
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                    }
-                    TranslateTransform translateTransform = new TranslateTransform();
-                    pieVisual.RenderTransform = translateTransform;
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-
-
-                    pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
-                    pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
-                    visual.Children.Add(pieVisual);
-                    faces.VisualComponents.Add(pieVisual);
-                    faces.Visual = pieVisual;
-                }
-
-                dataPoint.Faces = faces;
-
-                startAngle = endAngle;
-            }
-
-            if (chart.View3D)
-            {
-                Int32 zindex1, zindex2;
-                _elementPositionData.Sort(ElementPositionData.CompareAngle);
-                zindex1 = 1000;
-                zindex2 = -1000;
-                for (Int32 i = 0; i < _elementPositionData.Count; i++)
-                {
-                    SetZIndex(_elementPositionData[i].Element, ref zindex1, ref zindex2, _elementPositionData[i].StartAngle);
-                }
-            }
-
-            visual.Children.Add(labelCanvas);
-
-            return visual;
-        }
-
         private static Canvas GetPie2D(SectorChartShapeParams pieParams, ref PieDoughnut2DPoints unExplodedPoints, ref PieDoughnut2DPoints explodedPoints, ref Path labelLinePath)
         {
             Canvas visual = new Canvas();
 
-            Double width = pieParams.OuterRadius * 2;
-            Double height = pieParams.OuterRadius * 2;
+            Double width = pieParams.OuterRadius * 2 ;
+            Double height = pieParams.OuterRadius * 2 ;
 
             visual.Width = width;
             visual.Height = height;
@@ -1076,9 +648,10 @@ namespace Visifire.Charts
             Double xOffset = pieParams.OuterRadius * pieParams.ExplodeRatio * Math.Cos(pieParams.MeanAngle);
             Double yOffset = pieParams.OuterRadius * pieParams.ExplodeRatio * Math.Sin(pieParams.MeanAngle);
 
+
             #region PieSlice
             if (pieParams.StartAngle != pieParams.StopAngle || !pieParams.IsZero)
-            {
+            {   
                 Ellipse ellipse = new Ellipse();
                 ellipse.Width = width;
                 ellipse.Height = height;
@@ -1191,6 +764,7 @@ namespace Visifire.Charts
             #endregion Lighting
 
             #region LabelLine
+
             if (pieParams.LabelLineEnabled)
             {
                 Path labelLine = new Path();
@@ -1803,9 +1377,9 @@ namespace Visifire.Charts
                 pieFaces.InsertRange(pieFaces.Count, curvedSurface);
 
                 Path labelLine = new Path();
-                if (pieParams.LabelLineEnabled)
-                {
 
+                if (pieParams.LabelLineEnabled)
+                {   
                     Double meanAngle = pieParams.MeanAngle;
 
                     Point piePoint = new Point();
@@ -1835,6 +1409,7 @@ namespace Visifire.Charts
                         pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
                         pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
                     }
+
                     labelLine.Stroke = pieParams.LabelLineColor;
                     labelLine.StrokeDashArray = pieParams.LabelLineStyle;
                     labelLine.StrokeThickness = pieParams.LabelLineThickness;
@@ -1903,7 +1478,7 @@ namespace Visifire.Charts
                         _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StopAngle, pieParams.StopAngle));
                 }
                 else
-                {
+                {   
                     _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
                     if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle < Math.PI / 2)
                     {
@@ -1919,7 +1494,7 @@ namespace Visifire.Charts
                         //_elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
                     else if (pieParams.StartAngle >= Math.PI / 2 && pieParams.StartAngle < Math.PI && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
-                    {
+                    {   
                         if (labelLine != null)
                             _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
@@ -1942,10 +1517,9 @@ namespace Visifire.Charts
                             _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
+
                     _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
                 }
-
-
             }
 
             return pieFaces;
@@ -2894,7 +2468,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingOut2DAnimation(Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingOut2DAnimation(DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             storyboard.Stop();
 
@@ -2924,16 +2498,51 @@ namespace Visifire.Charts
             #endregion Animating Silce
 
             #region Animating Label
-            values = GenerateDoubleCollection(unExplodedPoints.LabelPosition.X, explodedPoints.LabelPosition.X);
-            frames = GenerateDoubleCollection(0, 0.4);
-            splines = GenerateKeySplineList
-                (
-                    new Point(0, 0), new Point(1, 1),
-                    new Point(0, 0), new Point(0, 1)
-                );
 
-            DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
-            storyboard.Children.Add(labelXAnimation);
+            if (dataPoint.LabelStyle == LabelStyles.Inside)
+            {   
+                if (label != null)
+                {
+                    translateTransform = new TranslateTransform();
+                    label.RenderTransform = translateTransform;
+
+                    values = GenerateDoubleCollection(0, xOffset);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+
+                    values = GenerateDoubleCollection(0, yOffset);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+
+                    storyboard.Children.Add(labelXAnimation);
+                    storyboard.Children.Add(labelYAnimation);
+                }
+            }
+            else
+            {
+                values = GenerateDoubleCollection(unExplodedPoints.LabelPosition.X, explodedPoints.LabelPosition.X);
+                frames = GenerateDoubleCollection(0, 0.4);
+                splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                storyboard.Children.Add(labelXAnimation);
+            }
             #endregion Animating Label
 
             #region Animating Label Line
@@ -2950,7 +2559,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingIn2DAnimation(Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingIn2DAnimation(DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             storyboard.Stop();
 
@@ -2980,16 +2589,50 @@ namespace Visifire.Charts
             #endregion Animating Silce
 
             #region Animating Label
-            values = GenerateDoubleCollection(explodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.X);
-            frames = GenerateDoubleCollection(0, 0.4);
-            splines = GenerateKeySplineList
-                (
-                    new Point(0, 0), new Point(1, 1),
-                    new Point(0, 0), new Point(0, 1)
-                );
+            if (dataPoint.LabelStyle == LabelStyles.Inside)
+            {
+                if (label != null)
+                {
 
-            DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
-            storyboard.Children.Add(labelXAnimation);
+                    translateTransform = label.RenderTransform as TranslateTransform;
+                    values = GenerateDoubleCollection(xOffset, 0);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+
+                    values = GenerateDoubleCollection(yOffset, 0);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+
+                    storyboard.Children.Add(labelXAnimation);
+                    storyboard.Children.Add(labelYAnimation);
+                }
+            }
+            else
+            {
+                values = GenerateDoubleCollection(explodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.X);
+                frames = GenerateDoubleCollection(0, 0.4);
+                splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                storyboard.Children.Add(labelXAnimation);
+            }
+
             #endregion Animating Label
 
             #region Animating Label Line
@@ -3006,7 +2649,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingOut3DAnimation(Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingOut3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -3048,16 +2691,53 @@ namespace Visifire.Charts
             #endregion Animating Slice
 
             #region Animating Label
-            values = GenerateDoubleCollection(unExplodedPoints.LabelPosition.X, explodedPoints.LabelPosition.X);
-            frames = GenerateDoubleCollection(0, 0.4);
-            splines = GenerateKeySplineList
-                (
-                    new Point(0, 0), new Point(1, 1),
-                    new Point(0, 0), new Point(0, 1)
-                );
 
-            DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
-            storyboard.Children.Add(labelXAnimation);
+            if (dataPoint.LabelStyle == LabelStyles.Inside)
+            {
+                if (label != null)
+                {
+
+                    TranslateTransform translateTransform = new TranslateTransform();
+                    label.RenderTransform = translateTransform;
+                    
+                    values = GenerateDoubleCollection(0, xOffset);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames sliceXAnimation1 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+
+                    values = GenerateDoubleCollection(0, yOffset);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames sliceYAnimation2 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+
+                    storyboard.Children.Add(sliceXAnimation1);
+                    storyboard.Children.Add(sliceYAnimation2);
+                }
+            }
+            else
+            {
+                values = GenerateDoubleCollection(unExplodedPoints.LabelPosition.X, explodedPoints.LabelPosition.X);
+                frames = GenerateDoubleCollection(0, 0.4);
+                splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                storyboard.Children.Add(labelXAnimation);
+            }
+
             #endregion Animating Label
 
             #region Animating Label Line
@@ -3099,7 +2779,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingIn3DAnimation(Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingIn3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -3143,16 +2823,51 @@ namespace Visifire.Charts
             #endregion Animating Slice
 
             #region Animating Label
-            values = GenerateDoubleCollection(explodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.X);
-            frames = GenerateDoubleCollection(0, 0.4);
-            splines = GenerateKeySplineList
-                (
-                    new Point(0, 0), new Point(1, 1),
-                    new Point(0, 0), new Point(0, 1)
-                );
 
-            DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
-            storyboard.Children.Add(labelXAnimation);
+            if (dataPoint.LabelStyle == LabelStyles.Inside)
+            {
+                if (label != null)
+                {
+                    TranslateTransform translateTransform = label.RenderTransform as TranslateTransform;
+
+                    values = GenerateDoubleCollection(xOffset, 0);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames labelXAnimation1 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+
+                    values = GenerateDoubleCollection(yOffset, 0);
+                    frames = GenerateDoubleCollection(0, 0.4);
+                    splines = GenerateKeySplineList
+                        (
+                            new Point(0, 0), new Point(1, 1),
+                            new Point(0, 0), new Point(0, 1)
+                        );
+
+                    DoubleAnimationUsingKeyFrames labelYAnimation2 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+
+                    storyboard.Children.Add(labelXAnimation1);
+                    storyboard.Children.Add(labelYAnimation2);
+                }
+            }
+            else
+            {
+                values = GenerateDoubleCollection(explodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.X);
+                frames = GenerateDoubleCollection(0, 0.4);
+                splines = GenerateKeySplineList
+                    (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 0), new Point(0, 1)
+                    );
+
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                storyboard.Children.Add(labelXAnimation);
+            }
+
             #endregion Animating Label
 
             #region Animating Label Line
@@ -3205,5 +2920,480 @@ namespace Visifire.Charts
             get;
             set;
         }
+
+        internal static Canvas GetVisualObjectForPieChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
+        {
+            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+
+            Debug.WriteLine("PieStart: " + DateTime.Now.ToLongTimeString());
+
+            Canvas visual = new Canvas();
+            visual.Width = width;
+            visual.Height = height;
+            DataSeries series = seriesList[0];
+
+            if (series.Enabled == false)
+                return visual;
+
+            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+            Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
+            absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
+
+            Double centerX = width / 2;
+            Double centerY = height / 2;
+
+            Double offsetX = 0;
+            Double offsetY = 0;
+            Boolean IsLabelEnabled;
+            Size pieCanvasSize = new Size();
+
+            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvasSize);
+
+            Debug.WriteLine("Labels Positioning over: " + DateTime.Now.ToLongTimeString());
+
+            if (labelCanvas == null)
+                IsLabelEnabled = false;
+            else
+            {
+                IsLabelEnabled = true;
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 50001);
+                labelCanvas.IsHitTestVisible = false;
+            }
+
+            Double radius = Math.Min(pieCanvasSize.Width, pieCanvasSize.Height) / (chart.View3D ? 1 : 2);
+            Double startAngle = series.StartAngle;
+            Double endAngle = 0;
+            Double angle;
+            Double absoluteYValue;
+            Double meanAngle = 0;
+            Int32 zindex = 0;
+
+            if (chart.View3D)
+                _elementPositionData = new List<ElementPositionData>();
+
+            if (series.Storyboard == null)
+                series.Storyboard = new Storyboard();
+
+            DataSeriesRef = series;
+
+            foreach (DataPoint dataPoint in enabledDataPoints)
+            {
+                DataPointRef = dataPoint;
+
+                if (Double.IsNaN(dataPoint.YValue))
+                    continue;
+
+                absoluteYValue = Math.Abs(dataPoint.YValue);
+
+                angle = (absoluteYValue / absoluteSum) * Math.PI * 2;
+
+                endAngle = startAngle + angle;
+                meanAngle = (startAngle + endAngle) / 2;
+
+                SectorChartShapeParams pieParams = new SectorChartShapeParams();
+
+                pieParams.Storyboard = series.Storyboard;
+                pieParams.AnimationEnabled = animationEnabled;
+                pieParams.Center = new Point(centerX, centerY);
+                pieParams.ExplodeRatio = 0.2;
+                pieParams.InnerRadius = 0;
+                pieParams.OuterRadius = radius;
+                pieParams.StartAngle = (startAngle) % (Math.PI * 2);
+                pieParams.StopAngle = (endAngle) % (Math.PI * 2);
+                pieParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                pieParams.Bevel = series.Bevel;
+                pieParams.IsLargerArc = (angle / (Math.PI)) > 1;
+                pieParams.Background = dataPoint.Color;
+                pieParams.Width = width;
+                pieParams.Height = height;
+                pieParams.TiltAngle = Math.Asin(0.4);
+                pieParams.Depth = 20 / pieParams.YAxisScaling;
+
+                pieParams.MeanAngle = meanAngle;
+                pieParams.LabelLineEnabled = (Boolean)dataPoint.LabelLineEnabled;
+                pieParams.LabelLineColor = dataPoint.LabelLineColor;
+                pieParams.LabelLineThickness = (Double)dataPoint.LabelLineThickness;
+                pieParams.LabelLineStyle = dataPoint.GetDashArray((LineStyles)dataPoint.LabelLineStyle);
+                pieParams.IsZero = (dataPoint.YValue == 0);
+
+                offsetX = radius * pieParams.ExplodeRatio * Math.Cos(meanAngle);
+                offsetY = radius * pieParams.ExplodeRatio * Math.Sin(meanAngle);
+                pieParams.OffsetX = offsetX;
+                pieParams.OffsetY = offsetY * (chart.View3D ? pieParams.YAxisScaling : 1);
+
+                if (dataPoint.LabelVisual != null)
+                {
+                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    {
+                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                    }
+                    else
+                    {
+                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                    }
+
+                    // apply animation to the labels
+                    if (animationEnabled)
+                    {
+                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
+                        dataPoint.LabelVisual.Opacity = 0;
+                    }
+                }
+
+                Faces faces = new Faces();
+
+                #region View3D = true
+
+                if (chart.View3D)
+                {
+                    PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
+                    PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
+                    List<Path> pieFaces = GetPie3D(pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+
+                    foreach (Path path in pieFaces)
+                    {
+                        if (path != null)
+                        {
+                            visual.Children.Add(path);
+                            faces.VisualComponents.Add(path);
+                            path.RenderTransform = new TranslateTransform();
+                            // apply animation to the 3D sections
+                            if (animationEnabled)
+                            {
+                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                                path.Opacity = 0;
+                            }
+                        }
+
+                    }
+
+                    if (dataPoint._labelLine != null && pieParams.LabelLineEnabled)
+                    {
+                        dataPoint._labelLine.RenderTransform = new TranslateTransform();
+                        visual.Children.Add(dataPoint._labelLine);
+                        faces.VisualComponents.Add(dataPoint._labelLine);
+                    }
+
+                    faces.Visual = visual;
+
+                    if (dataPoint.LabelVisual != null)
+                    {
+                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+
+                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                        else
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                    }
+
+                    dataPoint.ExplodeAnimation = new Storyboard();
+                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+
+                    dataPoint.UnExplodeAnimation = new Storyboard();
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+                }
+
+                #endregion
+
+                else
+                {
+                    PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
+                    PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
+
+                    if (dataPoint.LabelStyle == LabelStyles.Inside)
+                        pieParams.OuterRadius -= pieParams.OuterRadius * pieParams.ExplodeRatio;
+
+                    Canvas pieVisual = GetPie2D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+
+                    if (dataPoint.LabelVisual != null)
+                    {
+                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                        else
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                    }
+
+                    TranslateTransform translateTransform = new TranslateTransform();
+                    pieVisual.RenderTransform = translateTransform;
+                    dataPoint.ExplodeAnimation = new Storyboard();
+                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                    dataPoint.UnExplodeAnimation = new Storyboard();
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+
+
+                    pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
+                    pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
+                    visual.Children.Add(pieVisual);
+                    faces.VisualComponents.Add(pieVisual);
+                    faces.Visual = pieVisual;
+                }
+
+                Debug.WriteLine("Datapoint" + enabledDataPoints.IndexOf(dataPoint) + ": " + DateTime.Now.ToLongTimeString());
+
+                dataPoint.Faces = faces;
+                
+                startAngle = endAngle;
+            }
+
+            if (chart.View3D)
+            {
+                Int32 zindex1, zindex2;
+
+                _elementPositionData.Sort(ElementPositionData.CompareAngle);
+                zindex1 = 1000;
+                zindex2 = -1000;
+
+                for (Int32 i = 0; i < _elementPositionData.Count; i++)
+                {
+                    SetZIndex(_elementPositionData[i].Element, ref zindex1, ref zindex2, _elementPositionData[i].StartAngle);
+                }
+            }
+
+
+            if (IsLabelEnabled)
+                visual.Children.Add(labelCanvas);
+
+            return visual;
+        }
+
+        internal static Canvas GetVisualObjectForDoughnutChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
+        {
+            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+
+            Canvas visual = new Canvas();
+            visual.Width = width;
+            visual.Height = height;
+
+            DataSeries series = seriesList[0];
+
+            if (series.Enabled == false)
+                return visual;
+
+            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+            Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
+
+            absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
+
+            Double centerX = width / 2;
+            Double centerY = height / 2;
+
+            Double offsetX = 0;
+            Double offsetY = 0;
+
+            Size pieCanvas = new Size();
+            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
+
+            Double radius = Math.Min(pieCanvas.Width, pieCanvas.Height) / (chart.View3D ? 1 : 2);
+            Double startAngle = series.StartAngle;
+            Double endAngle = 0;
+            Double angle;
+            Double meanAngle;
+            Double absoluteYValue;
+            Double radiusDiff = 0;
+
+            var explodedDataPoints = (from datapoint in series.DataPoints where datapoint.Exploded == true select datapoint);
+            radiusDiff = (explodedDataPoints.Count() > 0) ? radius * 0.3 : 0;
+
+            //radius -= radiusDiff;
+            if (chart.View3D)
+            {
+                _elementPositionData = new List<ElementPositionData>();
+            }
+
+            if (labelCanvas != null)
+            {
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 50001);
+                labelCanvas.IsHitTestVisible = false;
+            }
+
+            if (series.Storyboard == null)
+                series.Storyboard = new Storyboard();
+
+            DataSeriesRef = series;
+
+            foreach (DataPoint dataPoint in enabledDataPoints)
+            {
+                DataPointRef = dataPoint;
+
+                if (Double.IsNaN(dataPoint.YValue))
+                    continue;
+
+                absoluteYValue = Math.Abs(dataPoint.YValue);
+
+                angle = (absoluteYValue / absoluteSum) * Math.PI * 2;
+
+                endAngle = startAngle + angle;
+                meanAngle = (startAngle + endAngle) / 2;
+
+                SectorChartShapeParams pieParams = new SectorChartShapeParams();
+                pieParams.AnimationEnabled = animationEnabled;
+                pieParams.Storyboard = series.Storyboard;
+                pieParams.ExplodeRatio = 0.2;
+                pieParams.Center = new Point(centerX, centerY);
+
+                pieParams.InnerRadius = radius / 2;
+                pieParams.OuterRadius = radius;
+                pieParams.StartAngle = (startAngle) % (Math.PI * 2);
+                pieParams.StopAngle = (endAngle) % (Math.PI * 2);
+                pieParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                pieParams.Bevel = series.Bevel;
+                pieParams.IsLargerArc = (angle / (Math.PI)) > 1;
+                pieParams.Background = dataPoint.Color;
+                pieParams.Width = width;
+                pieParams.Height = height;
+                pieParams.TiltAngle = Math.Asin(0.4);
+                pieParams.Depth = 20 / pieParams.YAxisScaling;
+
+                pieParams.MeanAngle = meanAngle;
+                pieParams.LabelLineEnabled = (Boolean)dataPoint.LabelLineEnabled;
+                pieParams.LabelLineColor = dataPoint.LabelLineColor;
+                pieParams.LabelLineThickness = (Double)dataPoint.LabelLineThickness;
+                pieParams.LabelLineStyle = dataPoint.GetDashArray((LineStyles)dataPoint.LabelLineStyle);
+
+                offsetX = radius * pieParams.ExplodeRatio * Math.Cos(meanAngle);
+                offsetY = radius * pieParams.ExplodeRatio * Math.Sin(meanAngle);
+                pieParams.OffsetX = offsetX;
+                pieParams.OffsetY = offsetY * (chart.View3D ? pieParams.YAxisScaling : 1);
+
+                if (dataPoint.LabelVisual != null)
+                {
+                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    {
+                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                    }
+                    else
+                    {
+                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                    }
+                    // apply animation to the labels
+                    if (animationEnabled)
+                    {
+                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
+                        dataPoint.LabelVisual.Opacity = 0;
+                    }
+                }
+
+                Faces faces = new Faces();
+                if (chart.View3D)
+                {
+                    PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
+                    PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
+                    List<Path> pieFaces = GetDoughnut3D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+
+                    foreach (Path path in pieFaces)
+                    {
+                        if (path != null)
+                        {
+                            visual.Children.Add(path);
+                            faces.VisualComponents.Add(path);
+                            path.RenderTransform = new TranslateTransform();
+                            // apply animation to the 3D sections
+                            if (animationEnabled)
+                            {
+                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                                path.Opacity = 0;
+                            }
+                        }
+                    }
+                    if (dataPoint._labelLine != null && pieParams.LabelLineEnabled)
+                    {
+                        dataPoint._labelLine.RenderTransform = new TranslateTransform();
+                        visual.Children.Add(dataPoint._labelLine);
+                        faces.VisualComponents.Add(dataPoint._labelLine);
+                    }
+
+                    faces.Visual = visual;
+
+                    if (dataPoint.LabelVisual != null)
+                    {
+
+                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                        else
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                    }
+
+                    dataPoint.ExplodeAnimation = new Storyboard();
+                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+                    dataPoint.UnExplodeAnimation = new Storyboard();
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual, dataPoint._labelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+                }
+                else
+                {
+                    PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
+                    PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
+
+                    if (dataPoint.LabelStyle == LabelStyles.Inside)
+                    {
+                        pieParams.OuterRadius -= pieParams.OuterRadius * pieParams.ExplodeRatio;
+                        pieParams.InnerRadius = pieParams.OuterRadius / 2;
+                    }
+
+                    Canvas pieVisual = GetDoughnut2D(pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+
+                    if (dataPoint.LabelVisual != null)
+                    {
+                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                        else
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                        }
+                    }
+
+                    TranslateTransform translateTransform = new TranslateTransform();
+                    pieVisual.RenderTransform = translateTransform;
+                    dataPoint.ExplodeAnimation = new Storyboard();
+                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                    dataPoint.UnExplodeAnimation = new Storyboard();
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual, dataPoint._labelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+
+
+                    pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
+                    pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
+                    visual.Children.Add(pieVisual);
+                    faces.VisualComponents.Add(pieVisual);
+                    faces.Visual = pieVisual;
+                }
+
+                dataPoint.Faces = faces;
+
+                startAngle = endAngle;
+            }
+
+            if (chart.View3D)
+            {
+                Int32 zindex1, zindex2;
+                _elementPositionData.Sort(ElementPositionData.CompareAngle);
+                zindex1 = 1000;
+                zindex2 = -1000;
+                for (Int32 i = 0; i < _elementPositionData.Count; i++)
+                {
+                    SetZIndex(_elementPositionData[i].Element, ref zindex1, ref zindex2, _elementPositionData[i].StartAngle);
+                }
+            }
+
+            visual.Children.Add(labelCanvas);
+
+            return visual;
+        }
+
     }
 }

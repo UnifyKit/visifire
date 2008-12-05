@@ -1,5 +1,5 @@
 /*
-    Visifire.js v2.0.1 beta
+    Visifire2.js v2.0.3 beta
     
     Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -249,6 +249,8 @@ if(!window.Visifire2)
 
         html += "logLevel=" + _uThisObject.logLevel + ",";
 
+        html += "controlId=" + _uThisObject.id + ",";
+        
         html += "setVisifireChartsRef=setVisifireChartsRef" + _uThisObject.index + ",";
 
         if (_uThisObject.preLoad != null)
