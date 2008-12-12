@@ -237,7 +237,6 @@
         <Setter Property="FontFamily" Value="Verdana"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <!--<Setter Property="FontColor" Value="Transparent"/>-->
     </Style>
 
     <Style TargetType="vc:Axis">

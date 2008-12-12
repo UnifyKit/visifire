@@ -100,23 +100,23 @@ namespace Visifire.Commons
         Dotted = 2
     }
 
-    public enum ColorSetNames
-    {
-        None = 0,
-        DarkShades = 1,
-        Visifire2 = 2,
-        SandyShades = 3,
-        Caravan = 4,
-        Picasso = 5,
-        DullShades = 6,
-        Visifire1 = 7,
-        VisiBlue = 8,
-        VisiRed = 9,
-        VisiGreen = 10,
-        VisiViolet = 11,
-        VisiAqua = 12,
-        VisiOrange = 13,
-        VisiGray = 14,
-    }
+    //public enum ColorSetNames
+    //{
+    //    None = 0,
+    //    DarkShades = 1,
+    //    Visifire2 = 2,
+    //    SandyShades = 3,
+    //    Caravan = 4,
+    //    Picasso = 5,
+    //    DullShades = 6,
+    //    Visifire1 = 7,
+    //    VisiBlue = 8,
+    //    VisiRed = 9,
+    //    VisiGreen = 10,
+    //    VisiViolet = 11,
+    //    VisiAqua = 12,
+    //    VisiOrange = 13,
+    //    VisiGray = 14,
+    //}
 
 }

@@ -3,40 +3,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
+
 using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 
@@ -92,14 +75,14 @@ namespace Visifire.Charts
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
                     if(isPositive)
                     {
-                        if (position < dataPoint.Marker.MarkerActualSize.Height)
+                        if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                         else
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                     }
                     else
                     {
-                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height)
+                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                         else
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
@@ -107,6 +90,7 @@ namespace Visifire.Charts
                 }
               
                 dataPoint.Marker.CreateVisual();
+
                 return dataPoint.Marker;
             }
             return null;
@@ -150,7 +134,9 @@ namespace Visifire.Charts
 
                 DataSeriesRef = series;
 
-                series.Faces = new Faces();
+                Faces faces = new Faces();
+                series.Faces = faces;
+                series.Faces.Parts = new List<FrameworkElement>();
 
                 PlotGroup plotGroup = series.PlotGroup;
 
@@ -171,7 +157,7 @@ namespace Visifire.Charts
                 areaParams.ShadowOffset = 0;
                 areaParams.Bevel = series.Bevel;
                 areaParams.BorderBrush = series.BorderColor;
-                areaParams.BorderStyle = series.GetDashArray(series.BorderStyle);
+                areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
                 areaParams.BorderThickness = series.BorderThickness.Left;
                 areaParams.Depth = depth3d;
                 areaParams.Storyboard = series.Storyboard;
@@ -192,7 +178,6 @@ namespace Visifire.Charts
 
                 for (Int32 i = 0; i < enabledDataPoints.Count - 1; i++)
                 {
-
                     currentDataPoint = enabledDataPoints[i];
                     nextDataPoint = enabledDataPoints[i + 1];
 
@@ -235,18 +220,17 @@ namespace Visifire.Charts
 
                         if (chart.View3D)
                         {
-                            Canvas areaVisual3D = Get3DArea(areaParams);
+                            Canvas areaVisual3D = Get3DArea(ref faces, areaParams);
                             areaVisual3D.SetValue(Canvas.ZIndexProperty, GetAreaZIndex(xPosition, yPosition, areaParams.IsPositive));
                             areaCanvas.Children.Add(areaVisual3D);
                             series.Faces.VisualComponents.Add(areaVisual3D);
                         }
                         else
                         {
-                            areaCanvas.Children.Add(Get2DArea(areaParams));
+                            areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
                             series.Faces.VisualComponents.Add(areaCanvas);
                         }
                         
-
                         points = new PointCollection();
                         points.Add(new Point(xNew, yNew));
                     }
@@ -260,6 +244,7 @@ namespace Visifire.Charts
                 points.Add(new Point(xPosition, yPosition));
 
                 marker = GetMarkerForDataPoint(chart, lastDataPoint, yPosition, lastDataPoint.YValue > 0);
+
                 if (marker != null)
                 {
                     marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
@@ -272,6 +257,7 @@ namespace Visifire.Charts
                         lastDataPoint.Parent.Storyboard = ApplyMarkerAnimationToAreaChart(marker, lastDataPoint.Parent.Storyboard, 1);
                     }
                 }
+
                 xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
                 yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
@@ -283,7 +269,7 @@ namespace Visifire.Charts
 
                 if (chart.View3D)
                 {
-                    Canvas areaVisual3D = Get3DArea(areaParams);
+                    Canvas areaVisual3D = Get3DArea(ref faces, areaParams);
                     areaVisual3D.SetValue(Canvas.ZIndexProperty, GetAreaZIndex(xPosition, yPosition, areaParams.IsPositive));
                     areaCanvas.Children.Add(areaVisual3D);
                     series.Faces.VisualComponents.Add(areaVisual3D);
@@ -291,9 +277,8 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    areaCanvas.Children.Add(Get2DArea(areaParams));
+                    areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
                     series.Faces.VisualComponents.Add(areaCanvas);
-
                 }
 
                 if (!plankDrawn && chart.View3D && plotGroup.AxisY.InternalAxisMinimum < 0 && plotGroup.AxisY.InternalAxisMaximum > 0)
@@ -455,20 +440,23 @@ namespace Visifire.Charts
                     areaParams.ShadowOffset = 0;
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
-                    areaParams.BorderStyle = series.GetDashArray(series.BorderStyle);
+                    areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
                     areaParams.BorderThickness = series.BorderThickness.Left;
                     areaParams.Depth = depth3d;
 
                     foreach (PointCollection points in pointSet)
-                    {
+                    {   
                         areaParams.Points = points;
+                        Faces faces = curDataPoints[index].Parent.Faces;
+                        if (faces.Parts == null)
+                            faces.Parts = new List<FrameworkElement>();
 
                         if (chart.View3D)
                         {
                             Point centroid = GetCentroid(points);
                             areaParams.IsPositive = centroid.Y < limitingYPosition;
-                            Canvas frontface = GetStacked3DAreaFrontFace(areaParams);
-                            Canvas sideface = GetStacked3DSideFaces(areaParams);
+                            Canvas frontface = GetStacked3DAreaFrontFace(ref faces, areaParams);
+                            Canvas sideface = GetStacked3DSideFaces(ref faces, areaParams);
                             sideface.SetValue(Canvas.ZIndexProperty, GetStackedAreaZIndex(centroid.X, centroid.Y, areaParams.IsPositive, index));
                             frontface.SetValue(Canvas.ZIndexProperty, 50000);
                             areaCanvas.Children.Add(sideface);
@@ -481,6 +469,7 @@ namespace Visifire.Charts
                             {
                                 if (curDataPoints[index].Parent.Storyboard == null)
                                     curDataPoints[index].Parent.Storyboard = new Storyboard();
+
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
@@ -490,7 +479,8 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            Canvas area2d = GetStacked2DArea(areaParams);
+                            
+                            Canvas area2d = GetStacked2DArea(ref faces, areaParams);
                             areaCanvas.Children.Add(area2d);
                             curDataPoints[index].Parent.Faces.VisualComponents.Add(area2d);
                             if (animationEnabled)
@@ -503,8 +493,10 @@ namespace Visifire.Charts
                                 storyboard = ApplyStackedAreaAnimation(area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
+
                         curDataPoints[index].Parent.Faces.Visual = visual;
                     }
+
                     curBase += curYValues[index];
                     nextBase += nextYValues[index];
                 }
@@ -674,9 +666,13 @@ namespace Visifire.Charts
                     areaParams.ShadowOffset = 0;
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
-                    areaParams.BorderStyle = series.GetDashArray(series.BorderStyle);
+                    areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
                     areaParams.BorderThickness = series.BorderThickness.Left;
                     areaParams.Depth = depth3d;
+
+                    Faces faces = curDataPoints[index].Parent.Faces;
+                    if (faces.Parts == null)
+                        faces.Parts = new List<FrameworkElement>();
 
                     foreach (PointCollection points in pointSet)
                     {
@@ -686,8 +682,8 @@ namespace Visifire.Charts
                         {
                             Point centroid = GetCentroid(points);
                             areaParams.IsPositive = centroid.Y < limitingYPosition;
-                            Canvas frontface = GetStacked3DAreaFrontFace(areaParams);
-                            Canvas sideface = GetStacked3DSideFaces(areaParams);
+                            Canvas frontface = GetStacked3DAreaFrontFace(ref faces, areaParams);
+                            Canvas sideface = GetStacked3DSideFaces(ref faces, areaParams);
                             sideface.SetValue(Canvas.ZIndexProperty, GetStackedAreaZIndex(centroid.X, centroid.Y, areaParams.IsPositive, index));
                             frontface.SetValue(Canvas.ZIndexProperty, 50000);
                             areaCanvas.Children.Add(sideface);
@@ -709,7 +705,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            Canvas area2d = Get2DArea(areaParams);
+                            Canvas area2d = Get2DArea(ref faces, areaParams);
                             areaCanvas.Children.Add(area2d);
                             curDataPoints[index].Parent.Faces.VisualComponents.Add(area2d);
                             if (animationEnabled)
@@ -1055,16 +1051,21 @@ namespace Visifire.Charts
             return new Rect(minX, minY, Math.Abs(maxX - minX), Math.Abs(maxY - minY));
         }
 
-        internal static Canvas Get2DArea(PolygonalChartShapeParams areaParams)
+        internal static Canvas Get2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
+            if (faces.Parts == null)
+                faces.Parts = new List<FrameworkElement>();
+
             Canvas visual = new Canvas();
 
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon();
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
 
-            polygon.Fill = areaParams.Lighting ? GetLightingEnabledBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            faces.Parts.Add(polygon);
+
+            polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.BackgroundBrush, "Linear", null) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
             polygon.StrokeDashArray = areaParams.BorderStyle;
@@ -1109,13 +1110,16 @@ namespace Visifire.Charts
 
                     Polygon bevel = new Polygon();
                     bevel.Points = points;
-                    bevel.Fill = GetBevelTopBrush(areaParams.BackgroundBrush);
+                    bevel.Fill = Graphics.GetBevelTopBrush(areaParams.BackgroundBrush);
 
                     if (areaParams.AnimationEnabled)
                     {
                         areaParams.Storyboard = CreateOpacityAnimation(areaParams.Storyboard, bevel, 1, 1, 1);
                         bevel.Opacity = 0;
                     }
+
+                    bevel.Tag = "Bevel";
+                    faces.Parts.Add(bevel);
 
                     visual.Children.Add(bevel);
                 }
@@ -1126,26 +1130,16 @@ namespace Visifire.Charts
 
         private static Storyboard CreateOpacityAnimation(Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
         {
-            DoubleCollection values = GenerateDoubleCollection(0, opacity);
-            DoubleCollection frames = GenerateDoubleCollection(0, duration);
-            List<KeySpline> splines = GenerateAnimationSplines(frames.Count);
-            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, opacity);
+            DoubleCollection frames = Graphics.GenerateDoubleCollection(0, duration);
+            List<KeySpline> splines = Graphics.GenerateAnimationSplines(frames.Count);
+            DoubleAnimationUsingKeyFrames opacityAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
             storyboard.Stop();
             storyboard.Children.Add(opacityAnimation);
             return storyboard;
         }
 
-        private static List<KeySpline> GenerateAnimationSplines(int count)
-        {
-            List<KeySpline> splines = new List<KeySpline>();
-            for (int i = 0; i < count; i++)
-            {
-                splines.Add(GetKeySpline(new Point(0, 0), new Point(1, 1)));
-            }
-            return splines;
-        }
-
-        internal static Canvas Get3DArea(PolygonalChartShapeParams areaParams)
+        internal static Canvas Get3DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             Canvas visual = new Canvas();
 
@@ -1154,7 +1148,7 @@ namespace Visifire.Charts
 
             Point centroid;
             Brush sideBrush = areaParams.Lighting ? GetRightFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush; 
-            Brush topBrush = areaParams.Lighting ? GetTopFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            Brush topBrush = areaParams.Lighting ? Graphics.GetTopFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
             Int32 pointIndexLimit = areaParams.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
 
             Canvas polygonSet = new Canvas();
@@ -1183,9 +1177,15 @@ namespace Visifire.Charts
                 sides.SetValue(Canvas.ZIndexProperty,zindex);
 
                 if (i == (areaParams.Points.Count - 2))
+                {
                     sides.Fill = sideBrush;
+                    sides.Tag = "Side";
+                }
                 else
+                {
                     sides.Fill = topBrush;
+                    sides.Tag = "Top";
+                }
 
                 sides.Stroke = areaParams.BorderBrush;
                 sides.StrokeDashArray = areaParams.BorderStyle;
@@ -1199,16 +1199,17 @@ namespace Visifire.Charts
                 sides.SetValue(Canvas.TopProperty, sidesBounds.Y - (size.Top - areaParams.Depth));
                 sides.SetValue(Canvas.LeftProperty, sidesBounds.X-size.X);
 
-
+                faces.Parts.Add(sides);
                 polygonSet.Children.Add(sides);
 
             }
 
-            Polygon polygon = new Polygon();
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
+            faces.Parts.Add(polygon);
             centroid = GetCentroid(areaParams.Points);
 
             polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y+1000);
-            polygon.Fill = areaParams.Lighting ? GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
             polygon.StrokeDashArray = areaParams.BorderStyle;
@@ -1235,16 +1236,21 @@ namespace Visifire.Charts
             return visual;
         }
 
-        internal static Canvas GetStacked2DArea(PolygonalChartShapeParams areaParams)
+        internal static Canvas GetStacked2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
+            if (faces.Parts == null)
+                faces.Parts = new List<FrameworkElement>();
+
             Canvas visual = new Canvas();
 
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon();
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
 
-            polygon.Fill = areaParams.Lighting ? GetLightingEnabledBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            faces.Parts.Add(polygon);
+
+            polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.BackgroundBrush, "Linear", null) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
             polygon.StrokeDashArray = areaParams.BorderStyle;
@@ -1283,8 +1289,10 @@ namespace Visifire.Charts
 
                     Polygon bevel = new Polygon();
                     bevel.Points = points;
-                    bevel.Fill = GetBevelTopBrush(areaParams.BackgroundBrush);
+                    bevel.Fill = Graphics.GetBevelTopBrush(areaParams.BackgroundBrush);
 
+                    bevel.Tag = "Bevel";
+                    faces.Parts.Add(bevel);
                     visual.Children.Add(bevel);
                 }
 
@@ -1294,14 +1302,15 @@ namespace Visifire.Charts
 
         }
 
-        internal static Canvas GetStacked3DAreaFrontFace(PolygonalChartShapeParams areaParams)
+        internal static Canvas GetStacked3DAreaFrontFace(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
-            Polygon polygon = new Polygon();
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
+            faces.Parts.Add(polygon);
             Point centroid = GetCentroid(areaParams.Points);
             Rect size = GetBounds(areaParams.Points);
 
             polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
-            polygon.Fill = areaParams.Lighting ? GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
             polygon.StrokeDashArray = areaParams.BorderStyle;
@@ -1321,16 +1330,17 @@ namespace Visifire.Charts
             polygonSet.Height = size.Height + areaParams.Depth;
             polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth);
             polygonSet.SetValue(Canvas.LeftProperty, size.Left);
-            polygonSet.Children.Add(polygon);
 
+            polygonSet.Children.Add(polygon);
+            
             return polygonSet;
         }
 
-        private static Canvas GetStacked3DSideFaces(PolygonalChartShapeParams areaParams)
+        private static Canvas GetStacked3DSideFaces(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             Point centroid;
             Brush sideBrush = areaParams.Lighting ? GetRightFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
-            Brush topBrush = areaParams.Lighting ? GetTopFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
+            Brush topBrush = areaParams.Lighting ? Graphics.GetTopFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
             Int32 pointIndexLimit = areaParams.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
 
             Canvas polygonSet = new Canvas();
@@ -1358,9 +1368,15 @@ namespace Visifire.Charts
                 sides.SetValue(Canvas.ZIndexProperty, zindex);
 
                 if (i == (areaParams.Points.Count - 2))
+                {
                     sides.Fill = sideBrush;
+                    sides.Tag = "Side";
+                }
                 else
+                {
                     sides.Fill = topBrush;
+                    sides.Tag = "Top";
+                }
 
                 sides.Stroke = areaParams.BorderBrush;
                 sides.StrokeDashArray = areaParams.BorderStyle;
@@ -1374,7 +1390,7 @@ namespace Visifire.Charts
                 sides.SetValue(Canvas.TopProperty, sidesBounds.Y - (size.Top - areaParams.Depth));
                 sides.SetValue(Canvas.LeftProperty, sidesBounds.X - size.X);
 
-
+                faces.Parts.Add(sides);
                 polygonSet.Children.Add(sides);
 
             }
@@ -1413,140 +1429,7 @@ namespace Visifire.Charts
             return zindex;
         }
 
-        private static Brush GetLightingEnabledBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.745));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.99));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
-        private static Brush GetBevelTopBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-                Double r, g, b;
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                r = ((double)solidBrush.Color.R / (double)255) * 0.9999;
-                g = ((double)solidBrush.Color.G / (double)255) * 0.9999;
-                b = ((double)solidBrush.Color.B / (double)255) * 0.9999;
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.99));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 1 - r, 1 - g, 1 - b));
-                stops.Add(0.2);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 1 - r, 1 - g, 1 - b));
-                stops.Add(0.6);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.99));
-                stops.Add(1);
-
-                return Graphics.CreateLinearGradientBrush(90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
-        private static Brush GetBevelSideBrush(Double angle, Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.97));
-                stops.Add(1);
-
-                return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
-        private static Brush GetLeftGradianceBrush()
-        {
-            LinearGradientBrush gradBrush = new LinearGradientBrush();
-
-            gradBrush.GradientStops = new GradientStopCollection();
-
-            gradBrush.StartPoint = new Point(0, 1);
-            gradBrush.EndPoint = new Point(1, 0);
-
-            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(127, 0, 0, 0), 0));
-            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(0, 0, 0, 0), 0));
-
-            return gradBrush;
-        }
-
-        private static Brush GetRightGradianceBrush()
-        {
-            LinearGradientBrush gradBrush = new LinearGradientBrush();
-
-            gradBrush.GradientStops = new GradientStopCollection();
-
-            gradBrush.StartPoint = new Point(1, 1);
-            gradBrush.EndPoint = new Point(0, 0);
-
-            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(127, 0, 0, 0), 0));
-            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(0, 0, 0, 0), 0));
-
-            return gradBrush;
-        }
-
-        private static Brush GetFrontFaceBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
-        private static Brush GetRightFaceBrush(Brush brush)
+        internal static Brush GetRightFaceBrush(Brush brush)
         {
             if (typeof(SolidColorBrush).Equals(brush.GetType()))
             {
@@ -1588,48 +1471,6 @@ namespace Visifire.Charts
             }
         }
 
-        private static Brush GetTopFaceBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else if (brush is GradientBrush)
-            {
-                GradientBrush gradBrush = brush as GradientBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                foreach (GradientStop gradStop in gradBrush.GradientStops)
-                {
-                    colors.Add(Graphics.GetLighterColor(gradStop.Color, 0.85));
-                    stops.Add(gradStop.Offset);
-                }
-
-                if (brush is LinearGradientBrush)
-                    return Graphics.CreateLinearGradientBrush(-45, new Point(-0.5, 1.5), new Point(0.5, 0), colors, stops);
-                else
-                    return Graphics.CreateRadialGradientBrush(colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
         private static PointCollection CloneCollection(PointCollection collection)
         {
             PointCollection newCollection = new PointCollection();
@@ -1639,53 +1480,13 @@ namespace Visifire.Charts
             return newCollection;
         }
 
-        private static DoubleCollection GenerateDoubleCollection(params Double[] values)
-        {
-            DoubleCollection collection = new DoubleCollection();
-            foreach (Double value in values)
-                collection.Add(value);
-            return collection;
-        }
-
         private static List<KeySpline> GenerateKeySplineList(params Point[] values)
         {
             List<KeySpline> splines = new List<KeySpline>();
             for (Int32 i = 0; i < values.Length; i += 2)
-                splines.Add(GetKeySpline(values[i], values[i + 1]));
+                splines.Add(Graphics.GetKeySpline(values[i], values[i + 1]));
 
             return splines;
-        }
-
-        private static KeySpline GetKeySpline(Point controlPoint1, Point controlPoint2)
-        {
-            return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
-        }
-
-        private static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
-        {
-            DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
-#if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
-            Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
-
-            DataSeriesRef.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-#else
-            Storyboard.SetTarget(da, target);
-#endif
-            Storyboard.SetTargetProperty(da, new PropertyPath(property));
-
-            da.BeginTime = TimeSpan.FromSeconds(beginTime);
-
-            for (Int32 index = 0; index < splines.Count; index++)
-            {
-                SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
-                keyFrame.KeySpline = splines[index];
-                keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
-                keyFrame.Value = values[index];
-                da.KeyFrames.Add(keyFrame);
-            }
-
-            return da;
         }
 
         private static DataSeries DataSeriesRef
@@ -1707,15 +1508,15 @@ namespace Visifire.Charts
             {
                 areaElement.RenderTransformOrigin = new Point(0.5, 0);
             }
-            DoubleCollection values = GenerateDoubleCollection(0, 1);
-            DoubleCollection frameTimes = GenerateDoubleCollection(0, 0.75);
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
+            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.75);
             List<KeySpline> splines = GenerateKeySplineList
                 (
                 new Point(0, 0), new Point(1, 1),
                 new Point(0, 0), new Point(0.5, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames growAnimation = CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
+            DoubleAnimationUsingKeyFrames growAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
             storyboard.Stop();
             storyboard.Children.Add(growAnimation);
 
@@ -1726,8 +1527,8 @@ namespace Visifire.Charts
         {
             if (marker == null) return storyboard;
 
-            DoubleCollection values = GenerateDoubleCollection(0, 1);
-            DoubleCollection frameTimes = GenerateDoubleCollection(0, 0.75);
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
+            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.75);
             List<KeySpline> splines = GenerateKeySplineList
                 (
                 new Point(0, 0), new Point(1, 1),
@@ -1736,7 +1537,7 @@ namespace Visifire.Charts
 
             marker.Visual.Opacity = 0;
 
-            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(marker.Visual, "(UIElement.Opacity)", beginTime+0.5, frameTimes, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, marker.Visual, "(UIElement.Opacity)", beginTime + 0.5, frameTimes, values, splines);
             storyboard.Stop();
             storyboard.Children.Add(opacityAnimation);
 
@@ -1745,15 +1546,16 @@ namespace Visifire.Charts
 
         private static Storyboard ApplyStackedAreaAnimation(UIElement areaElement, Storyboard storyboard, Double beginTime,Double duration)
         {
-            DoubleCollection values = GenerateDoubleCollection(0, 1);
-            DoubleCollection frameTimes = GenerateDoubleCollection(0, duration);
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
+            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, duration);
             List<KeySpline> splines = GenerateKeySplineList
                 (
                 new Point(0, 0), new Point(1, 1),
                 new Point(0, 0), new Point(0.5, 1)
                 );
+
             areaElement.Opacity = 0;
-            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(areaElement, "(UIElement.Opacity)", beginTime+0.5, frameTimes, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, areaElement, "(UIElement.Opacity)", beginTime + 0.5, frameTimes, values, splines);
             storyboard.Stop();
             storyboard.Children.Add(opacityAnimation);
 

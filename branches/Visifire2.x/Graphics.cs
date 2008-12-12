@@ -1,47 +1,28 @@
 ﻿#if WPF
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
 using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Collections;
+
 
 #else
 
 using System;
-using System.Net;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Windows.Markup;
-using System.Collections.ObjectModel;
 using System.Globalization;
 #endif
 
+using System.Windows.Media.Animation;
 using Visifire.Charts;
 using Visifire.Commons;
 
@@ -64,6 +45,15 @@ namespace Visifire.Charts
             private set;
         }
 
+        /// <summary>
+        /// Different parts of Visuals
+        /// </summary>
+        public List<FrameworkElement> Parts
+        {
+            get;
+            set;
+        }
+
         public Panel Visual
         {
             get;
@@ -78,7 +68,7 @@ namespace Visifire.Charts
 
     }
 
-    public class ExtendedGraphics
+    internal class ExtendedGraphics
     {
         public ExtendedGraphics()
         {
@@ -86,6 +76,83 @@ namespace Visifire.Charts
         }
 
         #region Static Methods
+
+        /// <summary>
+        /// Returns dash array for border
+        /// </summary>
+        /// <param name="borderStyle">borderStyle as BorderStyles</param>
+        /// <returns>DashArray as DoubleCollection</returns>
+        internal static DoubleCollection GetDashArray(BorderStyles borderStyle)
+        {
+            if (borderStyle.ToString() == null) return null;
+
+            DoubleCollection dashArray = new DoubleCollection();
+
+            switch (borderStyle)
+            {   
+                case BorderStyles.Solid:
+                    dashArray = null;
+                    break;
+
+                case BorderStyles.Dashed:
+                    dashArray.Clear();
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    break;
+
+                case BorderStyles.Dotted:
+                    dashArray.Clear();
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    break;
+
+            }
+
+            return dashArray;
+        }
+
+        
+        /// <summary>
+        /// Returns dash array for line
+        /// </summary>
+        /// <param name="lineStyle">LineStyle as LineStyles</param>
+        /// <returns>DashArray as DoubleCollection</returns>
+        internal static DoubleCollection GetDashArray(LineStyles lineStyle)
+        {
+            if (lineStyle.ToString() == null) return null;
+
+            DoubleCollection dashArray = new DoubleCollection();
+
+            switch (lineStyle)
+            {
+                case LineStyles.Solid:
+                    dashArray = null;
+                    break;
+
+                case LineStyles.Dashed:
+                    dashArray.Clear();
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    dashArray.Add(4);
+                    break;
+
+                case LineStyles.Dotted:
+                    dashArray.Clear();
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    dashArray.Add(1);
+                    dashArray.Add(2);
+                    break;
+            }
+
+            return dashArray;
+        }
+
         /// <summary>
         /// Generates a rectangle. The shape of each of the corners can be controlled and is useful for creating single sided 
         /// curved rectangles.
@@ -232,17 +299,6 @@ namespace Visifire.Charts
             return canvas;
         }
 
-        public static Canvas Get2DRectangleBevel(Double width, Double height, Double bevelX, Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush, Double[] Opacities)
-        {
-            Canvas canvas = Get2DRectangleBevel(width, height, bevelX, bevelY, topBrush, leftBrush, rightBrush, bottomBrush);
-
-            canvas.Children[0].Opacity = Opacities[0];
-            canvas.Children[1].Opacity = Opacities[1];
-            canvas.Children[2].Opacity = Opacities[2];
-            canvas.Children[3].Opacity = Opacities[3];
-            return canvas;
-        }
-
         public static Canvas Get2DRectangleBevel(Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
         {
             Canvas canvas = new Canvas();
@@ -257,6 +313,7 @@ namespace Visifire.Charts
             topBevel.Points.Add(new Point(width - bevelX , bevelY));
             topBevel.Points.Add(new Point(bevelX, bevelY));
             topBevel.Fill = topBrush;
+            topBevel.Tag = "TopBevel";
             canvas.Children.Add(topBevel);
 
             Polygon leftBevel = new Polygon();
@@ -266,6 +323,7 @@ namespace Visifire.Charts
             leftBevel.Points.Add(new Point(bevelX, height - bevelY));
             leftBevel.Points.Add(new Point(0, height));
             leftBevel.Fill = leftBrush;
+            leftBevel.Tag = "LeftBevel";
             canvas.Children.Add(leftBevel);
 
             Polygon rightBevel = new Polygon();
@@ -275,6 +333,7 @@ namespace Visifire.Charts
             rightBevel.Points.Add(new Point(width - bevelX, height - bevelY));
             rightBevel.Points.Add(new Point(width - bevelX, bevelY));
             rightBevel.Fill = rightBrush;
+            rightBevel.Tag = "RightBevel";
             canvas.Children.Add(rightBevel);
 
             Polygon bottomBevel = new Polygon();
@@ -284,6 +343,7 @@ namespace Visifire.Charts
             bottomBevel.Points.Add(new Point(width - bevelX, height - bevelY));
             bottomBevel.Points.Add(new Point(width, height));
             bottomBevel.Fill = bottomBrush;
+            bottomBevel.Tag = "BottomBevel";
             canvas.Children.Add(bottomBevel);
 
             return canvas;
@@ -304,6 +364,7 @@ namespace Visifire.Charts
                 rectLeft.SetValue(Canvas.TopProperty, (Double)0);
                 rectLeft.SetValue(Canvas.LeftProperty, (Double)0);
                 rectLeft.Fill = brush1;
+                rectLeft.Tag = "GradianceLeft";
                 canvas.Children.Add(rectLeft);
 
                 Rectangle rectRight = new Rectangle();
@@ -312,16 +373,18 @@ namespace Visifire.Charts
                 rectRight.SetValue(Canvas.TopProperty, (Double)0);
                 rectRight.SetValue(Canvas.LeftProperty, (Double)width / 2);
                 rectRight.Fill = brush2;
+                rectLeft.Tag = "GradianceRight";
                 canvas.Children.Add(rectRight);
             }
             else
-            {
+            {   
                 Rectangle rectTop = new Rectangle();
                 rectTop.Width = width;
                 rectTop.Height = height / 2;
                 rectTop.SetValue(Canvas.TopProperty, (Double)0);
                 rectTop.SetValue(Canvas.LeftProperty, (Double)0);
                 rectTop.Fill = brush1;
+                rectTop.Tag = "GradianceTop";
                 canvas.Children.Add(rectTop);
 
                 Rectangle rectBottom = new Rectangle();
@@ -330,6 +393,7 @@ namespace Visifire.Charts
                 rectBottom.SetValue(Canvas.TopProperty, (Double)height / 2);
                 rectBottom.SetValue(Canvas.LeftProperty, (Double)0);
                 rectBottom.Fill = brush2;
+                rectBottom.Tag = "GradianceBottom";
                 canvas.Children.Add(rectBottom);
             }
 
@@ -408,6 +472,184 @@ namespace Visifire.Commons
         }
 
         #region Static Methods
+
+
+        internal static DoubleCollection GenerateDoubleCollection(params Double[] values)
+        {
+            DoubleCollection collection = new DoubleCollection();
+            foreach (Double value in values)
+                collection.Add(value);
+            return collection;
+        }
+
+        internal static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DataSeries DataSeriesRef, DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
+        {
+            DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
+#if WPF
+            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
+            Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
+
+            DataSeriesRef.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+#else
+            Storyboard.SetTarget(da, target);
+#endif
+            Storyboard.SetTargetProperty(da, new PropertyPath(property));
+
+            da.BeginTime = TimeSpan.FromSeconds(beginTime);
+
+            for (Int32 index = 0; index < splines.Count; index++)
+            {
+                SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
+                keyFrame.KeySpline = splines[index];
+                keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
+                keyFrame.Value = values[index];
+                da.KeyFrames.Add(keyFrame);
+            }
+
+            return da;
+        }
+
+        internal static Brush GetRightGradianceBrush(Int32 alpha)
+        {
+            LinearGradientBrush gradBrush = new LinearGradientBrush();
+
+            gradBrush.GradientStops = new GradientStopCollection();
+
+            gradBrush.StartPoint = new Point(1, 1);
+            gradBrush.EndPoint = new Point(0, 0);
+
+            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb((byte)alpha, 0, 0, 0), 0));
+            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(0, 0, 0, 0), 0));
+
+            return gradBrush;
+        }
+
+        internal static Brush GetTopFaceBrush(Brush brush)
+        {
+            if (typeof(SolidColorBrush).Equals(brush.GetType()))
+            {
+                SolidColorBrush solidBrush = brush as SolidColorBrush;
+
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
+
+                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
+                stops.Add(0);
+
+                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
+                stops.Add(1);
+
+                return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+            }
+            else if (brush is GradientBrush)
+            {
+                GradientBrush gradBrush = brush as GradientBrush;
+
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
+
+                foreach (GradientStop gradStop in gradBrush.GradientStops)
+                {
+                    colors.Add(Graphics.GetLighterColor(gradStop.Color, 0.85));
+                    stops.Add(gradStop.Offset);
+                }
+
+                if (brush is LinearGradientBrush)
+                    return Graphics.CreateLinearGradientBrush(-45, new Point(-0.5, 1.5), new Point(0.5, 0), colors, stops);
+                else
+                    return Graphics.CreateRadialGradientBrush(colors, stops);
+            }
+            else
+            {
+                return brush;
+            }
+        }
+
+        internal static Brush GetRightFaceBrush(Brush brush)
+        {
+            if (brush != null)
+            {
+                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                {
+                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+
+                    List<Color> colors = new List<Color>();
+                    List<Double> stops = new List<Double>();
+
+                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
+                    stops.Add(0);
+
+                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
+                    stops.Add(1);
+
+
+                    return Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                }
+                else if (brush is GradientBrush)
+                {
+                    GradientBrush gradBrush = brush as GradientBrush;
+
+                    List<Color> colors = new List<Color>();
+                    List<Double> stops = new List<Double>();
+
+                    foreach (GradientStop gradStop in gradBrush.GradientStops)
+                    {
+                        colors.Add(Graphics.GetDarkerColor(gradStop.Color, 0.75));
+                        stops.Add(gradStop.Offset);
+                    }
+
+                    if (brush is LinearGradientBrush)
+                        return Graphics.CreateLinearGradientBrush(0, new Point(0, 1), new Point(1, 0), colors, stops);
+                    else
+                        return Graphics.CreateRadialGradientBrush(colors, stops);
+                }
+                else
+                {
+                    return brush;
+                }
+            }
+            else
+                return null;
+        }
+
+        internal static Brush GetFrontFaceBrush(Brush brush)
+        {
+            if (typeof(SolidColorBrush).Equals(brush.GetType()))
+            {
+                SolidColorBrush solidBrush = brush as SolidColorBrush;
+
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
+
+                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
+                stops.Add(0);
+
+                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
+                stops.Add(1);
+
+                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+            }
+            else
+            {
+                return brush;
+            }
+        }
+
+        internal static Brush GetLeftGradianceBrush(Int32 alpha)
+        {
+            LinearGradientBrush gradBrush = new LinearGradientBrush();
+
+            gradBrush.GradientStops = new GradientStopCollection();
+
+            gradBrush.StartPoint = new Point(0, 1);
+            gradBrush.EndPoint = new Point(1, 0);
+
+            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb((byte)alpha, 0, 0, 0), 0));
+            gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(0, 0, 0, 0), 0));
+
+            return gradBrush;
+        }
+
         public static LineSegment GetLineSegment(Point point)
         {
             LineSegment lineSegment = new LineSegment();
@@ -479,6 +721,101 @@ namespace Visifire.Commons
             return brush;
         }
 
+        internal static Brush GetBevelTopBrush(Brush brush, Double angle)
+        {
+            if (brush != null)
+            {
+                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                {
+                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+                    Double r, g, b;
+                    List<Color> colors = new List<Color>();
+                    List<Double> stops = new List<Double>();
+
+                    r = ((double)solidBrush.Color.R / (double)255) * 0.9999;
+                    g = ((double)solidBrush.Color.G / (double)255) * 0.9999;
+                    b = ((double)solidBrush.Color.B / (double)255) * 0.9999;
+
+                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.99));
+                    stops.Add(0);
+
+                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 1 - r, 1 - g, 1 - b));
+                    stops.Add(0.2);
+
+                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 1 - r, 1 - g, 1 - b));
+                    stops.Add(0.6);
+
+                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.99));
+                    stops.Add(1);
+
+                    return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                }
+                else
+                {
+                    return brush;
+                }
+            }
+            else
+                return null;
+        }
+
+        internal static Brush GetBevelSideBrush(Double angle, Brush brush)
+        {
+            return Graphics.GetLightingEnabledBrush(brush, angle, "Linear", new Double[] { 0.75, 0.97});
+        }
+
+        internal static Brush GetBevelTopBrush(Brush brush)
+        {
+            return GetBevelTopBrush(brush, 90);
+        }
+
+        internal static Brush GetLightingEnabledBrush3D(Brush brush)
+        {
+            return GetLightingEnabledBrush(brush, "Linear", new Double[] { 0.65, 0.55 });
+        }
+
+        internal static Brush GetLightingEnabledBrush(Brush brush, Double angle, String type, Double[] colorIntensies)
+        {
+            if (brush != null)
+            {
+                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                {
+                    if (colorIntensies == null)
+                        colorIntensies = new Double[] { 0.745, 0.99 };
+
+                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+
+                    List<Color> colors = new List<Color>();
+                    List<Double> stops = new List<Double>();
+
+                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[0]));
+                    stops.Add(0);
+
+                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[1]));
+                    stops.Add(1);
+
+                    if (type == "Radial")
+                        return Graphics.CreateRadialGradientBrush(colors, stops);
+                    else
+                        return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                }
+                else
+                {
+                    return brush;
+                }
+            }
+            else
+            {
+                return brush;
+            }
+
+        }
+ 
+        internal static Brush GetLightingEnabledBrush(Brush brush, String type, Double[] colorIntensies)
+        {
+             return GetLightingEnabledBrush(brush, -90, type, colorIntensies);
+        }
+        
         public static Brush CreateRadialGradientBrush(List<Color> colors, List<Double> stops)
         {
             RadialGradientBrush brush = new RadialGradientBrush();
@@ -775,19 +1112,20 @@ namespace Visifire.Commons
             return darkerShade;
         }
 
-        public static Color GetDarkerColor(Color color, Double intensityR, Double intensityG, Double intensityB)
+        public static List<KeySpline> GenerateAnimationSplines(int count)
         {
-            Color darkerShade = new Color();
-            intensityR = (intensityR < 0 || intensityR > 1) ? 1 : intensityR;
-            intensityG = (intensityG < 0 || intensityG > 1) ? 1 : intensityG;
-            intensityB = (intensityB < 0 || intensityB > 1) ? 1 : intensityB;
-            darkerShade.R = (Byte)(color.R * intensityR);
-            darkerShade.G = (Byte)(color.G * intensityG);
-            darkerShade.B = (Byte)(color.B * intensityB);
-            darkerShade.A = color.A;
-            return darkerShade;
+            List<KeySpline> splines = new List<KeySpline>();
+            for (int i = 0; i < count; i++)
+            {
+                splines.Add(GetKeySpline(new Point(0, 0), new Point(1, 1)));
+            }
+            return splines;
         }
 
+        public static KeySpline GetKeySpline(Point controlPoint1, Point controlPoint2)
+        {
+            return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
+        }
 
         /// <summary>
         /// Returns a lighter shade of the color by increasing the brightness by the given intensity value

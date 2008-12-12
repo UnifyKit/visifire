@@ -95,6 +95,18 @@
                                 alert(dataPoint.Chart.ControlId);
                             };
 
+
+                            // SetPropertyFromJs() can be used to update any property of any chart element.
+
+                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("YValue", "100");
+                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("Color", "Red");
+
+                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderThickness", "5.0");
+
+                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderThickness", "5.0");
+                           // chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderStyle", "Solid");
+                           //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderColor", "#FFFF00");
+
                         }
                         
                         /* 
@@ -112,7 +124,7 @@
 				                + '	<GradientStop Color="White" Offset="0.567"/>'
 				                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
 				                + '</LinearGradientBrush>';
-
+                            
                             // Set PoltArea background color.
                             chart.PlotArea.SetPropertyFromJs("Color", color);
 

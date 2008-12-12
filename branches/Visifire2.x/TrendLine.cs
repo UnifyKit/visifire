@@ -1,42 +1,19 @@
 ﻿#if WPF
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
+
 
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 using Visifire.Commons;
@@ -57,6 +34,18 @@ namespace Visifire.Charts
             set;
         }
         #endregion Internal Properties
+
+        #region Internal Methods
+
+        internal override void UpdateVisual(string PropertyName, object Value)
+        {
+            if (Line == null || Shadow == null)
+                FirePropertyChanged(PropertyName);
+            else
+                ApplyProperties();
+        }
+
+        #endregion
 
         #region Public Properties
 
@@ -106,7 +95,8 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("LineColor");
+            //source.FirePropertyChanged("LineColor");
+            source.UpdateVisual("LineColor", e.NewValue);
         }
 
         #endregion  LineColor
@@ -129,7 +119,8 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("LineThickness");
+            //source.FirePropertyChanged("LineThickness");
+            source.UpdateVisual("LineThickness", e.NewValue);
         }
 
         #endregion  LineThickness
@@ -152,7 +143,8 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("LineStyle");
+            //source.FirePropertyChanged("LineStyle");
+            source.UpdateVisual("LineStyle", e.NewValue);
         }
 
         #endregion  LineStyle
@@ -175,7 +167,8 @@ namespace Visifire.Charts
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("ShadowEnabled");
+            //source.FirePropertyChanged("ShadowEnabled");
+            source.UpdateVisual("ShadowEnabled", e.NewValue);
         }
 
         #endregion  ShadowEnabled
@@ -285,6 +278,24 @@ namespace Visifire.Charts
         #endregion Private Properties
         
         #region Public Methods
+
+        private void ApplyProperties()
+        {         
+            Line.Stroke = LineColor;
+            Line.StrokeThickness = LineThickness;
+            Line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+
+            Shadow.StrokeThickness = LineThickness + 2;
+            Shadow.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+
+            Shadow.Stroke = new SolidColorBrush(Colors.LightGray);
+            Shadow.Opacity = 0.7;
+
+            Shadow.StrokeDashCap = PenLineCap.Round;
+            Shadow.StrokeLineJoin = PenLineJoin.Round;
+            Shadow.Visibility = ShadowEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+        
         public void CreateVisualObject(Double width, Double height)
         {
             if (ReferingAxis == null || !(Boolean)Enabled)
@@ -296,14 +307,10 @@ namespace Visifire.Charts
             Visual = new Canvas();
             Visual.Opacity = this.Opacity;
             Double shadowThickness = LineThickness + 2;
-            Line = new Line(){Stroke = LineColor,StrokeThickness = LineThickness,StrokeDashArray = GetDashArray(LineStyle)};
-            Shadow = new Line() { StrokeThickness = shadowThickness, StrokeDashArray = GetDashArray(LineStyle) };
-            Shadow.Stroke = new SolidColorBrush(Colors.LightGray);
-            Shadow.Opacity = 0.7;
+            Line = new Line();
+            Shadow = new Line();
 
-            Shadow.StrokeDashCap = PenLineCap.Round;
-            Shadow.StrokeLineJoin = PenLineJoin.Round;
-            Shadow.Visibility = ShadowEnabled ? Visibility.Visible : Visibility.Collapsed;
+            ApplyProperties();
 
             switch (Orientation)
             {
@@ -354,8 +361,8 @@ namespace Visifire.Charts
 
             ObservableObject.AttachToolTip(ReferingAxis.Chart, Line, ToolTipText);
             ObservableObject.AttachHref(ReferingAxis.Chart, Line, Href, HrefTarget);
-            
         }
+
         #endregion Public Methods
 
         #region Data

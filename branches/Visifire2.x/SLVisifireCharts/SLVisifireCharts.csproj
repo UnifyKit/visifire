@@ -152,14 +152,15 @@
     </Compile>
     <Compile Include="Chart.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="JsHelper.cs" />
     <Compile Include="Logger.xaml.cs">
       <DependentUpon>Logger.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodingStandard.txt" />
-    <Content Include="Scratch.txt" />
+    <None Include="CodingStandard.txt" />
+    <None Include="Scratch.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SLVisifireCharts.snk" />

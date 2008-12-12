@@ -1,41 +1,23 @@
 ﻿#if WPF
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
 using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 
@@ -55,13 +37,6 @@ namespace Visifire.Charts
             XValue = Double.NaN;
             YValue = Double.NaN;
             ZValue = Double.NaN;
-
-            // LabelFontSize = 0;
-            // MarkerSize = 0;
-            // MarkerSize = Double.NaN;
-            // MarkerScale = Double.NaN;
-            // LabelFontSize = Double.NaN;
-
 #if WPF
             if (!_defaultStyleKeyApplied)
             {
@@ -69,8 +44,6 @@ namespace Visifire.Charts
                 _defaultStyleKeyApplied = true;
             } 
 
-            //object dsp = this.GetValue(FrameworkElement.DefaultStyleKeyProperty);
-            //Style = (Style)Application.Current.FindResource(dsp);
             NameScope.SetNameScope(this, new NameScope());
 
 #else
@@ -97,7 +70,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-
 
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableHrefTargetsConverter))]
@@ -133,7 +105,7 @@ namespace Visifire.Charts
         {
             get
             {
-                return (String)((HrefProperty == null)?GetValue(HrefProperty):Parent.GetValue(HrefProperty));
+                return (String)(!String.IsNullOrEmpty((String)GetValue(HrefProperty)) ? GetValue(HrefProperty) : Parent.GetValue(DataSeries.HrefProperty));
             }
             set
             {
@@ -274,13 +246,12 @@ namespace Visifire.Charts
             get
             {
                 if ((Brush)GetValue(ColorProperty) == null)
-                    return _parent.Color;
+                    return (_parent.Color == null)? InternalColor : _parent.Color;
                 else
                     return (Brush)GetValue(ColorProperty);
             }
             set
             {
-                IsExternalColorApplied = true;
                 SetValue(ColorProperty, value);
             }
         }
@@ -294,7 +265,8 @@ namespace Visifire.Charts
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("Color");
+            dataPoint.UpdateVisual("Color", e.NewValue);
+            //dataPoint.FirePropertyChanged("Color");
         }
 
         /// <summary>
@@ -1208,7 +1180,7 @@ namespace Visifire.Charts
         {
             get
             {
-                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) == null || (Thickness)GetValue(BorderThicknessProperty) == new Thickness(0, 0, 0, 0))
+                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(BorderThicknessProperty) == new Thickness(0,0,0,0))
                     return _parent.BorderThickness;
                 else
                     return (Nullable<Thickness>)GetValue(BorderThicknessProperty);
@@ -1216,7 +1188,7 @@ namespace Visifire.Charts
             set
             {
                 SetValue(BorderThicknessProperty, value);
-                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) == null || (Thickness)GetValue(BorderThicknessProperty) == new Thickness(0, 0, 0, 0))
+                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) != null)
                     this.FirePropertyChanged("BorderThickness");
             }
         }
@@ -1400,9 +1372,137 @@ namespace Visifire.Charts
 
         #region Protected Methods
 
+            internal override void UpdateVisual(String PropertyName, object Value)
+            {   
+                switch(PropertyName)
+                {
+                    case "Color":
+
+                        #region Color
+
+                        Value = Color;
+
+                        if (Faces != null && Faces.Parts != null)
+                        {
+                            switch(Parent.RenderAs)
+                            {
+                                case RenderAs.Column:
+                                case RenderAs.Bar:
+                                case RenderAs.StackedBar:
+                                case RenderAs.StackedBar100:
+                                case RenderAs.StackedColumn:
+                                case RenderAs.StackedColumn100:
+
+                                    if (!(Parent.Chart as Chart).View3D)
+                                    {
+                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Path).Fill = (((Boolean)Parent.LightingEnabled) ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.745, 0.99}) : (Brush)Value);
+                                        if (Faces.Parts[1] != null) (Faces.Parts[1] as Polygon).Fill = Graphics.GetBevelTopBrush((Brush)Value);
+                                        if (Faces.Parts[2] != null) (Faces.Parts[2] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -70 : 0), (Brush)Value);
+                                        if (Faces.Parts[3] != null) (Faces.Parts[3] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -110 : 180), (Brush)Value);
+                                        if (Faces.Parts[4] != null) (Faces.Parts[4] as Polygon).Fill = null;
+                                        if (Faces.Parts[5] != null) (Faces.Parts[5] as Shape).Fill = Graphics.GetLeftGradianceBrush(63);
+                                        if (Faces.Parts[6] != null) (Faces.Parts[6] as Shape).Fill = ((Parent.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Graphics.GetRightGradianceBrush(63) : Graphics.GetLeftGradianceBrush(63);
+                                    }
+                                    else
+                                    {   
+                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)Value) : (Brush)Value ;   // Front brush
+                                        if (Faces.Parts[1] != null) (Faces.Parts[1] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)Value) : (Brush)Value;      // Top brush
+                                        if (Faces.Parts[2] != null) (Faces.Parts[2] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)Value) : (Brush)Value;    // Right
+                                    }
+                                    
+                                break;
+                                    
+                                case RenderAs.Bubble:
+                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = ((Parent.Chart as Chart).View3D ? Graphics.GetLightingEnabledBrush3D((Brush)Value) : ((Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.99, 0.745 }) : (Brush)Value));
+                                    
+                                break;
+
+                                case RenderAs.Pie:
+                                case RenderAs.Doughnut:
+
+                                    SectorChartShapeParams pieParams = (SectorChartShapeParams)this.VisualParams;
+                                    pieParams.Background = (Brush)Value;
+
+                                    if (!(Parent.Chart as Chart).View3D)
+                                    {
+                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Radial", null) : (Brush)Value;
+
+                                        if (Faces.Parts[1] != null)
+                                            (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
+
+                                        if (Faces.Parts[2] != null)
+                                            (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
+
+                                        if (Faces.Parts[3] != null)
+                                            (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(-0.745, -0.85), PieChart.GetDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(0.745, -0.99), PieChart.GetDoubleCollection(0, 1));
+                                        
+                                        if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts[4] != null)
+                                            (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(-0.745, -0.85), PieChart.GetDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(0.745, -0.99), PieChart.GetDoubleCollection(0, 1));
+                                    }
+                                    else
+                                    {   
+                                        foreach (FrameworkElement fe in Faces.Parts)
+                                            if (fe != null) (fe as Path).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
+                                    }
+
+                                    break;
+                            }
+                        }
+
+
+                        UpdateMarkerAndLegend(Value);
+   #endregion
+
+                        break;
+
+                    default:
+                        FirePropertyChanged(PropertyName);
+                        break;
+                }
+            }
+            
         #endregion
 
+
+        void UpdateMarkerAndLegend(object Value)
+        {
+            if (Marker != null && Marker.Visual != null)
+            {
+                if (Parent.RenderAs == RenderAs.Line)
+                {
+                    Marker.BorderColor = (Brush)Value;
+                    Marker.UpdateMarker();
+                }
+                else if (Parent.RenderAs == RenderAs.Point)
+                {
+                    Marker.MarkerFillColor = (Brush)Value;
+                    if (Marker.MarkerType != MarkerTypes.Cross)
+                    {
+                        if (BorderColor != null)
+                            Marker.BorderColor = BorderColor;
+                    }
+                    else
+                        Marker.BorderColor = (Brush)Value;
+
+                    Marker.UpdateMarker();
+                }
+            }
+
+            if (LegendMarker != null && LegendMarker.Visual != null)
+            {
+                LegendMarker.BorderColor = (Brush)Value;
+                LegendMarker.MarkerFillColor = (Brush)Value;
+                LegendMarker.UpdateMarker();
+            }
+        }
+
         #region Internal Properties
+
+            internal Marker LegendMarker
+            {
+                get;
+                set;
+            }
 
         internal Faces Faces
         {
@@ -1437,6 +1537,16 @@ namespace Visifire.Charts
             get;
             set;
         }
+
+        /// <summary>
+        /// Visual Parameters
+        /// </summary>
+        internal object VisualParams
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Private Delegates
@@ -1455,61 +1565,63 @@ namespace Visifire.Charts
             /// <param name="faces"></param>
             internal void AttachEvent2DataPointVisualFaces(ObservableObject Object)
             {
-               
-                    if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
-                    {
-                        if (Faces != null)
-                        {
-                            if ((Parent.Chart as Chart).View3D)
-                            {
-                                foreach (FrameworkElement element in Faces.VisualComponents)
-                                {
-                                    AttachEvents2Visual(Object, this, element);
-                                    element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                                    element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                                }
-                            }
-                            else
-                            {
-                                AttachEvents2Visual(Object, this, Faces.Visual);
-                                Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                                Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                            }
+                //if (LegendMarker != null)
+                //    ObservableObject.AttachEvents2Visual(this, this.LegendMarker.Visual);
 
-                            this.ExplodeAnimation.Completed -= new EventHandler(ExplodeAnimation_Completed);
-                            this.UnExplodeAnimation.Completed -= new EventHandler(UnExplodeAnimation_Completed);
-                            this.ExplodeAnimation.Completed += new EventHandler(ExplodeAnimation_Completed);
-                            this.UnExplodeAnimation.Completed += new EventHandler(UnExplodeAnimation_Completed);
-                        }
-                    }
-                    else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100)
+                if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
+                {
+                    if (Faces != null)
                     {
-                        //if (Parent.Faces != null)
-                        //{
-                        //    foreach (FrameworkElement face in Parent.Faces.VisualComponents)
-                        //    {
-                        //        AttachEvents2Visual(Object, this, face);
-                        //    }
-                        //}
-
-                        if (Marker != null)
-                            AttachEvents2Visual(Object, this, Marker.Visual);
-                    }
-                    else if (Parent.RenderAs == RenderAs.Line)
-                    {
-                         if (Marker != null)
-                             AttachEvents2Visual(Object, this, Marker.Visual);
-                    }
-                    else
-                    {
-                        if (Faces != null)
+                        if ((Parent.Chart as Chart).View3D)
                         {
-                            foreach (FrameworkElement face in Faces.VisualComponents)
+                            foreach (FrameworkElement element in Faces.VisualComponents)
                             {
-                                AttachEvents2Visual(Object, this, face);
+                                AttachEvents2Visual(Object, this, element);
+                                element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                                element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                             }
                         }
+                        else
+                        {
+                            AttachEvents2Visual(Object, this, Faces.Visual);
+                            Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                            Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                        }
+
+                        this.ExplodeAnimation.Completed -= new EventHandler(ExplodeAnimation_Completed);
+                        this.UnExplodeAnimation.Completed -= new EventHandler(UnExplodeAnimation_Completed);
+                        this.ExplodeAnimation.Completed += new EventHandler(ExplodeAnimation_Completed);
+                        this.UnExplodeAnimation.Completed += new EventHandler(UnExplodeAnimation_Completed);
                     }
+                }
+                else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100)
+                {
+                    //if (Parent.Faces != null)
+                    //{
+                    //    foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                    //    {
+                    //        AttachEvents2Visual(Object, this, face);
+                    //    }
+                    //}
+
+                    if (Marker != null)
+                        AttachEvents2Visual(Object, this, Marker.Visual);
+                }
+                else if (Parent.RenderAs == RenderAs.Line)
+                {
+                     if (Marker != null)
+                         AttachEvents2Visual(Object, this, Marker.Visual);
+                }
+                else
+                {
+                    if (Faces != null)
+                    {
+                        foreach (FrameworkElement face in Faces.VisualComponents)
+                        {
+                            AttachEvents2Visual(Object, this, face);
+                        }
+                    }
+                }
             }
 
             void Visual_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -1544,7 +1656,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-
+            
             void ExplodeAnimation_Completed(object sender, EventArgs e)
             {
                 _interactiveExplodeState = true;
@@ -1563,6 +1675,7 @@ namespace Visifire.Charts
             /// </summary>
             internal void SetHref2DataPointVisualFaces(ObservableObject Object)
             {
+                System.Diagnostics.Debug.WriteLine(Href);
                 if (Faces != null)
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
@@ -1690,9 +1803,13 @@ namespace Visifire.Charts
                     str = str.Replace("##Sum", "#Sum");
                 else
                 {
-                    if (Parent.PlotGroup != null)
-                        str = str.Replace("#Sum", Parent.PlotGroup.AxisY.GetFormattedString(
-                            Parent.PlotGroup.XWiseStackedDataList[XValue].PositiveYValueSum + Parent.PlotGroup.XWiseStackedDataList[XValue].NegativeYValueSum));//_stackSum[XValue].X contains sum of all data points with same X value
+                    if (Parent.PlotGroup != null && Parent.PlotGroup.XWiseStackedDataList != null && Parent.PlotGroup.XWiseStackedDataList.ContainsKey(XValue))
+                    {
+                        Double sum = 0;
+                        sum += Parent.PlotGroup.XWiseStackedDataList[XValue].PositiveYValueSum;
+                        sum += Parent.PlotGroup.XWiseStackedDataList[XValue].NegativeYValueSum;
+                        str = str.Replace("#Sum", Parent.PlotGroup.AxisY.GetFormattedString(sum));  //_stackSum[XValue].X contains sum of all data points with same X value
+                    }
                 }
                 return str;
             }
@@ -1709,7 +1826,7 @@ namespace Visifire.Charts
             private String _toolTipText;
             private Boolean _interactiveExplodeState = false;
             private Boolean _interativityAnimationState = false;
-            internal Boolean IsExternalColorApplied;                        // if color is set by user not from ColorSet 
+            internal Brush InternalColor;
 #if WPF
         static Boolean _defaultStyleKeyApplied;            // Default Style key
 #endif

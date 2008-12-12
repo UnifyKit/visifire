@@ -10,7 +10,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class TrendLineTest:SilverlightControlTest
     {
 

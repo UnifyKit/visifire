@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows;
-
+using Visifire.Charts;
 #if SL
 using System.Windows.Browser;
 #endif
@@ -163,7 +163,18 @@ namespace Visifire.Commons
         internal event EventHandler EventChanged;
 
         #endregion
-        
+
+
+        /// <summary>
+        /// Attach events to a visual
+        /// </summary>
+        /// <param name="Visual"></param>
+        public static void AttachEvents2Visual(VisifireElement Object, FrameworkElement Visual)
+        {
+            if (Visual != null)
+                AttachEvents2Visual(Object, Object, Visual);
+        }
+
         /// <summary>
         /// Attach events to a visual
         /// </summary>
@@ -225,16 +236,22 @@ namespace Visifire.Commons
         }
 
         
+
+#if SL
         /// <summary>
-        /// Attach events to a visual
+        /// Sets value for specific property of chart
+        /// This function is used for setting property from JavaScript only
         /// </summary>
-        /// <param name="Visual"></param>
-        public static void AttachEvents2Visual(VisifireElement Object, FrameworkElement Visual)
+        /// <param name="propertyName">Name of the property as String</param>
+        /// <param name="value">Property Value as String</param>
+        [System.Windows.Browser.ScriptableMember()]
+        public void SetPropertyFromJs(String propertyName, String value)
         {
-            if (Visual != null)
-                AttachEvents2Visual(Object, Object, Visual);
+            JsHelper.SetProperty(this, propertyName, value);
         }
-        
+
+#endif
+
         internal event MouseButtonEventHandler _onMouseLeftButtonDown;       // Handler for MouseLeftButtonDown event
         internal event MouseButtonEventHandler _onMouseLeftButtonUp;         // Handler for MouseLeftButtonUp event
         internal event EventHandler<MouseEventArgs> _onMouseEnter;           // Handler for MouseEnter event

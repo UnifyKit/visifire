@@ -431,26 +431,6 @@ namespace SLVisifireChartsXap
 
             return chartCanvas;
         }
-
-        ///// <summary>
-        ///// Finds list of objects of specified type.
-        ///// </summary>
-        //private List<Chart> FindByType(Panel parent, Type objType)
-        //{
-        //    if (parent != null && parent.Children != null)
-        //    {
-        //        var objs = from child in parent.Children where objType.Equals(child.GetType()) select child;
-
-        //        List<Chart> charts = new List<Chart>();
-
-        //        foreach (Chart chart in objs)
-        //            charts.Add(chart);
-
-        //        return charts;
-        //    }
-        //    else
-        //        return null;
-        //}
         
         /// <summary>
         /// Finds list of objects of specified type.

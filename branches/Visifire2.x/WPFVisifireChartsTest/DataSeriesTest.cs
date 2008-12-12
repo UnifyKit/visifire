@@ -826,8 +826,8 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (isLoaded)
             {
-                dataSeries.ColorSet = ColorSetNames.Visifire2;
-                Assert.AreEqual(ColorSetNames.Visifire2, dataSeries.ColorSet);
+                dataSeries.ColorSet = "Visifire2";
+                Assert.AreEqual("Visifire2", dataSeries.ColorSet);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -2325,7 +2325,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (isLoaded)
             {
-                Assert.IsTrue((Boolean)dataSeries.LabelLineEnabled);
+                Assert.IsNull((Boolean)dataSeries.LabelLineEnabled);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

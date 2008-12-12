@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
-using Visifire.Commons;
 using System.Windows.Browser;
 using System.Globalization;
 using System.Linq;
@@ -64,7 +55,7 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.BottomInnerPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.BottomInnerLegendPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.BottomInnerTitlePanelName, Type = typeof(StackPanel))]
-    [TemplatePart(Name = Chart.LeftInnerPanelName, Type = typeof(StackPanel))]
+    //[TemplatePart(Name = Chart.LeftInnerPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.LeftInnerTitlePanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.LeftInnerLegendPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.RightInnerPanelName, Type = typeof(StackPanel))]
@@ -110,66 +101,25 @@ namespace Visifire.Charts
 
 
 
-        /// <summary>
-        /// Sets value for specific property of chart
-        /// This function is used for setting property from JavaScript only
-        /// </summary>
-        /// <param name="propertyName">Name of the property as String</param>
-        /// <param name="value">Property Value as String</param>
-        [System.Windows.Browser.ScriptableMember()]
-        public void SetPropertyFromJs(String propertyName, String value)
-        {
-            if (propertyName == "Canvas.ZIndex")
-            {
-                SetValue(Canvas.ZIndexProperty, Convert.ToInt32(value, CultureInfo.InvariantCulture));
-                return;
-            }
-
-            Object element = this;
-
-            System.Reflection.PropertyInfo[] propArray = element.GetType().GetProperties();
-            var obj = from property in propArray
-                      where (property.Name == propertyName)
-                      select property;
-
-            try
-            {
-                System.Reflection.PropertyInfo property1 = obj.First<System.Reflection.PropertyInfo>();
-
-                if (property1.PropertyType.Name == "Brush")
-                    property1.SetValue(element, ((Brush)System.Windows.Markup.XamlReader.Load(value)), null);
-                else if (property1.PropertyType.Equals(typeof(FontFamily)))
-                {
-                    FontFamily ffc = new FontFamily(value);
-                    property1.SetValue(element, ffc, null);
-                }
-                else if (property1.PropertyType.Equals(typeof(FontStyle)))
-                {
-                    property1.SetValue(element, value, null);
-                }
-                else if (property1.PropertyType.Equals(typeof(FontWeight)))
-                {
-                    property1.SetValue(element, value, null);
-                }
-                else if (property1.PropertyType.Equals(typeof(Nullable<Boolean>)))
-                    property1.SetValue(element, new Nullable<Boolean>(Convert.ToBoolean(value, CultureInfo.InvariantCulture)), null);
-                else if (property1.PropertyType.Equals(typeof(Nullable<Double>)))
-                    property1.SetValue(element, new Nullable<Double>(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property1.PropertyType.BaseType.Equals(typeof(Enum)))
-                    property1.SetValue(element, Enum.Parse(property1.PropertyType, value, true), null);
-                else if (property1.PropertyType.Equals(typeof(Thickness)))
-                    property1.SetValue(element, new Thickness(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property1.PropertyType.Equals(typeof(CornerRadius)))
-                    property1.SetValue(element, new CornerRadius(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else
-                    property1.SetValue(element, Convert.ChangeType(value, property1.PropertyType, CultureInfo.InvariantCulture), null);
-            }
-            catch (Exception e)
-            {
-                String s = String.Format(@"Unable to update {0} property, Property not found.\n [{1}]", propertyName, e.Message);
-                throw new Exception(s);
-            }
-        }
+        ///// <summary>
+        ///// Sets value for specific property of chart
+        ///// This function is used for setting property from JavaScript only
+        ///// </summary>
+        ///// <param name="propertyName">Name of the property as String</param>
+        ///// <param name="value">Property Value as String</param>
+        //[System.Windows.Browser.ScriptableMember()]
+        //public void SetPropertyFromJs(String propertyName, String value)
+        //{
+        //    try
+        //    {
+        //        JsHelper.SetProperty(this, propertyName, value);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        String s = String.Format(@"Unable to update {0} property, Property not found.\n [{1}]", propertyName, e.Message);
+        //        throw new Exception(s);
+        //    }
+        //}
 
         #endregion
 
@@ -251,7 +201,6 @@ namespace Visifire.Charts
 
         private void Chart_Loaded(object sender, RoutedEventArgs e)
         {
-            
             // Render the chart with new size
             CallRender();
         }

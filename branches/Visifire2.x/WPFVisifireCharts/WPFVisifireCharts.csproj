@@ -195,7 +195,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="favicon.ico" />
+    <None Include="favicon.ico" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ColorSets.xaml">

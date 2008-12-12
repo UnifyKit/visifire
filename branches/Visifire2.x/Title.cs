@@ -1,48 +1,22 @@
 ﻿#if WPF
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
 using Visifire.Commons;
-using System.Windows.Threading;
-using System.Windows.Media.Animation;
-using System.Reflection;
-using System.Resources;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+
 #else
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Collections.Generic;
 using Visifire.Commons;
-using System.Windows.Browser;
 using System.Windows.Data;
 #endif
 
@@ -64,7 +38,6 @@ namespace Visifire.Charts
         public Title()
         {
 #if SL
-
             Binding binding = new Binding("FontFamily");
             binding.Source = this;
             binding.Mode = BindingMode.TwoWay;
@@ -195,7 +168,6 @@ namespace Visifire.Charts
         
         #region Font Properties
 
-        //[System.ComponentModel.TypeConverter(typeof(System.Windows.Media.FontFamilyConverter))]
         public new FontFamily FontFamily
         {
             get
@@ -267,7 +239,8 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("FontSize");
+            // title.FirePropertyChanged("FontSize");
+            title.UpdateVisual("FontColor", e.NewValue);
         }
 #endif
 
@@ -296,7 +269,7 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             Title title = d as Title;
-            title.FirePropertyChanged("FontColor");
+            title.UpdateVisual("FontColor", e.NewValue);
         }
 
         private new Brush Foreground
@@ -319,7 +292,8 @@ namespace Visifire.Charts
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
-                    FirePropertyChanged("FontStyle");                   
+                    //FirePropertyChanged("FontStyle"); 
+                    UpdateVisual("FontStyle", value);
                 }
 #else
                 SetValue(FontStyleProperty, value);
@@ -334,7 +308,7 @@ namespace Visifire.Charts
         internal FontStyle InternalFontStyle
         {
             get
-            {
+            {   
                 return (FontStyle)(GetValue(InternalFontStyleProperty));
             }
             set
@@ -352,12 +326,13 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("FontStyle");
+            //title.FirePropertyChanged("FontStyle");
+            title.UpdateVisual("FontStyle", e.NewValue);
         }
 #endif
 
 #if SL
-      //  [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+
         public new FontWeight FontWeight
         {
             get
@@ -370,7 +345,8 @@ namespace Visifire.Charts
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
-                    FirePropertyChanged("FontWeight");
+                    // FirePropertyChanged("FontWeight");
+                    UpdateVisual("FontWeight", value);
                 }
 #else
                 SetValue(FontWeightProperty, value);
@@ -401,7 +377,8 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("FontWeight");
+            //title.FirePropertyChanged("FontWeight");
+            title.UpdateVisual("FontWeight", e.NewValue);
         }
 #endif
         /// <summary>
@@ -839,12 +816,12 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
-        
+
         /// <summary>
         /// Apply all style properties of the Title
         /// </summary>
         /// <param name="title"></param>
-        private static void ApplyProperties(Title title)
+        private static Boolean ApplyProperties(Title title)
         {   
             if (title.Visual != null)
             {   
@@ -876,12 +853,22 @@ namespace Visifire.Charts
                 // AttachToolTip
                 ObservableObject.AttachToolTip(title.Chart, title.TextElement, title.ToolTipText);
                 ObservableObject.AttachHref(title.Chart, title.TextElement, title.Href, title.HrefTarget);
+
+                return true;
             }
+            else
+                return false;
         }
 
         #endregion
 
         #region Internal Methods
+
+        internal override void UpdateVisual(String propertyName, Object Value)
+        {
+            if (!ApplyProperties(this))
+                this.FirePropertyChanged(propertyName);
+        }
 
         /// <summary>
         /// Set TextAlignment for Titles present in Left and Right of the ChartArea
@@ -933,6 +920,7 @@ namespace Visifire.Charts
 #else
             TextBlockDesiredSize = new Size(TextElement.ActualWidth, TextElement.ActualHeight);
 #endif
+
             // Set TextElement position inside Title Visual
             if (VerticalAlignment == VerticalAlignment.Center || VerticalAlignment == VerticalAlignment.Stretch)
             {

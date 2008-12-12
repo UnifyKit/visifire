@@ -1,49 +1,21 @@
 ﻿#if WPF
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Collections;
+using System.ComponentModel;
 
 #else
 
 using System;
-using System.Net;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
-using System.Globalization;
+
 
 #endif
-using System.Windows.Data;
-using System.ComponentModel;
-using Visifire.Charts;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -75,60 +47,8 @@ namespace Visifire.Charts
         
         private void SetDefaults()
         {
-            //Orientation = Orientation.Vertical;
-            //IsNotificationEnable = false;
-            //Padding = new Thickness(4);
-            //EntryMargin = 3;
-            //LabelMargin = 6;
-            //FontFamily = new FontFamily("Arial");
-            //FontStyle = FontStyles.Normal;
-            //FontWeight = FontWeights.Normal;
-            //FontColor = new SolidColorBrush(Colors.Black);
-            //FontSize = 9;
-            //TitleFontSize = 10;
-            //TitleBackground = new SolidColorBrush(Colors.LightGray);
-            //TitleAlignmentX = HorizontalAlignment.Stretch;
-            //TitleTextAlignment = TextAlignment.Center;
-            //BorderThickness = new Thickness(0.4);
-            //BorderColor = new SolidColorBrush(Colors.Black);
-            //CornerRadius = new CornerRadius(1);
-            //HorizontalAlignment = HorizontalAlignment.Center;
-            //VerticalAlignment = VerticalAlignment.Bottom;
-            //Background = new SolidColorBrush(Colors.Gray);
-            //LightingEnabled = true;
-            //Enabled = true;
-            //IsNotificationEnable = true;
 
-            //System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
-            //binding.Source = this;
-            //binding.Mode = System.Windows.Data.BindingMode.OneWay;
-            //base.SetBinding(InternalBackgroundProperty, binding);
-
-            //System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
-            //binding1.Source = this;
-            //binding1.Mode = System.Windows.Data.BindingMode.OneWay;
-            //base.SetBinding(InternalBorderThicknessProperty, binding1);
         }
-
-
-        
-        //internal Thickness InternalBorderThickness
-        //{
-        //    get
-        //    {
-        //        return (Thickness)GetValue(InternalBorderThicknessProperty);
-        //    }
-        //    set
-        //    {
-        //        SetValue(InternalBorderThicknessProperty, value);
-        //    }
-        //}
-
-        //public static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
-        //   ("InternalBorderThickness",
-        //   typeof(Thickness),
-        //   typeof(Legend),
-        //   new PropertyMetadata(OnInternalPropertyChanged));
 
         internal Border Visual
         {
@@ -606,9 +526,7 @@ namespace Visifire.Charts
             Legend legend = d as Legend;
             legend.FirePropertyChanged("FontColor");
         }
-       
 
-        //[System.ComponentModel.TypeConverter(typeof(System.Windows.Media.FontFamilyConverter))]
         public new FontFamily FontFamily
         {
             get

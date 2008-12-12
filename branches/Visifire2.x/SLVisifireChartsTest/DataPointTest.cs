@@ -13,7 +13,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class DataPointTest : SilverlightControlTest
     {
         /// <summary>

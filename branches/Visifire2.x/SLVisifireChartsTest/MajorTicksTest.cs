@@ -14,7 +14,7 @@ using Visifire.Charts;
 
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class MajorTicksTest : SilverlightControlTest
     {
         #region Test default property value

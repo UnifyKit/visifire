@@ -3,25 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
 using System.Globalization;
-using System.Diagnostics;
 using System.Collections.ObjectModel;
 
 #else
@@ -30,14 +19,10 @@ using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
@@ -595,8 +580,11 @@ namespace Visifire.Charts
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Color");
-            // axis.TitleFontColor = e.NewValue as Brush;
+            //axis.FirePropertyChanged("Color");
+            if(axis.Visual != null)
+                axis.Visual.Background = (Brush)e.NewValue;
+            else
+                axis.FirePropertyChanged("Color");
         }
 
         /// <summary>
@@ -1547,7 +1535,7 @@ namespace Visifire.Charts
             AxisLine = new Line() { Y1 = StartOffset, Y2 = Height - EndOffset, X1 = LineThickness / 2, X2 = LineThickness / 2, Width = LineThickness, Height = this.Height };
             AxisLine.StrokeThickness = LineThickness;
             AxisLine.Stroke = LineColor;
-            AxisLine.StrokeDashArray = GetDashArray(LineStyle);
+            AxisLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
             // Set the parameters for the major ticks
             foreach (Ticks tick in Ticks)
@@ -1689,7 +1677,7 @@ DOWN:
             AxisLine = new Line() { Y1 = StartOffset, Y2 = Height - EndOffset, X1 = LineThickness / 2, X2 = LineThickness / 2, Width = LineThickness, Height = this.Height };
             AxisLine.StrokeThickness = LineThickness;
             AxisLine.Stroke = LineColor;
-            AxisLine.StrokeDashArray = GetDashArray(LineStyle);
+            AxisLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
             // Set the parameters for the major ticks
             foreach (Ticks tick in Ticks)
@@ -1792,7 +1780,7 @@ DOWN:
             AxisLine = new Line() { X1 = StartOffset, X2 = Width - EndOffset, Y1 = LineThickness / 2, Y2 = LineThickness / 2, Width = this.Width, Height = LineThickness };
             AxisLine.StrokeThickness = LineThickness;
             AxisLine.Stroke = LineColor;
-            AxisLine.StrokeDashArray = GetDashArray(LineStyle);
+            AxisLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
             // Set the parameters for the major ticks
             foreach (Ticks tick in Ticks)
@@ -1902,7 +1890,7 @@ DOWN:
             AxisLine = new Line() { X1 = StartOffset, X2 = Width-EndOffset, Y1 = LineThickness / 2, Y2 = LineThickness / 2, Width = this.Width, Height = LineThickness };
             AxisLine.StrokeThickness = LineThickness;
             AxisLine.Stroke = LineColor;
-            AxisLine.StrokeDashArray = GetDashArray(LineStyle);
+            AxisLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
             // Set the parameters for the major ticks
             foreach (Ticks tick in Ticks)
@@ -1994,18 +1982,18 @@ DOWN:
                 minValue = ((minimumDifference < AxisManager.Interval) ? minimumDifference : AxisManager.Interval);
             }
 
-            Double dataAxisDifference = Math.Abs(AxisManager.AxisMinimumValue - Minimum);
+            Double dataAxisDifference = Math.Abs(AxisManager.AxisMinimumValue - Minimum) * 2;
             Double dataMinimumGap = 0;
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
-                gap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue) / PlotDetails.DrawingDivisionFactor;
-                dataMinimumGap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference * 2);
+                gap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue + AxisManager.AxisMinimumValue) / PlotDetails.DrawingDivisionFactor;
+                dataMinimumGap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference + AxisManager.AxisMinimumValue);
             }
             else
             {
-                gap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue) / PlotDetails.DrawingDivisionFactor;
-                dataMinimumGap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference * 2);
+                gap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue + AxisManager.AxisMinimumValue) / PlotDetails.DrawingDivisionFactor;
+                dataMinimumGap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference + AxisManager.AxisMinimumValue);
             }
 
             gap = Math.Min(Math.Abs(gap), Math.Abs(dataMinimumGap)) * 1.1 * PlotDetails.DrawingDivisionFactor / 2;

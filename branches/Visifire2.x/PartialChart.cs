@@ -3,48 +3,32 @@ using System;
 using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.IO;
 using System.Xml;
 using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
 using System.Collections.ObjectModel;
-using System.Collections;
-using System.Windows.Media.Animation;
+
 
 #else
 
 using System;
-using System.Net;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
 using System.Collections.ObjectModel;
-using System.Windows.Browser;
+
 
 #endif
 
-using System.ComponentModel;
 using Visifire.Commons;
 using System.Windows.Controls.Primitives;
 
@@ -176,12 +160,12 @@ namespace Visifire.Charts
             
             SetEventsToToolTipObject();
 
-            LoadColorSets();
-
             LoadWatermark();
 
             if(StyleDictionary == null)
                 LoadTheme("Theme1");
+
+            LoadColorSets();
             
             IsTemplateApplied = true;
 
@@ -211,24 +195,6 @@ namespace Visifire.Charts
 
             if (AnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
-        }
-
-        /// <summary>
-        /// Pause auto Render of the Chart
-        /// </summary>
-        internal void PauseRender()
-        {
-            IsRenderPaused = true;
-        }
-
-        /// <summary>
-        /// Start auto render of the Chart
-        /// </summary>
-        internal void StartRender()
-        {
-            IsRenderPaused = false;
-            RENDER_LOCK = false;
-            CallRender();
         }
 
         #endregion
@@ -268,7 +234,7 @@ namespace Visifire.Charts
         private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             Chart c = d as Chart;
-            c.CallRender();  
+            c.CallRender();
         }
 
         /// <summary>
@@ -423,59 +389,6 @@ namespace Visifire.Charts
             Chart c = d as Chart;
             ObservableObject.AttachHref(c, c, e.NewValue.ToString(), c.HrefTarget);
         }
-
-
-        #region RefreshEnabled DependencyProperty
-
-        /// <summary>
-        /// Enable auto refresh while designing in Blend.
-        /// </summary>
-#if SL
-        [System.Windows.Browser.ScriptableMember]
-#endif
-        public bool RefreshEnabled
-        {
-            set
-            {
-                SetValue(RefreshEnabledProperty, value);
-            }
-            get
-            {
-                return (bool)GetValue(RefreshEnabledProperty);
-            }
-        }
-
-        #region StaticTemplate Property
-
-        /// <summary>
-        /// Flag if static template is applied. This is done for testing.
-        /// </summary>
-        internal Boolean IsStaticTemplateApplied
-        {
-            get;
-            set;
-        }
-
-        #endregion StaticTemplate Property
-
-        /// <summary>
-        /// RefreshEnabledProperty as Dependency property
-        /// Auto refresh chart while designing in Blend.
-        /// </summary>
-        public static readonly DependencyProperty RefreshEnabledProperty = DependencyProperty.Register("RefreshEnabled", typeof(bool), typeof(Chart), new PropertyMetadata(OnRefreshEnabledPropertyChanged));
-
-        /// <summary>
-        /// Event handler RefreshEnabledProperty  changed event
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnRefreshEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.CallRender();
-        }
-
-        #endregion
 
         public String Theme
         {
@@ -730,8 +643,7 @@ namespace Visifire.Charts
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Enabled or disables the bevel effect
         /// </summary>
@@ -757,6 +669,7 @@ namespace Visifire.Charts
         {
             Chart c = d as Chart;
             c.ApplyChartBevel();
+
             if ((Boolean)e.NewValue == true)
             {
                 c.CallRender();
@@ -770,11 +683,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Set of colors that will be used for the DataPoints
         /// </summary>
-        public ColorSetNames ColorSet
+        public String ColorSet
         {
             get
             {
-                return (ColorSetNames)GetValue(ColorSetProperty);
+                return (String)GetValue(ColorSetProperty);
             }
             set
             {
@@ -784,7 +697,7 @@ namespace Visifire.Charts
 
         public static readonly DependencyProperty ColorSetProperty = DependencyProperty.Register
             ("ColorSet",
-            typeof(ColorSetNames),
+            typeof(String),
             typeof(Chart),
             new PropertyMetadata(OnColorSetPropertyChanged));
 
@@ -1126,7 +1039,7 @@ namespace Visifire.Charts
             ColorSets embeddedColorSets;
 
             using (System.IO.Stream s = this.GetType().Assembly.GetManifestResourceStream(fooResourceName))
-            {
+            {   
                 if (s != null)
                 {
                     System.IO.StreamReader reader = new System.IO.StreamReader(s);
@@ -1141,10 +1054,12 @@ namespace Visifire.Charts
                     if (embeddedColorSets == null)
                         System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
-                    if (ColorSets != null && embeddedColorSets != null)
+                    if (ColorSets == null)
+                        ColorSets = new ColorSets();
+
+                    if (embeddedColorSets != null)
                         ColorSets.AddRange(embeddedColorSets);
-
-
+                    
                     reader.Close();
                     s.Close();
                 }
@@ -1285,13 +1200,13 @@ namespace Visifire.Charts
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
                 if (e.NewItems != null)
-                {
+                {   
                     foreach (TrendLine trendLine in e.NewItems)
                     {
                         trendLine.Chart = this;
 
                         if (!String.IsNullOrEmpty(this.Theme))
-                        {
+                        {   
                             trendLine.ApplyStyleFromTheme(this, "TrendLine");
                         }
 
@@ -1600,10 +1515,10 @@ namespace Visifire.Charts
 
                 _bevelCanvas.Children.Clear();
 
-                Brush topBrush = ColumnChart.GetBevelTopBrush(this.Background);
-                Brush leftBrush = ColumnChart.GetBevelSideBrush(0, this.Background);
-                Brush rightBrush = ColumnChart.GetBevelSideBrush(170, this.Background);
-                Brush bottomBrush = ColumnChart.GetBevelSideBrush(180, this.Background);
+                Brush topBrush = Graphics.GetBevelTopBrush(this.Background);
+                Brush leftBrush = Graphics.GetBevelSideBrush(0, this.Background);
+                Brush rightBrush = Graphics.GetBevelSideBrush(170, this.Background);
+                Brush bottomBrush = Graphics.GetBevelSideBrush(180, this.Background);
 
                 BevelVisual = ExtendedGraphics.Get2DRectangleBevel(
                     _chartBorder.ActualWidth - _chartBorder.BorderThickness.Left - _chartBorder.BorderThickness.Right - _chartAreaOriginalMargin.Right - _chartAreaOriginalMargin.Left,
@@ -1611,7 +1526,7 @@ namespace Visifire.Charts
                 BEVEL_DEPTH, BEVEL_DEPTH, topBrush, leftBrush, rightBrush, bottomBrush);
 
                 if (LightingEnabled)
-                {
+                {   
                     _chartLightingBorder.Opacity = 0.4;
                 }
 
@@ -1705,7 +1620,7 @@ namespace Visifire.Charts
 #endif
             Watermark = true;
 
-            ColorSets = new ColorSets();
+            //ColorSets = new ColorSets();
 
             // Initialize title list
             Titles = new ObservableCollection<Title>();

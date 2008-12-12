@@ -64,9 +64,6 @@
     <Compile Include="Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Logger.xaml.cs">
-      <DependentUpon>Logger.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="Wrapper.xaml.cs">
       <DependentUpon>Wrapper.xaml</DependentUpon>
@@ -79,10 +76,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Dialog.xaml">
-      <SubType>Page</SubType>
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
-    </Page>
-    <Page Include="Logger.xaml">
       <SubType>Page</SubType>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
     </Page>

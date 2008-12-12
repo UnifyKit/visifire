@@ -142,7 +142,7 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                chart.ColorSet = ColorSetNames.Visifire2;
+                chart.ColorSet = "Visifire2";
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
@@ -152,7 +152,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
 
             EnqueueCallback(() =>
-            {
+            {   
                 chart.Margin = new Thickness(10);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
@@ -496,7 +496,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
 
             CreateAsyncTask(chart,
-               () => Assert.AreEqual(Visifire.Commons.ColorSetNames.Visifire1, chart.ColorSet));
+               () => Assert.AreEqual("Visifire1", chart.ColorSet));
 
             EnqueueTestComplete();
         }
@@ -805,8 +805,8 @@ namespace SLVisifireChartsTest
 
             CreateAsyncTask(chart,
                 () => EnqueueSleep(sleepTime),
-                () => chart.ColorSet = ColorSetNames.VisiGray,
-                () => Assert.AreEqual(ColorSetNames.VisiGray, chart.ColorSet));
+                () => chart.ColorSet = "VisiGray",
+                () => Assert.AreEqual("VisiGray", chart.ColorSet));
 
             EnqueueSleep(sleepTime);
             EnqueueTestComplete();

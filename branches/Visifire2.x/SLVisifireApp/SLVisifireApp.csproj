@@ -44,6 +44,8 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows" />
@@ -629,6 +631,7 @@
     <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
       <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
       <Name>SLVisifireCharts</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

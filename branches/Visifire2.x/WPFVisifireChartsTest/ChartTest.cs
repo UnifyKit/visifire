@@ -500,7 +500,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (isLoaded)
-                Assert.AreEqual(Visifire.Commons.ColorSetNames.Visifire1, chart.ColorSet);
+                Assert.AreEqual("Visifire1", chart.ColorSet);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -800,7 +800,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            chart.ColorSet = Visifire.Commons.ColorSetNames.Visifire2;
+            chart.ColorSet = "Visifire2";
 
             isLoaded = false;
 
@@ -810,7 +810,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (isLoaded)
-                Assert.AreEqual(Visifire.Commons.ColorSetNames.Visifire2, chart.ColorSet);
+                Assert.AreEqual("Visifire2", chart.ColorSet);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();

@@ -2,41 +2,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 
@@ -81,8 +59,8 @@ namespace Visifire.Charts
 
 
                     Brush markerColor = dataPoint.Color;
-                    markerColor = (chart.View3D ? GetLightingEnabledBrush3D(markerColor) :
-                        ((Boolean)dataPoint.LightingEnabled ? GetLightingEnabledBrush(markerColor) : markerColor));
+                    markerColor = (chart.View3D ? Graphics.GetLightingEnabledBrush3D(markerColor) :
+                        ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));
 
                     Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     Boolean markerBevel = false;
@@ -114,7 +92,7 @@ namespace Visifire.Charts
 
                     // Apply animation
                     if (animationEnabled)
-                    {
+                    {   
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
@@ -128,67 +106,12 @@ namespace Visifire.Charts
                     point.VisualComponents.Add(marker.Visual);
                     point.Visual = marker.Visual;
 
+                    dataPoint.Marker = marker;
                     dataPoint.Faces = point;
                 }
             }
 
             return visual;
-        }
-
-        
-        private static Brush GetLightingEnabledBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.745));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.99));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-
-        private static Brush GetLightingEnabledBrush3D(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
-        private static DoubleCollection GenerateDoubleCollection(params Double[] values)
-        {
-            DoubleCollection collection = new DoubleCollection();
-            foreach (Double value in values)
-                collection.Add(value);
-            return collection;
         }
 
         private static List<KeySpline> GenerateKeySplineList(params Point[] values)
@@ -204,33 +127,7 @@ namespace Visifire.Charts
         {
             return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
         }
-
-        private static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
-        {
-            DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
-#if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
-            Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
-
-            DataSeriesRef.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-#else
-            Storyboard.SetTarget(da, target);
-#endif
-            Storyboard.SetTargetProperty(da, new PropertyPath(property));
-
-            da.BeginTime = TimeSpan.FromSeconds(beginTime);
-
-            for (Int32 index = 0; index < splines.Count; index++)
-            {
-                SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
-                keyFrame.KeySpline = splines[index];
-                keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
-                keyFrame.Value = values[index];
-                da.KeyFrames.Add(keyFrame);
-            }
-
-            return da;
-        }
+        
         private static Storyboard ApplyPointChartAnimation(Panel pointGrid, Storyboard storyboard,Double width,Double height)
         {
             if (storyboard != null)
@@ -249,19 +146,19 @@ namespace Visifire.Charts
 
             pointGrid.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-            DoubleCollection times = GenerateDoubleCollection(0, 0.5, 0.75, 1);
-            DoubleCollection scaleValues = GenerateDoubleCollection(0, 1, 0.5, 1);
-            DoubleCollection translateXValues = GenerateDoubleCollection(pointGrid.DesiredSize.Width / 2, 0, pointGrid.DesiredSize.Width/4, 0);
-            DoubleCollection translateYValues = GenerateDoubleCollection(pointGrid.DesiredSize.Height / 2, 0, pointGrid.DesiredSize.Height / 4, 0);
+            DoubleCollection times = Graphics.GenerateDoubleCollection(0, 0.5, 0.75, 1);
+            DoubleCollection scaleValues = Graphics.GenerateDoubleCollection(0, 1, 0.5, 1);
+            DoubleCollection translateXValues = Graphics.GenerateDoubleCollection(pointGrid.DesiredSize.Width / 2, 0, pointGrid.DesiredSize.Width / 4, 0);
+            DoubleCollection translateYValues = Graphics.GenerateDoubleCollection(pointGrid.DesiredSize.Height / 2, 0, pointGrid.DesiredSize.Height / 4, 0);
             List<KeySpline> splines1 = GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
             List<KeySpline> splines2 = GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
             List<KeySpline> splines3 = GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
             List<KeySpline> splines4 = GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
 
-            DoubleAnimationUsingKeyFrames xScaleAnimation = CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", begin+0.5, times, scaleValues, splines1);
-            DoubleAnimationUsingKeyFrames yScaleAnimation = CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", begin+0.5, times, scaleValues, splines2);
-            DoubleAnimationUsingKeyFrames xTranslateAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", begin+0.5, times, translateXValues, splines3);
-            DoubleAnimationUsingKeyFrames yTranslateAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", begin+0.5, times, translateYValues, splines4);
+            DoubleAnimationUsingKeyFrames xScaleAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleX)", begin + 0.5, times, scaleValues, splines1);
+            DoubleAnimationUsingKeyFrames yScaleAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleY)", begin + 0.5, times, scaleValues, splines2);
+            DoubleAnimationUsingKeyFrames xTranslateAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, translateTransform, "(TranslateTransform.X)", begin + 0.5, times, translateXValues, splines3);
+            DoubleAnimationUsingKeyFrames yTranslateAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, translateTransform, "(TranslateTransform.Y)", begin + 0.5, times, translateYValues, splines4);
 
             storyboard.Children.Add(xScaleAnimation);
             storyboard.Children.Add(yScaleAnimation);

@@ -3,45 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
 using System.Diagnostics;
-using System.Collections.ObjectModel;
+
 
 #else
 using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 #endif
-using Visifire.Commons;
 
 namespace Visifire.Charts
 {   
@@ -72,10 +47,7 @@ namespace Visifire.Charts
 
             // Calculate all the required details
             this.Calculate();
-
-            if(Chart.AnimationEnabled)
-                foreach (DataSeries ds in Chart.InternalSeries)
-                    ds.Storyboard = null;
+         
         }
 
         #endregion
@@ -192,7 +164,6 @@ namespace Visifire.Charts
         #region Private Delegates
 
         #endregion
-
         
         #region Private Methods
         /// <summary>
@@ -431,7 +402,7 @@ namespace Visifire.Charts
                 List<DataSeries> SeriesWithNoReferingLegend = (from entry in SeriesToBeShownInLegend where String.IsNullOrEmpty(entry.Legend) select entry).ToList();
                 List<DataSeries> SeriesWithReferingLegend = (from entry in SeriesToBeShownInLegend where !String.IsNullOrEmpty(entry.Legend) select entry).ToList();
                 if (SeriesWithNoReferingLegend.Count > 0)
-                {
+                {   
                     legend = new Legend();
                     legend.Chart = Chart;
                     legend.IsNotificationEnable = false;

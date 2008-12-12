@@ -1,25 +1,13 @@
 ﻿using System;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Collections.Generic;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.ComponentModel;
-using System.Windows.Markup;
-using Visifire.Commons;
 using Visifire.Charts;
 using System.Linq;
-using System.IO;
-using System.Xml;
 using System.Globalization;
-#if SL
-using System.Windows.Browser;
-#endif
 
 namespace Visifire.Commons
 {
@@ -40,8 +28,7 @@ namespace Visifire.Commons
         }
 
         #region Public Methods
-
-        /// <summary>
+                /// <summary>
         /// Attach tooltip with a framework element
         /// </summary>
         /// <param name="control">Control reference</param>
@@ -101,9 +88,23 @@ namespace Visifire.Commons
 
             if (!String.IsNullOrEmpty(Href))
             {
+                Element.MouseEnter -= delegate(object sender, MouseEventArgs e)
+                {
+                    Element.Cursor = Cursors.Hand;
+                };
+
                 Element.MouseEnter += delegate(object sender, MouseEventArgs e)
                 {
                     Element.Cursor = Cursors.Hand;
+                };
+
+                Element.MouseLeftButtonUp -= delegate(object sender, MouseButtonEventArgs e)
+                {
+#if WPF
+                    System.Diagnostics.Process.Start("explorer.exe", Href);
+#else
+                    System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(VisifireControl.GetAbsolutePath(Href)), HrefTarget.ToString());
+#endif
                 };
 
                 Element.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
@@ -114,23 +115,6 @@ namespace Visifire.Commons
                     System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(VisifireControl.GetAbsolutePath(Href)), HrefTarget.ToString());
 #endif
                 };
-            }
-        }
-
-        /// <summary>
-        /// Detaches event handler
-        /// </summary>
-        /// <param name="Handler"></param>
-        public void DetachEvents(EventHandler Handler)
-        {   
-            if (Handler != null)
-            {
-                Delegate[] invList = Handler.GetInvocationList();
-
-                foreach (EventHandler handler in invList)
-                {
-                    Handler -= handler;
-                }
             }
         }
 
@@ -153,108 +137,6 @@ namespace Visifire.Commons
                 }
         }
 
-        
-
-#if SL
-        /// <summary>
-        /// Sets value for specific property of chart
-        /// This function is used for setting property from JavaScript only
-        /// </summary>
-        /// <param name="propertyName">Name of the property as String</param>
-        /// <param name="value">Property Value as String</param>
-        [System.Windows.Browser.ScriptableMember()]
-        public void SetPropertyFromJs(String propertyName, String value)
-        {
-            if (propertyName == "Canvas.ZIndex")
-            {
-                SetValue(Canvas.ZIndexProperty, Convert.ToInt32(value, CultureInfo.InvariantCulture));
-                FirePropertyChanged("ZIndex");
-                return;
-            }
-
-            Object element = this;
-
-            Chart chart = Chart as Chart;
-            //chart.RENDER_LOCK = false;
-
-            System.Reflection.PropertyInfo[] propArray = element.GetType().GetProperties();
-            var obj = from property in propArray
-                      where (property.Name == propertyName)
-                      select property;
-
-            try
-            {
-                if (obj.Count<System.Reflection.PropertyInfo>() == 0)
-                {
-                    throw new Exception("Property not found.");
-                }
-                
-                System.Reflection.PropertyInfo property = obj.First<System.Reflection.PropertyInfo>();
-
-                if (property.PropertyType.Name == "Brush")
-                    property.SetValue(element, ((Brush)System.Windows.Markup.XamlReader.Load(value)), null);
-                else if (property.PropertyType.Equals(typeof(FontFamily)))
-                {
-                    FontFamily ff = new FontFamily(value);
-                    property.SetValue(element, ff, null);
-                }
-                else if (property.PropertyType.Equals(typeof(FontStyle)))
-                {
-                    Visifire.Commons.Converters.FontStyleConverter fsc = new Visifire.Commons.Converters.FontStyleConverter();
-                    property.SetValue(element, fsc.ConvertFrom(null, CultureInfo.InvariantCulture, value), null);
-                }
-                else if (property.PropertyType.Equals(typeof(FontWeight)))
-                {
-                    Visifire.Commons.Converters.FontWeightConverter fwc = new Visifire.Commons.Converters.FontWeightConverter();
-                    property.SetValue(element, fwc.ConvertFrom(null, CultureInfo.InvariantCulture, value), null);
-                }
-                else if (property.PropertyType.Equals(typeof(Nullable<Boolean>)))
-                    property.SetValue(element, new Nullable<Boolean>(Convert.ToBoolean(value, CultureInfo.InvariantCulture)), null);
-                else if (property.PropertyType.Equals(typeof(Nullable<Double>)))
-                    property.SetValue(element, new Nullable<Double>(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property.PropertyType.BaseType.Equals(typeof(Enum)))
-                    property.SetValue(element, Enum.Parse(property.PropertyType, value, true), null);
-                else if (property.PropertyType.Equals(typeof(Thickness)))
-                    property.SetValue(element, new Thickness(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property.PropertyType.Equals(typeof(CornerRadius)))
-                    property.SetValue(element, new CornerRadius(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else
-                    property.SetValue(element, Convert.ChangeType(value, property.PropertyType, CultureInfo.InvariantCulture), null);
-
-                if (chart.LoggerWindow != null)
-                    chart.LoggerWindow.Visibility = Visibility.Collapsed;
-            }
-            catch (Exception e)
-            {
-                if (chart.LoggerWindow == null)
-                {
-                    // If Log viewer is not present create it.
-                    chart.CreateLogViewer();
-                }
-
-                if (chart.LogLevel == 1)
-                    chart.LoggerWindow.Visibility = Visibility.Visible;
-                else
-                    chart.Visibility = Visibility.Collapsed;
-               
-
-                chart.LoggerWindow.Log("\n\nError Message:\n");
-
-                // Log InnerException
-                if (e.InnerException != null)
-                {
-                    chart.LoggerWindow.LogLine(e.InnerException.Message);
-                }
-
-                String s = String.Format(@"Unable to update {0} property. ({1})", propertyName, e.Message);
-
-                chart.LoggerWindow.LogLine(s);
-
-                // Exception is thrown to JavaScript
-                throw new Exception(chart.LoggerWindow.logger.Text);
-            }
-        }
-#endif
         
         #endregion
 
@@ -295,6 +177,11 @@ namespace Visifire.Commons
 
         #region Protected Methods
 
+        internal virtual void UpdateVisual(String PropertyName, object Value)
+        {
+
+        }
+        
         /// <summary>
         /// Check whether the Property value is changed
         /// </summary>
@@ -323,37 +210,10 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Check whether the Property value is changed
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="propertyName">Property Name</param>
-        /// <param name="oldValue">Old property value</param>
-        /// <param name="newValue">New property value</param>
-        /// <returns></returns>
-        protected bool CheckPropertyChanged<T>(string propertyName, T oldValue, T newValue)
-        {
-            if (oldValue == null && newValue == null)
-            {
-                return false;
-            }
-
-            if ((oldValue == null && newValue != null) || !oldValue.Equals((T)newValue))
-            {
-                oldValue = newValue;
-
-                FirePropertyChanged(propertyName);
-
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Fire property change event
         /// </summary>
         /// <param name="propertyName">Property Name</param>
-        protected void FirePropertyChanged(string propertyName)
+        internal void FirePropertyChanged(string propertyName)
         {
             if (this.PropertyChanged != null && IsNotificationEnable)
             {
@@ -362,31 +222,24 @@ namespace Visifire.Commons
                 {
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
                 }
-                else
-                    if (Chart != null)
+                else if (Chart != null && (Chart as Chart).IsTemplateApplied)
+                {
+                    if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
                     {
-                        if ((Chart as Chart).IsTemplateApplied)
-                        {
-                            if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
-                            {
-                                System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
-                                
-                                if(!Chart.IsRenderPaused)
-                                {
-                                    if (currentDispatcher.CheckAccess())
-                                        (Chart as Chart).CallRender();
-                                    else
-                                        currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
-                                }
-                            }
-                            else // if we did not get the Dispatcher throw an exception
-                            {
-                                throw new InvalidOperationException("This object must be initialized after that the RootVisual has been loaded");
-                            }
-                        }
+                        System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
+
+                            if (currentDispatcher.CheckAccess())
+                                (Chart as Chart).CallRender();
+                            else
+                                currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
                     }
+                    else // if we did not get the Dispatcher throw an exception
+                    {
+                        throw new InvalidOperationException("This object must be initialized after that the RootVisual has been loaded");
+                    }
+                }
 #else
-                if (Chart != null && !Chart.IsRenderPaused)
+                if (Chart != null)
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 #endif
             }
@@ -405,7 +258,7 @@ namespace Visifire.Commons
             }
         }
 #else
-        internal Boolean IsInDesignMode
+        internal static Boolean IsInDesignMode
         {
             get
             {
@@ -491,81 +344,6 @@ namespace Visifire.Commons
                 return multiLineText;
             else
                 return multiLineText.Substring(0, multiLineText.Length - 1);
-        }
-
-        /// <summary>
-        /// Returns dash array for line
-        /// </summary>
-        /// <param name="lineStyle">LineStyle as LineStyles</param>
-        /// <returns>DashArray as DoubleCollection</returns>
-        internal DoubleCollection GetDashArray(LineStyles lineStyle)
-        {
-            if (lineStyle.ToString() == null) return null;
-
-            DoubleCollection dashArray = new DoubleCollection();
-
-            switch (lineStyle)
-            {
-                case LineStyles.Solid:
-                    dashArray = null;
-                    break;
-
-                case LineStyles.Dashed:
-                    dashArray.Clear();
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    break;
-
-                case LineStyles.Dotted:
-                    dashArray.Clear();
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    break;
-            }
-
-            return dashArray;
-        }
-
-        /// <summary>
-        /// Returns dash array for border
-        /// </summary>
-        /// <param name="borderStyle">borderStyle as BorderStyles</param>
-        /// <returns>DashArray as DoubleCollection</returns>
-        internal DoubleCollection GetDashArray(BorderStyles borderStyle)
-        {
-            if (borderStyle.ToString() == null) return null;
-
-            DoubleCollection dashArray = new DoubleCollection();
-
-            switch (borderStyle)
-            {
-                case BorderStyles.Solid:
-                    dashArray = null;
-                    break;
-
-                case BorderStyles.Dashed:
-                    dashArray.Clear();
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    break;
-
-                case BorderStyles.Dotted:
-                    dashArray.Clear();
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    break;
-
-            }
-
-            return dashArray;
         }
 
         #endregion

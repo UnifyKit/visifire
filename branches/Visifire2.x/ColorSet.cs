@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Visifire;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using Visifire.Commons;
 
 namespace Visifire.Charts
 {   
@@ -28,10 +17,7 @@ namespace Visifire.Charts
         /// <summary>
         /// ColorSet Id
         /// </summary>
-#if SL
-       // [System.ComponentModel.TypeConverter(typeof(Converters.ColorSetNameConverter))]
-#endif
-        public ColorSetNames Id
+        public String Id
         {
             get;
             set;

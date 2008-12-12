@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DataPoint.cs = DataPoint.cs
 		DataSeries.cs = DataSeries.cs
 		DataSeriesCollection.cs = DataSeriesCollection.cs
+		Defaults.cs = Defaults.cs
 		Enums.cs = Enums.cs
 		Graphics.cs = Graphics.cs
 		IVisifireControl.cs = IVisifireControl.cs
@@ -55,7 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Ticks.cs = Ticks.cs
 		Title.cs = Title.cs
 		TrendLine.cs = TrendLine.cs
-		Visifire1.vsmdi = Visifire1.vsmdi
+		Visifire2.vsmdi = Visifire2.vsmdi
 		VisifireControl.cs = VisifireControl.cs
 		VisifireElement.cs = VisifireElement.cs
 		XWiseData.cs = XWiseData.cs
@@ -65,7 +66,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireChartsXap", "SLVi
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = Visifire1.vsmdi
+		CategoryFile = Visifire2.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,33 +1,33 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Name="Chart" Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="True" ScrollingEnabled="False">
-  
-  <vc:Chart.Titles>
-    <vc:Title Name="Title" Text="Visifire"/>
-  </vc:Chart.Titles>
+Name="Chart" Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="False" ScrollingEnabled="False">
 
-  <vc:Chart.AxesX>
-    <vc:Axis>
-      <vc:Axis.Grids>
-        <vc:ChartGrid Enabled="True" LineThickness="2" LineColor="Gray"/>
-      </vc:Axis.Grids>
-      <vc:Axis.Ticks>
-        <vc:Ticks LineThickness="2" LineColor="Gray"/>
-      </vc:Axis.Ticks>
-      <vc:Axis.AxisLabels>
-        <vc:AxisLabels FontColor="Black"/>
-      </vc:Axis.AxisLabels>
-    </vc:Axis>
-  </vc:Chart.AxesX>
+<vc:Chart.Titles>
+<vc:Title Name="Title" Text="Visifire"/>
+</vc:Chart.Titles>
 
-  <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column" ShowInLegend="True">
-      <vc:DataSeries.DataPoints>
-        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-      </vc:DataSeries.DataPoints>
-    </vc:DataSeries>
-  </vc:Chart.Series>
+<vc:Chart.AxesX>
+<vc:Axis>
+<vc:Axis.Grids>
+<vc:ChartGrid Enabled="True" LineThickness="2" LineColor="Gray"/>
+</vc:Axis.Grids>
+<vc:Axis.Ticks>
+<vc:Ticks LineThickness="2" LineColor="Gray"/>
+</vc:Axis.Ticks>
+<vc:Axis.AxisLabels>
+<vc:AxisLabels FontColor="Black"/>
+</vc:Axis.AxisLabels>
+</vc:Axis>
+</vc:Chart.AxesX>
+
+<vc:Chart.Series>
+<vc:DataSeries RenderAs="Column" LabelEnabled="True">
+<vc:DataSeries.DataPoints>
+<vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
+<vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
+<vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
+<vc:DataPoint AxisXLabel="BP" YValue="274316"/>
+<vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
+</vc:DataSeries.DataPoints>
+</vc:DataSeries>
+</vc:Chart.Series>
 </vc:Chart>

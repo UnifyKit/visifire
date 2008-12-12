@@ -9,7 +9,7 @@ using Visifire.Charts;
 using Visifire.Commons;
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class ChartGridTest:SilverlightControlTest
     {
         /// <summary>

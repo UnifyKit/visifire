@@ -1,44 +1,23 @@
 ﻿#if WPF
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.IO;
 using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Collections;
+
 
 #else
 
 using System;
-using System.Net;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
 using System.Windows.Browser;
 
 #endif
@@ -391,8 +370,35 @@ namespace Visifire.Commons
         /// </summary>
         internal Brush MarkerFillColor
         {
-            get;
-            set;
+            get
+            {
+                return _markerFillColor;
+            }
+            set
+            {
+                _markerFillColor = value;
+            }
+        }
+        
+        /// <summary>
+        /// Update Marker with new properties
+        /// </summary>
+        internal void UpdateMarker()
+        {
+            if (BevelLayer != null)
+                Visual.Children.Remove(BevelLayer);
+
+            if (Bevel)
+            {   
+                BevelLayer = GetBevelLayer();
+                BevelLayer.SetValue(Grid.RowProperty, 1);
+                BevelLayer.SetValue(Grid.ColumnProperty, 1);
+                BevelLayer.SetValue(Grid.RowProperty, 1);
+                BevelLayer.SetValue(Grid.ColumnProperty, 1);
+                Visual.Children.Add(BevelLayer);
+            }
+
+            ApplyMarkerShapeProperties();
         }
 
         /// <summary>
@@ -558,7 +564,6 @@ namespace Visifire.Commons
 
                 case MarkerTypes.Cross:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" />");
-
                     break;
 
                 case MarkerTypes.Diamond:
@@ -596,7 +601,7 @@ namespace Visifire.Commons
         private FrameworkElement GetBevelLayer()
         {
             String xaml = null;
-            Brush topBrush = ColumnChart.GetBevelTopBrush(MarkerFillColor);
+            Brush topBrush = Graphics.GetBevelTopBrush(MarkerFillColor);
             String color;
             
             switch (MarkerType)
@@ -617,7 +622,7 @@ namespace Visifire.Commons
 
                 case MarkerTypes.Cross:
 
-                    topBrush = ColumnChart.GetBevelTopBrush(BorderColor);
+                    topBrush = Graphics.GetBevelTopBrush(BorderColor);
                     color = (topBrush as LinearGradientBrush).GradientStops[2].Color.ToString();
 
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Stretch=""Fill"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" >
@@ -658,9 +663,9 @@ namespace Visifire.Commons
                     Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(width,height,
                     3, 3,
                     topBrush,
-                    ColumnChart.GetBevelSideBrush(0, MarkerFillColor),
-                    ColumnChart.GetBevelSideBrush(120, MarkerFillColor),
-                    ColumnChart.GetBevelSideBrush(100, MarkerFillColor)
+                    Graphics.GetBevelSideBrush(0, MarkerFillColor),
+                    Graphics.GetBevelSideBrush(120, MarkerFillColor),
+                    Graphics.GetBevelSideBrush(100, MarkerFillColor)
                     );
                     
                    return bevelCanvas;
@@ -725,6 +730,7 @@ namespace Visifire.Commons
             MarkerShadow.Fill = GetMarkerShadowColor();
             TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1};
             MarkerShadow.RenderTransform = tt;
+
             //MarkerShadow.StrokeThickness = 0;
 
             // display or hide the shadow
@@ -740,18 +746,7 @@ namespace Visifire.Commons
             Visual.Children.Add(MarkerShadow);
             Visual.Children.Add(MarkerShape);
 
-            if(Bevel)
-            {
-                BevelLayer = GetBevelLayer();
-                BevelLayer.SetValue(Grid.RowProperty, 1);
-                BevelLayer.SetValue(Grid.ColumnProperty, 1);
-                BevelLayer.SetValue(Grid.RowProperty, 1);
-                BevelLayer.SetValue(Grid.ColumnProperty, 1);
-                Visual.Children.Add(BevelLayer);
-            }             
-
-            // Apply Shape property
-            ApplyMarkerShapeProperties();
+            UpdateMarker();
 
             if (!String.IsNullOrEmpty(Text))
             {
@@ -1043,6 +1038,7 @@ namespace Visifire.Commons
         public Brush _textBackground;
         public Double _scaleFactor = 1;
         private Point _markerShapePosition;         // Actual position of the Marker shape inside Marker grid
+        private Brush _markerFillColor;
 
         private event EventHandler<MouseEventArgs> _onMouseEnter;           // Handler for MouseEnter event
         private event EventHandler<MouseEventArgs> _onMouseLeave;           // Handler for MouseLeave event

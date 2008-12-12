@@ -3,43 +3,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
+
 
 #else
+
 using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+
 #endif
 using System.Windows.Data;
-using System.ComponentModel;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -310,7 +291,8 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("FontColor");
+            //axisLabels.FirePropertyChanged("FontColor");
+            axisLabels.UpdateVisual("FontColor", e.NewValue);
         }
 
         /// <summary>
@@ -329,7 +311,8 @@ namespace Visifire.Charts
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
-                    FirePropertyChanged("FontStyle");
+                    //FirePropertyChanged("FontStyle");
+                    UpdateVisual("FontStyle", value);
                 }
             }
         }
@@ -357,7 +340,8 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("FontStyle");
+            //axisLabels.FirePropertyChanged("FontStyle");
+            axisLabels.UpdateVisual("FontStyle", e.NewValue);
         }
 #endif
 
@@ -377,7 +361,8 @@ namespace Visifire.Charts
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
-                    FirePropertyChanged("FontWeight");
+                    // FirePropertyChanged("FontWeight");
+                    UpdateVisual("FontWeight", value);
                 }
             }
         }
@@ -405,7 +390,8 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
              AxisLabels axisLabels = d as AxisLabels;
-             axisLabels.FirePropertyChanged("FontWeight");
+             // axisLabels.FirePropertyChanged("FontWeight");
+             axisLabels.UpdateVisual("FontWeight", e.NewValue);
         }
 #endif
 
@@ -743,7 +729,7 @@ namespace Visifire.Charts
                 // if the data minimum - interval is less than the actual minimum
                 if ((DataMinimum - interval) < Minimum)
                     index = (Decimal)DataMinimum;
-
+                    
                 if (AllAxisLabels && AxisLabelContentDictionary.Count > 0)
                 {   
                     Dictionary<Double, String>.Enumerator enumerator = AxisLabelContentDictionary.GetEnumerator();
@@ -1083,6 +1069,8 @@ namespace Visifire.Charts
             // calculate the overflow due to this set of axis labels
             CalculateVerticalOverflow();
         }
+         
+
 
         private void ApplyAxisLabelFontProperties(AxisLabel label)
         {
@@ -1493,7 +1481,6 @@ namespace Visifire.Charts
         /// </summary>
 
         internal List<AxisLabel> AxisLabelList
-
         {
             get;
             set;
@@ -1502,16 +1489,29 @@ namespace Visifire.Charts
         /// <summary>
         /// List of position values for the labels
         /// </summary>
-
         internal List<Double> LabelValues
-
         {
             get;
             set;
         }
+
         #endregion
 
         #region Internal Methods
+
+        internal override void UpdateVisual(string PropertyName, object Value)
+        {
+            if (Visual != null)
+            {
+                foreach (AxisLabel axisLabel in AxisLabelList)
+                {
+                    ApplyAxisLabelFontProperties(axisLabel);
+                    axisLabel.ApplyProperties(axisLabel);
+                }
+            }
+            else
+                FirePropertyChanged(PropertyName);
+        }
 
         #endregion
 

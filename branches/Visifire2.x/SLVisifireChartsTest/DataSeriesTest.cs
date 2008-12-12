@@ -13,7 +13,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class DataSeriesTest : SilverlightControlTest
     {
         /// <summary>
@@ -2935,7 +2935,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue((Boolean)dataSeries.LabelLineEnabled));
+                () => Assert.IsNull((Boolean)dataSeries.LabelLineEnabled));
 
             EnqueueTestComplete();
         }

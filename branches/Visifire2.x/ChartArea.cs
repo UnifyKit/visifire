@@ -3,41 +3,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.IO;
 using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Windows.Media.Animation;
+
 
 #else
 using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 
@@ -325,10 +307,10 @@ namespace Visifire.Charts
         {
             Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(Chart.PlotArea.PlotAreaBorderElement.Width - Chart.PlotArea.BorderThickness.Left - Chart.PlotArea.BorderThickness.Right - PlankDepth, Chart.PlotArea.PlotAreaBorderElement.Height - Chart.PlotArea.BorderThickness.Top - Chart.PlotArea.BorderThickness.Bottom - PlankDepth - PlankThickness,
                     Chart.BEVEL_DEPTH, Chart.BEVEL_DEPTH,
-                    ColumnChart.GetBevelTopBrush(Chart.PlotArea.PlotAreaBorderElement.Background),
-                    ColumnChart.GetBevelSideBrush(0, Chart.PlotArea.PlotAreaBorderElement.Background),
-                    ColumnChart.GetBevelSideBrush(180, Chart.PlotArea.PlotAreaBorderElement.Background),
-                    ColumnChart.GetBevelSideBrush(90, Chart.PlotArea.PlotAreaBorderElement.Background));
+                    Graphics.GetBevelTopBrush(Chart.PlotArea.PlotAreaBorderElement.Background),
+                    Graphics.GetBevelSideBrush(0, Chart.PlotArea.PlotAreaBorderElement.Background),
+                    Graphics.GetBevelSideBrush(180, Chart.PlotArea.PlotAreaBorderElement.Background),
+                    Graphics.GetBevelSideBrush(90, Chart.PlotArea.PlotAreaBorderElement.Background));
 
             bevelCanvas.SetValue(Canvas.LeftProperty, Chart.PlotArea.BorderThickness.Left);
             bevelCanvas.SetValue(Canvas.TopProperty, Chart.PlotArea.BorderThickness.Top);
@@ -389,13 +371,19 @@ namespace Visifire.Charts
 
         void RedrawChart(Size NewSize, Size PreviousSize)
         {
-
             if ( _oldPlotSize.Height == NewSize.Height && _oldPlotSize.Width == NewSize.Width && _redrawCount >1)
                 return;
-
+            
             _oldPlotSize = NewSize;
 
             _redrawCount++;
+
+            if (Chart.AnimationEnabled)
+                foreach (DataSeries ds in Chart.InternalSeries)
+                {
+                    if(ds.Storyboard != null) ds.Storyboard.Stop();
+                    ds.Storyboard = null;
+                }
 
             Chart._drawingCanvas.Height = NewSize.Height;
             Chart._drawingCanvas.Width = NewSize.Width;
@@ -640,6 +628,7 @@ namespace Visifire.Charts
             }
 
             SetChartAreaCenterGridMargin();
+                       
 
             Render(PreviousSize,NewSize);
 
@@ -1433,7 +1422,7 @@ namespace Visifire.Charts
             if (Chart.AnimationEnabled && !Chart.IsInDesignMode)
             {
                 try
-                {   
+                {
                     if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                     {
                         foreach (ChartGrid chartGrid in AxisX.Grids)
@@ -1441,7 +1430,7 @@ namespace Visifire.Charts
                             if (chartGrid.Storyboard != null)
                             {
 #if WPF
-                            chartGrid.Storyboard.Begin(chartGrid as FrameworkElement, true);
+                                chartGrid.Storyboard.Begin(chartGrid as FrameworkElement, true);
 #else
                                 chartGrid.Storyboard.Begin();
 #endif
@@ -1459,7 +1448,7 @@ namespace Visifire.Charts
                                 {
 #if WPF
                                     chartGrid.Storyboard.Begin(chartGrid as FrameworkElement, true);
-#else
+#else                               
                                     chartGrid.Storyboard.Begin();
 #endif
                                     chartGrid.Storyboard.Completed += delegate
@@ -1510,7 +1499,7 @@ namespace Visifire.Charts
                                     }
                                 };
                             }
-
+                            series.Storyboard.Stop();
                             series.Storyboard.Begin();
 #endif
                         }
@@ -1525,6 +1514,11 @@ namespace Visifire.Charts
 
             }
 
+        }
+
+        public void CallMe()
+        {
+            Animate();
         }
 
         private void SetSeriesStyleFromTheme(Chart chart)
@@ -1549,10 +1543,11 @@ namespace Visifire.Charts
         private void SetTitleStyleFromTheme(Chart chart)
         {   
             int titleIndex = 0;
-            foreach (Title title in chart.Titles)
-            {
-                if (!String.IsNullOrEmpty(chart.Theme))
-                {   
+
+            if (!String.IsNullOrEmpty(chart.Theme))
+            {   
+                foreach (Title title in chart.Titles)
+                {
                     if (titleIndex == 0)
                         title.ApplyStyleFromTheme(chart, "MainTitle");
                     else
@@ -1560,7 +1555,7 @@ namespace Visifire.Charts
 
                     titleIndex++;
                 }
-            }           
+            }
         }
 
         private void SetLegendStyleFromTheme(Chart chart)
@@ -1579,14 +1574,14 @@ namespace Visifire.Charts
             ColorSet colorSet = null;
 
             // Load chart colorSet
-            if (chart.ColorSet != ColorSetNames.None)
+            if (!String.IsNullOrEmpty(chart.ColorSet))
             {
                 colorSet = chart.ColorSets.GetColorSetByName(chart.ColorSet);
             }
 
             if (chart.Series.Count == 1)
             {
-                if (chart.Series[0].ColorSet != ColorSetNames.None)
+                if (!String.IsNullOrEmpty(chart.Series[0].ColorSet))
                 {   
                     colorSet = chart.ColorSets.GetColorSetByName(chart.Series[0].ColorSet);
 
@@ -1600,12 +1595,10 @@ namespace Visifire.Charts
 
                 if (chart.Series[0].RenderAs == RenderAs.Area || chart.Series[0].RenderAs == RenderAs.Line || chart.Series[0].RenderAs == RenderAs.StackedArea || chart.Series[0].RenderAs == RenderAs.StackedArea100)
                 {
+                    Brush seriesColor = chart.Series[0].GetValue(DataSeries.ColorProperty) as Brush;
 
-                    //if (chart.Series[0].Color != null)
-                    //    chart.Series[0].Color = colorSet.GetNewColorFromColorSet();
-
-                    if (!chart.Series[0].IsExternalColorApplied)
-                        chart.Series[0].SetValue(DataSeries.ColorProperty, colorSet.GetNewColorFromColorSet());
+                    if (seriesColor == null)
+                        chart.Series[0].InternalColor = colorSet.GetNewColorFromColorSet();
 
                     colorSet.ReSet();
 
@@ -1613,7 +1606,7 @@ namespace Visifire.Charts
                     {
                         dp.IsNotificationEnable = false;
 
-                        dp.MarkerBorderColor = colorSet.GetNewColorFromColorSet();
+                        dp.InternalColor = colorSet.GetNewColorFromColorSet();
                         
                         dp.IsNotificationEnable = true;
                     }
@@ -1623,20 +1616,12 @@ namespace Visifire.Charts
                     foreach (DataPoint dp in chart.Series[0].DataPoints)
                     {
                         dp.IsNotificationEnable = false;
-
-                        // if (dp.Color == null)
-                        // dp.Color = colorSet.GetNewColorFromColorSet();
-
-                        if (!dp.IsExternalColorApplied)
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+                        if (dPColor == null)
                         {
-                            if (dp.Parent.IsExternalColorApplied)
-                            {
-                                dp.SetValue(DataPoint.ColorProperty, dp.Parent.Color);
-                            }
-                            else
-                                dp.SetValue(DataPoint.ColorProperty, colorSet.GetNewColorFromColorSet());
+                            dp.InternalColor = colorSet.GetNewColorFromColorSet();
                         }
-
+ 
                         dp.IsNotificationEnable = true;
                     }
                 }
@@ -1651,12 +1636,12 @@ namespace Visifire.Charts
                     colorSet.ReSet();
 
                 foreach (DataSeries ds in chart.Series)
-                {   
+                {
                     colorSet4MultiSeries = colorSet;
                     FLAG_UNIQUE_COLOR_4_EACH_DP = false;
 
-                    if (ds.ColorSet != ColorSetNames.None)
-                    {
+                    if (!String.IsNullOrEmpty(ds.ColorSet))
+                    {   
                         colorSet4MultiSeries = chart.ColorSets.GetColorSetByName(ds.ColorSet);
 
                         if (colorSet4MultiSeries != null)
@@ -1674,42 +1659,41 @@ namespace Visifire.Charts
 
                     if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
                     {
-                        //if (ds.Color == null)
-                        //    ds.Color = seriesColor;
+                        Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
+                        if (DataSeriesColor == null)
+                        {
+                            ds.InternalColor = seriesColor;
+                        }
 
-                        if (!ds.IsExternalColorApplied)
-                            ds.SetValue(DataSeries.ColorProperty, seriesColor);
+                        // if (!ds.IsExternalColorApplied)
+                        //    ds.SetValue(DataSeries.ColorProperty, seriesColor);
                     }
                     else
                     {
                         foreach (DataPoint dp in ds.DataPoints)
                         {
                             dp.IsNotificationEnable = false;
-
-                            //if (dp.Color == null)
-
-                            if (!dp.IsExternalColorApplied)
+                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+                            if (dPColor == null)
                             {
-                                if (dp.Parent.IsExternalColorApplied)
-                                    dp.SetValue(DataPoint.ColorProperty, dp.Parent.Color);
+                                // If unique color for each DataPoint
+                                if (FLAG_UNIQUE_COLOR_4_EACH_DP)
+                                {
+                                    dp.InternalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+                                }
                                 else
                                 {
-                                    // If unique color for each DataPoint
-                                    if (FLAG_UNIQUE_COLOR_4_EACH_DP)
-                                    {
-                                        dp.SetValue(DataPoint.ColorProperty, colorSet4MultiSeries.GetNewColorFromColorSet());
-                                    }
-                                    else
-                                    {
-                                        dp.SetValue(DataPoint.ColorProperty, seriesColor);
-                                    }
+                                    ds.InternalColor = seriesColor;
+                                    dp.IsNotificationEnable = true;
+                                    break;
                                 }
                             }
-                            
 
                             dp.IsNotificationEnable = true;
                         }
                     }
+
+                    ds.IsNotificationEnable = true;
                 }
             }
 
@@ -1722,12 +1706,12 @@ namespace Visifire.Charts
             ColorSet colorSet = null;
 
             // Load chart colorSet
-            if (chart.ColorSet != ColorSetNames.None)
+            if (!String.IsNullOrEmpty(chart.ColorSet))
             {
                 colorSet = chart.ColorSets.GetColorSetByName(chart.ColorSet);
             }
 
-            if (chart.InternalSeries[0].ColorSet != ColorSetNames.None)
+            if (!String.IsNullOrEmpty(chart.InternalSeries[0].ColorSet))
             {
                 colorSet = chart.ColorSets.GetColorSetByName(chart.InternalSeries[0].ColorSet);
 
@@ -1741,8 +1725,7 @@ namespace Visifire.Charts
 
             if (chart.InternalSeries[0].RenderAs == RenderAs.Area || chart.InternalSeries[0].RenderAs == RenderAs.Line || chart.InternalSeries[0].RenderAs == RenderAs.StackedArea || chart.InternalSeries[0].RenderAs == RenderAs.StackedArea100)
             {
-                if (!chart.InternalSeries[0].IsExternalColorApplied) 
-                    chart.InternalSeries[0].SetValue(DataSeries.ColorProperty, colorSet.GetNewColorFromColorSet());
+                chart.InternalSeries[0].SetValue(DataSeries.ColorProperty, colorSet.GetNewColorFromColorSet());
                 
                 colorSet.ReSet();
 
@@ -1762,8 +1745,7 @@ namespace Visifire.Charts
                 {
                     dp.IsNotificationEnable = false;
 
-                    if (!dp.IsExternalColorApplied)
-                        dp.SetValue(DataPoint.ColorProperty, colorSet.GetNewColorFromColorSet());
+                    dp.SetValue(DataPoint.ColorProperty, colorSet.GetNewColorFromColorSet());
 
                     dp.IsNotificationEnable = true;
                 }
@@ -1798,16 +1780,16 @@ namespace Visifire.Charts
                 else
                     markerSize = new Size(8, 8);
 
-                legend.Entries.Add(new KeyValuePair<String,Marker>(legendText,
-                    new Marker(
+                dataPoint.LegendMarker = new Marker(
                         RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent), 
                         1,
                         markerSize,
                         markerBevel,
                         markerColor,
                         ""
-                        )));
+                        );
 
+                legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataPoint.LegendMarker));
 
             }
         }
@@ -1909,15 +1891,16 @@ namespace Visifire.Charts
                         else
                             markerSize = new Size(8, 8);
 
-                        legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, 
-                            new Marker(
+                        dataSeries.LegendMarker = new Marker(
                                 RenderAsToMarkerType(dataSeries.RenderAs, dataSeries),
                                 1,
                                 markerSize,
                                 markerBevel,
                                 markerColor,
                                 ""
-                                )));
+                                );
+                        
+                        legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
                     }
                 }
             }
@@ -2528,6 +2511,9 @@ namespace Visifire.Charts
         {
             foreach (DataSeries ds in Chart.InternalSeries)
             {
+                //if (ds.LegendMarker != null)
+                //    ObservableObject.AttachEvents2Visual(ds, ds.LegendMarker.Visual);
+
                 ds.AttachEvent2DataSeriesVisualFaces();
 
                 foreach (DataPoint dp in ds.DataPoints)

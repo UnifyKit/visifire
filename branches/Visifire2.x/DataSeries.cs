@@ -2,43 +2,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Windows.Markup;
 using System.Collections.ObjectModel;
 
 #endif
+using System.Windows.Shapes;
 
 using Visifire.Commons;
 
@@ -299,11 +281,13 @@ namespace Visifire.Charts
         {
             get
             {
-                return (Brush)GetValue(ColorProperty);
+                if(((Brush)GetValue(DataSeries.ColorProperty) == null))
+                    return InternalColor;
+                else
+                    return (Brush)GetValue(ColorProperty);
             }
             set
             {
-                IsExternalColorApplied = true;
                 SetValue(ColorProperty, value);
             }
         }
@@ -317,7 +301,8 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.FirePropertyChanged("Color");
+            //dataSeries.FirePropertyChanged("Color");
+            dataSeries.UpdateVisual("Color", e.NewValue);
         }
 
         private new Brush Background
@@ -483,14 +468,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Sets the ColorSet 
         /// </summary>
-#if SL
-        //[System.ComponentModel.TypeConverter(typeof(Converters.ColorSetNameConverter))]
-#endif
-        public ColorSetNames ColorSet
+        public String ColorSet
         {
             get
             {
-                return (ColorSetNames)GetValue(ColorSetProperty);
+                return (String)GetValue(ColorSetProperty);
             }
             set
             {
@@ -500,7 +482,7 @@ namespace Visifire.Charts
 
         private static readonly DependencyProperty ColorSetProperty = DependencyProperty.Register
             ("ColorSet",
-            typeof(ColorSetNames),
+            typeof(String),
             typeof(DataSeries),
             new PropertyMetadata(OnColorSetPropertyChanged));
 
@@ -1646,9 +1628,71 @@ namespace Visifire.Charts
 
         #region Protected Methods
 
+        internal override void UpdateVisual(String PropertyName, object Value)
+        {
+            if (PropertyName == "Color")
+            {
+                if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
+                {
+                    if (Faces != null && Faces.Parts != null)
+                    {
+
+                        if ((Chart as Chart).View3D)
+                        {
+                            Brush sideBrush = (Boolean)LightingEnabled ? AreaChart.GetRightFaceBrush((Brush)Value) : (Brush)Value;
+                            Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)Value) : (Brush)Value;
+
+                            foreach (FrameworkElement fe in Faces.Parts)
+                            {
+                                if (fe.Tag.ToString() == "AreaBase")
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)Value) : (Brush)Value;
+                                else if (fe.Tag.ToString() == "Side")
+                                    (fe as Shape).Fill = sideBrush;
+                                else if (fe.Tag.ToString() == "Top")
+                                    (fe as Shape).Fill = topBrush;
+                            }
+                        }
+                        else
+                        {   
+                            foreach (FrameworkElement fe in Faces.Parts)
+                            {
+                                if (fe.Tag.ToString() == "AreaBase")
+                                {
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", null) : (Brush)Value;
+                                }
+                                else if (fe.Tag.ToString() == "Bevel")
+                                {
+                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)Value);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    foreach (DataPoint dp in DataPoints)
+                        dp.UpdateVisual("Color", null);
+
+                if (LegendMarker != null && LegendMarker.Visual != null)
+                {
+                    LegendMarker.BorderColor = (Brush)Color;
+                    LegendMarker.MarkerFillColor = (Brush)Color;
+                    LegendMarker.UpdateMarker();
+                }
+            }
+            else
+                FirePropertyChanged("Color");
+        }
+
         #endregion
 
         #region Internal Properties
+
+        internal Marker LegendMarker
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// This storyboard has to be used for animating the DataSeries
         /// </summary>
@@ -1718,7 +1762,7 @@ namespace Visifire.Charts
                 dp.AttachEvent2DataPointVisualFaces(this);
             }
         }
-
+        
         #endregion
 
         #region Internal Events
@@ -1728,8 +1772,7 @@ namespace Visifire.Charts
         #region Data
         private String _toolTipText;
         private Storyboard _storyboard;
-        internal Boolean IsExternalColorApplied;                        // if color is set by user not from ColorSet 
-
+        internal Brush InternalColor;
 #if WPF
         private static Boolean _defaultStyleKeyApplied = false;            // Default Style key
 #endif        

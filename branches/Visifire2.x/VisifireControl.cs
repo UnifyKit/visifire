@@ -1,42 +1,16 @@
 ﻿#if WPF
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Windows.Threading;
+
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 #endif
 
 using System.Windows.Controls.Primitives;
@@ -255,9 +229,9 @@ namespace Visifire.Commons
 
         internal TextBlock _toolTipTextBlock;
         internal const string ToolTipTextBlockName = "ToolTipTextBlock";
+        
         #endregion
 
-       
 #if SL
         /// <summary>
         /// Sliverlight Object Id
@@ -341,14 +315,7 @@ namespace Visifire.Commons
             }
         }
 #endif
-        /// <summary>
-        /// Is Auto Render is paushed
-        /// </summary>
-        internal Boolean IsRenderPaused
-        {
-            get;
-            set;
-        }
+
     }
 
 }

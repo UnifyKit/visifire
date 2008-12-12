@@ -2,41 +2,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 
@@ -83,13 +65,13 @@ namespace Visifire.Charts
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
                     if (isPositive)
                     {   
-                        if (position < dataPoint.Marker.MarkerActualSize.Height)
+                        if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                         else
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                     }
                     else
-                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height)
+                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                         else
                             dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
@@ -117,6 +99,7 @@ namespace Visifire.Charts
 
                 return dataPoint.Marker;
             }
+
             return null;
         }
 
@@ -172,7 +155,7 @@ namespace Visifire.Charts
                 lineParams.LineThickness = (Double)series.LineThickness;
                 lineParams.LineColor = stroke;
 
-                lineParams.LineStyle = series.GetDashArray(series.LineStyle);
+                lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
                 lineParams.Lighting = (Boolean)series.LightingEnabled;
                 lineParams.ShadowEnabled = series.ShadowEnabled;
 
@@ -186,7 +169,7 @@ namespace Visifire.Charts
 
                 // Apply animation
                 if (animationEnabled)
-                {
+                {   
                     if (series.Storyboard == null)
                         series.Storyboard = new Storyboard();
 
@@ -202,8 +185,6 @@ namespace Visifire.Charts
             // If animation is not enabled or if there are no series in the serieslist the dont apply animation
             if (animationEnabled && seriesList.Count > 0)
             {
-                //if (seriesList[0].Storyboard == null)
-                //    seriesList[0].Storyboard = new Storyboard();
                 // Apply animation to the label canvas
                 DataSeriesRef = seriesList[0];
 
@@ -219,7 +200,7 @@ namespace Visifire.Charts
 
             Polyline polyline = new Polyline();
             polyline.Points = lineParams.Points;
-            polyline.Stroke = lineParams.Lighting ? GetLightingEnabledBrush(lineParams.LineColor) : lineParams.LineColor;
+            polyline.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             polyline.StrokeThickness = lineParams.LineThickness;
             polyline.StrokeDashArray = lineParams.LineStyle;
 
@@ -240,29 +221,7 @@ namespace Visifire.Charts
             return visual;
         }
 
-        private static Brush GetLightingEnabledBrush(Brush brush)
-        {
-            if (typeof(SolidColorBrush).Equals(brush.GetType()))
-            {
-                SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                List<Color> colors = new List<Color>();
-                List<Double> stops = new List<Double>();
-
-                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                stops.Add(0);
-
-                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                stops.Add(1);
-
-
-                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-            }
-            else
-            {
-                return brush;
-            }
-        }
+       
 
         
         private static Brush GetShadowBrush()
@@ -279,14 +238,6 @@ namespace Visifire.Charts
             return newCollection;
         }
 
-        private static DoubleCollection GenerateDoubleCollection(params Double[] values)
-        {
-            DoubleCollection collection = new DoubleCollection();
-            foreach (Double value in values)
-                collection.Add(value);
-            return collection;
-        }
-
         private static List<KeySpline> GenerateKeySplineList(params Point[] values)
         {
             List<KeySpline> splines = new List<KeySpline>();
@@ -301,33 +252,7 @@ namespace Visifire.Charts
             return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
         }
 
-        private static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
-        {
-            DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
-#if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
-            Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
-
-            DataSeriesRef.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-#else
-            Storyboard.SetTarget(da, target);
-#endif
-            Storyboard.SetTargetProperty(da, new PropertyPath(property));
-
-            da.BeginTime = TimeSpan.FromSeconds(beginTime);
-
-            for (Int32 index = 0; index < splines.Count; index++)
-            {
-                SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
-                keyFrame.KeySpline = splines[index];
-                keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
-                keyFrame.Value = values[index];
-                da.KeyFrames.Add(keyFrame);
-            }
-
-            return da;
-        }
-
+       
         private static Storyboard ApplyLineChartAnimation(Panel canvas, Storyboard storyboard,Boolean isLineCanvas)
         {
 
@@ -349,31 +274,31 @@ namespace Visifire.Charts
 
             if (isLineCanvas)
             {
-                values = GenerateDoubleCollection(0, 1);
-                timeFrames = GenerateDoubleCollection(0, 1);
+                values = Graphics.GenerateDoubleCollection(0, 1);
+                timeFrames = Graphics.GenerateDoubleCollection(0, 1);
                 splines = GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-                storyboard.Children.Add(CreateDoubleAnimation(GradStop2, "(GradientStop.Offset)", 0.25+0.5, timeFrames, values, splines));
+                storyboard.Children.Add(Graphics.CreateDoubleAnimation(DataSeriesRef, GradStop2, "(GradientStop.Offset)", 0.25 + 0.5, timeFrames, values, splines));
 
-                values = GenerateDoubleCollection(0.01, 1);
-                timeFrames = GenerateDoubleCollection(0, 1);
+                values = Graphics.GenerateDoubleCollection(0.01, 1);
+                timeFrames = Graphics.GenerateDoubleCollection(0, 1);
                 splines = GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-                storyboard.Children.Add(CreateDoubleAnimation(GradStop3, "(GradientStop.Offset)", 0.25+0.5, timeFrames, values, splines));
+                storyboard.Children.Add(Graphics.CreateDoubleAnimation(DataSeriesRef, GradStop3, "(GradientStop.Offset)", 0.25 + 0.5, timeFrames, values, splines));
             }
             else
             {
-                values = GenerateDoubleCollection(0, 1);
-                timeFrames = GenerateDoubleCollection(0, 1);
+                values = Graphics.GenerateDoubleCollection(0, 1);
+                timeFrames = Graphics.GenerateDoubleCollection(0, 1);
                 splines = GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-                storyboard.Children.Add(CreateDoubleAnimation(GradStop2, "(GradientStop.Offset)", 0.5, timeFrames, values, splines));
+                storyboard.Children.Add(Graphics.CreateDoubleAnimation(DataSeriesRef, GradStop2, "(GradientStop.Offset)", 0.5, timeFrames, values, splines));
 
-                values = GenerateDoubleCollection(0.01, 1);
-                timeFrames = GenerateDoubleCollection(0, 1);
+                values = Graphics.GenerateDoubleCollection(0.01, 1);
+                timeFrames = Graphics.GenerateDoubleCollection(0, 1);
                 splines = GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-                storyboard.Children.Add(CreateDoubleAnimation(GradStop3, "(GradientStop.Offset)", 0.5, timeFrames, values, splines));
+                storyboard.Children.Add(Graphics.CreateDoubleAnimation(DataSeriesRef, GradStop3, "(GradientStop.Offset)", 0.5, timeFrames, values, splines));
             }
 
             return storyboard;

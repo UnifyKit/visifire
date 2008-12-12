@@ -11,7 +11,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    [TestClass]
+    //[TestClass]
     public class LegendTest : SilverlightControlTest
     {
         /// <summary>

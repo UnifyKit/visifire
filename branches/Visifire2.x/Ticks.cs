@@ -2,42 +2,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
+
 
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+
 #endif
 using Visifire.Commons;
 
@@ -185,7 +163,8 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.FirePropertyChanged("LineColor");
+            //ticks.FirePropertyChanged("LineColor");
+            ticks.UpdateVisual("LineColor", e.NewValue);
         }
 
         /// <summary>
@@ -212,7 +191,8 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.FirePropertyChanged("LineThickness");
+            //ticks.FirePropertyChanged("LineThickness");
+            ticks.UpdateVisual("LineThickness", e.NewValue);
         }
 
         /// <summary>
@@ -239,7 +219,8 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.FirePropertyChanged("LineStyle");
+            // ticks.FirePropertyChanged("LineStyle");
+            ticks.UpdateVisual("LineStyle", e.NewValue);
         }
 
         /// <summary>
@@ -463,7 +444,7 @@ namespace Visifire.Charts
 
                     line.Stroke = LineColor;
                     line.StrokeThickness = LineThickness;
-                    line.StrokeDashArray = GetDashArray(LineStyle);
+                    line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
                     switch (Placement)
                     {
@@ -532,6 +513,19 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
+        internal override void UpdateVisual(string PropertyName, object Value)
+        {   
+            if (Visual != null)
+                foreach (Line line in Visual.Children)
+                {    
+                    line.Stroke = LineColor;
+                    line.StrokeThickness = LineThickness;
+                    line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                }
+            else
+                FirePropertyChanged(PropertyName);
+        }
 
         #endregion
 

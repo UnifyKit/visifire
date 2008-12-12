@@ -2,41 +2,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using System.Threading;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Globalization;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Animation;
 #else
 using System;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
-using System.Windows.Markup;
-using System.Collections.ObjectModel;
+
 
 #endif
 using Visifire.Commons;
@@ -81,7 +60,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Creates the visual element for the Major ticks
         /// </summary>
-        public void CreateVisualObject(Double width, Double height, bool animationEnabled, Double duration)
+        internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double duration)
         {
             if (!(Boolean)Enabled)
             {
@@ -207,7 +186,8 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("LineColor");
+            // chartGrid.FirePropertyChanged("LineColor");
+            chartGrid.UpdateVisual("LineColor", e.NewValue);
         }
 
         /// <summary>
@@ -234,7 +214,8 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("LineStyle");
+            //chartGrid.FirePropertyChanged("LineStyle");
+            chartGrid.UpdateVisual("LineStyle", e.NewValue);
         }
 
         /// <summary>
@@ -261,10 +242,12 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("LineThickness");
+            //chartGrid.FirePropertyChanged("LineThickness");
+            chartGrid.UpdateVisual("LineThickness", e.NewValue);
         }
 
         #region InterlacedColor
+
         public Brush InterlacedColor
         {
             get { return (Brush)GetValue(InterlacedColorProperty); }
@@ -280,7 +263,8 @@ namespace Visifire.Charts
         private static void OnInterlacedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("InterlacedColor");
+            // chartGrid.FirePropertyChanged("InterlacedColor");
+            chartGrid.UpdateVisual("InterlacedColor", e.NewValue);
         }
 
         #endregion  InterlacedColor
@@ -461,15 +445,18 @@ namespace Visifire.Charts
             if(Storyboard != null)
                 Storyboard.Stop();
 
+            InterlacedRectangles = new List<Rectangle>();
+            InterlacedLines = new List<Line>();
+
             if (minval != maxVal)
-            {
+            {InterlacedRectangles = new List<Rectangle>();
                 for (; index <= maxVal; index = minval + (++count) * gap)
                 {
                     Line line = new Line();
-
+                    InterlacedLines.Add(line);
                     line.Stroke = LineColor;
                     line.StrokeThickness = LineThickness;
-                    line.StrokeDashArray = GetDashArray(LineStyle);
+                    line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
                     line.Width = Width;
                     line.Height = Height;
@@ -514,7 +501,9 @@ namespace Visifire.Charts
                                 rectangle.SetValue(Canvas.TopProperty, (Double)0);
                                 rectangle.SetValue(Canvas.ZIndexProperty, (Int32)(-countRectangles));
                                 Visual.Children.Add(rectangle);
+                                InterlacedRectangles.Add(rectangle);
                             }
+
                             break;
 
                         case PlacementTypes.Left:
@@ -545,6 +534,7 @@ namespace Visifire.Charts
                                     }
                                     rectangle.RenderTransform = scaleTransform;
                                 }
+
                                 countRectangles++;
                                 rectangle.Width = Width;
                                 rectangle.Height = Math.Abs(position - prevPosition);
@@ -553,15 +543,17 @@ namespace Visifire.Charts
                                 rectangle.SetValue(Canvas.TopProperty, position);
                                 rectangle.SetValue(Canvas.ZIndexProperty, (Int32)(-countRectangles));
                                 Visual.Children.Add(rectangle);
+                                InterlacedRectangles.Add(rectangle);
                             }
+
                             break;
-
                     }
-
+                    
 
                     Visual.Children.Add(line);
                     prevPosition = position;
                 }
+
                 if (count % 2 == 1)
                 {
                     Rectangle rectangle = new Rectangle();
@@ -618,14 +610,25 @@ namespace Visifire.Charts
                     rectangle.Fill = InterlacedColor;
                     rectangle.SetValue(Canvas.ZIndexProperty, (Int32)(-countRectangles));
                     Visual.Children.Add(rectangle);
-
-
+                    InterlacedRectangles.Add(rectangle);
                 }
             }
 
             Visual.Width = Width;
             Visual.Height = Height;
 
+        }
+
+        private List<Rectangle> InterlacedRectangles
+        {
+            get;
+            set;
+        }
+
+        private List<Line> InterlacedLines
+        {
+            get;
+            set;
         }
 
         private void ApplyVisualProperty()
@@ -672,6 +675,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
+        internal override void UpdateVisual(string PropertyName, object Value)
+        {
+            if (Visual != null)
+            {
+                foreach (Rectangle rec in InterlacedRectangles)
+                    rec.Fill = InterlacedColor;
+
+                foreach (Line line in InterlacedLines)
+                {
+                    line.Stroke = LineColor;
+                    line.StrokeThickness = LineThickness;
+                    line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                }
+            }
+            else
+                FirePropertyChanged(PropertyName);
+        }
 
         #endregion
 
