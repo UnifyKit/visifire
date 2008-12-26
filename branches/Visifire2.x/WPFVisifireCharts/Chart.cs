@@ -64,12 +64,10 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.PlotGridName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.PlotAreaShadowCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.DrawingCanvasName, Type = typeof(Canvas))]
-    //[TemplatePart(Name = Chart.PlotAreaBevelCanvasName, Type = typeof(Canvas))]
+    // [TemplatePart(Name = Chart.PlotAreaBevelCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.CenterDockInsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.CenterDockOutsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.ToolTipCanvasName, Type = typeof(Canvas))]
-    [TemplatePart(Name = Chart.ToolTipName, Type = typeof(Border))]
-    [TemplatePart(Name = Chart.ToolTipTextBlockName, Type = typeof(TextBlock))]
 
     #endregion
 
@@ -78,7 +76,6 @@ namespace Visifire.Charts
     /// </summary>
     public partial class Chart
     {
-
         #region Public Methods
 
         public Chart()
@@ -92,12 +89,19 @@ namespace Visifire.Charts
                 _defaultStyleKeyApplied = true;
             }
 
-            this.Loaded += new RoutedEventHandler(Chart_Loaded);
+            this.Loaded +=new RoutedEventHandler(Chart_Loaded);
+            this.SizeChanged += new SizeChangedEventHandler(Chart_SizeChanged);
+        }
+
+        void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Call Render
+            Render();
         }
 
         void Chart_Loaded(object sender, RoutedEventArgs e)
         {
-            Render();
+           Render();
         }
 
         #endregion
@@ -111,17 +115,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Protected Methods
-
-        /// <summary>
-        /// Called to remeasure a control.
-        /// </summary>
-        /// <param name="constraint"> The maximum size that the method can return</param>
-        /// <returns>The size of the control, up to the maximum specified by constraint</returns>
-        protected override Size MeasureOverride(Size constraint)
-        {
-            return base.MeasureOverride(constraint);
-        }
-
 
         /// <summary>
         /// When overridden in a derived class, participates in rendering operations
@@ -140,7 +133,7 @@ namespace Visifire.Charts
             if (IsTemplateApplied)
             {
                 // Call Render
-                CallRender();
+                //CallRender();
             }
         }
 

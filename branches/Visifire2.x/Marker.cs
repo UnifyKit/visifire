@@ -25,7 +25,7 @@ using Visifire.Charts;
 
 namespace Visifire.Commons
 {
-    public class Marker
+    public class Marker: IComparable
     {
         public Marker(MarkerTypes markerType, Double scaleFactor, Size markerSize, Boolean markerBevel, Brush markerColor, String markerLabelText)
         {
@@ -48,6 +48,12 @@ namespace Visifire.Commons
 
         }
 
+        public int CompareTo(Object o)
+        {
+            Marker dataPoint = (Marker)o;
+            return this.Position.X.CompareTo(dataPoint.Position.X);
+        }
+        
         public Boolean Bevel
         {
             get;
@@ -70,6 +76,12 @@ namespace Visifire.Commons
         }
 
         public Double LabelPadding
+        {
+            get;
+            set;
+        }
+
+        public Point Position
         {
             get;
             set;
@@ -110,6 +122,7 @@ namespace Visifire.Commons
 
         public void AddToParent(Canvas parentCanvas, Double xPosition, Double yPosition, Point anchorPoint)
         {
+            Position = new Point(xPosition, yPosition);
             parentCanvas.Children.Add(Visual);
             Double visualHeight;
             Double visualWidth;
@@ -143,6 +156,7 @@ namespace Visifire.Commons
 
             Visual.SetValue(Canvas.TopProperty, yPosition);
             Visual.SetValue(Canvas.LeftProperty, xPosition);
+
         }
 
         public void AddToParent(Panel parent)

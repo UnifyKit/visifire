@@ -1454,7 +1454,7 @@ namespace WPFVisifireChartsTest
                 axis.AxisType = AxisTypes.Secondary;
                 axis.AxisMaximum = 1000;
                 axis.AxisMinimum = 1;
-                chart.AxesY = new ObservableCollection<Axis>();
+                chart.AxesY = new AxisCollection();
                 chart.AxesY.Add(axis);
 
                 dataSeries.AxisYType = AxisTypes.Secondary;

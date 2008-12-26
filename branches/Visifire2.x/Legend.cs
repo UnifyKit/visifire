@@ -388,17 +388,24 @@ namespace Visifire.Charts
 
         public new Thickness BorderThickness
         {
-            set
-            {
-                System.Diagnostics.Debug.WriteLine(value.ToString());
-                SetValue(BorderThicknessProperty, value);
-            }
             get
             {
                 return (Thickness)GetValue(BorderThicknessProperty);
+            } 
+            set
+            {
+#if SL
+                if (BorderThickness != value)
+                {
+                    SetValue(BorderThicknessProperty, value);
+                    FirePropertyChanged("BorderThickness");
+                }
+#else
+                SetValue(BorderThicknessProperty, value);
+#endif
             }
         }
-
+#if WPF
         public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
         ("BorderThickness",
         typeof(Thickness),
@@ -410,6 +417,7 @@ namespace Visifire.Charts
             Legend legend = d as Legend;
             legend.FirePropertyChanged("BorderThickness");
         }
+#endif
 
         public new Brush Background
         {
@@ -419,19 +427,19 @@ namespace Visifire.Charts
             }
             set
             {
-//#if SL
-                //if (Background != value)
-                //{
-                //    SetValue(BackgroundProperty, value);
-                //    FirePropertyChanged("Background");
-                //}
-//#else
+#if SL
+                if (Background != value)
+                {
+                    SetValue(BackgroundProperty, value);
+                    FirePropertyChanged("Background");
+                }
+#else
                 SetValue(BackgroundProperty, value);
-//#endif
+#endif
             }
         }
 
-//#if WPF
+#if WPF
         private new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
             ("Background",
             typeof(Brush),
@@ -443,7 +451,7 @@ namespace Visifire.Charts
             Legend legend = d as Legend;
             legend.FirePropertyChanged("Background");
         }
-//#endif
+#endif
 
         public Boolean DockInsidePlotArea
         {
@@ -472,6 +480,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the BorderStyle property
         /// </summary>
+
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
         {
@@ -488,7 +497,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(Legend),
@@ -515,7 +524,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
             ("FontColor",
             typeof(Brush),
             typeof(Legend),

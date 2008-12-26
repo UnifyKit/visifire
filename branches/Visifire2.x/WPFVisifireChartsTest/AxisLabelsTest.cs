@@ -36,7 +36,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -66,7 +66,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -95,7 +95,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -125,7 +125,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -155,7 +155,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -185,7 +185,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -201,7 +201,7 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
-        
+
         /// <summary>
         /// Check the default value of FontColor. 
         /// </summary> 
@@ -215,7 +215,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -244,7 +244,7 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -273,7 +273,7 @@ namespace WPFVisifireChartsTest
         //    chart.Height = 300;
 
         //    Common.CreateAndAddDefaultDataSeries(chart);
-            
+
         //    isLoaded = false;
         //    chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -311,7 +311,7 @@ namespace WPFVisifireChartsTest
             chart.AxesY.Add(axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -347,7 +347,7 @@ namespace WPFVisifireChartsTest
 
             chart.AxesX.Add(axisX);
             chart.AxesY.Add(axisY);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -383,7 +383,7 @@ namespace WPFVisifireChartsTest
 
             chart.AxesX.Add(axisX);
             chart.AxesY.Add(axisY);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -419,7 +419,7 @@ namespace WPFVisifireChartsTest
 
             chart.AxesX.Add(axisX);
             chart.AxesY.Add(axisY);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -455,7 +455,7 @@ namespace WPFVisifireChartsTest
 
             chart.AxesX.Add(axisX);
             chart.AxesY.Add(axisY);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -491,7 +491,7 @@ namespace WPFVisifireChartsTest
 
             chart.AxesX.Add(axisX);
             chart.AxesY.Add(axisY);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -526,7 +526,7 @@ namespace WPFVisifireChartsTest
             chart.AxesX.Add(axisX);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -576,7 +576,7 @@ namespace WPFVisifireChartsTest
             }
 
             chart.Series.Add(dataSeries);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -621,7 +621,7 @@ namespace WPFVisifireChartsTest
             }
 
             chart.Series.Add(dataSeries);
-              
+
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 

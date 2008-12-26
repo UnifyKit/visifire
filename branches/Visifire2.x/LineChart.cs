@@ -40,9 +40,11 @@ namespace Visifire.Charts
     {
         internal static Marker GetMarkerForDataPoint(Chart chart, Double position, DataPoint dataPoint, Boolean isPositive)
         {
-            if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
+            //if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
             {
-                Size markerSize = (Boolean)dataPoint.MarkerEnabled ? new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize) : new Size(0, 0);
+                //Size markerSize = (Boolean)dataPoint.MarkerEnabled ? new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize) : new Size(0, 0);
+                Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
+
                 String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
                 Boolean markerBevel = false;
                 dataPoint.Marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, dataPoint.MarkerColor, labelText);
@@ -59,7 +61,7 @@ namespace Visifire.Charts
                 dataPoint.Marker.MarkerFillColor = dataPoint.MarkerColor;
 
                 if (true && !String.IsNullOrEmpty(labelText))
-                {
+                {   
                     dataPoint.Marker.CreateVisual();
 
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
@@ -81,26 +83,44 @@ namespace Visifire.Charts
 
                 dataPoint.Marker.CreateVisual();
 
-                dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
+                if ((Boolean)dataPoint.MarkerEnabled)
                 {
-                    Shape shape = sender as Shape;
-                    shape.Stroke = new SolidColorBrush(Colors.Red);
-                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
-                };
+                    dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
+                    {   
+                        Shape shape = sender as Shape;
+                        shape.Stroke = new SolidColorBrush(Colors.Red);
+                        shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    };
 
-                dataPoint.Marker.MarkerShape.MouseLeave += delegate(object sender, MouseEventArgs e)
+                    dataPoint.Marker.MarkerShape.MouseLeave += delegate(object sender, MouseEventArgs e)
+                    {
+                        Shape shape = sender as Shape;
+                        shape.Stroke = dataPoint.Marker.BorderColor;
+                        shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    };
+                }
+                else
                 {
-                    Shape shape = sender as Shape;
-                    shape.Stroke = dataPoint.Marker.BorderColor;
-                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
-                };
+                    Brush tarnsparentColor = new SolidColorBrush(Colors.Transparent);
+                    dataPoint.Marker.MarkerShape.Fill = tarnsparentColor;
+                    dataPoint.Marker.MarkerShape.Stroke = tarnsparentColor;
+
+                    if (dataPoint.Marker.MarkerShadow != null)
+                    {   
+                        dataPoint.Marker.MarkerShadow.Fill = tarnsparentColor;
+                        dataPoint.Marker.MarkerShadow.Stroke = tarnsparentColor;
+                    }
+
+                    if(dataPoint.Marker.BevelLayer != null)
+                        dataPoint.Marker.BevelLayer.Visibility = Visibility.Collapsed;
+                }
 
                 // Visifire.Commons.ObservableObject.AttachEvents2Visual(dataPoint, dataPoint.Marker.Visual);
 
                 return dataPoint.Marker;
             }
 
-            return null;
+            //return null;
         }
 
         internal static Canvas GetVisualObjectForLineChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
@@ -122,7 +142,7 @@ namespace Visifire.Charts
 
             foreach (DataSeries series in seriesList)
             {
-                if (series.Enabled == false)
+                if ((Boolean)series.Enabled == false)
                     continue;
 
                 Brush stroke = series.Color;
@@ -139,17 +159,17 @@ namespace Visifire.Charts
 
                     Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
-
+                   
+                    //System.Diagnostics.Debug.WriteLine("xPosition=" + xPosition.ToString());
+                    
                     pointsCollection.Add(new Point(xPosition, yPosition));
 
                     Marker marker = GetMarkerForDataPoint(chart, yPosition, dataPoint, dataPoint.YValue > 0);
-                    if (marker != null)
-                    {
-                        marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
-                    }
+                    marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
                 }
 
                 series.Faces = new Faces();
+
                 PolylineChartShapeParams lineParams = new PolylineChartShapeParams();
 
                 lineParams.LineThickness = (Double)series.LineThickness;
@@ -161,7 +181,10 @@ namespace Visifire.Charts
 
                 lineParams.Points = pointsCollection;
 
-                Canvas line2dCanvas = GetLine2D(lineParams);
+                Polyline polyline;
+                Polyline PolylineShadow;
+                Canvas line2dCanvas = GetLine2D(lineParams, out polyline, out PolylineShadow);              
+
                 visual.Children.Add(line2dCanvas);
 
                 series.Faces.Visual = line2dCanvas;
@@ -193,12 +216,12 @@ namespace Visifire.Charts
 
             return visual;
         }
-
-        private static Canvas GetLine2D(PolylineChartShapeParams lineParams)
+        
+        private static Canvas GetLine2D(PolylineChartShapeParams lineParams, out Polyline polyline, out Polyline polylineShadow)
         {
             Canvas visual = new Canvas();
 
-            Polyline polyline = new Polyline();
+            polyline = new Polyline();
             polyline.Points = lineParams.Points;
             polyline.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             polyline.StrokeThickness = lineParams.LineThickness;
@@ -206,7 +229,7 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                Polyline polylineShadow = new Polyline();
+                polylineShadow = new Polyline();
                 polylineShadow.Points = CloneCollection(lineParams.Points);
                 polylineShadow.Stroke = GetShadowBrush();
                 polylineShadow.StrokeThickness = lineParams.LineThickness;
@@ -215,6 +238,8 @@ namespace Visifire.Charts
                 polylineShadow.Opacity = 0.5;
                 visual.Children.Add(polylineShadow);
             }
+            else
+                polylineShadow = null;
 
             visual.Children.Add(polyline);
 

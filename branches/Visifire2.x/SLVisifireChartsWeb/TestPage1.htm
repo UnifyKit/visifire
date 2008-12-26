@@ -26,43 +26,54 @@
                         var vChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
 
                         //vChart1.setLogLevel(0); // If you want to disable logging.
-
-                        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1" AnimationEnabled="True" BorderThickness="2" Background="White" Bevel="True" BorderBrush="Black" View3D="False">'
+                        
+                        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1" AnimationEnabled="True" BorderThickness="2" Bevel="false" BorderBrush="Black" View3D="False">'
                            + '     <vc:Chart.Titles>'
-                           + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
+                           + '         <vc:Title Enabled="False" Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
                            + '     </vc:Chart.Titles>'
 
+                           + '     <vc:Chart.ToolTips>'
+                           + '         <vc:ToolTip FontSize="8" Background="AliceBlue"></vc:ToolTip>'
+                           + '     </vc:Chart.ToolTips>'
+                           
                            + '     <vc:Chart.AxesX>'
-                           + '         <vc:Axis Title="Country">'
-                           + '             <vc:Axis.AxisLabels>'
-                           + '                 <vc:AxisLabels Interval="1"/>'
-                           + '             </vc:Axis.AxisLabels>'
-                           + '         </vc:Axis>'
+                           + '         <vc:Axis Title="Country" />'
                            + '     </vc:Chart.AxesX>'
 
                            + '     <vc:Chart.AxesY>'
                            + '         <vc:Axis Title="Gold Medals Won" />'
                            + '    </vc:Chart.AxesY>'
-
+                            
                            + '     <vc:Chart.PlotArea>'
-                           + '         <vc:PlotArea  Color="Gray" ShadowEnabled="True" BorderThickness="0" CornerRadius="0"/>'
+                           + '         <vc:PlotArea Color="Gray"/>'
                            + '     </vc:Chart.PlotArea>'
 
                            + '     <vc:Chart.Series>'
-                           + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True" Cursor="Hand">'
+                           + '         <vc:DataSeries RenderAs="Line" LabelEnabled="True" Cursor="Hand">'
                            + '             <vc:DataSeries.DataPoints>'
                            + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                            + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
                            + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
                            + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
                            + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                           +' <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+                           + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                           +' <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+                           + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+                           + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                           
                            + '             </vc:DataSeries.DataPoints>'
                            + '         </vc:DataSeries>'
                            + '     </vc:Chart.Series>'
                            + ' </vc:Chart>';
 
                         // Set Chart XML
-                        vChart.setDataXml(chartXml);
+                        vChart.setDataUri("data.xml");
 
                         /* 
                         On preload event, array of charts can be received as event arguments.  
@@ -76,37 +87,12 @@
                             // DataPoint reference is received as event argument.
                             chart.Series[0].MouseLeftButtonUp = function(dataPoint) {
                                 alert("AxisXLabel =" + dataPoint.AxisXLabel + " YValue = " + dataPoint.YValue);
-                                dataPoint.SetPropertyFromJs("YValue", dataPoint.YValue + 10);
                             };
 
                             // Attach Events to a Title. Title reference is received as event argument.
                             chart.Titles[0].MouseLeftButtonUp = function(title) {
                                 alert(title.Text);
                             }
-
-                            chart.Series[0].DataPoints[0].MouseEnter = function(dataPoint) {
-                                chart.Titles[0].SetPropertyFromJs("Text", "Enter");
-                                dataPoint.YValue = 30;
-                            };
-
-                            chart.Series[0].DataPoints[0].MouseLeave = function(dataPoint) {
-                                chart.Titles[0].SetPropertyFromJs("Text", "Leave");
-                                dataPoint.YValue = 34343;
-                                alert(dataPoint.Chart.ControlId);
-                            };
-
-
-                            // SetPropertyFromJs() can be used to update any property of any chart element.
-
-                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("YValue", "100");
-                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("Color", "Red");
-
-                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderThickness", "5.0");
-
-                            //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderThickness", "5.0");
-                           // chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderStyle", "Solid");
-                           //chart.Series[0].DataPoints[0].SetPropertyFromJs("BorderColor", "#FFFF00");
-
                         }
                         
                         /* 
@@ -114,24 +100,15 @@
                         Events can be can attached to chart elements. And do require customization.
                         Default chart elements can be accessed here.
                         */
-                        vChart.loaded = function(args)
-                        {
+                        vChart.loaded = function(args) {
                             var chart = args[0];   // Chart Reference.
 
                             // Create a LinearGradientBrush color brush
                             var color = '<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >'
-				                + '	<GradientStop Color="#dbdbdb"/>'
+				                + '	<GradientStop Color="Red"/>'
 				                + '	<GradientStop Color="White" Offset="0.567"/>'
 				                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
 				                + '</LinearGradientBrush>';
-                            
-                            // Set PoltArea background color.
-                            chart.PlotArea.SetPropertyFromJs("Color", color);
-
-                            // SetPropertyFromJs() can be used to update any property of any chart element.
-                            chart.Series[0].DataPoints[0].SetPropertyFromJs("YValue", "18");
-
-                            chart.SetPropertyFromJs("ColorSet", "Visifire1");
                         };
 
                         // Render chart

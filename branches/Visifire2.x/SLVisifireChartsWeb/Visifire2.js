@@ -1,5 +1,5 @@
 /*
-    Visifire2.js v2.0.4 beta
+    Visifire2.js v2.0.5 beta
     
     Copyright (C) 2008 Webyog Softworks Private Limited
 

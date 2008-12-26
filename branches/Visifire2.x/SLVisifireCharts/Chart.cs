@@ -71,8 +71,6 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.CenterDockInsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.CenterDockOutsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.ToolTipCanvasName, Type = typeof(Canvas))]
-    [TemplatePart(Name = Chart.ToolTipName, Type = typeof(Border))]
-    [TemplatePart(Name = Chart.ToolTipTextBlockName, Type = typeof(TextBlock))]
 
     #endregion
 
@@ -167,7 +165,17 @@ namespace Visifire.Charts
             get;
             set;
         }
-
+#if SL
+        /// <summary>
+        /// If Chart is drawn using JavaScript, This property will be set from project SLVisifireChartsXap.
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public Boolean IsInJsMode
+        {
+            get;
+            set;
+        }
+#endif
         #endregion
 
         #region Public Events

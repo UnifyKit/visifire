@@ -18,10 +18,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-
 #endif
 
 using Visifire.Commons;
+using System.Windows.Data;
 
 namespace Visifire.Charts
 {
@@ -34,9 +34,15 @@ namespace Visifire.Charts
 
         public DataPoint()
         {
+            Binding myBinding = new Binding("BorderThickness");
+            myBinding.Source = this;
+            myBinding.Mode = BindingMode.TwoWay;
+            this.SetBinding(InternalBorderThicknessProperty, myBinding);
+
             XValue = Double.NaN;
             YValue = Double.NaN;
             ZValue = Double.NaN;
+
 #if WPF
             if (!_defaultStyleKeyApplied)
             {
@@ -141,7 +147,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty YValueProperty = DependencyProperty.Register
+        public static readonly DependencyProperty YValueProperty = DependencyProperty.Register
             ("YValue",
             typeof(Double),
             typeof(DataPoint),
@@ -169,7 +175,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty XValueProperty = DependencyProperty.Register
+        public static readonly DependencyProperty XValueProperty = DependencyProperty.Register
             ("XValue",
             typeof(Double),
             typeof(DataPoint),
@@ -196,7 +202,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ZValueProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ZValueProperty = DependencyProperty.Register
             ("ZValue",
             typeof(Double),
             typeof(DataPoint),
@@ -223,7 +229,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty AxisXLabelProperty = DependencyProperty.Register
+        public static readonly DependencyProperty AxisXLabelProperty = DependencyProperty.Register
             ("AxisXLabel",
             typeof(String),
             typeof(DataPoint),
@@ -256,7 +262,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal static readonly DependencyProperty ColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register
             ("Color",
             typeof(Brush),
             typeof(DataPoint),
@@ -288,7 +294,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -315,7 +321,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ExplodedProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ExplodedProperty = DependencyProperty.Register
             ("Exploded",
             typeof(Boolean),
             typeof(DataPoint),
@@ -350,7 +356,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LightingEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LightingEnabledProperty = DependencyProperty.Register
             ("LightingEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -387,7 +393,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
             ("ShadowEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -420,7 +426,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelEnabledProperty = DependencyProperty.Register
             ("LabelEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -450,7 +456,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelTextProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelTextProperty = DependencyProperty.Register
             ("LabelText",
             typeof(String),
             typeof(DataPoint),
@@ -480,7 +486,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelFontFamilyProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelFontFamilyProperty = DependencyProperty.Register
             ("LabelFontFamily",
             typeof(FontFamily),
             typeof(DataPoint),
@@ -515,7 +521,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelFontSizeProperty = DependencyProperty.Register
+       public static readonly DependencyProperty LabelFontSizeProperty = DependencyProperty.Register
             ("LabelFontSize",
             typeof(Nullable<Double>),
             typeof(DataPoint),
@@ -545,7 +551,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelFontColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelFontColorProperty = DependencyProperty.Register
             ("LabelFontColor",
             typeof(Brush),
             typeof(DataPoint),
@@ -578,7 +584,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelFontWeightProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelFontWeightProperty = DependencyProperty.Register
             ("LabelFontWeight",
             typeof(Nullable<FontWeight>),
             typeof(DataPoint),
@@ -608,7 +614,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelFontStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelFontStyleProperty = DependencyProperty.Register
             ("LabelFontStyle",
             typeof(Nullable<FontStyle>),
             typeof(DataPoint),
@@ -638,7 +644,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelBackgroundProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelBackgroundProperty = DependencyProperty.Register
             ("LabelBackground",
             typeof(Brush),
             typeof(DataPoint),
@@ -671,7 +677,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelStyleProperty = DependencyProperty.Register
             ("LabelStyle",
             typeof(Nullable<LabelStyles>),
             typeof(DataPoint),
@@ -713,7 +719,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelLineEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelLineEnabledProperty = DependencyProperty.Register
             ("LabelLineEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -743,7 +749,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelLineColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelLineColorProperty = DependencyProperty.Register
             ("LabelLineColor",
             typeof(Brush),
             typeof(DataPoint),
@@ -778,7 +784,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelLineThicknessProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelLineThicknessProperty = DependencyProperty.Register
             ("LabelLineThickness",
             typeof(Nullable<Double>),
             typeof(DataPoint),
@@ -811,7 +817,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LabelLineStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LabelLineStyleProperty = DependencyProperty.Register
             ("LabelLineStyle",
             typeof(Nullable<LineStyles>),
             typeof(DataPoint),
@@ -848,7 +854,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerEnabledProperty = DependencyProperty.Register
             ("MarkerEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -881,7 +887,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerTypeProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerTypeProperty = DependencyProperty.Register
             ("MarkerType",
             typeof(Nullable<MarkerTypes>),
             typeof(DataPoint),
@@ -927,7 +933,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerBorderThicknessProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerBorderThicknessProperty = DependencyProperty.Register
             ("MarkerBorderThickness",
             typeof(Nullable<Thickness>),
             typeof(DataPoint),
@@ -947,20 +953,24 @@ namespace Visifire.Charts
             get
             {
                 if (GetValue(MarkerBorderColorProperty) != null)
+                {
                     return (Brush)GetValue(MarkerBorderColorProperty);
+                }
                 else
+                {
                     if (_parent.MarkerBorderColor != null)
                         return (_parent.MarkerBorderColor);
                     else
-                        return (Color);
+                        return (InternalColor == null)? _parent.InternalColor: InternalColor;
+                }
             }
             set
-            {
+            {   
                 SetValue(MarkerBorderColorProperty, value);
             }
         }
 
-        private static readonly DependencyProperty MarkerBorderColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerBorderColorProperty = DependencyProperty.Register
            ("MarkerBorderColor",
            typeof(Brush),
            typeof(DataPoint),
@@ -993,7 +1003,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerSizeProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerSizeProperty = DependencyProperty.Register
             ("MarkerSize",
             typeof(Nullable<Double>),
             typeof(DataPoint),
@@ -1029,7 +1039,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerColorProperty = DependencyProperty.Register
             ("MarkerColor",
             typeof(Brush),
             typeof(DataPoint),
@@ -1062,7 +1072,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty MarkerScaleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MarkerScaleProperty = DependencyProperty.Register
             ("MarkerScale",
             typeof(Nullable<Double>),
             typeof(DataPoint),
@@ -1083,18 +1093,14 @@ namespace Visifire.Charts
         {
             get
             {
-                if (!String.IsNullOrEmpty(base.ToolTipText))
-                    return base.ToolTipText;
-                else if (String.IsNullOrEmpty(_toolTipText))
+                if (String.IsNullOrEmpty((String)GetValue(ToolTipTextProperty)))
                     return _parent.ToolTipText;
                 else
-                    return _toolTipText;
+                    return (String)GetValue(ToolTipTextProperty);
             }
             set
             {
-                _toolTipText = value;
-                base.ToolTipText = value;
-                CheckPropertyChanged<String>("ToolTipText", ref _toolTipText, ref value);
+                SetValue(ToolTipTextProperty, value);
             }
         }
 
@@ -1121,7 +1127,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ShowInLegendProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ShowInLegendProperty = DependencyProperty.Register
             ("ShowInLegend",
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
@@ -1161,7 +1167,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LegendTextProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LegendTextProperty = DependencyProperty.Register
             ("LegendText",
             typeof(String),
             typeof(DataPoint),
@@ -1176,34 +1182,32 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the BorderThickness property
         /// </summary>
-        public new Nullable<Thickness> BorderThickness
-        {
+        internal Nullable<Thickness> InternalBorderThickness
+        {   
             get
             {
-                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(BorderThicknessProperty) == new Thickness(0,0,0,0))
-                    return _parent.BorderThickness;
+                if ((Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == new Thickness(0, 0, 0, 0))
+                    return _parent.InternalBorderThickness;
                 else
-                    return (Nullable<Thickness>)GetValue(BorderThicknessProperty);
+                    return (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty);
             }
             set
             {
-                SetValue(BorderThicknessProperty, value);
-                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) != null)
-                    this.FirePropertyChanged("BorderThickness");
+                SetValue(InternalBorderThicknessProperty, value);
             }
         }
 
-        //private new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
-        //    ("BorderThickness",
-        //    typeof(Thickness),
-        //    typeof(DataPoint),
-        //    new PropertyMetadata(OnBorderThicknessPropertyChanged));
+        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+            ("InternalBorderThickness",
+            typeof(Nullable<Thickness>),
+            typeof(DataPoint),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
 
-        //private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    DataPoint dataPoint = d as DataPoint;
-        //    dataPoint.FirePropertyChanged("BorderThickness");
-        //}
+        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.FirePropertyChanged("BorderThickness");
+        }
 
         /// <summary>
         /// Set the BorderColor property
@@ -1227,7 +1231,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
             ("BorderColor",
             typeof(Brush),
             typeof(DataPoint),
@@ -1265,7 +1269,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty BorderStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty BorderStyleProperty = DependencyProperty.Register
             ("BorderStyle",
             typeof(Nullable<BorderStyles>),
             typeof(DataPoint),
@@ -1301,7 +1305,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty RadiusXProperty = DependencyProperty.Register
+        public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Register
             ("RadiusX",
             typeof(Nullable<CornerRadius>),
             typeof(DataPoint),
@@ -1336,7 +1340,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty RadiusYProperty = DependencyProperty.Register
+        public static readonly DependencyProperty RadiusYProperty = DependencyProperty.Register
             ("RadiusY",
             typeof(Nullable<CornerRadius>),
             typeof(DataPoint),
@@ -1466,7 +1470,7 @@ namespace Visifire.Charts
 
         void UpdateMarkerAndLegend(object Value)
         {
-            if (Marker != null && Marker.Visual != null)
+            if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
             {
                 if (Parent.RenderAs == RenderAs.Line)
                 {
@@ -1474,7 +1478,7 @@ namespace Visifire.Charts
                     Marker.UpdateMarker();
                 }
                 else if (Parent.RenderAs == RenderAs.Point)
-                {
+                {   
                     Marker.MarkerFillColor = (Brush)Value;
                     if (Marker.MarkerType != MarkerTypes.Cross)
                     {
@@ -1766,7 +1770,7 @@ namespace Visifire.Charts
                 if (str.Contains("##YValue"))
                     str = str.Replace("##YValue", "#YValue");
                 else
-                {
+                {   
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
                         if (Parent.PlotGroup != null)
@@ -1823,7 +1827,6 @@ namespace Visifire.Charts
         #region Data
 
             private DataSeries _parent;                         // Parent of DataPoints 
-            private String _toolTipText;
             private Boolean _interactiveExplodeState = false;
             private Boolean _interativityAnimationState = false;
             internal Brush InternalColor;

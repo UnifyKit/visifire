@@ -7,17 +7,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type vc:Chart}" >
                     <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0"
-                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                          Background="{TemplateBinding Background}">
-                           
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
+
                         <Grid x:Name="ShadowGrid" Margin="0,0,0,0" Canvas.ZIndex="0" ></Grid>
 
-                        <Border x:Name="ChartBorder" Margin="0,0,0,0" Canvas.ZIndex="1" 
-                                       Background="{TemplateBinding Background}"
-                                       Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
-                                       BorderThickness="{TemplateBinding BorderThickness}" 
-                                       CornerRadius="{TemplateBinding CornerRadius}"
-                                       BorderBrush="{TemplateBinding BorderBrush}">
+                        <Border x:Name="ChartBorder" Padding="{TemplateBinding Padding}" Margin="0,0,0,0" Canvas.ZIndex="1"
+                            Background="{TemplateBinding Background}"
+                            Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
 
                             <Grid x:Name="ChartAreaGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                                 <Grid.RowDefinitions>
@@ -28,7 +27,7 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
@@ -61,8 +60,8 @@
                                     <StackPanel x:Name="RightOuterTitlePanel" Orientation="Horizontal" ></StackPanel>
                                 </StackPanel>
 
-                                <!-- -->
-                                <Grid x:Name="CenterOuterGrid" Margin="{TemplateBinding Padding}" Grid.Row="1" Grid.Column="1" Canvas.ZIndex="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <!-- Margin="{TemplateBinding Padding}" -->
+                                <Grid x:Name="CenterOuterGrid" Margin="0" Grid.Row="1" Grid.Column="1" Canvas.ZIndex="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
@@ -80,7 +79,7 @@
                                     <Grid x:Name="LeftOffsetGrid" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Stretch"/>
                                     <Grid x:Name="RightOffsetGrid" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" VerticalAlignment="Stretch"/>
 
-                                    <Grid x:Name="CenterGrid" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid x:Name="CenterGrid" Grid.Row="1" Margin="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -94,44 +93,43 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Grid x:Name="TopAxisGrid" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Grid x:Name="TopAxisGrid" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="TopAxisContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <StackPanel x:Name="TopAxisPanel"></StackPanel>
                                                 <ScrollBar x:Name="TopAxisScrollBar" Orientation="Horizontal" Visibility="Collapsed"></ScrollBar>
                                             </StackPanel>
                                         </Grid>
 
-                                        <Grid x:Name="LeftAxisGrid" Grid.Row="1" Grid.Column="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <StackPanel x:Name="LeftAxisContainer" Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Grid x:Name="LeftAxisGrid" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="LeftAxisContainer" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <StackPanel x:Name="LeftAxisPanel"></StackPanel>
-                                                <ScrollBar x:Name="LeftAxisScrollBar" Height="0" Orientation="Vertical" Visibility="Collapsed"></ScrollBar>
+                                                <ScrollBar x:Name="LeftAxisScrollBar" Height="1" VerticalAlignment="Top" Orientation="Vertical" Visibility="Collapsed"></ScrollBar>
                                             </StackPanel>
                                         </Grid>
 
-                                        <Grid x:Name="RightAxisGrid" Grid.Row="1"  Grid.Column="2"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <StackPanel x:Name="RightAxisContainer" Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollBar x:Name="RightAxisScrollBar" Height="0" Orientation="Vertical" Visibility="Collapsed" ></ScrollBar>
+                                        <Grid x:Name="RightAxisGrid" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="RightAxisContainer" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollBar x:Name="RightAxisScrollBar" VerticalAlignment="Top" Height="0" Orientation="Vertical" Visibility="Collapsed" ></ScrollBar>
                                                 <StackPanel x:Name="RightAxisPanel" ></StackPanel>
                                             </StackPanel>
                                         </Grid>
 
-                                        <Grid x:Name="BottomAxisGrid" Grid.Row="2" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <StackPanel x:Name="BottomAxisContainer" Orientation="Vertical"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollBar  x:Name="BottomAxisScrollBar" Height="12" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
+                                        <Grid x:Name="BottomAxisGrid" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="BottomAxisContainer" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollBar x:Name="BottomAxisScrollBar" Height="0" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
                                                 <StackPanel x:Name="BottomAxisPanel" ></StackPanel>
                                             </StackPanel>
                                         </Grid>
 
-                                        <Grid x:Name="CenterInnerGrid" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            
-                                            <Canvas x:Name="PlotAreaShadowCanvas" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Canvas.ZIndex="0"></Canvas>
+                                        <Grid x:Name="CenterInnerGrid" Margin="0" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                                            <Grid  x:Name="PlotAreaGrid" Margin="0,0,4,4" Canvas.ZIndex="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                                                <ScrollViewer BorderThickness="0"  x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Padding="0">
-                                                    <Canvas x:Name="PlotCanvas" Margin="0">
+                                            <Canvas x:Name="PlotAreaShadowCanvas" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
+                                            <!-- Margin="0,0,4,4" -->
+                                            <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,4,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollViewer BorderThickness="0" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
+                                                    <Canvas x:Name="PlotCanvas">
 
-
-                                                        <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Canvas>
+                                                        <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
 
                                                         <!--<Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
 
@@ -139,7 +137,7 @@
                                                 </ScrollViewer>
                                             </Grid>
 
-                                            <Grid x:Name="InnerGrid"  Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <Grid x:Name="InnerGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
@@ -165,10 +163,10 @@
 
                                                 <StackPanel x:Name="LeftInnerPanel" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
                                                     <StackPanel x:Name="LeftInnerTitlePanel" Orientation="Horizontal" ></StackPanel>
-                                                    <StackPanel x:Name="LeftInnerLegendPanel"  Orientation="Horizontal" ></StackPanel>
+                                                    <StackPanel x:Name="LeftInnerLegendPanel" Orientation="Horizontal" ></StackPanel>
                                                 </StackPanel>
 
-                                                <StackPanel x:Name="RightInnerPanel" Grid.Column="2"  Grid.Row="1" Orientation="Horizontal" >
+                                                <StackPanel x:Name="RightInnerPanel" Grid.Column="2" Grid.Row="1" Orientation="Horizontal" >
                                                     <StackPanel x:Name="RightInnerLegendPanel" Orientation="Horizontal" ></StackPanel>
                                                     <StackPanel x:Name="RightInnerTitlePanel" Orientation="Horizontal" ></StackPanel>
                                                 </StackPanel>
@@ -183,19 +181,7 @@
                         <Canvas x:Name="BevelCanvas" Canvas.ZIndex="2" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Canvas>
                         <StackPanel x:Name="CenterDockInsidePlotAreaPanel" Canvas.ZIndex="3" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
-                        <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
-                            <Border x:Name="ToolTip" IsHitTestVisible="False" Visibility="Collapsed" HorizontalAlignment="Left" CornerRadius="4,4,4,4" BorderBrush="#FF000000" BorderThickness="0.25,0.25,0.25,1" Padding="10,5,10,5">
-                                <Border.Background>
-                                    <LinearGradientBrush Opacity=".999" EndPoint="0.5,1" StartPoint="0.5,0">
-                                        <GradientStop Color="#FFC8C8C4" Offset="0.156"/>
-                                        <GradientStop Color="#F0FFFFFF" Offset="1"/>
-                                    </LinearGradientBrush>
-
-                                </Border.Background>
-                                <Border.Child>
-                                    <TextBlock x:Name="ToolTipTextBlock" Text="" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Verdana" FontSize="12" Foreground="#FF2E2D2D"/>
-                                </Border.Child>
-                            </Border>
+                        <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
                     </Grid>
                 </ControlTemplate>
@@ -210,7 +196,39 @@
         <Setter Property="ColorSet" Value="Visifire1" />
         <Setter Property="Theme" Value="Theme1"/>
     </Style>
-    
+
+    <Style TargetType="{x:Type vc:ToolTip}">
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="Visibility" Value="Collapsed"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="CornerRadius" Value="4,4,4,4"/>
+        <Setter Property="BorderThickness" Value="0.25,0.25,0.25,1"/>
+        <Setter Property="BorderBrush" Value="#FF000000"/>
+        <Setter Property="Padding" Value="10,5,10,3"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush Opacity="0.9" EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFC8C8C4" Offset="0.156"/>
+                    <GradientStop Color="#F0FFFFFF" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="FontFamily" Value="Portable User Interface"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontColor" Value="#FF2E2D2D"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type vc:ToolTip}" >
+                    <Border  Name="ToolTipBorder" IsHitTestVisible="false" Visibility="{TemplateBinding Visibility}" CornerRadius="{TemplateBinding CornerRadius}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"  Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                        <Border.Child>
+                            <TextBlock Name="ToolTipTextBlock" LineHeight="{TemplateBinding FontSize}" LineStackingStrategy="BlockLineHeight" TextWrapping="Wrap" Text="{TemplateBinding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding FontColor}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"/>
+                        </Border.Child>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type vc:DataSeries}">
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>

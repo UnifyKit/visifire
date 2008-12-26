@@ -13,7 +13,7 @@ namespace WPFVisifireChartsTest
     /// <summary>
     /// Summary description for ChartGridTest
     /// </summary>
-    //[TestClass]
+    [TestClass]
     public class ChartGridTest
     {
         /// <summary>

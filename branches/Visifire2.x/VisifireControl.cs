@@ -212,8 +212,8 @@ namespace Visifire.Commons
         internal Canvas _drawingCanvas;
         internal const string DrawingCanvasName = "DrawingCanvas";
 
-        internal Canvas _plotAreaBevelCanvas;
-        internal const string PlotAreaBevelCanvasName = "PlotAreaBevelCanvas";
+        //internal Canvas _plotAreaBevelCanvas;
+        //internal const string PlotAreaBevelCanvasName = "PlotAreaBevelCanvas";
 
         internal StackPanel _centerDockInsidePlotAreaPanel;
         internal const string CenterDockInsidePlotAreaPanelName = "CenterDockInsidePlotAreaPanel";
@@ -224,11 +224,7 @@ namespace Visifire.Commons
         internal Canvas _toolTipCanvas;
         internal const string ToolTipCanvasName = "ToolTipCanvas";
 
-        internal Border _toolTip;
-        internal const string ToolTipName = "ToolTip";
-
-        internal TextBlock _toolTipTextBlock;
-        internal const string ToolTipTextBlockName = "ToolTipTextBlock";
+        internal Visifire.Charts.ToolTip _toolTip;
         
         #endregion
 
@@ -296,7 +292,6 @@ namespace Visifire.Commons
             return path;
 #endif
         }
-
 
 #if WPF
         internal Boolean IsInDesignMode

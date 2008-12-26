@@ -1,33 +1,66 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Name="Chart" Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" View3D="False" ScrollingEnabled="False">
+Width="350" Height="400" Theme="Theme1" View3D="True" AnimationEnabled="False" ScrollingEnabled="true" BorderBrush="Gray">
 
-<vc:Chart.Titles>
-<vc:Title Name="Title" Text="Visifire"/>
-</vc:Chart.Titles>
+  <vc:Chart.Titles>
+    <vc:Title Text="Top 10 Emerging Mobile Market Carriers" HorizontalAlignment="Left" Padding="2"/>
+  </vc:Chart.Titles>
 
-<vc:Chart.AxesX>
-<vc:Axis>
-<vc:Axis.Grids>
-<vc:ChartGrid Enabled="True" LineThickness="2" LineColor="Gray"/>
-</vc:Axis.Grids>
-<vc:Axis.Ticks>
-<vc:Ticks LineThickness="2" LineColor="Gray"/>
-</vc:Axis.Ticks>
-<vc:Axis.AxisLabels>
-<vc:AxisLabels FontColor="Black"/>
-</vc:Axis.AxisLabels>
-</vc:Axis>
-</vc:Chart.AxesX>
+  <vc:Chart.AxesX>
+    <vc:Axis Interval="1" Title="Company" LineThickness="0">
+      <vc:Axis.Ticks>
+        <vc:Ticks Enabled="False"/>
+      </vc:Axis.Ticks>
+    </vc:Axis>
+  </vc:Chart.AxesX>
 
-<vc:Chart.Series>
-<vc:DataSeries RenderAs="Column" LabelEnabled="True">
-<vc:DataSeries.DataPoints>
-<vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-<vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-<vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-<vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-<vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
-</vc:DataSeries.DataPoints>
-</vc:DataSeries>
-</vc:Chart.Series>
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Subscriber (millions)"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bar" LabelEnabled="True" >
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
+        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
+        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
+        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
+        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
+        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
+        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
+        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
+        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
+        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
+        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
+        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
+        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
+        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
+        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
+        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
+        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
+        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
+        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
+        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
+        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
+        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
+        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
+        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
+        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
+        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
+        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
+        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
+        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
 </vc:Chart>

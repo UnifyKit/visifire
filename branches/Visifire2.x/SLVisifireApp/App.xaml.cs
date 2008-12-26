@@ -55,6 +55,7 @@ namespace SLVisifireApp
                 }
                 catch (Exception)
                 {
+                    System.Diagnostics.Debug.WriteLine("Erroe");
                 }
             }
         }

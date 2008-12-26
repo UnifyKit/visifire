@@ -9,7 +9,7 @@ using Visifire.Charts;
 using Visifire.Commons;
 namespace SLVisifireChartsTest
 {
-    //[TestClass]
+    [TestClass]
     public class ChartGridTest:SilverlightControlTest
     {
         /// <summary>
@@ -20,7 +20,6 @@ namespace SLVisifireChartsTest
         public void EnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -46,7 +45,6 @@ namespace SLVisifireChartsTest
         public void LineThicknessDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -67,7 +65,6 @@ namespace SLVisifireChartsTest
         public void LineColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -88,7 +85,6 @@ namespace SLVisifireChartsTest
         public void LineStyleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -114,7 +110,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -142,13 +137,17 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
             CreateAsyncTask(chart,
-                () => chart.AxesY[0].Grids[0].Interval = 20,
-                () => Assert.AreEqual(20, chart.AxesY[0].Grids[0].Interval));
+                () => grid.Interval = 20,
+                () => Assert.AreEqual(20, grid.Interval));
 
             EnqueueTestComplete();
         }
@@ -165,13 +164,17 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
             CreateAsyncTask(chart,
-                () => chart.AxesY[0].Grids[0].LineColor = new SolidColorBrush(Colors.Red),
-                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.AxesY[0].Grids[0].LineColor));
+                () => grid.LineColor = new SolidColorBrush(Colors.Red),
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), grid.LineColor));
 
             EnqueueTestComplete();
         }
@@ -188,13 +191,17 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
             CreateAsyncTask(chart,
-                () => chart.AxesY[0].Grids[0].LineThickness = 1,
-                () => Assert.AreEqual(1, chart.AxesY[0].Grids[0].LineThickness));
+                () => grid.LineThickness = 1,
+                () => Assert.AreEqual(1, grid.LineThickness));
 
             EnqueueTestComplete();
         }
@@ -211,13 +218,17 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
             CreateAsyncTask(chart,
-                () => chart.AxesY[0].Grids[0].LineStyle = LineStyles.Dashed,
-                () => Assert.AreEqual(LineStyles.Dashed, chart.AxesY[0].Grids[0].LineStyle));
+                () => grid.LineStyle = LineStyles.Dashed,
+                () => Assert.AreEqual(LineStyles.Dashed, grid.LineStyle));
 
             EnqueueTestComplete();
         }

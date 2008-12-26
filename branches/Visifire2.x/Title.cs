@@ -106,7 +106,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(Title),
@@ -260,7 +260,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
             ("FontColor",
             typeof(Brush),
             typeof(Title),
@@ -396,7 +396,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TextProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register
             ("Text",
             typeof(String),
             typeof(Title),
@@ -427,7 +427,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
             ("BorderColor", 
             typeof(Brush), 
             typeof(Title), 
@@ -479,7 +479,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
             ("CornerRadius",
             typeof(CornerRadius),
             typeof(Title),
@@ -691,7 +691,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
             ("TextAlignment",
             typeof(TextAlignment),
             typeof(Title),
@@ -718,7 +718,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty DockInsidePlotAreaProperty = DependencyProperty.Register
+        public static readonly DependencyProperty DockInsidePlotAreaProperty = DependencyProperty.Register
             ("DockInsidePlotArea",
             typeof(Boolean),
             typeof(Title),
@@ -990,8 +990,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-
-        internal Double _fontSize;                         // The identifier for property FontSize
 
 #if WPF
         static Boolean _defaultStyleKeyApplied = false;            // Default Style key

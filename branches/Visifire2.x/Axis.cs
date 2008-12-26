@@ -40,14 +40,14 @@ namespace Visifire.Charts
         #region Public Methods
 
         public Axis()
-        {
+        {   
             SetDefaults();
 
             // Initialize list of ChartGrids list as Grids
-            Grids = new ObservableCollection<ChartGrid>();
+            Grids = new ChartGridCollection();
 
             // Initialize list of Ticks list 
-            Ticks = new ObservableCollection<Ticks>();
+            Ticks = new TicksCollection();
 
             // Create AxisLebels element
             AxisLabels = new AxisLabels();
@@ -60,7 +60,7 @@ namespace Visifire.Charts
         void Ticks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
+            {   
                 if (e.NewItems != null)
                 {
                     foreach (Ticks tick in e.NewItems)
@@ -124,7 +124,15 @@ namespace Visifire.Charts
             get;
             set;
         }
-            
+
+        /// <summary>
+        /// Keep tracks about current offsetvalue of the axis scrollviewer
+        /// </summary>
+        internal Double CurrentScrollScrollBarOffset
+        {
+            get;
+            set;
+        }
 
         private void SetDefaults()
         {
@@ -135,7 +143,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Collection of grids
         /// </summary>
-        public ObservableCollection<ChartGrid> Grids
+        public ChartGridCollection Grids
         {
             get;
             set;
@@ -144,7 +152,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Collection of Ticks for an axis
         /// </summary>
-        public ObservableCollection<Ticks> Ticks
+        public TicksCollection Ticks
         {
             get;
             set;
@@ -169,7 +177,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(Axis),
@@ -180,30 +188,10 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
             axis.FirePropertyChanged("Enabled");
         }
-        
-        /// <summary>
-        /// Creates the visual element for the Axis
-        /// </summary>
-        public void CreateVisualObject(Chart Chart, String AxisXorY)
+
+        internal void SetScrollBar(String AxisXorY)
         {
-            IsNotificationEnable = false;
-
-            AxisLabels.IsNotificationEnable = false;
-            AxisLabels.Chart = Chart;
-
-            if (AxisXorY == "AxesX")
-                AxisLabels.ApplyStyleFromTheme(Chart, "AxisXLabels");
-            else if (AxisXorY == "AxesY")
-                AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
-
-            // Create visual elements
-            Visual = new StackPanel();
-            
-            ApplyVisualProperty();
-            InternalStackPanel = new StackPanel();
-            Visual.Background = Color;
-
-            if (AxisXorY == "AxesX")
+            if (AxisXorY == "AxisX")
             {
                 if (AxisOrientation == Orientation.Vertical)
                 {
@@ -215,7 +203,6 @@ namespace Visifire.Charts
                     {
                         ScrollBarElement = Chart._rightAxisScrollBar;
                     }
-                   
                 }
                 else
                 {
@@ -229,7 +216,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (AxisXorY == "AxesY")
+            else if (AxisXorY == "AxisY")
             {
                 if (this.AxisOrientation == Orientation.Vertical)
                 {
@@ -255,8 +242,31 @@ namespace Visifire.Charts
 
                 }
             }
+        }
 
-           // ScrollBarElement = new ScrollBar();
+        /// <summary>
+        /// Creates the visual element for the Axis
+        /// </summary>
+        public void CreateVisualObject(Chart Chart, String AxisXorY)
+        {
+            IsNotificationEnable = false;
+
+            AxisLabels.IsNotificationEnable = false;
+            AxisLabels.Chart = Chart;
+
+            if (AxisXorY == "AxisX")
+                AxisLabels.ApplyStyleFromTheme(Chart, "AxisXLabels");
+            else if (AxisXorY == "AxisY")
+                AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
+
+            // Create visual elements
+            Visual = new StackPanel();
+            
+            ApplyVisualProperty();
+            InternalStackPanel = new StackPanel();
+            Visual.Background = Color;
+            
+            // ScrollBarElement = new ScrollBar();
 
             ScrollViewerElement = new ScrollViewer() { Padding = new Thickness(0), BorderThickness = new Thickness(0) };
 
@@ -364,6 +374,8 @@ namespace Visifire.Charts
 
             InternalInterval = AxisManager.Interval;
 
+            AxisLabels.IsNotificationEnable = false;
+
             // set the params to create Axis Labels
             AxisLabels.Maximum = AxisManager.AxisMaximumValue;
             AxisLabels.Minimum = AxisManager.AxisMinimumValue;
@@ -372,6 +384,8 @@ namespace Visifire.Charts
             AxisLabels.ParentAxis = this;
             AxisLabels.Padding = this.Padding;
 
+            AxisLabels.IsNotificationEnable = true;
+
             if (Ticks.Count == 0)
                 Ticks.Add(new Ticks());
 
@@ -379,9 +393,9 @@ namespace Visifire.Charts
             {   
                 tick.IsNotificationEnable = false;
 
-                if (AxisXorY == "AxesX")
+                if (AxisXorY == "AxisX")
                     tick.ApplyStyleFromTheme(Chart, "AxisXTicks");
-                else if (AxisXorY == "AxesY")
+                else if (AxisXorY == "AxisY")
                     tick.ApplyStyleFromTheme(Chart, "AxisYTicks");
 
                 tick.Maximum = AxisManager.AxisMaximumValue;
@@ -394,7 +408,7 @@ namespace Visifire.Charts
                 tick.IsNotificationEnable = true;
             }
 
-            if (Grids.Count == 0 && AxisXorY != "AxesX")
+            if (Grids.Count == 0 && AxisXorY != "AxisX")
                 Grids.Add(new ChartGrid());
 
             foreach (ChartGrid grid in Grids)
@@ -433,7 +447,7 @@ namespace Visifire.Charts
 
                 tick.IsNotificationEnable = true;
             }
-
+                       
             // set the placement order based on the axis orientation
             switch (AxisOrientation)
             {   
@@ -450,8 +464,11 @@ namespace Visifire.Charts
             AxisLabels.IsNotificationEnable = true;
 
             if (!(Boolean)this.Enabled)
+            {
                 Visual.Visibility = Visibility.Collapsed;
+            }
 
+           // Visual.Background = new SolidColorBrush(Colors.Green);
         }
 
         Double GenerateDefaultInterval()
@@ -571,7 +588,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register
             ("Color",
             typeof(Brush),
             typeof(Axis),
@@ -609,7 +626,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
+        public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
             ("Interval",
             typeof(Nullable<Double>),
             typeof(Axis),
@@ -638,7 +655,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
             ("LineColor",
             typeof(Brush),
             typeof(Axis),
@@ -665,7 +682,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
             ("LineThickness",
             typeof(Double),
             typeof(Axis),
@@ -692,7 +709,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
             ("LineStyle",
             typeof(LineStyles),
             typeof(Axis),
@@ -723,7 +740,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register
             ("Title",
             typeof(String),
             typeof(Axis),
@@ -750,7 +767,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleFontColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleFontColorProperty = DependencyProperty.Register
             ("TitleFontColor",
             typeof(Brush),
             typeof(Axis),
@@ -777,7 +794,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleFontFamilyProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleFontFamilyProperty = DependencyProperty.Register
             ("TitleFontFamily",
             typeof(FontFamily),
             typeof(Axis),
@@ -804,7 +821,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleFontSizeProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleFontSizeProperty = DependencyProperty.Register
             ("TitleFontSize",
             typeof(Double),
             typeof(Axis),
@@ -831,7 +848,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleFontStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleFontStyleProperty = DependencyProperty.Register
             ("TitleFontStyle",
             typeof(FontStyle),
             typeof(Axis),
@@ -858,7 +875,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TitleFontWeightProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TitleFontWeightProperty = DependencyProperty.Register
             ("TitleFontWeight",
             typeof(FontWeight),
             typeof(Axis),
@@ -887,7 +904,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty AxisTypeProperty = DependencyProperty.Register
+        public static readonly DependencyProperty AxisTypeProperty = DependencyProperty.Register
             ("AxisType",
             typeof(AxisTypes),
             typeof(Axis),
@@ -931,7 +948,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty AxisMaximumProperty = DependencyProperty.Register
+        public static readonly DependencyProperty AxisMaximumProperty = DependencyProperty.Register
             ("AxisMaximum",
             typeof(Nullable<Double>),
             typeof(Axis),
@@ -966,7 +983,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty AxisMinimumProperty = DependencyProperty.Register
+        public static readonly DependencyProperty AxisMinimumProperty = DependencyProperty.Register
             ("AxisMinimum",
             typeof(Nullable<Double>),
             typeof(Axis),
@@ -993,7 +1010,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty IncludeZeroProperty = DependencyProperty.Register
+        public static readonly DependencyProperty IncludeZeroProperty = DependencyProperty.Register
             ("IncludeZero",
             typeof(Boolean),
             typeof(Axis),
@@ -1029,7 +1046,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty StartFromZeroProperty = DependencyProperty.Register
+        public static readonly DependencyProperty StartFromZeroProperty = DependencyProperty.Register
             ("StartFromZero",
             typeof(Nullable<Boolean>),
             typeof(Axis),
@@ -1056,7 +1073,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty PrefixProperty = DependencyProperty.Register
+        public static readonly DependencyProperty PrefixProperty = DependencyProperty.Register
             ("Prefix",
             typeof(String),
             typeof(Axis),
@@ -1083,7 +1100,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty SuffixProperty = DependencyProperty.Register
+        public static readonly DependencyProperty SuffixProperty = DependencyProperty.Register
             ("Suffix",
             typeof(String),
             typeof(Axis),
@@ -1111,7 +1128,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ScalingSetProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ScalingSetProperty = DependencyProperty.Register
             ("ScalingSet",
             typeof(String),
             typeof(Axis),
@@ -1138,7 +1155,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ValueFormatStringProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ValueFormatStringProperty = DependencyProperty.Register
             ("ValueFormatString",
             typeof(String),
             typeof(Axis),
@@ -1574,10 +1591,11 @@ UP:
             }
 
 DOWN:
-
             // Place the visual elements in the axis stack panel
             if (!String.IsNullOrEmpty(Title))
+            {
                 Visual.Children.Add(AxisTitleElement.Visual);
+            }
             
             if (AxisLabels.Visual != null)
             {
@@ -1590,6 +1608,7 @@ DOWN:
                 {
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
                 }
+
             }
 
             foreach (Ticks tick in Ticks)
@@ -1613,7 +1632,9 @@ DOWN:
             //  Visual.Children.Add(ScrollBarElement);
             Visual.Children.Add(AxisLine);
 
+           // Visual.Background = new SolidColorBrush(Colors.Orange);
         }
+
         internal Int32 SkipOfset
         {
             get;
@@ -1699,7 +1720,7 @@ DOWN:
                         
             // Place the visual elements in the axis stack panel
             Visual.Children.Add(AxisLine);
-            
+
             foreach (Ticks tick in Ticks)
             {
                 tick.CreateVisualObject();
@@ -1709,6 +1730,7 @@ DOWN:
                         Visual.Children.Add(tick.Visual);
                     else
                         InternalStackPanel.Children.Add(tick.Visual);
+
                 }
             }
 
@@ -1744,14 +1766,16 @@ DOWN:
         DOWN2:
 
             if (!String.IsNullOrEmpty(Title))
+            {
                 Visual.Children.Add(AxisTitleElement.Visual);
+            }
         }
 
         /// <summary>
         /// Applies setting for primary horizontal axis (Primary axis X or Primary axis Y in Bar)
         /// </summary>
         private void ApplyHorizontalPrimaryAxisSettings()
-        {   
+        {
             // Set the parameters fo the Axis Stack panel
             Visual.HorizontalAlignment = HorizontalAlignment.Stretch;
             Visual.VerticalAlignment = VerticalAlignment.Bottom;
@@ -1763,7 +1787,7 @@ DOWN:
 
             InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
             {
-                ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight);
+                ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight) ;
             };
 
             ScrollViewerElement.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -1801,19 +1825,20 @@ DOWN:
             AxisLabels.CreateVisualObject();
             //MajorTicksElement.CreateVisualObject();
 
-            //AxisTitleElement.Margin = new Thickness(4);
-            //AxisTitleElement.CreateVisualObject();
+            // AxisTitleElement.Margin = new Thickness(4);
+            // AxisTitleElement.CreateVisualObject();
 
             // Place the visual elements in the axis stack panel
             Visual.Children.Add(AxisLine);
            // Visual.Children.Add(ScrollBarElement);
 
+            //AxisLabels.Visual.Background = new SolidColorBrush(Colors.Orange);
             foreach (Ticks tick in Ticks)
             {
                 tick.CreateVisualObject();
                 if (tick.Visual != null)
                 {
-                    if(Width == ScrollableSize)
+                    if (Width == ScrollableSize)
                         Visual.Children.Add(tick.Visual);
                     else
                         InternalStackPanel.Children.Add(tick.Visual);
@@ -1821,7 +1846,7 @@ DOWN:
             }
 
             if (Width == ScrollableSize)
-            {
+            {   
                 if(AxisLabels.Visual != null)
                     Visual.Children.Add(AxisLabels.Visual);
             }
@@ -1838,6 +1863,7 @@ DOWN:
 
             AxisTitleElement.Margin = new Thickness(4);
             AxisTitleElement.CreateVisualObject();
+            //AxisTitleElement.Visual.Background = new SolidColorBrush(Colors.Purple);
 
             if (AxisTitleElement.TextBlockDesiredSize.Width > Width && Width != 0)
             {
@@ -1851,9 +1877,10 @@ DOWN:
 
         DOWNX1:
 
-            if(!String.IsNullOrEmpty(Title))
+            if (!String.IsNullOrEmpty(Title))
+            {
                 Visual.Children.Add(AxisTitleElement.Visual);
-
+            }
         }
 
         /// <summary>
@@ -1917,8 +1944,9 @@ DOWN:
             
             // Place the visual elements in the axis stack panel
             if (!String.IsNullOrEmpty(Title))
+            {
                 Visual.Children.Add(AxisTitleElement.Visual);
-
+            }
             if (AxisLabels.Visual != null)
             {
                 if (Width == ScrollableSize)
@@ -2015,7 +2043,7 @@ DOWN:
                 }
             }
             else
-            {
+            {   
                 if (Double.IsNaN((Double)AxisMinimum))
                 {
                     Double value = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, Minimum);
@@ -2026,6 +2054,7 @@ DOWN:
                     AxisManager.AxisMinimumValue = (Double)AxisMinimum;
                 }
             }
+
             return true;
         }
 
@@ -2093,7 +2122,6 @@ DOWN:
             AttachToolTip(Chart, Visual, ToolTipText);
             AttachEvents2Visual(this, this.Visual);
             Visual.Opacity = this.Opacity;
-            
         }
         
         #endregion

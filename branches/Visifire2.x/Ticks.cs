@@ -94,7 +94,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(Ticks),
@@ -127,7 +127,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
+        public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
             ("Interval",
             typeof(Nullable<Double>),
             typeof(Ticks),
@@ -154,7 +154,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
             ("LineColor",
             typeof(Brush),
             typeof(Ticks),
@@ -182,7 +182,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
             ("LineThickness",
             typeof(Double),
             typeof(Ticks),
@@ -210,7 +210,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
             ("LineStyle",
             typeof(LineStyles),
             typeof(Ticks),
@@ -238,7 +238,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TickLengthProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TickLengthProperty = DependencyProperty.Register
             ("TickLength",
             typeof(Double),
             typeof(Ticks),

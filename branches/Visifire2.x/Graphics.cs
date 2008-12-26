@@ -473,6 +473,61 @@ namespace Visifire.Commons
 
         #region Static Methods
 
+        internal static Size CalculateVisualSize(FrameworkElement visual)
+        {
+            Size retVal;
+#if WPF
+            visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            retVal = visual.DesiredSize;
+#else
+            //if ((Double.IsNaN(visual.ActualWidth) && Double.IsNaN(visual.ActualHeight) || visual.ActualWidth == 0 || visual.ActualHeight == 0))
+            {
+                visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                retVal = visual.DesiredSize;
+            }
+           // else
+            //    retVal = new Size(visual.ActualWidth, visual.ActualHeight);
+#endif
+            return retVal;
+        }
+
+        internal static Size CalculateTextBlockSize(Double radianAngle, TextBlock textBlock)
+        {
+            Double actualHeight;
+            Double actualWidth;
+
+#if WPF
+            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            actualHeight = textBlock.DesiredSize.Height;
+            actualWidth = textBlock.DesiredSize.Width;
+#else
+            actualHeight = textBlock.ActualHeight;
+            actualWidth = textBlock.ActualWidth;
+#endif
+            if (radianAngle != 0)
+            {
+                // length of the diagonal from top left to bottom right
+                Double length = Math.Sqrt(Math.Pow(actualHeight, 2) + Math.Pow(actualWidth, 2));
+
+                // angle made by the diagonal with respect to the horizontal
+                Double beta = Math.Atan(actualHeight / actualWidth);
+
+                // calculate the two possible height and width values using the diagonal length and angle
+                Double height1 = length * Math.Sin(radianAngle + beta);
+                Double height2 = length * Math.Sin(radianAngle - beta);
+                Double width1 = length * Math.Cos(radianAngle + beta);
+                Double width2 = length * Math.Cos(radianAngle - beta);
+
+                // Actual height will be the maximum of the two calculated heights
+                actualHeight = Math.Max(Math.Abs(height1), Math.Abs(height2));
+
+                // Actual width will be the maximum of the two calculated widths
+                actualWidth = Math.Max(Math.Abs(width1), Math.Abs(width2));
+            }
+
+            return new Size(actualWidth, actualHeight);
+        }
+
 
         internal static DoubleCollection GenerateDoubleCollection(params Double[] values)
         {

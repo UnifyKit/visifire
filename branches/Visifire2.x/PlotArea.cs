@@ -73,7 +73,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register
             ("Color",
             typeof(Brush),
             typeof(PlotArea),
@@ -83,8 +83,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender();
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender();
         }
 
         public HrefTargets HrefTarget
@@ -109,8 +111,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            plotArea.FirePropertyChanged("");
+
+            //if((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
 
         public String Href
@@ -135,8 +139,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
        
         /// <summary>
@@ -163,9 +169,10 @@ namespace Visifire.Charts
         private static void OnBevelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
+            plotArea.FirePropertyChanged("");
   
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
         
         public Brush BorderColor
@@ -189,9 +196,11 @@ namespace Visifire.Charts
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PlotArea plotArea = d as PlotArea;
-            
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender();
+
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender();
         }
 
         public BorderStyles BorderStyle
@@ -216,8 +225,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
 
         public new Thickness BorderThickness
@@ -229,7 +240,8 @@ namespace Visifire.Charts
             set
             {
                 SetValue(BorderThicknessProperty, value);
-                (Chart as Chart).CallRender();
+                FirePropertyChanged("");
+                //(Chart as Chart).CallRender();
             }
         }
 
@@ -270,10 +282,12 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-            {
-                (plotArea.Chart as Chart).CallRender();
-            }
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //{
+            //    (plotArea.Chart as Chart).CallRender();
+            //}
         }
         
 #if WPF
@@ -303,8 +317,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
                 
         public Boolean ShadowEnabled
@@ -329,8 +345,10 @@ namespace Visifire.Charts
         {
             PlotArea plotArea = d as PlotArea;
 
-            if ((plotArea.Chart as Chart) != null)
-                (plotArea.Chart as Chart).CallRender(); 
+            plotArea.FirePropertyChanged("");
+
+            //if ((plotArea.Chart as Chart) != null)
+            //    (plotArea.Chart as Chart).CallRender(); 
         }
 
         public override String ToolTipText

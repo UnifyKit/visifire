@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Media;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Visifire.Charts
 {   
@@ -10,8 +10,8 @@ namespace Visifire.Charts
     public class ColorSet: Object
     {
         public ColorSet()
-        {   
-            Brushes = new List<Brush>();
+        {
+            Brushes = new Collection<Brush>();
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Brush collection
         /// </summary>
-        public List<Brush> Brushes
+        public Collection<Brush> Brushes
         {
             get;
             set;

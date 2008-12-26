@@ -415,7 +415,7 @@ namespace WPFVisifireChartsTest
 
             Int32 numberOfDataPoints = 0;
 
-            String msg = Common.AssertAverageDuration(200, 2, delegate
+            String msg = Common.AssertAverageDuration(300, 2, delegate
             {
                 for (Int32 i = 0; i < 2500; i++)
                 {

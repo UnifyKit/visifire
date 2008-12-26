@@ -187,7 +187,7 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            chart.Titles = new ObservableCollection<Title>();
+            chart.Titles = new TitleCollection();
 
             Title title = new Title();
             title.Text = "Title1";
@@ -1014,7 +1014,7 @@ namespace WPFVisifireChartsTest
         public void TemplatePartsAreDefined()
         {
             IDictionary<string, Type> templateParts = DefaultControlToTest.GetType().GetTemplateParts();
-            Assert.AreEqual(60, templateParts.Count);
+            Assert.AreEqual(58, templateParts.Count);
             Assert.AreSame(typeof(Grid), templateParts["RootElement"]);
             Assert.AreSame(typeof(Grid), templateParts["ShadowGrid"]);
             Assert.AreSame(typeof(Border), templateParts["ChartBorder"]);

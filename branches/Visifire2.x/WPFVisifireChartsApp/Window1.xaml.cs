@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
+// using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,12 +16,12 @@ using System.Windows.Media.Animation;
 using System.IO;
 
 namespace WPFVisifireChartsApp
-{
+{   
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
     public partial class Window1 : Window
-    {
+    {   
         public Window1()
         {
             InitializeComponent();

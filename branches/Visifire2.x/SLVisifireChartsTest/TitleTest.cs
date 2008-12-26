@@ -12,7 +12,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    //[TestClass]
+    [TestClass]
     public class TitleTest : SilverlightControlTest
     {
 
@@ -709,6 +709,9 @@ namespace SLVisifireChartsTest
         {
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
 
+            Double totalDuration = 0;
+            DateTime start = DateTime.UtcNow;
+
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
@@ -722,8 +725,7 @@ namespace SLVisifireChartsTest
 
             Random rand = new Random();
             Int32 numberOfTitles = 0;
-            Double totalDuration = 0;
-            DateTime start = DateTime.UtcNow;
+       
             Canvas c = new Canvas();
             string msg = Common.AssertAverageDuration(100, 1, delegate
             {
@@ -769,6 +771,8 @@ namespace SLVisifireChartsTest
         void TitleTest_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement2);
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 

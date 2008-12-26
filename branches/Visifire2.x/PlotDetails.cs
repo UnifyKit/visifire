@@ -425,8 +425,10 @@ namespace Visifire.Charts
                             legend = new Legend();
                             legend.Chart = Chart;
                             legend.SetValue(FrameworkElement.NameProperty, series.Legend);
-                            
+                            legend.Tag = "Default";
+                            Chart.IsRenderCallAllowed = false;
                             Chart.Legends.Add(legend);
+                            Chart.IsRenderCallAllowed = true;
                         }
                     }
                 }

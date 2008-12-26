@@ -7,6 +7,7 @@ using System.Windows.Browser;
 #endif
 namespace Visifire.Commons
 {
+
     public abstract class VisifireElement: System.Windows.Controls.Control
     {
         public VisifireElement()

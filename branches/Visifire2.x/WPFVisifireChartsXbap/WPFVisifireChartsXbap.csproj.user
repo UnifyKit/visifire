@@ -12,4 +12,8 @@
     <FallbackCulture>en-US</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <StartURL>P:\RenderLogic1\Visifire 2.0.5\WPFVisifireChartsXbap\bin\Debug\WPFVisifireChartsXbap.xbap</StartURL>
+    <StartAction>URL</StartAction>
+  </PropertyGroup>
 </Project>

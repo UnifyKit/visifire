@@ -20,7 +20,7 @@ namespace Visifire.Commons
             : base()
         {
             this.EventChanged += delegate
-            {
+            {   
                 FirePropertyChanged("MouseEvent");
             };
 
@@ -41,19 +41,28 @@ namespace Visifire.Commons
 
             if (!String.IsNullOrEmpty(ToolTipText))
             {
+                Element.MouseMove += delegate(object sender, MouseEventArgs e)
+                {
+                    if (Control.ToolTipEnabled)
+                        Control._toolTip.Show();
+                    (Control as Chart).UpdateToolTipPosition(sender, e);
+                };
+
                 // Show ToolTip on mouse move over the chart element
                 Element.MouseEnter += delegate(object sender, MouseEventArgs e)
                 {
-                    Control._toolTipTextBlock.Text = ToolTipText;
+                    Control._toolTip.Text = ToolTipText;
 
                     if (Control.ToolTipEnabled)
-                        Control._toolTip.Visibility = Visibility.Visible;
+                        Control._toolTip.Show();
+
+                   (Control as Chart).UpdateToolTipPosition(sender, e);
                 };
 
                 // Hide ToolTip on mouse out from the chart element
                 Element.MouseLeave += delegate(object sender, MouseEventArgs e)
                 {
-                    Control._toolTip.Visibility = Visibility.Collapsed;
+                    Control._toolTip.Hide();
                 };
             }
         }
@@ -125,6 +134,9 @@ namespace Visifire.Commons
         /// <param name="KeyName">Style key name</param>
         public void ApplyStyleFromTheme(VisifireControl Control, String KeyName)
         {
+            bool oldIsNotificationEnable = IsNotificationEnable;
+            IsNotificationEnable = false;
+
             Chart chart = Control as Chart;
 
             if (Style == null)
@@ -135,6 +147,8 @@ namespace Visifire.Commons
                     if (myStyle != null)
                         Style = myStyle;
                 }
+
+            IsNotificationEnable = oldIsNotificationEnable;
         }
 
         
@@ -154,18 +168,42 @@ namespace Visifire.Commons
         /// <summary>
         /// ToolTip text
         /// </summary>
+        //public virtual String ToolTipText
+        //{
+        //    get
+        //    {   
+        //        return _toolTipText;
+        //    }
+        //    set
+        //    {   
+        //        _toolTipText = value;
+        //        FirePropertyChanged("ToolTipText");
+        //    }
+        //}
         public virtual String ToolTipText
-        {
+        {   
             get
             {
-                return _toolTipText;
+                return (String)GetValue(ToolTipTextProperty);
             }
             set
             {
-                _toolTipText = value;
-                FirePropertyChanged("ToolTipText");
+                SetValue(ToolTipTextProperty, value);
             }
         }
+
+        internal static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
+            ("ToolTipText",
+            typeof(String),
+            typeof(ObservableObject),
+            new PropertyMetadata(OnFixedDataPointsChanged));
+
+        private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            ObservableObject c = d as ObservableObject;
+            c.FirePropertyChanged("ToolTipText");
+        }
+
 
         #endregion
 
@@ -215,7 +253,9 @@ namespace Visifire.Commons
         /// <param name="propertyName">Property Name</param>
         internal void FirePropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null && IsNotificationEnable)
+            _isPropertyChangedFired = false; // Used for testing
+
+            if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
 #if SL
                 if (IsInDesignMode)
@@ -228,7 +268,7 @@ namespace Visifire.Commons
                     {
                         System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
 
-                            if (currentDispatcher.CheckAccess())
+                            if (currentDispatcher.CheckAccess() && (Chart as Chart).IsRenderCallAllowed)
                                 (Chart as Chart).CallRender();
                             else
                                 currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
@@ -237,9 +277,11 @@ namespace Visifire.Commons
                     {
                         throw new InvalidOperationException("This object must be initialized after that the RootVisual has been loaded");
                     }
+
+                    _isPropertyChangedFired = true;   // Used for testing
                 }
 #else
-                if (Chart != null)
+                if (Chart != null && (Chart as Chart).IsRenderCallAllowed)
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 #endif
             }
@@ -295,6 +337,8 @@ namespace Visifire.Commons
         /// </summary>
 #if SL
         [System.Windows.Browser.ScriptableMember]
+#else
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 #endif
         public VisifireControl Chart
         {
@@ -354,7 +398,8 @@ namespace Visifire.Commons
 
         #region Data
 
-        private String _toolTipText;
+        //private String _toolTipText;
+        internal static Boolean _isPropertyChangedFired = false;   // Used for testing
 
        #endregion
     }

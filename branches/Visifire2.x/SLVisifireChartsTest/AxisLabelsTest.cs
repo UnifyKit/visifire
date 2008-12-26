@@ -11,7 +11,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    //[TestClass]
+    [TestClass]
     public class AxisLabelsTest : SilverlightControlTest
     {
 
@@ -551,7 +551,7 @@ namespace SLVisifireChartsTest
             Int32 numberOfDataPoint = 0;
             Double totalDuration = 0;
             DateTime start = DateTime.UtcNow;
-            String msg = Common.AssertAverageDuration(50, 1, delegate
+            String msg = Common.AssertAverageDuration(80, 1, delegate
             {
                 for (Int32 i = 0; i < 500; i++)
                 {

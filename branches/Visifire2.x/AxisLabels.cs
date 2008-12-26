@@ -137,7 +137,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
+        public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
             ("Interval",
             typeof(Nullable<Double>),
             typeof(AxisLabels),
@@ -170,7 +170,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty AngleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty AngleProperty = DependencyProperty.Register
             ("Angle",
             typeof(Nullable<Double>),
             typeof(AxisLabels),
@@ -202,7 +202,7 @@ namespace Visifire.Charts
         }
 
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(AxisLabels),
@@ -282,7 +282,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
             ("FontColor",
             typeof(Brush),
             typeof(AxisLabels),
@@ -445,7 +445,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty TextWrapProperty = DependencyProperty.Register
+        public static readonly DependencyProperty TextWrapProperty = DependencyProperty.Register
             ("TextWrap",
             typeof(TextWrapping),
             typeof(AxisLabels),
@@ -475,7 +475,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty RowsProperty = DependencyProperty.Register
+        public static readonly DependencyProperty RowsProperty = DependencyProperty.Register
             ("Rows",
             typeof(Nullable<Int32>),
             typeof(AxisLabels),
@@ -1161,7 +1161,10 @@ namespace Visifire.Charts
             }
 
             // if over flow is negative only then an actual overflow has ocured
-            LeftOverflow = LeftOverflow > 0 ? 0 : Math.Abs(LeftOverflow);
+            if ((Boolean)ParentAxis.Enabled)
+                LeftOverflow = LeftOverflow > 0 ? 0 : Math.Abs(LeftOverflow);
+            else
+                LeftOverflow = 0;
 
             // if over flow is positive only then an actual overflow has ocured
             RightOverflow = RightOverflow < 0 ? 0 : RightOverflow;
@@ -1220,41 +1223,7 @@ namespace Visifire.Charts
                 return FontSize;
         }
 
-        private Size CalculateSize(Double radianAngle, TextBlock textBlock)
-        {
-            Double actualHeight;
-            Double actualWidth;
-
-#if WPF
-            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            actualHeight = textBlock.DesiredSize.Height;
-            actualWidth = textBlock.DesiredSize.Width;
-#else
-            actualHeight = textBlock.ActualHeight;
-            actualWidth = textBlock.ActualWidth;
-#endif
-
-            // length of the diagonal from top left to bottom right
-            Double length = Math.Sqrt(Math.Pow(actualHeight, 2) + Math.Pow(actualWidth, 2));
-
-            // angle made by the diagonal with respect to the horizontal
-            Double beta = Math.Atan(actualHeight / actualWidth);
-
-            // calculate the two possible height and width values using the diagonal length and angle
-            Double height1 = length * Math.Sin(radianAngle + beta);
-            Double height2 = length * Math.Sin(radianAngle - beta);
-            Double width1 = length * Math.Cos(radianAngle + beta);
-            Double width2 = length * Math.Cos(radianAngle - beta);
-
-            // Actual height will be the maximum of the two calculated heights
-            actualHeight = Math.Max(Math.Abs(height1), Math.Abs(height2));
-
-            // Actual width will be the maximum of the two calculated widths
-            actualWidth = Math.Max(Math.Abs(width1), Math.Abs(width2));
-
-            return new Size(actualWidth, actualHeight);
-        }
-
+        
         private Double AutoAdjustFontSize(Double initialFontSize, Double width)
         {
             Double minimumFontSize = 8;
@@ -1273,7 +1242,7 @@ namespace Visifire.Charts
                 foreach (AxisLabel label in AxisLabelList)
                 {
                     textBlock.Text = " " + label.Text + " ";
-                    textBlockSize = CalculateSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                    textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
                     labelsWidth += textBlockSize.Width;
                 }
 
@@ -1302,7 +1271,7 @@ namespace Visifire.Charts
                 foreach (AxisLabel label in AxisLabelList)
                 {
                     textBlock.Text = " " + label.Text + " ";
-                    textBlockSize = CalculateSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                    textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
                     maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
                     labelWidths.Add(textBlockSize.Width);
                 }
@@ -1357,7 +1326,7 @@ namespace Visifire.Charts
             {
                 AxisLabel label = AxisLabelList[labelIndex];
                 textBlock.Text = label.Text;
-                textBlockSize = CalculateSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
                 maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
             }
 
@@ -1366,6 +1335,8 @@ namespace Visifire.Charts
 
         private void CalculateHorizontalDefaults()
         {
+            IsNotificationEnable = false;
+
             Double width = Double.IsNaN(Width) ? 0 : Width;
             Double height = Double.IsNaN(Height) ? 0 : Height;
             Double max = Math.Max(width, height);
@@ -1391,7 +1362,9 @@ namespace Visifire.Charts
                 }
                 else
                 {
+                    
                     Rows = rows;
+                    
                 }
             }
             else
@@ -1405,6 +1378,9 @@ namespace Visifire.Charts
             }
 
             _maxRowHeight = GetMaxHeight();
+
+            IsNotificationEnable = true;
+
         }
 
         private Int32 CalculateSkipOffset(Int32 NoOfRows, Double Angle,Double AxisWidth)

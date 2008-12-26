@@ -29,31 +29,31 @@
     <div id="VisifireChart0" >
 
         <script type="text/javascript">
-
+            
             var chart;  // A global chart variable
             
             // Create Visifire object
             var vChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
 
             //vChart1.setLogLevel(0); // If you want to disable logging.
-
-            var chartXml = '<vc:Chart ScrollingEnabled="False" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" AnimationEnabled="False" BorderThickness="0.5" Background="White" BorderBrush="Black" Padding="3">'
+            
+            var chartXml = '<vc:Chart ScrollingEnabled="true" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" AnimationEnabled="False" BorderThickness="0.5" Background="White" BorderBrush="Black" Padding="3">'
                + '     <vc:Chart.Titles>'
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True" Cursor="Hand">'
+               + '         <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Cursor="Hand">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
                + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
                + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
-               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'              
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
                + '             </vc:DataSeries.DataPoints>'
                + '         </vc:DataSeries>'
                + '     </vc:Chart.Series>'
                + ' </vc:Chart>';
-                
+
             // Set Chart XML
             vChart.setDataXml(chartXml);
 
@@ -77,9 +77,10 @@
             {   
                 if (chart != null)
                 {
-                    try
-                    {
-                        chart.Series[0].DataPoints[dataPointIndex].SetPropertyFromJs("YValue", newValue);
+                    try {
+//                        for (var i = 0; i < 29; i++) {
+                            chart.Series[0].DataPoints[dataPointIndex].SetPropertyFromJs("YValue", newValue);
+//                        }
                     }
                     catch (e) {
                         //alert(e);
@@ -91,7 +92,7 @@
             {
                 updateYValue(Math.abs(Math.random() * 100 - 10 * dataPointIndex), dataPointIndex++);
                 dataPointIndex = (dataPointIndex > 4) ? 0 : dataPointIndex;
-                setTimeout(timer, 100);
+                setTimeout(timer, 1000);
             };
             
         </script>

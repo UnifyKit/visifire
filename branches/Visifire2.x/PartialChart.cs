@@ -26,7 +26,6 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-
 #endif
 
 using Visifire.Commons;
@@ -134,8 +133,17 @@ namespace Visifire.Charts
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
             _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;
-            _toolTip = GetTemplateChild(ToolTipName) as Border;
-            _toolTipTextBlock = GetTemplateChild(ToolTipTextBlockName) as TextBlock;
+            
+            if (ToolTips.Count == 0)
+            {
+                ToolTip toolTip = new ToolTip() { Chart = this, Visibility = Visibility.Collapsed };
+                ToolTips.Add(toolTip);
+            }
+            
+            _toolTip = ToolTips[0];
+            _toolTip.Chart = this;
+
+            _toolTipCanvas.Children.Add(_toolTip);
 
             #endregion       
 
@@ -183,7 +191,8 @@ namespace Visifire.Charts
             binding1.Source = this;
             binding1.Mode = System.Windows.Data.BindingMode.OneWay;
             base.SetBinding(InternalBorderThicknessProperty, binding1);
-/*
+           
+/*          
             this.EventChanged += delegate
             {
                  AttachEvents2Visual(this, this, this._rootElement);
@@ -195,7 +204,10 @@ namespace Visifire.Charts
 
             if (AnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
+
         }
+
+      
 
         #endregion
 
@@ -204,7 +216,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Bevel canvas as Bevel Visual
         /// </summary>
-        public Canvas BevelVisual
+        internal Canvas BevelVisual
         {
             get;
             set;
@@ -213,8 +225,8 @@ namespace Visifire.Charts
         /// <summary>
         /// MinimumGap between two DataPoint in Plotarea
         /// </summary>
-        public Int32 FixedDataPoints
-        {
+        internal Int32 FixedDataPoints
+        {   
             get
             {
                 return (Int32)GetValue(FixedDataPointsProperty);
@@ -244,21 +256,21 @@ namespace Visifire.Charts
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
 #endif
         public Nullable<Double> MinimumGap
-        {
+        {   
             get
-            {
+            {   
                 if ((Nullable<Double>)GetValue(MinimumGapProperty) == null)
                     return 30;
                 else
                     return (Nullable<Double>)GetValue(MinimumGapProperty);
             }
             set
-            {
+            {   
                 SetValue(MinimumGapProperty, value);
             }
         }
 
-        private static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
+        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
             ("MinimumGap",
             typeof(Nullable<Double>),
             typeof(Chart),
@@ -293,7 +305,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty ScrollingEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ScrollingEnabledProperty = DependencyProperty.Register
             ("ScrollingEnabled",
             typeof(Nullable<Boolean>),
             typeof(Chart),
@@ -325,7 +337,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty View3DProperty = DependencyProperty.Register
+        public static readonly DependencyProperty View3DProperty = DependencyProperty.Register
             ("View3D",
             typeof(Boolean),
             typeof(Chart),
@@ -419,13 +431,13 @@ namespace Visifire.Charts
         {
             if (String.IsNullOrEmpty(themeName))
                 return;
-                        
+            
             StyleDictionary = null;
 
             string fooResourceName = "Visifire.Charts." + themeName + ".xaml";
 
-            using (System.IO.Stream s = this.GetType().Assembly.GetManifestResourceStream(fooResourceName))
-            {
+            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(fooResourceName))
+            {   
                 if (s == null)
                 {
 #if WPF             
@@ -713,7 +725,7 @@ namespace Visifire.Charts
         public ColorSets ColorSets
         {
             get
-            {   
+            {
                 return (ColorSets)GetValue(ColorSetsProperty);
             }
             set
@@ -727,6 +739,15 @@ namespace Visifire.Charts
             typeof(ColorSets),
             typeof(Chart),
             null);
+
+        /// <summary>
+        /// Set of colors that will be used for the DataPoints
+        /// </summary>
+        internal ColorSets InternalColorSets
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Enabled or disabled automatic color shading
@@ -840,7 +861,7 @@ namespace Visifire.Charts
         /// <summary>
         /// AxesX as Observable collection of type Axis
         /// </summary>
-        public Collection<Axis> AxesX
+        public AxisCollection AxesX
         {
             get;
             set;
@@ -858,7 +879,7 @@ namespace Visifire.Charts
         /// <summary>
         /// AxesY as Observable collection of type Axis
         /// </summary>
-        public Collection<Axis> AxesY
+        public AxisCollection AxesY
         {
             get;
             set;
@@ -876,19 +897,25 @@ namespace Visifire.Charts
         /// <summary>
         /// Titles as Observable collection of type Title
         /// </summary>
-        public ObservableCollection<Title> Titles
+        public TitleCollection Titles
         {
             get;
             set;
         }
 
-        public ObservableCollection<Legend> Legends
+        public LegendCollection Legends
         {
             get;
             set;
         }
 
-        public ObservableCollection<TrendLine> TrendLines
+        public ToolTipCollection ToolTips
+        {
+            get;
+            set;
+        }
+
+        public TrendLineCollection TrendLines
         {
             get;
             set;
@@ -963,9 +990,21 @@ namespace Visifire.Charts
         /// </summary>
         public String ToolTipText
         {
-            get;
-            set;
+            get
+            {
+                return (String)GetValue(ToolTipTextProperty);
+            }
+            set
+            {
+                SetValue(ToolTipTextProperty, value);
+            }
         }
+
+        public static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
+            ("ToolTipText",
+            typeof(String),
+            typeof(Chart),
+            null);
 
         #endregion
 
@@ -1038,10 +1077,10 @@ namespace Visifire.Charts
             string fooResourceName = "Visifire.Charts.ColorSets.xaml";
             ColorSets embeddedColorSets;
 
-            using (System.IO.Stream s = this.GetType().Assembly.GetManifestResourceStream(fooResourceName))
+            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(fooResourceName))
             {   
                 if (s != null)
-                {
+                {   
                     System.IO.StreamReader reader = new System.IO.StreamReader(s);
 
                     String xaml = reader.ReadToEnd();
@@ -1054,12 +1093,16 @@ namespace Visifire.Charts
                     if (embeddedColorSets == null)
                         System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
-                    if (ColorSets == null)
-                        ColorSets = new ColorSets();
-
-                    if (embeddedColorSets != null)
-                        ColorSets.AddRange(embeddedColorSets);
+                    if (InternalColorSets == null)
+                        InternalColorSets = new ColorSets();
                     
+                    if (embeddedColorSets != null)
+                        InternalColorSets.AddRange(embeddedColorSets);
+
+                    if(ColorSets != null)
+                        foreach (ColorSet colorSet in ColorSets)
+                            InternalColorSets.Add(colorSet);
+                        
                     reader.Close();
                     s.Close();
                 }
@@ -1068,7 +1111,6 @@ namespace Visifire.Charts
 
         private void SetEventsToToolTipObject()
         {
-            this._rootElement.MouseMove += new MouseEventHandler(Chart_MouseMoveSetToolTipPosition);
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
         }
 
@@ -1077,12 +1119,24 @@ namespace Visifire.Charts
             if (ToolTipEnabled)
             {
                 if (_toolTip.Visibility == Visibility.Visible)
-                    _toolTip.Visibility = Visibility.Collapsed;
+                    _toolTip.Hide();
             }
             else
             {
-                _toolTip.Visibility = Visibility.Collapsed;
+                _toolTip.Hide();
             }
+            _toolTip.Text = "";
+        }
+
+        Point MousePosition
+        {
+            get;
+            set;
+        }
+
+        internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
+        {
+            Chart_MouseMoveSetToolTipPosition(sender, e);
         }
 
         /// <summary>
@@ -1092,45 +1146,58 @@ namespace Visifire.Charts
         /// <param name="sender">Chart as object</param>
         /// <param name="e">MouseEventArgs</param>
         private void Chart_MouseMoveSetToolTipPosition(object sender, MouseEventArgs e)
-        {
+        {   
             if (ToolTipEnabled)
-            {
-                #region Set position of ToolTip
-
+            {   
                 Double x = e.GetPosition(this).X;
                 Double y = e.GetPosition(this).Y;
 
-                Double toolTipWidth = (Double.IsNaN(_toolTip.ActualWidth) || _toolTip.ActualWidth == 0)?14:_toolTip.ActualWidth;
-                Double toolTipHeight = (Double.IsNaN(_toolTip.ActualHeight) || _toolTip.ActualHeight == 0) ? 26 : _toolTip.ActualHeight;
-                
-                x = x - toolTipWidth / 2;
+                #region Set position of ToolTip
+
+                Double toolTipWidth = _toolTip.ActualWidth;
+                Double toolTipHeight = _toolTip.ActualHeight;
+
                 y = y - (toolTipHeight + 5);
 
-                if (x <= 0)
-                {
-                    x = e.GetPosition(this).X + 10;
-                    y = e.GetPosition(this).Y + 20;
+                x = x - toolTipWidth / 2;
 
-                    if ((y + toolTipHeight) >= this.ActualHeight)
-                        y = this.ActualHeight - toolTipHeight;
-                }
+                    if (x <= 0)
+                    {
+                        x = e.GetPosition(this).X + 10;
+                        y = e.GetPosition(this).Y + 20;
 
-                if ((x + toolTipWidth) >= this.ActualWidth)
-                {
-                    x = e.GetPosition(this).X - toolTipWidth;
-                    y = e.GetPosition(this).Y - toolTipHeight;
-                }
-                if (y <= 0)
-                    y = e.GetPosition(this).Y + 20;
+                        if ((y + toolTipHeight) >= this.ActualHeight)
+                            y = this.ActualHeight - toolTipHeight;
+                    }
+                    
+                    if ((x + toolTipWidth) >= this.ActualWidth)
+                    {
+                        x = e.GetPosition(this).X - toolTipWidth;
+                        y = e.GetPosition(this).Y - toolTipHeight;
+
+                        if (x < 0)
+                        {
+                        //    //_toolTip.FontSize = 12;
+                        //    //_toolTip.AutoReSize();
+                        x = Padding.Left;
+                        }
+                    }
+                    if (y <= 0)
+                        y = e.GetPosition(this).Y + 20;
+
+                Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
+                //System.Diagnostics.Debug.WriteLine("Left=" + left.ToString());
+                //System.Diagnostics.Debug.WriteLine("toolTipWidth=" + toolTipWidth.ToString());
 
                 _toolTip.SetValue(Canvas.LeftProperty, x - Padding.Left);
+
                 _toolTip.SetValue(Canvas.TopProperty, y - Padding.Top);
 
                 #endregion
             }
             else
             {
-                _toolTip.Visibility = Visibility.Collapsed;
+                _toolTip.Hide();
             }
         }
 
@@ -1150,7 +1217,8 @@ namespace Visifire.Charts
                         title.Chart = this;
                         title.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Title_PropertyChanged);
                     }
-                    CallRender();
+
+                   CallRender();
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
@@ -1180,12 +1248,13 @@ namespace Visifire.Charts
                     legend.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(legend_PropertyChanged);
                 }
 
-
-                CallRender();
+                if(IsRenderCallAllowed)
+                    CallRender();
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-                CallRender();
+                if(IsRenderCallAllowed)
+                    CallRender();
             }
            
         }
@@ -1299,7 +1368,6 @@ namespace Visifire.Charts
 
                         if (!String.IsNullOrEmpty(this.Theme))
                         {
-                            
                             axis.ApplyStyleFromTheme(this, "AxisY");
                         }
 
@@ -1428,7 +1496,7 @@ namespace Visifire.Charts
                     _renderLapsedCounter = 0;
                     RENDER_LOCK = true;
 
-                    try
+                   // try
                     {
                         if(ChartArea == null)
                             ChartArea = CreateVisualTree();
@@ -1447,11 +1515,12 @@ namespace Visifire.Charts
                        // System.Diagnostics.Debug.WriteLine("Debug End");
 
                     }
-                    catch (Exception e)
+                    //catch (Exception e)
                     {   
-                        RENDER_LOCK = false;
-                        throw new Exception(e.Message, e);
+                    //    RENDER_LOCK = false;
+                    //    throw new Exception(e.Message, e);
                     }
+
                 }
             }
         }
@@ -1586,27 +1655,33 @@ namespace Visifire.Charts
             //else
             //    ChartShadowGrid.Visibility = Visibility.Collapsed;
         }
-
+//#if WPF
+//        [STAThread]
+//#endif
         internal void CallRender()
         {
+            if (IsTemplateApplied)
+            {
 #if WPF
-            if (RENDER_LOCK)
-                _renderLapsedCounter++;
-            else if (Application.Current != null && Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-            else
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
+
+                if (RENDER_LOCK)
+                    _renderLapsedCounter++;
+                else if (Application.Current != null && Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
+                else
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
 #else       
             if (RENDER_LOCK)
                 _renderLapsedCounter++;
             else
-            {
+            {   
                 if (IsInDesignMode)
                     Render();
                 else
                     this.Dispatcher.BeginInvoke(Render);
             }
 #endif
+            }
         }
 
         /// <summary>
@@ -1621,26 +1696,29 @@ namespace Visifire.Charts
             Watermark = true;
 
             //ColorSets = new ColorSets();
+            ToolTips = new ToolTipCollection();
 
             // Initialize title list
-            Titles = new ObservableCollection<Title>();
+            Titles = new TitleCollection();
 
             // Initialize legend list
-            Legends = new ObservableCollection<Legend>();
+            Legends = new LegendCollection();
 
-            TrendLines = new ObservableCollection<TrendLine>();
+            TrendLines = new TrendLineCollection();
 
             // Initialize AxesX list
-            AxesX = new ObservableCollection<Axis>();
+            AxesX = new AxisCollection();
 
             // Initialize AxesY list
-            AxesY = new ObservableCollection<Axis>();
+            AxesY = new AxisCollection();
 
             // Initialize Series list
             Series = new DataSeriesCollection();
 
             PlotArea = new PlotArea();
             PlotArea.Chart = this;
+
+            ToolTips.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ToolTips_CollectionChanged);
 
             // Attach event handler for the Title collection changed event
             Titles.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Titles_CollectionChanged);
@@ -1655,10 +1733,42 @@ namespace Visifire.Charts
             Series.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Series_CollectionChanged);
 
             // Attach event handler for the AxesX collection changed event
-            (AxesX as ObservableCollection<Axis>).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
+            (AxesX as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
 
             // Attach event handler for the AxisY collection changed event
-            (AxesY as ObservableCollection<Axis>).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
+            (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
+
+            InternalColorSets = new ColorSets();
+        }
+
+        void ToolTips_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                ObservableCollection<ToolTip> titles = sender as ObservableCollection<ToolTip>;
+
+                if (e.NewItems != null)
+                {
+                    foreach (ToolTip toolTip in e.NewItems)
+                    {
+                        if (toolTip.Style == null && StyleDictionary != null)
+                        {
+                            Style myStyle = StyleDictionary["ToolTip"] as Style;
+
+                            if (myStyle != null)
+                                toolTip.Style = myStyle;
+                        }
+
+                        toolTip.Chart = this;
+                        
+                    }
+                }
+            }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            {
+                foreach (ToolTip toolTip in e.OldItems)
+                    (toolTip.Chart as Chart)._toolTipCanvas.Children.Remove(toolTip);
+            }
         }
 
         /// <summary>
@@ -1734,6 +1844,7 @@ namespace Visifire.Charts
         internal static Double BEVEL_DEPTH = 5;                             // Bevel Depth for chart
         internal Int32 _renderLapsedCounter;                                // Noumber of time UI render is not done called due to RENDER_LOCK
         private Thickness _chartAreaOriginalMargin;
+        internal Boolean IsRenderCallAllowed = true;
         #endregion
     }
 }

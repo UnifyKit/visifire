@@ -13,7 +13,7 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
-    //[TestClass]
+    [TestClass]
     public class DataPointTest : SilverlightControlTest
     {
         /// <summary>
@@ -26,7 +26,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -64,10 +64,10 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             EnqueueCallback(() =>
-                {
-                    dataPoint.XValue = 10;
-                    dataPoint.YValue = rand.Next(-100, 100);
-                });
+            {
+                dataPoint.XValue = 10;
+                dataPoint.YValue = rand.Next(-100, 100);
+            });
 
             EnqueueSleep(sleepTime);
             EnqueueTestComplete();
@@ -86,7 +86,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -103,42 +103,42 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
 
             EnqueueCallback(() =>
-                {
-                    DataSeries dataSeries1 = new DataSeries();
-                    dataSeries1.RenderAs = RenderAs.Column;
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.Column;
 
-                    for (Double i = 0; i < 10; i++)
-                    {
-                        DataPoint dataPoint = new DataPoint();
-                        dataPoint.XValue = i + 1;
-                        xList.Add(i);
-                        dataPoint.YValue = (y = rand.Next(-100, 100));
-                        yList.Add(y);
-                        dataSeries1.DataPoints.Add(dataPoint);
-                    }
-                    chart.Series.Add(dataSeries1);
-                });
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                chart.Series.Add(dataSeries1);
+            });
 
             EnqueueSleep(sleepTime);
 
             EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.Column;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
                 {
-
-                    DataSeries dataSeries2 = new DataSeries();
-                    dataSeries2.RenderAs = RenderAs.Column;
-
-                    Double j = 0.5;
-                    for (Int32 i = 0; i < 10; i++)
-                    {
-                        DataPoint dataPoint = new DataPoint();
-                        dataPoint.XValue = j;
-                        dataPoint.YValue = yList[i];
-                        dataSeries2.DataPoints.Add(dataPoint);
-                        j++;
-                    }
-                    chart.Series.Add(dataSeries2);
-                    htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
-                });
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                chart.Series.Add(dataSeries2);
+                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
 
             htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
             htmlElement1.SetProperty("value", "Testing DataSeries Behaviour :- First DataSeries with all positive XValues and Second DataSeries with all Decimal XValues. Click here to exit.");
@@ -158,7 +158,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -188,9 +188,9 @@ namespace SLVisifireChartsTest
             EnqueueConditional(() => { return isLoaded; });
 
             EnqueueCallback(() =>
-                {
-                    htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
-                });
+            {
+                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
 
             htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
             htmlElement1.SetProperty("value", "Testing DataSeries Behaviour with repeated XValues. Click here to exit.");
@@ -211,7 +211,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.ScrollingEnabled = false;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -246,12 +246,12 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
 
             EnqueueCallback(() =>
-                {
-                    htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                    htmlElement1.SetStyleAttribute("width", "900px");
-                    htmlElement1.SetProperty("value", numberOfDataPoints + " XValues added. " + msg + " Click here to exit.");
-                    System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                });
+            {
+                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
+                htmlElement1.SetStyleAttribute("width", "900px");
+                htmlElement1.SetProperty("value", numberOfDataPoints + " XValues added. " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            });
 
             EnqueueCallback(() =>
             {
@@ -272,7 +272,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -339,7 +339,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -412,7 +412,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -467,7 +467,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -495,7 +495,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -531,7 +531,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = false;
             chart.ScrollingEnabled = false;
-            //chart.AnimationEnabled = false;
+            //
 
             bool isPropertyChanged = false;
             bool isRenderOver = false;
@@ -797,7 +797,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -942,7 +942,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -975,7 +975,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -1000,7 +1000,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -1029,7 +1029,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1059,7 +1059,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1089,7 +1089,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1119,7 +1119,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1149,7 +1149,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1179,7 +1179,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1209,7 +1209,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1239,7 +1239,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
@@ -1269,7 +1269,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -1299,7 +1299,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -1330,7 +1330,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -1360,7 +1360,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -1391,7 +1391,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -1420,7 +1420,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1450,7 +1450,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1481,7 +1481,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1512,7 +1512,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1542,7 +1542,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1573,7 +1573,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -1604,7 +1604,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -1628,7 +1628,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
@@ -1657,7 +1657,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
@@ -1687,7 +1687,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.DataPoints[0].BorderThickness = new Thickness(2);
@@ -1717,7 +1717,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
@@ -1747,7 +1747,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -1779,10 +1779,10 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.BorderThickness=new Thickness(1);
+            dataSeries.BorderThickness = new Thickness(1);
             chart.Series.Add(dataSeries);
 
             EnqueueSleep(sleepTime);

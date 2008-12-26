@@ -150,7 +150,7 @@ namespace Visifire.Charts
         }
 
 
-        private static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
             ("Enabled",
             typeof(Nullable<Boolean>),
             typeof(ChartGrid),
@@ -177,7 +177,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
             ("LineColor",
             typeof(Brush),
             typeof(ChartGrid),
@@ -205,7 +205,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
             ("LineStyle",
             typeof(LineStyles),
             typeof(ChartGrid),
@@ -233,7 +233,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
+        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
             ("LineThickness",
             typeof(Double),
             typeof(ChartGrid),

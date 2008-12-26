@@ -399,6 +399,7 @@ namespace SLVisifireChartsXap
                 Charts.Add(chart);
                 chart.LogLevel = _logLevel;
                 chart.ControlId = _controlId;
+                chart.IsInJsMode = true;
             }
 
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))

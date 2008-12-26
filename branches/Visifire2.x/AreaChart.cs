@@ -53,8 +53,8 @@ namespace Visifire.Charts
             {
                 Size markerSize = (Boolean)dataPoint.MarkerEnabled ? new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize) : new Size(0, 0);
                 String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
-                Boolean markerBevel = dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
-
+                //Boolean markerBevel = dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
+                Boolean markerBevel = false;
                 dataPoint.Marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, dataPoint.MarkerColor, labelText);
 
                 dataPoint.Marker.MarkerSize = markerSize;
@@ -67,6 +67,7 @@ namespace Visifire.Charts
                 dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
                 dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
                 dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
+                dataPoint.Marker.MarkerFillColor = dataPoint.MarkerColor;
 
                 if (true && !String.IsNullOrEmpty(labelText))
                 {
@@ -158,7 +159,7 @@ namespace Visifire.Charts
                 areaParams.Bevel = series.Bevel;
                 areaParams.BorderBrush = series.BorderColor;
                 areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                areaParams.BorderThickness = series.BorderThickness.Left;
+                areaParams.BorderThickness = series.InternalBorderThickness.Left;
                 areaParams.Depth = depth3d;
                 areaParams.Storyboard = series.Storyboard;
                 areaParams.AnimationEnabled = animationEnabled;
@@ -441,7 +442,7 @@ namespace Visifire.Charts
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
                     areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                    areaParams.BorderThickness = series.BorderThickness.Left;
+                    areaParams.BorderThickness = series.InternalBorderThickness.Left;
                     areaParams.Depth = depth3d;
 
                     foreach (PointCollection points in pointSet)
@@ -667,7 +668,7 @@ namespace Visifire.Charts
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
                     areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                    areaParams.BorderThickness = series.BorderThickness.Left;
+                    areaParams.BorderThickness = series.InternalBorderThickness.Left;
                     areaParams.Depth = depth3d;
 
                     Faces faces = curDataPoints[index].Parent.Faces;

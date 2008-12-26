@@ -72,7 +72,7 @@ namespace Visifire.Charts
             Positive = positive;
             Negative = negative;
         }
-        
+
         public List<DataPoint> Positive { get; private set; }
         public List<DataPoint> Negative { get; private set; }
     }
@@ -145,7 +145,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < (chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
+                            if (top + dataPoint.Marker.MarkerActualSize.Height < (chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
                                 columnParams.LabelStyle = LabelStyles.Inside;
                         }
                     }
@@ -205,15 +205,15 @@ namespace Visifire.Charts
             return markerCanvas;
         }
 
-        internal static Canvas GetVisualObjectForColumnChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth,bool animationEnabled)
+        internal static Canvas GetVisualObjectForColumnChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) 
+            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
-            
+
             Double columnGapRatio = 0.1;
-            
+
             Dictionary<Double, SortedDataPoints> sortedDataPoints = null;
-            
+
             sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
 
             List<Double> xValues = sortedDataPoints.Keys.ToList();
@@ -273,10 +273,10 @@ namespace Visifire.Charts
                     columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                    columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
-                    columnParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft,dataPoint.RadiusX.Value.TopRight,0,0);
-                    columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight,0,0);
+                    columnParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, dataPoint.RadiusX.Value.TopRight, 0, 0);
+                    columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight, 0, 0);
                     columnParams.IsPositive = true;
                     columnParams.BackgroundBrush = dataPoint.Color;
 
@@ -309,6 +309,8 @@ namespace Visifire.Charts
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
+
+                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
 
                     if (dataPoint.YValue > (Double)plotGroup.AxisY.InternalAxisMaximum)
                         System.Diagnostics.Debug.WriteLine("Max Value greater then axis max");
@@ -354,14 +356,14 @@ namespace Visifire.Charts
 
                     dataPoint.Faces = columnFaces;
                     dataPoint.Faces.LabelCanvas = labelCanvas;
-                    
+
                     columnVisual.SetValue(Canvas.LeftProperty, left);
                     columnVisual.SetValue(Canvas.TopProperty, top);
 
                     columnCanvas.Children.Add(columnVisual);
-                    
+
                     labelCanvas.Children.Add(GetMarker(chart, columnParams, dataPoint, left, top));
-                    
+
                     // Apply animation
                     if (animationEnabled)
                     {
@@ -369,7 +371,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = new Storyboard();
 
                         DataSeriesRef = dataPoint.Parent;
-                        
+
                         // Apply animation to the data points i.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
@@ -386,10 +388,10 @@ namespace Visifire.Charts
                     columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                    columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
-                    columnParams.XRadius = new CornerRadius(0,0,dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
-                    columnParams.YRadius = new CornerRadius(0,0,dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
+                    columnParams.XRadius = new CornerRadius(0, 0, dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
+                    columnParams.YRadius = new CornerRadius(0, 0, dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
                     columnParams.IsPositive = false;
                     columnParams.BackgroundBrush = dataPoint.Color;
 
@@ -422,7 +424,7 @@ namespace Visifire.Charts
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
-
+                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
 
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
@@ -487,7 +489,7 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
                     }
 
-                 }
+                }
             }
             if (!plankDrawn && chart.View3D && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum < 0 && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum > 0)
             {
@@ -514,7 +516,7 @@ namespace Visifire.Charts
             return visual;
         }
 
-        internal static Canvas GetVisualObjectForStackedColumnChart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth,bool animationEnabled)
+        internal static Canvas GetVisualObjectForStackedColumnChart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
 
@@ -586,7 +588,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
@@ -655,7 +657,7 @@ namespace Visifire.Charts
                             DataSeriesRef = dataPoint.Parent;
 
                             // Apply animation to the data points i.e to the rectangles that form the columns
-                            dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0/seriesList.Count);
+                            dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
                             dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
@@ -674,7 +676,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
@@ -828,7 +830,7 @@ namespace Visifire.Charts
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
                 if (plotGroup.AxisY.InternalAxisMaximum < 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-                    
+
                 foreach (Double xValue in xValuesList)
                 {
                     RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -855,7 +857,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
@@ -904,7 +906,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            
+
                             column = Get2DColumn(columnParams);
                             columnVisual = column.Visual;
                         }
@@ -945,7 +947,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
@@ -1047,7 +1049,7 @@ namespace Visifire.Charts
                 zeroPlankVisual.Opacity = 0.7;
                 columnCanvas.Children.Add(zeroPlankVisual);
             }
-            
+
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
 
@@ -1058,7 +1060,8 @@ namespace Visifire.Charts
         {
             Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = new Dictionary<Axis, Dictionary<Axis, Int32>>();
 
-            var seriesByAxis = (from series in seriesList where series.Enabled == true
+            var seriesByAxis = (from series in seriesList
+                                where series.Enabled == true
                                 group series
                                     by new
                                     {
@@ -1152,7 +1155,7 @@ namespace Visifire.Charts
             }
 
             if (columnParams.Shadow)
-            {   
+            {
                 Double shadowVerticalOffsetGap = 1;
                 Double shadowVerticalOffset = columnParams.ShadowOffset - shadowVerticalOffsetGap;
                 Double shadowHeight = columnParams.Size.Height;
@@ -1205,8 +1208,8 @@ namespace Visifire.Charts
                 //shadowGrid.RenderTransform = tt;
                 columnVisual.Children.Add(shadowGrid);
             }
-            
-            
+
+
             faces.VisualComponents.Add(columnVisual);
 
             faces.Visual = columnVisual;
@@ -1219,7 +1222,7 @@ namespace Visifire.Charts
             return Get3DColumn(columnParams, null, null, null);
         }
 
-        internal static Faces Get3DColumn(RectangularChartShapeParams columnParams, Brush frontBrush, Brush topBrush, Brush rightBrush )
+        internal static Faces Get3DColumn(RectangularChartShapeParams columnParams, Brush frontBrush, Brush topBrush, Brush rightBrush)
         {
             Faces faces = new Faces();
             faces.Parts = new List<FrameworkElement>();
@@ -1229,13 +1232,13 @@ namespace Visifire.Charts
             columnVisual.Width = columnParams.Size.Width;
             columnVisual.Height = columnParams.Size.Height;
 
-            if(frontBrush == null)
+            if (frontBrush == null)
                 frontBrush = columnParams.Lighting ? Graphics.GetFrontFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
 
-            if(topBrush == null)
+            if (topBrush == null)
                 topBrush = columnParams.Lighting ? Graphics.GetTopFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
 
-            if(rightBrush == null)
+            if (rightBrush == null)
                 rightBrush = columnParams.Lighting ? Graphics.GetRightFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
 
             Canvas front = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Size.Height,
@@ -1243,7 +1246,7 @@ namespace Visifire.Charts
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(front.Children[0] as FrameworkElement);
-            
+
             Canvas top = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Depth,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
@@ -1273,7 +1276,7 @@ namespace Visifire.Charts
             top.SetValue(Canvas.TopProperty, -columnParams.Depth);
             right.SetValue(Canvas.LeftProperty, columnParams.Size.Width);
 
-            
+
             faces.Visual = columnVisual;
 
             faces.VisualComponents.Add(front);
@@ -1317,8 +1320,8 @@ namespace Visifire.Charts
         private static List<KeySpline> GenerateKeySplineList(params Point[] values)
         {
             List<KeySpline> splines = new List<KeySpline>();
-            for(Int32 i=0;i<values.Length;i+=2)
-                splines.Add(GetKeySpline(values[i],values[i+1]));
+            for (Int32 i = 0; i < values.Length; i += 2)
+                splines.Add(GetKeySpline(values[i], values[i + 1]));
 
             return splines;
         }
@@ -1328,13 +1331,13 @@ namespace Visifire.Charts
             return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
         }
 
-       
-        private static Storyboard ApplyColumnChartAnimation(Panel column,Storyboard storyboard,RectangularChartShapeParams columnParams)
+
+        private static Storyboard ApplyColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams)
         {
-            
+
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
             column.RenderTransform = scaleTransform;
-            
+
             if (columnParams.IsPositive)
             {
                 column.RenderTransformOrigin = new Point(0.5, 1);
@@ -1348,8 +1351,8 @@ namespace Visifire.Charts
             DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 1);
             List<KeySpline> splines = GenerateKeySplineList
                 (
-                new Point(0,0), new Point(1,1),
-                new Point(0,1), new Point(0.5,1)
+                new Point(0, 0), new Point(1, 1),
+                new Point(0, 1), new Point(0.5, 1)
                 );
 
             DoubleAnimationUsingKeyFrames growAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleY)", 1, frameTimes, values, splines);
@@ -1359,7 +1362,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard ApplyStackedColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams,Double begin,Double duration)
+        private static Storyboard ApplyStackedColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams, Double begin, Double duration)
         {
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
             column.RenderTransform = scaleTransform;
@@ -1385,7 +1388,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard ApplyMarkerAnimationToColumnChart(Marker marker, Storyboard storyboard,Double beginTime)
+        private static Storyboard ApplyMarkerAnimationToColumnChart(Marker marker, Storyboard storyboard, Double beginTime)
         {
             if (marker == null) return storyboard;
 

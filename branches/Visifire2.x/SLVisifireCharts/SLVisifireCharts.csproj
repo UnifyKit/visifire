@@ -42,6 +42,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;SL</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <NoConfig>true</NoConfig>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -78,6 +90,9 @@
     <Compile Include="..\ChartGrid.cs">
       <Link>ChartGrid.cs</Link>
     </Compile>
+    <Compile Include="..\Collections.cs">
+      <Link>Collections.cs</Link>
+    </Compile>
     <Compile Include="..\ColorSet.cs">
       <Link>ColorSet.cs</Link>
     </Compile>
@@ -92,9 +107,6 @@
     </Compile>
     <Compile Include="..\DataSeries.cs">
       <Link>DataSeries.cs</Link>
-    </Compile>
-    <Compile Include="..\DataSeriesCollection.cs">
-      <Link>DataSeriesCollection.cs</Link>
     </Compile>
     <Compile Include="..\Enums.cs">
       <Link>Enums.cs</Link>
@@ -137,6 +149,9 @@
     </Compile>
     <Compile Include="..\Title.cs">
       <Link>Title.cs</Link>
+    </Compile>
+    <Compile Include="..\ToolTip.cs">
+      <Link>ToolTip.cs</Link>
     </Compile>
     <Compile Include="..\TrendLine.cs">
       <Link>TrendLine.cs</Link>

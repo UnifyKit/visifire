@@ -1,33 +1,34 @@
 ﻿<UserControl x:Class="SLVisifireApp.Page"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"   
-    Width="700" Height="500" 
-    >
-    
-    <Grid x:Name="LayoutRoot" Width="500" Height="300" Background="White">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+Width="700" Height="500"
+>
+
+    <Grid x:Name="LayoutRoot" Width="500" Height="450" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" x:Name="MyChart"
-            Width="500" Height="300" Theme="Theme1" View3D="False" LightingEnabled="True" BorderBrush="Gray">
+          Width="500" Height="300" Theme="Theme2" BorderBrush="Gray" ColorSet="Visifire2">
+
+            <vc:Chart.PlotArea>
+                <vc:PlotArea Color="#f1f1f1"/>
+            </vc:Chart.PlotArea>
 
             <vc:Chart.Titles>
                 <vc:Title Text="Worldwide Box office Grosses"/>
             </vc:Chart.Titles>
-            
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie" Bevel="True" LightingEnabled="true" MarkerEnabled="True"
-                               LabelStyle="OutSide" Cursor="Hand">
+                <vc:DataSeries RenderAs="Pie" Bevel="True" Cursor="Hand" Color="Aqua">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Transformers" YValue="706.5"/>
+                        <vc:DataPoint AxisXLabel="Transformers" YValue="706.5" Color="AliceBlue"/>
                         <vc:DataPoint AxisXLabel="Ratatouille" YValue="620.4"/>
-                        <vc:DataPoint AxisXLabel="I Am Legend" YValue="582.4"/>
+                        <vc:DataPoint AxisXLabel="I Am Legend" YValue="582.4" Color="AliceBlue"/>
                         <vc:DataPoint AxisXLabel="Simpsons Movie" YValue="525.5"/>
                         <vc:DataPoint AxisXLabel="The Bourne Ultimatum" YValue="442.6"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
-               
-             </vc:Chart.Series>
+            </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
-   
+
 </UserControl>
