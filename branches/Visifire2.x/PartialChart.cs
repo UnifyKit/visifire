@@ -133,6 +133,7 @@ namespace Visifire.Charts
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
             _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;
+
             
             if (ToolTips.Count == 0)
             {
@@ -181,11 +182,7 @@ namespace Visifire.Charts
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
-        
-            System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
-            binding.Source = this;
-            binding.Mode = System.Windows.Data.BindingMode.OneWay;
-            base.SetBinding(InternalBackgroundProperty, binding);
+
 
             System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
             binding1.Source = this;
@@ -201,13 +198,12 @@ namespace Visifire.Charts
 #endif
             };
 */
+            _internalAnimationEnabled = AnimationEnabled;
 
-            if (AnimationEnabled)
+            if (_internalAnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
 
         }
-
-      
 
         #endregion
 
@@ -501,9 +497,9 @@ namespace Visifire.Charts
         public Boolean AnimationEnabled
         {
             get
-            {
+            {   
                 if (!IsInDesignMode)
-                {
+                {   
                     if (String.IsNullOrEmpty(AnimationEnabledProperty.ToString()))
                     {
                         return false;
@@ -621,26 +617,50 @@ namespace Visifire.Charts
 
         #endregion
 
-        internal Brush InternalBackground
-        {
+        public new Brush Background
+        {   
             get
             {
-                return (Brush)GetValue(InternalBackgroundProperty);
+                return (Brush)GetValue(BackgroundProperty);
             }
             set
             {
+                SetValue(BackgroundProperty, value);
                 SetValue(InternalBackgroundProperty, value);
             }
         }
 
         public static readonly DependencyProperty InternalBackgroundProperty = DependencyProperty.Register
-           ("InternalBackground",
-           typeof(Brush),
-           typeof(Chart),
-           new PropertyMetadata(OnInternalPropertyChanged));
+          ("InternalBackground",
+          typeof(Brush),
+          typeof(Chart),
+          new PropertyMetadata(OnInternalBackgroundPropertyChanged));
+
+
+        private static void OnInternalBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            Chart c = d as Chart;
+            //c._chartBorder.Background = (Brush) e.NewValue;
+            c.RemoveChartBevel();
+            c.CallRender();
+
+            //if (c.ApplyChartBevel())
+            //{
+            //    if ((Boolean)c.Bevel == true)
+            //    {
+            //        c.CallRender();
+            //    }
+            //    else
+            //    {
+            //        c.RemoveChartBevel();
+            //    }
+            //}
+
+            //c.CallRender();
+        }
 
         private static void OnInternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Chart c = d as Chart;
 
             if (c.ApplyChartBevel())
@@ -655,7 +675,7 @@ namespace Visifire.Charts
                 }
             }
         }
-        
+
         /// <summary>
         /// Enabled or disables the bevel effect
         /// </summary>
@@ -1463,16 +1483,27 @@ namespace Visifire.Charts
             CallRender();
         }
 
+        void PropertyBindingBeforeFirstTimeRender()
+        {
+            System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
+            binding.Source = this;
+            binding.Mode = System.Windows.Data.BindingMode.OneWay;
+            base.SetBinding(InternalBackgroundProperty, binding);
+        }
+
         /// <summary>
         /// Create visual tree before rendering
         /// </summary>
         /// <returns></returns>
         private ChartArea CreateVisualTree()
         {
+
             // Create new ChartArea
             ChartArea chartArea = new ChartArea(this as Chart);
 
             chartArea.PropertyChanged += new EventHandler(ChartArea_PropertyChanged);
+
+            PropertyBindingBeforeFirstTimeRender();
 
             return chartArea;
         }
@@ -1493,10 +1524,9 @@ namespace Visifire.Charts
                 {
                     System.Diagnostics.Debug.WriteLine("Render______");
 
-                    _renderLapsedCounter = 0;
                     RENDER_LOCK = true;
 
-                   // try
+                    try
                     {
                         if(ChartArea == null)
                             ChartArea = CreateVisualTree();
@@ -1510,17 +1540,17 @@ namespace Visifire.Charts
                         _topAxisPanel.Children.Clear();
                         _rightAxisPanel.Children.Clear();
 
+                        _renderLapsedCounter = 0;
                         ChartArea.Draw(this);
 
-                       // System.Diagnostics.Debug.WriteLine("Debug End");
+                        // System.Diagnostics.Debug.WriteLine("Debug End");
 
                     }
-                    //catch (Exception e)
+                    catch (Exception e)
                     {   
-                    //    RENDER_LOCK = false;
-                    //    throw new Exception(e.Message, e);
+                        RENDER_LOCK = false;
+                        throw new Exception(e.Message, e);
                     }
-
                 }
             }
         }
@@ -1845,6 +1875,8 @@ namespace Visifire.Charts
         internal Int32 _renderLapsedCounter;                                // Noumber of time UI render is not done called due to RENDER_LOCK
         private Thickness _chartAreaOriginalMargin;
         internal Boolean IsRenderCallAllowed = true;
+        internal Boolean _internalAnimationEnabled = false;
+        
         #endregion
     }
 }

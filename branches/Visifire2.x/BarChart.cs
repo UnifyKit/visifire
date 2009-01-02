@@ -234,9 +234,8 @@ namespace Visifire.Charts
 
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
-
-                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
                     
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
@@ -344,8 +343,8 @@ namespace Visifire.Charts
 
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
-                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
                                         
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);

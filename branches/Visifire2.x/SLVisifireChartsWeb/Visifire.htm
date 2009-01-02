@@ -27,9 +27,15 @@
             vChart.setDataUri('data.xml');
 
             vChart.preLoad = function(args) {
-                var chart = args[0];
+            var chart = args[0];
+                
+                var brush='<SolidColorBrush xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Color="#FF000000"/>'
+                            
+                             
                 chart.MouseLeftButtonUp = function(e) {
-                    alert(e.ControlId);
+                    //                    alert(e.ControlId);
+                    //                    e.SetPropertyFromJs("RenderAs", "Column");
+                chart.Series[0].DataPoints[0].SetPropertyFromJs("Color", brush); 
                 }
             };
             

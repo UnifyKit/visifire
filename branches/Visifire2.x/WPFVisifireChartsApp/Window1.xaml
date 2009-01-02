@@ -6,22 +6,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     >
-
-    <Grid x:Name="LayoutRoot" Width="654" Height="426" Background="White">
-
-        <vc:Chart Theme="Theme2" x:Name="MyChart" BorderBrush="Gray" Margin="0,0,0,12">
+   
+    <Grid x:Name="LayoutRoot" Width="500" Height="300" Background="White">
+        
+        <vc:Chart Theme="Theme2" x:Name="MyChart" Background="AliceBlue" BorderBrush="Gray" Margin="0,0,0,12">
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Bubble Chart"/>
+                <vc:Title Text="Visifire Bubble Chart" Style="{StaticResource TitleStyle}"/>
             </vc:Chart.Titles>
 
-            <vc:Chart.Legends>
-                <vc:Legend EntryMargin="5" LabelMargin="5"/>
-            </vc:Chart.Legends>
             <vc:Chart.AxesX>
                 <vc:Axis Interval="1"/>
             </vc:Chart.AxesX>
             <vc:Chart.Series>
-                <vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
+                <vc:DataSeries RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint YValue="6009" ZValue="300"/>
                         <vc:DataPoint YValue="2547" ZValue="200"/>
@@ -33,7 +30,6 @@
                         <vc:DataPoint YValue="3047" ZValue="230"/>
                         <vc:DataPoint YValue="6248" ZValue="330"/>
                         <vc:DataPoint YValue="3422" ZValue="422"/>
-
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

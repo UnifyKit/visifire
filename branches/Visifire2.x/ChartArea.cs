@@ -111,7 +111,7 @@ namespace Visifire.Charts
         /// <returns></returns>
         public Size GetBundingRectangle()
         {
-            Size boundingRec = new Size(Chart._chartAreaGrid.ActualWidth , Chart._chartAreaGrid.ActualHeight );
+            Size boundingRec = new Size(Chart._chartAreaGrid.ActualWidth, Chart._chartAreaGrid.ActualHeight);
 
             System.Diagnostics.Debug.WriteLine("chartAreaGrid Size:" + boundingRec.ToString());
 
@@ -167,6 +167,12 @@ namespace Visifire.Charts
                     }
                 }
             }
+
+            //if (Chart.Bevel)
+            //{
+            //    boundingRec.Height -= 2*Chart.BEVEL_DEPTH;
+            //    boundingRec.Width -= 2*Chart.BEVEL_DEPTH;
+            //}
 
             Chart._centerOuterGrid.Height = boundingRec.Height;
             Chart._centerOuterGrid.Width = boundingRec.Width;
@@ -517,6 +523,7 @@ namespace Visifire.Charts
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX.Width = NewSize.Width;
+                AxisX.ScrollBarElement.Width = AxisX.Width;
 
                 if (ChartScrollViewer != null)
                 {
@@ -537,7 +544,7 @@ namespace Visifire.Charts
                 AxisX.ScrollBarElement.Scroll -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
 
-                if (AxisX.Width >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0 )
+                if (AxisX.Width >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0)
                     AxisX.ScrollBarElement.Visibility = Visibility.Collapsed;
                 else
                 {
@@ -549,12 +556,14 @@ namespace Visifire.Charts
 
                 Size size = Graphics.CalculateVisualSize(Chart._bottomAxisContainer);
                 totalHeightReduced += size.Height;
+                                
 
                 System.Diagnostics.Debug.WriteLine("CurrentScrollScrollBarOffset" + AxisX.CurrentScrollScrollBarOffset.ToString());
                 System.Diagnostics.Debug.WriteLine("HorizontalOffset" + AxisX.ScrollViewerElement.HorizontalOffset.ToString());
                 
                 if((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
                     (AxisX.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(-AxisX.CurrentScrollScrollBarOffset, 0, 0, 0);
+
             }
             else
                 Chart._bottomAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -562,6 +571,7 @@ namespace Visifire.Charts
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX2.Width = NewSize.Width;
+                AxisX2.ScrollBarElement.Width = AxisX2.Width;
 
                 if (ChartScrollViewer != null)
                 {
@@ -642,6 +652,8 @@ namespace Visifire.Charts
             return totalHeightReduced;
         }
 
+       // private DrawAxisX
+
         Double DrawAxesY(Size NewSize, Boolean AddToVisual)
         {
             Double totalWidthReduced = 0;
@@ -655,6 +667,8 @@ namespace Visifire.Charts
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX.Height = NewSize.Height;
+                AxisX.ScrollBarElement.Height = AxisX.Height;
+
                 if (ChartScrollViewer != null)
                 {
                     AxisX.ScrollableSize = ScrollableLength;
@@ -698,6 +712,8 @@ namespace Visifire.Charts
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX2.Height = NewSize.Height;
+                AxisX2.ScrollBarElement.Height = AxisX2.Height;
+
                 if (ChartScrollViewer != null)
                 {
                     AxisX2.ScrollableSize = ScrollableLength;
@@ -770,9 +786,10 @@ namespace Visifire.Charts
 
         void RedrawChart(Size NewSize, Size PreviousSize)
         {
+            
             _redrawCount++;
 
-            if (Chart.AnimationEnabled)
+            if (Chart._internalAnimationEnabled)
                 foreach (DataSeries ds in Chart.InternalSeries)
                 {
                     if (ds.Storyboard != null) ds.Storyboard.Stop();
@@ -934,6 +951,7 @@ namespace Visifire.Charts
         private void SetBlankSeries()
         {
             DataSeries ds = new DataSeries();
+            ds.IsNotificationEnable = false;
             ds.RenderAs = RenderAs.Column;
             ds.LightingEnabled = true;
             ds.ShadowEnabled = false;
@@ -952,6 +970,7 @@ namespace Visifire.Charts
 
             ds.Tag = "BlankSeries";
             Chart.InternalSeries.Add(ds);
+            ds.IsNotificationEnable = true;
         }
 
         private void ShowLabels()
@@ -1303,7 +1322,7 @@ namespace Visifire.Charts
                     grid.ApplyStyleFromTheme(Chart, "AxisXGrid");
                     grid.IsNotificationEnable = true;
 
-                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart.AnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
+                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart._internalAnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
                     if (grid.Visual != null)
                     {
                         //AxesX.MajorGridsElement.Visual.SetValue(Canvas.ZIndexProperty, -4);
@@ -1321,7 +1340,7 @@ namespace Visifire.Charts
                     grid.ApplyStyleFromTheme(Chart, "AxisXGrid");
                     grid.IsNotificationEnable = true;
 
-                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart.AnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
+                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart._internalAnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
                     if (grid.Visual != null)
                     {
                         //AxesX2.MajorGridsElement.Visual.SetValue(Canvas.ZIndexProperty, -5);
@@ -1339,7 +1358,7 @@ namespace Visifire.Charts
                     grid.ApplyStyleFromTheme(Chart, "AxisYGrid");
                     grid.IsNotificationEnable = true;
 
-                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart.AnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
+                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart._internalAnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
                     if (grid.Visual != null)
                     {
                         //AxisY.MajorGridsElement.Visual.SetValue(Canvas.ZIndexProperty, -6);
@@ -1357,7 +1376,7 @@ namespace Visifire.Charts
                     grid.ApplyStyleFromTheme(Chart, "AxisYGrid");
                     grid.IsNotificationEnable = true;
 
-                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart.AnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
+                    grid.CreateVisualObject(ChartCanvas.Width, ChartCanvas.Height, Chart._internalAnimationEnabled && !_isAnimationFired, GRID_ANIMATION_DURATION);
                     if (grid.Visual != null)
                     {
                         //AxisY2.MajorGridsElement.Visual.SetValue(Canvas.ZIndexProperty, -7);
@@ -1632,59 +1651,59 @@ namespace Visifire.Charts
             switch (dataSeriesList4Rendering[0].RenderAs)
             {
                 case RenderAs.Column:
-                    renderedCanvas = ColumnChart.GetVisualObjectForColumnChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = ColumnChart.GetVisualObjectForColumnChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Bar:
-                    renderedCanvas = BarChart.GetVisualObjectForBarChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = BarChart.GetVisualObjectForBarChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Line:
-                    renderedCanvas = LineChart.GetVisualObjectForLineChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = LineChart.GetVisualObjectForLineChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Point:
-                    renderedCanvas = PointChart.GetVisualObjectForPointChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = PointChart.GetVisualObjectForPointChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Bubble:
-                    renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Area:
-                    renderedCanvas = AreaChart.GetVisualObjectForAreaChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = AreaChart.GetVisualObjectForAreaChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedColumn:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedColumn100:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedBar:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedBar100:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Pie:
-                    renderedCanvas = PieChart.GetVisualObjectForPieChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = PieChart.GetVisualObjectForPieChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.Doughnut:
-                    renderedCanvas = PieChart.GetVisualObjectForDoughnutChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = PieChart.GetVisualObjectForDoughnutChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedArea:
-                    renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
 
                 case RenderAs.StackedArea100:
-                    renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart.AnimationEnabled && !_isAnimationFired));
+                    renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(ChartCanvas.Width, ChartCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PlankDepth, (Chart._internalAnimationEnabled && !_isAnimationFired));
                     break;
             }
 
@@ -1697,7 +1716,7 @@ namespace Visifire.Charts
 
         internal void Animate()
         {
-            if (Chart.AnimationEnabled && !Chart.IsInDesignMode)
+            if (Chart._internalAnimationEnabled && !Chart.IsInDesignMode)
             {
                 try
                 {
@@ -2685,8 +2704,11 @@ namespace Visifire.Charts
             //if (AxisY != null) AxisY.PlotDetails = PlotDetails;
             //if (AxisY2 != null) AxisY2.PlotDetails = PlotDetails;
 
+            
+
             if (AxisX != null)
             {
+
                 AxisX.ApplyStyleFromTheme(Chart, "AxisX");
 
                 if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
@@ -2697,6 +2719,7 @@ namespace Visifire.Charts
                     AxisX.SetScrollBar("AxisX");
                     //AxisX.CreateVisualObject(Chart, "AxisX");
                     //Chart._bottomAxisPanel.Children.Add(AxisX.Visual);
+
                 }
                 else
                 {
@@ -2999,6 +3022,8 @@ namespace Visifire.Charts
 
         void PlottingCanvas_Loaded(object sender, RoutedEventArgs e)
         {
+            PlottingCanvas.Loaded -= new RoutedEventHandler(PlottingCanvas_Loaded);
+
             Chart.RENDER_LOCK = false;
 
             if (Chart._renderLapsedCounter >= 1)
@@ -3007,6 +3032,8 @@ namespace Visifire.Charts
             }
 
             Animate();
+
+            Chart._internalAnimationEnabled = false;
         }
 
         /// <summary>

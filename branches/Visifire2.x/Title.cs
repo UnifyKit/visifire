@@ -38,20 +38,20 @@ namespace Visifire.Charts
         public Title()
         {
 #if SL
-            Binding binding = new Binding("FontFamily");
-            binding.Source = this;
-            binding.Mode = BindingMode.TwoWay;
-            base.SetBinding(Control.FontFamilyProperty, binding);
+            //Binding binding = new Binding("FontFamily");
+            //binding.Source = this;
+            //binding.Mode = BindingMode.TwoWay;
+            //base.SetBinding(Control.FontFamilyProperty, binding);
 #else       
-            Binding binding = new Binding("InternalFontStyle");
-            binding.Source = this;
-            binding.Mode = BindingMode.TwoWay;
-            SetBinding(FontStyleProperty, binding);
+            //Binding binding = new Binding("InternalFontStyle");
+            //binding.Source = this;
+            //binding.Mode = BindingMode.TwoWay;
+            //SetBinding(FontStyleProperty, binding);
 
-            binding = new Binding("InternalFontWeight");
-            binding.Source = this;
-            binding.Mode = BindingMode.TwoWay;
-            SetBinding(FontWeightProperty, binding);
+            //binding = new Binding("InternalFontWeight");
+            //binding.Source = this;
+            //binding.Mode = BindingMode.TwoWay;
+            //SetBinding(FontWeightProperty, binding);
 #endif
 
             SetDefaults();
@@ -239,8 +239,8 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            // title.FirePropertyChanged("FontSize");
-            title.UpdateVisual("FontColor", e.NewValue);
+            title.FirePropertyChanged("FontSize");
+            //title.UpdateVisual("FontColor", e.NewValue);
         }
 #endif
 
@@ -279,7 +279,7 @@ namespace Visifire.Charts
         }
 
 #if SL
-        [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontStyleConverter))]
+
         public new FontStyle FontStyle
         {
             get
@@ -288,37 +288,30 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
-                    //FirePropertyChanged("FontStyle"); 
                     UpdateVisual("FontStyle", value);
                 }
-#else
-                SetValue(FontStyleProperty, value);
-#endif
             }
         }
-#endif
-
-#if WPF
+#else
 
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
-        internal FontStyle InternalFontStyle
+        public new FontStyle FontStyle
         {
             get
-            {   
-                return (FontStyle)(GetValue(InternalFontStyleProperty));
+            {
+                return (FontStyle)(GetValue(FontStyleProperty));
             }
             set
             {
-                SetValue(InternalFontStyleProperty, value);
+                SetValue(FontStyleProperty, value);
             }
         }
 
-        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
-            ("InternalFontStyle",
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
+            ("FontStyle",
             typeof(FontStyle),
             typeof(Title),
             new PropertyMetadata(OnFontStylePropertyChanged));
@@ -326,13 +319,65 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            //title.FirePropertyChanged("FontStyle");
-            title.UpdateVisual("FontStyle", e.NewValue);
+            title.UpdateVisual("FontStyle",  e.NewValue);
         }
+
 #endif
 
-#if SL
+        //#if SL
+//        [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontStyleConverter))]
+//        public new FontStyle FontStyle
+//        {
+//            get
+//            {
+//                return (FontStyle)(GetValue(FontStyleProperty));
+//            }
+//            set
+//            {
+//#if SL
+//                if (FontStyle != value)
+//                {
+//                    SetValue(FontStyleProperty, value);
+//                    //FirePropertyChanged("FontStyle"); 
+//                    UpdateVisual("FontStyle", value);
+//                }
+//#else
+//                SetValue(FontStyleProperty, value);
+//#endif
+//            }
+//        }
+//#endif
 
+//#if WPF
+
+//        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
+//        internal FontStyle InternalFontStyle
+//        {
+//            get
+//            {   
+//                return (FontStyle)(GetValue(InternalFontStyleProperty));
+//            }
+//            set
+//            {
+//                SetValue(InternalFontStyleProperty, value);
+//            }
+//        }
+
+//        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
+//            ("InternalFontStyle",
+//            typeof(FontStyle),
+//            typeof(Title),
+//            new PropertyMetadata(OnFontStylePropertyChanged));
+
+//        private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+//        {
+//            Title title = d as Title;
+//            //title.FirePropertyChanged("FontStyle");
+//            title.UpdateVisual("FontStyle", e.NewValue);
+//        }
+//#endif
+
+#if SL
         public new FontWeight FontWeight
         {
             get
@@ -341,35 +386,30 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
-                    // FirePropertyChanged("FontWeight");
                     UpdateVisual("FontWeight", value);
                 }
-#else
-                SetValue(FontWeightProperty, value);
-#endif
             }
         }
 
 #else
         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
-        internal FontWeight InternalFontWeight
-        {   
+        public new FontWeight FontWeight
+        {
             get
             {
-                return (FontWeight)(GetValue(InternalFontWeightProperty));
+                return (FontWeight)(GetValue(FontWeightProperty));
             }
             set
             {
-                SetValue(InternalFontWeightProperty, value);
+                SetValue(FontWeightProperty, value);
             }
         }
 
-        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
-            ("InternalFontWeight",
+        private new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
+            ("FontWeight",
             typeof(FontWeight),
             typeof(Title),
             new PropertyMetadata(OnFontWeightPropertyChanged));
@@ -377,10 +417,60 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            //title.FirePropertyChanged("FontWeight");
             title.UpdateVisual("FontWeight", e.NewValue);
         }
 #endif
+
+        //#if SL
+
+//        public new FontWeight FontWeight
+//        {
+//            get
+//            {
+//                return (FontWeight)(GetValue(FontWeightProperty));
+//            }
+//            set
+//            {
+//#if SL
+//                if (FontWeight != value)
+//                {
+//                    SetValue(FontWeightProperty, value);
+//                    // FirePropertyChanged("FontWeight");
+//                    UpdateVisual("FontWeight", value);
+//                }
+//#else
+//                SetValue(FontWeightProperty, value);
+//#endif
+//            }
+//        }
+
+//#else
+//        [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+//        internal FontWeight InternalFontWeight
+//        {   
+//            get
+//            {
+//                return (FontWeight)(GetValue(InternalFontWeightProperty));
+//            }
+//            set
+//            {
+//                SetValue(InternalFontWeightProperty, value);
+//            }
+//        }
+
+//        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
+//            ("InternalFontWeight",
+//            typeof(FontWeight),
+//            typeof(Title),
+//            new PropertyMetadata(OnFontWeightPropertyChanged));
+
+//        private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+//        {
+//            Title title = d as Title;
+//            //title.FirePropertyChanged("FontWeight");
+//            title.UpdateVisual("FontWeight", e.NewValue);
+//        }
+//#endif
         /// <summary>
         /// Property Text
         /// </summary>

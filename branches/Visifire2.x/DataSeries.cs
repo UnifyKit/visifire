@@ -143,6 +143,9 @@ namespace Visifire.Charts
             DataPoint dp = this.DataPoints[0];
             Double diff = Math.Abs(dp.XValue - xValue);
 
+            //List<DataPoint> DataPoint(Chart as Chart).InternalSeries[this.Index];
+
+
             for (Int32 i = 1; i < this.DataPoints.Count; i++)
             {
                 if (Math.Abs(this.DataPoints[i].XValue - xValue) < diff)

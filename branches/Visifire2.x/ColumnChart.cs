@@ -308,9 +308,8 @@ namespace Visifire.Charts
 
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
-
-                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
 
                     if (dataPoint.YValue > (Double)plotGroup.AxisY.InternalAxisMaximum)
                         System.Diagnostics.Debug.WriteLine("Max Value greater then axis max");
@@ -423,8 +422,8 @@ namespace Visifire.Charts
 
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
-                    //Int32 drawingIndex = plotGroup.DataSeriesList.IndexOf(dataPoint.Parent);
 
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);

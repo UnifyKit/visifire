@@ -947,7 +947,10 @@ namespace Visifire.Commons
                     {
                         if (chart.Background == null)
                         {
-                            dataPoint.LabelFontColor = new SolidColorBrush(Colors.Black);
+                            //dataPoint.IsNotificationEnable = false;
+                            //dataPoint.LabelFontColor = new SolidColorBrush(Colors.Black);
+                            //dataPoint.IsNotificationEnable = true;
+                            returnBrush = new SolidColorBrush(Colors.Black);
                         }
                         else
                         {   

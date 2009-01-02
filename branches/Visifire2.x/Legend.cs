@@ -620,37 +620,30 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
                     FirePropertyChanged("FontStyle");
                 }
-#else
-                SetValue(FontStyleProperty, value);
-#endif
-
             }
         }
-#endif
-
-#if WPF
+#else
 
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
-        internal FontStyle InternalFontStyle
+        public new FontStyle FontStyle
         {
             get
             {
-                return (FontStyle)(GetValue(InternalFontStyleProperty));
+                return (FontStyle)(GetValue(FontStyleProperty));
             }
             set
             {
-                SetValue(InternalFontStyleProperty, value);
+                SetValue(FontStyleProperty, value);
             }
         }
 
-        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
-            ("InternalFontStyle",
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
+            ("FontStyle",
             typeof(FontStyle),
             typeof(Legend),
             new PropertyMetadata(OnFontStylePropertyChanged));
@@ -660,14 +653,13 @@ namespace Visifire.Charts
             Legend legend = d as Legend;
             legend.FirePropertyChanged("FontStyle");
         }
+
 #endif
 
 
 
 
 #if SL
-
-       
         public new FontWeight FontWeight
         {
             get
@@ -676,34 +668,30 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
                     FirePropertyChanged("FontWeight");
                 }
-#else
-                SetValue(FontWeightProperty, value);
-#endif
             }
         }
 
 #else
         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
-        internal FontWeight InternalFontWeight
-        {   
+        public new FontWeight FontWeight
+        {
             get
             {
-                return (FontWeight)(GetValue(InternalFontWeightProperty));
+                return (FontWeight)(GetValue(FontWeightProperty));
             }
             set
             {
-                SetValue(InternalFontWeightProperty, value);
+                SetValue(FontWeightProperty, value);
             }
         }
 
-        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
-            ("InternalFontWeight",
+        private new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
+            ("FontWeight",
             typeof(FontWeight),
             typeof(Legend),
             new PropertyMetadata(OnFontWeightPropertyChanged));

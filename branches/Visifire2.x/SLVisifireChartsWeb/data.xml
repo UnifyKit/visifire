@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="350" Height="400" Theme="Theme1" View3D="True" AnimationEnabled="False" ScrollingEnabled="true" BorderBrush="Gray">
+Width="500" Height="300" Theme="Theme1" View3D="True" AnimationEnabled="False" ScrollingEnabled="True" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Top 10 Emerging Mobile Market Carriers" HorizontalAlignment="Left" Padding="2"/>
@@ -18,44 +18,14 @@ Width="350" Height="400" Theme="Theme1" View3D="True" AnimationEnabled="False" S
   </vc:Chart.AxesY>
 
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Bar" LabelEnabled="True" >
+    <vc:DataSeries RenderAs="Column" LabelEnabled="True" >
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
         <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
         <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
         <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
         <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
-        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
-        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
-        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
-        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
-        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
-        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
-        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
-        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
-        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
-        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
-        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
-        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
-        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
-        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
-        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
-        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
-        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
-        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
-        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
-        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
-        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
-        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
-        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
-        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
-        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
-        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
-        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
-        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
-        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
-        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
-        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="40.12" />
         <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
         <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
         <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />

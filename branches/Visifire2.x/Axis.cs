@@ -209,6 +209,7 @@ namespace Visifire.Charts
                     if (AxisType == AxisTypes.Primary)
                     {
                         ScrollBarElement = Chart._bottomAxisScrollBar;
+                        
                     }
                     else
                     {
@@ -385,6 +386,7 @@ namespace Visifire.Charts
             AxisLabels.Padding = this.Padding;
 
             AxisLabels.IsNotificationEnable = true;
+            
 
             if (Ticks.Count == 0)
                 Ticks.Add(new Ticks());
@@ -1577,10 +1579,13 @@ namespace Visifire.Charts
 
 UP:
 
-            AxisTitleElement.Margin = new Thickness(4);
+            AxisTitleElement.Margin = new Thickness(INNER_MARGIN, 0, INNER_MARGIN, 0);
+            //AxisTitleElement.Background = new SolidColorBrush(Colors.LightGray);
             AxisTitleElement.CreateVisualObject();
 
-            if (AxisTitleElement.TextBlockDesiredSize.Width > Height && Height != 0)
+            Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
+
+            if (size.Height > Height && Height != 0)
             {
                 if (AxisTitleElement.FontSize == 4)
                     goto DOWN;
@@ -1599,6 +1604,7 @@ DOWN:
             
             if (AxisLabels.Visual != null)
             {
+                //AxisLabels.Visual.Background = new SolidColorBrush(Colors.LightGray);
                 if (Height == ScrollableSize)
                 {
                     if (AxisLabels.Visual != null)
@@ -1748,12 +1754,15 @@ DOWN:
                 Visual.Children.Add(ScrollViewerElement);
             }
 
+            AxisTitleElement.Margin = new Thickness(INNER_MARGIN, 0, INNER_MARGIN, 0);
+
         UP2:
 
-            AxisTitleElement.Margin = new Thickness(4);
             AxisTitleElement.CreateVisualObject();
 
-            if (AxisTitleElement.TextBlockDesiredSize.Width > Height && Height != 0)
+            Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
+
+            if (size.Height > Height && Height != 0)
             {
                 if (AxisTitleElement.FontSize == 4)
                     goto DOWN2;
@@ -1787,7 +1796,7 @@ DOWN:
 
             InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
             {
-                ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight) ;
+                ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight);
             };
 
             ScrollViewerElement.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -1859,13 +1868,15 @@ DOWN:
                 Visual.Children.Add(ScrollViewerElement);
             }
 
-        UPX1:
+            AxisTitleElement.Margin = new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN);
 
-            AxisTitleElement.Margin = new Thickness(4);
+        UPX1:
+            
             AxisTitleElement.CreateVisualObject();
             //AxisTitleElement.Visual.Background = new SolidColorBrush(Colors.Purple);
+            Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
-            if (AxisTitleElement.TextBlockDesiredSize.Width > Width && Width != 0)
+            if (size.Width > Width && Width != 0)
             {
                 if (AxisTitleElement.FontSize == 4)
                     goto DOWNX1;
@@ -1939,9 +1950,26 @@ DOWN:
 
             //MajorTicksElement.CreateVisualObject();
 
-            AxisTitleElement.Margin = new Thickness(4);
+            AxisTitleElement.Margin = new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN);
+
+        UPX1:
+
             AxisTitleElement.CreateVisualObject();
-            
+            //AxisTitleElement.Visual.Background = new SolidColorBrush(Colors.Purple);
+            Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
+
+            if (size.Width > Width && Width != 0)
+            {
+                if (AxisTitleElement.FontSize == 4)
+                    goto DOWNX1;
+                AxisTitleElement.IsNotificationEnable = false;
+                AxisTitleElement.FontSize -= 1;
+                AxisTitleElement.IsNotificationEnable = true;
+                goto UPX1;
+            }
+
+        DOWNX1:
+
             // Place the visual elements in the axis stack panel
             if (!String.IsNullOrEmpty(Title))
             {
@@ -2212,7 +2240,7 @@ DOWN:
         private List<String> _scaleUnits;           // To store the units extracted from the scaling sets
         private List<Double> _scaleValues;          // To store the values extracted from the scaling sets
         private Double _axisIntervalOverride;       // To check if user has set the axis interval or not 
-
+        private const Double INNER_MARGIN = 4;
         #endregion
     }
 }

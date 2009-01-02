@@ -1234,7 +1234,7 @@ namespace SLVisifireChartsTest
         public void TemplatePartsAreDefined()
         {
             IDictionary<string, Type> templateParts = DefaultControlToTest.GetType().GetTemplateParts();
-            Assert.AreEqual(60, templateParts.Count);
+            Assert.AreEqual(57, templateParts.Count);
             Assert.AreSame(typeof(Grid), templateParts["RootElement"]);
             Assert.AreSame(typeof(Grid), templateParts["ShadowGrid"]);
             Assert.AreSame(typeof(Border), templateParts["ChartBorder"]);

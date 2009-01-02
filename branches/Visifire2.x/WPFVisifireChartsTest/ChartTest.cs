@@ -1005,6 +1005,7 @@ namespace WPFVisifireChartsTest
         }
 
         #endregion
+
         #region CheckControlTemplate
         /// <summary>
         /// Verifies the Control's TemplateParts.
@@ -1069,7 +1070,7 @@ namespace WPFVisifireChartsTest
             Assert.AreSame(typeof(StackPanel), templateParts["CenterDockInsidePlotAreaPanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["CenterDockOutsidePlotAreaPanel"]);
             Assert.AreSame(typeof(Canvas), templateParts["ToolTipCanvas"]);
-            Assert.AreSame(typeof(Border), templateParts["ToolTip"]);
+            //Assert.AreSame(typeof(Border), templateParts["ToolTip"]);
         }
         #endregion CheckControlTemplate
 
