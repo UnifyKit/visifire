@@ -1165,6 +1165,39 @@ namespace Visifire.Charts
             return (from entry in lists select entry.Parent).Distinct().ToList();
         }
 
+        /// <summary>
+        /// Get the list of Series belonging to a DataPoint value
+        /// </summary>
+        /// <param name="dataPoint"></param>
+        /// <returns></returns>
+        internal List<DataSeries> GetSeriesFromDataPoint(DataPoint dataPoint)
+        {
+            List<DataSeries> lists = new List<DataSeries>();
+
+            Boolean IsDataSeriesExist = false;
+            foreach (DataSeries ds in Chart.InternalSeries)
+            {
+                if (ds.RenderAs == dataPoint.Parent.RenderAs)
+                {
+                    foreach (DataPoint dp in ds.DataPoints)
+                    {
+                        if (dp.XValue == dataPoint.XValue)
+                        {
+                            IsDataSeriesExist = true;
+                            break;
+                        }
+                        else
+                            IsDataSeriesExist = false;
+                    }
+
+                    if (IsDataSeriesExist)
+                        lists.Add(ds);
+                }
+            }
+
+            return lists;
+        }
+
         internal Int32 GetMaxDivision(Dictionary<Double, SortedDataPoints> sortedDataPointList)
         {
             List<Double> values = sortedDataPointList.Keys.ToList();

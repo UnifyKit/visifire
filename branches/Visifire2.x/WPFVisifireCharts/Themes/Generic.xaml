@@ -126,7 +126,7 @@
                                             <Canvas x:Name="PlotAreaShadowCanvas" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
                                             <!-- Margin="0,0,4,4" -->
                                             <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,4,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollViewer BorderThickness="0" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
+                                                <ScrollViewer BorderThickness="0"  IsTabStop="False"  x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"  Padding="0">
                                                     <Canvas x:Name="PlotCanvas">
 
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>

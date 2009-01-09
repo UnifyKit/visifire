@@ -2325,7 +2325,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (isLoaded)
             {
-                Assert.IsNull((Boolean)dataSeries.LabelLineEnabled);
+                Assert.IsNull((Nullable<Boolean>)dataSeries.LabelLineEnabled);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

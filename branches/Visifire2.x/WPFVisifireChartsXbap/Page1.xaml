@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Page1" Background="#FFD6D6D6" 
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
-    xmlns:Visifire_Commons="clr-namespace:Visifire.Commons;assembly=WPFVisifire.Charts">
+    >
     <Page.Resources>
         <Style x:Key="ChartStyle" TargetType="{x:Type vc:Chart}">
             <Setter Property="Bevel" Value="True"/>

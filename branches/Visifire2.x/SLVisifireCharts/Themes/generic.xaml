@@ -17,14 +17,14 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             BorderBrush="{TemplateBinding BorderBrush}">
-
+                            
                             <Grid x:Name="ChartAreaGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-
+                                
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition/>
@@ -116,7 +116,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
 
                                         <Grid x:Name="BottomAxisGrid" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="BottomAxisContainer" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollBar x:Name="BottomAxisScrollBar" Height="0" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
+                                                <ScrollBar x:Name="BottomAxisScrollBar" Height="10" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
                                                 <StackPanel x:Name="BottomAxisPanel" ></StackPanel>
                                             </StackPanel>
                                         </Grid>
@@ -126,9 +126,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                                             <Canvas x:Name="PlotAreaShadowCanvas" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
                                             <!-- Margin="0,0,4,4" -->
                                             <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,4,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollViewer BorderThickness="0" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
+                                                <ScrollViewer BorderThickness="0" IsTabStop="False" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
                                                     <Canvas x:Name="PlotCanvas">
-
+                                                        
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
 
                                                         <!--<Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->

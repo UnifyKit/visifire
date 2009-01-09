@@ -269,12 +269,12 @@ namespace Visifire.Charts
             
             // ScrollBarElement = new ScrollBar();
 
-            ScrollViewerElement = new ScrollViewer() { Padding = new Thickness(0), BorderThickness = new Thickness(0) };
+            ScrollViewerElement = new ScrollViewer() { IsTabStop = false, Padding = new Thickness(0), BorderThickness = new Thickness(0) };
 
             AxisTitleElement = new Title();
             ApplyTitleProperties();
 
-            //Set scroll viewer parameters
+            // Set scroll viewer parameters
             ScrollViewerElement.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
             ScrollViewerElement.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 
@@ -469,6 +469,23 @@ namespace Visifire.Charts
             {
                 Visual.Visibility = Visibility.Collapsed;
             }
+            else
+            {
+#if WPF
+
+                if (ScrollViewerElement != null)
+                {
+                    ScrollViewerElement.ScrollChanged += delegate(object sender, ScrollChangedEventArgs e)
+                    {
+                        if (AxisOrientation == Orientation.Horizontal)
+                            ScrollViewerElement.ScrollToHorizontalOffset(CurrentScrollScrollBarOffset);
+                        else if (AxisOrientation == Orientation.Vertical)
+                            ScrollViewerElement.ScrollToVerticalOffset(CurrentScrollScrollBarOffset);
+                    };
+                }
+#endif
+            }
+
 
            // Visual.Background = new SolidColorBrush(Colors.Green);
         }
@@ -522,7 +539,47 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+        
+        /// <summary>
+        /// ScrollBar offset value 
+        /// ScrollBarOffset value can be accessed after the chart is rendered.
+        /// </summary>
+        public Double ScrollBarOffset
+        {   
+            get
+            {
+                return (Double)GetValue(ScrollBarOffsetProperty);
+            }
+            set
+            {
+                SetValue(ScrollBarOffsetProperty, value);
+            }
+        }
 
+        public static readonly DependencyProperty ScrollBarOffsetProperty = DependencyProperty.Register
+           ("ScrollBarOffset",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(OnScrollBarOffsetChanged));
+
+        private static void OnScrollBarOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.SetScrollBarValueFromOffset((Double)e.NewValue);
+        }
+
+        internal void SetScrollBarValueFromOffset(Double offset)
+        {
+            if (ScrollBarElement != null)
+            {   
+                Double value = (ScrollBarElement.Maximum - ScrollBarElement.Minimum) * offset + ScrollBarElement.Minimum;
+                ScrollBarElement.SetValue(ScrollBar.ValueProperty, value);
+
+                if (Scroll != null)
+                    Scroll(ScrollBarElement, new ScrollEventArgs(ScrollEventType.First, value));
+            }
+        }
+        
         /// <summary>
         /// Href target property
         /// </summary>
@@ -2231,6 +2288,8 @@ DOWN:
         #endregion
 
         #region Internal Events
+
+        internal event ScrollEventHandler Scroll;
 
         #endregion
 

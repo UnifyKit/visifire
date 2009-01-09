@@ -917,7 +917,7 @@ namespace Visifire.Commons
         public static Brush GetDefaultFontColor(Double intensity)
         {
             Brush brush = null;
-            if (intensity < 0.5)
+            if (intensity < 0.6)
             {
                 brush = ParseSolidColor("#EFEFEF");
             }

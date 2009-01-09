@@ -97,12 +97,27 @@ namespace Visifire.Charts
 
             // Check if drawing axis is necessary or not
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-            {
+            {   
                 // Add the required axis to the chart
                 this.AddAxis(chart);
             }
 
             RedrawChart(new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height), new Size(0, 0));
+
+#if WPF
+            Chart._plotAreaScrollViewer.ScrollChanged += delegate(object sender, ScrollChangedEventArgs e)
+            {
+                if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                {
+                    Chart._plotAreaScrollViewer.ScrollToVerticalOffset(AxisX.CurrentScrollScrollBarOffset);
+                }
+                else
+                    Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(AxisX.CurrentScrollScrollBarOffset);
+
+            };
+#endif
+
+
         }
 
         /// <summary>
@@ -508,6 +523,13 @@ namespace Visifire.Charts
                 axis.ScrollBarElement.SmallChange = 20;
                 axis.ScrollBarElement.LargeChange = 80;
             }
+
+            if (IsFirstTimeRender)
+            {
+                axis.Scroll -= AxesXScrollBarElement_Scroll;
+                axis.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                axis.SetScrollBarValueFromOffset(axis.ScrollBarOffset);
+            }
         }
 
         Double DrawAxesX(Size NewSize, Boolean AddToVisual)
@@ -536,10 +558,10 @@ namespace Visifire.Charts
                     AxisX.ScrollBarElement.ViewportSize = ChartScrollViewer.ActualWidth;
 #endif
                 }
-                
-                SetScrollBarValues(AxisX);
-                
+
                 AxisX.CreateVisualObject(Chart, "AxisX");
+
+                SetScrollBarValues(AxisX);
 
                 AxisX.ScrollBarElement.Scroll -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
@@ -585,10 +607,8 @@ namespace Visifire.Charts
 #endif              
                 }
 
-                SetScrollBarValues(AxisX2);
-
                 AxisX2.CreateVisualObject(Chart, "AxisX");
-
+                SetScrollBarValues(AxisX2);
 
                 AxisX2.ScrollBarElement.Scroll -= AxesX2ScrollBarElement_Scroll;
                 AxisX2.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesX2ScrollBarElement_Scroll);
@@ -682,9 +702,8 @@ namespace Visifire.Charts
 #endif
                 }
 
-                SetScrollBarValues(AxisX);
-
                 AxisX.CreateVisualObject(Chart, "AxisX");
+                SetScrollBarValues(AxisX);
 
                 AxisX.ScrollBarElement.Height = NewSize.Height;
                 AxisX.ScrollViewerElement.Height = NewSize.Height;
@@ -726,9 +745,8 @@ namespace Visifire.Charts
 #endif
                 }
 
-                SetScrollBarValues(AxisX2);
-
                 AxisX2.CreateVisualObject(Chart, "AxisX");
+                SetScrollBarValues(AxisX2);
 
                 AxisX2.ScrollBarElement.Scroll -= AxesX2ScrollBarElement_Scroll;
                 AxisX2.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesX2ScrollBarElement_Scroll);
@@ -786,7 +804,6 @@ namespace Visifire.Charts
 
         void RedrawChart(Size NewSize, Size PreviousSize)
         {
-            
             _redrawCount++;
 
             if (Chart._internalAnimationEnabled)
@@ -810,6 +827,7 @@ namespace Visifire.Charts
                 NewSize.Height -= totalHeightReduced;
                 System.Diagnostics.Debug.WriteLine("NewSize=" + NewSize.ToString());
 
+                //UpdateLayoutSettings(NewSize);
                 Double totalWidthReduced = DrawAxesY(NewSize, true);
                 
                 System.Diagnostics.Debug.WriteLine("totalWidthReduced=" + totalWidthReduced.ToString());
@@ -944,7 +962,7 @@ namespace Visifire.Charts
             //Chart._plotAreaScrollViewer.Width = NewSize.Width;
             Chart._plotAreaScrollViewer.UpdateLayout();
             ChartScrollViewer = Chart._plotAreaScrollViewer;
-             ApplyPlotAreaShadow();
+            ApplyPlotAreaShadow();
 
         }
 
@@ -1576,6 +1594,7 @@ namespace Visifire.Charts
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
 
             }
+
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 Double offset = e.NewValue;
@@ -1791,7 +1810,7 @@ namespace Visifire.Charts
 
                                     foreach (DataPoint dataPoint in series.DataPoints)
                                     {
-                                        if (dataPoint.Exploded)
+                                        if (dataPoint.Exploded && dataPoint.YValue != 0)
                                             dataPoint.InteractiveAnimation();
                                     }
                                 };
@@ -1886,12 +1905,14 @@ namespace Visifire.Charts
                     throw new Exception("ColorSet named " + chart.ColorSet + " is not found.");
                 }
 
+                Brush seriesColor = Series[0].GetValue(DataSeries.ColorProperty) as Brush;
+
                 if (Series[0].RenderAs == RenderAs.Area || Series[0].RenderAs == RenderAs.Line || Series[0].RenderAs == RenderAs.StackedArea || Series[0].RenderAs == RenderAs.StackedArea100)
                 {
-                    Brush seriesColor = Series[0].GetValue(DataSeries.ColorProperty) as Brush;
-
                     if (seriesColor == null)
                         Series[0].InternalColor = colorSet.GetNewColorFromColorSet();
+                    else
+                        Series[0].InternalColor = seriesColor;
 
                     colorSet.ReSet();
 
@@ -1899,7 +1920,15 @@ namespace Visifire.Charts
                     {
                         dp.IsNotificationEnable = false;
 
-                        dp.InternalColor = colorSet.GetNewColorFromColorSet();
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                        if (dPColor == null)
+                            if (seriesColor == null)
+                                dp.InternalColor = colorSet.GetNewColorFromColorSet();
+                            else
+                                dp.InternalColor = seriesColor;
+                        else
+                            dp.InternalColor = dPColor;
 
                         dp.IsNotificationEnable = true;
                     }
@@ -1914,8 +1943,13 @@ namespace Visifire.Charts
 
                         if (dPColor == null)
                         {
-                            dp.InternalColor = colorSet.GetNewColorFromColorSet();
+                            if (seriesColor == null)
+                                dp.InternalColor = colorSet.GetNewColorFromColorSet();
+                            else
+                                dp.InternalColor = seriesColor;
                         }
+                        else
+                            dp.InternalColor = dPColor;
 
                         dp.IsNotificationEnable = true;
                     }
@@ -1924,7 +1958,7 @@ namespace Visifire.Charts
             else if (Series.Count > 1)
             {
                 ColorSet colorSet4MultiSeries = null;
-                Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false;   // Unique color for each DataPoint
+                Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false; // Unique color for each DataPoint
                 Brush seriesColor = null;
 
                 if (colorSet != null)
@@ -1939,7 +1973,7 @@ namespace Visifire.Charts
                     {
                         colorSet4MultiSeries = chart.InternalColorSets.GetColorSetByName(ds.ColorSet);
 
-                        if (colorSet4MultiSeries != null)
+                        if (colorSet4MultiSeries == null)
                             throw new Exception("ColorSet named " + ds.ColorSet + " is not found.");
 
                         FLAG_UNIQUE_COLOR_4_EACH_DP = true;
@@ -1949,21 +1983,36 @@ namespace Visifire.Charts
                         throw new Exception("ColorSet named " + chart.ColorSet + " is not found.");
                     }
 
-                    if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
-                        seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-
                     if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
                     {
+                        seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+
                         Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
+
                         if (DataSeriesColor == null)
                         {
                             ds.InternalColor = seriesColor;
                         }
                         else
                             ds.InternalColor = DataSeriesColor;
+
+                        foreach (DataPoint dp in ds.DataPoints)
+                        {
+                            dp.IsNotificationEnable = false;
+
+                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                            if (dPColor != null)
+                                dp.InternalColor = dPColor;
+
+                            dp.IsNotificationEnable = true;
+                        }
                     }
                     else
                     {
+                        if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
+                            seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+                        
                         foreach (DataPoint dp in ds.DataPoints)
                         {
                             dp.IsNotificationEnable = false;
@@ -1977,11 +2026,19 @@ namespace Visifire.Charts
                                 }
                                 else
                                 {
-                                    ds.InternalColor = seriesColor;
+                                    Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
+                                    if (DataSeriesColor == null)
+                                        ds.InternalColor = seriesColor;
+                                    else
+                                        ds.InternalColor = DataSeriesColor;
+
                                     dp.IsNotificationEnable = true;
+
                                     break;
                                 }
                             }
+                            else
+                                dp.InternalColor = dPColor;
 
                             dp.IsNotificationEnable = true;
                         }
@@ -2004,7 +2061,7 @@ namespace Visifire.Charts
 
                 String legendText = (String.IsNullOrEmpty(dataPoint.LegendText) ? dataPoint.Name : dataPoint.LegendText);
 
-                Brush markerColor = dataPoint.MarkerBorderColor;
+                Brush markerColor = dataPoint.InternalColor;
 
                 Boolean markerBevel;
                 if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point 
@@ -2527,6 +2584,7 @@ namespace Visifire.Charts
             get;
             set;
         }
+
         #endregion
 
         #region Private Delegates
@@ -3034,6 +3092,8 @@ namespace Visifire.Charts
             Animate();
 
             Chart._internalAnimationEnabled = false;
+
+            IsFirstTimeRender = false;
         }
 
         /// <summary>
@@ -3042,7 +3102,7 @@ namespace Visifire.Charts
         /// <param name="title">Title to add</param>
         /// <param name="panel">Where to add</param>
         private void AddTitle(Chart chart, Title title, Panel panel, Double width, Double height)
-        {
+        {   
             // Set parent
             title.Chart = chart;
 
@@ -3143,6 +3203,7 @@ namespace Visifire.Charts
         internal Int32 _redrawCount = 0;                        // No of redrawing chart for a single render call 
         internal Int32 _renderCount = 0;                        // Used for Testing
         Boolean _isAnimationFired = false;                      // Is animation is fired.
+        internal bool IsFirstTimeRender = true;
 
         #endregion
     }

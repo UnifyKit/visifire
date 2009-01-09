@@ -210,6 +210,7 @@ namespace Visifire.Charts
             while (angle < 0) angle += Math.PI * 2;
             return angle;
         }
+
         private static List<ElementPositionData> _elementPositionData;
 
         private static Grid CreateLabel(DataPoint dataPoint)
@@ -240,6 +241,8 @@ namespace Visifire.Charts
             public Double yPosition;
             public Double xPosition;
             public Double MeanAngle;
+            public Double Height;
+            public Double Width;
 
             public static Int32 CompareYPosition(PostionData a, PostionData b)
             {
@@ -247,7 +250,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static void PositionLabels(Double totalSum, List<DataPoint> dataPoints, Dictionary<DataPoint, Grid> labels, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
+        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Dictionary<DataPoint, Grid> labels, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
         {
             Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
             Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
@@ -260,11 +263,13 @@ namespace Visifire.Charts
             Dictionary<Int32, PostionData> leftPositionData = new Dictionary<int, PostionData>();
             Dictionary<Int32, PostionData> tempPositionData = new Dictionary<int, PostionData>();
 
+            Double outerRadius = Math.Min(pieSize.Width, pieSize.Height) / (is3D ? 1 : 2);
             Int32 index = 0;
             Int32 rightIndex = 0;
             Int32 leftIndex = 0;
 
-            Double startAngle = FixAngle(dataPoints[0].Parent.StartAngle);
+            // dataPoints[0].Parent.InternalStartAngle;
+            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle);
             Double stopAngle = 0;
             Double meanAngle = 0;
 
@@ -277,17 +282,19 @@ namespace Visifire.Charts
             Double gapLeft = 0;
             Double gapRight = 0;
 
-            if(!is3D)
-            foreach (DataPoint dataPoint in dataPoints)
-                if (dataPoint.LabelStyle == LabelStyles.Inside)
-                {
-                    hInnerEllipseRadius -= hInnerEllipseRadius * 0.2; // ExploredRatio
-                    break;
-                }
+            //if (!is3D)
+            //    foreach (DataPoint dataPoint in dataPoints)
+            //        if (dataPoint.LabelStyle == LabelStyles.Inside)
+            //        {
+            //            hInnerEllipseRadius -= hInnerEllipseRadius * 0.2; // ExploredRatio
+            //            break;
+            //        }
             
             foreach (DataPoint dataPoint in dataPoints)
             {
-                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoint.YValue) / totalSum;
+                if (dataPoint.YValue == 0) continue;
+
+                stopAngle = startAngle + Math.PI * 2 * (Math.Abs(dataPoint.YValue) / totalSum);
                 meanAngle = (startAngle + stopAngle) / 2;
 
                 centerX = visualCanvasSize.Width / 2;
@@ -302,10 +309,37 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle) - labels[dataPoint].DesiredSize.Width  / 2;
-                        yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle) - labels[dataPoint].DesiredSize.Height / 2;
+                        if (!is3D)
+                        {
+                            //if (dataPoint.Parent.RenderAs == RenderAs.Doughnut)
+                            //{
+                                xPos = centerX + 1.7 * (outerRadius / 3) * Math.Cos(meanAngle);
+                                yPos = centerY + 1.7 * (outerRadius / 3) * Math.Sin(meanAngle);
+                            //}
+                            //else
+                            //{
+                            //    xPos = centerX + 1.7 * (outerRadius / 3) * Math.Cos(meanAngle);
+                            //    yPos = centerY + 1.7 * (outerRadius / 3) * Math.Sin(meanAngle);
+                            //}
+                           
+                        }
+                        else
+                        {
+                            xPos = centerX + hInnerEllipseRadius  * Math.Cos(meanAngle);
+                            yPos = centerY + vInnerEllipseRadius *  Math.Sin(meanAngle);
+                        }
+
+                        //Ellipse ellipse = new Ellipse() { Height = 6, Width = 6, Fill = new SolidColorBrush(Colors.Yellow) };
+
+                        //ellipse.SetValue(Canvas.TopProperty, yPos);
+                        //ellipse.SetValue(Canvas.LeftProperty, xPos);
+                        //ellipse.SetValue(Canvas.ZIndexProperty,(Int32) 1000000);
+                        //visual.Children.Add(ellipse);
                     }
 
+                    xPos = xPos - labels[dataPoint].DesiredSize.Width / 2;
+                    yPos = yPos - labels[dataPoint].DesiredSize.Height / 2;
+                    
                     labels[dataPoint].SetValue(Canvas.TopProperty, yPos);
                     labels[dataPoint].SetValue(Canvas.LeftProperty, xPos);
                 }
@@ -319,15 +353,22 @@ namespace Visifire.Charts
                     if (xPos < centerX)
                     {
                         xPos -= labels[dataPoint].DesiredSize.Width +10;
-                        leftPositionData.Add(leftIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle });
+                        leftPositionData.Add(leftIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle, Height = labels[dataPoint].DesiredSize.Height, Width = labels[dataPoint].DesiredSize.Width });
                         gapLeft = Math.Max(gapLeft, labels[dataPoint].DesiredSize.Height);
                     }
                     else
-                    {
+                    {   
                         xPos += 10;
-                        rightPositionData.Add(rightIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle });
+                        rightPositionData.Add(rightIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle, Height = labels[dataPoint].DesiredSize.Height, Width = labels[dataPoint].DesiredSize.Width });
                         gapRight = Math.Max(gapRight, labels[dataPoint].DesiredSize.Height);
                     }
+
+                    // Ellipse ellipse = new Ellipse() { Height = 6, Width = 6, Fill = new SolidColorBrush(Colors.Yellow) };
+
+                    //ellipse.SetValue(Canvas.TopProperty, yPos);
+                    //ellipse.SetValue(Canvas.LeftProperty, xPos);
+                    //ellipse.SetValue(Canvas.ZIndexProperty, (Int32)1000000);
+                    //visual.Children.Add(ellipse);
                 }
 
                 startAngle = stopAngle;
@@ -335,11 +376,16 @@ namespace Visifire.Charts
 
             }
 
-            PostionData tempData;
+            //visual.Background = new SolidColorBrush(Colors.Green);
+            #region Left Alignment
 
+            //// Following code for to place the pie labels for those datapoints who’s LabelStyles is OutSide
+            PostionData tempData;
+            Grid oldLabel = null;
             Double minimumY;
             Double maximumY;
             Double extent;
+
             if (is3D)
             {
                 minimumY = centerY - vOuterEllipseRadius;
@@ -378,12 +424,69 @@ namespace Visifire.Charts
 
                 if ((bool)dataPoints[tempData.Index].LabelEnabled)
                 {
-                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2);
+                    Double labelTop = tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                    if (tempData.MeanAngle > 1.5 * Math.PI / 2 && tempData.MeanAngle <= 2.7 * Math.PI/2)
+                    {   
+                        if (oldLabel != null)
+                        {
+                            Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                            Double overlapOffset = 0;
+
+                            if (oldTop < labelTop + tempData.Height)
+                            {
+                                overlapOffset = labelTop + tempData.Height - oldTop;
+                                labelTop -= overlapOffset/2;
+                                oldLabel.SetValue(Canvas.TopProperty, oldTop + overlapOffset / 2);
+
+                                for (int j = i - 2; j >= 0; j--)
+                                {
+                                    PostionData pData;
+                                    leftPositionData.TryGetValue(j, out pData);
+                                    Grid oldOldLabel = labels[dataPoints[pData.Index]];
+
+                                    if ((pData.MeanAngle >= 1.5 * Math.PI / 2 && pData.MeanAngle <= 2.7 * Math.PI / 2))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                                        System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                                        oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                                        Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                                        if (oldTop < top + oldLabel.DesiredSize.Height)
+                                        {
+                                            overlapOffset = top + oldLabel.DesiredSize.Height - oldTop;
+
+                                            oldOldLabel.SetValue(Canvas.TopProperty, oldTop + overlapOffset);
+                                        }
+                                    }
+
+                                    oldLabel = oldOldLabel;
+
+                                }
+                            }
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("Text=" + (labels[dataPoints[tempData.Index]].Children[0] as TextBlock).Text);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
 
                     labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, tempData.xPosition);
 
                 }
+
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual;
+
+                //if (i == 1)
+                //    break;
             }
+
+            #endregion
+
+            #region Right Alignment
+
 
             PostionData[] dataForSorting = rightPositionData.Values.ToArray();
             Array.Sort(dataForSorting, PostionData.CompareYPosition);
@@ -429,11 +532,67 @@ namespace Visifire.Charts
 
                 if ((bool)dataPoints[tempData.Index].LabelEnabled)
                 {
-                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2);
+                    //labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2);
 
-                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, tempData.xPosition);
+                    //labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, tempData.xPosition);
+
+                    Double labelTop = tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+                    Double labelLeft = tempData.xPosition;
+
+                    if ((tempData.MeanAngle >= 3.7 * Math.PI / 2 && tempData.MeanAngle <= 4 * Math.PI / 2) || (tempData.MeanAngle >= 0 && tempData.MeanAngle <= Math.PI / 4))
+                    {
+                        if (oldLabel != null)
+                        {
+                            Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                            Double overlapOffset = 0;
+
+                            if (labelTop < oldTop + oldLabel.DesiredSize.Height)
+                            {
+                                overlapOffset = oldTop + oldLabel.DesiredSize.Height - labelTop;
+                                labelTop += overlapOffset / 2;
+                                oldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset / 2);
+
+                                for (int j = i - 2; j > 0; j--)
+                                {
+                                    PostionData pData;
+                                    rightPositionData.TryGetValue(j, out pData);
+                                    Grid oldOldLabel = labels[dataPoints[pData.Index]];
+
+                                    if ((pData.MeanAngle >= 3.7 * Math.PI / 2 && pData.MeanAngle <= 4 * Math.PI / 2) || (pData.MeanAngle >= 0 && pData.MeanAngle <= Math.PI / 4))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                                        System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                                        oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                                        Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                                        if (top < oldTop + oldOldLabel.DesiredSize.Height)
+                                        {
+                                            overlapOffset = oldTop + oldOldLabel.DesiredSize.Height - top;
+                                            oldTop -= overlapOffset;
+                                            oldOldLabel.SetValue(Canvas.TopProperty, oldTop);
+                                        }
+                                    }
+
+                                    oldLabel = oldOldLabel;
+
+                                }
+                            }
+                        }
+
+                    }
+
+                    
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, labelLeft);
                 }
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual;
             }
+            #endregion
+
         }
 
         private static void PositionLabels(Double minY, Double maxY, Double gap, Double maxGap, Double labelCount, Dictionary<Int32, PostionData> labelPositions, Boolean isRight)
@@ -446,7 +605,7 @@ namespace Visifire.Charts
             Double currentY;
             PostionData point;
             //Double offsetFactor = sign * ((gap > maxGap) ? maxGap / 2 : gap / 2);
-            Double offsetFactor = sign * ((gap > maxGap) ? maxGap / 10 : gap / 10);
+            Double offsetFactor = sign * ((gap > maxGap) ? (maxGap / 10) : (gap / 10));
             do
             {
                 previousY = limit;
@@ -459,7 +618,6 @@ namespace Visifire.Charts
 
                     if (Math.Abs(previousY - currentY) < gap && i != 0)
                     {
-
                         point.yPosition = previousY - offsetFactor;
                         if (isRight)
                         {
@@ -486,6 +644,7 @@ namespace Visifire.Charts
                         {
                             if (point.yPosition > maxY) point.yPosition = (previousY + maxY - gap) / 2;
                         }
+
                         //Debug.WriteLine("Y: " + point.yPosition + " A: " + point.MeanAngle);
                         labelPositions.Remove(i - 1);
                         labelPositions.Add(i - 1, new PostionData() { Index = point.Index, MeanAngle = point.MeanAngle, xPosition = point.xPosition, yPosition = point.yPosition });
@@ -530,7 +689,9 @@ namespace Visifire.Charts
 
         private static Canvas CreateAndPositionLabels(Double totalSum, List<DataPoint> dataPoints, Double width, Double height, Double scaleY, Boolean is3D, ref Size size)
         {
-            Canvas visual = new Canvas();
+            Canvas visual = new Canvas() { Height = height, Width = width };
+
+            //visual.Background = new SolidColorBrush(Colors.Green);
 
             Dictionary<DataPoint, Grid> labels = new Dictionary<DataPoint, Grid>();
 
@@ -543,6 +704,9 @@ namespace Visifire.Charts
 
             foreach (DataPoint dataPoint in dataPoints)
             {
+                if (dataPoint.YValue == 0)
+                    continue;
+
                 Grid label = CreateLabel(dataPoint);
                 if ((bool)dataPoint.LabelEnabled)
                 {
@@ -590,7 +754,7 @@ namespace Visifire.Charts
                     //labelEllipseWidth = pieCanvasWidth + maxLabelWidth;
                     //labelEllipseHeight = pieCanvasHeight + maxLabelHeight;
 
-                    PositionLabels(totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
                 else
                 {
@@ -600,7 +764,7 @@ namespace Visifire.Charts
                     labelEllipseWidth = pieCanvasWidth;
                     labelEllipseHeight = pieCanvasHeight;
 
-                    PositionLabels(totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
             }
             else
@@ -1327,135 +1491,194 @@ namespace Visifire.Charts
             return visual;
         }
 
-        private static List<Path> GetPie3D(ref Faces faces, SectorChartShapeParams pieParams, ref Int32 zindex, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath)
+        private static Path CreateLabelLine(SectorChartShapeParams pieParams, Point centerOfPie, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints)
         {
+            Path labelLine = null;
 
-            List<Path> pieFaces = new List<Path>();
-            if (pieParams.StartAngle == pieParams.StopAngle && pieParams.IsLargerArc)
+            if (pieParams.LabelLineEnabled)
             {
-                // draw singleton pie here
+                labelLine = new Path();
+                Double meanAngle = pieParams.MeanAngle;
+
+                Point piePoint = new Point();
+                piePoint.X = centerOfPie.X + pieParams.OuterRadius * Math.Cos(meanAngle);
+                piePoint.Y = centerOfPie.Y + pieParams.OuterRadius * Math.Sin(meanAngle) * pieParams.YAxisScaling;
+
+                Point labelPoint = new Point();
+                labelPoint.X = centerOfPie.X + pieParams.LabelPoint.X - pieParams.Width / 2;
+                labelPoint.Y = centerOfPie.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
+
+                Point midPoint = new Point();
+                midPoint.X = (labelPoint.X < centerOfPie.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                midPoint.Y = labelPoint.Y;
+
+                List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
+                labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : midPoint));
+                labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : labelPoint));
+                labelLine.Data = GetPathGeometryFromList(FillRule.Nonzero, piePoint, labelLinePathGeometry);
+                PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
+                PathSegmentCollection segments = figure.Segments;
+                figure.IsClosed = false;
+                figure.IsFilled = false;
+
+                // apply animation to the label line
+                if (pieParams.AnimationEnabled)
+                {
+                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
+                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
+                }
+
+                labelLine.Stroke = pieParams.LabelLineColor;
+                labelLine.StrokeDashArray = pieParams.LabelLineStyle;
+                labelLine.StrokeThickness = pieParams.LabelLineThickness;
+
+                // set the un exploded points for interactivity
+                unExplodedPoints.LabelLineEndPoint = labelPoint;
+                unExplodedPoints.LabelLineMidPoint = midPoint;
+                unExplodedPoints.LabelLineStartPoint = piePoint;
+
+                // set the exploded points for interactivity
+                explodedPoints.LabelLineEndPoint = new Point(labelPoint.X, labelPoint.Y - pieParams.OffsetY);
+                explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - pieParams.OffsetY);
+                explodedPoints.LabelLineStartPoint = new Point(piePoint.X + pieParams.OffsetX, piePoint.Y + pieParams.OffsetY);
             }
-            else
+
+            return labelLine;
+        }
+
+        private static void UpdatePositionLabelInsidePie(SectorChartShapeParams pieParams, Double yOffset)
+        {
+            if (DataPointRef.LabelStyle == LabelStyles.Inside)
             {
                 Point center = new Point();
                 center.X = pieParams.Width / 2;
                 center.Y = pieParams.Height / 2;
 
-                // calculate 3d offsets
-                Double yOffset = -pieParams.Depth / 2 * pieParams.ZAxisScaling;
+                Double a = 3 * (pieParams.OuterRadius / 4);
+                Double b = 3 * (pieParams.OuterRadius / 4) * pieParams.YAxisScaling;
+                Double x = center.X + a * Math.Cos(pieParams.MeanAngle);
+                Double y = center.Y + b * Math.Sin(pieParams.MeanAngle) + yOffset;
 
-                // calculate all points
-                Point3D topFaceCenter = new Point3D();
-                topFaceCenter.X = center.X;
-                topFaceCenter.Y = center.Y + yOffset;
-                topFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+                DataPointRef.LabelVisual.SetValue(Canvas.LeftProperty, x - DataPointRef.LabelVisual.DesiredSize.Width /2);
+                DataPointRef.LabelVisual.SetValue(Canvas.TopProperty, y - DataPointRef.LabelVisual.DesiredSize.Height);
 
-                Point3D topArcStart = new Point3D();
-                topArcStart.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
-                topArcStart.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                topArcStart.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+                //Ellipse e = new Ellipse() { Height = 3, Width = 3, Fill = new SolidColorBrush(Colors.Yellow) };
+                //e.SetValue(Canvas.ZIndexProperty,(Int32) 100000);
+                //e.SetValue(Canvas.LeftProperty, x);
+                //e.SetValue(Canvas.TopProperty, y);
+                //pieFaces.Add(e);
+            }
+        }
 
-                Point3D topArcStop = new Point3D();
-                topArcStop.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
-                topArcStop.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                topArcStop.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
 
-                Point3D bottomFaceCenter = new Point3D();
-                bottomFaceCenter.X = center.X;
-                bottomFaceCenter.Y = center.Y - yOffset;
-                bottomFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+        private static List<Shape> GetPie3D(ref Faces faces, SectorChartShapeParams pieParams, ref Int32 zindex, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath)
+        {
+            List<Shape> pieFaces = new List<Shape>();
 
-                Point3D bottomArcStart = new Point3D();
-                bottomArcStart.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
-                bottomArcStart.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                bottomArcStart.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+            Shape topFace = null, bottomFace = null, rightFace = null, leftFace = null;
+            Point center = new Point();
+            center.X = pieParams.Width / 2;
+            center.Y = pieParams.Height / 2;
+    
+            // calculate 3d offsets
+            Double yOffset = -pieParams.Depth / 2 * pieParams.ZAxisScaling;
 
-                Point3D bottomArcStop = new Point3D();
-                bottomArcStop.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
-                bottomArcStop.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                bottomArcStop.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+            // calculate all points
+            Point3D topFaceCenter = new Point3D();
+            topFaceCenter.X = center.X;
+            topFaceCenter.Y = center.Y + yOffset;
+            topFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
 
-                Point3D centroid = GetCentroid(topFaceCenter, topArcStart, topArcStop, bottomFaceCenter, bottomArcStart, bottomArcStop);
+            Point3D topArcStart = new Point3D();
+            topArcStart.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
+            topArcStart.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            topArcStart.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
 
-                Path topFace = GetPieFace(pieParams, centroid, topFaceCenter, topArcStart, topArcStop);
+            Point3D topArcStop = new Point3D();
+            topArcStop.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
+            topArcStop.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            topArcStop.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomFaceCenter = new Point3D();
+            bottomFaceCenter.X = center.X;
+            bottomFaceCenter.Y = center.Y - yOffset;
+            bottomFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomArcStart = new Point3D();
+            bottomArcStart.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
+            bottomArcStart.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            bottomArcStart.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomArcStop = new Point3D();
+            bottomArcStop.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
+            bottomArcStop.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            bottomArcStop.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+            
+            Point3D centroid = GetCentroid(topFaceCenter, topArcStart, topArcStop, bottomFaceCenter, bottomArcStart, bottomArcStop);
+
+            UpdatePositionLabelInsidePie(pieParams, yOffset);
+
+            if (pieParams.StartAngle == pieParams.StopAngle && pieParams.IsLargerArc)
+            {   
+                // draw singleton pie here
+                topFace = new Ellipse();
+                topFace.Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                //topFace.Stroke = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                topFace.Width = 2 * pieParams.OuterRadius;
+                topFace.Height = 2 * pieParams.OuterRadius * pieParams.YAxisScaling;
+                topFace.SetValue(Canvas.LeftProperty, (Double)(pieParams.Center.X - topFace.Width / 2));
+                topFace.SetValue(Canvas.TopProperty, (Double)(pieParams.Center.Y - topFace.Height / 2 + yOffset));
+                pieFaces.Add(topFace);
+                faces.Parts.Add(topFace);
+                
+                bottomFace = new Ellipse();
+                bottomFace.Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                bottomFace.Width = 2 * pieParams.OuterRadius;
+                bottomFace.Height = 2 * pieParams.OuterRadius * pieParams.YAxisScaling;
+                bottomFace.SetValue(Canvas.LeftProperty, (Double)(pieParams.Center.X - topFace.Width / 2));
+                bottomFace.SetValue(Canvas.TopProperty, (Double)(pieParams.Center.Y - topFace.Height / 2 + yOffset));
+                pieFaces.Add(bottomFace);
+                faces.Parts.Add(bottomFace);
+            }
+            else
+            {
+                topFace = GetPieFace(pieParams, centroid, topFaceCenter, topArcStart, topArcStop);
                 pieFaces.Add(topFace);
                 faces.Parts.Add(topFace);
 
-                Path bottomFace = GetPieFace(pieParams, centroid, bottomFaceCenter, bottomArcStart, bottomArcStop);
+                bottomFace = GetPieFace(pieParams, centroid, bottomFaceCenter, bottomArcStart, bottomArcStop);
                 pieFaces.Add(bottomFace);
                 faces.Parts.Add(bottomFace);
 
-                Path rightFace = GetPieSide(pieParams, centroid, topFaceCenter, bottomFaceCenter, topArcStart, bottomArcStart);
+                rightFace = GetPieSide(pieParams, centroid, topFaceCenter, bottomFaceCenter, topArcStart, bottomArcStart);
                 pieFaces.Add(rightFace);
                 faces.Parts.Add(rightFace);
 
-                Path leftFace = GetPieSide(pieParams, centroid, topFaceCenter, bottomFaceCenter, topArcStop, bottomArcStop);
+                leftFace = GetPieSide(pieParams, centroid, topFaceCenter, bottomFaceCenter, topArcStop, bottomArcStop);
                 pieFaces.Add(leftFace);
-                faces.Parts.Add(leftFace);
+                faces.Parts.Add(leftFace);               
+            }
+            
+            labelLinePath = CreateLabelLine(pieParams, center, ref unExplodedPoints, ref explodedPoints);
 
-                List<Path> curvedSurface = GetPieOuterCurvedFace(pieParams, centroid, topFaceCenter, bottomFaceCenter);
-                pieFaces.InsertRange(pieFaces.Count, curvedSurface);
+            List<Shape> curvedSurface = GetPieOuterCurvedFace(pieParams, centroid, topFaceCenter, bottomFaceCenter);
+            pieFaces.InsertRange(pieFaces.Count, curvedSurface.ToList());
 
-                foreach (FrameworkElement fe in curvedSurface)
-                    faces.Parts.Add(fe);
+            foreach (FrameworkElement fe in curvedSurface)
+                faces.Parts.Add(fe);
 
-                Path labelLine = new Path();
+            //Top face ZIndex
+            topFace.SetValue(Canvas.ZIndexProperty, (Int32)(50000));
 
-                if (pieParams.LabelLineEnabled)
-                {   
-                    Double meanAngle = pieParams.MeanAngle;
+            //BottomFace ZIndex
+            bottomFace.SetValue(Canvas.ZIndexProperty, (Int32)(-50000));
 
-                    Point piePoint = new Point();
-                    piePoint.X = center.X + pieParams.OuterRadius * Math.Cos(meanAngle);
-                    piePoint.Y = center.Y + pieParams.OuterRadius * Math.Sin(meanAngle) * pieParams.YAxisScaling;
+            if (pieParams.StartAngle == pieParams.StopAngle && pieParams.IsLargerArc)
+            {
 
-                    Point labelPoint = new Point();
-                    labelPoint.X = center.X + pieParams.LabelPoint.X - pieParams.Width / 2;
-                    labelPoint.Y = center.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
-
-                    Point midPoint = new Point();
-                    midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
-                    midPoint.Y = labelPoint.Y;
-
-                    List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
-                    labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : midPoint));
-                    labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : labelPoint));
-                    labelLine.Data = GetPathGeometryFromList(FillRule.Nonzero, piePoint, labelLinePathGeometry);
-                    PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
-                    PathSegmentCollection segments = figure.Segments;
-                    figure.IsClosed = false;
-                    figure.IsFilled = false;
-
-                    // apply animation to the label line
-                    if (pieParams.AnimationEnabled)
-                    {
-                        pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
-                        pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
-                    }
-
-                    labelLine.Stroke = pieParams.LabelLineColor;
-                    labelLine.StrokeDashArray = pieParams.LabelLineStyle;
-                    labelLine.StrokeThickness = pieParams.LabelLineThickness;
-
-                    labelLinePath = labelLine;
-
-                    // set the un exploded points for interactivity
-                    unExplodedPoints.LabelLineEndPoint = labelPoint;
-                    unExplodedPoints.LabelLineMidPoint = midPoint;
-                    unExplodedPoints.LabelLineStartPoint = piePoint;
-
-                    // set the exploded points for interactivity
-                    explodedPoints.LabelLineEndPoint = new Point(labelPoint.X, labelPoint.Y - pieParams.OffsetY);
-                    explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - pieParams.OffsetY);
-                    explodedPoints.LabelLineStartPoint = new Point(piePoint.X + pieParams.OffsetX, piePoint.Y + pieParams.OffsetY);
-                }
-
-                //Top face ZIndex
-                topFace.SetValue(Canvas.ZIndexProperty, (Int32)(50000));
-
-                //BottomFace ZIndex
-                bottomFace.SetValue(Canvas.ZIndexProperty, (Int32)(-50000));
-
+            }
+            else
+            {
                 // ZIndex of curved face
                 if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2 && pieParams.IsLargerArc)
                 {
@@ -1465,8 +1688,8 @@ namespace Visifire.Charts
                     //_elementPositionData.Add(new ElementPositionData(curvedSurface[2],Math.PI,pieParams.StopAngle));
                     _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, Math.PI));
                     _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, 0, Math.PI));
+                    if (labelLinePath != null)
+                        _elementPositionData.Add(new ElementPositionData(labelLinePath, 0, Math.PI));
                 }
                 else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI && pieParams.IsLargerArc)
                 {
@@ -1477,14 +1700,14 @@ namespace Visifire.Charts
                     _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
                     _elementPositionData.Add(new ElementPositionData(curvedSurface[1], 0, pieParams.StopAngle));
                     _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        labelLine.SetValue(Canvas.ZIndexProperty, -50000);
+                    if (labelLinePath != null)
+                        labelLinePath.SetValue(Canvas.ZIndexProperty, -50000);
                 }
                 else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2)
                 {
                     _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, Math.PI));
+                    if (labelLinePath != null)
+                        _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, Math.PI));
                     //_elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
                     //_elementPositionData.Add(new ElementPositionData(curvedSurface[1], Math.PI,pieParams.StopAngle));
                     _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
@@ -1497,47 +1720,47 @@ namespace Visifire.Charts
                     //_elementPositionData.Add(new ElementPositionData(curvedSurface[1], 0, pieParams.StopAngle));
                     _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, pieParams.StopAngle));
                     _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StopAngle, pieParams.StopAngle));
+                    if (labelLinePath != null)
+                        _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StopAngle, pieParams.StopAngle));
                 }
                 else
                 {   
                     _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
                     if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle < Math.PI / 2)
                     {
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StopAngle, pieParams.StopAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StopAngle, pieParams.StopAngle));
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
                     else if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
                     {
-                        if (labelLine != null)
-                            labelLine.SetValue(Canvas.ZIndexProperty, 40000);
+                        if (labelLinePath != null)
+                            labelLinePath.SetValue(Canvas.ZIndexProperty, 40000);
                         curvedSurface[0].SetValue(Canvas.ZIndexProperty, 35000);
                         //_elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
                     else if (pieParams.StartAngle >= Math.PI / 2 && pieParams.StartAngle < Math.PI && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
-                    {   
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
+                    {
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
                     else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle < Math.PI * 1.5 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle < Math.PI * 1.5)
                     {
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
                     }
                     else if (pieParams.StartAngle >= Math.PI * 1.5 && pieParams.StartAngle < Math.PI * 2 && pieParams.StopAngle >= Math.PI * 1.5 && pieParams.StopAngle < Math.PI * 2)
                     {
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StopAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StopAngle));
                     }
                     else
                     {
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
                         _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
                     }
 
@@ -1549,237 +1772,221 @@ namespace Visifire.Charts
 
         }
 
-        private static List<Path> GetDoughnut3D(ref Faces faces, SectorChartShapeParams pieParams, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath)
+        private static List<Shape> GetDoughnut3D(ref Faces faces, SectorChartShapeParams pieParams, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath)
         {
-            List<Path> pieFaces = new List<Path>();
+            List<Shape> pieFaces = new List<Shape>();
+            Shape topFace = null, bottomFace = null, rightFace = null, leftFace = null;
+
+            // calculate 3d offsets
+            Double yOffset = -pieParams.Depth / 2 * pieParams.ZAxisScaling;
+            Point center = new Point();
+            center.X += pieParams.Width / 2;
+            center.Y += pieParams.Height / 2;
+
+            // calculate all points
+            Point3D topFaceCenter = new Point3D();
+            topFaceCenter.X = center.X;
+            topFaceCenter.Y = center.Y + yOffset;
+            topFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+            
+            Point3D topOuterArcStart = new Point3D();
+            topOuterArcStart.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
+            topOuterArcStart.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            topOuterArcStart.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D topOuterArcStop = new Point3D();
+            topOuterArcStop.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
+            topOuterArcStop.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            topOuterArcStop.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D topInnerArcStart = new Point3D();
+            topInnerArcStart.X = topFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StartAngle);
+            topInnerArcStart.Y = topFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            topInnerArcStart.Z = (topFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D topInnerArcStop = new Point3D();
+            topInnerArcStop.X = topFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StopAngle);
+            topInnerArcStop.Y = topFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            topInnerArcStop.Z = (topFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomFaceCenter = new Point3D();
+            bottomFaceCenter.X = center.X;
+            bottomFaceCenter.Y = center.Y - yOffset;
+            bottomFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomOuterArcStart = new Point3D();
+            bottomOuterArcStart.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
+            bottomOuterArcStart.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            bottomOuterArcStart.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomOuterArcStop = new Point3D();
+            bottomOuterArcStop.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
+            bottomOuterArcStop.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            bottomOuterArcStop.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomInnerArcStart = new Point3D();
+            bottomInnerArcStart.X = bottomFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StartAngle);
+            bottomInnerArcStart.Y = bottomFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
+            bottomInnerArcStart.Z = (bottomFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D bottomInnerArcStop = new Point3D();
+            bottomInnerArcStop.X = bottomFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StopAngle);
+            bottomInnerArcStop.Y = bottomFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
+            bottomInnerArcStop.Z = (bottomFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
+
+            Point3D centroid = GetCentroid(topInnerArcStart, topInnerArcStop, topOuterArcStart, topOuterArcStop, bottomInnerArcStart, bottomInnerArcStop, bottomOuterArcStart, bottomOuterArcStop);
+
+            UpdatePositionLabelInsidePie(pieParams, yOffset);
             if (pieParams.StartAngle == pieParams.StopAngle && pieParams.IsLargerArc)
             {
                 // draw singleton pie here
+                topFace = new Ellipse();
+                topFace.Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                // topFace.Stroke = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                topFace.Width = 2 * pieParams.OuterRadius;
+                topFace.Height = 2 * pieParams.OuterRadius * pieParams.YAxisScaling;
+                topFace.SetValue(Canvas.LeftProperty, (Double)(pieParams.Center.X - topFace.Width / 2));
+                topFace.SetValue(Canvas.TopProperty, (Double)(pieParams.Center.Y - topFace.Height / 2 + yOffset));
+
+                GeometryGroup gg = new GeometryGroup();
+                gg.Children.Add(new EllipseGeometry() { Center = new Point(topFace.Width / 2, topFace.Height / 2), RadiusX = topFace.Width, RadiusY = topFace.Height });
+                gg.Children.Add(new EllipseGeometry() { Center = new Point(topFace.Width / 2, topFace.Height / 2), RadiusX = pieParams.InnerRadius, RadiusY = topFace.Height - 2 * (pieParams.OuterRadius - pieParams.InnerRadius) });
+
+                topFace.Clip = gg;
+                pieFaces.Add(topFace);
+                faces.Parts.Add(topFace);
+
+                bottomFace = new Ellipse();
+                bottomFace.Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                // topFace.Stroke = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+                bottomFace.Width = 2 * pieParams.OuterRadius;
+                bottomFace.Height = 2 * pieParams.OuterRadius * pieParams.YAxisScaling;
+                bottomFace.SetValue(Canvas.LeftProperty, (Double)(pieParams.Center.X - topFace.Width / 2));
+                bottomFace.SetValue(Canvas.TopProperty, (Double)(pieParams.Center.Y - topFace.Height / 2 ));
+
+                gg = new GeometryGroup();
+                gg.Children.Add(new EllipseGeometry() { Center = new Point(topFace.Width / 2, topFace.Height / 2), RadiusX = topFace.Width, RadiusY = topFace.Height });
+                gg.Children.Add(new EllipseGeometry() { Center = new Point(topFace.Width / 2, topFace.Height / 2), RadiusX = pieParams.InnerRadius, RadiusY = topFace.Height - 2 * (pieParams.OuterRadius - pieParams.InnerRadius) });
+
+                bottomFace.Clip = gg;
+                pieFaces.Add(bottomFace);
+                faces.Parts.Add(bottomFace);
             }
             else
-            {   
-                Point center = new Point();
-                center.X += pieParams.Width / 2;
-                center.Y += pieParams.Height / 2;
-
-                // calculate 3d offsets
-                Double yOffset = -pieParams.Depth / 2 * pieParams.ZAxisScaling;
-
-                // calculate all points
-                Point3D topFaceCenter = new Point3D();
-                topFaceCenter.X = center.X;
-                topFaceCenter.Y = center.Y + yOffset;
-                topFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-
-                Point3D topOuterArcStart = new Point3D();
-                topOuterArcStart.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
-                topOuterArcStart.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                topOuterArcStart.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D topOuterArcStop = new Point3D();
-                topOuterArcStop.X = topFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
-                topOuterArcStop.Y = topFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                topOuterArcStop.Z = (topFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D topInnerArcStart = new Point3D();
-                topInnerArcStart.X = topFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StartAngle);
-                topInnerArcStart.Y = topFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                topInnerArcStart.Z = (topFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D topInnerArcStop = new Point3D();
-                topInnerArcStop.X = topFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StopAngle);
-                topInnerArcStop.Y = topFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                topInnerArcStop.Z = (topFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) + pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-                
-                Point3D bottomFaceCenter = new Point3D();
-                bottomFaceCenter.X = center.X;
-                bottomFaceCenter.Y = center.Y - yOffset;
-                bottomFaceCenter.Z = pieParams.OffsetY * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D bottomOuterArcStart = new Point3D();
-                bottomOuterArcStart.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StartAngle);
-                bottomOuterArcStart.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                bottomOuterArcStart.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D bottomOuterArcStop = new Point3D();
-                bottomOuterArcStop.X = bottomFaceCenter.X + pieParams.OuterRadius * Math.Cos(pieParams.StopAngle);
-                bottomOuterArcStop.Y = bottomFaceCenter.Y + pieParams.OuterRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                bottomOuterArcStop.Z = (bottomFaceCenter.Y + pieParams.OuterRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D bottomInnerArcStart = new Point3D();
-                bottomInnerArcStart.X = bottomFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StartAngle);
-                bottomInnerArcStart.Y = bottomFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StartAngle) * pieParams.YAxisScaling;
-                bottomInnerArcStart.Z = (bottomFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StartAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-
-                Point3D bottomInnerArcStop = new Point3D();
-                bottomInnerArcStop.X = bottomFaceCenter.X + pieParams.InnerRadius * Math.Cos(pieParams.StopAngle);
-                bottomInnerArcStop.Y = bottomFaceCenter.Y + pieParams.InnerRadius * Math.Sin(pieParams.StopAngle) * pieParams.YAxisScaling;
-                bottomInnerArcStop.Z = (bottomFaceCenter.Y + pieParams.InnerRadius) * Math.Sin(pieParams.StopAngle) * Math.Cos(pieParams.TiltAngle) - pieParams.Depth * Math.Cos(Math.PI / 2 - pieParams.TiltAngle);
-                
-                Point3D centroid = GetCentroid(topInnerArcStart, topInnerArcStop, topOuterArcStart, topOuterArcStop, bottomInnerArcStart, bottomInnerArcStop, bottomOuterArcStart, bottomOuterArcStop);
-
-                Path topFace = GetDoughnutFace(pieParams, centroid, topInnerArcStart, topInnerArcStop, topOuterArcStart, topOuterArcStop, true);
+            {
+                topFace = GetDoughnutFace(pieParams, centroid, topInnerArcStart, topInnerArcStop, topOuterArcStart, topOuterArcStop, true);
                 pieFaces.Add(topFace);
                 faces.Parts.Add(topFace);
                 
-                Path bottomFace = GetDoughnutFace(pieParams, centroid, bottomInnerArcStart, bottomInnerArcStop, bottomOuterArcStart, bottomOuterArcStop, false);
+                bottomFace = GetDoughnutFace(pieParams, centroid, bottomInnerArcStart, bottomInnerArcStop, bottomOuterArcStart, bottomOuterArcStop, false);
                 pieFaces.Add(bottomFace);
                 faces.Parts.Add(bottomFace);
 
-                Path rightFace = GetPieSide(pieParams, centroid, topInnerArcStart, bottomInnerArcStart, topOuterArcStart, bottomOuterArcStart);
+                rightFace = GetPieSide(pieParams, centroid, topInnerArcStart, bottomInnerArcStart, topOuterArcStart, bottomOuterArcStart);
                 pieFaces.Add(rightFace);
                 faces.Parts.Add(rightFace);
 
-                Path leftFace = GetPieSide(pieParams, centroid, topInnerArcStop, bottomInnerArcStop, topOuterArcStop, bottomOuterArcStop);
+                leftFace = GetPieSide(pieParams, centroid, topInnerArcStop, bottomInnerArcStop, topOuterArcStop, bottomOuterArcStop);
                 pieFaces.Add(leftFace);
                 faces.Parts.Add(leftFace);
-                
-                List<Path> curvedSurface = GetDoughnutCurvedFace(pieParams, centroid, topFaceCenter, bottomFaceCenter);
+            }
+
+                List<Shape> curvedSurface = GetDoughnutCurvedFace(pieParams, centroid, topFaceCenter, bottomFaceCenter);
                 pieFaces.InsertRange(pieFaces.Count, curvedSurface);
 
                 foreach (FrameworkElement fe in curvedSurface)
                     faces.Parts.Add(fe);
 
-                Path labelLine = new Path();
-                if (pieParams.LabelLineEnabled)
-                {
-
-                    Double meanAngle = pieParams.MeanAngle;
-
-                    Point piePoint = new Point();
-                    piePoint.X = center.X + pieParams.OuterRadius * Math.Cos(meanAngle);
-                    piePoint.Y = center.Y + pieParams.OuterRadius * Math.Sin(meanAngle) * pieParams.YAxisScaling;
-
-                    Point labelPoint = new Point();
-                    labelPoint.X = center.X + pieParams.LabelPoint.X - pieParams.Width / 2;
-                    labelPoint.Y = center.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
-
-                    Point midPoint = new Point();
-                    midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
-                    midPoint.Y = labelPoint.Y;
-
-                    List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
-                    labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : midPoint));
-                    labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : labelPoint));
-                    labelLine.Data = GetPathGeometryFromList(FillRule.Nonzero, piePoint, labelLinePathGeometry);
-                    PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
-                    PathSegmentCollection segments = figure.Segments;
-                    figure.IsClosed = false;
-                    figure.IsFilled = false;
-
-                    // apply animation to the label line
-                    if (pieParams.AnimationEnabled)
-                    {
-                        pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
-                        pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
-                    }
-
-                    labelLine.Stroke = pieParams.LabelLineColor;
-                    labelLine.StrokeDashArray = pieParams.LabelLineStyle;
-                    labelLine.StrokeThickness = pieParams.LabelLineThickness;
-
-                    labelLinePath = labelLine;
-
-                    // set the un exploded points for interactivity
-                    unExplodedPoints.LabelLineEndPoint = labelPoint;
-                    unExplodedPoints.LabelLineMidPoint = midPoint;
-                    unExplodedPoints.LabelLineStartPoint = piePoint;
-
-                    // set the exploded points for interactivity
-                    explodedPoints.LabelLineEndPoint = new Point(labelPoint.X, labelPoint.Y - pieParams.OffsetY);
-                    explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - pieParams.OffsetY);
-                    explodedPoints.LabelLineStartPoint = new Point(piePoint.X + pieParams.OffsetX, piePoint.Y + pieParams.OffsetY);
-
-                }
+                labelLinePath = CreateLabelLine(pieParams, center, ref unExplodedPoints, ref explodedPoints);
 
                 //Top face ZIndex
                 topFace.SetValue(Canvas.ZIndexProperty, (Int32)(50000));
-
                 //BottomFace ZIndex
                 bottomFace.SetValue(Canvas.ZIndexProperty, (Int32)(-50000));
 
-                // ZIndex of curved face
-                if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2 && pieParams.IsLargerArc)
+                if (!(pieParams.StartAngle == pieParams.StopAngle && pieParams.IsLargerArc))
                 {
-                    _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, Math.PI));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[1], pieParams.StartAngle, 0));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[2], Math.PI, pieParams.StopAngle));
-                    _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, 0, Math.PI));
-                }
-                else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI && pieParams.IsLargerArc)
-                {
-                    _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[1], Math.PI * 2, pieParams.StopAngle));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[2], Math.PI, Math.PI * 2));
-                    _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        labelLine.SetValue(Canvas.ZIndexProperty, -50000);
-                }
-                else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2)
-                {
-                    _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, Math.PI));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[1], Math.PI, pieParams.StopAngle));
-                    _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                }
-                else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI)
-                {
-                    _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, pieParams.StopAngle));
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[1], pieParams.StartAngle, 0));
-                    _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
-                    if (labelLine != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StopAngle, pieParams.StopAngle));
-                }
-                else
-                {
-                    _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle < Math.PI / 2)
+                    // ZIndex of curved face
+                    if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2 && pieParams.IsLargerArc)
                     {
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StopAngle, pieParams.StopAngle));
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, Math.PI));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[1], pieParams.StartAngle, 0));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[2], Math.PI, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, 0, Math.PI));
                     }
-                    else if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
+                    else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI && pieParams.IsLargerArc)
                     {
-                        if (labelLine != null)
-                            labelLine.SetValue(Canvas.ZIndexProperty, 40000);
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[1], Math.PI * 2, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[2], Math.PI, Math.PI * 2));
+                        _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
+                        if (labelLinePath != null)
+                            labelLinePath.SetValue(Canvas.ZIndexProperty, -50000);
                     }
-                    else if (pieParams.StartAngle >= Math.PI / 2 && pieParams.StartAngle < Math.PI && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
+                    else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2)
                     {
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, Math.PI));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[1], Math.PI, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
                     }
-                    else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle < Math.PI * 1.5 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle < Math.PI * 1.5)
+                    else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI)
                     {
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
-                    }
-                    else if (pieParams.StartAngle >= Math.PI * 1.5 && pieParams.StartAngle < Math.PI * 2 && pieParams.StopAngle >= Math.PI * 1.5 && pieParams.StopAngle < Math.PI * 2)
-                    {
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], 0, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(curvedSurface[1], pieParams.StartAngle, 0));
+                        _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
+                        if (labelLinePath != null)
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StopAngle, pieParams.StopAngle));
                     }
                     else
                     {
-                        if (labelLine != null)
-                            _elementPositionData.Add(new ElementPositionData(labelLine, pieParams.StartAngle, pieParams.StartAngle));
-                        _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
+                        if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle < Math.PI / 2)
+                        {
+                            if (labelLinePath != null)
+                                _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StopAngle, pieParams.StopAngle));
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        }
+                        else if (pieParams.StartAngle >= 0 && pieParams.StartAngle < Math.PI / 2 && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
+                        {
+                            if (labelLinePath != null)
+                                labelLinePath.SetValue(Canvas.ZIndexProperty, 40000);
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        }
+                        else if (pieParams.StartAngle >= Math.PI / 2 && pieParams.StartAngle < Math.PI && pieParams.StopAngle >= Math.PI / 2 && pieParams.StopAngle < Math.PI)
+                        {
+                            if (labelLinePath != null)
+                                _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        }
+                        else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle < Math.PI * 1.5 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle < Math.PI * 1.5)
+                        {
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                            if (labelLinePath != null)
+                                _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
+                        }
+                        else if (pieParams.StartAngle >= Math.PI * 1.5 && pieParams.StartAngle < Math.PI * 2 && pieParams.StopAngle >= Math.PI * 1.5 && pieParams.StopAngle < Math.PI * 2)
+                        {
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                            if (labelLinePath != null)
+                                _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StopAngle));
+                        }
+                        else
+                        {
+                            if (labelLinePath != null)
+                                _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, pieParams.StartAngle));
+                            _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, pieParams.StopAngle));
+                        }
+                        _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
                     }
-                    _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
                 }
-            }
 
             return pieFaces;
         }
@@ -1804,9 +2011,9 @@ namespace Visifire.Charts
             }
         }
 
-        private static List<Path> GetPieOuterCurvedFace(SectorChartShapeParams pieParams, Point3D centroid, Point3D topFaceCenter, Point3D bottomFaceCenter)
+        private static List<Shape> GetPieOuterCurvedFace(SectorChartShapeParams pieParams, Point3D centroid, Point3D topFaceCenter, Point3D bottomFaceCenter)
         {
-            List<Path> curvedFaces = new List<Path>();
+            List<Shape> curvedFaces = new List<Shape>();
 
             if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2 && pieParams.IsLargerArc)
             {
@@ -1864,6 +2071,9 @@ namespace Visifire.Charts
             Path pieFace = new Path();
 
             pieFace.Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+            // pieFace.Stroke = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : pieParams.Background;
+
+            // pieFace.StrokeThickness = 0.15;
 
             List<PathGeometryParams> pathGeometryList = new List<PathGeometryParams>();
 
@@ -1952,9 +2162,9 @@ namespace Visifire.Charts
             return pieFace;
         }
 
-        private static List<Path> GetDoughnutCurvedFace(SectorChartShapeParams pieParams, Point3D centroid, Point3D topFaceCenter, Point3D bottomFaceCenter)
+        private static List<Shape> GetDoughnutCurvedFace(SectorChartShapeParams pieParams, Point3D centroid, Point3D topFaceCenter, Point3D bottomFaceCenter)
         {
-            List<Path> curvedFaces = new List<Path>();
+            List<Shape> curvedFaces = new List<Shape>();
 
             if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2 && pieParams.IsLargerArc)
             {
@@ -2227,10 +2437,8 @@ namespace Visifire.Charts
             }
 
             #endregion Public
-
-
         }
-
+        
         private static PointCollection GenerateDoubleCollection(params Point[] values)
         {
             PointCollection collection = new PointCollection();
@@ -2247,8 +2455,6 @@ namespace Visifire.Charts
 
             return splines;
         }
-
-        
 
         private static PointAnimationUsingKeyFrames CreatePointAnimation(DependencyObject target, String property, Double beginTime, List<Double> frameTime, List<Point> values, List<KeySpline> splines)
         {
@@ -2584,7 +2790,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingOut3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingOut3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -2594,7 +2800,7 @@ namespace Visifire.Charts
 
             #region Animating Slice
 
-            foreach (Path path in pathElements)
+            foreach (Shape path in pathElements)
             {
                 if (path == null) continue;
                 TranslateTransform translateTransform = path.RenderTransform as TranslateTransform;
@@ -2676,7 +2882,7 @@ namespace Visifire.Charts
             #endregion Animating Label
 
             #region Animating Label Line
-            if (labelLine != null)
+            if (labelLine != null )
             {
                 TranslateTransform translateTransform = labelLine.RenderTransform as TranslateTransform;
 
@@ -2714,7 +2920,7 @@ namespace Visifire.Charts
             return storyboard;
         }
 
-        private static Storyboard CreateExplodingIn3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Path> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingIn3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -2725,7 +2931,7 @@ namespace Visifire.Charts
 
             #region Animating Slice
 
-            foreach (Path path in pathElements)
+            foreach (Shape path in pathElements)
             {
                 if (path == null) continue;
 
@@ -2870,7 +3076,7 @@ namespace Visifire.Charts
             if (series.Enabled == false)
                 return visual;
 
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true && datapoint.YValue != 0 select datapoint).ToList();
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
 
@@ -2896,7 +3102,7 @@ namespace Visifire.Charts
             }
 
             Double radius = Math.Min(pieCanvasSize.Width, pieCanvasSize.Height) / (chart.View3D ? 1 : 2);
-            Double startAngle = series.StartAngle;
+            Double startAngle = series.InternalStartAngle;
             Double endAngle = 0;
             Double angle;
             Double absoluteYValue;
@@ -2918,7 +3124,7 @@ namespace Visifire.Charts
             if (!chart.View3D)
             {
                 foreach (DataPoint dataPoint in enabledDataPoints)
-                {
+                {   
                     if (dataPoint.LabelStyle == LabelStyles.Inside)
                         labelStyleCounter++;
                 }
@@ -2928,7 +3134,7 @@ namespace Visifire.Charts
             {
                 DataPointRef = dataPoint;
 
-                if (Double.IsNaN(dataPoint.YValue))
+                if (Double.IsNaN(dataPoint.YValue) || dataPoint.YValue == 0)
                     continue;
 
                 absoluteYValue = Math.Abs(dataPoint.YValue);
@@ -2999,12 +3205,12 @@ namespace Visifire.Charts
                 {
                     PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
                     PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
-                    List<Path> pieFaces = GetPie3D(ref faces, pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+                    List<Shape> pieFaces = GetPie3D(ref faces, pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
 
-                    foreach (Path path in pieFaces)
+                    foreach (Shape path in pieFaces)
                     {   
                         if (path != null)
-                        {
+                        {   
                             visual.Children.Add(path);
                             faces.VisualComponents.Add(path);
                             path.RenderTransform = new TranslateTransform();
@@ -3051,7 +3257,7 @@ namespace Visifire.Charts
                 #endregion
 
                 else
-                {
+                {   
                     PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
                     PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
                     
@@ -3109,7 +3315,7 @@ namespace Visifire.Charts
             }
 
 
-            if (IsLabelEnabled)
+            if (IsLabelEnabled && labelCanvas != null)
                 visual.Children.Add(labelCanvas);
 
             return visual;
@@ -3128,7 +3334,7 @@ namespace Visifire.Charts
             if (series.Enabled == false)
                 return visual;
 
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true && datapoint.YValue != 0 select datapoint).ToList();
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
 
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
@@ -3143,14 +3349,14 @@ namespace Visifire.Charts
             Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
 
             Double radius = Math.Min(pieCanvas.Width, pieCanvas.Height) / (chart.View3D ? 1 : 2);
-            Double startAngle = series.StartAngle;
+            Double startAngle = series.InternalStartAngle;
             Double endAngle = 0;
             Double angle;
             Double meanAngle;
             Double absoluteYValue;
             Double radiusDiff = 0;
 
-            var explodedDataPoints = (from datapoint in series.DataPoints where datapoint.Exploded == true select datapoint);
+            var explodedDataPoints = (from datapoint in series.DataPoints where datapoint.Exploded == true && datapoint.YValue != 0 select datapoint);
             radiusDiff = (explodedDataPoints.Count() > 0) ? radius * 0.3 : 0;
 
             //radius -= radiusDiff;
@@ -3187,7 +3393,7 @@ namespace Visifire.Charts
             {
                 DataPointRef = dataPoint;
 
-                if (Double.IsNaN(dataPoint.YValue))
+                if (Double.IsNaN(dataPoint.YValue) || dataPoint.YValue == 0)
                     continue;
 
                 absoluteYValue = Math.Abs(dataPoint.YValue);
@@ -3239,6 +3445,7 @@ namespace Visifire.Charts
                     {
                         pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
                     }
+
                     // apply animation to the labels
                     if (animationEnabled)
                     {
@@ -3249,13 +3456,14 @@ namespace Visifire.Charts
 
                 Faces faces = new Faces();
                 faces.Parts = new List<FrameworkElement>();
+
                 if (chart.View3D)
                 {
                     PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
                     PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
-                    List<Path> doughnutFaces = GetDoughnut3D(ref faces, pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
+                    List<Shape> doughnutFaces = GetDoughnut3D(ref faces, pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint._labelLine);
 
-                    foreach (Path path in doughnutFaces)
+                    foreach (Shape path in doughnutFaces)
                     {
                         if (path != null)
                         {
@@ -3281,8 +3489,8 @@ namespace Visifire.Charts
 
                     if (dataPoint.LabelVisual != null)
                     {
-
                         unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+
                         if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
                         {
                             explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
@@ -3356,7 +3564,8 @@ namespace Visifire.Charts
                 }
             }
 
-            visual.Children.Add(labelCanvas);
+            if(labelCanvas != null)
+                visual.Children.Add(labelCanvas);
 
             return visual;
         }

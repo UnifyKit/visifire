@@ -6,25 +6,23 @@ Width="500" Height="300"
 >
 
     <Grid x:Name="LayoutRoot" Background="White" Width="500" Height="300">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" x:Name="MyChart"
-          Width="500" Height="300" Theme="Theme1">
 
-            <vc:Chart.PlotArea>
-                <vc:PlotArea Color="#f1f1f1"/>
-            </vc:Chart.PlotArea>
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+Width="500" Height="300" Theme="Theme1" View3D="True" BorderBrush="Gray">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Worldwide Box office Grosses"/>
+                <vc:Title Text="Web Search Engine Market Share"/>
             </vc:Chart.Titles>
-          
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie" Bevel="True" Cursor="Hand" Color="Aqua">
+                <vc:DataSeries RenderAs="Pie" LabelEnabled="True" LabelLineThickness="0.5" Bevel="False">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Transformers" YValue="706.5" Color="AliceBlue"/>
-                        <vc:DataPoint AxisXLabel="Ratatouille" YValue="620.4"/>
-                        <vc:DataPoint AxisXLabel="I Am Legend" YValue="582.4" Color="AliceBlue"/>
-                        <vc:DataPoint AxisXLabel="Simpsons Movie" YValue="525.5"/>
-                        <vc:DataPoint AxisXLabel="The Bourne Ultimatum" YValue="442.6"/>
+                        <vc:DataPoint AxisXLabel="Yahoo" YValue="16.7" Exploded="True"/>
+                        <vc:DataPoint AxisXLabel="Google" YValue="68.6"/>
+                        <vc:DataPoint AxisXLabel="MSN/Live" YValue="8.7" Exploded="True"/>
+                        <vc:DataPoint AxisXLabel="Ask" YValue="3.7" Exploded="True"/>
+                        <vc:DataPoint AxisXLabel="AOL" YValue="1.7" Exploded="True"/>
+                        <vc:DataPoint AxisXLabel="Others" YValue="0.6" Exploded="True"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

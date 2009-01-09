@@ -8,17 +8,20 @@
     >
    
     <Grid x:Name="LayoutRoot" Width="500" Height="300" Background="White">
-        
-        <vc:Chart Theme="Theme2" x:Name="MyChart" Background="AliceBlue" BorderBrush="Gray" Margin="0,0,0,12">
+
+        <vc:Chart Theme="Theme2" x:Name="MyChart" BorderBrush="Gray" Margin="0,0,0,12">
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Bubble Chart" Style="{StaticResource TitleStyle}"/>
+                <vc:Title Text="Visifire Bubble Chart"/>
             </vc:Chart.Titles>
 
+            <vc:Chart.Legends>
+                <vc:Legend EntryMargin="5" LabelMargin="5"/>
+            </vc:Chart.Legends>
             <vc:Chart.AxesX>
                 <vc:Axis Interval="1"/>
             </vc:Chart.AxesX>
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
+                <vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue" Cursor="Hand">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint YValue="6009" ZValue="300"/>
                         <vc:DataPoint YValue="2547" ZValue="200"/>
@@ -33,7 +36,6 @@
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
-
         </vc:Chart>
     </Grid>
 </Window>

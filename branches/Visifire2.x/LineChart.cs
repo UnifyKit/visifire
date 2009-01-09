@@ -169,6 +169,7 @@ namespace Visifire.Charts
                 }
 
                 series.Faces = new Faces();
+                series.Faces.Parts = new List<FrameworkElement>();
 
                 PolylineChartShapeParams lineParams = new PolylineChartShapeParams();
 
@@ -181,10 +182,12 @@ namespace Visifire.Charts
 
                 lineParams.Points = pointsCollection;
 
+                series.VisualParams = lineParams;
                 Polyline polyline;
                 Polyline PolylineShadow;
-                Canvas line2dCanvas = GetLine2D(lineParams, out polyline, out PolylineShadow);              
+                Canvas line2dCanvas = GetLine2D(lineParams, out polyline, out PolylineShadow);
 
+                series.Faces.Parts.Add(polyline);
                 visual.Children.Add(line2dCanvas);
 
                 series.Faces.Visual = line2dCanvas;

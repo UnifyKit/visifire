@@ -1029,7 +1029,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Events
-        
+
         #endregion
 
         #region Protected Methods
@@ -1500,14 +1500,14 @@ namespace Visifire.Charts
 
             // Create new ChartArea
             ChartArea chartArea = new ChartArea(this as Chart);
-
+            
             chartArea.PropertyChanged += new EventHandler(ChartArea_PropertyChanged);
 
             PropertyBindingBeforeFirstTimeRender();
 
             return chartArea;
         }
-
+        
         void ChartArea_PropertyChanged(object sender, EventArgs e)
         {
             CallRender();
@@ -1526,7 +1526,7 @@ namespace Visifire.Charts
 
                     RENDER_LOCK = true;
 
-                    try
+                    //try
                     {
                         if(ChartArea == null)
                             ChartArea = CreateVisualTree();
@@ -1546,10 +1546,10 @@ namespace Visifire.Charts
                         // System.Diagnostics.Debug.WriteLine("Debug End");
 
                     }
-                    catch (Exception e)
+                   // catch (Exception e)
                     {   
-                        RENDER_LOCK = false;
-                        throw new Exception(e.Message, e);
+                   //     RENDER_LOCK = false;
+                   //     throw new Exception(e.Message, e);
                     }
                 }
             }

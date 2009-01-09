@@ -942,7 +942,14 @@ namespace Visifire.Charts
         private static void OnMarkerBorderThicknessPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerBorderThickness");
+            // dataPoint.FirePropertyChanged("MarkerBorderThickness");
+            dataPoint.UpdateMarker();
+
+            //if (dataPoint.Marker != null && dataPoint.Marker.Visual != null && (Boolean)dataPoint.MarkerEnabled)
+            //{
+            //    dataPoint.Marker.BorderThickness = ((Thickness) (MarkerBorderThickness as Nullable<Thickness>)).Left;
+            //    dataPoint.Marker.UpdateMarker();
+            //}
         }
 
         /// <summary>
@@ -961,7 +968,7 @@ namespace Visifire.Charts
                     if (_parent.MarkerBorderColor != null)
                         return (_parent.MarkerBorderColor);
                     else
-                        return (InternalColor == null)? _parent.InternalColor: InternalColor;
+                        return (InternalColor == null) ? _parent.InternalColor : InternalColor;
                 }
             }
             set
@@ -979,7 +986,14 @@ namespace Visifire.Charts
         private static void OnMarkerBorderColorPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerBorderColor");
+            //dataPoint.FirePropertyChanged("MarkerBorderColor");
+            dataPoint.UpdateMarker();
+
+            //if (dataPoint.Marker != null && dataPoint.Marker.Visual != null && (Boolean)dataPoint.MarkerEnabled)
+            //{
+            //    dataPoint.Marker.BorderColor = (Brush) e.NewValue;
+            //    dataPoint.Marker.UpdateMarker();
+            //}
         }
 
         /// <summary>
@@ -1048,7 +1062,13 @@ namespace Visifire.Charts
         private static void OnMarkerColorPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerColor");
+            //dataPoint.FirePropertyChanged("MarkerColor");
+            dataPoint.UpdateMarker();
+            //if (dataPoint.Marker != null && dataPoint.Marker.Visual != null && (Boolean)dataPoint.MarkerEnabled)
+            //{
+            //    dataPoint.Marker.MarkerFillColor = (Brush)e.NewValue;
+            //    dataPoint.Marker.UpdateMarker();
+            //}
         }
 
         /// <summary>
@@ -1446,20 +1466,21 @@ namespace Visifire.Charts
                                     else
                                     {   
                                         foreach (FrameworkElement fe in Faces.Parts)
-                                            if (fe != null) (fe as Path).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
+                                            if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
                                     }
-
                                     break;
+
                             }
                         }
 
-
                         UpdateMarkerAndLegend(Value);
+
    #endregion
 
                         break;
 
                     default:
+
                         FirePropertyChanged(PropertyName);
                         break;
                 }
@@ -1472,12 +1493,7 @@ namespace Visifire.Charts
         {
             if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
             {
-                if (Parent.RenderAs == RenderAs.Line)
-                {
-                    Marker.BorderColor = (Brush)Value;
-                    Marker.UpdateMarker();
-                }
-                else if (Parent.RenderAs == RenderAs.Point)
+                if (Parent.RenderAs == RenderAs.Point)
                 {   
                     Marker.MarkerFillColor = (Brush)Value;
                     if (Marker.MarkerType != MarkerTypes.Cross)
@@ -1490,6 +1506,13 @@ namespace Visifire.Charts
 
                     Marker.UpdateMarker();
                 }
+                else
+                    //if (Parent.RenderAs == RenderAs.Line)
+                {
+                    Marker.BorderColor = (Brush)Value;
+                    Marker.UpdateMarker();
+                }
+                
             }
 
             if (LegendMarker != null && LegendMarker.Visual != null)
@@ -1530,6 +1553,7 @@ namespace Visifire.Charts
             get;
             set;
         }
+
         internal Path _labelLine;
         internal Storyboard ExplodeAnimation
         {
@@ -1817,7 +1841,18 @@ namespace Visifire.Charts
                 }
                 return str;
             }
-            
+
+            internal void UpdateMarker()
+            {
+                if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
+                {
+                    Marker.BorderThickness = ((Thickness)(MarkerBorderThickness as Nullable<Thickness>)).Left;
+                    Marker.BorderColor = MarkerBorderColor;
+                    Marker.MarkerFillColor = MarkerColor;
+                    Marker.UpdateMarker();
+                }
+            }
+
         #endregion
 
         #region Internal Events

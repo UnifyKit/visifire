@@ -2929,7 +2929,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsNull((Boolean)dataSeries.LabelLineEnabled));
+                () => Assert.IsNull(dataSeries.LabelLineEnabled));
 
             EnqueueTestComplete();
         }

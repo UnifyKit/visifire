@@ -1184,7 +1184,8 @@ namespace Visifire.Charts
         private static void OnMarkerBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.FirePropertyChanged("MarkerBorderThickness");
+            //dataSeries.FirePropertyChanged("MarkerBorderThickness");
+            dataSeries.UpdateMarkers();
         }
 
         /// <summary>
@@ -1211,7 +1212,8 @@ namespace Visifire.Charts
         private static void OnMarkerBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.FirePropertyChanged("MarkerBorderColor");
+            //dataSeries.FirePropertyChanged("MarkerBorderColor");
+            dataSeries.UpdateMarkers();
         }
 
         /// <summary>
@@ -1275,7 +1277,15 @@ namespace Visifire.Charts
         private static void OnMarkerColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.FirePropertyChanged("MarkerColor");
+            //dataSeries.FirePropertyChanged("MarkerColor");
+            dataSeries.UpdateMarkers();
+           
+        }
+
+        private void UpdateMarkers()
+        {
+            foreach (DataPoint dataPoint in DataPoints)
+                dataPoint.UpdateMarker();
         }
 
 #if SL
@@ -1319,11 +1329,19 @@ namespace Visifire.Charts
 
         #endregion Marker Properties
 
+         internal Double InternalStartAngle
+         {
+             get
+             {
+                 return (StartAngle % 360) * (Math.PI / 180);
+             }
+         }
+         
         /// <summary>
         /// Sets the StartAngle property. This property is generally used in Pie/Doughnut.
         /// </summary>
         public Double StartAngle
-        {
+        {   
             get
             {
                 return (Double)GetValue(StartAngleProperty);
@@ -1332,7 +1350,7 @@ namespace Visifire.Charts
             {
                 if(value < 0 || value > 360)
                     throw (new Exception("Invalid property value:: StartAngle should be greater than 0 and less than 360."));
-               // value = (value % 360) * (Math.PI / 180);
+                
                 SetValue(StartAngleProperty, value);
             }
         }
@@ -1670,6 +1688,19 @@ namespace Visifire.Charts
                                 }
                             }
                         }
+
+                        foreach (DataPoint dp in DataPoints)
+                            dp.UpdateVisual("Color", null);
+                    }
+                }
+                else if (RenderAs == RenderAs.Line)
+                {
+                    if (VisualParams != null)
+                    {
+                        PolylineChartShapeParams lineParams = VisualParams as PolylineChartShapeParams;
+                        (Faces.Parts[0] as Polyline).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)Value;
+                        foreach (DataPoint dp in DataPoints)
+                            dp.UpdateVisual("Color", null);
                     }
                 }
                 else
@@ -1690,6 +1721,15 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// Visual Parameters
+        /// </summary>
+        internal object VisualParams
+        {
+            get;
+            set;
+        }
 
         internal Marker LegendMarker
         {

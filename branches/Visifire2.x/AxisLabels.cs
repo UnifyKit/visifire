@@ -1309,6 +1309,7 @@ namespace Visifire.Charts
             textBlock.FontFamily = FontFamily;
             textBlock.FontStyle = FontStyle;
             textBlock.FontWeight = FontWeight;
+            
             return textBlock;
         }
 
@@ -1383,12 +1384,13 @@ namespace Visifire.Charts
 
         }
 
-        private Int32 CalculateSkipOffset(Int32 NoOfRows, Double Angle,Double AxisWidth)
+        private Int32 CalculateSkipOffset(Int32 NoOfRows, Double Angle, Double AxisWidth)
         {
             Int32 skipOffset = 0;             // Skip offset
             Boolean overlap = true;
 
-            Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
+            //Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
+            Double interval = (Double)((Double.IsNaN((Double)Interval) || Interval <= 0) ? ParentAxis.InternalInterval : Interval);
             Double pixelInterval;
             TextBlock textBlock = new TextBlock();
             textBlock = SetFontProperties(textBlock);
@@ -1406,8 +1408,8 @@ namespace Visifire.Charts
                 {
                     overlap = false;
                 }
-
-                skipOffset++;
+                //else
+                    skipOffset++;
             }
 
             return skipOffset;

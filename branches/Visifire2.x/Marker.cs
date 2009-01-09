@@ -347,7 +347,7 @@ namespace Visifire.Commons
                 _borderColor = value;
 #if WPF
                 // Make it unmodifiable. 
-                _borderColor.Freeze();
+                //_borderColor.Freeze();
 #endif
             }
         }

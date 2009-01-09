@@ -422,12 +422,12 @@ namespace Visifire.Charts
             Double endOffset = Double.IsNaN(ParentAxis.EndOffset) ? 0 : ParentAxis.EndOffset;
 
             // Calculate interval
-            Double interval =(Double) Interval;
+            Double interval = (Double)Interval;
 
             Decimal index = (Decimal)Minimum;
             Decimal minval = (Decimal)Minimum;
             Decimal maxVal = (Decimal)Maximum;
-            Decimal gap = (Decimal)interval + +(((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
+            Decimal gap = (Decimal)interval + (((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
             Int32 count = 0;
             Double position;
 

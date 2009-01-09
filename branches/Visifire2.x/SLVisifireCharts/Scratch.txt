@@ -237,3 +237,136 @@ if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
                     </Grid>
+                    
+                    
+                    
+                    
+                    
+ //PIE Label Placing inside Pie
+                 if (DataPointRef.LabelStyle == LabelStyles.Inside)
+                {
+                    Double x = (topArcStart.X > topArcStop.X) ? topArcStop.X + (topArcStart.X - topArcStop.X) / 2 : topArcStart.X + (topArcStop.X - topArcStart.X) / 2;
+                    Double y = (topArcStart.Y > topArcStop.Y) ? topArcStop.Y + (topArcStart.Y - topArcStop.Y) / 2 : topArcStart.Y + (topArcStop.Y - topArcStart.Y) / 2;             
+
+                    Double a = 2 * (pieParams.OuterRadius / 3);
+                    Double b = 2 * (pieParams.OuterRadius / 3) * pieParams.YAxisScaling;
+
+                    x = center.X + a * Math.Cos(pieParams.MeanAngle);
+                    y = center.Y + b * Math.Sin(pieParams.MeanAngle) + yOffset;
+
+                    DataPointRef.LabelVisual.SetValue(Canvas.LeftProperty, x);
+                    DataPointRef.LabelVisual.SetValue(Canvas.TopProperty, y - DataPointRef.LabelVisual.DesiredSize.Height);
+
+                    Ellipse e = new Ellipse() { Height = 3, Width = 3, Fill = new SolidColorBrush(Colors.Yellow) };
+                    e.SetValue(Canvas.ZIndexProperty,(Int32) 100000);
+                    e.SetValue(Canvas.LeftProperty, x);
+                    e.SetValue(Canvas.TopProperty, y);
+                    pieFaces.Add(e);
+                }
+                
+                
+                
+                
+                
+                
+                
+                -------------------------
+                
+                
+                 PostionData[] dataForSorting = rightPositionData.Values.ToArray();
+            Array.Sort(dataForSorting, PostionData.CompareYPosition);
+            rightPositionData.Clear();
+            for (int i = 0; i < dataForSorting.Length; i++)
+                rightPositionData.Add(i, dataForSorting[i]);
+
+            if (is3D)
+            {
+                minimumY = centerY - vOuterEllipseRadius;
+                maximumY = centerY + vOuterEllipseRadius;
+
+            }
+            else
+            {
+                minimumY = gapRight / 2;
+                maximumY = visualCanvasSize.Height - gapRight / 2;
+            }
+            maxGapBetweenLabels = ((maximumY - minimumY) - (gapRight * rightPositionData.Count)) / rightPositionData.Count;
+            PositionLabels(minimumY, maximumY, 1, maxGapBetweenLabels, rightIndex, rightPositionData, true);
+
+            oldLabel = null; 
+
+            for (Int32 i = 0; i < rightIndex; i++)
+            {
+                rightPositionData.TryGetValue(i, out tempData);
+
+                centerX = visualCanvasSize.Width / 2;
+                centerY = visualCanvasSize.Height / 2;
+
+                extent = Math.Max(centerY - minimumY, maximumY - centerY);
+
+                if (is3D)
+                {
+                    tempData.xPosition = centerX + Math.Sqrt((1 - Math.Pow((tempData.yPosition - centerY) / extent, 2)) * Math.Pow(hOuterEllipseRadius, 2)) + 10;
+                }
+                else
+                    tempData.xPosition = centerX + hOuterEllipseRadius * Math.Cos(Math.Asin(Math.Abs(tempData.yPosition - centerY) / hOuterEllipseRadius)) ;
+
+                if (tempData.xPosition + labels[dataPoints[tempData.Index]].DesiredSize.Width > visualCanvasSize.Width)
+                    tempData.xPosition = visualCanvasSize.Width - labels[dataPoints[tempData.Index]].DesiredSize.Width;
+                if (tempData.yPosition + labels[dataPoints[tempData.Index]].DesiredSize.Height > visualCanvasSize.Height)
+                    tempData.yPosition = visualCanvasSize.Height - labels[dataPoints[tempData.Index]].DesiredSize.Height;
+                if (tempData.yPosition < labels[dataPoints[tempData.Index]].DesiredSize.Height / 2)
+                    tempData.yPosition = labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                if ((bool)dataPoints[tempData.Index].LabelEnabled)
+                {
+                    Double labelTop = tempData.yPosition -labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+                    Double labelLeft = tempData.xPosition;
+
+                   // if (tempData.MeanAngle >= 3.5 * Math.PI / 2 && tempData.MeanAngle <= 4.5 * Math.PI / 2)
+                    //if (oldLabel != null)
+                    //{
+                    //    Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                    //    Double overlapOffset = 0;
+
+                    //    if (labelTop < oldTop + oldLabel.DesiredSize.Height)
+                    //    {
+                    //        overlapOffset = oldTop + oldLabel.DesiredSize.Height - labelTop;
+                    //        labelTop += overlapOffset / 2;
+                    //        oldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset / 2);
+
+                    //        for (int j = i - 2; j > 0; j--)
+                    //        {
+                    //            PostionData pData;
+                    //            rightPositionData.TryGetValue(j, out pData);
+                    //            Grid oldOldLabel = labels[dataPoints[pData.Index]];
+                    //            System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                    //            System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                    //            oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                    //            Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                    //            if (top < oldTop + oldOldLabel.DesiredSize.Height)
+                    //            {
+                    //                overlapOffset = oldTop + oldOldLabel.DesiredSize.Height - top;
+
+                    //                oldOldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset);
+                    //            }
+
+                    //            oldLabel = oldOldLabel;
+
+                    //        }
+                    //    }
+                    //}
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, labelLeft);
+
+                }
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual;
+                oldLabel.ShowGridLines = true;
+                //if (i == 1)
+                //    break;
+            }

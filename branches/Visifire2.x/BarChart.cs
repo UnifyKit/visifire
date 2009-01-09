@@ -27,7 +27,7 @@ namespace Visifire.Charts
     internal class BarChart
     {
         internal static Canvas GetMarker(Chart chart, RectangularChartShapeParams columnParams, DataPoint dataPoint, Double left, Double top)
-        {
+        {   
             Canvas markerCanvas = new Canvas();
             markerCanvas.Width = columnParams.Size.Width;
             markerCanvas.Height = columnParams.Size.Height;
@@ -232,9 +232,9 @@ namespace Visifire.Charts
                     if (plotGroup.AxisY.InternalAxisMaximum < 0)
                         limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-                    List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
-                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
+                    List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
                     
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
@@ -341,9 +341,9 @@ namespace Visifire.Charts
                     if (plotGroup.AxisY.InternalAxisMaximum < 0)
                         limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-                    List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
+                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
-                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesListByRenderAs(dataPoint.Parent.RenderAs);
+                    List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
                                         
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
@@ -998,7 +998,7 @@ namespace Visifire.Charts
 
             columnVisual.Children.Add(columnBase);
 
-            if (columnParams.Bevel)
+            if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
             {
                 Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(columnParams.Size.Width - columnParams.BorderThickness - columnParams.BorderThickness, columnParams.Size.Height - columnParams.BorderThickness - columnParams.BorderThickness, 6, 6,
                     Graphics.GetBevelTopBrush(columnParams.BackgroundBrush),
