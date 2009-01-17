@@ -141,8 +141,14 @@ namespace Visifire.Charts
                 ToolTips.Add(toolTip);
             }
             
+
             _toolTip = ToolTips[0];
             _toolTip.Chart = this;
+
+            //_toolTip.OnSizeChanged += delegate(object sender, MouseEventArgs e)
+            //{
+            //     //UpdateToolTipPosition(this, e);
+            //};
 
             _toolTipCanvas.Children.Add(_toolTip);
 
@@ -178,16 +184,13 @@ namespace Visifire.Charts
             
             IsTemplateApplied = true;
 
-            ObservableObject.AttachToolTip(this, this, ToolTipText);
+            if (!String.IsNullOrEmpty(ToolTipText))
+                AttachToolTip(this,this, this);
+                        
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
 
-
-            System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
-            binding1.Source = this;
-            binding1.Mode = System.Windows.Data.BindingMode.OneWay;
-            base.SetBinding(InternalBorderThicknessProperty, binding1);
            
 /*          
             this.EventChanged += delegate
@@ -202,6 +205,16 @@ namespace Visifire.Charts
 
             if (_internalAnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
+
+        }
+
+        internal override void OnToolTipTextPropertyChanged(string NewValue)
+        {   
+            base.OnToolTipTextPropertyChanged(NewValue);
+            DetachToolTip(this._toolTipCanvas);
+
+            if (!String.IsNullOrEmpty(NewValue))
+                AttachToolTip(this, this, this);
 
         }
 
@@ -574,14 +587,15 @@ namespace Visifire.Charts
 
         #region BorderProperties
 
-        internal Thickness InternalBorderThickness
+        public new Thickness BorderThickness
         {
             get
             {
-                return (Thickness)GetValue(InternalBorderThicknessProperty);
+                return (Thickness)GetValue(BorderThicknessProperty);
             }
             set
             {
+                SetValue(BorderThicknessProperty, value);
                 SetValue(InternalBorderThicknessProperty, value);
             }
         }
@@ -590,8 +604,27 @@ namespace Visifire.Charts
            ("InternalBorderThickness",
            typeof(Thickness),
            typeof(Chart),
-           new PropertyMetadata(OnInternalPropertyChanged));
+           new PropertyMetadata(OnInternalBorderThicknessChanged));
 
+        private static void OnInternalBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+
+            c.RemoveChartBevel();
+            c.CallRender();
+
+            //if (c.ApplyChartBevel())
+            //{
+            //    if ((Boolean)c.Bevel == true)
+            //    {
+            //        c.CallRender();
+            //    }
+            //    else
+            //    {
+            //        c.RemoveChartBevel();
+            //    }
+            //}
+        }
 
         /// <summary>
         /// Sets the border line style
@@ -620,7 +653,7 @@ namespace Visifire.Charts
         public new Brush Background
         {   
             get
-            {
+            {   
                 return (Brush)GetValue(BackgroundProperty);
             }
             set
@@ -644,17 +677,17 @@ namespace Visifire.Charts
             c.RemoveChartBevel();
             c.CallRender();
 
-            //if (c.ApplyChartBevel())
-            //{
-            //    if ((Boolean)c.Bevel == true)
-            //    {
-            //        c.CallRender();
-            //    }
-            //    else
-            //    {
-            //        c.RemoveChartBevel();
-            //    }
-            //}
+            if (c.ApplyChartBevel())
+            {
+                if ((Boolean)c.Bevel == true)
+                {
+                    c.CallRender();
+                }
+                else
+                {
+                    c.RemoveChartBevel();
+                }
+            }
 
             //c.CallRender();
         }
@@ -662,6 +695,8 @@ namespace Visifire.Charts
         private static void OnInternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
+            //c.RemoveChartBevel();
+            //c.CallRender();
 
             if (c.ApplyChartBevel())
             {
@@ -700,16 +735,19 @@ namespace Visifire.Charts
         private static void OnBevelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.ApplyChartBevel();
+            c.RemoveChartBevel();
+            c.CallRender();
 
-            if ((Boolean)e.NewValue == true)
-            {
-                c.CallRender();
-            }
-            else
-            {
-                c.RemoveChartBevel();
-            }
+            //c.ApplyChartBevel();
+
+            //if ((Boolean)e.NewValue == true)
+            //{
+            //    c.CallRender();
+            //}
+            //else
+            //{
+                
+            //}
         }
 
         /// <summary>
@@ -1005,26 +1043,26 @@ namespace Visifire.Charts
 
         #endregion
 
-        /// <summary>
-        /// ToolTip text property for the Chart
-        /// </summary>
-        public String ToolTipText
-        {
-            get
-            {
-                return (String)GetValue(ToolTipTextProperty);
-            }
-            set
-            {
-                SetValue(ToolTipTextProperty, value);
-            }
-        }
+        ///// <summary>
+        ///// ToolTip text property for the Chart
+        ///// </summary>
+        //public String ToolTipText
+        //{
+        //    get
+        //    {
+        //        return (String)GetValue(ToolTipTextProperty);
+        //    }
+        //    set
+        //    {
+        //        SetValue(ToolTipTextProperty, value);
+        //    }
+        //}
 
-        public static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
-            ("ToolTipText",
-            typeof(String),
-            typeof(Chart),
-            null);
+        //public static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
+        //    ("ToolTipText",
+        //    typeof(String),
+        //    typeof(Chart),
+        //    null);
 
         #endregion
 
@@ -1134,6 +1172,7 @@ namespace Visifire.Charts
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
         }
 
+
         void Chart_MouseLeave(object sender, MouseEventArgs e)
         {
             if (ToolTipEnabled)
@@ -1156,6 +1195,11 @@ namespace Visifire.Charts
 
         internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
         {
+            
+            //if (e == null && _mouseEventArgs == null)
+            //    return;
+            //Chart_MouseMoveSetToolTipPosition(sender, (e == null) ? _mouseEventArgs : e);
+
             Chart_MouseMoveSetToolTipPosition(sender, e);
         }
 
@@ -1166,16 +1210,24 @@ namespace Visifire.Charts
         /// <param name="sender">Chart as object</param>
         /// <param name="e">MouseEventArgs</param>
         private void Chart_MouseMoveSetToolTipPosition(object sender, MouseEventArgs e)
-        {   
-            if (ToolTipEnabled)
+        {
+            // _mouseEventArgs = e;
+
+            if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
             {   
                 Double x = e.GetPosition(this).X;
                 Double y = e.GetPosition(this).Y;
 
                 #region Set position of ToolTip
+                _toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                _toolTip.UpdateLayout();
+                                
+                Size size = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
 
-                Double toolTipWidth = _toolTip.ActualWidth;
-                Double toolTipHeight = _toolTip.ActualHeight;
+                //System.Diagnostics.Debug.WriteLine("Size :" + size.ToString());
+
+                Double toolTipWidth = size.Width;
+                Double toolTipHeight = size.Height;
 
                 y = y - (toolTipHeight + 5);
 
@@ -1194,24 +1246,32 @@ namespace Visifire.Charts
                     {
                         x = e.GetPosition(this).X - toolTipWidth;
                         y = e.GetPosition(this).Y - toolTipHeight;
-
-                        if (x < 0)
-                        {
-                        //    //_toolTip.FontSize = 12;
-                        //    //_toolTip.AutoReSize();
-                        x = Padding.Left;
-                        }
                     }
-                    if (y <= 0)
+
+                    if (y < 0)
                         y = e.GetPosition(this).Y + 20;
 
+                    if (x + toolTipWidth > this.ActualWidth)
+                        x = x + toolTipWidth - this.ActualWidth;
+                    
+                    
+                    if (toolTipWidth == _toolTip.MaxWidth)
+                        x = 0;
+                    
+                    if (x < 0)
+                    {
+                        x = 0;
+                    }
+
+               
+
+                _toolTip.SetValue(Canvas.LeftProperty, x);
+
+                _toolTip.SetValue(Canvas.TopProperty, y);
+
                 Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
-                //System.Diagnostics.Debug.WriteLine("Left=" + left.ToString());
-                //System.Diagnostics.Debug.WriteLine("toolTipWidth=" + toolTipWidth.ToString());
+                //System.Diagnostics.Debug.WriteLine("LEft =" + left.ToString());
 
-                _toolTip.SetValue(Canvas.LeftProperty, x - Padding.Left);
-
-                _toolTip.SetValue(Canvas.TopProperty, y - Padding.Top);
 
                 #endregion
             }
@@ -1489,6 +1549,11 @@ namespace Visifire.Charts
             binding.Source = this;
             binding.Mode = System.Windows.Data.BindingMode.OneWay;
             base.SetBinding(InternalBackgroundProperty, binding);
+
+            System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
+            binding1.Source = this;
+            binding1.Mode = System.Windows.Data.BindingMode.OneWay;
+            base.SetBinding(InternalBorderThicknessProperty, binding1);
         }
 
         /// <summary>
@@ -1609,8 +1674,9 @@ namespace Visifire.Charts
                 _chartAreaGrid.Margin = new Thickness(
                     _chartAreaOriginalMargin.Left + BEVEL_DEPTH,
                     _chartAreaOriginalMargin.Top + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Right + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Bottom + BEVEL_DEPTH);
+                    _chartAreaOriginalMargin.Right,
+                    _chartAreaOriginalMargin.Bottom);
+                _chartAreaGrid.UpdateLayout();
 
                 _bevelCanvas.Children.Clear();
 
@@ -1635,6 +1701,8 @@ namespace Visifire.Charts
                 BevelVisual.SetValue(Canvas.LeftProperty, _chartAreaOriginalMargin.Left + _chartBorder.BorderThickness.Left);
                 _bevelCanvas.Children.Add(BevelVisual);
             }
+            // else
+            //    _chartAreaGrid.Margin = new Thickness(0);
 
             return true;
         }
@@ -1644,7 +1712,10 @@ namespace Visifire.Charts
             if (IsTemplateApplied)
             {
                 if (BevelVisual != null && _bevelCanvas != null)
+                {
                     _bevelCanvas.Children.Clear();
+                    _chartAreaGrid.Margin = new Thickness(0);
+                }
             }
         }
 
@@ -1687,7 +1758,7 @@ namespace Visifire.Charts
         }
 //#if WPF
 //        [STAThread]
-//#endif
+//#endif    
         internal void CallRender()
         {
             if (IsTemplateApplied)
@@ -1704,7 +1775,7 @@ namespace Visifire.Charts
             if (RENDER_LOCK)
                 _renderLapsedCounter++;
             else
-            {   
+            {
                 if (IsInDesignMode)
                     Render();
                 else
@@ -1836,6 +1907,7 @@ namespace Visifire.Charts
 
                 return titlesDockedInsidePlotArea.ToList<Title>();
             }
+
             return null;
         }
 
@@ -1847,7 +1919,7 @@ namespace Visifire.Charts
         internal List<Title> GetTitlesDockedOutSidePlotArea()
         {
             if (Titles != null)
-            {
+            {   
                 var titlesDockedOutSidePlotArea =
                     from title in Titles
                     where (title.DockInsidePlotArea == false)
@@ -1869,6 +1941,7 @@ namespace Visifire.Charts
 
         #region Data
 
+        // internal MouseEventArgs _mouseEventArgs;
         internal bool RENDER_LOCK = false;                                  // Render process Lock to recover from 
         internal static Double SHADOW_DEPTH = 4;                            // Shadow Depth for chart
         internal static Double BEVEL_DEPTH = 5;                             // Bevel Depth for chart

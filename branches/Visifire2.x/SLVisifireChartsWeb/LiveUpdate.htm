@@ -42,9 +42,34 @@
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Cursor="Hand">'
+               + '         <vc:DataSeries RenderAs="StackedArea100" LabelEnabled="True" Cursor="Hand">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                              + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                              + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                              + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                              + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                              + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
                + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
                + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
@@ -78,10 +103,10 @@
                 if (chart != null)
                 {
                     try {
-//                        for (var i = 0; i < 29; i++) {
+                       // for (var i = 0; i < chart.Series[0].DataPoints.length; i++)
                             chart.Series[0].DataPoints[dataPointIndex].SetPropertyFromJs("YValue", newValue);
-//                        }
-                    }
+                       }
+                    
                     catch (e) {
                         //alert(e);
                     }

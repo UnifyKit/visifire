@@ -1445,7 +1445,7 @@ namespace Visifire.Charts
 
             ApplyLighting();
             AttachHref(Chart, Visual, Href, HrefTarget);
-            AttachToolTip(Chart, Visual, ToolTipText);
+            AttachToolTip(Chart, this, Visual);
             AttachEvents2Visual(this, Visual);
         }
 

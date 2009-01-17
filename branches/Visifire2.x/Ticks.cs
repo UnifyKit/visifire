@@ -431,8 +431,15 @@ namespace Visifire.Charts
             Int32 count = 0;
             Double position;
 
-            if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
-                index = (Decimal)DataMinimum;
+            //if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
+            //    index = (Decimal)DataMinimum;
+            if(ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
+            {
+                if (DataMinimum - interval < Minimum + ParentAxis.SkipOfset)
+                    index = (Decimal)DataMinimum;
+                else
+                    index = (Decimal)Minimum + ParentAxis.SkipOfset;
+            }
 
             minval = index;
             maxVal = maxVal + gap / 1000;

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Globalization;
 
 namespace Visifire.Commons
-{
+{   
     /// <summary>
     /// ObservableObject Implements INotifyPropertyChanged Interface
     /// </summary>
@@ -28,42 +28,39 @@ namespace Visifire.Commons
         }
 
         #region Public Methods
-                /// <summary>
-        /// Attach tooltip with a framework element
+
+
+
+        /// <summary>
+        /// Visifire Control reference
         /// </summary>
-        /// <param name="control">Control reference</param>
-        /// <param name="element">FrameworkElement</param>
-        /// <param name="toolTipText">Tooltip text</param>
-        internal static void AttachToolTip(VisifireControl Control, FrameworkElement Element, String ToolTipText)
+#if SL
+        [System.Windows.Browser.ScriptableMember]
+#else
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#endif
+        public VisifireControl Chart
         {
-            if (Element == null)
-                return;
+            get;
+            set;
+        }
 
-            if (!String.IsNullOrEmpty(ToolTipText))
+
+        /// <summary>
+        /// Sets the ToolTipText for the DataPoint
+        /// </summary>
+        public override String ToolTipText
+        {
+            get
             {
-                Element.MouseMove += delegate(object sender, MouseEventArgs e)
-                {
-                    if (Control.ToolTipEnabled)
-                        Control._toolTip.Show();
-                    (Control as Chart).UpdateToolTipPosition(sender, e);
-                };
-
-                // Show ToolTip on mouse move over the chart element
-                Element.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    Control._toolTip.Text = ToolTipText;
-
-                    if (Control.ToolTipEnabled)
-                        Control._toolTip.Show();
-
-                   (Control as Chart).UpdateToolTipPosition(sender, e);
-                };
-
-                // Hide ToolTip on mouse out from the chart element
-                Element.MouseLeave += delegate(object sender, MouseEventArgs e)
-                {
-                    Control._toolTip.Hide();
-                };
+                if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
+                    return null;
+                else
+                    return (String)GetValue(ToolTipTextProperty);
+            }
+            set
+            {
+                SetValue(ToolTipTextProperty, value);
             }
         }
 
@@ -73,13 +70,13 @@ namespace Visifire.Commons
         /// <param name="control">Control reference</param>
         /// <param name="elements">FrameworkElements list</param>
         /// <param name="toolTipText">Tooltip text</param>
-        public static void AttachToolTip(VisifireControl Control, List<FrameworkElement> Elements, String ToolTipText)
+        public void AttachToolTip(VisifireControl Control, ObservableObject Element, List<FrameworkElement> VisualElements)
         {
-            if (!String.IsNullOrEmpty(ToolTipText))
+            //if (!String.IsNullOrEmpty(ToolTipText))
             {
                 // Show ToolTip on mouse move over the chart element
-                foreach (FrameworkElement element in Elements)
-                    AttachToolTip(Control, element, ToolTipText);
+                foreach (FrameworkElement visualElement in VisualElements)
+                    AttachToolTip(Control, Element, visualElement);
             }
         }
 
@@ -180,29 +177,29 @@ namespace Visifire.Commons
         //        FirePropertyChanged("ToolTipText");
         //    }
         //}
-        public virtual String ToolTipText
-        {   
-            get
-            {
-                return (String)GetValue(ToolTipTextProperty);
-            }
-            set
-            {
-                SetValue(ToolTipTextProperty, value);
-            }
-        }
+        //public virtual String ToolTipText
+        //{   
+        //    get
+        //    {
+        //        return (String)GetValue(ToolTipTextProperty);
+        //    }
+        //    set
+        //    {
+        //        SetValue(ToolTipTextProperty, value);
+        //    }
+        //}
 
-        internal static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
-            ("ToolTipText",
-            typeof(String),
-            typeof(ObservableObject),
-            new PropertyMetadata(OnFixedDataPointsChanged));
+        //internal static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
+        //    ("ToolTipText",
+        //    typeof(String),
+        //    typeof(ObservableObject),
+        //    new PropertyMetadata(OnFixedDataPointsChanged));
 
-        private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
-            ObservableObject c = d as ObservableObject;
-            c.FirePropertyChanged("ToolTipText");
-        }
+        //private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{   
+        //    ObservableObject c = d as ObservableObject;
+        //    c.FirePropertyChanged("ToolTipText");
+        //}
 
 
         #endregion
@@ -331,20 +328,6 @@ namespace Visifire.Commons
         #endregion
 
         #region Internal Property
-
-        /// <summary>
-        /// Visifire Control reference
-        /// </summary>
-#if SL
-        [System.Windows.Browser.ScriptableMember]
-#else
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-#endif
-        public VisifireControl Chart
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Property change event will be fired only if value is True

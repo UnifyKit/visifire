@@ -17,6 +17,8 @@
 
 #endif
 
+using System.Windows.Input;
+
 namespace Visifire.Charts
 {
 
@@ -31,15 +33,18 @@ namespace Visifire.Charts
         #region Public Methods
 
         public ToolTip()
-        {   
+        {
+            Text = "";
 #if WPF     
             if (!_defaultStyleKeyApplied)
-            {
+            {   
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(ToolTip), new FrameworkPropertyMetadata(typeof(ToolTip)));
                 _defaultStyleKeyApplied = true;
             }
 #else       
+
             DefaultStyleKey = typeof(ToolTip);
+            
 #endif
 
         }
@@ -65,8 +70,8 @@ namespace Visifire.Charts
         {
             if (Chart != null)
             {
-                if (e.NewSize.Width + Chart.BorderThickness.Left + Chart.BorderThickness.Right == Chart.ActualWidth)
-                    SetValue(Canvas.LeftProperty, (Double)Chart.Padding.Left);
+                // if (OnSizeChanged != null && _borderElement != null)
+                //  OnSizeChanged(this, null);
             }
         }
 
@@ -163,6 +168,7 @@ namespace Visifire.Charts
             if (tootlTip.Chart != null)
             {   
                 tootlTip.MaxWidth = tootlTip.Chart.ActualWidth;
+                
                 if (tootlTip._toolTipTextBlock != null)
                     tootlTip._toolTipTextBlock.MaxWidth = tootlTip.Chart.ActualWidth - 4;
             }
@@ -222,7 +228,13 @@ namespace Visifire.Charts
         {
             if ((Boolean)Enabled)
             {
-                this.Visibility = Visibility.Visible;
+                if (Text == String.Empty)
+                    Hide();
+                else
+                    this.Visibility = Visibility.Visible;
+
+                // if (OnTextChanged != null)
+                //    OnTextChanged(this, null);
             }
             else
                 Hide();
@@ -233,10 +245,9 @@ namespace Visifire.Charts
             this.Visibility = Visibility.Collapsed;
         }
 
-
         #region Data
 
-        private Border _borderElement;
+        internal Border _borderElement;
         private TextBlock _toolTipTextBlock;
 
 #if WPF

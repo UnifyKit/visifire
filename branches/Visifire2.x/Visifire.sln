@@ -6,6 +6,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireCharts", "SLVisifireCharts\SLVisifireCharts.csproj", "{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireChartsWeb", "SLVisifireChartsWeb\SLVisifireChartsWeb.csproj", "{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5} = {CC926AB3-DF2D-4820-95AC-46247A5E3FC5}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireCharts", "WPFVisifireCharts\WPFVisifireCharts.csproj", "{CF8E563B-5C37-47C3-8431-056EE13E6A00}"
 EndProject
@@ -74,19 +77,19 @@ Global
 		{F16255E4-2248-47D9-9606-BBE44463075F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F16255E4-2248-47D9-9606-BBE44463075F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F16255E4-2248-47D9-9606-BBE44463075F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F16255E4-2248-47D9-9606-BBE44463075F}.Silverlight|Any CPU.ActiveCfg = Silverlight|Any CPU
-		{F16255E4-2248-47D9-9606-BBE44463075F}.Silverlight|Any CPU.Build.0 = Silverlight|Any CPU
+		{F16255E4-2248-47D9-9606-BBE44463075F}.Silverlight|Any CPU.ActiveCfg = Debug|Any CPU
+		{F16255E4-2248-47D9-9606-BBE44463075F}.Silverlight|Any CPU.Build.0 = Debug|Any CPU
 		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Silverlight|Any CPU.ActiveCfg = Silverlight|Any CPU
-		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Silverlight|Any CPU.Build.0 = Silverlight|Any CPU
+		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Silverlight|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}.Silverlight|Any CPU.Build.0 = Debug|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Silverlight|Any CPU.ActiveCfg = Silverlight|Any CPU
+		{D74F0A64-FEE5-43CB-82C5-EFDFFEB867BD}.Silverlight|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF8E563B-5C37-47C3-8431-056EE13E6A00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF8E563B-5C37-47C3-8431-056EE13E6A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF8E563B-5C37-47C3-8431-056EE13E6A00}.Release|Any CPU.ActiveCfg = Release|Any CPU

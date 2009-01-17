@@ -2204,7 +2204,7 @@ DOWN:
         {
             Visual.Cursor = (Cursor == null) ? Cursors.Arrow : Cursor;
             AttachHref(Chart, Visual, Href, HrefTarget);
-            AttachToolTip(Chart, Visual, ToolTipText);
+            AttachToolTip(Chart, this, Visual);
             AttachEvents2Visual(this, this.Visual);
             Visual.Opacity = this.Opacity;
         }

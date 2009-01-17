@@ -42,7 +42,7 @@ namespace Visifire.Charts
         public List<FrameworkElement> VisualComponents
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>

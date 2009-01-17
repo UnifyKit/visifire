@@ -30,14 +30,12 @@ namespace Visifire.Charts
 #endif
     public class DataPoint : ObservableObject
     {
+
         #region Public Methods
 
         public DataPoint()
         {
-            Binding myBinding = new Binding("BorderThickness");
-            myBinding.Source = this;
-            myBinding.Mode = BindingMode.TwoWay;
-            this.SetBinding(InternalBorderThicknessProperty, myBinding);
+            ToolTipText = String.Empty;
 
             XValue = Double.NaN;
             YValue = Double.NaN;
@@ -56,6 +54,10 @@ namespace Visifire.Charts
             DefaultStyleKey = typeof(DataPoint);
 #endif
 
+            //Binding myBinding = new Binding("BorderThickness1");
+            //myBinding.Source = this;
+            //myBinding.Mode = BindingMode.OneWay;
+            //this.SetBinding(BorderThicknessProperty, myBinding);
         }
 
         public Cursor GetCursor()
@@ -1110,10 +1112,13 @@ namespace Visifire.Charts
         /// Sets the ToolTipText for the DataPoint
         /// </summary>
         public override String ToolTipText
-        {
+        {   
             get
             {
-                if (String.IsNullOrEmpty((String)GetValue(ToolTipTextProperty)))
+                if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
+                    return null;
+                                   
+                if ((String)GetValue(ToolTipTextProperty) == String.Empty)
                     return _parent.ToolTipText;
                 else
                     return (String)GetValue(ToolTipTextProperty);
@@ -1202,32 +1207,71 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the BorderThickness property
         /// </summary>
-        internal Nullable<Thickness> InternalBorderThickness
-        {   
+        public new Nullable<Thickness> BorderThickness
+        {
             get
             {
-                if ((Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == new Thickness(0, 0, 0, 0))
-                    return _parent.InternalBorderThickness;
+                if ((Nullable<Thickness>)GetValue(BorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(BorderThicknessProperty) == new Thickness(0, 0, 0, 0))
+                    return _parent.BorderThickness;
                 else
-                    return (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty);
+                    return (Nullable<Thickness>)GetValue(BorderThicknessProperty);
             }
             set
             {
-                SetValue(InternalBorderThicknessProperty, value);
+#if SL
+                if (BorderThickness != value)
+                {
+                    SetValue(BorderThicknessProperty, value);
+                    FirePropertyChanged("BorderThickness");
+                }
+#else
+                SetValue(BorderThicknessProperty, value);
+#endif
             }
         }
 
-        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
-            ("InternalBorderThickness",
-            typeof(Nullable<Thickness>),
-            typeof(DataPoint),
-            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+#if WPF
+
+        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
+        ("BorderThickness",
+        typeof(Nullable<Thickness>),
+        typeof(DataPoint),
+        new PropertyMetadata(OnBorderThicknessPropertyChanged));
 
         private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             DataPoint dataPoint = d as DataPoint;
             dataPoint.FirePropertyChanged("BorderThickness");
         }
+
+#endif
+
+        //internal Nullable<Thickness> BorderThickness
+        //{   
+        //    get
+        //    {
+        //        if ((Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == null || (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty) == new Thickness(0, 0, 0, 0))
+        //            return _parent.InternalBorderThickness;
+        //        else
+        //            return (Nullable<Thickness>)GetValue(InternalBorderThicknessProperty);
+        //    }
+        //    set
+        //    {
+        //        SetValue(InternalBorderThicknessProperty, value);
+        //    }
+        //}
+
+        //private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+        //    ("InternalBorderThickness",
+        //    typeof(Nullable<Thickness>),
+        //    typeof(DataPoint),
+        //    new PropertyMetadata(OnBorderThicknessPropertyChanged));
+
+        //private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{   
+        //    DataPoint dataPoint = d as DataPoint;
+        //    dataPoint.FirePropertyChanged("BorderThickness");
+        //}
 
         /// <summary>
         /// Set the BorderColor property
@@ -1616,10 +1660,13 @@ namespace Visifire.Charts
                             Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                         }
 
-                        this.ExplodeAnimation.Completed -= new EventHandler(ExplodeAnimation_Completed);
-                        this.UnExplodeAnimation.Completed -= new EventHandler(UnExplodeAnimation_Completed);
-                        this.ExplodeAnimation.Completed += new EventHandler(ExplodeAnimation_Completed);
-                        this.UnExplodeAnimation.Completed += new EventHandler(UnExplodeAnimation_Completed);
+                        if (this.ExplodeAnimation != null || this.UnExplodeAnimation != null)
+                        {
+                            this.ExplodeAnimation.Completed -= new EventHandler(ExplodeAnimation_Completed);
+                            this.UnExplodeAnimation.Completed -= new EventHandler(UnExplodeAnimation_Completed);
+                            this.ExplodeAnimation.Completed += new EventHandler(ExplodeAnimation_Completed);
+                            this.UnExplodeAnimation.Completed += new EventHandler(UnExplodeAnimation_Completed);
+                        }
                     }
                 }
                 else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100)
@@ -1644,10 +1691,15 @@ namespace Visifire.Charts
                 {
                     if (Faces != null)
                     {
-                        foreach (FrameworkElement face in Faces.VisualComponents)
+                        if (Parent.RenderAs == RenderAs.Point)
                         {
-                            AttachEvents2Visual(Object, this, face);
+                            foreach (FrameworkElement face in Faces.VisualComponents)
+                            {
+                                AttachEvents2Visual(Object, this, face);
+                            }
                         }
+                        else
+                            AttachEvents2Visual(Object, this, Faces.Visual);
                     }
                 }
             }
@@ -1703,12 +1755,38 @@ namespace Visifire.Charts
             /// </summary>
             internal void SetHref2DataPointVisualFaces(ObservableObject Object)
             {
-                System.Diagnostics.Debug.WriteLine(Href);
+                //System.Diagnostics.Debug.WriteLine(Href);
+                //if (Faces != null)
+                //    foreach (FrameworkElement face in Faces.VisualComponents)
+                //    {
+                //        AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
+                //    }
                 if (Faces != null)
-                    foreach (FrameworkElement face in Faces.VisualComponents)
+                    if (Faces.VisualComponents.Count != 0)
                     {
-                        AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
+                        foreach (FrameworkElement face in Faces.VisualComponents)
+                        {
+                            AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
+                        }
                     }
+                    else
+                        AttachHref(Chart, Faces.Visual, Href, (HrefTargets)HrefTarget);
+
+                if (this.Parent.Faces != null)
+                    if (this.Parent.Faces.VisualComponents.Count != 0)
+                    {
+                        foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+                        {
+                            AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
+                        }
+                    }
+                    else
+                        AttachHref(Chart, this.Parent.Faces.Visual, Href, (HrefTargets)HrefTarget);
+
+                if (this.Marker != null)
+                {
+                    AttachHref(Chart, Marker.Visual, Href, (HrefTargets)HrefTarget);
+                }
             }
             
             /// <summary>
@@ -1717,15 +1795,27 @@ namespace Visifire.Charts
             internal void SetCursor2DataPointVisualFaces()
             {
                 if (Faces != null)
-                    foreach (FrameworkElement face in Faces.VisualComponents)
+                    if (Faces.VisualComponents.Count != 0)
                     {
-                        face.Cursor = GetCursor();
+                        foreach (FrameworkElement face in Faces.VisualComponents)
+                        {
+                            face.Cursor = GetCursor();
+                        }
                     }
-                if(this.Parent.Faces != null)
-                    foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+                    else
+                        Faces.Visual.Cursor = GetCursor();
+
+                if (this.Parent.Faces != null)
+                    if (this.Parent.Faces.VisualComponents.Count != 0)
                     {
-                        face.Cursor = GetCursor();
+                        foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+                        {
+                            face.Cursor = GetCursor();
+                        }
                     }
+                    else
+                        this.Parent.Faces.Visual.Cursor = GetCursor();
+
                 if (this.Marker != null)
                 {
                     Marker.Visual.Cursor = GetCursor();
@@ -1771,8 +1861,10 @@ namespace Visifire.Charts
                 }
                 return percentage;
             }
+            
+         
 
-            public String TextParser(String unParsed)
+            public override String TextParser(String unParsed)
             {
                 if (string.IsNullOrEmpty(unParsed) || Enabled == false)
                     return "";

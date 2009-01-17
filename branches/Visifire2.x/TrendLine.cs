@@ -359,7 +359,7 @@ namespace Visifire.Charts
             Visual.Children.Add(Shadow);
             Visual.Children.Add(Line);
 
-            ObservableObject.AttachToolTip(ReferingAxis.Chart, Line, ToolTipText);
+            AttachToolTip(ReferingAxis.Chart, this, Line);
             ObservableObject.AttachHref(ReferingAxis.Chart, Line, Href, HrefTarget);
         }
 

@@ -536,6 +536,31 @@ namespace Visifire.Charts
             set;
         }
 
+        /// <summary>
+        /// Set the BorderThickness property
+        /// </summary>
+        public new Thickness BorderThickness
+        {
+            get
+            {
+                return (Thickness)GetValue(BorderThicknessProperty);
+            }
+            set
+            {
+#if SL
+                if (BorderThickness != value)
+                {
+                    SetValue(BorderThicknessProperty, value);
+                    FirePropertyChanged("BorderThickness");
+                }
+#else           
+                SetValue(BorderThicknessProperty, value);
+#endif
+            }
+        }
+
+#if WPF
+        
         private new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
             ("BorderThickness",
             typeof(Thickness),
@@ -548,6 +573,7 @@ namespace Visifire.Charts
             title.FirePropertyChanged("BorderThickness");
         }
 
+#endif
         /// <summary>
         /// Property CornerRadius
         /// </summary>
@@ -941,7 +967,7 @@ namespace Visifire.Charts
                 title.Visual.Cursor = (title.Cursor == null)? Cursors.Arrow : title.Cursor;
                 title.Visual.SetValue(Canvas.ZIndexProperty, title.GetValue(Canvas.ZIndexProperty));
                 // AttachToolTip
-                ObservableObject.AttachToolTip(title.Chart, title.TextElement, title.ToolTipText);
+                title.AttachToolTip(title.Chart, title, title.TextElement);
                 ObservableObject.AttachHref(title.Chart, title.TextElement, title.Href, title.HrefTarget);
 
                 return true;

@@ -34,10 +34,12 @@ namespace Visifire.Charts
     {   
         public DataSeries()
         {
-            Binding myBinding = new Binding("BorderThickness");
-            myBinding.Source = this;
-            myBinding.Mode = BindingMode.TwoWay;
-            this.SetBinding(InternalBorderThicknessProperty, myBinding);
+            ToolTipText = "";
+
+            //Binding myBinding = new Binding("BorderThickness");
+            //myBinding.Source = this;
+            //myBinding.Mode = BindingMode.TwoWay;
+            //this.SetBinding(InternalBorderThicknessProperty, myBinding);
             
 #if WPF
             if (!_defaultStyleKeyApplied)
@@ -101,7 +103,7 @@ namespace Visifire.Charts
             DataPoints.Add((DataPoint)XamlReader.Load(DataPointXml));
         }
 #endif
-
+        
         /// <summary>
         /// Attach tooltip with a framework element
         /// </summary>
@@ -110,27 +112,37 @@ namespace Visifire.Charts
         /// <param name="toolTipText">Tooltip text</param>
         public void AttachAreaToolTip(VisifireControl Control, List<FrameworkElement> Elements)
         {
-            if (!String.IsNullOrEmpty(ToolTipText))
+            //if (!String.IsNullOrEmpty(ToolTipText))
             {
                 // Show ToolTip on mouse move over the chart element
                 foreach (FrameworkElement element in Elements)
                 {   
                     element.MouseMove += delegate(object sender, MouseEventArgs e)
-                    { 
+                    {
                         Point position = e.GetPosition(this.Faces.Visual);
                         Double xValue = Graphics.PixelPositionToValue(0, this.Faces.Visual.Width, (Double)(Control as Chart).ChartArea.AxisX.AxisManager.AxisMinimumValue, (Double)(Control as Chart).ChartArea.AxisX.AxisManager.AxisMaximumValue, position.X);
                         DataPoint dataPoint = GetNearestDataPoint(xValue);
-                        
-                        Control._toolTip.Text = dataPoint.TextParser(dataPoint.ToolTipText);
-                        (Control as Chart).UpdateToolTipPosition(sender, e);
 
-                        if (Control.ToolTipEnabled)
-                            Control._toolTip.Show();
+                        if (dataPoint.ToolTipText == null)
+                        {
+                            Control._toolTip.Text = "";
+                            Control._toolTip.Hide();
+                            return;
+                        }
+                        else
+                        {
+                            Control._toolTip.Text = dataPoint.TextParser(dataPoint.ToolTipText);
+
+                            if (Control.ToolTipEnabled)
+                                Control._toolTip.Show();
+
+                            (Control as Chart).UpdateToolTipPosition(sender, e);
+                        }
                     };
 
                     // Hide ToolTip on mouse out from the chart element
                     element.MouseLeave += delegate(object sender, MouseEventArgs e)
-                    {
+                    {   
                         //if (Control.ToolTipElement.Visibility == Visibility.Visible)
                         Control._toolTip.Hide();
                     };
@@ -1106,8 +1118,8 @@ namespace Visifire.Charts
         public Nullable<Boolean> MarkerEnabled
         {
             get
-            {   
-                if (this.RenderAs == RenderAs.Line)
+            {
+                if (this.RenderAs == RenderAs.Line || this.RenderAs == RenderAs.Point)
                     return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? true : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
                 else
                     return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? false : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
@@ -1369,32 +1381,71 @@ namespace Visifire.Charts
 
         #region BorderProperties
 
+
         /// <summary>
         /// Set the BorderThickness property
         /// </summary>
-        internal Thickness InternalBorderThickness
+        public new Thickness BorderThickness
         {
             get
             {
-                return (Thickness)GetValue(InternalBorderThicknessProperty);
+                return (Thickness)GetValue(BorderThicknessProperty);
             }
             set
-            {   
-                SetValue(InternalBorderThicknessProperty, value);
+            {
+#if SL
+                if (BorderThickness != value)
+                {
+                    SetValue(BorderThicknessProperty, value);
+                    FirePropertyChanged("BorderThickness");
+                }
+#else
+                SetValue(BorderThicknessProperty, value);
+#endif
             }
         }
 
-        public static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
-            ("InternalBorderThickness",
-            typeof(Thickness),
-            typeof(DataSeries),
-            new PropertyMetadata(OnBorderThicknessPropertychanged));
+#if WPF
 
-        private static void OnBorderThicknessPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
+        ("BorderThickness",
+        typeof(Thickness),
+        typeof(DataSeries),
+        new PropertyMetadata(OnBorderThicknessPropertyChanged));
+
+        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged("BorderThickness");
         }
+#endif
+
+        ///// <summary>
+        ///// Set the BorderThickness property
+        ///// </summary>
+        //internal Thickness BorderThickness
+        //{
+        //    get
+        //    {
+        //        return (Thickness)GetValue(InternalBorderThicknessProperty);
+        //    }
+        //    set
+        //    {   
+        //        SetValue(InternalBorderThicknessProperty, value);
+        //    }
+        //}
+
+        //public static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+        //    ("InternalBorderThickness",
+        //    typeof(Thickness),
+        //    typeof(DataSeries),
+        //    new PropertyMetadata(OnBorderThicknessPropertychanged));
+
+        //private static void OnBorderThicknessPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    DataSeries dataSeries = d as DataSeries;
+        //    dataSeries.FirePropertyChanged("BorderThickness");
+        //}
 
         /// <summary>
         /// Set the BorderColor property
@@ -1551,8 +1602,16 @@ namespace Visifire.Charts
         {
             get
             {
+                if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
+                    return null;
+
+                //System.Diagnostics.Debug.WriteLine("DS ToolTipText : " + (String)GetValue(ToolTipTextProperty));
+
                 if (String.IsNullOrEmpty((String)GetValue(ToolTipTextProperty)))
-                {
+                {   
+                    if (GetValue(ToolTipTextProperty) == null)
+                        return null;
+
                     switch (RenderAs)
                     {
                         case RenderAs.StackedColumn100:
@@ -1564,8 +1623,14 @@ namespace Visifire.Charts
                         case RenderAs.Doughnut:
                             return "#AxisXLabel, #YValue(#Percentage%)";
 
+                        case RenderAs.Line:
+                        case RenderAs.Area:
+                        case RenderAs.StackedArea:
+                            return "#XValue, #YValue";
+
                         default:
                             return "#AxisXLabel, #YValue";
+                                 
                     }
                 }
                 else

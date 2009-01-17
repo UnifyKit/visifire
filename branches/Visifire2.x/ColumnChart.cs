@@ -140,12 +140,12 @@ namespace Visifire.Charts
                     {
                         if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
                         {
-                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < chart.Height - chart.PlotArea.PlotAreaBorderElement.Height)
+                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height)
                                 columnParams.LabelStyle = LabelStyles.Inside;
                         }
                         else
                         {
-                            if (top + dataPoint.Marker.MarkerActualSize.Height < (chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
+                            if (top + dataPoint.Marker.MarkerActualSize.Height < (chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
                                 columnParams.LabelStyle = LabelStyles.Inside;
                         }
                     }
@@ -153,12 +153,12 @@ namespace Visifire.Charts
                     {
                         if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
                         {
-                            if ((chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness + dataPoint.Marker.MarkerSize.Height)
+                            if ((chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness + dataPoint.Marker.MarkerSize.Height)
                                 columnParams.LabelStyle = LabelStyles.Inside;
                         }
                         else
                         {
-                            if ((chart.Height - chart.PlotArea.PlotAreaBorderElement.Height) / 2 + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness)
+                            if ((chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) / 2 + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness)
                                 columnParams.LabelStyle = LabelStyles.Inside;
                         }
                     }
@@ -205,10 +205,20 @@ namespace Visifire.Charts
             return markerCanvas;
         }
 
+        static DateTime start;
         internal static Canvas GetVisualObjectForColumnChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
+
+            //#region Testing
+
+            //start = DateTime.UtcNow;
+            //Double totalTime = 0;
+            //Double totalDuration = 0;
+            //System.Diagnostics.Debug.WriteLine("Total time taken by ColumnChart render function");
+
+            //#endregion
 
             Double columnGapRatio = 0.1;
 
@@ -261,11 +271,25 @@ namespace Visifire.Charts
 
             Boolean plankDrawn = false;
 
+            //#region Testing
+
+            //DateTime end = DateTime.UtcNow;
+            //totalDuration = (end - start).TotalSeconds;
+            //totalTime = totalDuration;
+
+            //#endregion
+
             foreach (Double xValue in xValues)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
                 columnParams.ShadowOffset = 5;
                 columnParams.Depth = depth3d;
+
+                #region Testing
+
+                start = DateTime.UtcNow;
+
+                #endregion
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {
@@ -273,7 +297,7 @@ namespace Visifire.Charts
                     columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                     columnParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, dataPoint.RadiusX.Value.TopRight, 0, 0);
                     columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight, 0, 0);
@@ -349,6 +373,12 @@ namespace Visifire.Charts
                     }
                     else
                     {
+                        //end = DateTime.UtcNow;
+                        //totalDuration = (end - start).TotalSeconds;
+                        //System.Diagnostics.Debug.WriteLine("Time taken for DataPoint" + xValue + " : " + totalDuration);
+                        //totalTime += totalDuration;
+                        //start = DateTime.UtcNow;
+
                         columnFaces = Get2DColumn(columnParams);
                         columnVisual = columnFaces.Visual;
                     }
@@ -378,7 +408,13 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
                     }
 
+                    #region Testing
 
+                    //end = DateTime.UtcNow;
+                    //totalDuration = (end - start).TotalSeconds;
+                    //System.Diagnostics.Debug.WriteLine("Time taken for DataPoint" + xValue + " : " + totalDuration);
+                    //totalTime += totalDuration;
+                    #endregion
                 }
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Negative)
@@ -387,7 +423,7 @@ namespace Visifire.Charts
                     columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                     columnParams.XRadius = new CornerRadius(0, 0, dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
                     columnParams.YRadius = new CornerRadius(0, 0, dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
@@ -490,6 +526,9 @@ namespace Visifire.Charts
 
                 }
             }
+            
+            start = DateTime.UtcNow; // used for testing
+
             if (!plankDrawn && chart.View3D && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum < 0 && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum > 0)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -511,6 +550,15 @@ namespace Visifire.Charts
 
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
+
+            //#region Testing
+
+            //end = DateTime.UtcNow;
+            //totalDuration = (end - start).TotalSeconds;
+            //totalTime += totalDuration;
+            //System.Diagnostics.Debug.WriteLine("Total time taken by ColumnChart : " + totalTime);
+
+            //#endregion
 
             return visual;
         }
@@ -587,7 +635,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
@@ -675,7 +723,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
@@ -856,7 +904,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
@@ -946,7 +994,7 @@ namespace Visifire.Charts
                         columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
@@ -1109,8 +1157,15 @@ namespace Visifire.Charts
 
             columnVisual.Children.Add(columnBase);
 
+            //DateTime end = DateTime.UtcNow;
+            //Double totalDuration = (end - start).TotalSeconds;
+            //System.Diagnostics.Debug.WriteLine("Column creation : " + totalDuration);
+
+
             // if (((!columnParams.IsStacked) || (columnParams.IsStacked && columnParams.IsTopOfStack))
             //    && columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
+
+            start = DateTime.UtcNow;
 
             if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
             {
@@ -1135,6 +1190,10 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
             }
 
+            //end = DateTime.UtcNow;
+            //totalDuration = (end - start).TotalSeconds;
+            //System.Diagnostics.Debug.WriteLine("Bevel calculation : " + totalDuration);
+
             if (!columnParams.Lighting && columnParams.Bevel)
             {
                 Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(columnParams.Size.Width, columnParams.Size.Height,
@@ -1152,6 +1211,8 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
                 faces.Parts.Add(null);
             }
+
+            start = DateTime.UtcNow;
 
             if (columnParams.Shadow)
             {
@@ -1209,7 +1270,10 @@ namespace Visifire.Charts
             }
 
 
-            faces.VisualComponents.Add(columnVisual);
+            //end = DateTime.UtcNow;
+            //totalDuration = (end - start).TotalSeconds;
+            //System.Diagnostics.Debug.WriteLine("Shadow calculation : " + totalDuration);
+            //faces.VisualComponents.Add(columnVisual);
 
             faces.Visual = columnVisual;
 

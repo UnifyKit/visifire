@@ -26,10 +26,10 @@
             <Setter Property="Bevel" Value="False"/>
         </Style>
     </Page.Resources>
-    <Grid x:Name="LayoutRoot" Height="534" Width="800">
+    <Grid x:Name="LayoutRoot" Height="300" Width="500">
 
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-                  Theme="Theme1" AnimationEnabled="True" Style="{StaticResource ChartStyle}" Margin="146,79,158,156">
+                  Theme="Theme1" AnimationEnabled="True" Style="{StaticResource ChartStyle}">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Area Chart" Style="{StaticResource TitleStyle}"/>

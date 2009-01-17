@@ -71,14 +71,15 @@ namespace Visifire.Charts
         /// </summary>
         public void CreateVisualObject()
         {
+            // Create a new 
+            Visual = new Canvas();
+
             if (!(Boolean)Enabled)
             {
+                Visual = null;
                 return;
             }
 
-            // Create a new 
-            Visual = new Canvas();
-            
             // Create new Labels list
             AxisLabelList = new List<AxisLabel>();
 
@@ -1389,8 +1390,8 @@ namespace Visifire.Charts
             Int32 skipOffset = 0;             // Skip offset
             Boolean overlap = true;
 
-            //Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
-            Double interval = (Double)((Double.IsNaN((Double)Interval) || Interval <= 0) ? ParentAxis.InternalInterval : Interval);
+            Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
+            //Double interval = (Double)((Double.IsNaN((Double)Interval) || Interval <= 0) ? ParentAxis.InternalInterval : Interval);
             Double pixelInterval;
             TextBlock textBlock = new TextBlock();
             textBlock = SetFontProperties(textBlock);
@@ -1408,7 +1409,7 @@ namespace Visifire.Charts
                 {
                     overlap = false;
                 }
-                //else
+                else
                     skipOffset++;
             }
 

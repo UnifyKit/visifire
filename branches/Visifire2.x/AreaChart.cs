@@ -50,7 +50,7 @@ namespace Visifire.Charts
         internal static Marker GetMarkerForDataPoint(Chart chart, DataPoint dataPoint, Double position, bool isPositive)
         {
             if((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
-            {
+            {   
                 Size markerSize = (Boolean)dataPoint.MarkerEnabled ? new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize) : new Size(0, 0);
                 String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
                 //Boolean markerBevel = dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
@@ -159,7 +159,7 @@ namespace Visifire.Charts
                 areaParams.Bevel = series.Bevel;
                 areaParams.BorderBrush = series.BorderColor;
                 areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                areaParams.BorderThickness = series.InternalBorderThickness.Left;
+                areaParams.BorderThickness = series.BorderThickness.Left;
                 areaParams.Depth = depth3d;
                 areaParams.Storyboard = series.Storyboard;
                 areaParams.AnimationEnabled = animationEnabled;
@@ -215,7 +215,6 @@ namespace Visifire.Charts
                         points.Add(new Point(xNew, yNew));
 
                         // get the faces
-                        
                         areaParams.Points = points;
                         areaParams.IsPositive = (currentDataPoint.YValue>0);
 
@@ -356,7 +355,7 @@ namespace Visifire.Charts
 
             Marker marker;
 
-            for (Int32 i=0;i<xValues.Length-1;i++)
+            for (Int32 i=0; i < xValues.Length-1;i++)
             {
                 List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
                 List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
@@ -378,11 +377,10 @@ namespace Visifire.Charts
 
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
-
-
+                    
                     marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].YValue > 0);
                     if (marker != null)
-                    {
+                    {   
                         if (curDataPoints[index].Parent.Storyboard == null)
                             curDataPoints[index].Parent.Storyboard = new Storyboard();
 
@@ -442,7 +440,7 @@ namespace Visifire.Charts
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
                     areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                    areaParams.BorderThickness = series.InternalBorderThickness.Left;
+                    areaParams.BorderThickness = series.BorderThickness.Left;
                     areaParams.Depth = depth3d;
 
                     foreach (PointCollection points in pointSet)
@@ -480,7 +478,6 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            
                             Canvas area2d = GetStacked2DArea(ref faces, areaParams);
                             areaCanvas.Children.Add(area2d);
                             curDataPoints[index].Parent.Faces.VisualComponents.Add(area2d);
@@ -635,6 +632,7 @@ namespace Visifire.Charts
                                 nextDataPoints[index].Parent.Storyboard = ApplyMarkerAnimationToAreaChart(marker, nextDataPoints[index].Parent.Storyboard, 1);
                         }
                     }
+
                     if (curDataPoints[index].Parent.Faces == null)
                     {
                         curDataPoints[index].Parent.Faces = new Faces();
@@ -651,7 +649,7 @@ namespace Visifire.Charts
                         pointSet.InsertRange(pointSet.Count, set2);
                     }
                     else
-                    {
+                    {   
                         pointSet = GeneratePointsCollection(curXPosition, curYPosition, curYBase, nextXPosition, nextYPosition, nextYBase, limitingYPosition);
                     }
 
@@ -668,7 +666,7 @@ namespace Visifire.Charts
                     areaParams.Bevel = series.Bevel;
                     areaParams.BorderBrush = series.BorderColor;
                     areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-                    areaParams.BorderThickness = series.InternalBorderThickness.Left;
+                    areaParams.BorderThickness = series.BorderThickness.Left;
                     areaParams.Depth = depth3d;
 
                     Faces faces = curDataPoints[index].Parent.Faces;

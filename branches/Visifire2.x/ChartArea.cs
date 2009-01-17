@@ -97,7 +97,7 @@ namespace Visifire.Charts
 
             // Check if drawing axis is necessary or not
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-            {   
+            {
                 // Add the required axis to the chart
                 this.AddAxis(chart);
             }
@@ -126,7 +126,17 @@ namespace Visifire.Charts
         /// <returns></returns>
         public Size GetBundingRectangle()
         {
-            Size boundingRec = new Size(Chart._chartAreaGrid.ActualWidth, Chart._chartAreaGrid.ActualHeight);
+            //Size boundingRec = new Size(Chart._chartAreaGrid.ActualWidth - Chart._chartAreaGrid.Margin.Left - Chart._chartAreaGrid.Margin.Right, Chart._chartAreaGrid.ActualHeight - Chart._chartAreaGrid.Margin.Top - Chart._chartAreaGrid.Margin.Bottom);
+            // Size boundingRec = new Size(Chart._chartAreaGrid.ActualWidth, Chart._chartAreaGrid.ActualHeight);
+            Size boundingRec = new Size(Chart._chartBorder.ActualWidth, Chart._chartBorder.ActualHeight);
+            boundingRec.Width -= (Chart._chartBorder.Padding.Left + Chart._chartBorder.Padding.Right);
+            boundingRec.Height -= (Chart._chartBorder.Padding.Top + Chart._chartBorder.Padding.Bottom);
+            boundingRec.Width -= (Chart._chartBorder.BorderThickness.Left + Chart._chartBorder.BorderThickness.Right);
+            boundingRec.Height -= (Chart._chartBorder.BorderThickness.Top + Chart._chartBorder.BorderThickness.Bottom);
+            boundingRec.Width -= (Chart._chartAreaGrid.Margin.Left + Chart._chartAreaGrid.Margin.Right);
+            boundingRec.Height -= (Chart._chartAreaGrid.Margin.Top + Chart._chartAreaGrid.Margin.Bottom);
+
+
 
             System.Diagnostics.Debug.WriteLine("chartAreaGrid Size:" + boundingRec.ToString());
 
@@ -171,30 +181,30 @@ namespace Visifire.Charts
                         Chart._topOuterLegendPanel.Height += size.Height;
                 }
                 else if (legend.VerticalAlignment == VerticalAlignment.Center)
-                {   
+                {
                     if (legend.HorizontalAlignment == HorizontalAlignment.Left || legend.HorizontalAlignment == HorizontalAlignment.Right)
                     {
                         boundingRec.Width -= size.Width;
-                        if(legend.HorizontalAlignment  == HorizontalAlignment.Left)
+                        if (legend.HorizontalAlignment == HorizontalAlignment.Left)
                             Chart._leftOuterLegendPanel.Width = +size.Width;
                         else
-                            Chart._rightOuterLegendPanel.Width = + size.Width;
+                            Chart._rightOuterLegendPanel.Width = +size.Width;
                     }
                 }
             }
 
-            //if (Chart.Bevel)
-            //{
-            //    boundingRec.Height -= 2*Chart.BEVEL_DEPTH;
-            //    boundingRec.Width -= 2*Chart.BEVEL_DEPTH;
-            //}
+            // if (Chart.Bevel)
+            // {
+            //     boundingRec.Height -= 2 * Chart.BEVEL_DEPTH;
+            //     boundingRec.Width -= 2 * Chart.BEVEL_DEPTH;
+            // }
 
             Chart._centerOuterGrid.Height = boundingRec.Height;
             Chart._centerOuterGrid.Width = boundingRec.Width;
 
             return boundingRec;
         }
-    
+
         /// <summary>
         /// Create the center layout of the ChartArea
         /// </summary>
@@ -220,22 +230,41 @@ namespace Visifire.Charts
 
             Chart.PlotArea.Chart = Chart;
 
-            if (Chart.PlotArea.ShadowEnabled)
-            {
-                Chart._plotAreaGrid.Margin = (Chart.View3D) ? new Thickness(0, 0, 4, 0) : new Thickness(0, 0, 4, 4);
-            }
-            else
-            {
-                Chart._plotAreaGrid.Margin = new Thickness(0, 0, 0, 0);
-            }
+            //if (Chart.PlotArea.ShadowEnabled)
+            //{
+            //    Chart._plotAreaGrid.Margin = (Chart.View3D) ? new Thickness(0, 0,Chart.SHADOW_DEPTH, 0) : new Thickness(0, 0, Chart.SHADOW_DEPTH, Chart.SHADOW_DEPTH);
+            //}
+            //else
+            //{   
+            //    Chart._plotAreaGrid.Margin = new Thickness(0, 0, 0, 0);
+            //}
+            //----------------------
+            //if (Chart.PlotArea.ShadowEnabled)
+            //{
+            //    if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            //    {
+            //        Chart._plotAreaGrid.Margin = (Chart.View3D) ? new Thickness(0, 0, 0, Chart.SHADOW_DEPTH) : new Thickness(0, 0, 0, 0);
+            //        //Chart._plotCanvas.Margin = (Chart.View3D) ? new Thickness(0, 0, 0, Chart.SHADOW_DEPTH) : new Thickness(0, 0, 0, 0);
+            //        //Chart._plotAreaGrid.Margin = new Thickness(0, 0, 0, 0);
+            //    }
+            //    else
+            //    {
+            //        Chart._plotAreaGrid.Margin = new Thickness(0, 0, 0, 0);
+            //    }
+            //}
+            //else
+            //{
+            //    Chart._plotAreaGrid.Margin = new Thickness(0, 0, 0, 0);
+            //}
+            //--------------------------------
 
             if (!String.IsNullOrEmpty(Chart.Theme))
                 Chart.PlotArea.ApplyStyleFromTheme(Chart, "PlotArea");
 
             Size boundingRec = GetBundingRectangle();
 
-            PlotAreaCanvas.Height = boundingRec.Height; 
-            PlotAreaCanvas.Width = boundingRec.Width; 
+            PlotAreaCanvas.Height = boundingRec.Height;
+            PlotAreaCanvas.Width = boundingRec.Width;
 
             System.Diagnostics.Debug.WriteLine("boundingRec=" + boundingRec.ToString());
 
@@ -244,7 +273,10 @@ namespace Visifire.Charts
             PlotAreaCanvas.Margin = new Thickness(0);
 
             ObservableObject.AttachHref(Chart, PlotAreaCanvas.Children[0] as Border, Chart.PlotArea.Href, Chart.PlotArea.HrefTarget);
-            ObservableObject.AttachToolTip(Chart, PlotAreaCanvas.Children[0] as Border, Chart.PlotArea.ToolTipText);
+
+            //if (String.IsNullOrEmpty(Chart.ToolTipText))
+            Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
+
             Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
 
             if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
@@ -252,7 +284,7 @@ namespace Visifire.Charts
         }
 
         private Size CalculateLegendMaxSize(Boolean DockInsidePlotArea)
-        {   
+        {
             Size retVal = new Size(0, 0);
 
             foreach (Title title in Chart.Titles)
@@ -407,13 +439,21 @@ namespace Visifire.Charts
 
         private void ApplyPlotAreaBevel()
         {
+            // Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(Chart.PlotArea.PlotAreaBorderElement.Width - Chart.PlotArea.BorderThickness.Left - Chart.PlotArea.BorderThickness.Right - PlankDepth
+            //    , Chart.PlotArea.PlotAreaBorderElement.Height - Chart.PlotArea.BorderThickness.Top - Chart.PlotArea.BorderThickness.Bottom - PlankDepth - PlankThickness
+            //    , Chart.BEVEL_DEPTH, Chart.BEVEL_DEPTH
+            //    , Graphics.GetBevelTopBrush(Chart.PlotArea.PlotAreaBorderElement.Background)
+            //    , Graphics.GetBevelSideBrush(0, Chart.PlotArea.PlotAreaBorderElement.Background)
+            //    , Graphics.GetBevelSideBrush(180, Chart.PlotArea.PlotAreaBorderElement.Background)
+            //    , Graphics.GetBevelSideBrush(90, Chart.PlotArea.PlotAreaBorderElement.Background));
+
             Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(Chart.PlotArea.PlotAreaBorderElement.Width - Chart.PlotArea.BorderThickness.Left - Chart.PlotArea.BorderThickness.Right - PlankDepth
-                , Chart.PlotArea.PlotAreaBorderElement.Height - Chart.PlotArea.BorderThickness.Top - Chart.PlotArea.BorderThickness.Bottom - PlankDepth - PlankThickness
-                , Chart.BEVEL_DEPTH, Chart.BEVEL_DEPTH
-                , Graphics.GetBevelTopBrush(Chart.PlotArea.PlotAreaBorderElement.Background)
-                , Graphics.GetBevelSideBrush(0, Chart.PlotArea.PlotAreaBorderElement.Background)
-                , Graphics.GetBevelSideBrush(180, Chart.PlotArea.PlotAreaBorderElement.Background)
-                , Graphics.GetBevelSideBrush(90, Chart.PlotArea.PlotAreaBorderElement.Background));
+            , Chart.PlotArea.PlotAreaBorderElement.Height - Chart.PlotArea.BorderThickness.Top - Chart.PlotArea.BorderThickness.Bottom + ((Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || Chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? 0 : (-PlankDepth - PlankThickness))
+            , Chart.BEVEL_DEPTH, Chart.BEVEL_DEPTH
+            , Graphics.GetBevelTopBrush(Chart.PlotArea.PlotAreaBorderElement.Background)
+            , Graphics.GetBevelSideBrush(0, Chart.PlotArea.PlotAreaBorderElement.Background)
+            , Graphics.GetBevelSideBrush(180, Chart.PlotArea.PlotAreaBorderElement.Background)
+            , Graphics.GetBevelSideBrush(90, Chart.PlotArea.PlotAreaBorderElement.Background));
 
             bevelCanvas.SetValue(Canvas.LeftProperty, Chart.PlotArea.BorderThickness.Left);
             bevelCanvas.SetValue(Canvas.TopProperty, Chart.PlotArea.BorderThickness.Top);
@@ -434,10 +474,25 @@ namespace Visifire.Charts
             {
                 if (Chart.View3D)
                 {
-                    Chart.PlotArea.ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Chart._plotAreaScrollViewer.ActualWidth + Chart.SHADOW_DEPTH - PlankOffset
-                        , Chart.PlotArea.PlotAreaBorderElement.Height - PlankDepth - PlankThickness
+                    //Chart.PlotArea.ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Chart._plotAreaScrollViewer.ActualWidth + Chart.SHADOW_DEPTH - PlankOffset
+                    //    , Chart.PlotArea.PlotAreaBorderElement.Height - PlankDepth - PlankThickness
+                    //    , Chart.PlotArea.CornerRadius
+                    //    , Chart.PlotArea.CornerRadius, 6);
+
+                    if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || Chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                    {
+                        Chart.PlotArea.ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Chart._plotAreaScrollViewer.ActualWidth + Chart.SHADOW_DEPTH - PlankOffset
+                        , Chart._plotCanvas.ActualHeight + Chart.SHADOW_DEPTH
                         , Chart.PlotArea.CornerRadius
                         , Chart.PlotArea.CornerRadius, 6);
+                    }
+                    else
+                    {
+                        Chart.PlotArea.ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Chart._plotAreaScrollViewer.ActualWidth + Chart.SHADOW_DEPTH - PlankOffset
+                        , Chart.PlotArea.PlotAreaBorderElement.Height + Chart.SHADOW_DEPTH - PlankDepth - PlankThickness
+                        , Chart.PlotArea.CornerRadius
+                        , Chart.PlotArea.CornerRadius, 6);
+                    }
 
                     PathGeometry pg = new PathGeometry();
                     PathFigure pf = new PathFigure();
@@ -473,9 +528,10 @@ namespace Visifire.Charts
                 else
                 {
                     Chart.PlotArea.ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Chart._plotAreaScrollViewer.ActualWidth + Chart.SHADOW_DEPTH
-                        , Chart._plotCanvas.ActualHeight - PlankOffset, Chart.PlotArea.CornerRadius
+                        , Chart._plotAreaScrollViewer.Height - PlankOffset + Chart.SHADOW_DEPTH, Chart.PlotArea.CornerRadius
                         , Chart.PlotArea.CornerRadius
                         , 6);
+                    
 
                     PathGeometry pg = new PathGeometry();
                     PathFigure pf = new PathFigure();
@@ -508,11 +564,12 @@ namespace Visifire.Charts
 
                 Chart.PlotArea.ShadowGrid.IsHitTestVisible = false;
                 Chart._plotAreaShadowCanvas.Children.Add(Chart.PlotArea.ShadowGrid);
+                Chart.PlotArea.ShadowGrid.UpdateLayout();
             }
         }
 
         private void SetScrollBarValues(Axis axis)
-        {   
+        {
             if (ScrollableLength < 1000)
             {
                 axis.ScrollBarElement.SmallChange = 10;
@@ -573,23 +630,23 @@ namespace Visifire.Charts
                     AxisX.ScrollBarElement.Visibility = Visibility.Visible;
                 }
 
-                if(AddToVisual)
+                if (AddToVisual)
                     Chart._bottomAxisPanel.Children.Add(AxisX.Visual);
 
                 Size size = Graphics.CalculateVisualSize(Chart._bottomAxisContainer);
                 totalHeightReduced += size.Height;
-                                
+
 
                 System.Diagnostics.Debug.WriteLine("CurrentScrollScrollBarOffset" + AxisX.CurrentScrollScrollBarOffset.ToString());
                 System.Diagnostics.Debug.WriteLine("HorizontalOffset" + AxisX.ScrollViewerElement.HorizontalOffset.ToString());
-                
-                if((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
+
+                if ((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
                     (AxisX.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(-AxisX.CurrentScrollScrollBarOffset, 0, 0, 0);
 
             }
             else
                 Chart._bottomAxisScrollBar.Visibility = Visibility.Collapsed;
-            
+
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX2.Width = NewSize.Width;
@@ -598,13 +655,13 @@ namespace Visifire.Charts
                 if (ChartScrollViewer != null)
                 {
                     AxisX2.ScrollableSize = ScrollableLength;
-#if SL              
+#if SL
                     AxisX2.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ViewportWidth;
                     AxisX2.ScrollBarElement.ViewportSize = ChartScrollViewer.ViewportWidth;
 #else               
                     AxisX2.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ActualWidth;
                     AxisX2.ScrollBarElement.ViewportSize = ChartScrollViewer.ActualWidth;
-#endif              
+#endif
                 }
 
                 AxisX2.CreateVisualObject(Chart, "AxisX");
@@ -626,13 +683,13 @@ namespace Visifire.Charts
                 Size size = Graphics.CalculateVisualSize(Chart._topAxisContainer);
                 totalHeightReduced += size.Height;
 
-                if((AxisX2.ScrollViewerElement.Content as FrameworkElement) != null)
+                if ((AxisX2.ScrollViewerElement.Content as FrameworkElement) != null)
                     (AxisX2.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(-AxisX.CurrentScrollScrollBarOffset, 0, 0, 0);
 
             }
             else
                 Chart._topAxisScrollBar.Visibility = Visibility.Collapsed;
-            
+
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisY.Width = NewSize.Width;
@@ -672,7 +729,7 @@ namespace Visifire.Charts
             return totalHeightReduced;
         }
 
-       // private DrawAxisX
+        // private DrawAxisX
 
         Double DrawAxesY(Size NewSize, Boolean AddToVisual)
         {
@@ -692,7 +749,7 @@ namespace Visifire.Charts
                 if (ChartScrollViewer != null)
                 {
                     AxisX.ScrollableSize = ScrollableLength;
-                    
+
 #if SL
                     AxisX.ScrollBarElement.Maximum = ScrollableLength - ChartScrollViewer.ViewportHeight;
                     AxisX.ScrollBarElement.ViewportSize = ChartScrollViewer.ViewportHeight;
@@ -717,13 +774,13 @@ namespace Visifire.Charts
                     AxisX.ScrollBarElement.Visibility = Visibility.Visible;
                 }
 
-                if(AddToVisual)
+                if (AddToVisual)
                     Chart._leftAxisPanel.Children.Add(AxisX.Visual);
 
                 Size size = Graphics.CalculateVisualSize(Chart._leftAxisContainer);
                 totalWidthReduced += size.Width;
 
-                if((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
+                if ((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
                     (AxisX.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(0, -AxisX.CurrentScrollScrollBarOffset, 0, 0);
 
             }
@@ -764,7 +821,7 @@ namespace Visifire.Charts
                 Size size = Graphics.CalculateVisualSize(Chart._rightAxisContainer);
                 totalWidthReduced += size.Width;
 
-                if((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
+                if ((AxisX.ScrollViewerElement.Content as FrameworkElement) != null)
                     (AxisX.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(0, -AxisX.CurrentScrollScrollBarOffset, 0, 0);
             }
 
@@ -811,40 +868,63 @@ namespace Visifire.Charts
                 {
                     if (ds.Storyboard != null) ds.Storyboard.Stop();
                     ds.Storyboard = null;
+                    ds.Faces = null;
                 }
 
             if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
-                System.Diagnostics.Debug.WriteLine("Entry NewSize=" + NewSize.ToString());
+                Double totalWidthReduced = DrawAxesY(NewSize, true);
+                NewSize.Width -= totalWidthReduced;
 
                 UpdateLayoutSettings(NewSize);
-                System.Diagnostics.Debug.WriteLine("UpdateLayoutSettings NewSize=" + NewSize.ToString());
 
                 Double totalHeightReduced = DrawAxesX(NewSize, true);
-                System.Diagnostics.Debug.WriteLine("DrawAxesX NewSize=" + NewSize.ToString());
-                System.Diagnostics.Debug.WriteLine("totalHeightReduced=" + totalHeightReduced.ToString());
-
                 NewSize.Height -= totalHeightReduced;
-                System.Diagnostics.Debug.WriteLine("NewSize=" + NewSize.ToString());
-
-                //UpdateLayoutSettings(NewSize);
-                Double totalWidthReduced = DrawAxesY(NewSize, true);
-                
-                System.Diagnostics.Debug.WriteLine("totalWidthReduced=" + totalWidthReduced.ToString());
-                NewSize.Width -= totalWidthReduced;
-                                
-                System.Diagnostics.Debug.WriteLine("by DrawAxesY NewSize=" + NewSize.ToString());
 
                 NewSize = SetChartAreaCenterGridMargin(NewSize);
-                UpdateLayoutSettings(NewSize);
-                totalHeightReduced = DrawAxesX(NewSize, true);
-                               
-                System.Diagnostics.Debug.WriteLine("DrawAxesX NewSize=" + NewSize.ToString());
-                System.Diagnostics.Debug.WriteLine("totalHeightReduced=" + totalHeightReduced.ToString());
 
-                System.Diagnostics.Debug.WriteLine("DrawAxesY NewSize=" + NewSize.ToString());
-                
+                UpdateLayoutSettings(NewSize);
+
                 DrawAxesY(NewSize, true);
+
+                totalHeightReduced = DrawAxesX(NewSize, true);
+
+                //System.Diagnostics.Debug.WriteLine("Entry NewSize=" + NewSize.ToString());
+
+                //UpdateLayoutSettings(NewSize);
+                //System.Diagnostics.Debug.WriteLine("UpdateLayoutSettings NewSize=" + NewSize.ToString());
+
+                //Double firstTotalHeightReduced = DrawAxesX(NewSize, true);
+                //System.Diagnostics.Debug.WriteLine("DrawAxesX NewSize=" + NewSize.ToString());
+                //System.Diagnostics.Debug.WriteLine("totalHeightReduced=" + firstTotalHeightReduced.ToString());
+
+                //NewSize.Height -= firstTotalHeightReduced;
+                //System.Diagnostics.Debug.WriteLine("NewSize=" + NewSize.ToString());
+
+                ////UpdateLayoutSettings(NewSize);
+                //Double totalWidthReduced = DrawAxesY(NewSize, true);
+
+                //System.Diagnostics.Debug.WriteLine("totalWidthReduced=" + totalWidthReduced.ToString());
+                //NewSize.Width -= totalWidthReduced;
+
+                //System.Diagnostics.Debug.WriteLine("by DrawAxesY NewSize=" + NewSize.ToString());
+
+                //NewSize = SetChartAreaCenterGridMargin(NewSize);
+                //UpdateLayoutSettings(NewSize);
+                //Double secondTotalHeightReduced = DrawAxesX(NewSize, true);
+
+                //if (secondTotalHeightReduced != firstTotalHeightReduced)
+                //{
+                //    NewSize.Height += firstTotalHeightReduced;
+                //    NewSize.Height -= secondTotalHeightReduced;
+                //    UpdateLayoutSettings(NewSize);
+                //}
+                //System.Diagnostics.Debug.WriteLine("DrawAxesX NewSize=" + NewSize.ToString());
+                //System.Diagnostics.Debug.WriteLine("totalHeightReduced=" + firstTotalHeightReduced.ToString());
+
+                //System.Diagnostics.Debug.WriteLine("DrawAxesY NewSize=" + NewSize.ToString());
+
+                //DrawAxesY(NewSize, true);
             }
 
             #region Horizontal Render
@@ -881,15 +961,16 @@ namespace Visifire.Charts
                 System.Diagnostics.Debug.WriteLine("totalHeightReduced=" + totalHeightReduced.ToString());
 
                 System.Diagnostics.Debug.WriteLine("DrawAxesY NewSize=" + NewSize.ToString());
-                                
+
                 DrawAxesY(NewSize, true);
             }
 
             #endregion Horizontal Render
             else
             {
-                 UpdateLayoutSettings(NewSize);
-                 SetChartAreaCenterGridMargin(NewSize);
+                UpdateLayoutSettings(NewSize);
+                //NewSize = SetChartAreaCenterGridMargin(NewSize);
+
             }
 
             Render(PreviousSize, NewSize);
@@ -919,7 +1000,7 @@ namespace Visifire.Charts
                 chartSize = NewSize.Width;
 
             if ((bool)Chart.ScrollingEnabled)
-            {   
+            {
                 Double minGap = 10;
                 if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
                     minGap = (Double)Chart.MinimumGap;
@@ -956,10 +1037,13 @@ namespace Visifire.Charts
 
             if (Chart.PlotArea.Bevel)
                 ApplyPlotAreaBevel();
-                       
+
 
             Chart._plotAreaScrollViewer.Height = NewSize.Height;
-            //Chart._plotAreaScrollViewer.Width = NewSize.Width;
+
+            //if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+            //    Chart._plotAreaScrollViewer.Width = NewSize.Width;
+
             Chart._plotAreaScrollViewer.UpdateLayout();
             ChartScrollViewer = Chart._plotAreaScrollViewer;
             ApplyPlotAreaShadow();
@@ -1058,23 +1142,23 @@ namespace Visifire.Charts
             colors.Add(Color.FromArgb(255, 210, 210, 210)); // #FFD2D2D2
             colors.Add(Color.FromArgb(255, 255, 255, 255)); // #FFFFFFFF
             colors.Add(Color.FromArgb(255, 223, 223, 223)); // #FFDFDFDF
-            
-            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5,1), new Point(0.5,0), colors, new List<double>() { 0,1.844,1,0.442 }); 
+
+            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1.844, 1, 0.442 });
 
             colors = new List<Color>();
-            colors.Add(Color.FromArgb(255,232,232,232));  // #FFE8E8E8
-            colors.Add(Color.FromArgb(255, 142,142,142)); // #FF8E8787
+            colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
+            colors.Add(Color.FromArgb(255, 142, 142, 142)); // #FF8E8787
 
 
-            rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0,0.5), new Point(1,0.5), colors, new List<double>() { 1, 0 }); 
+            rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
 
             colors = new List<Color>();
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
             colors.Add(Color.FromArgb(255, 142, 142, 142));  // #FF8E8787
             colors.Add(Color.FromArgb(255, 232, 227, 227));    // #FFE8E3E3
 
-            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0.357, 1, 0 }); 
-            
+            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0.357, 1, 0 });
+
             RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
             columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)246, (Byte)246, (Byte)246));
 
@@ -1141,20 +1225,20 @@ namespace Visifire.Charts
             colors.Add(Color.FromArgb(255, 255, 255, 255));  // #FFFFFFFF
             colors.Add(Color.FromArgb(255, 223, 223, 223));  // #FFDFDFDF
 
-            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(1.1, 0.49), new Point(-0.15, 0.49), colors, new List<double>() { 0, 0.844, 1, 0.442 }); 
+            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(1.1, 0.49), new Point(-0.15, 0.49), colors, new List<double>() { 0, 0.844, 1, 0.442 });
 
             colors = new List<Color>();
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
             colors.Add(Color.FromArgb(255, 142, 135, 135));  // #FF8E8787
 
-            rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0,0.5), new Point(1,0.5), colors, new List<double>() { 1,0 }); 
+            rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
 
             colors = new List<Color>();
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
             colors.Add(Color.FromArgb(255, 142, 135, 135));  // #FF8E8787
 
-            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.084, 0.441), new Point(1.916, 0.443), colors, new List<double>() { 0, 1 }); 
-            
+            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.084, 0.441), new Point(1.916, 0.443), colors, new List<double>() { 0, 1 });
+
             columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)223, (Byte)223, (Byte)223));
             columnParams.Lighting = false;
             columnParams.BorderThickness = 0.45;
@@ -1189,22 +1273,22 @@ namespace Visifire.Charts
             colors.Add(Color.FromArgb(255, 232, 232, 232));
             colors.Add(Color.FromArgb(255, 142, 135, 135));
 
-            Brush rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 0, 1 }); 
+            Brush rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 0, 1 });
 
-//          Brush rightBrush;
-//          String xaml = String.Format(@"<LinearGradientBrush 
-//
-//xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
-//                EndPoint=""1,0.5"" StartPoint=""0,0.5"">
-//                <GradientStop Color=""#FFE8E8E8"" Offset=""0""/>
-//    			<GradientStop Color=""#FF8E8787"" Offset=""1""/>
-//    		</LinearGradientBrush>");
+            //          Brush rightBrush;
+            //          String xaml = String.Format(@"<LinearGradientBrush 
+            //
+            //xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+            //                EndPoint=""1,0.5"" StartPoint=""0,0.5"">
+            //                <GradientStop Color=""#FFE8E8E8"" Offset=""0""/>
+            //    			<GradientStop Color=""#FF8E8787"" Offset=""1""/>
+            //    		</LinearGradientBrush>");
 
-//#if WPF
-//          rightBrush = (Brush)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
-//#else
-//          rightBrush = System.Windows.Markup.XamlReader.Load(xaml) as Brush;
-//#endif
+            //#if WPF
+            //          rightBrush = (Brush)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
+            //#else
+            //          rightBrush = System.Windows.Markup.XamlReader.Load(xaml) as Brush;
+            //#endif
 
             Faces plankFaces = ColumnChart.Get3DColumn(columnParams, null, null, rightBrush);
             Panel plank = plankFaces.Visual;
@@ -1242,31 +1326,31 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 trendLinesReferingToPrimaryAxesX = (from trendline in Chart.TrendLines
-                                                    where (trendline.Orientation == Orientation.Vertical) &&(trendline.AxisType == AxisTypes.Primary)
+                                                    where (trendline.Orientation == Orientation.Vertical) && (trendline.AxisType == AxisTypes.Primary)
                                                     select trendline).ToList();
                 trendLinesReferingToPrimaryAxisY = (from trendline in Chart.TrendLines
-                                                    where (trendline.Orientation == Orientation.Horizontal) &&(trendline.AxisType == AxisTypes.Primary)
+                                                    where (trendline.Orientation == Orientation.Horizontal) && (trendline.AxisType == AxisTypes.Primary)
                                                     select trendline).ToList();
                 trendLinesReferingToSecondaryAxesX = (from trendline in Chart.TrendLines
-                                                      where (trendline.Orientation == Orientation.Vertical) &&(trendline.AxisType == AxisTypes.Secondary)
+                                                      where (trendline.Orientation == Orientation.Vertical) && (trendline.AxisType == AxisTypes.Secondary)
                                                       select trendline).ToList();
                 trendLinesReferingToSecondaryAxisY = (from trendline in Chart.TrendLines
-                                                      where (trendline.Orientation == Orientation.Horizontal) &&(trendline.AxisType == AxisTypes.Secondary)
+                                                      where (trendline.Orientation == Orientation.Horizontal) && (trendline.AxisType == AxisTypes.Secondary)
                                                       select trendline).ToList();
             }
             else
             {
                 trendLinesReferingToPrimaryAxesX = (from trendline in Chart.TrendLines
-                                                    where (trendline.Orientation == Orientation.Horizontal) &&(trendline.AxisType == AxisTypes.Primary)
+                                                    where (trendline.Orientation == Orientation.Horizontal) && (trendline.AxisType == AxisTypes.Primary)
                                                     select trendline).ToList();
                 trendLinesReferingToPrimaryAxisY = (from trendline in Chart.TrendLines
-                                                    where (trendline.Orientation == Orientation.Vertical) &&(trendline.AxisType == AxisTypes.Primary)
+                                                    where (trendline.Orientation == Orientation.Vertical) && (trendline.AxisType == AxisTypes.Primary)
                                                     select trendline).ToList();
                 trendLinesReferingToSecondaryAxesX = (from trendline in Chart.TrendLines
-                                                      where (trendline.Orientation == Orientation.Horizontal) &&(trendline.AxisType == AxisTypes.Secondary)
+                                                      where (trendline.Orientation == Orientation.Horizontal) && (trendline.AxisType == AxisTypes.Secondary)
                                                       select trendline).ToList();
                 trendLinesReferingToSecondaryAxisY = (from trendline in Chart.TrendLines
-                                                      where (trendline.Orientation == Orientation.Vertical) &&(trendline.AxisType == AxisTypes.Secondary)
+                                                      where (trendline.Orientation == Orientation.Vertical) && (trendline.AxisType == AxisTypes.Secondary)
                                                       select trendline).ToList();
             }
 
@@ -1425,6 +1509,14 @@ namespace Visifire.Charts
             PlotAreaCanvas.Height = NewSize.Height;
 
             PlottingCanvas = new Canvas();
+
+            //ObservableObject.AttachHref(Chart, PlottingCanvas, Chart.PlotArea.Href, Chart.PlotArea.HrefTarget);
+
+            //if (String.IsNullOrEmpty(Chart.ToolTipText))
+            //    Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, PlottingCanvas);
+
+            //Chart.AttachEvents2Visual(Chart.PlotArea, PlottingCanvas);
+
             PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
             PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
             PlotAreaCanvas.Children.Add(PlottingCanvas);
@@ -1487,11 +1579,11 @@ namespace Visifire.Charts
                 return;
 
             // set the ChartCanvas Size
-            ChartCanvas.Width = chartCanvasSize.Width - ((PlotDetails.ChartOrientation == ChartOrientationType.Horizontal) ? CHART_SCROLLVIEWER_OFFSET:0);
+            ChartCanvas.Width = chartCanvasSize.Width - ((PlotDetails.ChartOrientation == ChartOrientationType.Horizontal) ? CHART_SCROLLVIEWER_OFFSET : 0);
             ChartCanvas.Height = chartCanvasSize.Height;
-            Chart.PlotArea.PlotAreaBorderElement.Height = chartCanvasSize.Height;
+            Chart.PlotArea.PlotAreaBorderElement.Height = chartCanvasSize.Height + ((PlotDetails.ChartOrientation == ChartOrientationType.Horizontal && Chart.View3D) ? PlankOffset : 0);
             Chart.PlotArea.PlotAreaBorderElement.Width = chartCanvasSize.Width;
-            
+
             //ChartCanvas.Background = new SolidColorBrush(Colors.Red);
             //PlottingCanvas.Background = new SolidColorBrush(Colors.Red);
             //Chart._drawingCanvas.Background = new SolidColorBrush(Colors.Red);
@@ -1527,7 +1619,7 @@ namespace Visifire.Charts
             if ((axis.ScrollViewerElement.Content as FrameworkElement) != null)
                 (axis.ScrollViewerElement.Content as FrameworkElement).Margin = new Thickness(0);
         }
-        
+
         internal void AxesXScrollBarElement_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
@@ -1543,7 +1635,7 @@ namespace Visifire.Charts
 
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
-#endif          
+#endif
                 ChartScrollViewer.ScrollToHorizontalOffset(offset);
                 AxisX.ScrollViewerElement.ScrollToHorizontalOffset(offset);
 
@@ -1832,7 +1924,7 @@ namespace Visifire.Charts
             }
 
         }
-        
+
         private void SetSeriesStyleFromTheme(Chart chart)
         {
             if (Chart.Series != null)
@@ -2012,7 +2104,7 @@ namespace Visifire.Charts
                     {
                         if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
                             seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-                        
+
                         foreach (DataPoint dp in ds.DataPoints)
                         {
                             dp.IsNotificationEnable = false;
@@ -2064,9 +2156,9 @@ namespace Visifire.Charts
                 Brush markerColor = dataPoint.InternalColor;
 
                 Boolean markerBevel;
-                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point 
+                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
-                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie 
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line)
                     markerBevel = false;
@@ -2099,7 +2191,8 @@ namespace Visifire.Charts
         private void AddLegends(Chart chart, Boolean DockInsidePlotArea, Double Height, Double Width)
         {
             List<Legend> dockTest = (from legend in chart.Legends
-                                     where legend.DockInsidePlotArea == DockInsidePlotArea select legend).ToList();
+                                     where legend.DockInsidePlotArea == DockInsidePlotArea
+                                     select legend).ToList();
 
             if (dockTest.Count <= 0)
                 return;
@@ -2148,13 +2241,13 @@ namespace Visifire.Charts
 
                     foreach (DataSeries dataSeries in seriesToBeShownInLegend)
                     {
-                        if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(dataSeries.Legend) 
+                        if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(dataSeries.Legend)
                             || !String.IsNullOrEmpty(dataSeries.InternalLegendName)))
                         {
                             legend = null;
                             var legends = from entry in chart.Legends
-                                          where (entry.Name == dataSeries.Legend 
-                                          || entry.Name == dataSeries.InternalLegendName) 
+                                          where (entry.Name == dataSeries.Legend
+                                          || entry.Name == dataSeries.InternalLegendName)
                                           && entry.DockInsidePlotArea == DockInsidePlotArea
                                           select entry;
 
@@ -2244,37 +2337,37 @@ namespace Visifire.Charts
             chart._centerDockInsidePlotAreaPanel.Children.Clear();
 
             List<Legend> legendsOnTop = (from entry in chart.Legends
-                                         where entry.Entries.Count > 0 && entry.VerticalAlignment == VerticalAlignment.Top 
-                                         && entry.DockInsidePlotArea == DockInsidePlotArea 
+                                         where entry.Entries.Count > 0 && entry.VerticalAlignment == VerticalAlignment.Top
+                                         && entry.DockInsidePlotArea == DockInsidePlotArea
                                          && (Boolean)entry.Enabled
                                          select entry).ToList();
 
             List<Legend> legendsOnBottom = (from entry in chart.Legends
-                                            where entry.Entries.Count > 0 
-                                            && entry.VerticalAlignment == VerticalAlignment.Bottom 
+                                            where entry.Entries.Count > 0
+                                            && entry.VerticalAlignment == VerticalAlignment.Bottom
                                             && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
                                             select entry).ToList();
 
             List<Legend> legendsOnLeft = (from entry in chart.Legends
-                                          where entry.Entries.Count > 0 
-                                          && entry.VerticalAlignment == VerticalAlignment.Center 
-                                          && entry.HorizontalAlignment == HorizontalAlignment.Left 
+                                          where entry.Entries.Count > 0
+                                          && entry.VerticalAlignment == VerticalAlignment.Center
+                                          && entry.HorizontalAlignment == HorizontalAlignment.Left
                                           && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
                                           select entry).ToList();
 
             List<Legend> legendsOnRight = (from entry in chart.Legends
-                                           where entry.Entries.Count > 0 
-                                           && entry.VerticalAlignment == VerticalAlignment.Center 
-                                           && entry.HorizontalAlignment == HorizontalAlignment.Right 
-                                           && entry.DockInsidePlotArea == DockInsidePlotArea 
+                                           where entry.Entries.Count > 0
+                                           && entry.VerticalAlignment == VerticalAlignment.Center
+                                           && entry.HorizontalAlignment == HorizontalAlignment.Right
+                                           && entry.DockInsidePlotArea == DockInsidePlotArea
                                            && (Boolean)entry.Enabled
                                            select entry).ToList();
 
             List<Legend> legendsAtCenter = (from entry in chart.Legends
-                                            where entry.Entries.Count > 0 
-                                            && entry.VerticalAlignment == VerticalAlignment.Center 
-                                            && entry.HorizontalAlignment == HorizontalAlignment.Center 
-                                            && entry.DockInsidePlotArea == DockInsidePlotArea 
+                                            where entry.Entries.Count > 0
+                                            && entry.VerticalAlignment == VerticalAlignment.Center
+                                            && entry.HorizontalAlignment == HorizontalAlignment.Center
+                                            && entry.DockInsidePlotArea == DockInsidePlotArea
                                             && (Boolean)entry.Enabled
                                             select entry).ToList();
 
@@ -2285,7 +2378,7 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = LegendLayouts.FlowLayout;
                     if (!Double.IsNaN(Width) && Width > 0)
-                        legend.MaximumWidth = Width;
+                        legend.MaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right;
 
                     legend.CreateVisual();
                     if (legend.Visual != null)
@@ -2301,7 +2394,7 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = LegendLayouts.FlowLayout;
                     if (!Double.IsNaN(Width) && Width > 0)
-                        legend.MaximumWidth = Width;
+                        legend.MaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right;
 
                     legend.CreateVisual();
                     if (legend.Visual != null)
@@ -2316,7 +2409,7 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = LegendLayouts.FlowLayout;
                     if (!Double.IsNaN(Height) && Height > 0)
-                        legend.MaximumHeight = Height;
+                        legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom;
 
                     legend.CreateVisual();
                     if (legend.Visual != null)
@@ -2332,7 +2425,7 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = LegendLayouts.FlowLayout;
                     if (!Double.IsNaN(Height) && Height > 0)
-                        legend.MaximumHeight = Height;
+                        legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom;
 
                     legend.CreateVisual();
                     if (legend.Visual != null)
@@ -2553,7 +2646,7 @@ namespace Visifire.Charts
             private set;
         }
 
-        
+
 
         internal Axis AxisX
         {
@@ -2762,7 +2855,7 @@ namespace Visifire.Charts
             //if (AxisY != null) AxisY.PlotDetails = PlotDetails;
             //if (AxisY2 != null) AxisY2.PlotDetails = PlotDetails;
 
-            
+
 
             if (AxisX != null)
             {
@@ -2904,38 +2997,45 @@ namespace Visifire.Charts
 
                     #region Attach Tool Tips
 
-                    if (dp.Faces != null)
+                    //if (String.IsNullOrEmpty(Chart.ToolTipText))
                     {
-                        if ((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut))
+                        if (dp.Faces != null)
                         {
-                            ObservableObject.AttachToolTip(Chart, dp.Faces.VisualComponents, dp.TextParser((String.IsNullOrEmpty(dp.ToolTipText) ? "#XValue, #YValue" : dp.ToolTipText)));
+                            if ((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut))
+                            {
+                                dp.AttachToolTip(Chart, dp, dp.Faces.VisualComponents);
+                                //dp.AttachToolTip(Chart, dp.Faces.VisualComponents, dp.TextParser((dp.ToolTipText == String.Empty) ? "#XValue, #YValue" : dp.ToolTipText));
+                            }
+                            else
+                            {
+                                //dp.ToolTipText = (dp.ToolTipText == String.Empty) ? "#XValue, #YValue" : dp.ToolTipText;
+
+                                if (ds.RenderAs != RenderAs.Line && ds.RenderAs != RenderAs.Area && ds.RenderAs != RenderAs.StackedArea && ds.RenderAs != RenderAs.StackedArea100)
+                                    dp.AttachToolTip(Chart, dp, dp.Faces.Visual);
+
+                                if (dp.Marker != null)
+                                    dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+                            }
                         }
-                        else
+
+                        if (ds.RenderAs == RenderAs.Line)
                         {
-                            if (ds.RenderAs != RenderAs.Line && ds.RenderAs != RenderAs.Area && ds.RenderAs != RenderAs.StackedArea && ds.RenderAs != RenderAs.StackedArea100)
-                                ObservableObject.AttachToolTip(Chart, dp.Faces.Visual, dp.TextParser((String.IsNullOrEmpty(dp.ToolTipText) ? "#XValue, #YValue" : dp.ToolTipText)));
                             if (dp.Marker != null)
-                                ObservableObject.AttachToolTip(Chart, dp.Marker.Visual, dp.TextParser((String.IsNullOrEmpty(dp.ToolTipText) ? "#XValue, #YValue" : dp.ToolTipText)));
+                                dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
                         }
-                    }
 
-                    if (ds.RenderAs == RenderAs.Line)
-                    {
-                        if (dp.Marker != null)
-                            ObservableObject.AttachToolTip(Chart, dp.Marker.Visual, dp.TextParser(dp.ToolTipText));
-                    }
-
-                    if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
-                    {
-                        if (dp.Marker != null)
-                            ObservableObject.AttachToolTip(Chart, dp.Marker.Visual, dp.TextParser(dp.ToolTipText));
+                        if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
+                        {
+                            if (dp.Marker != null)
+                                dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+                        }
                     }
 
                     #endregion
 
                     #region Attach Href
 
-                    dp.SetHref2DataPointVisualFaces(dp);
+                    //dp.SetHref2DataPointVisualFaces(dp);
 
                     #endregion
 
@@ -2944,12 +3044,14 @@ namespace Visifire.Charts
                 }
 
                 #region Attach ToolTip for AreaCharts
-
-                if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
+                //if (String.IsNullOrEmpty(Chart.ToolTipText) && String.IsNullOrEmpty(Chart.PlotArea.ToolTipText))
                 {
-                    if (ds.Faces != null)
+                    if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
                     {
-                        ds.AttachAreaToolTip(Chart, ds.Faces.VisualComponents);
+                        if (ds.Faces != null)
+                        {
+                            ds.AttachAreaToolTip(Chart, ds.Faces.VisualComponents);
+                        }
                     }
                 }
 
@@ -3102,7 +3204,7 @@ namespace Visifire.Charts
         /// <param name="title">Title to add</param>
         /// <param name="panel">Where to add</param>
         private void AddTitle(Chart chart, Title title, Panel panel, Double width, Double height)
-        {   
+        {
             // Set parent
             title.Chart = chart;
 
@@ -3110,8 +3212,8 @@ namespace Visifire.Charts
             // Create Title Visual Object
             title.CreateVisualObject();
 
-            if (title.VerticalAlignment == VerticalAlignment.Top || title.VerticalAlignment == VerticalAlignment.Bottom 
-                ||(title.VerticalAlignment == VerticalAlignment.Center && title.HorizontalAlignment == HorizontalAlignment.Center))
+            if (title.VerticalAlignment == VerticalAlignment.Top || title.VerticalAlignment == VerticalAlignment.Bottom
+                || (title.VerticalAlignment == VerticalAlignment.Center && title.HorizontalAlignment == HorizontalAlignment.Center))
             {
                 if (title.TextBlockDesiredSize.Width > width && (chart.ActualWidth - width) < width)
                 {

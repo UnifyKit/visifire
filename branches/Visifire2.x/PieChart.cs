@@ -828,7 +828,7 @@ namespace Visifire.Charts
                 // apply animation to the individual points that for the pie slice
                 if (pieParams.AnimationEnabled)
                 {
-                    // if the stop angle is zero then animation weill not be applies to that point 
+                    // if the stop angle is zero then animation will not be applies to that point 
                     // hence during animation the shape of the pie will get distorted
                     Double stopAngle = 0;
                     if (pieParams.StopAngle == 0)
@@ -3221,7 +3221,6 @@ namespace Visifire.Charts
                                 path.Opacity = 0;
                             }
                         }
-
                     }
 
                     if (dataPoint._labelLine != null && pieParams.LabelLineEnabled)

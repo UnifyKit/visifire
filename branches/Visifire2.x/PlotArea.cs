@@ -203,6 +203,24 @@ namespace Visifire.Charts
             //    (plotArea.Chart as Chart).CallRender();
         }
 
+        /// <summary>
+        /// ToolTip text property for the Chart
+        /// </summary>
+        public override String ToolTipText
+        {
+            get
+            {
+                if (Chart != null && !String.IsNullOrEmpty(Chart.ToolTipText))
+                    return null;
+                else
+                    return (String)GetValue(ToolTipTextProperty);
+            }
+            set
+            {
+                SetValue(ToolTipTextProperty, value);
+            }
+        }
+
         public BorderStyles BorderStyle
         {
             get
@@ -351,12 +369,12 @@ namespace Visifire.Charts
             //    (plotArea.Chart as Chart).CallRender(); 
         }
 
-        public override String ToolTipText
-        {
-            get;
-            set;
-        }
-
+        // public override String ToolTipText
+        // {
+        //     get;
+        //     set;
+        // }
+        
         #endregion
 
         internal void CreateVisual()
@@ -464,22 +482,22 @@ namespace Visifire.Charts
 
 
 
-        private void ApplyShadow(Thickness shadowDepth, Double width, Double height)
-        {
-            if (ShadowEnabled)
-            {
-                Canvas PlotAreaShadowCanvas = new Canvas();
+        //private void ApplyShadow(Thickness shadowDepth, Double width, Double height)
+        //{
+        //    if (ShadowEnabled)
+        //    {
+        //        Canvas PlotAreaShadowCanvas = new Canvas();
 
-                PlotAreaBorderElement.Margin = shadowDepth;
-                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(width, height, new CornerRadius(10), new CornerRadius(10), 6);
-                shadowGrid.SetValue(Canvas.TopProperty, shadowDepth.Bottom);
-                shadowGrid.SetValue(Canvas.LeftProperty, shadowDepth.Right);
+        //        PlotAreaBorderElement.Margin = shadowDepth;
+        //        Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(width, height, new CornerRadius(10), new CornerRadius(10), 6);
+        //        shadowGrid.SetValue(Canvas.TopProperty, shadowDepth.Bottom);
+        //        shadowGrid.SetValue(Canvas.LeftProperty, shadowDepth.Right);
 
-                PlotAreaShadowCanvas.Children.Add(shadowGrid);
+        //        PlotAreaShadowCanvas.Children.Add(shadowGrid);
 
-                PlotAreaBorderElement.Child = PlotAreaShadowCanvas;
-            }
-        }
+        //        PlotAreaBorderElement.Child = PlotAreaShadowCanvas;
+        //    }
+        //}
 
         internal Canvas Visual
         {

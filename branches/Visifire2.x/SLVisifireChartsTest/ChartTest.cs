@@ -152,7 +152,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
 
             EnqueueCallback(() =>
-            {   
+            {
                 chart.Margin = new Thickness(10);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
@@ -1279,7 +1279,7 @@ namespace SLVisifireChartsTest
             Assert.AreSame(typeof(StackPanel), templateParts["BottomInnerPanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["BottomInnerTitlePanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["BottomInnerLegendPanel"]);
-            Assert.AreSame(typeof(StackPanel), templateParts["LeftInnerPanel"]);
+            //Assert.AreSame(typeof(StackPanel), templateParts["LeftInnerPanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["LeftInnerTitlePanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["LeftInnerLegendPanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["RightInnerPanel"]);
@@ -1289,7 +1289,7 @@ namespace SLVisifireChartsTest
             Assert.AreSame(typeof(StackPanel), templateParts["CenterDockInsidePlotAreaPanel"]);
             Assert.AreSame(typeof(StackPanel), templateParts["CenterDockOutsidePlotAreaPanel"]);
             Assert.AreSame(typeof(Canvas), templateParts["ToolTipCanvas"]);
-            Assert.AreSame(typeof(Border), templateParts["ToolTip"]);
+            //Assert.AreSame(typeof(Border), templateParts["ToolTip"]);
         }
         #endregion CheckControlTemplate
 

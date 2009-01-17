@@ -11,9 +11,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data;
+using System.ComponentModel;
 using Visifire.Charts;
 using System.Windows.Media.Animation;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Documents.Serialization;
+using System.IO.Packaging;
+using System.Windows.Xps.Packaging;
+using System.Printing;
+using System.Windows.Xps;
 
 namespace WPFVisifireChartsApp
 {   
@@ -21,7 +29,7 @@ namespace WPFVisifireChartsApp
     /// Interaction logic for Window1.xaml
     /// </summary>
     public partial class Window1 : Window
-    {   
+    {
         public Window1()
         {
             InitializeComponent();

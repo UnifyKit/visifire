@@ -185,7 +185,7 @@ namespace Visifire.Charts
         #region Protected Methods
 
         #endregion
-
+        
         #region Internal Properties
 
 #if SL

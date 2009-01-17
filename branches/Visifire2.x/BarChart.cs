@@ -199,7 +199,7 @@ namespace Visifire.Charts
                     barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     barParams.BorderBrush = dataPoint.BorderColor;
-                    barParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                    barParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                     barParams.XRadius = new CornerRadius(0,dataPoint.RadiusX.Value.TopRight, dataPoint.RadiusX.Value.BottomRight, 0);
                     barParams.YRadius = new CornerRadius(0,dataPoint.RadiusY.Value.TopRight, dataPoint.RadiusY.Value.BottomRight, 0);
@@ -308,7 +308,7 @@ namespace Visifire.Charts
                     barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                     barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                     barParams.BorderBrush = dataPoint.BorderColor;
-                    barParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
+                    barParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                     barParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft,0,0,dataPoint.RadiusX.Value.BottomLeft);
                     barParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft,0,0,dataPoint.RadiusY.Value.BottomLeft);
@@ -509,7 +509,7 @@ namespace Visifire.Charts
                         barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
-                        barParams.BorderThickness = ((Thickness) dataPoint.InternalBorderThickness).Left;
+                        barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (barParams.IsTopOfStack)
@@ -597,7 +597,7 @@ namespace Visifire.Charts
                         barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
-                        barParams.BorderThickness = ((Thickness) dataPoint.InternalBorderThickness).Left;
+                        barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (barParams.IsTopOfStack)
@@ -782,7 +782,7 @@ namespace Visifire.Charts
                         barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
-                        barParams.BorderThickness = ((Thickness) dataPoint.InternalBorderThickness).Left;
+                        barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (barParams.IsTopOfStack)
@@ -871,7 +871,7 @@ namespace Visifire.Charts
                         barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
                         barParams.Shadow = dataPoint.Parent.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
-                        barParams.BorderThickness = ((Thickness) dataPoint.InternalBorderThickness).Left;
+                        barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (barParams.IsTopOfStack)

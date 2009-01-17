@@ -7,15 +7,15 @@ Width="500" Height="300"
 
     <Grid x:Name="LayoutRoot" Background="White" Width="500" Height="300">
 
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="500" Height="300" Theme="Theme1" View3D="True" BorderBrush="Gray">
+        <vc:Chart Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+                  Theme="Theme1">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Web Search Engine Market Share"/>
             </vc:Chart.Titles>
-
+            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie" LabelEnabled="True" LabelLineThickness="0.5" Bevel="False">
+                <vc:DataSeries RenderAs="Pie" Bevel="False">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="Yahoo" YValue="16.7" Exploded="True"/>
                         <vc:DataPoint AxisXLabel="Google" YValue="68.6"/>
@@ -27,6 +27,7 @@ Width="500" Height="300" Theme="Theme1" View3D="True" BorderBrush="Gray">
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+        
     </Grid>
 
 </UserControl>
