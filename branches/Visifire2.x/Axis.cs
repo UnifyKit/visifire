@@ -45,7 +45,7 @@ namespace Visifire.Charts
 
             // Initialize list of ChartGrids list as Grids
             Grids = new ChartGridCollection();
-
+            
             // Initialize list of Ticks list 
             Ticks = new TicksCollection();
 
@@ -264,19 +264,19 @@ namespace Visifire.Charts
             Visual = new StackPanel();
             
             ApplyVisualProperty();
-            InternalStackPanel = new StackPanel();
+            InternalStackPanel = new Canvas();
             Visual.Background = Color;
             
             // ScrollBarElement = new ScrollBar();
 
-            ScrollViewerElement = new ScrollViewer() { IsTabStop = false, Padding = new Thickness(0), BorderThickness = new Thickness(0) };
+            ScrollViewerElement = new Canvas();// { IsTabStop = false, Padding = new Thickness(0), BorderThickness = new Thickness(0) };
 
             AxisTitleElement = new Title();
             ApplyTitleProperties();
 
             // Set scroll viewer parameters
-            ScrollViewerElement.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-            ScrollViewerElement.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+           // ScrollViewerElement.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+           // ScrollViewerElement.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 
             // Get the minimum and maximum value dependeing on the axis representation value
             Minimum = AxisRepresentation == AxisRepresentations.AxisX ? PlotDetails.GetAxisXMinimumDataValue(this) : PlotDetails.GetAxisYMinimumDataValue(this);
@@ -469,25 +469,26 @@ namespace Visifire.Charts
             {
                 Visual.Visibility = Visibility.Collapsed;
             }
-            else
-            {
-#if WPF
+//            else
+//            {
+//#if WPF
 
-                if (ScrollViewerElement != null)
-                {
-                    ScrollViewerElement.ScrollChanged += delegate(object sender, ScrollChangedEventArgs e)
-                    {
-                        if (AxisOrientation == Orientation.Horizontal)
-                            ScrollViewerElement.ScrollToHorizontalOffset(CurrentScrollScrollBarOffset);
-                        else if (AxisOrientation == Orientation.Vertical)
-                            ScrollViewerElement.ScrollToVerticalOffset(CurrentScrollScrollBarOffset);
-                    };
-                }
-#endif
-            }
+//                if (ScrollViewerElement != null)
+//                {
+//                    ScrollViewerElement.ScrollChanged += delegate(object sender, ScrollChangedEventArgs e)
+//                    {
+//                        if (AxisOrientation == Orientation.Horizontal)
+//                            ScrollViewerElement.ScrollToHorizontalOffset(CurrentScrollScrollBarOffset);
+//                        else if (AxisOrientation == Orientation.Vertical)
+//                            ScrollViewerElement.ScrollToVerticalOffset(CurrentScrollScrollBarOffset);
+//                    };
+//                }
+//#endif
+//            }
 
 
            // Visual.Background = new SolidColorBrush(Colors.Green);
+
         }
 
         Double GenerateDefaultInterval()
@@ -541,8 +542,8 @@ namespace Visifire.Charts
         #region Public Properties
         
         /// <summary>
-        /// ScrollBar offset value 
-        /// ScrollBarOffset value can be accessed after the chart is rendered.
+        /// ScrollBar offset value
+        /// ScrollBarOffset value can be accessed after the chart is rendered. Value Range 0 to 1
         /// </summary>
         public Double ScrollBarOffset
         {   
@@ -1371,7 +1372,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Axis ScrollViewer element
         /// </summary>
-        internal ScrollViewer ScrollViewerElement
+        internal Canvas ScrollViewerElement
         {
             get;
             set;
@@ -1587,16 +1588,9 @@ namespace Visifire.Charts
             Visual.Orientation = Orientation.Horizontal;
 
             //Visual.Background = new SolidColorBrush(Colors.Red);
-
+            InternalStackPanel.Width = 0;
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Left;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-            InternalStackPanel.Orientation = Orientation.Horizontal;
-
-            InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
-            {
-                ScrollViewerElement.Width = e.NewSize.Width;
-            };
-
             ScrollViewerElement.VerticalAlignment = VerticalAlignment.Stretch;
 
             // Set the parameters for the scroll bar
@@ -1632,7 +1626,7 @@ namespace Visifire.Charts
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
             
-            //MajorTicksElement.CreateVisualObject();
+            // MajorTicksElement.CreateVisualObject();
 
 UP:
 
@@ -1661,6 +1655,7 @@ DOWN:
             
             if (AxisLabels.Visual != null)
             {
+                InternalStackPanel.Width += AxisLabels.Visual.Width;
                 //AxisLabels.Visual.Background = new SolidColorBrush(Colors.LightGray);
                 if (Height == ScrollableSize)
                 {
@@ -1671,7 +1666,6 @@ DOWN:
                 {
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
                 }
-
             }
 
             foreach (Ticks tick in Ticks)
@@ -1682,19 +1676,48 @@ DOWN:
                     if (Height == ScrollableSize)
                         Visual.Children.Add(tick.Visual);
                     else
+                    {
                         InternalStackPanel.Children.Add(tick.Visual);
+                        tick.Visual.SetValue(Canvas.LeftProperty, InternalStackPanel.Width);
+                        InternalStackPanel.Width += tick.Visual.Width;
+                    }
                 }
             }
 
             if (Height != ScrollableSize)
             {
-                ScrollViewerElement.Content = InternalStackPanel;
+                ScrollViewerElement.Children.Add(InternalStackPanel);
                 Visual.Children.Add(ScrollViewerElement);
             }
 
             //  Visual.Children.Add(ScrollBarElement);
             Visual.Children.Add(AxisLine);
+            InternalStackPanel.Width += AxisLine.Width;
 
+            ScrollViewerElement.Width = InternalStackPanel.Width;
+
+            // ------------------------------------
+            if (Height != ScrollableSize)
+            {
+                PathGeometry pathGeometry = new PathGeometry();
+
+                pathGeometry.Figures = new PathFigureCollection();
+
+                PathFigure pathFigure = new PathFigure();
+
+                pathFigure.StartPoint = new Point(0, -3);
+                pathFigure.Segments = new PathSegmentCollection();
+
+                // Do not change the order of the lines below
+                // Segmens required to create the rectangle
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(ScrollViewerElement.Width, -3)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(ScrollViewerElement.Width, Height + 4)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, Height + 4)));
+                pathGeometry.Figures.Add(pathFigure);
+
+                ScrollViewerElement.Clip = pathGeometry;
+
+            }
            // Visual.Background = new SolidColorBrush(Colors.Orange);
         }
 
@@ -1740,7 +1763,7 @@ DOWN:
 
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Right;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Stretch;
-            InternalStackPanel.Orientation = Orientation.Horizontal;
+            //InternalStackPanel.Orientation = Orientation.Horizontal;
 
             InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
             {
@@ -1803,10 +1826,10 @@ DOWN:
                     Visual.Children.Add(AxisLabels.Visual);
             }
             else
-            {
+            {   
                 InternalStackPanel.Children.Add(AxisLabels.Visual);
 
-                ScrollViewerElement.Content = InternalStackPanel;
+                ScrollViewerElement.Children.Add(InternalStackPanel);
 
                 Visual.Children.Add(ScrollViewerElement);
             }
@@ -1846,18 +1869,21 @@ DOWN:
             Visual.HorizontalAlignment = HorizontalAlignment.Stretch;
             Visual.VerticalAlignment = VerticalAlignment.Bottom;
             Visual.Orientation = Orientation.Vertical;
-
+            InternalStackPanel.Height = 0;
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Bottom;
-            InternalStackPanel.Orientation = Orientation.Vertical;
+            //InternalStackPanel.Orientation = Orientation.Vertical;
 
-            InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
-            {
-                ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight);
-            };
+            //InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
+            //{
+            //    ScrollViewerElement.Height = Math.Max(e.NewSize.Height, InternalStackPanel.ActualHeight);
+            //    System.Diagnostics.Debug.WriteLine("Size");
+            //};
 
+            // InternalStackPanel.Background = new SolidColorBrush(Colors.Orange);
+            //ScrollViewerElement.Background = new SolidColorBrush(Colors.LightGray);
             ScrollViewerElement.HorizontalAlignment = HorizontalAlignment.Stretch;
-            
+
             // Set the parameters for the scroll bar
             ScrollBarElement.Orientation = Orientation.Horizontal;
             ScrollBarElement.Height = 10;
@@ -1889,46 +1915,85 @@ DOWN:
 
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
-            //MajorTicksElement.CreateVisualObject();
+
+            // MajorTicksElement.CreateVisualObject();
 
             // AxisTitleElement.Margin = new Thickness(4);
             // AxisTitleElement.CreateVisualObject();
 
             // Place the visual elements in the axis stack panel
             Visual.Children.Add(AxisLine);
-           // Visual.Children.Add(ScrollBarElement);
 
+            // Visual.Children.Add(ScrollBarElement);
+
+            Double ticksHeight = 0;
             //AxisLabels.Visual.Background = new SolidColorBrush(Colors.Orange);
             foreach (Ticks tick in Ticks)
             {
                 tick.CreateVisualObject();
                 if (tick.Visual != null)
-                {
+                {   
                     if (Width == ScrollableSize)
                         Visual.Children.Add(tick.Visual);
                     else
+                    {
                         InternalStackPanel.Children.Add(tick.Visual);
+                        ticksHeight = Math.Max(ticksHeight, tick.Visual.Height);
+                    }
                 }
             }
 
+            InternalStackPanel.Height += ticksHeight;
+
             if (Width == ScrollableSize)
             {   
-                if(AxisLabels.Visual != null)
+                if (AxisLabels.Visual != null)
                     Visual.Children.Add(AxisLabels.Visual);
             }
             else
             {   
-                if(AxisLabels.Visual != null)
+                if (AxisLabels.Visual != null)
+                {
+                    InternalStackPanel.Width = AxisLabels.Visual.Width;
+                    AxisLabels.Visual.SetValue(Canvas.TopProperty, InternalStackPanel.Height);
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
+                    InternalStackPanel.Height += AxisLabels.Visual.Height;
+                }
 
-                ScrollViewerElement.Content = InternalStackPanel;
+                ScrollViewerElement.Children.Add(InternalStackPanel);
                 Visual.Children.Add(ScrollViewerElement);
+            }
+
+            ScrollViewerElement.Height = InternalStackPanel.Height;
+
+            if (Width != ScrollableSize)
+            {
+                PathGeometry pathGeometry = new PathGeometry();
+
+                pathGeometry.Figures = new PathFigureCollection();
+
+                PathFigure pathFigure = new PathFigure();
+
+                pathFigure.StartPoint = new Point(0, 0);
+                pathFigure.Segments = new PathSegmentCollection();
+
+                // Do not change the order of the lines below
+                // Segmens required to create the rectangle
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(Width, 0)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(Width , ticksHeight)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(Width + 4, ticksHeight)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(Width + 4, ScrollViewerElement.Height)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(-4, ScrollViewerElement.Height)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(-4, ticksHeight)));
+                pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, ticksHeight)));
+                pathGeometry.Figures.Add(pathFigure);
+                ScrollViewerElement.Clip = pathGeometry;
             }
 
             AxisTitleElement.Margin = new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN);
 
         UPX1:
-            
+
             AxisTitleElement.CreateVisualObject();
             //AxisTitleElement.Visual.Background = new SolidColorBrush(Colors.Purple);
             Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
@@ -1937,6 +2002,7 @@ DOWN:
             {
                 if (AxisTitleElement.FontSize == 4)
                     goto DOWNX1;
+
                 AxisTitleElement.IsNotificationEnable = false;
                 AxisTitleElement.FontSize -= 1;
                 AxisTitleElement.IsNotificationEnable = true;
@@ -1963,7 +2029,7 @@ DOWN:
 
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Top;
-            InternalStackPanel.Orientation = Orientation.Vertical;
+            //InternalStackPanel.Orientation = Orientation.Vertical;
 
 
             InternalStackPanel.SizeChanged += delegate(object sender, SizeChangedEventArgs e)
@@ -2054,7 +2120,7 @@ DOWN:
 
             if (Width != ScrollableSize)
             {
-                ScrollViewerElement.Content = InternalStackPanel;
+                ScrollViewerElement.Children.Add(InternalStackPanel);
 
                 Visual.Children.Add(ScrollViewerElement);
             }
@@ -2251,7 +2317,7 @@ DOWN:
             (sender as AxisLabels).Parent.FirePropertyChanged(e.PropertyName);
         }
 
-        private StackPanel InternalStackPanel
+        private Canvas InternalStackPanel
         {
             get;
             set;

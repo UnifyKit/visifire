@@ -294,8 +294,8 @@ namespace Visifire.Charts
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {
                     columnParams.Bevel = dataPoint.Parent.Bevel;
-                    columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                    columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                    columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                    columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
                     columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -335,13 +335,13 @@ namespace Visifire.Charts
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
 
-                    if (dataPoint.YValue > (Double)plotGroup.AxisY.InternalAxisMaximum)
+                    if (dataPoint.InternalYValue > (Double)plotGroup.AxisY.InternalAxisMaximum)
                         System.Diagnostics.Debug.WriteLine("Max Value greater then axis max");
 
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     left = left + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * widthPerColumn;
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-                    Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
+                    Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double columnHeight = Math.Abs(top - bottom);
 
                     Double finalWidth = widthPerColumn;
@@ -358,7 +358,7 @@ namespace Visifire.Charts
                     }
 
                     if (finalWidth < 0)
-                        return null;
+                        continue;
 
                     columnParams.Size = new Size(finalWidth, columnHeight);
 
@@ -369,7 +369,7 @@ namespace Visifire.Charts
                     {
                         columnFaces = Get3DColumn(columnParams);
                         columnVisual = columnFaces.Visual;
-                        columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.YValue > 0)));
+                        columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
@@ -420,8 +420,8 @@ namespace Visifire.Charts
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Negative)
                 {
                     columnParams.Bevel = dataPoint.Parent.Bevel;
-                    columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                    columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                    columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                    columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                     columnParams.BorderBrush = dataPoint.BorderColor;
                     columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -464,7 +464,7 @@ namespace Visifire.Charts
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     left = left + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * widthPerColumn;
-                    Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
+                    Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                     Double columnHeight = Math.Abs(top - bottom);
 
@@ -481,6 +481,8 @@ namespace Visifire.Charts
                     {
                         finalWidth = maxPosValue - left;
                     }
+                    if (finalWidth < 0)
+                        continue;
 
                     columnParams.Size = new Size(finalWidth, columnHeight);
 
@@ -491,7 +493,7 @@ namespace Visifire.Charts
                     {
                         column = Get3DColumn(columnParams);
                         columnVisual = column.Visual;
-                        columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.YValue > 0)));
+                        columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
@@ -570,7 +572,7 @@ namespace Visifire.Charts
             List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedColumn select plots).ToList();
 
             Double widthDivisionFactor = plotDetails.DrawingDivisionFactor;
-            Double columnGapRatio = 0.2;
+            Double columnGapRatio = 0.1;
 
             Boolean plankDrawn = false;
 
@@ -597,8 +599,11 @@ namespace Visifire.Charts
 
             foreach (PlotGroup plotGroup in plotGroupList)
             {
-                Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
+                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
+                    continue;
 
+                Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
+                
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
                 minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
@@ -624,16 +629,40 @@ namespace Visifire.Charts
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
+                    //----------------------------------------
+                    Double finalWidth = widthPerColumn;
+                    Double minPosValue = 0;
+                    Double maxPosValue = width;
+                    if (left < minPosValue)
+                    {
+                        finalWidth = left + widthPerColumn - minPosValue;
+                        left = minPosValue;
+                    }
+                    else if (left + widthPerColumn > maxPosValue)
+                    {
+                        finalWidth = maxPosValue - left;
+                    }
+                    if (finalWidth < 0)
+                        continue;
+
+                    //----------------------------------------
+
                     Double top;
                     Double columnHeight;
                     Double prevSum = 0;
-                    Int32 index = 1;
+                    //Int32 index = 1;
+
+                    Int32 positiveIndex = 1;
+                    Int32 negativeIndex = 1;
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
                         columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -663,13 +692,16 @@ namespace Visifire.Charts
                         columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue + prevSum);
+                        top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
-                        prevSum += dataPoint.YValue;
+                        prevSum += dataPoint.InternalYValue;
 
                         columnParams.BackgroundBrush = dataPoint.Color;
-                        columnParams.Size = new Size(widthPerColumn, columnHeight);
+
+                        columnParams.Size = new Size(finalWidth, columnHeight);
+
+                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -678,7 +710,7 @@ namespace Visifire.Charts
                         {
                             column = Get3DColumn(columnParams);
                             columnVisual = column.Visual;
-                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.YValue > 0), index++));
+                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
@@ -714,14 +746,18 @@ namespace Visifire.Charts
                     }
 
                     prevSum = 0;
-                    //index = 1;
+                    
+                    //index--;
                     top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
                         columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -751,13 +787,16 @@ namespace Visifire.Charts
                         columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue + prevSum);
+                        bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
-                        prevSum += dataPoint.YValue;
+                        prevSum += dataPoint.InternalYValue;
 
                         columnParams.BackgroundBrush = dataPoint.Color;
-                        columnParams.Size = new Size(widthPerColumn, columnHeight);
+
+                        columnParams.Size = new Size(finalWidth, columnHeight);
+
+                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -766,7 +805,7 @@ namespace Visifire.Charts
                         {
                             column = Get3DColumn(columnParams);
                             columnVisual = column.Visual;
-                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.YValue > 0), index++));
+                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
@@ -834,7 +873,7 @@ namespace Visifire.Charts
             List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedColumn100 select plots).ToList();
 
             Double widthDivisionFactor = plotDetails.DrawingDivisionFactor;
-            Double columnGapRatio = 0.2;
+            Double columnGapRatio = 0.1;
 
             Boolean plankDrawn = false;
 
@@ -861,6 +900,9 @@ namespace Visifire.Charts
 
             foreach (PlotGroup plotGroup in plotGroupList)
             {
+                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
+                    continue;
+
                 Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
@@ -887,6 +929,25 @@ namespace Visifire.Charts
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
+                    //----------------------------------------
+
+                    Double finalWidth = widthPerColumn;
+                    Double minPosValue = 0;
+                    Double maxPosValue = width;
+                    if (left < minPosValue)
+                    {
+                        finalWidth = left + widthPerColumn - minPosValue;
+                        left = minPosValue;
+                    }
+                    else if (left + widthPerColumn > maxPosValue)
+                    {
+                        finalWidth = maxPosValue - left;
+                    }
+                    if (finalWidth < 0)
+                        continue;
+
+                    //----------------------------------------
+
                     Double absoluteSum = plotGroup.XWiseStackedDataList[xValue].AbsoluteYValueSum;
 
                     if (Double.IsNaN(absoluteSum) || absoluteSum <= 0)
@@ -896,13 +957,19 @@ namespace Visifire.Charts
                     Double columnHeight;
                     Double prevSum = 0;
                     Double percentYValue;
-                    Int32 index = 1;
+                    //Int32 index = 1;
+
+                    Int32 positiveIndex = 1;
+                    Int32 negativeIndex = 1;
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
                         columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -933,14 +1000,17 @@ namespace Visifire.Charts
                         columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        percentYValue = (dataPoint.YValue / absoluteSum * 100);
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
                         top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
                         prevSum += percentYValue;
 
                         columnParams.BackgroundBrush = dataPoint.Color;
-                        columnParams.Size = new Size(widthPerColumn, columnHeight);
+
+                        columnParams.Size = new Size(finalWidth, columnHeight);
+
+                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -949,7 +1019,7 @@ namespace Visifire.Charts
                         {
                             column = Get3DColumn(columnParams);
                             columnVisual = column.Visual;
-                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.YValue > 0), index++));
+                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
@@ -985,14 +1055,17 @@ namespace Visifire.Charts
                     }
 
                     prevSum = 0;
-                    index = 1;
+                    //index = 1;
                     top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        columnParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         columnParams.BorderBrush = dataPoint.BorderColor;
                         columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                         columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -1022,7 +1095,7 @@ namespace Visifire.Charts
                         columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        percentYValue = (dataPoint.YValue / absoluteSum * 100);
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
 
                         bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
 
@@ -1031,7 +1104,10 @@ namespace Visifire.Charts
                         prevSum += percentYValue;
 
                         columnParams.BackgroundBrush = dataPoint.Color;
-                        columnParams.Size = new Size(widthPerColumn, columnHeight);
+
+                        columnParams.Size = new Size(finalWidth, columnHeight);
+
+                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -1040,7 +1116,7 @@ namespace Visifire.Charts
                         {
                             column = Get3DColumn(columnParams);
                             columnVisual = column.Visual;
-                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.YValue > 0), index++));
+                            columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
@@ -1352,14 +1428,17 @@ namespace Visifire.Charts
         private static Int32 GetColumnZIndex(Double left, Double top, Boolean isPositive)
         {
             Int32 Zi = 0;
+            Int32 ioffset = (Int32)left;
+            if (ioffset == 0)
+                ioffset++;
+
             if (isPositive)
             {
-                Zi = Zi + (Int32)(left);
+                Zi = Zi + (Int32)(ioffset);
             }
             else
             {
-                Zi = Zi + Int32.MinValue + (Int32)(left);
-
+                Zi = Zi + Int32.MinValue + (Int32)(ioffset);
             }
             return Zi;
         }
@@ -1368,6 +1447,7 @@ namespace Visifire.Charts
         {
             Int32 ioffset = (Int32)(left);
             Int32 topOffset = (Int32)(index);
+          
             Int32 zindex = 0;
             if (isPositive)
             {
@@ -1375,7 +1455,9 @@ namespace Visifire.Charts
             }
             else
             {
-                zindex = Int32.MinValue + (Int32)(ioffset - topOffset);
+                if (ioffset == 0)
+                    ioffset = 1;
+                zindex = Int32.MinValue + (Int32)(ioffset + topOffset);
             }
             return zindex;
         }

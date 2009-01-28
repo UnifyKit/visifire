@@ -126,11 +126,11 @@ namespace Visifire.Charts
         {
             get
             {
-                return (Double)GetValue(MaxWidthProperty);
+                return (Double)GetValue(MaximumWidthProperty);
             }
             set
             {
-                SetValue(MaxWidthProperty, value);
+                SetValue(MaximumWidthProperty, value);
             }
         }
 
@@ -143,18 +143,18 @@ namespace Visifire.Charts
         private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("MaxWidth");
+            legend.FirePropertyChanged("MaximumWidth");
         }
 
         public Double MaximumHeight
         {
             get
             {
-                return (Double)GetValue(MaxHeightProperty);
+                return (Double)GetValue(MaximumHeightProperty);
             }
             set
             {
-                SetValue(MaxHeightProperty, value);
+                SetValue(MaximumHeightProperty, value);
             }
         }
 
@@ -757,7 +757,7 @@ namespace Visifire.Charts
             legend.FirePropertyChanged("CornerRadius");
         }
 
-        public Boolean ShadowEnabled
+        private Boolean ShadowEnabled
         {
             get
             {
@@ -1068,6 +1068,7 @@ namespace Visifire.Charts
                     legendTitle.Background = TitleBackground;
 
                 legendTitle.HorizontalAlignment = TitleAlignmentX;
+                legendTitle.VerticalAlignment = VerticalAlignment.Top;
                 legendTitle.TextAlignment = TitleTextAlignment;
 
                 legendTitle.CreateVisualObject();
@@ -1383,6 +1384,7 @@ namespace Visifire.Charts
                 SetValue(MaxWidthProperty, value);
             }
         }
+
         private void ApplyFontProperty(TextBlock textBlock)
         {
             textBlock.FontFamily = FontFamily;

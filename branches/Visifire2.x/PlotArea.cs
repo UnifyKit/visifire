@@ -426,7 +426,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void UpdateProperties()
         {
-            PlotAreaBorderElement.SetValue(Canvas.TopProperty,(Double) 0);
+            PlotAreaBorderElement.SetValue(Canvas.TopProperty,(Double)0);
             PlotAreaBorderElement.SetValue(Canvas.LeftProperty, (Double)0);
 
             ApplyProperties();

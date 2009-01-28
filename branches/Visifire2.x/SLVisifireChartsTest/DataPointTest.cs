@@ -486,6 +486,60 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Checking Pie with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SinglePieChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 20;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Checking Doughnut with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleDoughnutChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Doughnut;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 20;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
         /// Checking Pie with all zero values
         /// </summary>
         [TestMethod]
@@ -891,12 +945,12 @@ namespace SLVisifireChartsTest
                 dataPoint.YValue = rand.Next(-100, 100);
                 dataPoint.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).YValue + " MouseLeftButtonUp event fired");
+                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonUp event fired");
                 };
 
                 dataPoint.MouseEnter += delegate(Object sender, MouseEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).YValue + " MouseEnter event fired");
+                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseEnter event fired");
                 };
 
                 dataPoint.MouseLeave += delegate(Object sender, MouseEventArgs e)
@@ -906,12 +960,12 @@ namespace SLVisifireChartsTest
 
                 dataPoint.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).YValue + " MouseLeftButtonDown event fired");
+                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonDown event fired");
                 };
 
                 dataPoint.MouseMove += delegate(Object sender, MouseEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).YValue + " MouseMove event fired");
+                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseMove event fired");
                 };
 
                 dataSeries.DataPoints.Add(dataPoint);
@@ -985,7 +1039,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[5].Exploded = true,
-                () => Assert.IsTrue(dataSeries.DataPoints[5].Exploded));
+                () => Assert.IsTrue((Boolean)dataSeries.DataPoints[5].Exploded));
 
             EnqueueTestComplete();
         }

@@ -180,7 +180,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                         </Border>
                         <Canvas x:Name="BevelCanvas" Canvas.ZIndex="2" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Canvas>
                         <StackPanel x:Name="CenterDockInsidePlotAreaPanel" Canvas.ZIndex="3" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
-                        <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
+                        <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="400" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
                     </Grid>

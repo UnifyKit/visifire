@@ -153,6 +153,7 @@
     <Content Include="TestPage1.htm" />
     <Content Include="Visifire.htm" />
     <Content Include="Visifire2.js" />
+    <Content Include="VisifireRealtime.htm" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -183,7 +184,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>49876</DevelopmentServerPort>
+          <DevelopmentServerPort>50133</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

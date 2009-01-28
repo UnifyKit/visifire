@@ -4,29 +4,32 @@
     Title="Window1" Height="456" Width="676" Background="#FFD9CDCD"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts">
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
+        WindowState="Normal">
    
-    <Grid x:Name="LayoutRoot" Width="500" Height="300" Background="White">
-
+    <Grid x:Name="LayoutRoot" Background="White">
         <vc:Chart Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-                  Theme="Theme1">
+                          Theme="Theme1">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Web Search Engine Market Share" />
+                <vc:Title Text="Visifire with broken Line Chart" />
             </vc:Chart.Titles>
-            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie">
+                <vc:DataSeries RenderAs="Line" AxisYType="Primary" >
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Yahoo" YValue="16.3" Exploded="True"/>
-                        <vc:DataPoint AxisXLabel="Google" YValue="68.6"/>
-                        <vc:DataPoint AxisXLabel="MSN/Live" YValue="8.7" Exploded="True"/>
-                        <vc:DataPoint AxisXLabel="Ask" YValue="3.7" Exploded="True"/>
-                        <vc:DataPoint AxisXLabel="AOL" YValue="1.7" Exploded="True"/>
-                        <vc:DataPoint AxisXLabel="Others" YValue="0.6" Exploded="True"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="20" />
+                        <vc:DataPoint AxisXLabel="Feb" YValue="28" />
+                        <vc:DataPoint AxisXLabel="Mar" YValue="20" />
+                        <vc:DataPoint AxisXLabel="Apr" YValue="28" />
+                        <vc:DataPoint AxisXLabel="May" YValue="" />
+                        <vc:DataPoint AxisXLabel="Jun" YValue="28" />
+                        <vc:DataPoint AxisXLabel="Jul" YValue="12" />
+                        <vc:DataPoint AxisXLabel="Aug" YValue="30" />
+                        <vc:DataPoint AxisXLabel="Sep" YValue="18" />
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+        
     </Grid>
 </Window>

@@ -612,7 +612,7 @@ namespace WPFVisifireChartsTest
                 for (Int32 i = 0; i < 10; i++)
                 {
                     dataSeries.DataPoints[i].Exploded = true;
-                    Assert.IsTrue(dataSeries.DataPoints[i].Exploded);
+                    Assert.IsTrue((Boolean)dataSeries.DataPoints[i].Exploded);
                 }
             }
 

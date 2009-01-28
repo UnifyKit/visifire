@@ -379,12 +379,12 @@ namespace Visifire.Charts
             ("HrefTarget",
             typeof(HrefTargets),
             typeof(Chart),
-            new PropertyMetadata(OnHrefChanged));
+            new PropertyMetadata(OnHrefTargetChanged));
 
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            ObservableObject.AttachHref(c, c, e.NewValue.ToString(), (HrefTargets)e.NewValue);
+            ObservableObject.AttachHref(c, c, c.Href, (HrefTargets)e.NewValue);
         }
 
         public String Href
@@ -1221,7 +1221,7 @@ namespace Visifire.Charts
                 #region Set position of ToolTip
                 _toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 _toolTip.UpdateLayout();
-                                
+
                 Size size = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
 
                 //System.Diagnostics.Debug.WriteLine("Size :" + size.ToString());
@@ -1297,14 +1297,15 @@ namespace Visifire.Charts
                         title.Chart = this;
                         title.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Title_PropertyChanged);
                     }
-
-                   CallRender();
                 }
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                CallRender();
-            }
+
+            CallRender();
+
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    CallRender();
+            //}
         }
 
         void Title_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1328,15 +1329,16 @@ namespace Visifire.Charts
                     legend.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(legend_PropertyChanged);
                 }
 
-                if(IsRenderCallAllowed)
-                    CallRender();
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                if(IsRenderCallAllowed)
-                    CallRender();
-            }
-           
+
+            if (IsRenderCallAllowed)
+                CallRender();
+
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    if(IsRenderCallAllowed)
+            //        CallRender();
+            //}
         }
 
         void legend_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1364,12 +1366,14 @@ namespace Visifire.Charts
                     }
                 }
 
-                CallRender();
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                CallRender();
-            }
+
+            CallRender();
+
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    CallRender();
+            //}
         }
 
         void trendLine_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1401,13 +1405,22 @@ namespace Visifire.Charts
                         ds.PropertyChanged -= Series_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Series_PropertyChanged);
                     }
-                    
-                CallRender();
+                 
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                CallRender();
-            }
+
+            CallRender();
+
+            //}
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    CallRender();
+            //}
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            //{   
+            //    //if (ChartArea != null)
+            //    //    ChartArea.ClearPlotAreaChildren();
+            //    CallRender();
+            //}
         }
 
         void Series_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1460,20 +1473,20 @@ namespace Visifire.Charts
                         axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxesY_PropertyChanged);
                     }
                 }
-
-                if (!isAutoAxis)
-                {
-                    CallRender();
-                }
-
             }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+
+            if (!isAutoAxis)
             {
-                if (!isAutoAxis)
-                {
-                    CallRender();
-                }
+                CallRender();
             }
+
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    if (!isAutoAxis)
+            //    {
+            //        CallRender();
+            //    }
+            //}
         }
 
         void AxesY_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1523,19 +1536,20 @@ namespace Visifire.Charts
                         axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxesX_PropertyChanged);
                     }
                 }
+            }
 
-                if (!isAutoAxis)
-                {
-                    CallRender();
-                }
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            if (!isAutoAxis)
             {
-                if (!isAutoAxis)
-                {
-                    CallRender();
-                }
+                CallRender();
             }
+
+            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            //{
+            //    if (!isAutoAxis)
+            //    {
+            //        CallRender();
+            //    }
+            //}
         }
 
         void AxesX_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1589,9 +1603,12 @@ namespace Visifire.Charts
                 {
                     System.Diagnostics.Debug.WriteLine("Render______");
 
+                    if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
+                        return;                        
+
                     RENDER_LOCK = true;
 
-                    //try
+                    try
                     {
                         if(ChartArea == null)
                             ChartArea = CreateVisualTree();
@@ -1611,10 +1628,10 @@ namespace Visifire.Charts
                         // System.Diagnostics.Debug.WriteLine("Debug End");
 
                     }
-                   // catch (Exception e)
-                    {   
-                   //     RENDER_LOCK = false;
-                   //     throw new Exception(e.Message, e);
+                    catch (Exception e)
+                    {    
+                         RENDER_LOCK = false;
+                         throw new Exception(e.Message, e);
                     }
                 }
             }

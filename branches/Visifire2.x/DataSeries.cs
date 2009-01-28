@@ -1626,7 +1626,7 @@ namespace Visifire.Charts
                         case RenderAs.Line:
                         case RenderAs.Area:
                         case RenderAs.StackedArea:
-                            return "#XValue, #YValue";
+                            return "#AxisXLabel, #YValue";
 
                         default:
                             return "#AxisXLabel, #YValue";
@@ -1763,7 +1763,7 @@ namespace Visifire.Charts
                     if (VisualParams != null)
                     {
                         PolylineChartShapeParams lineParams = VisualParams as PolylineChartShapeParams;
-                        (Faces.Parts[0] as Polyline).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)Value;
+                        (Faces.Parts[0] as Path).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)Value;
                         foreach (DataPoint dp in DataPoints)
                             dp.UpdateVisual("Color", null);
                     }

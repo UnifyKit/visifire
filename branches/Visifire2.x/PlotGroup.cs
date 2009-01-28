@@ -48,8 +48,25 @@ namespace Visifire.Charts
         #region Protected Methods
 
         #endregion
-
+        
         #region Internal Properties
+
+        /// <summary>
+        /// PlotGroup is Enabled if atleast one dataSeries in DataSeriesList is Enabled
+        /// </summary>
+        internal bool IsEnabled
+        {
+            get
+            {
+                foreach (DataSeries ds in DataSeriesList)
+                {
+                    if ((Boolean)ds.Enabled) return true; 
+                }
+
+                return false;
+            }
+        }
+        
         /// <summary>
         /// Reference to the X-Axis for this group
         /// </summary>
@@ -185,16 +202,14 @@ namespace Visifire.Charts
 #endif
         void AddXWiseStackedDataEntry(ref XWiseStackedData xWiseData, DataPoint dataPoint)
         {
-            if (dataPoint.YValue >= 0)
+            if (dataPoint.InternalYValue >= 0)
             {
                 xWiseData.Positive.Add(dataPoint);
-
             }
             else
             {
                 xWiseData.Negative.Add(dataPoint);
             }
-
         }
 
         /// <summary>
@@ -233,8 +248,6 @@ namespace Visifire.Charts
         /// </summary>
         internal void Update()
         {
-            
-
             // List to store a concatinated set of DataPoints from all DataSeries in this group
             List<DataPoint> dataPoints = new List<DataPoint>();
 
@@ -243,7 +256,7 @@ namespace Visifire.Charts
             foreach (DataSeries dataSeries in DataSeriesList)
             {
                 // check if data series is enabled
-                if (dataSeries.Enabled == true)
+                // if (dataSeries.Enabled == true)
                 {
                     List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList();
 
@@ -262,9 +275,8 @@ namespace Visifire.Charts
             // all the datapoints from all DataSeries from this group
             foreach (DataPoint dataPoint in dataPoints)
             {
-
                 if (XWiseStackedDataList.ContainsKey(dataPoint.XValue))
-                {
+                {   
                     // gets the existing  node
                     xWiseData = XWiseStackedDataList[dataPoint.XValue];
                 }
@@ -281,7 +293,7 @@ namespace Visifire.Charts
 
             // Get a list of all XValues,YValues and ZValues from all DataPoints from all the DataSeries in this Group
             var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.XValue) select dataPoint.XValue).Distinct();
-            var yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) select dataPoint.YValue).Distinct();
+            var yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct();
             var zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct();
 
             // Calculate max value

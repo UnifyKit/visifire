@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Charts;
+using Visifire.Commons;
+using System.Collections.ObjectModel;
 
 namespace SLVisifireApp
 {

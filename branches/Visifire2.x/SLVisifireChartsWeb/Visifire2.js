@@ -1,5 +1,5 @@
 /*
-    Visifire2.js v2.0.8 beta
+    Visifire2.js v2.0.9 beta
     
     Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -25,11 +25,11 @@ if(!window.Visifire2)
 {
     /*  Visifire2
     
-        pXapPath    => Location of SL.Visifire.Charts.xap file path.
-        pId         => Silverlight object id.
-        pWidth      => Width of the chart container.
-        pHeight     => Height of the chart container.
-        pBackground => Background of the silverlight object
+        pXapPath     => Location of SL.Visifire.Charts.xap file path.
+        pId          => Silverlight object id.
+        pWidth       => Width of the chart container.
+        pHeight      => Height of the chart container.
+        pBackground  => Background of the silverlight object
         pWindowless  => Whether the Silverlight object is windowless
     */
     window.Visifire2 = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless)

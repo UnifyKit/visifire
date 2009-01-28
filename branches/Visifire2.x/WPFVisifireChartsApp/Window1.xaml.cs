@@ -16,12 +16,6 @@ using System.ComponentModel;
 using Visifire.Charts;
 using System.Windows.Media.Animation;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows.Documents.Serialization;
-using System.IO.Packaging;
-using System.Windows.Xps.Packaging;
-using System.Printing;
-using System.Windows.Xps;
 
 namespace WPFVisifireChartsApp
 {   

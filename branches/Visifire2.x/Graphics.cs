@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Windows.Markup;
 using System.Globalization;
 #endif
-
+using System.ComponentModel;
 using System.Windows.Media.Animation;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -464,6 +464,22 @@ namespace Visifire.Charts
 
 namespace Visifire.Commons
 {
+    public class ValueConverter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return true;
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        {
+            if ((String)value == String.Empty)
+                return Double.NaN;
+            else
+                return Double.Parse((String)value, System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }
+
     public class Graphics
     {
         public Graphics()
@@ -475,19 +491,14 @@ namespace Visifire.Commons
 
         internal static Size CalculateVisualSize(FrameworkElement visual)
         {
-            Size retVal;
-#if WPF
-            visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            retVal = visual.DesiredSize;
-#else
-            //if ((Double.IsNaN(visual.ActualWidth) && Double.IsNaN(visual.ActualHeight) || visual.ActualWidth == 0 || visual.ActualHeight == 0))
+            Size retVal = new Size(0,0);;
+
+            if (visual != null)
             {
                 visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 retVal = visual.DesiredSize;
             }
-           // else
-            //    retVal = new Size(visual.ActualWidth, visual.ActualHeight);
-#endif
+
             return retVal;
         }
 

@@ -395,7 +395,7 @@ namespace SLVisifireChartsXap
             FindByType(ref _charts, chartCanvas as Panel, typeof(Chart));
 
             foreach (Chart chart in _charts)
-            {
+            {   
                 Charts.Add(chart);
                 chart.LogLevel = _logLevel;
                 chart.ControlId = _controlId;

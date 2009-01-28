@@ -386,7 +386,7 @@ namespace SLVisifireChartsTest
             {
                 DataPoint datapoint = new DataPoint();
                 datapoint.AxisXLabel = "VisifireSilverlight" + i;
-                datapoint.YValue = rand.Next(0, 100);
+                dataPoint.YValue = rand.Next(0, 100);
                 datapoint.XValue = i + 1;
                 dataSeries.DataPoints.Add(datapoint);
             }

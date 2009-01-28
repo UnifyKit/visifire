@@ -29,6 +29,8 @@ namespace Visifire.Charts
     internal class PolylineChartShapeParams
     {
         internal PointCollection Points { get; set; }
+        internal GeometryGroup LineGeometryGroup { get; set; }
+        internal GeometryGroup LineShadowGeometryGroup { get; set; }
         internal Brush LineColor { get; set; }
         internal Double LineThickness { get; set; }
         internal Boolean Lighting { get; set; }
@@ -140,51 +142,83 @@ namespace Visifire.Charts
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
 
+            Double xPosition, yPosition;
+
             foreach (DataSeries series in seriesList)
             {
                 if ((Boolean)series.Enabled == false)
                     continue;
 
-                Brush stroke = series.Color;
-
                 PlotGroup plotGroup = series.PlotGroup;
+                PolylineChartShapeParams lineParams = new PolylineChartShapeParams();
 
-                PointCollection pointsCollection = new PointCollection();
+                #region Set LineParms
+
+                lineParams.Points = new PointCollection();
+                lineParams.LineGeometryGroup = new GeometryGroup();
+                lineParams.LineThickness = (Double)series.LineThickness;
+                lineParams.LineColor = series.Color;
+                lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
+                lineParams.Lighting = (Boolean)series.LightingEnabled;
+                lineParams.ShadowEnabled = series.ShadowEnabled;
+
+                if (series.ShadowEnabled)
+                    lineParams.LineShadowGeometryGroup = new GeometryGroup();
+
+                #endregion
+
+                series.VisualParams = lineParams;
+
+                Point startPoint = new Point(), endPoint = new Point();
+                Boolean IsStartPoint = true;
+
                 foreach (DataPoint dataPoint in series.DataPoints)
-                {
-                    if (Double.IsNaN(dataPoint.YValue)|| (dataPoint.Enabled == false))
+                {   
+                    if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
                     {
-                        continue;
+                        xPosition = Double.NaN;
+                        yPosition = Double.NaN;
+                        IsStartPoint = true;
+                    }
+                    else
+                    {   
+                        xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
+                        yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+
+                        // Create Marker
+                        Marker marker = GetMarkerForDataPoint(chart, yPosition, dataPoint, dataPoint.InternalYValue > 0);
+                        marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
+
+                        #region Generate GeometryGroup for line and line shadow
+
+                        if (IsStartPoint)
+                            startPoint = new Point(xPosition, yPosition);
+                        else
+                            endPoint = new Point(xPosition, yPosition);
+
+                        if (!IsStartPoint)
+                        {
+                            lineParams.LineGeometryGroup.Children.Add(new LineGeometry() { StartPoint = startPoint, EndPoint = endPoint });
+
+                            if(lineParams.ShadowEnabled)
+                                lineParams.LineShadowGeometryGroup.Children.Add(new LineGeometry() { StartPoint = startPoint, EndPoint = endPoint });
+                            
+                            startPoint = endPoint;
+                            IsStartPoint = false;
+                        }
+                        else
+                            IsStartPoint = !IsStartPoint;
+
+                        #endregion Generate GeometryGroup for line and line shadow
                     }
 
-                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
-                    Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
-                   
-                    //System.Diagnostics.Debug.WriteLine("xPosition=" + xPosition.ToString());
-                    
-                    pointsCollection.Add(new Point(xPosition, yPosition));
-
-                    Marker marker = GetMarkerForDataPoint(chart, yPosition, dataPoint, dataPoint.YValue > 0);
-                    marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
+                    lineParams.Points.Add(new Point(xPosition, yPosition));
                 }
 
                 series.Faces = new Faces();
                 series.Faces.Parts = new List<FrameworkElement>();
 
-                PolylineChartShapeParams lineParams = new PolylineChartShapeParams();
-
-                lineParams.LineThickness = (Double)series.LineThickness;
-                lineParams.LineColor = stroke;
-
-                lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
-                lineParams.Lighting = (Boolean)series.LightingEnabled;
-                lineParams.ShadowEnabled = series.ShadowEnabled;
-
-                lineParams.Points = pointsCollection;
-
-                series.VisualParams = lineParams;
-                Polyline polyline;
-                Polyline PolylineShadow;
+                Path polyline, PolylineShadow;
                 Canvas line2dCanvas = GetLine2D(lineParams, out polyline, out PolylineShadow);
 
                 series.Faces.Parts.Add(polyline);
@@ -214,44 +248,46 @@ namespace Visifire.Charts
                 // Apply animation to the label canvas
                 DataSeriesRef = seriesList[0];
 
-                seriesList[0].Storyboard = ApplyLineChartAnimation(labelCanvas, seriesList[0].Storyboard, false);
+                if (DataSeriesRef.Storyboard == null)
+                    DataSeriesRef.Storyboard = new Storyboard();
+
+                DataSeriesRef.Storyboard = ApplyLineChartAnimation(labelCanvas, DataSeriesRef.Storyboard, false);
             }
 
             return visual;
         }
-        
-        private static Canvas GetLine2D(PolylineChartShapeParams lineParams, out Polyline polyline, out Polyline polylineShadow)
-        {
+
+        private static Canvas GetLine2D(PolylineChartShapeParams lineParams, out Path line, out Path lineShadow)
+        {   
             Canvas visual = new Canvas();
 
-            polyline = new Polyline();
-            polyline.Points = lineParams.Points;
-            polyline.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
-            polyline.StrokeThickness = lineParams.LineThickness;
-            polyline.StrokeDashArray = lineParams.LineStyle;
+            line = new Path();
+
+            line.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
+            line.StrokeThickness = lineParams.LineThickness;
+            line.StrokeDashArray = lineParams.LineStyle;
+            line.Data = lineParams.LineGeometryGroup;
 
             if (lineParams.ShadowEnabled)
             {
-                polylineShadow = new Polyline();
-                polylineShadow.Points = CloneCollection(lineParams.Points);
-                polylineShadow.Stroke = GetShadowBrush();
-                polylineShadow.StrokeThickness = lineParams.LineThickness;
+                lineShadow = new Path();
+                lineShadow.Stroke = GetShadowBrush();
+                lineShadow.StrokeThickness = lineParams.LineThickness;
+                lineShadow.Opacity = 0.5;
+                lineShadow.Data = lineParams.LineShadowGeometryGroup;
                 TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
-                polylineShadow.RenderTransform = tt;
-                polylineShadow.Opacity = 0.5;
-                visual.Children.Add(polylineShadow);
+                lineShadow.RenderTransform = tt;
+
+                visual.Children.Add(lineShadow);
             }
             else
-                polylineShadow = null;
+                lineShadow = null;
 
-            visual.Children.Add(polyline);
+            visual.Children.Add(line);
 
             return visual;
         }
 
-       
-
-        
         private static Brush GetShadowBrush()
         {
             return new SolidColorBrush(Colors.LightGray);

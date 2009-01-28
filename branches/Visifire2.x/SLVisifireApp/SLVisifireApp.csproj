@@ -638,17 +638,16 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
-      <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
-      <Name>SLVisifireCharts</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="MyTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
+      <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
+      <Name>SLVisifireCharts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

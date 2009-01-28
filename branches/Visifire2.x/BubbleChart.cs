@@ -59,7 +59,7 @@ namespace Visifire.Charts
 
                 foreach (DataPoint dataPoint in series.DataPoints)
                 {
-                    if (Double.IsNaN(dataPoint.YValue)||(dataPoint.Enabled == false))
+                    if (Double.IsNaN(dataPoint.InternalYValue)||(dataPoint.Enabled == false))
                     {
                         continue;
                     }
@@ -68,7 +68,7 @@ namespace Visifire.Charts
                     bubbleFaces.Parts = new List<FrameworkElement>();
 
                     Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
-                    Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
+                    Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     
                     Brush markerColor = dataPoint.Color;
                     markerColor = (chart.View3D ? Graphics.GetLightingEnabledBrush3D(markerColor) : ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));

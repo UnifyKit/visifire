@@ -237,7 +237,6 @@ namespace Visifire.Commons
             }
         }
 
-
         void VisualObject_MouseLeave(object sender, MouseEventArgs e)
         {
             String text = _element.TextParser(_element.ToolTipText);

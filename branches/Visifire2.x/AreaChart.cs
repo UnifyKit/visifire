@@ -123,6 +123,8 @@ namespace Visifire.Charts
             labelCanvas.SetValue(Canvas.TopProperty, visualOffset);
             labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
 
+            
+
             Marker marker;
 
             foreach (DataSeries series in seriesList)
@@ -182,14 +184,14 @@ namespace Visifire.Charts
                     currentDataPoint = enabledDataPoints[i];
                     nextDataPoint = enabledDataPoints[i + 1];
 
-                    if (Double.IsNaN(currentDataPoint.YValue)) continue;
+                    if (Double.IsNaN(currentDataPoint.InternalYValue)) continue;
 
                     xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.XValue);
-                    yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, currentDataPoint.YValue);
+                    yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, currentDataPoint.InternalYValue);
 
                     points.Add(new Point(xPosition, yPosition));
 
-                    marker = GetMarkerForDataPoint(chart, currentDataPoint, yPosition, currentDataPoint.YValue>0);
+                    marker = GetMarkerForDataPoint(chart, currentDataPoint, yPosition, currentDataPoint.InternalYValue>0);
                     if (marker != null)
                     {
                         marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
@@ -203,10 +205,10 @@ namespace Visifire.Charts
                             currentDataPoint.Parent.Storyboard = ApplyMarkerAnimationToAreaChart(marker, currentDataPoint.Parent.Storyboard, 1);
                         }
                     }
-                    if (Math.Sign(currentDataPoint.YValue) != Math.Sign(nextDataPoint.YValue))
+                    if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
                     {
                         Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.XValue);
-                        Double yNextPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextDataPoint.YValue);
+                        Double yNextPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextDataPoint.InternalYValue);
 
                         Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                         Double xNew = Graphics.ConvertScale(yPosition, yNextPosition, limitingYPosition, xPosition, xNextPosition);
@@ -216,7 +218,7 @@ namespace Visifire.Charts
 
                         // get the faces
                         areaParams.Points = points;
-                        areaParams.IsPositive = (currentDataPoint.YValue>0);
+                        areaParams.IsPositive = (currentDataPoint.InternalYValue>0);
 
                         if (chart.View3D)
                         {
@@ -239,11 +241,11 @@ namespace Visifire.Charts
                 DataPoint lastDataPoint = enabledDataPoints[enabledDataPoints.Count - 1];
 
                 xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
-                yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, lastDataPoint.YValue);
+                yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, lastDataPoint.InternalYValue);
 
                 points.Add(new Point(xPosition, yPosition));
 
-                marker = GetMarkerForDataPoint(chart, lastDataPoint, yPosition, lastDataPoint.YValue > 0);
+                marker = GetMarkerForDataPoint(chart, lastDataPoint, yPosition, lastDataPoint.InternalYValue > 0);
 
                 if (marker != null)
                 {
@@ -265,7 +267,7 @@ namespace Visifire.Charts
 
                 // get the faces
                 areaParams.Points = points;
-                areaParams.IsPositive = (lastDataPoint.YValue > 0);
+                areaParams.IsPositive = (lastDataPoint.InternalYValue > 0);
 
                 if (chart.View3D)
                 {
@@ -335,8 +337,10 @@ namespace Visifire.Charts
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
 
             var plotgroups = (from series in seriesList where series.PlotGroup != null select series.PlotGroup);
+
             if (plotgroups.Count() == 0)
                 return visual;
+
             PlotGroup plotGroup = plotgroups.First();
 
             Dictionary<Double, List<Double>> dataPointValuesInStackedOrder = plotDetails.GetDataPointValuesInStackedOrder(plotGroup);
@@ -368,6 +372,9 @@ namespace Visifire.Charts
 
                 for(Int32 index = 0;index<curYValues.Count;index++)
                 {
+                    if (index >= nextYValues.Count || index >= curYValues.Count || curDataPoints[index] == null || nextDataPoints[index] == null)
+                        continue;
+
                     Double curXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i]);
                     Double nextXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i + 1]);
                     Double curYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, curBase + curYValues[index]);
@@ -378,7 +385,7 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
                     
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].YValue > 0);
+                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {   
                         if (curDataPoints[index].Parent.Storyboard == null)
@@ -393,7 +400,7 @@ namespace Visifire.Charts
                     }
                     if (i+1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].YValue > 0);
+                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (nextDataPoints[index].Parent.Storyboard == null)
@@ -571,14 +578,18 @@ namespace Visifire.Charts
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
                 List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];              
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
                 Double curAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i]].AbsoluteYValueSum;
                 Double nextAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i+1]].AbsoluteYValueSum;
 
+                //Func<DataPoint, Boolean> EnabledDataPointsSelector = delegate(DataPoint entry) { return (entry.Enabled==true)? true:false; };
+
                 List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
+                //curDataPoints = (from dp in curDataPoints where dp.Enabled == true select dp).ToList();
+
                 List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 if (Double.IsNaN(curAbsoluteSum))
@@ -590,8 +601,14 @@ namespace Visifire.Charts
                 for (Int32 index = 0; index < curYValues.Count; index++)
                 {
 
+                    if (index >= nextYValues.Count || index >= curYValues.Count || curDataPoints[index] == null || nextDataPoints[index] == null)
+                        continue;
+
                     Double curPercentageY = curYValues[index] / curAbsoluteSum * 100;
                     Double nextPercentageY = nextYValues[index] / nextAbsoluteSum * 100;
+
+                    if (Double.IsNaN(nextPercentageY) || Double.IsNaN(curPercentageY))
+                        continue;
 
                     Double curXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i]);
                     Double nextXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i + 1]);
@@ -603,7 +620,7 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].YValue > 0);
+                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {
                         if (curDataPoints[index].Parent.Storyboard == null)
@@ -618,7 +635,7 @@ namespace Visifire.Charts
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].YValue > 0);
+                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (curDataPoints[index].Parent.Storyboard == null)
@@ -1067,7 +1084,7 @@ namespace Visifire.Charts
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.BackgroundBrush, "Linear", null) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
-            polygon.StrokeDashArray = areaParams.BorderStyle;
+            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
             polygon.StrokeMiterLimit = 1;
 
@@ -1187,7 +1204,7 @@ namespace Visifire.Charts
                 }
 
                 sides.Stroke = areaParams.BorderBrush;
-                sides.StrokeDashArray = areaParams.BorderStyle;
+                sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
                 sides.StrokeThickness = areaParams.BorderThickness;
                 sides.StrokeMiterLimit = 1;
 
@@ -1211,7 +1228,7 @@ namespace Visifire.Charts
             polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
-            polygon.StrokeDashArray = areaParams.BorderStyle;
+            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
             polygon.StrokeMiterLimit = 1;
 
@@ -1252,7 +1269,7 @@ namespace Visifire.Charts
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.BackgroundBrush, "Linear", null) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
-            polygon.StrokeDashArray = areaParams.BorderStyle;
+            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
             polygon.StrokeMiterLimit = 1;
 
@@ -1312,7 +1329,7 @@ namespace Visifire.Charts
             polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.BackgroundBrush) : areaParams.BackgroundBrush;
 
             polygon.Stroke = areaParams.BorderBrush;
-            polygon.StrokeDashArray = areaParams.BorderStyle;
+            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
             polygon.StrokeMiterLimit = 1;
 
@@ -1378,7 +1395,7 @@ namespace Visifire.Charts
                 }
 
                 sides.Stroke = areaParams.BorderBrush;
-                sides.StrokeDashArray = areaParams.BorderStyle;
+                sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
                 sides.StrokeThickness = areaParams.BorderThickness;
                 sides.StrokeMiterLimit = 1;
 
@@ -1400,13 +1417,17 @@ namespace Visifire.Charts
         private static Int32 GetAreaZIndex(Double left, Double top, Boolean isPositive)
         {
             Int32 Zi = 0;
+            Int32 ioffset = (Int32)left;
+            if (ioffset == 0)
+                ioffset++;
+
             if (isPositive)
             {
-                Zi = Zi + (Int32)(left);
+                Zi = Zi + (Int32)(ioffset);
             }
             else
             {
-                Zi = Zi + Int32.MinValue + (Int32)(left);
+                Zi = Zi + Int32.MinValue + (Int32)(ioffset);
 
             }
             return Zi;
@@ -1423,7 +1444,9 @@ namespace Visifire.Charts
             }
             else
             {
-                zindex = Int32.MinValue + (Int32)(ioffset - topOffset);
+                if (ioffset == 0)
+                    ioffset = 1;
+                zindex = Int32.MinValue + (Int32)(ioffset + topOffset);
             }
             return zindex;
         }

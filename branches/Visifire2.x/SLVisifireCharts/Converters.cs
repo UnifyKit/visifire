@@ -33,7 +33,7 @@ namespace Visifire.Commons
 
             public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
             {
-                Nullable<Int32> data = new Nullable<Int32>(System.Convert.ToInt32(value));
+                Nullable<Int32> data = new Nullable<Int32>(System.Convert.ToInt32(value,System.Globalization.CultureInfo.InvariantCulture));
                 return data;
             }
         }
@@ -53,11 +53,11 @@ namespace Visifire.Commons
 
                 if (thickness.Length == 1)
                 {
-                    markerBorderThickness = new Thickness(Convert.ToDouble(thickness[0]), Convert.ToDouble(thickness[0]), Convert.ToDouble(thickness[0]), Convert.ToDouble(thickness[0]));
+                    markerBorderThickness = new Thickness(Convert.ToDouble(thickness[0],System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[0],System.Globalization.CultureInfo.InvariantCulture));
                 }
                 else if (thickness.Length == 4)
                 {
-                    markerBorderThickness = new Thickness(Convert.ToDouble(thickness[0]), Convert.ToDouble(thickness[1]), Convert.ToDouble(thickness[2]), Convert.ToDouble(thickness[3]));
+                    markerBorderThickness = new Thickness(Convert.ToDouble(thickness[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[1],System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[2],System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(thickness[3],System.Globalization.CultureInfo.InvariantCulture));
                 }
                 else
                     throw new NotSupportedException("Incorrect property value of property type Thickness");
@@ -150,12 +150,12 @@ namespace Visifire.Commons
                 CornerRadius cornerRadius;
 
                 if (radius.Length == 1)
-                {   
-                    cornerRadius = new CornerRadius(Convert.ToDouble(radius[0]), Convert.ToDouble(radius[0]), Convert.ToDouble(radius[0]), Convert.ToDouble(radius[0]));
+                {
+                    cornerRadius = new CornerRadius(Convert.ToDouble(radius[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[0], System.Globalization.CultureInfo.InvariantCulture));
                 }
                 else if (radius.Length == 4)
                 {
-                    cornerRadius = new CornerRadius(Convert.ToDouble(radius[0]), Convert.ToDouble(radius[1]), Convert.ToDouble(radius[2]), Convert.ToDouble(radius[3]));
+                    cornerRadius = new CornerRadius(Convert.ToDouble(radius[0], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[1], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[2], System.Globalization.CultureInfo.InvariantCulture), Convert.ToDouble(radius[3], System.Globalization.CultureInfo.InvariantCulture));
                 }
                 else
                     throw new NotSupportedException("Incorrect property value of property CornerRadius");

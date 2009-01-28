@@ -96,7 +96,8 @@ namespace Visifire.Charts
         void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Call Render
-            Render();
+            if(!Double.IsNaN(e.NewSize.Width) && !Double.IsNaN(e.NewSize.Height) && e.NewSize.Width!=0 && e.NewSize.Height!=0)
+                Render();
         }
 
         void Chart_Loaded(object sender, RoutedEventArgs e)

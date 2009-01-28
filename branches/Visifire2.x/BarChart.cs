@@ -196,8 +196,8 @@ namespace Visifire.Charts
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {
                     barParams.Bevel = dataPoint.Parent.Bevel;
-                    barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                    barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                    barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                    barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                     barParams.BorderBrush = dataPoint.BorderColor;
                     barParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -241,7 +241,7 @@ namespace Visifire.Charts
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     top = top + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * heightPerBar;
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-                    Double right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
+                    Double right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double columnWidth = Math.Abs(left - right);
 
                     Double finalHeight = heightPerBar;
@@ -257,6 +257,8 @@ namespace Visifire.Charts
                     {
                         finalHeight = maxPosValue - top;
                     }
+                    if (finalHeight < 0)
+                        continue;
                     
                     barParams.Size = new Size(columnWidth, finalHeight);
 
@@ -267,7 +269,7 @@ namespace Visifire.Charts
                     {
                         column = Get3DBar(barParams);
                         columnVisual = column.Visual;
-                        columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.YValue > 0));
+                        columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
                     }
                     else
                     {
@@ -305,8 +307,8 @@ namespace Visifire.Charts
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Negative)
                 {
                     barParams.Bevel = dataPoint.Parent.Bevel;
-                    barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                    barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                    barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                    barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                     barParams.BorderBrush = dataPoint.BorderColor;
                     barParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
                     barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -350,21 +352,24 @@ namespace Visifire.Charts
                     //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     top = top + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * heightPerBar;
                     Double right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-                    Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue);
+                    Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double columnWidth = Math.Abs(right - left);
 
                     Double finalHeight = heightPerBar;
                     Double minPosValue = 0;
                     Double maxPosValue = height;
+
                     if (top < minPosValue)
                     {
-                        finalHeight = left + heightPerBar - minPosValue;
+                        finalHeight = top + heightPerBar - minPosValue;
                         top = minPosValue;
                     }
                     else if (top + heightPerBar > maxPosValue)
                     {
                         finalHeight = maxPosValue - top;
                     }
+                    if (finalHeight < 0)
+                        continue;
 
                     barParams.Size = new Size(columnWidth, finalHeight);
 
@@ -375,7 +380,7 @@ namespace Visifire.Charts
                     {
                         column = Get3DBar(barParams);
                         columnVisual = column.Visual;
-                        columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.YValue > 0));
+                        columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
                     }
                     else
                     {
@@ -470,8 +475,14 @@ namespace Visifire.Charts
 
             Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = GetSeriesIndex(seriesList);
 
+            Int32 index = 1;
+
             foreach (PlotGroup plotGroup in plotGroupList)
             {
+
+                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
+                    continue;
+
                 Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
@@ -489,6 +500,8 @@ namespace Visifire.Charts
                 if (plotGroup.AxisY.InternalAxisMaximum < 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
+                index++;
+
                 foreach (Double xValue in xValuesList)
                 {
                     RectangularChartShapeParams barParams = new RectangularChartShapeParams();
@@ -499,15 +512,38 @@ namespace Visifire.Charts
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * heightPerBar - (maxBarHeight / 2);
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
+                    //-----------------------------------------------------
+
+                    Double finalHeight = heightPerBar;
+                    Double minPosValue = 0;
+                    Double maxPosValue = height;
+
+                    if (top < minPosValue)
+                    {
+                        finalHeight = top + heightPerBar - minPosValue;
+                        top = minPosValue;
+                    }
+                    else if (top + heightPerBar > maxPosValue)
+                    {
+                        finalHeight = maxPosValue - top;
+                    }
+                    if (finalHeight < 0)
+                        continue;
+
+                    //-----------------------------------------------------
+
                     Double right;
                     Double barWidth;
                     Double prevSum = 0;
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         barParams.Bevel = dataPoint.Parent.Bevel;
-                        barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
                         barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -537,13 +573,15 @@ namespace Visifire.Charts
                         barParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         barParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue + prevSum);
+                        right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         barWidth = Math.Abs(right - left);
 
-                        prevSum += dataPoint.YValue;
+                        prevSum += dataPoint.InternalYValue;
 
                         barParams.BackgroundBrush = dataPoint.Color;
-                        barParams.Size = new Size(barWidth, heightPerBar);
+
+                        barParams.Size = new Size(barWidth, finalHeight);
+                        //barParams.Size = new Size(barWidth, heightPerBar);
 
                         Faces bar;
                         Panel barVisual = null;
@@ -552,7 +590,7 @@ namespace Visifire.Charts
                         {
                             bar = Get3DBar(barParams);
                             barVisual = bar.Visual;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top,width, (dataPoint.YValue > 0)));
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
@@ -593,9 +631,12 @@ namespace Visifire.Charts
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+                        
                         barParams.Bevel = dataPoint.Parent.Bevel;
-                        barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
                         barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -625,13 +666,15 @@ namespace Visifire.Charts
                         barParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         barParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.YValue + prevSum);
+                        left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         barWidth = Math.Abs(right - left);
 
-                        prevSum += dataPoint.YValue;
+                        prevSum += dataPoint.InternalYValue;
 
                         barParams.BackgroundBrush = dataPoint.Color;
-                        barParams.Size = new Size(barWidth,heightPerBar);
+
+                        barParams.Size = new Size(barWidth, finalHeight);
+                        //barParams.Size = new Size(barWidth, heightPerBar);
 
                         Faces bar;
                         Panel barVisual = null;
@@ -640,7 +683,7 @@ namespace Visifire.Charts
                         {
                             bar = Get3DBar(barParams);
                             barVisual = bar.Visual;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top,width, (dataPoint.YValue > 0)));
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
@@ -739,6 +782,9 @@ namespace Visifire.Charts
 
             foreach (PlotGroup plotGroup in plotGroupList)
             {
+                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
+                    continue;
+                
                 Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
@@ -771,6 +817,26 @@ namespace Visifire.Charts
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * heightPerBar - (maxBarHeight / 2);
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
+                    //-----------------------------------------------------
+
+                    Double finalHeight = heightPerBar;
+                    Double minPosValue = 0;
+                    Double maxPosValue = height;
+
+                    if (top < minPosValue)
+                    {
+                        finalHeight = top + heightPerBar - minPosValue;
+                        top = minPosValue;
+                    }
+                    else if (top + heightPerBar > maxPosValue)
+                    {
+                        finalHeight = maxPosValue - top;
+                    }
+                    if (finalHeight < 0)
+                        continue;
+
+                    //-----------------------------------------------------
+
                     Double right;
                     Double barWidth;
                     Double prevSum = 0;
@@ -778,9 +844,12 @@ namespace Visifire.Charts
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         barParams.Bevel = dataPoint.Parent.Bevel;
-                        barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
                         barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -810,7 +879,7 @@ namespace Visifire.Charts
                         barParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         barParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        percentYValue = (dataPoint.YValue/absoluteSum * 100);
+                        percentYValue = (dataPoint.InternalYValue/absoluteSum * 100);
                         right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
                         barWidth = Math.Abs(right - left);
 
@@ -818,7 +887,9 @@ namespace Visifire.Charts
                         prevSum += percentYValue;
 
                         barParams.BackgroundBrush = dataPoint.Color;
-                        barParams.Size = new Size(barWidth, heightPerBar);
+                        
+                        barParams.Size = new Size(barWidth, finalHeight);
+                        //barParams.Size = new Size(barWidth, heightPerBar);
 
                         Faces bar;
                         Panel barVisual = null;
@@ -827,7 +898,7 @@ namespace Visifire.Charts
                         {
                             bar = Get3DBar(barParams);
                             barVisual = bar.Visual;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, (dataPoint.YValue > 0)));
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
@@ -867,9 +938,12 @@ namespace Visifire.Charts
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
+                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                            continue;
+
                         barParams.Bevel = dataPoint.Parent.Bevel;
-                        barParams.Lighting = (Boolean)dataPoint.Parent.LightingEnabled;
-                        barParams.Shadow = dataPoint.Parent.ShadowEnabled;
+                        barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+                        barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
                         barParams.BorderBrush = dataPoint.BorderColor;
                         barParams.BorderThickness = ((Thickness) dataPoint.BorderThickness).Left;
                         barParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
@@ -899,7 +973,7 @@ namespace Visifire.Charts
                         barParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
                         barParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
-                        percentYValue = (dataPoint.YValue / absoluteSum * 100);
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
 
                         left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
                         barWidth = Math.Abs(right - left);
@@ -907,7 +981,9 @@ namespace Visifire.Charts
                         prevSum += percentYValue;
 
                         barParams.BackgroundBrush = dataPoint.Color;
-                        barParams.Size = new Size(barWidth, heightPerBar);
+
+                        barParams.Size = new Size(barWidth, finalHeight);
+                        //barParams.Size = new Size(barWidth, heightPerBar);
 
                         Faces bar;
                         Panel barVisual = null;
@@ -916,7 +992,7 @@ namespace Visifire.Charts
                         {
                             bar = Get3DBar(barParams);
                             barVisual = bar.Visual;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, (dataPoint.YValue > 0)));
+                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
@@ -1198,17 +1274,28 @@ namespace Visifire.Charts
                 return Int32.MinValue + zindex;
         }
 
-        private static Int32 GetStackedBarZIndex(Double left, Double top,Double width, Boolean isPositive)
+        //private static Int32 GetStackedBarZIndex(Double left, Double top, Double width, Boolean isPositive)
+        //{
+        //    Double zOffset = Math.Pow(10, (Int32)(Math.Log10(width) - 1));
+        //    Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
+        //    Int32 zindex = (Int32)((top) * zOffset) + iOffset;
+        //    if (isPositive)
+        //        return zindex;
+        //    else
+        //        return Int32.MinValue + zindex;
+        //}
+
+        private static Int32 GetStackedBarZIndex(Double left, Double top, Double width, Double height, Boolean isPositive)
         {
+            Int32 yOffset = (Int32)(height - top);
             Double zOffset = Math.Pow(10, (Int32)(Math.Log10(width) - 1));
-            Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
+            Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset) + Math.Pow(yOffset, 2));
             Int32 zindex = (Int32)((top) * zOffset) + iOffset;
             if (isPositive)
                 return zindex;
             else
                 return Int32.MinValue + zindex;
         }
-
 
         private static List<KeySpline> GenerateKeySplineList(params Point[] values)
         {
