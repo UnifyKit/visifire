@@ -12,11 +12,12 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for PlotAreaTest
+    /// This class runs the unit tests Visifire.Charts.PlotArea class 
     /// </summary>
     [TestClass]
     public class PlotAreaTest
     {
+        #region CheckPlotAreaDefaultPropertyValue
         /// <summary>
         /// Check the default value of Bevel
         /// </summary>
@@ -30,13 +31,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse(chart.PlotArea.Bevel);
             }
@@ -58,13 +59,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.PlotArea.BorderColor);
             }
@@ -86,13 +87,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(0), chart.PlotArea.BorderThickness);
             }
@@ -102,10 +103,10 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the default value of Color
+        /// Check the default value of Background
         /// </summary>
         [TestMethod]
-        public void ColorDefaultValue()
+        public void BackgroundDefaultValue()
         {
             Chart chart = new Chart();
             chart.AnimationEnabled = false;
@@ -114,15 +115,15 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                Assert.IsNull(chart.PlotArea.Color);
+                Assert.IsNull(chart.PlotArea.Background);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -142,13 +143,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.PlotArea.Href);
             }
@@ -170,13 +171,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(Visifire.Commons.HrefTargets._self, chart.PlotArea.HrefTarget);
             }
@@ -198,13 +199,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse(chart.PlotArea.LightingEnabled);
             }
@@ -226,13 +227,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse(chart.PlotArea.ShadowEnabled);
             }
@@ -254,13 +255,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new CornerRadius(0), chart.PlotArea.CornerRadius);
             }
@@ -282,13 +283,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.PlotArea.ToolTipText);
             }
@@ -296,6 +297,7 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
         #region CheckPlotAreaNewPropertyValue
         /// <summary>
@@ -315,15 +317,15 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                chart.PlotArea.Color = new SolidColorBrush(Colors.Red);
+                chart.PlotArea.Background = new SolidColorBrush(Colors.Red);
                 chart.PlotArea.Bevel = true;
                 Assert.IsTrue(chart.PlotArea.Bevel);
             }
@@ -349,13 +351,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.BorderThickness = new Thickness(1);
                 chart.PlotArea.BorderColor = new SolidColorBrush(Colors.Red);
@@ -383,13 +385,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.BorderThickness = new Thickness(2);
                 Assert.AreEqual(new Thickness(2), chart.PlotArea.BorderThickness);
@@ -400,12 +402,12 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the new value of Color. 
+        /// Check the new value of Background. 
         /// </summary> 
         [TestMethod]
-        [Description("Check the new value of Color.")]
+        [Description("Check the new value of Background.")]
         [Owner("[....]")]
-        public void ColorNewValue()
+        public void BackgroundNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -416,16 +418,16 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                chart.PlotArea.Color = new SolidColorBrush(Colors.Red);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.PlotArea.Color);
+                chart.PlotArea.Background = new SolidColorBrush(Colors.Red);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.PlotArea.Background);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -449,13 +451,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.Href = "http://www.visifire.com";
                 Assert.AreEqual("http://www.visifire.com", chart.PlotArea.Href);
@@ -482,13 +484,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.HrefTarget = HrefTargets._blank;
                 Assert.AreEqual(HrefTargets._blank, chart.PlotArea.HrefTarget);
@@ -516,15 +518,15 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                chart.PlotArea.Color = new SolidColorBrush(Colors.Red);
+                chart.PlotArea.Background = new SolidColorBrush(Colors.Red);
                 chart.PlotArea.LightingEnabled = true;
                 Assert.IsTrue(chart.PlotArea.LightingEnabled);
             }
@@ -550,13 +552,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.ShadowEnabled = true;
                 Assert.IsTrue(chart.PlotArea.ShadowEnabled);
@@ -583,13 +585,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.BorderThickness = new Thickness(1);
                 chart.PlotArea.CornerRadius = new CornerRadius(5);
@@ -617,13 +619,13 @@ namespace WPFVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
                
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.PlotArea.ToolTipText = "ToolTip";
                 Assert.AreEqual("ToolTip", chart.PlotArea.ToolTipText);
@@ -634,14 +636,21 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

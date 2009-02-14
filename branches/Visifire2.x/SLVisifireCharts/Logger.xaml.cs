@@ -17,10 +17,15 @@ namespace Visifire.Charts
     /// </summary>
     public partial class Logger : UserControl
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.Logger class
+        /// </summary>
         public Logger()
         {
             InitializeComponent();
-            lineNumber = 1;
+            _lineNumber = 1;
         }
 
         /// <summary>
@@ -29,7 +34,7 @@ namespace Visifire.Charts
         /// <param name="message">Message as String</param>
         public void LogLine(String message)
         {
-            logger.Text += "\n" + (lineNumber++).ToString() + ") " + message;
+            logger.Text += "\n" + (_lineNumber++).ToString() + ") " + message;
         }
 
         /// <summary>
@@ -41,13 +46,51 @@ namespace Visifire.Charts
             logger.Text += message;
         }
 
+        #endregion
+
+        #region Public Properties
+
+        #endregion
+
+        #region Public Events And Delegates
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Properties
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+
+        #endregion
+
+        #region Internal Methods
+
+        #endregion
+
+        #region Internal Events And Delegates
+
+        #endregion
+
+        #region Data
+
         /// <summary>
         /// Current line number of logger message
         /// </summary>
-        private Int32 lineNumber
-        {
-            get;
-            set;
-        }
+        private Int32 _lineNumber;
+
+        #endregion
     }
 }

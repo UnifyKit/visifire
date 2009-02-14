@@ -7,7 +7,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type vc:Chart}" >
                     <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0"
-                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}" Opacity="{TemplateBinding Opacity}">
 
                         <Grid x:Name="ShadowGrid" Margin="0,0,0,0" Canvas.ZIndex="0" ></Grid>
 
@@ -257,7 +257,7 @@
         <!--Do not use background color here. Bcz Color wont refresh in blend <Setter Property="Color" Value="Transparent"/>-->
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>
-        <Setter Property="Color" Value="Transparent"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     
     <Style TargetType="{x:Type vc:ChartGrid}">

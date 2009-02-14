@@ -14,17 +14,155 @@ using System.Windows.Shapes;
 #endif
 
 using System.Windows.Controls.Primitives;
+
 namespace Visifire.Commons
 {   
     /// <summary>
-    /// Visifire Control interface
+    /// Visifire Control base class
     /// </summary>
     public abstract class VisifireControl : VisifireElement
     {
+        #region Public Methods
+
+        /// <summary>
+        /// VisifireControl base class constructor
+        /// </summary>
         public VisifireControl()
         {
             ToolTipEnabled = true;
         }
+
+        /// <summary>
+        /// Accepts absolute or relative Uri, builds and returns abslute path
+        /// </summary>
+        /// <param name="path">Path as String</param>
+        /// <returns>String</returns>
+        public static String GetAbsolutePath(String path)
+        {
+#if SL      
+            String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
+            Uri ur = new Uri(path, UriKind.RelativeOrAbsolute);
+            if (ur.IsAbsoluteUri)
+            {
+                return ur.AbsoluteUri;
+            }
+            else if (path.StartsWith("/"))
+            {
+                UriBuilder baseUri = new UriBuilder(BaseUri);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, path);
+                return newUri.ToString();
+            }
+            else
+            {
+                UriBuilder baseUri = new UriBuilder(BaseUri);
+                String sourcePath = baseUri.Path.Substring(0, baseUri.Path.LastIndexOf('/') + 1);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + path);
+                return newUri.ToString();
+            }
+#else       
+            return path;
+#endif
+        }
+
+        #endregion
+
+        #region Public Properties
+        
+        /// <summary>
+        /// Identifies the Visifire.Commons.ToolTipEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Commons.ToolTipEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ToolTipEnabledProperty = DependencyProperty.Register
+            ("ToolTipEnabled",
+            typeof(Boolean),
+            typeof(VisifireControl),
+            null);
+
+#if SL
+
+        /// <summary>
+        /// Sliverlight Object Id
+        /// </summary>
+        [System.Windows.Browser.ScriptableMember]
+        public String ControlId
+        {
+            get;
+            set;
+        }
+
+#endif
+
+        /// <summary>
+        /// Enables or disables all ToolTips in chart
+        /// </summary>
+#if SL
+        [System.Windows.Browser.ScriptableMember]
+#endif
+        public Boolean ToolTipEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ToolTipEnabledProperty);
+            }
+            set
+            {
+                SetValue(ToolTipEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Whether the chart is in design mode or application mode
+        /// </summary>
+        internal Boolean IsInDesignMode
+        {
+            get
+            {
+#if WPF   
+                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
+#else
+                return (!System.Windows.Browser.HtmlPage.IsEnabled);
+#endif
+            }
+        }
+
+        #endregion
+
+        #region Public Events And Delegates
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+
+        #endregion
+
+        #region Internal Methods
+
+        #endregion
+
+        #region Internal Events And Delegates
+
+        #endregion
+
+        #region Data
+
+        /// <summary>
+        /// Whether the template is applied or not
+        /// </summary>
+        internal Boolean _isTemplateApplied;
 
         #region Template Part
 
@@ -32,9 +170,6 @@ namespace Visifire.Commons
 
         internal const string RootElementName = "RootElement";
 
-        /// <summary>
-        /// Chart Shadow Canvas
-        /// </summary>
         internal Grid _shadowGrid;
         internal const string ShadowGridName = "ShadowGrid";
 
@@ -176,9 +311,6 @@ namespace Visifire.Commons
         internal StackPanel _bottomInnerTitlePanel;
         internal const string BottomInnerTitlePanelName = "BottomInnerTitlePanel";
 
-        /// <summary>
-        /// LeftInnerPanel holds LeftInnerTitlePanel and LeftInnerLegendPanel
-        /// </summary>
         internal StackPanel _leftInnerPanel;
         internal const string LeftInnerPanelName = "LeftInnerPanel";
 
@@ -212,9 +344,6 @@ namespace Visifire.Commons
         internal Canvas _drawingCanvas;
         internal const string DrawingCanvasName = "DrawingCanvas";
 
-        //internal Canvas _plotAreaBevelCanvas;
-        //internal const string PlotAreaBevelCanvasName = "PlotAreaBevelCanvas";
-
         internal StackPanel _centerDockInsidePlotAreaPanel;
         internal const string CenterDockInsidePlotAreaPanelName = "CenterDockInsidePlotAreaPanel";
 
@@ -225,95 +354,10 @@ namespace Visifire.Commons
         internal const string ToolTipCanvasName = "ToolTipCanvas";
 
         internal Visifire.Charts.ToolTip _toolTip;
-        
+
         #endregion
 
-#if SL
-        /// <summary>
-        /// Sliverlight Object Id
-        /// </summary>
-        [System.Windows.Browser.ScriptableMember]
-        public String ControlId
-        {
-            get;
-            set;
-        }
-#endif        
-        /// <summary>
-        /// Enables or disables the ToolTip
-        /// </summary>
-#if SL
-        [System.Windows.Browser.ScriptableMember]
-#endif
-        public Boolean ToolTipEnabled
-        {
-            get
-            {
-                return (Boolean)GetValue(ToolTipEnabledProperty);
-            }
-            set
-            {
-                SetValue(ToolTipEnabledProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty ToolTipEnabledProperty = DependencyProperty.Register("ToolTipEnabled", typeof(Boolean), typeof(VisifireControl), null);
-
-        internal Boolean IsTemplateApplied;
-
-        /// <summary>
-        /// Accepts absolute or relative Uri, builds and returns abslute path
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        internal static String GetAbsolutePath(String path)
-        {
-#if SL
-            String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
-            Uri ur = new Uri(path, UriKind.RelativeOrAbsolute);
-            if (ur.IsAbsoluteUri)
-            {
-                return ur.AbsoluteUri;
-            }
-            else if (path.StartsWith("/"))
-            {
-                UriBuilder baseUri = new UriBuilder(BaseUri);
-                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, path);
-                return newUri.ToString();
-            }
-            else
-            {
-                UriBuilder baseUri = new UriBuilder(BaseUri);
-                String sourcePath = baseUri.Path.Substring(0, baseUri.Path.LastIndexOf('/') + 1);
-                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + path);
-                return newUri.ToString();
-            }
-#else
-            return path;
-#endif
-        }
-
-#if WPF
-        internal Boolean IsInDesignMode
-        {
-            get
-            {
-                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
-            }
-        }
-#else
-        internal Boolean IsInDesignMode
-        {
-            get
-            {
-                return (!System.Windows.Browser.HtmlPage.IsEnabled);
-            }
-        }
-#endif
-
-        #region Data
-       
         #endregion
+
+        }
     }
-
-}

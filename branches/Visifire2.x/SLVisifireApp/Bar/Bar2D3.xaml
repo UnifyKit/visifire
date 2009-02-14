@@ -6,7 +6,7 @@
         <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
 
             <vc:Chart.PlotArea>
-                <vc:PlotArea Color="#f1f1f1"/>
+                <vc:PlotArea Background="#f1f1f1"/>
             </vc:Chart.PlotArea>
             <vc:Chart.Titles>
                 <vc:Title Text="Monthly Production"/>

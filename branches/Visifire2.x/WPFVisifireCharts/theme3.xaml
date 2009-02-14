@@ -39,7 +39,7 @@
     <Style x:Key="PlotArea" TargetType="{x:Type vc:PlotArea}">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>
-        <Setter Property="Color" Value="Transparent"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="AxisXLabels" TargetType="{x:Type vc:AxisLabels}">
         <Setter Property="FontSize" Value="10"/>

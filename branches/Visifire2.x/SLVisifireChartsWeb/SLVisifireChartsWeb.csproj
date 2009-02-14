@@ -12,6 +12,7 @@
     <AssemblyName>SLVisifireChartsWeb</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SilverlightApplicationList>{A40DCCB5-CDCA-4BC8-8F90-D9C0428E117E}|..\SLVisifireChartsXap\SLVisifireChartsXap.csproj|ClientBin|False,{F16255E4-2248-47D9-9606-BBE44463075F}|..\SLVisifireApp\SLVisifireApp.csproj|ClientBin|False</SilverlightApplicationList>
+    <TargetFrameworkSubset>Full</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -158,8 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Default.aspx.cs">
-      <SubType>ASPXCodeBehind</SubType>
       <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -184,7 +185,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>50133</DevelopmentServerPort>
+          <DevelopmentServerPort>49745</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

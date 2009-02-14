@@ -10,7 +10,7 @@
             </vc:Chart.Titles>
             
             <vc:Chart.PlotArea>
-                <vc:PlotArea Color="#f9f9f9"/>
+                <vc:PlotArea Background="#f9f9f9"/>
             </vc:Chart.PlotArea>
             
             <vc:Chart.AxesY>

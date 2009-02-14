@@ -1,4 +1,24 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+#if WPF
 
     using System;
     using System.Collections.Generic;
@@ -21,9 +41,8 @@ using System.Windows.Input;
 
 namespace Visifire.Charts
 {
-
     /// <summary>
-    /// Class ToolTip is used for Displaying ToolTip
+    /// ToolTip class
     /// </summary>
 #if SL
     [System.Windows.Browser.ScriptableType]
@@ -32,53 +51,93 @@ namespace Visifire.Charts
     {
         #region Public Methods
 
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.ToolTip class
+        /// </summary>
         public ToolTip()
-        {
+        {   
             Text = "";
+
+            // Apply default style from generic
 #if WPF     
             if (!_defaultStyleKeyApplied)
             {   
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(ToolTip), new FrameworkPropertyMetadata(typeof(ToolTip)));
                 _defaultStyleKeyApplied = true;
             }
-#else       
-
+#else
             DefaultStyleKey = typeof(ToolTip);
-            
 #endif
-
         }
 
-        // Summary:
-        //     When overridden in a derived class, is invoked whenever application code
-        //     or internal processes (such as a rebuilding layout pass) call System.Windows.Controls.Control.ApplyTemplate().
+        /// <summary>
+        /// When overridden in a derived class, is invoked whenever application code
+        /// or internal processes (such as a rebuilding layout pass) call System.Windows.Controls.Control.ApplyTemplate().
+        /// </summary>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            
+
             _borderElement = GetTemplateChild("ToolTipBorder") as Border;
             _toolTipTextBlock = GetTemplateChild("ToolTipTextBlock") as TextBlock;
             this.Visibility = Visibility.Collapsed;
-            this.SizeChanged += new SizeChangedEventHandler(ToolTip_SizeChanged);
         }
 
         #endregion
+        
+        #region Public Properties
 
-        #region Private Methods
+        /// <summary>
+        /// Identifies the Visifire.Charts.ToolTip.Enabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ToolTip.Enabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+            ("Enabled",
+            typeof(Nullable<Boolean>),
+            typeof(ToolTip),
+            new PropertyMetadata(OnEnabledPropertyChanged));
 
-        void ToolTip_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (Chart != null)
-            {
-                // if (OnSizeChanged != null && _borderElement != null)
-                //  OnSizeChanged(this, null);
-            }
-        }
+        /// <summary>
+        /// Identifies the Visifire.Charts.ToolTip.Text dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ToolTip.Text dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register
+            ("Text",
+            typeof(String),
+            typeof(ToolTip),
+            new PropertyMetadata(OnTextPropertyChanged));
 
-        #endregion 
+        /// <summary>
+        /// Identifies the Visifire.Charts.ToolTip.CornerRadius dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ToolTip.CornerRadius dependency property.
+        /// </returns>
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
+            ("CornerRadius",
+            typeof(CornerRadius),
+            typeof(ToolTip),
+            null);
 
-        #region Properties
+        /// <summary>
+        /// Identifies the Visifire.Charts.ToolTip.FontColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ToolTip.FontColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
+            ("FontColor",
+            typeof(Brush),
+            typeof(ToolTip),
+            null);
 
+        /// <summary>
+        /// Visifire chart control reference
+        /// </summary>
 #if WPF
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 #endif
@@ -89,7 +148,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enabled property of ToolTip
+        /// Enables or disables the ToolTip
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -114,89 +173,35 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
-            ("Enabled",
-            typeof(Nullable<Boolean>),
-            typeof(ToolTip),
-            new PropertyMetadata(OnEnabledPropertyChanged));
-
-        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ToolTip t = d as ToolTip;
-
-            if (t._borderElement != null)
-            {
-                if ((Boolean)e.NewValue)
-                    t._borderElement.Visibility = t.Visibility;
-                else
-                    t._borderElement.Visibility = Visibility.Collapsed;
-            }
-        }
-
-
         /// <summary>
-        /// Property Text
+        /// Text property of ToolTip
         /// </summary>
         public String Text
         {
             get
-            {   
+            {
                 return (GetValue(TextProperty) == null) ? "" : (String)GetValue(TextProperty);
             }
             set
-            {   
-                SetValue(TextProperty, value);
+            {
+                SetValue(TextProperty, Visifire.Commons.ObservableObject.GetFormattedMultilineText(value.ToString(System.Globalization.CultureInfo.InvariantCulture)));
             }
         }
 
         /// <summary>
-        /// ToolTip text dependency property
-        /// </summary>
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register
-            ("Text",
-            typeof(String),
-            typeof(ToolTip),
-            new PropertyMetadata(OnTextPropertyChanged));
-
-        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ToolTip tootlTip = d as ToolTip;
-
-            if(tootlTip._toolTipTextBlock != null)
-                tootlTip._toolTipTextBlock.Text = (String)e.NewValue;
-
-            if (tootlTip.Chart != null)
-            {   
-                tootlTip.MaxWidth = tootlTip.Chart.ActualWidth;
-                
-                if (tootlTip._toolTipTextBlock != null)
-                    tootlTip._toolTipTextBlock.MaxWidth = tootlTip.Chart.ActualWidth - 4;
-            }
-        }
-
-        /// <summary>
-        /// Property Text
+        /// CornerRadius property of ToolTip
         /// </summary>
         public CornerRadius CornerRadius
         {
             get
             {
-                return (CornerRadius) GetValue(CornerRadiusProperty);
+                return (CornerRadius)GetValue(CornerRadiusProperty);
             }
             set
             {
                 SetValue(CornerRadiusProperty, value);
             }
         }
-
-        /// <summary>
-        /// CornerRadius dependency property
-        /// </summary>
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
-            ("CornerRadius",
-            typeof(CornerRadius),
-            typeof(ToolTip),
-            null);
 
         /// <summary>
         /// Property Text
@@ -213,17 +218,76 @@ namespace Visifire.Charts
             }
         }
 
-        /// <summary>
-        /// CornerRadius dependency property
-        /// </summary>
-        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
-            ("FontColor",
-            typeof(Brush),
-            typeof(ToolTip),
-            null);
+        #endregion
+
+        #region Public Events And Delegates
 
         #endregion
 
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Properties
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// EnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ToolTip t = d as ToolTip;
+
+            if (t._borderElement != null)
+            {
+                if ((Boolean)e.NewValue)
+                    t._borderElement.Visibility = t.Visibility;
+                else
+                    t._borderElement.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// TextProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ToolTip tootlTip = d as ToolTip;
+
+            if (tootlTip._toolTipTextBlock != null)
+                tootlTip._toolTipTextBlock.Text = (String)e.NewValue;
+
+            if (tootlTip.Chart != null)
+            {
+                tootlTip.MaxWidth = tootlTip.Chart.ActualWidth;
+
+                if (tootlTip._toolTipTextBlock != null)
+                    tootlTip._toolTipTextBlock.MaxWidth = tootlTip.Chart.ActualWidth - 4;
+            }
+        }
+
+        #endregion
+
+        #region Internal Methods
+
+        /// <summary>
+        /// Show ToolTip
+        /// </summary>
         internal void Show()
         {
             if ((Boolean)Enabled)
@@ -232,27 +296,44 @@ namespace Visifire.Charts
                     Hide();
                 else
                     this.Visibility = Visibility.Visible;
-
-                // if (OnTextChanged != null)
-                //    OnTextChanged(this, null);
             }
             else
                 Hide();
         }
 
+        /// <summary>
+        /// Hide ToolTip
+        /// </summary>
         internal void Hide()
         {
             this.Visibility = Visibility.Collapsed;
         }
 
-        #region Data
+        #endregion
 
+        #region Internal Events And Delegates
+
+        #endregion
+
+        #region Data
+        
+        /// <summary>
+        /// Border element of ToolTip
+        /// </summary>
         internal Border _borderElement;
+
+        /// <summary>
+        /// TextBlock element of ToolTip
+        /// </summary>
         private TextBlock _toolTipTextBlock;
 
 #if WPF
-        static Boolean _defaultStyleKeyApplied = false;            // Default Style key
+        /// <summary>
+        /// Whether the default style is applied
+        /// </summary>
+        private static Boolean _defaultStyleKeyApplied;
 #endif
+
         #endregion
     }
 }

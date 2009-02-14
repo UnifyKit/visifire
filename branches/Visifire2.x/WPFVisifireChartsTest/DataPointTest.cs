@@ -13,11 +13,12 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for DataPointTest
+    /// This class runs the unit tests Visifire.Charts.DataPoint class 
     /// </summary>
     [TestClass]
     public class DataPointTest
     {
+        #region TestDataPointPropertyChanged
         /// <summary>
         /// Test DataPoint property changed event.
         /// </summary>
@@ -28,7 +29,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -59,7 +60,7 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 dataPoint.XValue = 10;
                 dataPoint.YValue = rand.Next(-100, 100);
@@ -68,7 +69,9 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
+        #region DataPointDecimalXValueChecking
         /// <summary>
         /// Test DataPoints with Decimal values in the second series
         /// </summary>
@@ -83,7 +86,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -122,13 +125,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointRepeatedXValueChecking
         /// <summary>
         /// Test DataPoints with repeated XValues in the series
         /// </summary>
@@ -143,7 +148,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -166,13 +171,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointStressXValueChecking
         /// <summary>
         /// Stress testing DataPoints with hundreds of XValues
         /// </summary>
@@ -187,7 +194,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -213,13 +220,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointDecimalXValueChecking2
         /// <summary>
         /// Performance testing DataPoints with decimal XValues
         /// </summary>
@@ -234,7 +243,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -271,13 +280,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointAxisXLabelChecking
         /// <summary>
         /// Performance testing DataPoints with AxisXLabels
         /// </summary>
@@ -292,7 +303,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -335,13 +346,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointRandomXValuesChecking
         /// <summary>
         /// Performance testing DataPoints with random XValues
         /// </summary>
@@ -352,7 +365,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -383,13 +396,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointStressXValuesChecking2
         /// <summary>
         /// Stress testing DataPoints with thousands of XValues
         /// </summary>
@@ -405,7 +420,7 @@ namespace WPFVisifireChartsTest
             axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -432,13 +447,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointStressYValuesChecking
         /// <summary>
         /// Testing DataPoints with YValues
         /// </summary>
@@ -449,7 +466,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -486,13 +503,15 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
+        #region DataPointEventChecking
         /// <summary>
         /// Testing DataPoint Event checking
         /// </summary>
@@ -503,7 +522,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -544,13 +563,14 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 System.Threading.Thread.Sleep(1000);
                 window.Dispatcher.InvokeShutdown();
                 window.Close();
             }
         }
+        #endregion
 
         #region CheckNewPropertyValue
         /// <summary>
@@ -567,13 +587,13 @@ namespace WPFVisifireChartsTest
             Random rand = new Random();
             Double r, g, b;
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -601,13 +621,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -634,13 +654,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -667,13 +687,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -700,13 +720,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -733,13 +753,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -766,13 +786,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -799,13 +819,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -832,13 +852,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -865,13 +885,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -898,13 +918,13 @@ namespace WPFVisifireChartsTest
             dataSeries.LabelEnabled = true;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -932,13 +952,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -966,13 +986,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1000,13 +1020,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1034,13 +1054,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1067,13 +1087,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1100,13 +1120,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1133,13 +1153,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1167,13 +1187,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1201,13 +1221,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1234,13 +1254,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1267,13 +1287,13 @@ namespace WPFVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1300,13 +1320,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1333,13 +1353,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1366,13 +1386,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1400,13 +1420,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1432,13 +1452,13 @@ namespace WPFVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries2();
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1466,13 +1486,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1502,13 +1522,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1539,13 +1559,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                     Assert.IsFalse((Boolean)dataSeries.DataPoints[i].ShowInLegend);
@@ -1568,13 +1588,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                     Assert.IsNull(dataSeries.DataPoints[i].BorderColor);
@@ -1599,13 +1619,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1632,13 +1652,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                   
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1665,13 +1685,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1697,13 +1717,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1730,13 +1750,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1763,13 +1783,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1796,13 +1816,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1829,13 +1849,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1862,13 +1882,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1895,13 +1915,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1928,13 +1948,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1961,13 +1981,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -1994,13 +2014,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2026,13 +2046,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2059,13 +2079,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2092,13 +2112,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2125,13 +2145,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2158,13 +2178,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2191,13 +2211,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2224,13 +2244,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2257,13 +2277,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2290,13 +2310,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2323,13 +2343,13 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
                    
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
@@ -2342,6 +2362,10 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
+        /// <summary>
+        /// Create DataSeries with negative points
+        /// </summary>
+        /// <returns></returns>
         private DataSeries CreateDataSeries1()
         {
             Random rand = new Random();
@@ -2360,6 +2384,10 @@ namespace WPFVisifireChartsTest
             return dataSeries;
         }
 
+        /// <summary>
+        /// Create dataSeries with positive points
+        /// </summary>
+        /// <returns></returns>
         private DataSeries CreateDataSeries2()
         {
             Random rand = new Random();
@@ -2372,21 +2400,27 @@ namespace WPFVisifireChartsTest
                 DataPoint dataPoint = new DataPoint();
                 dataPoint.AxisXLabel = "Label" + i;
                 dataPoint.XValue = i + 1;
-                dataPoint.YValue = rand.Next(-100, 100);
+                dataPoint.YValue = rand.Next(10, 100);
                 dataSeries.DataPoints.Add(dataPoint);
             }
             return dataSeries;
         }
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        bool isLoaded = false;
-        const int sleepTime = 2000;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

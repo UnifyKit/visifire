@@ -14,12 +14,11 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for TitleTest
+    /// This class runs the unit tests Visifire.Charts.Title class 
     /// </summary>
     [TestClass]
     public class TitleTest
     {
-
         #region CheckTitleBackgroundPropertyChanged Event
         /// <summary>
         /// Testing Title Background property changed.
@@ -45,13 +44,13 @@ namespace WPFVisifireChartsTest
             title.Background = new SolidColorBrush(Colors.Magenta);
             chart.Titles.Add(title);
       
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 title.PropertyChanged += (object sender, System.ComponentModel.PropertyChangedEventArgs e)
                     =>
@@ -85,13 +84,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Titles[0].Background);
             }
@@ -115,13 +114,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new FontFamily("Verdana"), chart.Titles[0].FontFamily);
             }
@@ -147,13 +146,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(12, (Double)chart.Titles[0].FontSize, Common.HighPrecisionDelta);
             }
@@ -179,13 +178,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Titles[0].FontColor);
             }
@@ -211,13 +210,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontStyles.Normal, chart.Titles[0].FontStyle);
             }
@@ -244,13 +243,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontWeights.Normal, chart.Titles[0].FontWeight);
             }
@@ -276,13 +275,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(HorizontalAlignment.Center, chart.Titles[0].HorizontalAlignment);
             }
@@ -308,13 +307,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(VerticalAlignment.Top, chart.Titles[0].VerticalAlignment);
             }
@@ -340,13 +339,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(0), chart.Titles[0].Padding);
             }
@@ -372,13 +371,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(0), chart.Titles[0].Margin);
             }
@@ -404,13 +403,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(false, chart.Titles[0].DockInsidePlotArea);
             }
@@ -436,13 +435,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual("", chart.Titles[0].Text);
             }
@@ -468,13 +467,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new CornerRadius(0, 0, 0, 0), chart.Titles[0].CornerRadius);
             }
@@ -500,13 +499,13 @@ namespace WPFVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(TextAlignment.Left, chart.Titles[0].TextAlignment);
             }
@@ -555,13 +554,13 @@ namespace WPFVisifireChartsTest
                 title.CornerRadius = new CornerRadius(1, 1, 1, 1);
             }
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 foreach (Title title in chart.Titles) Assert.AreEqual(false, title.DockInsidePlotArea);
                 foreach (Title title in chart.Titles) Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), title.Background);
@@ -605,13 +604,13 @@ namespace WPFVisifireChartsTest
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 foreach (Title title in chart.Titles)
                 {
@@ -654,13 +653,13 @@ namespace WPFVisifireChartsTest
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 foreach (Title title in chart.Titles)
                 {
@@ -707,13 +706,13 @@ namespace WPFVisifireChartsTest
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 foreach (Title title in chart.Titles)
                 {
@@ -786,15 +785,21 @@ namespace WPFVisifireChartsTest
             }
         }
 
-        void chart_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        const int sleepTime = 1000;
-        bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

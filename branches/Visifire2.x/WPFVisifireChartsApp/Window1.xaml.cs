@@ -14,11 +14,12 @@ using System.Windows.Shapes;
 using System.Data;
 using System.ComponentModel;
 using Visifire.Charts;
+using Visifire.Commons;
 using System.Windows.Media.Animation;
 using System.IO;
 
 namespace WPFVisifireChartsApp
-{   
+{
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>

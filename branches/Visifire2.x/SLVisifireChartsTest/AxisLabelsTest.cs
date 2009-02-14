@@ -11,15 +11,12 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.AxisLabels class 
+    /// </summary>
     [TestClass]
     public class AxisLabelsTest : SilverlightControlTest
     {
-
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            isLoaded = true;
-        }
-
         #region CheckDefaultPropertyValues
         /// <summary>
         /// Check the default value of Angle. 
@@ -35,7 +32,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Double.NaN, chart.AxesX[0].AxisLabels.Angle),
@@ -58,7 +55,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Double.NaN, chart.AxesX[0].AxisLabels.Interval));
@@ -80,7 +77,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.AreEqual(10, chart.AxesX[0].AxisLabels.FontSize),
@@ -103,35 +100,13 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.AxesX[0].AxisLabels.Rows));
 
             EnqueueTestComplete();
         }
-
-        ///// <summary>
-        ///// Check the default value of TextWrap (Currently not in use).
-        ///// </summary> 
-        //[TestMethod]
-        //[Description("Check the default value of TextWrap (Currently not in use).")]
-        //[Owner("[....]")]
-        //[Asynchronous]
-        //public void TextWrapDefaultValue()
-        //{
-        //    Chart chart = new Chart();
-        //    chart.Width = 400;
-        //    chart.Height = 300;
-
-        //    Common.CreateAndAddDefaultDataSeries(chart);
-        //    EnqueueSleep(sleepTime);
-
-        //    CreateAsyncTask(chart,
-        //        () => Assert.AreEqual(TextWrapping.Wrap, chart.AxesX[0].AxisLabels.TextWrap));
-
-        //    EnqueueTestComplete();
-        //}
 
         #endregion
 
@@ -149,21 +124,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.Angle = -30;
-            axisY.AxisLabels.Angle = 30;
+            _axisX.AxisLabels.Angle = -30;
+            _axisY.AxisLabels.Angle = 30;
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(-30, axisX.AxisLabels.Angle),
-                () => Assert.AreEqual(30, axisY.AxisLabels.Angle));
+                () => Assert.AreEqual(-30, _axisX.AxisLabels.Angle),
+                () => Assert.AreEqual(30, _axisY.AxisLabels.Angle));
 
             EnqueueTestComplete();
         }
@@ -181,21 +156,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.FontSize = 14;
-            axisY.AxisLabels.FontSize = 14;
+            _axisX.AxisLabels.FontSize = 14;
+            _axisY.AxisLabels.FontSize = 14;
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(14, axisX.AxisLabels.FontSize),
-                () => Assert.AreEqual(14, axisY.AxisLabels.FontSize));
+                () => Assert.AreEqual(14, _axisX.AxisLabels.FontSize),
+                () => Assert.AreEqual(14, _axisY.AxisLabels.FontSize));
 
             EnqueueTestComplete();
         }
@@ -213,21 +188,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.FontFamily = new FontFamily("Arial");
-            axisY.AxisLabels.FontFamily = new FontFamily("Arial");
+            _axisX.AxisLabels.FontFamily = new FontFamily("Arial");
+            _axisY.AxisLabels.FontFamily = new FontFamily("Arial");
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(new FontFamily("Arial"), axisX.AxisLabels.FontFamily),
-                () => Assert.AreEqual(new FontFamily("Arial"), axisY.AxisLabels.FontFamily));
+                () => Assert.AreEqual(new FontFamily("Arial"), _axisX.AxisLabels.FontFamily),
+                () => Assert.AreEqual(new FontFamily("Arial"), _axisY.AxisLabels.FontFamily));
 
             EnqueueTestComplete();
         }
@@ -245,21 +220,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
-            axisY.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
+            _axisX.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
+            _axisY.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), axisX.AxisLabels.FontColor),
-                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), axisY.AxisLabels.FontColor));
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), _axisX.AxisLabels.FontColor),
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), _axisY.AxisLabels.FontColor));
 
             EnqueueTestComplete();
         }
@@ -277,21 +252,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.FontStyle = FontStyles.Italic;
-            axisY.AxisLabels.FontStyle = FontStyles.Italic;
+            _axisX.AxisLabels.FontStyle = FontStyles.Italic;
+            _axisY.AxisLabels.FontStyle = FontStyles.Italic;
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(FontStyles.Italic, axisX.AxisLabels.FontStyle),
-                () => Assert.AreEqual(FontStyles.Italic, axisY.AxisLabels.FontStyle));
+                () => Assert.AreEqual(FontStyles.Italic, _axisX.AxisLabels.FontStyle),
+                () => Assert.AreEqual(FontStyles.Italic, _axisY.AxisLabels.FontStyle));
 
             EnqueueTestComplete();
         }
@@ -309,21 +284,21 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
+            _axisX = new Axis();
+            _axisY = new Axis();
 
-            axisX.AxisLabels.FontWeight = FontWeights.Bold;
-            axisY.AxisLabels.FontWeight = FontWeights.Bold;
+            _axisX.AxisLabels.FontWeight = FontWeights.Bold;
+            _axisY.AxisLabels.FontWeight = FontWeights.Bold;
 
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(FontWeights.Bold, axisX.AxisLabels.FontWeight),
-                () => Assert.AreEqual(FontWeights.Bold, axisY.AxisLabels.FontWeight));
+                () => Assert.AreEqual(FontWeights.Bold, _axisX.AxisLabels.FontWeight),
+                () => Assert.AreEqual(FontWeights.Bold, _axisY.AxisLabels.FontWeight));
 
             EnqueueTestComplete();
         }
@@ -340,16 +315,16 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
+            _axisX = new Axis();
 
-            axisX.AxisLabels.Rows = 2;
-            chart.AxesX.Add(axisX);
+            _axisX.AxisLabels.Rows = 2;
+            chart.AxesX.Add(_axisX);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTest(chart,
-                () => Assert.AreEqual(2, axisX.AxisLabels.Rows));
+                () => Assert.AreEqual(2, _axisX.AxisLabels.Rows));
 
             EnqueueTestComplete();
         }
@@ -367,13 +342,13 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
+            _axisX = new Axis();
 
-            axisX.AxisLabels.TextWrap = TextWrapping.Wrap;
-            axisX.AxisLabels.Angle = 0;
-            axisX.Interval = 1;
-            axisX.AxisLabels.Rows = 1;
-            chart.AxesX.Add(axisX);
+            _axisX.AxisLabels.TextWrap = TextWrapping.Wrap;
+            _axisX.AxisLabels.Angle = 0;
+            _axisX.Interval = 1;
+            _axisX.AxisLabels.Rows = 1;
+            chart.AxesX.Add(_axisX);
 
             DataSeries dataSeries = new DataSeries();
             DataPoint dataPoint = new DataPoint();
@@ -394,7 +369,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTest(chart,
-                () => Assert.AreEqual(TextWrapping.Wrap, axisX.AxisLabels.TextWrap));
+                () => Assert.AreEqual(TextWrapping.Wrap, _axisX.AxisLabels.TextWrap));
 
             EnqueueTestComplete();
         }
@@ -413,7 +388,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new System.Windows.RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -433,8 +408,8 @@ namespace SLVisifireChartsTest
             }
             chart.Series.Add(dataSeries);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -446,7 +421,7 @@ namespace SLVisifireChartsTest
 
         #endregion
 
-        #region AxisLabel Performance Test
+        #region AxisLabel Performance Tests
         /// <summary>
         /// Test number of AxisLabel added to Chart
         /// </summary>
@@ -492,7 +467,7 @@ namespace SLVisifireChartsTest
 
             });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -503,19 +478,19 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
 
@@ -566,7 +541,7 @@ namespace SLVisifireChartsTest
 
             });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -577,38 +552,75 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
 
+        #endregion
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
-        #endregion
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
+        }
 
         #region Private Data
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
 
-        const int sleepTime = 1000;
-        System.Windows.Browser.HtmlElement htmlElement1;
-        System.Windows.Browser.HtmlElement htmlElement2;
-        Axis axisX = new Axis();
-        Axis axisY = new Axis();
-        Boolean isLoaded = false;
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 2000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
+
+        /// <summary>
+        /// AxisX reference
+        /// </summary>
+        private Axis _axisX;
+
+        /// <summary>
+        /// AxisY reference
+        /// </summary>
+        private Axis _axisY;
+
         #endregion
     }
 }

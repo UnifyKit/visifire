@@ -12,12 +12,11 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for MajorTicksTest
+    /// This class runs the unit tests Visifire.Charts.Ticks class 
     /// </summary>
     [TestClass]
-    public class MajorTicksTest
+    public class TicksTest
     {
-
         #region Test default property value
          /// <summary>
         /// Check Enabled default value
@@ -35,13 +34,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue((Boolean)tick.Enabled);
             }
@@ -66,13 +65,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(0.5, tick.LineThickness);
             }
@@ -97,13 +96,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(LineStyles.Solid, tick.LineStyle);
             }
@@ -128,13 +127,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), tick.LineColor);
             }
@@ -161,13 +160,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 tick.Enabled = true;
                 Assert.IsTrue((Boolean)tick.Enabled);
@@ -193,13 +192,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 tick.LineThickness = 2;
                 Assert.AreEqual(2, tick.LineThickness);
@@ -225,13 +224,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 tick.LineStyle = LineStyles.Dashed;
                 Assert.AreEqual(LineStyles.Dashed, tick.LineStyle);
@@ -257,13 +256,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 tick.LineColor = new SolidColorBrush(Colors.Blue);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Blue), tick.LineColor);
@@ -289,13 +288,13 @@ namespace WPFVisifireChartsTest
             axis.Ticks.Add(tick);
             chart.AxesX.Add(axis);
               
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 tick.Interval = 2;
                 Assert.AreEqual(2, tick.Interval);
@@ -306,14 +305,21 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

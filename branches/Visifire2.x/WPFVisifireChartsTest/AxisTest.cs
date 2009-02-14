@@ -17,7 +17,7 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for AxisTest
+    /// This class runs the unit tests Visifire.Charts.Axis class 
     /// </summary>
     [TestClass]
     public class AxisTest
@@ -36,13 +36,13 @@ namespace WPFVisifireChartsTest
 
             Chart chart = result as Chart;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(1, chart.AxesX[0].AxisMinimum);
                 Assert.AreEqual(100, chart.AxesX[0].AxisMaximum);
@@ -59,12 +59,12 @@ namespace WPFVisifireChartsTest
 
         #region CheckDefaultPropertyValues
         /// <summary>
-        /// Check the default value of Color. 
+        /// Check the default value of Background. 
         /// </summary> 
         [TestMethod]
-        [Description("Check the default value of Color.")]
+        [Description("Check the default value of Background.")]
         [Owner("[....]")]
-        public void ColorDefaultValue()
+        public void BackgroundDefaultValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -73,16 +73,16 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                Assert.IsNull(chart.AxesX[0].Color);
-                Assert.IsNull(chart.AxesY[0].Color);
+                Assert.IsNull(chart.AxesX[0].Background);
+                Assert.IsNull(chart.AxesY[0].Background);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -103,13 +103,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue((Boolean)chart.AxesX[0].Enabled);
                 Assert.IsTrue((Boolean)chart.AxesY[0].Enabled);
@@ -133,13 +133,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesX[0].LineColor);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesY[0].LineColor);
@@ -163,13 +163,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(LineStyles.Solid, chart.AxesX[0].LineStyle);
                 Assert.AreEqual(LineStyles.Solid, chart.AxesY[0].LineStyle);
@@ -193,13 +193,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(0.5, chart.AxesX[0].LineThickness);
                 Assert.AreEqual(0.5, chart.AxesY[0].LineThickness);
@@ -223,13 +223,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.AxesX[0].Prefix);
                 Assert.IsNull(chart.AxesY[0].Prefix);
@@ -253,13 +253,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.AxesX[0].Suffix);
                 Assert.IsNull(chart.AxesY[0].Suffix);
@@ -283,13 +283,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.AxesX[0].ScalingSet);
                 Assert.IsNull(chart.AxesY[0].ScalingSet);
@@ -313,13 +313,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse((Boolean)chart.AxesX[0].StartFromZero);
                 Assert.IsTrue((Boolean)chart.AxesY[0].StartFromZero);
@@ -343,13 +343,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.AxesX[0].Title);
                 Assert.IsNull(chart.AxesY[0].Title);
@@ -373,13 +373,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.AxesX[0].TitleFontColor);
                 Assert.IsNull(chart.AxesY[0].TitleFontColor);
@@ -403,13 +403,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new FontFamily("Verdana"), chart.AxesX[0].TitleFontFamily);
                 Assert.AreEqual(new FontFamily("Verdana"), chart.AxesY[0].TitleFontFamily);
@@ -433,13 +433,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(11, chart.AxesX[0].TitleFontSize, Common.HighPrecisionDelta);
                 Assert.AreEqual(11, chart.AxesY[0].TitleFontSize, Common.HighPrecisionDelta);
@@ -463,13 +463,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontStyles.Normal, chart.AxesX[0].TitleFontStyle);
                 Assert.AreEqual(FontStyles.Normal, chart.AxesY[0].TitleFontStyle);
@@ -493,13 +493,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontWeights.Normal, chart.AxesX[0].TitleFontWeight);
                 Assert.AreEqual(FontWeights.Normal, chart.AxesY[0].TitleFontWeight);
@@ -523,13 +523,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(Double.NaN, chart.AxesX[0].Interval);
                 Assert.AreEqual(Double.NaN, chart.AxesY[0].Interval);
@@ -554,13 +554,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(AxisTypes.Primary, chart.AxesX[0].AxisType);
                 Assert.AreEqual(AxisTypes.Primary, chart.AxesY[0].AxisType);
@@ -584,13 +584,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(Orientation.Horizontal, chart.AxesX[0].AxisOrientation);
                 Assert.AreEqual(Orientation.Vertical, chart.AxesY[0].AxisOrientation);
@@ -605,36 +605,36 @@ namespace WPFVisifireChartsTest
         #region CheckNewPropertyValues
 
         /// <summary>
-        /// Check the new value of Color. 
+        /// Check the new value of Background. 
         /// </summary> 
         [TestMethod]
-        [Description("Check the new value of Color.")]
+        [Description("Check the new value of Background.")]
         [Owner("[....]")]
-        public void ColorNewValue()
+        public void BackgroundNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Color = new SolidColorBrush(Colors.Blue);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Blue), axisX.Color);
-                axisY.Color = new SolidColorBrush(Colors.Red);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), axisY.Color);
+                _axisX.Background = new SolidColorBrush(Colors.Blue);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Blue), _axisX.Background);
+                _axisY.Background = new SolidColorBrush(Colors.Red);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), _axisY.Background);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -653,25 +653,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Enabled = false;
-                Assert.IsFalse((Boolean)axisX.Enabled);
-                axisY.Enabled = false;
-                Assert.IsFalse((Boolean)axisY.Enabled);
+                _axisX.Enabled = false;
+                Assert.IsFalse((Boolean)_axisX.Enabled);
+                _axisY.Enabled = false;
+                Assert.IsFalse((Boolean)_axisY.Enabled);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -690,25 +690,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.LineColor = new SolidColorBrush(Colors.Green);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Green), axisX.LineColor);
-                axisY.LineColor = new SolidColorBrush(Colors.Green);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Green), axisY.LineColor);
+                _axisX.LineColor = new SolidColorBrush(Colors.Green);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Green), _axisX.LineColor);
+                _axisY.LineColor = new SolidColorBrush(Colors.Green);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Green), _axisY.LineColor);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -727,25 +727,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.LineStyle = LineStyles.Dashed;
-                Assert.AreEqual(LineStyles.Dashed, axisX.LineStyle);
-                axisY.LineStyle = LineStyles.Dotted;
-                Assert.AreEqual(LineStyles.Dotted, axisY.LineStyle);
+                _axisX.LineStyle = LineStyles.Dashed;
+                Assert.AreEqual(LineStyles.Dashed, _axisX.LineStyle);
+                _axisY.LineStyle = LineStyles.Dotted;
+                Assert.AreEqual(LineStyles.Dotted, _axisY.LineStyle);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -764,25 +764,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.LineThickness = 2;
-                Assert.AreEqual(2, axisX.LineThickness);
-                axisY.LineThickness = 2;
-                Assert.AreEqual(2, axisY.LineThickness);
+                _axisX.LineThickness = 2;
+                Assert.AreEqual(2, _axisX.LineThickness);
+                _axisY.LineThickness = 2;
+                Assert.AreEqual(2, _axisY.LineThickness);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -801,25 +801,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Prefix = "$";
-                Assert.AreEqual("$", axisX.Prefix);
-                axisY.Prefix = "$";
-                Assert.AreEqual("$", axisY.Prefix);
+                _axisX.Prefix = "$";
+                Assert.AreEqual("$", _axisX.Prefix);
+                _axisY.Prefix = "$";
+                Assert.AreEqual("$", _axisY.Prefix);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -838,25 +838,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Suffix = "%";
-                Assert.AreEqual("%", axisX.Suffix);
-                axisY.Suffix = "%";
-                Assert.AreEqual("%", axisY.Suffix);
+                _axisX.Suffix = "%";
+                Assert.AreEqual("%", _axisX.Suffix);
+                _axisY.Suffix = "%";
+                Assert.AreEqual("%", _axisY.Suffix);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -875,8 +875,8 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisY = new Axis();
-            chart.AxesY.Add(axisY);
+            _axisY = new Axis();
+            chart.AxesY.Add(_axisY);
 
             DataSeries dataSeries = new DataSeries();
             DataPoint dataPoint = new DataPoint();
@@ -896,16 +896,16 @@ namespace WPFVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisY.ScalingSet = "1024,KB;1024,MB;1024,GB";
-                Assert.AreEqual("1024,KB;1024,MB;1024,GB", axisY.ScalingSet);
+                _axisY.ScalingSet = "1024,KB;1024,MB;1024,GB";
+                Assert.AreEqual("1024,KB;1024,MB;1024,GB", _axisY.ScalingSet);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -924,25 +924,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.StartFromZero = true;
-                Assert.IsTrue((Boolean)axisX.StartFromZero);
-                axisY.StartFromZero = false;
-                Assert.IsFalse((Boolean)axisY.StartFromZero);
+                _axisX.StartFromZero = true;
+                Assert.IsTrue((Boolean)_axisX.StartFromZero);
+                _axisY.StartFromZero = false;
+                Assert.IsFalse((Boolean)_axisY.StartFromZero);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -961,25 +961,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Title = "AxisXTitle";
-                Assert.AreEqual("AxisXTitle", axisX.Title);
-                axisY.Title = "AxisYTitle";
-                Assert.AreEqual("AxisYTitle", axisY.Title);
+                _axisX.Title = "AxisXTitle";
+                Assert.AreEqual("AxisXTitle", _axisX.Title);
+                _axisY.Title = "AxisYTitle";
+                Assert.AreEqual("AxisYTitle", _axisY.Title);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -998,27 +998,27 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisX.Title = "AxisX";
-            axisY = new Axis();
-            axisY.Title = "AxisY";
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisX.Title = "AxisX";
+            _axisY = new Axis();
+            _axisY.Title = "AxisY";
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.TitleFontColor = new SolidColorBrush(Colors.Magenta);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), axisX.TitleFontColor);
-                axisY.TitleFontColor = new SolidColorBrush(Colors.Magenta);
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), axisY.TitleFontColor);
+                _axisX.TitleFontColor = new SolidColorBrush(Colors.Magenta);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), _axisX.TitleFontColor);
+                _axisY.TitleFontColor = new SolidColorBrush(Colors.Magenta);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), _axisY.TitleFontColor);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1037,27 +1037,27 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisX.Title = "AxisX";
-            axisY = new Axis();
-            axisY.Title = "AxisY";
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisX.Title = "AxisX";
+            _axisY = new Axis();
+            _axisY.Title = "AxisY";
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.TitleFontFamily = new FontFamily("MS Trebuchet");
-                Assert.AreEqual(new FontFamily("MS Trebuchet"), axisX.TitleFontFamily);
-                axisY.TitleFontFamily = new FontFamily("MS Trebuchet");
-                Assert.AreEqual(new FontFamily("MS Trebuchet"), axisY.TitleFontFamily);
+                _axisX.TitleFontFamily = new FontFamily("MS Trebuchet");
+                Assert.AreEqual(new FontFamily("MS Trebuchet"), _axisX.TitleFontFamily);
+                _axisY.TitleFontFamily = new FontFamily("MS Trebuchet");
+                Assert.AreEqual(new FontFamily("MS Trebuchet"), _axisY.TitleFontFamily);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1076,27 +1076,27 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisX.Title = "AxisX";
-            axisY = new Axis();
-            axisY.Title = "AxisY";
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisX.Title = "AxisX";
+            _axisY = new Axis();
+            _axisY.Title = "AxisY";
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.TitleFontSize = 16;
-                Assert.AreEqual(16, axisX.TitleFontSize);
-                axisY.TitleFontSize = 16;
-                Assert.AreEqual(16, axisY.TitleFontSize);
+                _axisX.TitleFontSize = 16;
+                Assert.AreEqual(16, _axisX.TitleFontSize);
+                _axisY.TitleFontSize = 16;
+                Assert.AreEqual(16, _axisY.TitleFontSize);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1115,27 +1115,27 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisX.Title = "AxisX";
-            axisY = new Axis();
-            axisY.Title = "AxisY";
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisX.Title = "AxisX";
+            _axisY = new Axis();
+            _axisY.Title = "AxisY";
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.TitleFontStyle = FontStyles.Italic;
-                Assert.AreEqual(FontStyles.Italic, axisX.TitleFontStyle);
-                axisY.TitleFontStyle = FontStyles.Italic;
-                Assert.AreEqual(FontStyles.Italic, axisY.TitleFontStyle);
+                _axisX.TitleFontStyle = FontStyles.Italic;
+                Assert.AreEqual(FontStyles.Italic, _axisX.TitleFontStyle);
+                _axisY.TitleFontStyle = FontStyles.Italic;
+                Assert.AreEqual(FontStyles.Italic, _axisY.TitleFontStyle);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1154,27 +1154,27 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisX.Title = "AxisX";
-            axisY = new Axis();
-            axisY.Title = "AxisY";
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisX.Title = "AxisX";
+            _axisY = new Axis();
+            _axisY.Title = "AxisY";
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.TitleFontWeight = FontWeights.Bold;
-                Assert.AreEqual(FontWeights.Bold, axisX.TitleFontWeight);
-                axisY.TitleFontWeight = FontWeights.Bold;
-                Assert.AreEqual(FontWeights.Bold, axisY.TitleFontWeight);
+                _axisX.TitleFontWeight = FontWeights.Bold;
+                Assert.AreEqual(FontWeights.Bold, _axisX.TitleFontWeight);
+                _axisY.TitleFontWeight = FontWeights.Bold;
+                Assert.AreEqual(FontWeights.Bold, _axisY.TitleFontWeight);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1193,25 +1193,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.Interval = 2;
-                Assert.AreEqual(2, axisX.Interval);
-                axisY.Interval = 5;
-                Assert.AreEqual(5, axisY.Interval);
+                _axisX.Interval = 2;
+                Assert.AreEqual(2, _axisX.Interval);
+                _axisY.Interval = 5;
+                Assert.AreEqual(5, _axisY.Interval);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1230,25 +1230,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.AxisMaximum = 50;
-                Assert.AreEqual(50, axisX.AxisMaximum);
-                axisY.AxisMaximum = 100;
-                Assert.AreEqual(100, axisY.AxisMaximum);
+                _axisX.AxisMaximum = 50;
+                Assert.AreEqual(50, _axisX.AxisMaximum);
+                _axisY.AxisMaximum = 100;
+                Assert.AreEqual(100, _axisY.AxisMaximum);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1267,25 +1267,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.AxisMinimum = 1;
-                Assert.AreEqual(1, axisX.AxisMinimum);
-                axisY.AxisMinimum = 10;
-                Assert.AreEqual(10, axisY.AxisMinimum);
+                _axisX.AxisMinimum = 1;
+                Assert.AreEqual(1, _axisX.AxisMinimum);
+                _axisY.AxisMinimum = 10;
+                Assert.AreEqual(10, _axisY.AxisMinimum);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1304,25 +1304,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.AxisType = AxisTypes.Primary;
-                Assert.AreEqual(AxisTypes.Primary, axisX.AxisType);
-                axisY.AxisType = AxisTypes.Secondary;
-                Assert.AreEqual(AxisTypes.Secondary, axisY.AxisType);
+                _axisX.AxisType = AxisTypes.Primary;
+                Assert.AreEqual(AxisTypes.Primary, _axisX.AxisType);
+                _axisY.AxisType = AxisTypes.Secondary;
+                Assert.AreEqual(AxisTypes.Secondary, _axisY.AxisType);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1341,25 +1341,25 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.AxisOrientation = Orientation.Horizontal;
-                Assert.AreEqual(Orientation.Horizontal, axisX.AxisOrientation);
-                axisY.AxisOrientation = Orientation.Vertical;
-                Assert.AreEqual(Orientation.Vertical, axisY.AxisOrientation);
+                _axisX.AxisOrientation = Orientation.Horizontal;
+                Assert.AreEqual(Orientation.Horizontal, _axisX.AxisOrientation);
+                _axisY.AxisOrientation = Orientation.Vertical;
+                Assert.AreEqual(Orientation.Vertical, _axisY.AxisOrientation);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1379,25 +1379,25 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
             chart.AnimationEnabled = false;
 
-            axisX = new Axis();
-            axisY = new Axis();
-            chart.AxesX.Add(axisX);
-            chart.AxesY.Add(axisY);
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
-                axisX.ToolTipText = "AxisX";
-                Assert.AreEqual("AxisX", axisX.ToolTipText);
-                axisY.ToolTipText = "AxisY";
-                Assert.AreEqual("AxisY", axisY.ToolTipText);
+                _axisX.ToolTipText = "AxisX";
+                Assert.AreEqual("AxisX", _axisX.ToolTipText);
+                _axisY.ToolTipText = "AxisY";
+                Assert.AreEqual("AxisY", _axisY.ToolTipText);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1419,7 +1419,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
@@ -1442,13 +1442,13 @@ namespace WPFVisifireChartsTest
 
             Axis axis = new Axis();
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 axis.Title = "Visifire Axis Title";
                 axis.AxisType = AxisTypes.Secondary;
@@ -1466,18 +1466,32 @@ namespace WPFVisifireChartsTest
 
         #endregion
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
-        const int sleepTime = 2000;
-        bool isLoaded = false;
+        /// <summary>
+        /// AxisX reference
+        /// </summary>
+        private Axis _axisX;
 
-        Axis axisX;
-        Axis axisY;
+        /// <summary>
+        /// AxisY reference
+        /// </summary>
+        private Axis _axisY;
+
 
         #endregion
     }

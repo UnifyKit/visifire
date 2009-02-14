@@ -6,7 +6,7 @@
 
 #endregion
 
-#region Public Events
+#region Public Events And Delegates
 
 #endregion
 
@@ -15,6 +15,10 @@
 #endregion
 
 #region Internal Properties
+
+#endregion
+
+#region Private Properties
 
 #endregion
 
@@ -30,14 +34,13 @@
 
 #endregion
 
-#region Internal Events
+#region Internal Events And Delegates
 
 #endregion
 
 #region Data
     
 #endregion
-
 
 				UpdateLayoutSettings(NewSize);
                 Double totalHeightReduced = DrawAxesY(NewSize);//totalWidthReduced
@@ -52,8 +55,7 @@
                 //NewSize.Height -= 7;
                 UpdateLayoutSettings(NewSize);
                 DrawAxesY(NewSize);
-                DrawAxesX(NewSize);
-                
+                DrawAxesX(NewSize);              
                 
                 
                 

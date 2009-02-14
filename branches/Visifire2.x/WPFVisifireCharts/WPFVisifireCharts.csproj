@@ -79,6 +79,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AnimationHelper.cs">
+      <Link>AnimationHelper.cs</Link>
+    </Compile>
     <Compile Include="..\AreaChart.cs">
       <Link>AreaChart.cs</Link>
     </Compile>
@@ -117,6 +120,9 @@
     </Compile>
     <Compile Include="..\ColumnChart.cs">
       <Link>ColumnChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Converters.cs">
+      <Link>Converters.cs</Link>
     </Compile>
     <Compile Include="..\DataPoint.cs">
       <Link>DataPoint.cs</Link>

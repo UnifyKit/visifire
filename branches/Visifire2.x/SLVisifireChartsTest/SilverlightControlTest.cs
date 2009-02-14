@@ -13,9 +13,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary> 
+    /// Unit tests for Silverlight controls. 
+    /// </summary>
     public abstract class SilverlightControlTest : SilverlightTest
     {
-
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTest. 
         /// </summary>

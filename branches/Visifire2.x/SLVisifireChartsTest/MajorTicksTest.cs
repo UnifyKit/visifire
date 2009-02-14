@@ -14,8 +14,11 @@ using Visifire.Charts;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.Ticks class 
+    /// </summary>
     [TestClass]
-    public class MajorTicksTest : SilverlightControlTest
+    public class TicksTest : SilverlightControlTest
     {
         #region Test default property value
         /// <summary>
@@ -31,7 +34,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0.5, chart.AxesX[0].Ticks[0].LineThickness),
                 () => Assert.AreEqual(0.5, chart.AxesY[0].Ticks[0].LineThickness));
@@ -52,7 +55,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, chart.AxesX[0].Ticks[0].LineStyle),
                 () => Assert.AreEqual(LineStyles.Solid, chart.AxesY[0].Ticks[0].LineStyle));
@@ -73,7 +76,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesX[0].Ticks[0].LineColor),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesY[0].Ticks[0].LineColor));
@@ -94,7 +97,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.AxesX[0].Ticks[0].Interval));
 
@@ -117,7 +120,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineThickness = 2,
                 () => Assert.AreEqual(2, chart.AxesX[0].Ticks[0].LineThickness),
@@ -141,7 +144,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, chart.AxesX[0].Ticks[0].LineStyle),
@@ -165,7 +168,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineColor = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.AxesX[0].Ticks[0].LineColor),
@@ -190,7 +193,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -204,7 +207,10 @@ namespace SLVisifireChartsTest
         #endregion
 
         #region Private Data
-        private const int sleepTime = 1000;
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks.
+        /// </summary>
+        private const int _sleepTime = 1000;
         #endregion
     }
 }

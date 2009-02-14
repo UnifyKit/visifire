@@ -18,16 +18,11 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for ChartTest
+    /// This class runs the unit tests Visifire.Charts.Chart class 
     /// </summary>
     [TestClass]
     public class ChartTest
     {
-        void chart_Loaded(object sender, RoutedEventArgs e)
-        {
-            isLoaded = true;
-        }
-
         #region XAML Parsing Tests
         /// <summary>
         /// Assign Title content to a Chart in XAML markup via a property. 
@@ -45,13 +40,13 @@ namespace WPFVisifireChartsTest
 
             Title title = chart.Titles[0] as Title;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(Resource.Title_ShortText, title.Text);
 
             window.Dispatcher.InvokeShutdown();
@@ -71,13 +66,13 @@ namespace WPFVisifireChartsTest
 
             Chart chart = result as Chart;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsNotNull(chart._rootElement);
 
             window.Dispatcher.InvokeShutdown();
@@ -100,13 +95,13 @@ namespace WPFVisifireChartsTest
 
             Chart chart = result as Chart;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsNotNull(chart._rootElement);
 
             window.Dispatcher.InvokeShutdown();
@@ -122,13 +117,13 @@ namespace WPFVisifireChartsTest
 
             Chart chart = new Chart();
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 chart.Template = template;
 
             window.Dispatcher.InvokeShutdown();
@@ -147,20 +142,20 @@ namespace WPFVisifireChartsTest
         [Owner("[....]")]
         public void ChartLoaded()
         {
-            chart = new Chart();
-            isLoaded = false;
+            _chart = new Chart();
+            _isLoaded = false;
 
-            chart.Width = 400;
-            chart.Height = 300;
+            _chart.Width = 400;
+            _chart.Height = 300;
 
-            Common.CreateAndAddDefaultDataSeries(chart);
+            Common.CreateAndAddDefaultDataSeries(_chart);
 
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
-            window.Content = chart;
+            window.Content = _chart;
             window.Show();
-            Assert.IsTrue(isLoaded);
+            Assert.IsTrue(_isLoaded);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -183,7 +178,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -237,7 +232,7 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(4, titlesAdded);
 
             window.Dispatcher.InvokeShutdown();
@@ -258,7 +253,7 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             Common.CreateAndAddDefaultDataSeries(chart);
 
             TitleTest titleTest = new TitleTest();
@@ -281,7 +276,7 @@ namespace WPFVisifireChartsTest
                 Window window = new Window();
                 window.Content = chart;
                 window.Show();
-                if (isLoaded)
+                if (_isLoaded)
                     Assert.IsTrue(changedObserved, "The event handler did not fire");
 
                 window.Dispatcher.InvokeShutdown();
@@ -303,13 +298,13 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsFalse(chart.View3D);
 
             window.Dispatcher.InvokeShutdown();
@@ -326,13 +321,13 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = true;
+            _isLoaded = true;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.AnimationEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -349,13 +344,13 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue((Boolean)chart.ScrollingEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -372,14 +367,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsFalse(chart.Bevel);
 
             window.Dispatcher.InvokeShutdown();
@@ -396,14 +391,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.BorderBrush);
 
             window.Dispatcher.InvokeShutdown();
@@ -420,14 +415,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(new Thickness(1), chart.BorderThickness);
 
             window.Dispatcher.InvokeShutdown();
@@ -444,14 +439,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(BorderStyles.Solid, chart.BorderStyle);
 
             window.Dispatcher.InvokeShutdown();
@@ -459,7 +454,7 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the Color default property value.
+        /// Check the Background default property value.
         /// </summary>
         [TestMethod]
         public void CheckBackgroundDefaultValue()
@@ -468,14 +463,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Background);
 
             window.Dispatcher.InvokeShutdown();
@@ -492,14 +487,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual("Visifire1", chart.ColorSet);
 
             window.Dispatcher.InvokeShutdown();
@@ -516,14 +511,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.LightingEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -540,14 +535,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(new CornerRadius(0, 0, 0, 0), chart.CornerRadius);
 
             window.Dispatcher.InvokeShutdown();
@@ -564,14 +559,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsFalse(chart.ShadowEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -588,14 +583,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual("Theme1", chart.Theme);
 
             window.Dispatcher.InvokeShutdown();
@@ -612,14 +607,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsNull(chart.ToolTipText);
 
             window.Dispatcher.InvokeShutdown();
@@ -636,14 +631,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.Watermark);
 
             window.Dispatcher.InvokeShutdown();
@@ -666,14 +661,14 @@ namespace WPFVisifireChartsTest
 
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.View3D);
 
             window.Dispatcher.InvokeShutdown();
@@ -692,14 +687,14 @@ namespace WPFVisifireChartsTest
 
             chart.AnimationEnabled = false;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsFalse(chart.AnimationEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -718,14 +713,14 @@ namespace WPFVisifireChartsTest
 
             chart.Bevel = true;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.Bevel);
 
             window.Dispatcher.InvokeShutdown();
@@ -746,14 +741,14 @@ namespace WPFVisifireChartsTest
             chart.BorderBrush = new SolidColorBrush(Colors.Black);
             chart.BorderStyle = BorderStyles.Dashed;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(1), chart.BorderThickness);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.BorderBrush);
@@ -765,10 +760,10 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
-        /// Check Color new property value
+        /// Check Background new property value
         /// </summary>
         [TestMethod]
-        public void CheckColorNewPropertyValue()
+        public void CheckBackgroundNewPropertyValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -776,14 +771,14 @@ namespace WPFVisifireChartsTest
 
             chart.Background = new SolidColorBrush(Colors.Magenta);
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), chart.Background);
 
             window.Dispatcher.InvokeShutdown();
@@ -802,14 +797,14 @@ namespace WPFVisifireChartsTest
 
             chart.ColorSet = "Visifire2";
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual("Visifire2", chart.ColorSet);
 
             window.Dispatcher.InvokeShutdown();
@@ -829,14 +824,14 @@ namespace WPFVisifireChartsTest
             chart.Width = 600;
             chart.Height = 500;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(600, chart.Width);
                 Assert.AreEqual(500, chart.Height);
@@ -859,14 +854,14 @@ namespace WPFVisifireChartsTest
 
             chart.LightingEnabled = true;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.LightingEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -885,14 +880,14 @@ namespace WPFVisifireChartsTest
 
             chart.ShadowEnabled = true;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsTrue(chart.ShadowEnabled);
 
             window.Dispatcher.InvokeShutdown();
@@ -911,14 +906,14 @@ namespace WPFVisifireChartsTest
 
             chart.CornerRadius = new CornerRadius(2, 2, 2, 2);
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual(new CornerRadius(2, 2, 2, 2), chart.CornerRadius);
 
             window.Dispatcher.InvokeShutdown();
@@ -937,14 +932,14 @@ namespace WPFVisifireChartsTest
 
             chart.Theme = "Theme3";
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual("Theme3", chart.Theme);
 
             window.Dispatcher.InvokeShutdown();
@@ -963,14 +958,14 @@ namespace WPFVisifireChartsTest
 
             chart.ToolTipText = "This is a Chart";
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.AreEqual("This is a Chart", chart.ToolTipText);
 
             window.Dispatcher.InvokeShutdown();
@@ -990,14 +985,14 @@ namespace WPFVisifireChartsTest
 
             chart.Watermark = false;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
                 Assert.IsFalse(chart.Watermark);
 
             window.Dispatcher.InvokeShutdown();
@@ -1074,14 +1069,6 @@ namespace WPFVisifireChartsTest
         }
         #endregion CheckControlTemplate
 
-        /// <summary>
-        /// Gets a default instance of Control (or a derived type) to test.
-        /// </summary>
-        public Control DefaultControlToTest
-        {
-            get { return new Chart(); }
-        }
-
         #region CheckChartStressViaXaml
 
         /// <summary>
@@ -1104,11 +1091,35 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
+        /// <summary>
+        /// Gets a default instance of Control (or a derived type) to test.
+        /// </summary>
+        public Control DefaultControlToTest
+        {
+            get { return new Chart(); }
+        }
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
+        }
+
         #region Private Data
 
-        const int sleepTime = 1000;
-        Chart chart;
-        bool isLoaded = false;
+        /// <summary>
+        /// Reference for Chart
+        /// </summary>
+        private Chart _chart;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

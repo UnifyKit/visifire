@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+
+*/
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Generic;
@@ -16,9 +36,13 @@ namespace Visifire.Commons
     /// </summary>
     public abstract class ObservableObject : VisifireElement, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.ObservableObject class
+        /// </summary>
         public ObservableObject()
             : base()
         {
+            // Attach event handler with EventChanged event of VisfiireElement
             this.EventChanged += delegate
             {   
                 FirePropertyChanged("MouseEvent");
@@ -29,8 +53,34 @@ namespace Visifire.Commons
 
         #region Public Methods
 
+        /// <summary>
+        /// Apply specific style from theme
+        /// </summary>
+        /// <param name="Control">Control</param>
+        /// <param name="KeyName">Style key name</param>
+        public void ApplyStyleFromTheme(VisifireControl control, String keyName)
+        {
+            bool oldIsNotificationEnable = IsNotificationEnable;
+            IsNotificationEnable = false;
 
+            Chart chart = control as Chart;
 
+            if (Style == null)
+                if (chart.StyleDictionary != null)
+                {
+                    Style myStyle = chart.StyleDictionary[keyName] as Style;
+
+                    if (myStyle != null)
+                        Style = myStyle;
+                }
+
+            IsNotificationEnable = oldIsNotificationEnable;
+        }
+                
+        #endregion
+
+        #region Public Properties
+               
         /// <summary>
         /// Visifire Control reference
         /// </summary>
@@ -44,7 +94,6 @@ namespace Visifire.Commons
             get;
             set;
         }
-
 
         /// <summary>
         /// Sets the ToolTipText for the DataPoint
@@ -64,154 +113,24 @@ namespace Visifire.Commons
             }
         }
 
-        /// <summary>
-        /// Attach tooltip with a framework element
-        /// </summary>
-        /// <param name="control">Control reference</param>
-        /// <param name="elements">FrameworkElements list</param>
-        /// <param name="toolTipText">Tooltip text</param>
-        public void AttachToolTip(VisifireControl Control, ObservableObject Element, List<FrameworkElement> VisualElements)
-        {
-            //if (!String.IsNullOrEmpty(ToolTipText))
-            {
-                // Show ToolTip on mouse move over the chart element
-                foreach (FrameworkElement visualElement in VisualElements)
-                    AttachToolTip(Control, Element, visualElement);
-            }
-        }
-
-        /// <summary>
-        /// Attach Href with a framework element
-        /// </summary>
-        /// <param name="Control">Chart Control</param>
-        /// <param name="Element">FrameworkElement</param>
-        /// <param name="Href">Href</param>
-        /// <param name="HrefTarget">HrefTarget</param>
-        public static void AttachHref(VisifireControl Control, FrameworkElement Element, String Href, HrefTargets HrefTarget)
-        {
-            if (Element == null)
-                return;
-
-            if (!String.IsNullOrEmpty(Href))
-            {
-                Element.MouseEnter -= delegate(object sender, MouseEventArgs e)
-                {
-                    Element.Cursor = Cursors.Hand;
-                };
-
-                Element.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    Element.Cursor = Cursors.Hand;
-                };
-
-                Element.MouseLeftButtonUp -= delegate(object sender, MouseButtonEventArgs e)
-                {
-#if WPF
-                    System.Diagnostics.Process.Start("explorer.exe", Href);
-#else
-                    System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(VisifireControl.GetAbsolutePath(Href)), HrefTarget.ToString());
-#endif
-                };
-
-                Element.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-                {
-#if WPF
-                    System.Diagnostics.Process.Start("explorer.exe", Href);
-#else
-                    System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(VisifireControl.GetAbsolutePath(Href)), HrefTarget.ToString());
-#endif
-                };
-            }
-        }
-
-        /// <summary>
-        /// Apply specific style from theme
-        /// </summary>
-        /// <param name="Control">Control</param>
-        /// <param name="KeyName">Style key name</param>
-        public void ApplyStyleFromTheme(VisifireControl Control, String KeyName)
-        {
-            bool oldIsNotificationEnable = IsNotificationEnable;
-            IsNotificationEnable = false;
-
-            Chart chart = Control as Chart;
-
-            if (Style == null)
-                if (chart.StyleDictionary != null)
-                {
-                    Style myStyle = chart.StyleDictionary[KeyName] as Style;
-
-                    if (myStyle != null)
-                        Style = myStyle;
-                }
-
-            IsNotificationEnable = oldIsNotificationEnable;
-        }
-
-        
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Index property of a ObservableObject
-        /// </summary>
-        public Int32 Index
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// ToolTip text
-        /// </summary>
-        //public virtual String ToolTipText
-        //{
-        //    get
-        //    {   
-        //        return _toolTipText;
-        //    }
-        //    set
-        //    {   
-        //        _toolTipText = value;
-        //        FirePropertyChanged("ToolTipText");
-        //    }
-        //}
-        //public virtual String ToolTipText
-        //{   
-        //    get
-        //    {
-        //        return (String)GetValue(ToolTipTextProperty);
-        //    }
-        //    set
-        //    {
-        //        SetValue(ToolTipTextProperty, value);
-        //    }
-        //}
-
-        //internal static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
-        //    ("ToolTipText",
-        //    typeof(String),
-        //    typeof(ObservableObject),
-        //    new PropertyMetadata(OnFixedDataPointsChanged));
-
-        //private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{   
-        //    ObservableObject c = d as ObservableObject;
-        //    c.FirePropertyChanged("ToolTipText");
-        //}
-
-
         #endregion
 
         #region Public Event
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
+            
+        /// <summary>
+        /// Event PropertyChanged will be fired if any property is changed
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+            
         #endregion
 
         #region Protected Methods
 
+        /// <summary>
+        /// UpdateVisual is used for partial rendering
+        /// </summary>
+        /// <param name="PropertyName">Name of the property</param>
+        /// <param name="Value">Value of the property</param>
         internal virtual void UpdateVisual(String PropertyName, object Value)
         {
 
@@ -220,7 +139,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Check whether the Property value is changed
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Type</typeparam>
         /// <param name="propertyName">Property Name</param>
         /// <param name="oldValue">Old property value</param>
         /// <param name="newValue">New property value</param>
@@ -254,19 +173,19 @@ namespace Visifire.Commons
 
             if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
-#if SL
+#if SL          
                 if (IsInDesignMode)
                 {
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
                 }
-                else if (Chart != null && (Chart as Chart).IsTemplateApplied)
-                {
+                else if (Chart != null && (Chart as Chart)._isTemplateApplied)
+                {   
                     if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
                     {
                         System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
 
-                            if (currentDispatcher.CheckAccess() && (Chart as Chart).IsRenderCallAllowed)
-                                (Chart as Chart).CallRender();
+                            if (currentDispatcher.CheckAccess())
+                                (Chart as Chart).InvokeRender();
                             else
                                 currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
                     }
@@ -278,7 +197,7 @@ namespace Visifire.Commons
                     _isPropertyChangedFired = true;   // Used for testing
                 }
 #else
-                if (Chart != null && (Chart as Chart).IsRenderCallAllowed)
+                if (Chart != null)
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 #endif
             }
@@ -289,6 +208,10 @@ namespace Visifire.Commons
         #region Internal Properties
 
 #if WPF
+
+        /// <summary>
+        /// Whether the application is in design mode
+        /// </summary>
         internal Boolean IsInDesignMode
         {
             get
@@ -297,6 +220,9 @@ namespace Visifire.Commons
             }
         }
 #else
+        /// <summary>
+        /// Whether the application is in design mode
+        /// </summary>
         internal static Boolean IsInDesignMode
         {
             get
@@ -318,6 +244,9 @@ namespace Visifire.Commons
         #region Private Properties
 
 #if WPF
+        /// <summary>
+        /// Overrides the tooltip property of control
+        /// </summary>
         private new String ToolTip
         {
             get;
@@ -330,7 +259,7 @@ namespace Visifire.Commons
         #region Internal Property
 
         /// <summary>
-        /// Property change event will be fired only if value is True
+        /// Property change event will be fired if value is True
         /// </summary>
         internal Boolean IsNotificationEnable
         {
@@ -381,9 +310,18 @@ namespace Visifire.Commons
 
         #region Data
 
-        //private String _toolTipText;
-        internal static Boolean _isPropertyChangedFired = false;   // Used for testing
+        /// <summary>
+        /// Whether the PropertyChanged event is fired
+        /// </summary>
+        internal static Boolean _isPropertyChangedFired = false; 
 
+        /// <summary>
+        /// Whether this object is automatically generated while rendering.
+        /// And it is used while creating auto elements during render
+        /// </summary>
+        internal Boolean _isAutoGenerated;
+
+      
        #endregion
     }
 }

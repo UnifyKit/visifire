@@ -6,7 +6,7 @@
         <vc:Chart Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="6">
 
             <vc:Chart.PlotArea>
-                <vc:PlotArea Color="#f0f0f0"/>
+                <vc:PlotArea Background="#f0f0f0"/>
             </vc:Chart.PlotArea>
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Line Chart"/>

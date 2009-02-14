@@ -9,6 +9,9 @@ namespace Visifire.Charts
     /// </summary>
     public class ColorSet: Object
     {
+        /// <summary>
+        ///  Initializes a new instance of the Visifire.Charts.ColorSet class
+        /// </summary>
         public ColorSet()
         {
             Brushes = new Collection<Brush>();
@@ -32,19 +35,29 @@ namespace Visifire.Charts
             set;
         }
 
+        /// <summary>
+        /// Returns a new color from ColorSet
+        /// </summary>
+        /// <returns>Brush</returns>
         public Brush GetNewColorFromColorSet()
-        {
+        {   
             if (colorSetIndex == Brushes.Count)
                 colorSetIndex = 0;
 
             return Brushes[colorSetIndex++];
         }
 
-        internal void ReSet()
+        /// <summary>
+        /// Reset ColorSet index
+        /// </summary>
+        internal void ResetIndex()
         {
             colorSetIndex = 0;
         }
 
+        /// <summary>
+        /// Index for ColorSet
+        /// </summary>
         private int colorSetIndex = 0;
     }
 }

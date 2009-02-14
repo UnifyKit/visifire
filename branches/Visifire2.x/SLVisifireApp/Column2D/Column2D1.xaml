@@ -11,7 +11,7 @@
         <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderThickness="2" Background="Aqua"
                   Bevel="True" BorderBrush="Black" View3D="False">
             <vc:Chart.Titles>
-                <vc:Title Style="TitleStyle" Text="Athens 2004 Olympics" FontSize="14"/>
+                <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>
             </vc:Chart.Titles>
             <vc:Chart.AxesX>
                 <vc:Axis Title="Country">
@@ -26,7 +26,7 @@
             </vc:Chart.AxesY>
 
             <vc:Chart.PlotArea>
-                <vc:PlotArea Bevel="True" Color="Red" ShadowEnabled="True"
+                <vc:PlotArea Bevel="True" ShadowEnabled="True"
                              BorderThickness="0" CornerRadius="0"/>
             </vc:Chart.PlotArea>
 

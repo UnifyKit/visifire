@@ -1,4 +1,24 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+#if WPF
 
 using System;
 using System.Windows;
@@ -22,9 +42,14 @@ namespace Visifire.Charts
     internal class AxisLabel
     {
         #region Public Methods
+
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.AxisLabel class
+        /// </summary>
         public AxisLabel()
         {
         }
+
         #endregion
 
         #region Public Properties
@@ -50,7 +75,7 @@ namespace Visifire.Charts
                 return _angle;
             }
             set
-            {
+            {   
                 if (value >= -90 && value <= 90)
                     _angle = value;
                 else if (double.IsNaN(value))
@@ -255,10 +280,11 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Properties
+
         /// <summary>
         /// Visual text element for the label
         /// </summary>
-        internal TextBlock TextElement
+        private TextBlock TextElement
         {
             get;
             set;
@@ -276,20 +302,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
-
-        /// <summary>
-        /// Applies properties to the TextBlock
-        /// </summary>
-        /// <param name="axisLabel"></param>
-        internal void ApplyProperties(AxisLabel axisLabel)
-        {
-            TextElement.Text = axisLabel.Text;
-            TextElement.Foreground = FontColor;
-            TextElement.FontSize = FontSize;
-            TextElement.FontFamily = FontFamily;
-            TextElement.FontStyle = FontStyle;
-            TextElement.FontWeight = FontWeight;
-        }
 
         /// <summary>
         /// Sets the position of the label based on the angle and the Position Property
@@ -556,6 +568,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+        
+        /// <summary>
+        /// Applies properties to the TextBlock
+        /// </summary>
+        /// <param name="axisLabel"></param>
+        internal void ApplyProperties(AxisLabel axisLabel)
+        {
+            TextElement.Text = axisLabel.Text;
+            TextElement.Foreground = FontColor;
+            TextElement.FontSize = FontSize;
+            TextElement.FontFamily = FontFamily;
+            TextElement.FontStyle = FontStyle;
+            TextElement.FontWeight = FontWeight;
+        }
+
+        /// <summary>
+        /// Create visual for a AxisLabel
+        /// </summary>
         internal void CreateVisualObject()
         {
             Visual = new Canvas();
@@ -596,17 +626,52 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-        private Double _angle;                      
+
+        /// <summary>
+        /// Identifier for Angle property
+        /// </summary>
+        private Double _angle;  
+                
+        /// <summary>
+        /// Identifier for Position property
+        /// </summary>
         private Point _position;
+
+        /// <summary>
+        /// Identifier for Text property
+        /// </summary>
         private String _text;
 
+        /// <summary>
+        /// Identifier for ActualLeft property
+        /// </summary>
         private Double _actualLeft;
+
+        /// <summary>
+        /// Identifier for ActualTop property
+        /// </summary>
         private Double _actualTop;
+
+        /// <summary>
+        /// Identifier for ActualWidth property
+        /// </summary>
         private Double _actualWidth;
+
+        /// <summary>
+        /// Identifier for ActualHeight property
+        /// </summary>
         private Double _actualHeight;
 
+        /// <summary>
+        /// Identifier for ActualTextHeight property
+        /// </summary>
         private Double _actualTextHeight;
+
+        /// <summary>
+        /// Identifier for ActualTextWidth property
+        /// </summary>
         private Double _actualTextWidth;
+
         #endregion
     }
 }

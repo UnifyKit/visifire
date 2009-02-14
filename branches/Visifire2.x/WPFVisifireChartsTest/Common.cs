@@ -16,6 +16,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WPFVisifireChartsTest
 {
+    /// <summary>
+    /// Common testing utilities and constants.
+    /// </summary> 
     public static class Common
     {
         public const int NumberOfInstancesForStressScenarios = 500;

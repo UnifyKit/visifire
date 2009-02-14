@@ -23,15 +23,20 @@ using Visifire.Commons;
 namespace Visifire.Charts
 {
 
+    /// <summary>
+    /// Grids of axis
+    /// </summary>
     public class ChartGrid : ObservableObject
     {
 
         #region Public Methods
 
+        /// <summary>
+        ///  Initializes a new instance of the Visifire.Charts.ChartGrid class
+        /// </summary>
         public ChartGrid()
         {
-            SetDefaults();
-
+            // Apply default style from generic
 #if WPF
             if (!_defaultStyleKeyApplied)
             {
@@ -39,65 +44,90 @@ namespace Visifire.Charts
                 _defaultStyleKeyApplied = true;
 
             }
-
-            //object dsp = this.GetValue(FrameworkElement.DefaultStyleKeyProperty);
-            //Style = (Style)Application.Current.FindResource(dsp);
-
 #else
             DefaultStyleKey = typeof(ChartGrid);
 #endif
 
         }
 
-        private void SetDefaults()
-        {
-            //Interval = Double.NaN;
-            LineStyle = LineStyles.Solid;
-            LineThickness = Double.NaN;
-            //  Enabled = true;
-        }
-
-        /// <summary>
-        /// Creates the visual element for the Major ticks
-        /// </summary>
-        internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double duration)
-        {
-            if (!(Boolean)Enabled)
-            {
-                Visual = null;
-                return;
-            }
-
-            Visual = new Canvas();
-
-            Width = width;
-            Height = height;
-
-            if (animationEnabled)
-            {
-                Storyboard = new Storyboard();
-                //Visual.Resources.Add(Storyboard.GetHashCode().ToString(), Storyboard);
-
-                ScaleTransform st = new ScaleTransform() { ScaleX = 1, ScaleY = 1 };
-                Visual.RenderTransformOrigin = new Point(0.5, 0.5);
-                Visual.RenderTransform = st;
-
-                if (Placement == PlacementTypes.Top || Placement == PlacementTypes.Bottom)
-                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleY)", 0, 1, 0, duration));
-                else
-                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleX)", 0, 1, 0, duration));
-            }
-
-            CreateAndPositionChartGrid(animationEnabled, duration);
-            ApplyVisualProperty();
-        }
-
-
         #endregion
 
         #region Public Properties
+
         /// <summary>
-        /// Major grid Interval
+        /// Identifies the Visifire.Charts.ChartGrid.Interval dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.Interval dependency property.
+        /// </returns>
+        public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
+            ("Interval",
+            typeof(Nullable<Double>),
+            typeof(ChartGrid),
+            new PropertyMetadata(OnIntervalPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.Enabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.Enabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+            ("Enabled",
+            typeof(Nullable<Boolean>),
+            typeof(ChartGrid),
+            new PropertyMetadata(OnEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.LineColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.LineColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
+             ("LineColor",
+             typeof(Brush),
+             typeof(ChartGrid),
+             new PropertyMetadata(OnLineColorPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.LineStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.LineStyle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
+            ("LineStyle",
+            typeof(LineStyles),
+            typeof(ChartGrid),
+            new PropertyMetadata(OnLineStylePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.LineThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.LineThickness dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
+            ("LineThickness",
+            typeof(Double),
+            typeof(ChartGrid),
+            new PropertyMetadata(0.25, OnLineThicknessPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.InterlacedColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.InterlacedColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty InterlacedColorProperty = DependencyProperty.Register(
+            "InterlacedColor",
+            typeof(Brush),
+            typeof(ChartGrid),
+            new PropertyMetadata(OnInterlacedColorPropertyChanged));
+
+        /// <summary>
+        /// Grid interval
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -106,8 +136,7 @@ namespace Visifire.Charts
         {
             get
             {
-                //return (Double.IsNaN((Double)GetValue(IntervalProperty))) ? ParentAxis.Interval : (Double)GetValue(IntervalProperty);
-                if ((Nullable<Double>)GetValue(IntervalProperty) == null)
+                if ((Nullable<Double>)GetValue(IntervalProperty) == null && ParentAxis != null)
                     return ParentAxis.InternalInterval;
                 else
                     return (Nullable<Double>)GetValue(IntervalProperty);
@@ -118,166 +147,96 @@ namespace Visifire.Charts
             }
         }
 
-        private static readonly DependencyProperty IntervalProperty = DependencyProperty.Register
-            ("Interval",
-            typeof(Nullable<Double>),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnIntervalPropertyChanged));
+       /// <summary>
+       /// ToolTipText property
+       /// ( NotImplemented )
+       /// </summary>
+       [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+       public override String ToolTipText
+       {
+           get
+           {
+               throw new NotImplementedException("ToolTipText property for ChartGrid is not implemented");
+           }
+           set
+           {
+               throw new NotImplementedException("ToolTipText property for ChartGrid is not implemented");
+           }
+       }
 
-        private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("Interval");
-        }
-
-        /// <summary>
-        /// Enables or disables Major grid 
-        /// </summary>
-        [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
-        public Nullable<Boolean> Enabled
-        {
-            get
-            {
-                if ((Nullable<Boolean>)GetValue(EnabledProperty) == null)
-                    return true;
-                else
-                    return (Nullable<Boolean>)GetValue(EnabledProperty);
-            }
-            set
-            {
-                SetValue(EnabledProperty, value);
-            }
-        }
-
-
-        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
-            ("Enabled",
-            typeof(Nullable<Boolean>),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnEnabledPropertyChanged));
-
-        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("Enabled");
-        }
+       /// <summary>
+       /// Grid line style
+       /// </summary>
+       public LineStyles LineStyle
+       {
+           get
+           {
+               return (LineStyles)GetValue(LineStyleProperty);
+           }
+           set
+           {
+               SetValue(LineStyleProperty, value);
+           }
+       }
 
         /// <summary>
-        /// Major grid LineColor
+       /// Grid interlaced color
         /// </summary>
-        public Brush LineColor
-        {
-            get
-            {
-                return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : new SolidColorBrush(Colors.Gray);
-            }
-            set
-            {
-                SetValue(LineColorProperty, value);
-            }
-        }
+       public Brush InterlacedColor
+       {
+           get { return (Brush)GetValue(InterlacedColorProperty); }
+           set { SetValue(InterlacedColorProperty, value); }
+       }
+       
+       /// <summary>
+       /// Grid line thickness 
+       /// </summary>
+       public Double LineThickness
+       {   
+           get
+           {
+               return (Double)GetValue(LineThicknessProperty);
+           }
+           set
+           {
+               SetValue(LineThicknessProperty, value);
+           }
+       }
 
-        public static readonly DependencyProperty LineColorProperty = DependencyProperty.Register
-            ("LineColor",
-            typeof(Brush),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnLineColorPropertyChanged));
+       /// <summary>
+       /// Enables or disables grid lines
+       /// </summary>
+       [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
+       public Nullable<Boolean> Enabled
+       {
+           get
+           {
+               if ((Nullable<Boolean>)GetValue(EnabledProperty) == null)
+                   return true;
+               else
+                   return (Nullable<Boolean>)GetValue(EnabledProperty);
+           }
+           set
+           {
+               SetValue(EnabledProperty, value);
+           }
+       }
 
-        private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            // chartGrid.FirePropertyChanged("LineColor");
-            chartGrid.UpdateVisual("LineColor", e.NewValue);
-        }
+       /// <summary>
+       /// Grid line color
+       /// </summary>
+       public Brush LineColor
+       {
+           get
+           {
+               return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : new SolidColorBrush(Colors.Gray);
+           }
+           set
+           {
+               SetValue(LineColorProperty, value);
+           }
+       }
 
-        /// <summary>
-        /// Major grid LineStyle
-        /// </summary>
-        public LineStyles LineStyle
-        {
-            get
-            {
-                return (LineStyles)GetValue(LineStyleProperty);
-            }
-            set
-            {
-                SetValue(LineStyleProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty LineStyleProperty = DependencyProperty.Register
-            ("LineStyle",
-            typeof(LineStyles),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnLineStylePropertyChanged));
-
-        private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            //chartGrid.FirePropertyChanged("LineStyle");
-            chartGrid.UpdateVisual("LineStyle", e.NewValue);
-        }
-
-        /// <summary>
-        /// Major grid LineThickness
-        /// </summary>
-        public Double LineThickness
-        {
-            get
-            {
-                return (!Double.IsNaN((Double)GetValue(LineThicknessProperty))) ? (Double)GetValue(LineThicknessProperty) : 0.25;
-            }
-            set
-            {
-                SetValue(LineThicknessProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
-            ("LineThickness",
-            typeof(Double),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnLineThicknessPropertyChanged));
-
-        private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            //chartGrid.FirePropertyChanged("LineThickness");
-            chartGrid.UpdateVisual("LineThickness", e.NewValue);
-        }
-
-        #region InterlacedColor
-
-        public Brush InterlacedColor
-        {
-            get { return (Brush)GetValue(InterlacedColorProperty); }
-            set { SetValue(InterlacedColorProperty, value); }
-        }
-        public static readonly DependencyProperty InterlacedColorProperty =
-            DependencyProperty.Register(
-            "InterlacedColor",
-            typeof(Brush),
-            typeof(ChartGrid),
-            new PropertyMetadata(OnInterlacedColorPropertyChanged));
-
-        private static void OnInterlacedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ChartGrid chartGrid = d as ChartGrid;
-            // chartGrid.FirePropertyChanged("InterlacedColor");
-            chartGrid.UpdateVisual("InterlacedColor", e.NewValue);
-        }
-
-        #endregion  InterlacedColor
-
-
-        /// <summary>
-        /// Visual element for major ticks
-        /// </summary>
-        public Canvas Visual
-        {
-            get;
-            private set;
-        }
         #endregion
 
         #region Public Events
@@ -289,19 +248,23 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+        
+        /// <summary>
+        /// Visual element for major ticks
+        /// </summary>
+        internal Canvas Visual
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Actual minimum value of the axis
         /// </summary>
         internal Double Minimum
         {
-            get
-            {
-                return _minimum;
-            }
-            set
-            {
-                _minimum = value;
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -309,44 +272,26 @@ namespace Visifire.Charts
         /// </summary>
         internal Double Maximum
         {
-            get
-            {
-                return _maximum;
-            }
-            set
-            {
-                _maximum = value;
-            }
+            get;
+            set;
         }
 
         /// <summary>
-        /// Visual minimum for the axis
+        /// Minimum value for the axis
         /// </summary>
         internal Double DataMinimum
         {
-            get
-            {
-                return _dataMinimum;
-            }
-            set
-            {
-                _dataMinimum = value;
-            }
+            get;
+            set;
         }
 
         /// <summary>
-        /// Visual maximum for the axis
+        /// Maximum value for the axis
         /// </summary>
         internal Double DataMaximum
         {
-            get
-            {
-                return _dataMaximum;
-            }
-            set
-            {
-                _dataMaximum = value;
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -388,24 +333,18 @@ namespace Visifire.Charts
             set;
         }
 
-        internal Dictionary<Double, String> AxisLabelsDictionary
-        {
-            get;
-            set;
-        }
-
-        internal Boolean AllAxisLabels
-        {
-            get;
-            set;
-        }
-
+        /// <summary>
+        /// Parent axis reference
+        /// </summary>
         internal Axis ParentAxis
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Chart grid storyboard
+        /// </summary>
         internal Storyboard Storyboard
         {
             get;
@@ -419,20 +358,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
+        
         /// <summary>
         /// Creates the major ticks and also positions them appropriately
         /// </summary>
-        private void CreateAndPositionChartGrid(bool animationEnabled, Double duration)
+        private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
         {
             Double interval = (Double)Interval; // Interval  for the chart grid
-            Decimal index = (Decimal)Minimum; // starting point for the loop that generates grids
-            Decimal minval = (Decimal)Minimum; // smallest value from where the grid must be drawn
-            Decimal maxVal = (Decimal)Maximum; // largest value from where the grid must be drawn
-            Decimal gap = (Decimal)interval +( ((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0); // gap between two intervals
-            Int32 count = 0; // counts the number of lines required for alternate colored bands
-            Int32 countRectangles = 0; // counts the number of color bands for animating them alternately in opposite direction
-            Double position = 0; // value of the line position for the running loop cycle
-            Double prevPosition = 0; // value of the line position for the previous position
+            Decimal index = (Decimal)Minimum;   // starting point for the loop that generates grids
+            Decimal minval = (Decimal)Minimum;  // smallest value from where the grid must be drawn
+            Decimal maxVal = (Decimal)Maximum;  // largest value from where the grid must be drawn
+
+            // gap between two intervals
+            Decimal gap = (Decimal)interval +( ((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0); 
+            
+            Int32 count = 0;                    // counts the number of lines required for alternate colored bands
+            Int32 countRectangles = 0;          // counts the number of color bands for animating them alternately in opposite direction
+            Double position = 0;                // value of the line position for the running loop cycle
+            Double prevPosition = 0;            // value of the line position for the previous position
 
             // if axis X then and the First data point is in a gap between the prescribed interval the index must start from the 
             // datapoint rather than the axis minimum
@@ -442,14 +385,21 @@ namespace Visifire.Charts
             minval = index;
             maxVal = maxVal + gap / 1000;
 
-            if(Storyboard != null)
+#if WPF
+            if (Storyboard != null && Storyboard.GetValue(Storyboard.TargetProperty) != null)
                 Storyboard.Stop();
+#else       
+            if (Storyboard != null)
+                Storyboard.Stop();
+#endif
 
             InterlacedRectangles = new List<Rectangle>();
             InterlacedLines = new List<Line>();
 
             if (minval != maxVal)
-            {InterlacedRectangles = new List<Rectangle>();
+            {
+                InterlacedRectangles = new List<Rectangle>();
+
                 for (; index <= maxVal; index = minval + (++count) * gap)
                 {
                     Line line = new Line();
@@ -465,7 +415,9 @@ namespace Visifire.Charts
                     {
                         case PlacementTypes.Top:
                         case PlacementTypes.Bottom:
+
                             position = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, (Double)index);
+
                             line.X1 = position;
                             line.X2 = position;
                             line.Y1 = 0;
@@ -474,6 +426,7 @@ namespace Visifire.Charts
                             if (count % 2 == 1)
                             {
                                 Rectangle rectangle = new Rectangle();
+
                                 if (animationEnabled)
                                 {
                                     ScaleTransform scaleTransform;
@@ -481,13 +434,13 @@ namespace Visifire.Charts
                                     {
                                         scaleTransform = new ScaleTransform() { ScaleX = 1, ScaleY = 0 };
                                         rectangle.RenderTransformOrigin = new Point(0.5, 1);
-                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, duration));
+                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, animationDuration));
                                     }
                                     else
                                     {
                                         scaleTransform = new ScaleTransform() { ScaleX = 1, ScaleY = 0 };
                                         rectangle.RenderTransformOrigin = new Point(0.5, 0);
-                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, duration));
+                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, animationDuration));
                                     }
                                     rectangle.RenderTransform = scaleTransform;
                                 }
@@ -508,30 +461,38 @@ namespace Visifire.Charts
 
                         case PlacementTypes.Left:
                         case PlacementTypes.Right:
+
                             position = Graphics.ValueToPixelPosition(Height, 0, Minimum, Maximum, (Double)index);
-                            if (position == 0) position += this.LineThickness;
+
+                            if (position == 0)
+                                position += this.LineThickness;
+
                             line.X1 = 0;
                             line.X2 = Width;
                             line.Y1 = position;
                             line.Y2 = position;
+
                             if (count % 2 == 1)
                             {
                                 Rectangle rectangle = new Rectangle();
+
                                 if (animationEnabled)
                                 {
                                     ScaleTransform scaleTransform;
+
                                     if (countRectangles % 2 == 0)
                                     {
                                         scaleTransform = new ScaleTransform() { ScaleX = 0, ScaleY = 1 };
                                         rectangle.RenderTransformOrigin = new Point(0, 0.5);
-                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, duration));
+                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, animationDuration));
                                     }
                                     else
                                     {
                                         scaleTransform = new ScaleTransform() { ScaleX = 0, ScaleY = 1 };
                                         rectangle.RenderTransformOrigin = new Point(1, 0.5);
-                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, duration));
+                                        Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, animationDuration));
                                     }
+
                                     rectangle.RenderTransform = scaleTransform;
                                 }
 
@@ -549,7 +510,6 @@ namespace Visifire.Charts
                             break;
                     }
                     
-
                     Visual.Children.Add(line);
                     prevPosition = position;
                 }
@@ -558,54 +518,59 @@ namespace Visifire.Charts
                 {
                     Rectangle rectangle = new Rectangle();
                     ScaleTransform scaleTransform = null;
-
                     switch (Placement)
                     {
                         case PlacementTypes.Top:
                         case PlacementTypes.Bottom:
                             rectangle.Width = Math.Abs(Width - position);
                             rectangle.Height = Height;
+
                             if (animationEnabled)
                             {
                                 if (countRectangles % 2 == 0)
                                 {
                                     scaleTransform = new ScaleTransform() { ScaleX = 1, ScaleY = 0 };
                                     rectangle.RenderTransformOrigin = new Point(0.5, 1);
-                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5,duration));
+                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, animationDuration));
                                 }
                                 else
                                 {
                                     scaleTransform = new ScaleTransform() { ScaleX = 1, ScaleY = 0 };
                                     rectangle.RenderTransformOrigin = new Point(0.5, 0);
-                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, duration));
+                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleY)", 0, 1, 0.5, animationDuration));
                                 }
                             }
+
                             rectangle.SetValue(Canvas.LeftProperty, position);
                             rectangle.SetValue(Canvas.TopProperty, (Double)0);
                             break;
+
                         case PlacementTypes.Left:
                         case PlacementTypes.Right:
                             rectangle.Width = Width;
                             rectangle.Height = Math.Abs(position);
+
                             if (animationEnabled)
                             {
                                 if (countRectangles % 2 == 0)
                                 {
                                     scaleTransform = new ScaleTransform() { ScaleX = 0, ScaleY = 1 };
                                     rectangle.RenderTransformOrigin = new Point(0, 0.5);
-                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, duration));
+                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, animationDuration));
                                 }
                                 else
                                 {
                                     scaleTransform = new ScaleTransform() { ScaleX = 0, ScaleY = 1 };
                                     rectangle.RenderTransformOrigin = new Point(1, 0.5);
-                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, duration));
+                                    Storyboard.Children.Add(CreateDoubleAnimation(scaleTransform, "(ScaleTransform.ScaleX)", 0, 1, 0.5, animationDuration));
                                 }
                             }
+
                             rectangle.SetValue(Canvas.LeftProperty, (Double)0);
                             rectangle.SetValue(Canvas.TopProperty, (Double)0);
                             break;
                     }
+
                     rectangle.RenderTransform = scaleTransform;
                     rectangle.Fill = InterlacedColor;
                     rectangle.SetValue(Canvas.ZIndexProperty, (Int32)(-countRectangles));
@@ -616,29 +581,12 @@ namespace Visifire.Charts
 
             Visual.Width = Width;
             Visual.Height = Height;
-
         }
 
-        private List<Rectangle> InterlacedRectangles
-        {
-            get;
-            set;
-        }
-
-        private List<Line> InterlacedLines
-        {
-            get;
-            set;
-        }
-
-        private void ApplyVisualProperty()
-        {
-            Visual.Opacity = this.Opacity;
-        }
         /// <summary>
         /// Generates a Double animation sequence with fixed parameters
         /// </summary>
-        DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double from, Double to, Double begin, Double duration)
+        private DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double from, Double to, Double begin, Double duration)
         {
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
             da.BeginTime = TimeSpan.FromSeconds(begin);
@@ -669,13 +617,152 @@ namespace Visifire.Charts
 
             return da;
         }
+        
+        /// <summary>
+        /// IntervalProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.FirePropertyChanged("Interval");
+        }
+
+        /// <summary>
+        /// EnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.FirePropertyChanged("Enabled");
+        }
+
+        /// <summary>
+        /// LineColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.UpdateVisual("LineColor", e.NewValue);
+        }
+
+        /// <summary>
+        /// LineStyleProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.UpdateVisual("LineStyle", e.NewValue);
+        }
+
+        /// <summary>
+        /// LineThicknessProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.UpdateVisual("LineThickness", e.NewValue);
+        }
+
+        /// <summary>
+        /// InterlacedColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnInterlacedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ChartGrid chartGrid = d as ChartGrid;
+            chartGrid.UpdateVisual("InterlacedColor", e.NewValue);
+        }
+                
         #endregion
 
         #region Private Properties
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.ToolTipText dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.ToolTipText dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
+            ("ToolTipText",
+            typeof(String),
+            typeof(ChartGrid),
+            null);
+
+        /// <summary>
+        /// List of interlaced rectangles
+        /// </summary>
+        private List<Rectangle> InterlacedRectangles
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// List of interlaced lines
+        /// </summary>
+        private List<Line> InterlacedLines
+        {
+            get;
+            set;
+        }
+        
         #endregion
 
         #region Internal Methods
 
+        /// <summary>
+        /// Creates the visual element for the Major ticks
+        /// </summary>
+        internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double animationDuration)
+        {   
+            if (!(Boolean)Enabled)
+            {
+                Visual = null;
+                return;
+            }
+
+            Visual = new Canvas();
+
+            Width = width;
+            Height = height;
+
+            if (animationEnabled)
+            {
+                Storyboard = new Storyboard();
+                //Visual.Resources.Add(Storyboard.GetHashCode().ToString(), Storyboard);
+
+                ScaleTransform st = new ScaleTransform() { ScaleX = 1, ScaleY = 1 };
+                Visual.RenderTransformOrigin = new Point(0.5, 0.5);
+                Visual.RenderTransform = st;
+
+                if (Placement == PlacementTypes.Top || Placement == PlacementTypes.Bottom)
+                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleY)", 0, 1, 0, animationDuration));
+                else
+                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleX)", 0, 1, 0, animationDuration));
+            }
+
+            CreateAndPositionChartGrid(animationEnabled, animationDuration);
+
+            Visual.Opacity = this.Opacity;
+        }
+        
+        /// <summary>
+        /// Update visual does partial upadte
+        /// </summary>
+        /// <param name="PropertyName">Name of the property</param>
+        /// <param name="Value">Value of the property</param>
         internal override void UpdateVisual(string PropertyName, object Value)
         {
             if (Visual != null)
@@ -701,15 +788,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-        private Double _maximum;
-        private Double _minimum;
+
+        /// <summary>
+        /// Set the width of the major tick canvas. will be used only with the Horizontal axis
+        /// </summary>
         private Double _width;
+
+        /// <summary>
+        /// Set the height of the major tick canvas. will be used ony with the vertical axis 
+        /// </summary>
         private Double _height;
-        private Double _dataMinimum;
-        private Double _dataMaximum;
 
 #if WPF
-        private static Boolean _defaultStyleKeyApplied;            // Default Style key
+
+        /// <summary>
+        /// Whether the default style is applied
+        /// </summary>
+        private static Boolean _defaultStyleKeyApplied;    
+   
 #endif
         #endregion
     }

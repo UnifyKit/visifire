@@ -13,6 +13,9 @@ using System.Windows.Browser;
 
 namespace SLVisifireChartsXap
 {
+    /// <summary>
+    /// SLVisifireChartsXap.Wrapper class
+    /// </summary>
     public partial class Wrapper : UserControl
     {
         public Wrapper()
@@ -21,6 +24,12 @@ namespace SLVisifireChartsXap
         }
 
         #region Scriptable methods
+
+        /// <summary>
+        /// Resize the wrapper
+        /// </summary>
+        /// <param name="width">Width</param>
+        /// <param name="height">Height</param>
         [ScriptableMember()]
         public void Resize(Double width, Double height)
         {
@@ -32,6 +41,10 @@ namespace SLVisifireChartsXap
                 OnResize(this, e);
         }
 
+        /// <summary>
+        /// Add new data xml 
+        /// </summary>
+        /// <param name="dataXML">xml string</param>
         [ScriptableMember()]
         public void AddDataXML(String dataXML)
         {
@@ -40,10 +53,14 @@ namespace SLVisifireChartsXap
             e.DataXML = dataXML;
             e.DataUri = null;
 
-            if (DataXML != null)
-                DataXML(this, e);
+            if (DataXMLAdded != null)
+                DataXMLAdded(this, e);
         }
 
+        /// <summary>
+        /// Add chart data xml file Uri
+        /// </summary>
+        /// <param name="dataUri">Data xml file Uri</param>
         [ScriptableMember()]
         public void AddDataUri(String dataUri)
         {
@@ -51,10 +68,13 @@ namespace SLVisifireChartsXap
 
             e.DataUri = dataUri;
 
-            if (DataXML != null)
-                DataXML(this, e);
+            if (DataXMLAdded != null)
+                DataXMLAdded(this, e);
         }
 
+        /// <summary>
+        /// Rerender the chart 
+        /// </summary>
         [ScriptableMember()]
         public void ReRenderChart()
         {
@@ -62,20 +82,35 @@ namespace SLVisifireChartsXap
                 ReRender(this, null);
         }
 
+        /// <summary>
+        /// Whether the data xml is loaded
+        /// </summary>
         [ScriptableMember()]
         public Boolean IsDataLoaded
         {
             get;
             set;
         }
+
         #endregion Scriptable methods
 
         #region Public Events
-        public event EventHandler<DataXMLEventArgs> DataXML;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public event EventHandler<DataXMLEventArgs> DataXMLAdded;
+
+        /// <summary>
+        /// ReRender EventHandler
+        /// </summary>
         public event EventHandler ReRender;
 
+        /// <summary>
+        /// EventHandler OnResize
+        /// </summary>
         public event EventHandler<ResizeEventArgs> OnResize;
+
         #endregion Public Events
     }
 }

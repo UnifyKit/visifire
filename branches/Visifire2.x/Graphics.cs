@@ -22,7 +22,6 @@ using System.Windows.Markup;
 using System.Globalization;
 #endif
 using System.ComponentModel;
-using System.Windows.Media.Animation;
 using Visifire.Charts;
 using Visifire.Commons;
 
@@ -46,7 +45,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Different parts of Visuals
+        /// Different parts of Visuals. Parts are used while doing partial update
         /// </summary>
         public List<FrameworkElement> Parts
         {
@@ -54,12 +53,18 @@ namespace Visifire.Charts
             set;
         }
 
+        /// <summary>
+        /// Visual of faces
+        /// </summary>
         public Panel Visual
         {
             get;
             set;
         }
 
+        /// <summary>
+        ///  Label canvas reference for faces
+        /// </summary>
         public Canvas LabelCanvas
         {
             get;
@@ -84,37 +89,8 @@ namespace Visifire.Charts
         /// <returns>DashArray as DoubleCollection</returns>
         internal static DoubleCollection GetDashArray(BorderStyles borderStyle)
         {
-            if (borderStyle.ToString() == null) return null;
-
-            DoubleCollection dashArray = new DoubleCollection();
-
-            switch (borderStyle)
-            {   
-                case BorderStyles.Solid:
-                    dashArray = null;
-                    break;
-
-                case BorderStyles.Dashed:
-                    dashArray.Clear();
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    break;
-
-                case BorderStyles.Dotted:
-                    dashArray.Clear();
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    break;
-
-            }
-
-            return dashArray;
+            return Graphics.LineStyleToStrokeDashArray(borderStyle.ToString());
         }
-
         
         /// <summary>
         /// Returns dash array for line
@@ -123,34 +99,7 @@ namespace Visifire.Charts
         /// <returns>DashArray as DoubleCollection</returns>
         internal static DoubleCollection GetDashArray(LineStyles lineStyle)
         {
-            if (lineStyle.ToString() == null) return null;
-
-            DoubleCollection dashArray = new DoubleCollection();
-
-            switch (lineStyle)
-            {
-                case LineStyles.Solid:
-                    dashArray = null;
-                    break;
-
-                case LineStyles.Dashed:
-                    dashArray.Clear();
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    dashArray.Add(4);
-                    break;
-
-                case LineStyles.Dotted:
-                    dashArray.Clear();
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    dashArray.Add(1);
-                    dashArray.Add(2);
-                    break;
-            }
-
-            return dashArray;
+            return Graphics.LineStyleToStrokeDashArray(lineStyle.ToString());
         }
 
         /// <summary>
@@ -185,6 +134,12 @@ namespace Visifire.Charts
             return pathGeometry;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
         private static CornerRadius GetCorrectedRadius(CornerRadius radius,Double limit)
         {
            return new CornerRadius(
@@ -195,6 +150,11 @@ namespace Visifire.Charts
                 );
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="corner"></param>
+        /// <returns></returns>
         private static Brush GetCornerShadowGradientBrush(Corners corner)
         {
             RadialGradientBrush gradBrush = new RadialGradientBrush();
@@ -224,6 +184,12 @@ namespace Visifire.Charts
             gradBrush.RelativeTransform = tg;
             return gradBrush;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         private static Brush GetSideShadowGradientBrush(Directions direction)
         {
             LinearGradientBrush gradBrush = new LinearGradientBrush();
@@ -231,7 +197,7 @@ namespace Visifire.Charts
             gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(191, 0, 0, 0), 0));
             gradBrush.GradientStops.Add(Graphics.GetGradientStop(Color.FromArgb(0, 0, 0, 0), 1));
             switch (direction)
-            {
+            {   
                 case Directions.Top:
                     gradBrush.StartPoint = new Point(0.5, 1);
                     gradBrush.EndPoint = new Point(0.5, 0);
@@ -252,6 +218,11 @@ namespace Visifire.Charts
             return gradBrush;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         public static DoubleCollection CloneCollection(DoubleCollection collection)
         {
             DoubleCollection newCollection = new DoubleCollection();
@@ -400,10 +371,10 @@ namespace Visifire.Charts
             return canvas;
         }
 
-        public static PathGeometry Get2DRectangleClip(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius)
-        {
-            return GetRectanglePathGeometry(width, height, GetCorrectedRadius(xRadius, width), GetCorrectedRadius(yRadius, height));
-        }
+        //public static PathGeometry Get2DRectangleClip(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius)
+        //{
+        //    return GetRectanglePathGeometry(width, height, GetCorrectedRadius(xRadius, width), GetCorrectedRadius(yRadius, height));
+        //}
 
         public static Grid Get2DRectangleShadow(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius,Double minCurvature)
         {
@@ -464,22 +435,6 @@ namespace Visifire.Charts
 
 namespace Visifire.Commons
 {
-    public class ValueConverter : TypeConverter
-    {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-        {
-            return true;
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-        {
-            if ((String)value == String.Empty)
-                return Double.NaN;
-            else
-                return Double.Parse((String)value, System.Globalization.CultureInfo.InvariantCulture);
-        }
-    }
-
     public class Graphics
     {
         public Graphics()
@@ -546,33 +501,6 @@ namespace Visifire.Commons
             foreach (Double value in values)
                 collection.Add(value);
             return collection;
-        }
-
-        internal static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DataSeries DataSeriesRef, DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
-        {
-            DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
-#if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
-            Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
-
-            DataSeriesRef.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-#else
-            Storyboard.SetTarget(da, target);
-#endif
-            Storyboard.SetTargetProperty(da, new PropertyPath(property));
-
-            da.BeginTime = TimeSpan.FromSeconds(beginTime);
-
-            for (Int32 index = 0; index < splines.Count; index++)
-            {
-                SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
-                keyFrame.KeySpline = splines[index];
-                keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
-                keyFrame.Value = values[index];
-                da.KeyFrames.Add(keyFrame);
-            }
-
-            return da;
         }
 
         internal static Brush GetRightGradianceBrush(Int32 alpha)
@@ -866,7 +794,7 @@ namespace Visifire.Commons
                         return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
                 }
                 else
-                {
+                {   
                     return brush;
                 }
             }
@@ -938,47 +866,6 @@ namespace Visifire.Commons
             }
             return brush;
         }
-        
-        internal static Brush ApplyLabelFontColor(Chart chart, DataPoint dataPoint, Brush labelFontColor, LabelStyles labelStyle)
-        {
-            Brush returnBrush = dataPoint.LabelFontColor;
-
-            if (labelFontColor == null)
-            {
-                Double intensity;
-
-                if (labelStyle == LabelStyles.Inside && dataPoint.Parent.RenderAs != RenderAs.Line)
-                {
-                    intensity = Graphics.GetBrushIntensity(dataPoint.Color);
-                    returnBrush = Graphics.GetDefaultFontColor(intensity);
-                }
-                else
-                {
-                    if (chart.PlotArea.Color == null)
-                    {
-                        if (chart.Background == null)
-                        {
-                            //dataPoint.IsNotificationEnable = false;
-                            //dataPoint.LabelFontColor = new SolidColorBrush(Colors.Black);
-                            //dataPoint.IsNotificationEnable = true;
-                            returnBrush = new SolidColorBrush(Colors.Black);
-                        }
-                        else
-                        {   
-                            intensity = Graphics.GetBrushIntensity(chart.Background);
-                            returnBrush = Graphics.GetDefaultFontColor(intensity);
-                        }
-                    }
-                    else
-                    {
-                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.Color);
-                        returnBrush = Graphics.GetDefaultFontColor(intensity);
-                    }
-                }
-            }
-
-            return returnBrush;
-        }
 
         internal static bool AreBrushesEqual(Brush first, Brush second)
         {
@@ -1002,54 +889,6 @@ namespace Visifire.Commons
             return false;
         }
 
-        internal static Brush ApplyAutoFontColor(Chart chart, Brush color, Boolean dockInsidePlotArea)
-        {
-            Brush brush = color;
-            Double intensity;
-            if (color == null)
-            {
-                if (!dockInsidePlotArea)
-                {
-                    if (chart != null)
-                    {
-                        if (AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
-                        {
-                            brush = new SolidColorBrush(Colors.Black);
-                        }
-                        else
-                        {
-                            intensity = Graphics.GetBrushIntensity(chart.Background);
-                            brush = Graphics.GetDefaultFontColor(intensity);
-                        }
-                    }
-                }
-                else
-                {
-                    if (chart.PlotArea != null)
-                    {
-                        if (AreBrushesEqual(chart.PlotArea.Color, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.Color == null)
-                        {
-                            if (AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
-                            {
-                                brush = new SolidColorBrush(Colors.Black);
-                            }
-                            else
-                            {
-                                intensity = Graphics.GetBrushIntensity(chart.Background);
-                                brush = Graphics.GetDefaultFontColor(intensity);
-                            }
-                        }
-                        else
-                        {
-                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.Color);
-                            brush = Graphics.GetDefaultFontColor(intensity);
-                        }
-                    }
-                }
-            }
-            return brush;
-        }
-
         /// <summary>
         /// Converts a color in String form to Solid Color Brush
         /// </summary>
@@ -1062,106 +901,6 @@ namespace Visifire.Commons
 #else
             return (Brush)XamlReader.Load(String.Format(System.Globalization.CultureInfo.InvariantCulture, @"<SolidColorBrush xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Color=""{0}""></SolidColorBrush>", colorCode));
 #endif
-        }
-
-        public static Brush ParseColor(String colorString)
-        {
-            String[] splitStr = colorString.Split(';');
-            if (splitStr.Length == 1)
-                return ParseSolidColor(splitStr[0]);
-            else
-            {
-                String[] str0 = splitStr[0].Split(',');
-                String[] str1 = splitStr[1].Split(',');
-
-                if (str0.Length == 1 && str1.Length == 1)
-                    return ParseRadialGradient(colorString);
-                else
-                    return ParseLinearGradient(colorString);
-            }
-        }
-
-        /// <summary>
-        /// This converts a given String of X;Y;color,stop;.... String to a radial gradient brush
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static Brush ParseRadialGradient(String str)
-        {
-            String[] colorStopSet = str.Split(';');
-
-#if WPF
-            String brushString = String.Format(@"<RadialGradientBrush xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">");
-#else
-            String brushString = String.Format(@"<RadialGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >");
-#endif
-            
-            brushString += GetGradientStopString(colorStopSet);
-
-            brushString += "</RadialGradientBrush>";
-
-#if WPF
-            RadialGradientBrush brush = (RadialGradientBrush)XamlReader.Load(new XmlTextReader(new System.IO.StringReader(brushString)));
-#else
-            RadialGradientBrush brush = (RadialGradientBrush)XamlReader.Load(brushString);
-#endif
-
-            brush.GradientOrigin = new Point(Double.Parse(colorStopSet[0], CultureInfo.InvariantCulture), Double.Parse(colorStopSet[1], CultureInfo.InvariantCulture));
-
-            return brush;
-
-        }
-
-        /// <summary>
-        /// This converts a given String of angle;color,stop;.... String to a linear gradient brush
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static Brush ParseLinearGradient(String str)
-        {
-            Double angle;
-
-            String[] strSplit = str.Split(';');
-            angle = Double.Parse(strSplit[0], CultureInfo.InvariantCulture);
-#if WPF
-            String brushString = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" EndPoint=""1,0"" StartPoint=""0,0"">");
-#else
-            String brushString = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""1,0"" StartPoint=""0,0"">");
-#endif
-            
-            brushString += GetGradientStopString(strSplit);
-
-            brushString += "</LinearGradientBrush>";
-#if WPF
-            Brush brush = (Brush)XamlReader.Load(new XmlTextReader(new System.IO.StringReader(brushString)));
-#else
-            Brush brush = (Brush)XamlReader.Load(brushString);
-#endif
-            RotateTransform rt = new RotateTransform();
-            rt.Angle = angle;
-            rt.CenterX = .5;
-            rt.CenterY = .5;
-
-            // tg.Children.Add(rt);
-            brush.RelativeTransform = rt;
-
-            return brush;
-        }
-
-        public static String GetGradientStopString(String[] gradStops)
-        {
-            String stopsString = "";
-            foreach (String colorOffset in gradStops)
-            {
-                String[] colorOffsetSplit = colorOffset.Split(',');
-
-                if (colorOffsetSplit.Length > 1)
-                {
-                    stopsString += String.Format(@"<GradientStop Color=""" + colorOffsetSplit[0] + @""" Offset=""" + colorOffsetSplit[1] + @"""/>");
-                }
-            }
-
-            return stopsString;
         }
 
         /// <summary>
@@ -1181,20 +920,7 @@ namespace Visifire.Commons
             return darkerShade;
         }
 
-        public static List<KeySpline> GenerateAnimationSplines(int count)
-        {
-            List<KeySpline> splines = new List<KeySpline>();
-            for (int i = 0; i < count; i++)
-            {
-                splines.Add(GetKeySpline(new Point(0, 0), new Point(1, 1)));
-            }
-            return splines;
-        }
 
-        public static KeySpline GetKeySpline(Point controlPoint1, Point controlPoint2)
-        {
-            return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
-        }
 
         /// <summary>
         /// Returns a lighter shade of the color by increasing the brightness by the given intensity value
@@ -1212,6 +938,7 @@ namespace Visifire.Commons
             lighterShade.A = color.A;
             return lighterShade;
         }
+
         public static Color GetLighterColor(Color color, Double intensityR, Double intensityG, Double intensityB)
         {
             Color lighterShade = new Color();
@@ -1225,22 +952,29 @@ namespace Visifire.Commons
             return lighterShade;
         }
 
-        public static DoubleCollection SolidStrokeDashArray = null;
-        public static DoubleCollection DashedStrokeDashArray = new DoubleCollection() { 4, 2 };
-        public static DoubleCollection DottedStrokeDashArray = new DoubleCollection() { 2, 2 };
-        public static DoubleCollection BorderStyleToStrokeDashArray(BorderStyles borderStyle)
+        /// <summary>
+        /// Converts LineStyle to StrokeDashArray
+        /// </summary>
+        /// <param name="lineStyle">lineStyle as String</param>
+        /// <returns>DashArray as DoubleCollection</returns>
+        public static DoubleCollection LineStyleToStrokeDashArray(String lineStyle)
         {
-            switch (borderStyle)
+            DoubleCollection retVal = null;
+
+            switch (lineStyle)
             {
-                case BorderStyles.Solid:
-                    return SolidStrokeDashArray;
-                case BorderStyles.Dotted:
-                    return DottedStrokeDashArray;
-                case BorderStyles.Dashed:
-                    return DashedStrokeDashArray;
+                case "Solid":
+                    retVal = null;
+                    break;
+                case "Dashed":
+                    retVal = new DoubleCollection() { 4, 4, 4, 4 };
+                    break;
+                case "Dotted":
+                    retVal = new DoubleCollection() { 1, 2, 1, 2 };
+                    break;
             }
 
-            return SolidStrokeDashArray;
+            return retVal;
         }
 
         public static Brush LightingBrush(Boolean lightingEnabled)
@@ -1248,7 +982,7 @@ namespace Visifire.Commons
             Brush brush;
 
             if (lightingEnabled)
-            {
+            {   
                 String xaml = String.Format(@"<LinearGradientBrush EndPoint=""0.5,1"" StartPoint=""0.5,0"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
                                                 <GradientStop Color=""#A0FFFFFF"" Offset=""0""/>
                                                 <GradientStop Color=""#00FFFFFF"" Offset=""1""/>
@@ -1269,7 +1003,9 @@ namespace Visifire.Commons
         #endregion
 
         #region Constants
+
         public static Double[] DefaultFontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
+
         #endregion
     }
 }

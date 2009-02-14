@@ -1,4 +1,24 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+#if WPF
 
 using System;
 using System.Windows;
@@ -23,8 +43,7 @@ using System.Windows.Data;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// Title class is a observable object.
-    /// Title supports the Visifire Control as parent which implements IVisifireControl interface
+    /// Visifire.Charts.Title class
     /// </summary>
 #if SL
     [System.Windows.Browser.ScriptableType]
@@ -33,62 +52,279 @@ namespace Visifire.Charts
     {
         #region Public Methods
 
-        #region Constructors
-
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.Title class
+        /// </summary>
         public Title()
         {
-#if SL
-            //Binding binding = new Binding("FontFamily");
-            //binding.Source = this;
-            //binding.Mode = BindingMode.TwoWay;
-            //base.SetBinding(Control.FontFamilyProperty, binding);
-#else       
-            //Binding binding = new Binding("InternalFontStyle");
-            //binding.Source = this;
-            //binding.Mode = BindingMode.TwoWay;
-            //SetBinding(FontStyleProperty, binding);
-
-            //binding = new Binding("InternalFontWeight");
-            //binding.Source = this;
-            //binding.Mode = BindingMode.TwoWay;
-            //SetBinding(FontWeightProperty, binding);
-#endif
-
-            SetDefaults();
+            SetDefaultStyle();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.Title class
+        /// </summary>
         internal Title(String text)
         {
-            SetDefaults();
+            SetDefaultStyle();
             Text = text;
         }
-
-        private void SetDefaults()
-        {
-#if WPF
-            if (!_defaultStyleKeyApplied)
-            {
-                DefaultStyleKeyProperty.OverrideMetadata(typeof(Title), new FrameworkPropertyMetadata(typeof(Title)));
-                _defaultStyleKeyApplied = true;
-               
-            }
-
-            //object dsp = this.GetValue(FrameworkElement.DefaultStyleKeyProperty);
-            //Style = (Style)Application.Current.FindResource(dsp);
-#else
-
-            DefaultStyleKey = typeof(Title);
-#endif
-        }
-        
-        #endregion Constructors
 
         #endregion
 
         #region Public Properties
 
         /// <summary>
-        /// Enabled property
+        /// Identifies the Visifire.Charts.Title.Enabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Enabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
+            ("Enabled",
+            typeof(Nullable<Boolean>),
+            typeof(Title),
+            new PropertyMetadata(OnEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.HrefTarget dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.HrefTarget dependency property.
+        /// </returns>
+        public static readonly DependencyProperty HrefTargetProperty = DependencyProperty.Register
+            ("HrefTarget",
+            typeof(HrefTargets),
+            typeof(Title),
+            new PropertyMetadata(OnHrefTargetChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Href dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Href dependency property.
+        /// </returns>
+        public static readonly DependencyProperty HrefProperty = DependencyProperty.Register
+            ("Href",
+            typeof(String),
+            typeof(Title),
+            new PropertyMetadata(OnHrefChanged));
+
+#if WPF
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontFamily dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontFamily dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register
+            ("FontFamily",
+            typeof(FontFamily),
+            typeof(Title),
+            new PropertyMetadata(OnFontFamilyPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontSize dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontSize dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register
+            ("FontSize",
+            typeof(Double),
+            typeof(Title),
+            new PropertyMetadata(OnFontSizePropertyChanged));
+#endif
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
+            ("FontColor",
+            typeof(Brush),
+            typeof(Title),
+            new PropertyMetadata(OnFontColorPropertyChanged));
+
+#if WPF
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontStyle dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
+            ("FontStyle",
+            typeof(FontStyle),
+            typeof(Title),
+            new PropertyMetadata(OnFontStylePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontWeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontWeight dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
+            ("FontWeight",
+            typeof(FontWeight),
+            typeof(Title),
+            new PropertyMetadata(OnFontWeightPropertyChanged));
+#endif
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Text dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Text dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register
+            ("Text",
+            typeof(String),
+            typeof(Title),
+            new PropertyMetadata(OnTextPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.BorderColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.BorderColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
+            ("BorderColor",
+            typeof(Brush),
+            typeof(Title),
+            new PropertyMetadata(OnBorderColorPropertyChanged));
+
+#if WPF
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.BorderThickness dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
+            ("BorderThickness",
+            typeof(Thickness),
+            typeof(Title),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+#endif
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.CornerRadius dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.CornerRadius dependency property.
+        /// </returns>
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
+                  ("CornerRadius",
+                  typeof(CornerRadius),
+                  typeof(Title),
+                  new PropertyMetadata(OnCornerRadiusPropertyChanged));
+
+#if WPF
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Background dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Background dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
+            ("Background",
+            typeof(Brush),
+            typeof(Title),
+            new PropertyMetadata(OnBackgroundPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.HorizontalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.HorizontalAlignment dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty HorizontalAlignmentProperty = DependencyProperty.Register
+            ("HorizontalAlignment",
+            typeof(HorizontalAlignment),
+            typeof(Title),
+            new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.VerticalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.VerticalAlignment dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Register
+            ("VerticalAlignment",
+            typeof(VerticalAlignment),
+            typeof(Title),
+            new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Margin dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Margin dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty MarginProperty = DependencyProperty.Register
+            ("Margin",
+            typeof(Thickness),
+            typeof(Title),
+            new PropertyMetadata(OnMarginPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Padding dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Padding dependency property.
+        /// </returns>
+        private new static readonly DependencyProperty PaddingProperty = DependencyProperty.Register
+            ("Padding",
+            typeof(Thickness),
+            typeof(Title),
+            new PropertyMetadata(OnPaddingPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Opacity dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty OpacityProperty = DependencyProperty.Register
+            ("Opacity",
+            typeof(Double),
+            typeof(Title),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+#endif
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.TextAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.TextAlignment dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
+            ("TextAlignment",
+            typeof(TextAlignment),
+            typeof(Title),
+            new PropertyMetadata(OnTextAlignmentPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.DockInsidePlotArea dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.DockInsidePlotArea dependency property.
+        /// </returns>
+        public static readonly DependencyProperty DockInsidePlotAreaProperty = DependencyProperty.Register
+            ("DockInsidePlotArea",
+            typeof(Boolean),
+            typeof(Title),
+            new PropertyMetadata(OnDockInsidePlotAreaPropertyChanged));
+
+        /// <summary>
+        /// Set or get Enabled property of title
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -106,18 +342,10 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register
-            ("Enabled",
-            typeof(Nullable<Boolean>),
-            typeof(Title),
-            new PropertyMetadata(OnEnabledPropertyChanged));
 
-        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("Enabled");
-        }
-
+        /// <summary>
+        /// Set or get HrefTarget property of title
+        /// </summary>
         public HrefTargets HrefTarget
         {   
             get
@@ -130,18 +358,9 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty HrefTargetProperty = DependencyProperty.Register
-            ("HrefTarget", 
-            typeof(HrefTargets),
-            typeof(Title),
-            new PropertyMetadata(OnHrefTargetChanged));
-
-        private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("HrefTarget");
-        }
-
+        /// <summary>
+        /// Set or get Href property of title
+        /// </summary>
         public String Href
         {
             get
@@ -154,20 +373,34 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty HrefProperty = DependencyProperty.Register
-            ("Href",
-            typeof(String),
-            typeof(Title),
-            new PropertyMetadata(OnHrefChanged));
-
-        private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Get or set the Opacity property
+        /// </summary>
+        public new Double Opacity
         {
-            Title title = d as Title;
-            title.FirePropertyChanged("Href");
+            get
+            {
+                return (Double)GetValue(OpacityProperty);
+            }
+            set
+            {
+#if SL
+                if (Opacity != value)
+                {
+                    SetValue(OpacityProperty, value);
+                    FirePropertyChanged("Opacity");
+                }
+#else
+                SetValue(OpacityProperty, value);
+#endif
+            }
         }
-        
+                
         #region Font Properties
 
+        /// <summary>
+        /// Set or get FontFamily property of title
+        /// </summary>
         public new FontFamily FontFamily
         {
             get
@@ -192,22 +425,9 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-
-        private new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register
-            ("FontFamily",
-            typeof(FontFamily),
-            typeof(Title),
-            new PropertyMetadata(OnFontFamilyPropertyChanged));
-
-        private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("FontFamily");
-        }
-
-#endif
-
+        /// <summary>
+        /// Set or get FontSize property of title
+        /// </summary>
         public new Double FontSize
         {
             get
@@ -229,29 +449,13 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        internal new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register
-            ("FontSize",
-            typeof(Double),
-            typeof(Title),
-            new PropertyMetadata(OnFontSizePropertyChanged));
-            
-        private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("FontSize");
-            //title.UpdateVisual("FontColor", e.NewValue);
-        }
-#endif
-
         /// <summary>
-        /// Property FontColor
+        /// Set or get FontColor property of title text
         /// </summary>
         public Brush FontColor
         {
             get
             {
-                //return ((Brush)GetValue(FontColorProperty) == null) ? (new SolidColorBrush(Colors.Black)) : (Brush)GetValue(FontColorProperty);
                 return (Brush)GetValue(FontColorProperty);
             }
             set
@@ -260,26 +464,12 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty FontColorProperty = DependencyProperty.Register
-            ("FontColor",
-            typeof(Brush),
-            typeof(Title),
-            new PropertyMetadata(OnFontColorPropertyChanged));
-        
-        private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
-            Title title = d as Title;
-            title.UpdateVisual("FontColor", e.NewValue);
-        }
-
-        private new Brush Foreground
-        {
-            get;
-            set;
-        }
-
-#if SL
-
+        /// <summary>
+        /// Set or get FontStyle property of title text
+        /// </summary>
+#if WPF
+        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
+#endif
         public new FontStyle FontStyle
         {
             get
@@ -288,96 +478,24 @@ namespace Visifire.Charts
             }
             set
             {
+#if SL     
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
                     UpdateVisual("FontStyle", value);
                 }
-            }
-        }
 #else
-
-        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
-        public new FontStyle FontStyle
-        {
-            get
-            {
-                return (FontStyle)(GetValue(FontStyleProperty));
-            }
-            set
-            {
                 SetValue(FontStyleProperty, value);
+#endif
             }
         }
 
-        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
-            ("FontStyle",
-            typeof(FontStyle),
-            typeof(Title),
-            new PropertyMetadata(OnFontStylePropertyChanged));
-
-        private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.UpdateVisual("FontStyle",  e.NewValue);
-        }
-
+        /// <summary>
+        /// Set or get FontWeight property of title text
+        /// </summary>
+#if WPF
+         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
 #endif
-
-        //#if SL
-//        [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontStyleConverter))]
-//        public new FontStyle FontStyle
-//        {
-//            get
-//            {
-//                return (FontStyle)(GetValue(FontStyleProperty));
-//            }
-//            set
-//            {
-//#if SL
-//                if (FontStyle != value)
-//                {
-//                    SetValue(FontStyleProperty, value);
-//                    //FirePropertyChanged("FontStyle"); 
-//                    UpdateVisual("FontStyle", value);
-//                }
-//#else
-//                SetValue(FontStyleProperty, value);
-//#endif
-//            }
-//        }
-//#endif
-
-//#if WPF
-
-//        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
-//        internal FontStyle InternalFontStyle
-//        {
-//            get
-//            {   
-//                return (FontStyle)(GetValue(InternalFontStyleProperty));
-//            }
-//            set
-//            {
-//                SetValue(InternalFontStyleProperty, value);
-//            }
-//        }
-
-//        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
-//            ("InternalFontStyle",
-//            typeof(FontStyle),
-//            typeof(Title),
-//            new PropertyMetadata(OnFontStylePropertyChanged));
-
-//        private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-//        {
-//            Title title = d as Title;
-//            //title.FirePropertyChanged("FontStyle");
-//            title.UpdateVisual("FontStyle", e.NewValue);
-//        }
-//#endif
-
-#if SL
         public new FontWeight FontWeight
         {
             get
@@ -386,93 +504,20 @@ namespace Visifire.Charts
             }
             set
             {
+#if SL            
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
                     UpdateVisual("FontWeight", value);
                 }
-            }
-        }
-
 #else
-        [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
-        public new FontWeight FontWeight
-        {
-            get
-            {
-                return (FontWeight)(GetValue(FontWeightProperty));
-            }
-            set
-            {
                 SetValue(FontWeightProperty, value);
+#endif
             }
         }
 
-        private new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
-            ("FontWeight",
-            typeof(FontWeight),
-            typeof(Title),
-            new PropertyMetadata(OnFontWeightPropertyChanged));
-
-        private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.UpdateVisual("FontWeight", e.NewValue);
-        }
-#endif
-
-        //#if SL
-
-//        public new FontWeight FontWeight
-//        {
-//            get
-//            {
-//                return (FontWeight)(GetValue(FontWeightProperty));
-//            }
-//            set
-//            {
-//#if SL
-//                if (FontWeight != value)
-//                {
-//                    SetValue(FontWeightProperty, value);
-//                    // FirePropertyChanged("FontWeight");
-//                    UpdateVisual("FontWeight", value);
-//                }
-//#else
-//                SetValue(FontWeightProperty, value);
-//#endif
-//            }
-//        }
-
-//#else
-//        [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
-//        internal FontWeight InternalFontWeight
-//        {   
-//            get
-//            {
-//                return (FontWeight)(GetValue(InternalFontWeightProperty));
-//            }
-//            set
-//            {
-//                SetValue(InternalFontWeightProperty, value);
-//            }
-//        }
-
-//        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
-//            ("InternalFontWeight",
-//            typeof(FontWeight),
-//            typeof(Title),
-//            new PropertyMetadata(OnFontWeightPropertyChanged));
-
-//        private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-//        {
-//            Title title = d as Title;
-//            //title.FirePropertyChanged("FontWeight");
-//            title.UpdateVisual("FontWeight", e.NewValue);
-//        }
-//#endif
         /// <summary>
-        /// Property Text
+        /// Set or get Text property of title
         /// </summary>
         public String Text
         {
@@ -485,25 +530,13 @@ namespace Visifire.Charts
                 SetValue(TextProperty, value);
             }
         }
-
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register
-            ("Text",
-            typeof(String),
-            typeof(Title),
-            new PropertyMetadata(OnTextPropertyChanged));
-
-        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("Text");
-        }
-
+        
         #endregion
 
         #region Border Properties
 
         /// <summary>
-        /// Property BorderColor
+        /// Set or get BorderColor property of title
         /// </summary>
         public Brush BorderColor
         {
@@ -517,27 +550,8 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty BorderColorProperty = DependencyProperty.Register
-            ("BorderColor", 
-            typeof(Brush), 
-            typeof(Title), 
-            new PropertyMetadata(OnBorderColorPropertyChanged));
-
-        private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("BorderColor");
-        }
-
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        private new Brush BorderBrush
-        {
-            get;
-            set;
-        }
-
         /// <summary>
-        /// Set the BorderThickness property
+        /// Set or get BorderThickness of title
         /// </summary>
         public new Thickness BorderThickness
         {
@@ -559,25 +573,9 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        
-        private new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
-            ("BorderThickness",
-            typeof(Thickness),
-            typeof(Title),
-            new PropertyMetadata(OnBorderThicknessPropertyChanged));
-
-        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("BorderThickness");
-        }
-
-#endif
         /// <summary>
-        /// Property CornerRadius
+        /// Set or get CornerRadius property of title
         /// </summary>
-
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
 #else
@@ -595,22 +593,11 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
-            ("CornerRadius",
-            typeof(CornerRadius),
-            typeof(Title),
-            new PropertyMetadata(OnCornerRadiusPropertyChanged));
-
-        private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("CornerRadius");
-        }
-
         #endregion
 
-        #region Background
-
+        /// <summary>
+        /// Set or get Background property of title
+        /// </summary>
         public new Brush Background
         {
             get
@@ -631,24 +618,11 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        private new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
-            ("Background",
-            typeof(Brush),
-            typeof(Title),
-            new PropertyMetadata(OnBackgroundPropertyChanged));
-
-        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("Background");
-        }
-#endif
-
-        #endregion
-
         #region Alignment
 
+        /// <summary>
+        /// Set or get HorizontalAlignment property of title
+        /// </summary>
         public new HorizontalAlignment HorizontalAlignment
         {
             get
@@ -670,22 +644,9 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-
-        public new static readonly DependencyProperty HorizontalAlignmentProperty = DependencyProperty.Register
-        ("HorizontalAlignment",
-        typeof(HorizontalAlignment),
-        typeof(Title),
-        new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
-
-        private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("HorizontalAlignment");
-        }
-
-#endif
-
+        /// <summary>
+        /// Set or get VerticalAlignment property of title
+        /// </summary>
         public new VerticalAlignment VerticalAlignment
         {
             get
@@ -706,24 +667,11 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        public new static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Register
-        ("VerticalAlignment",
-        typeof(VerticalAlignment),
-        typeof(Title),
-        new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
-
-        private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("VerticalAlignment");
-        }
-
-#endif
-
         #endregion
 
-
+        /// <summary>
+        /// Set or get Margin property of title
+        /// </summary>
         public new Thickness Margin
         {
             get
@@ -744,20 +692,9 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        private new static readonly DependencyProperty MarginProperty = DependencyProperty.Register
-            ("Margin",
-            typeof(Thickness),
-            typeof(Title),
-            new PropertyMetadata(OnMarginPropertyChanged));
-
-        private static void OnMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("Margin");
-        }
-#endif
-
+        /// <summary>
+        /// Set or get Padding property of title
+        /// </summary>
         public new Thickness Padding
         {
             get
@@ -778,22 +715,8 @@ namespace Visifire.Charts
             }
         }
 
-#if WPF
-        private new static readonly DependencyProperty PaddingProperty = DependencyProperty.Register
-            ("Padding",
-            typeof(Thickness),
-            typeof(Title),
-            new PropertyMetadata(OnPaddingPropertyChanged));
-
-        private static void OnPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("Padding");
-        }
-#endif
-
         /// <summary>
-        /// Property TextAlignment
+        /// Set or get Property property TextAlignment
         /// </summary>
         public TextAlignment TextAlignment
         {
@@ -807,20 +730,9 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
-            ("TextAlignment",
-            typeof(TextAlignment),
-            typeof(Title),
-            new PropertyMetadata(OnTextAlignmentPropertyChanged));
-
-        private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("TextAlignment");
-        }
-
         /// <summary>
-        /// Whether the title will be docked inside PlotArea 
+        /// Set or get DockInsidePlotArea property of title
+        /// (Whether the title will be docked inside PlotArea)
         /// </summary>
         public Boolean DockInsidePlotArea
         {
@@ -834,17 +746,6 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty DockInsidePlotAreaProperty = DependencyProperty.Register
-            ("DockInsidePlotArea",
-            typeof(Boolean),
-            typeof(Title),
-            new PropertyMetadata(OnDockInsidePlotAreaChanged));
-
-        private static void OnDockInsidePlotAreaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Title title = d as Title;
-            title.FirePropertyChanged("DockInsidePlotArea");
-        }
 
         #endregion
 
@@ -871,6 +772,14 @@ namespace Visifire.Charts
 #endif
         }
 
+        /// <summary>
+        /// TextBlock desired size
+        /// </summary>
+        internal Size TextBlockDesiredSize
+        {
+            get;
+            set;
+        }
 
         #endregion
 
@@ -880,31 +789,27 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        //private new HorizontalAlignment HorizontalAlignment
-        //{
-        //    get
-        //    {
-        //        return HorizontalAlignment.Center;
-        //    }
+        #region Hidden Properties
 
-        //}
-
-        //private new VerticalAlignment VerticalAlignment
-        //{
-        //    get
-        //    {
-        //        return VerticalAlignment.Center;
-        //    }
-        //}
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        private new Brush BorderBrush
+        {
+            get;
+            set;
+        }
         
+        private new Brush Foreground
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
         /// <summary>
         /// Text element of the title to display text content
         /// </summary>
-#if DEBUG
-        internal TextBlock TextElement
-#else
         private TextBlock TextElement
-#endif
         {
             get;
             set;
@@ -913,41 +818,277 @@ namespace Visifire.Charts
         /// <summary>
         /// Canvas inside Title Visual
         /// </summary>
-#if DEBUG
-        internal Canvas InnerCanvas
-#else
         private Canvas InnerCanvas
-#endif
         {
             get;
             set;
         }
-
-        internal Size TextBlockDesiredSize
-        {
-            get;
-            set;
-        }
-
+        
         #endregion
 
         #region Private Methods
 
         /// <summary>
+        /// EnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Enabled");
+        }
+
+        /// <summary>
+        /// HrefTargetProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("HrefTarget");
+        }
+
+        /// <summary>
+        /// HrefProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Href");
+        }
+
+#if WPF
+        /// <summary>
+        /// FontFamilyProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("FontFamily");
+        }
+
+        /// <summary>
+        /// FontSizeProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("FontSize");
+        }
+
+        /// <summary>
+        /// OpacityProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Opacity");
+        }
+#endif
+
+        /// <summary>
+        /// FontColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.UpdateVisual("FontColor", e.NewValue);
+        }
+
+#if WPF
+        /// <summary>
+        /// FontStyleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.UpdateVisual("FontStyle",  e.NewValue);
+        }
+
+        /// <summary>
+        /// FontWeightProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.UpdateVisual("FontWeight", e.NewValue);
+        }
+#endif
+
+        /// <summary>
+        /// TextProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            Title title = d as Title;
+            title.FirePropertyChanged("Text");
+        }
+        
+        /// <summary>
+        /// BorderColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            Title title = d as Title;
+            title.FirePropertyChanged("BorderColor");
+        }
+
+#if WPF
+        /// <summary>
+        /// BorderThicknessProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("BorderThickness");
+        }
+#endif
+
+        /// <summary>
+        /// CornerRadiusProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("CornerRadius");
+        }
+
+#if WPF
+        /// <summary>
+        /// BackgroundProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Background");
+        }
+
+        /// <summary>
+        /// HorizontalAlignmentProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("HorizontalAlignment");
+        }
+
+        /// <summary>
+        /// VerticalAlignmentProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("VerticalAlignment");
+        }
+
+        /// <summary>
+        /// MarginProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Margin");
+        }
+
+        /// <summary>
+        /// PaddingProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("Padding");
+        }
+#endif
+        
+        /// <summary>
+        /// TextAlignmentProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("TextAlignment");
+        }
+        
+        /// <summary>
+        /// DockInsidePlotAreaProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnDockInsidePlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged("DockInsidePlotArea");
+        }
+
+        /// <summary>
+        /// Set default style for title
+        /// </summary>
+        private void SetDefaultStyle()
+        {
+            // Apply default style from generic
+#if WPF
+            if (!_defaultStyleKeyApplied)
+            {
+                DefaultStyleKeyProperty.OverrideMetadata(typeof(Title), new FrameworkPropertyMetadata(typeof(Title)));
+                _defaultStyleKeyApplied = true;
+               
+            }
+#else
+            DefaultStyleKey = typeof(Title);
+#endif
+        }
+
+        /// <summary>
         /// Apply all style properties of the Title
         /// </summary>
-        /// <param name="title"></param>
+        /// <param name="title">Title</param>
         private static Boolean ApplyProperties(Title title)
         {   
             if (title.Visual != null)
             {   
                 // Set TextElement properties 
                 title.TextElement.FontFamily = title.FontFamily;
-                title.TextElement.FontSize = (Double) title.FontSize;
+                title.TextElement.FontSize = title.FontSize;
                 title.TextElement.FontStyle = title.FontStyle;
                 title.TextElement.FontWeight = title.FontWeight;
                 title.TextElement.Text = GetFormattedMultilineText(title.Text);
-                title.TextElement.Foreground = Graphics.ApplyAutoFontColor((title.Chart as Chart), title.FontColor, title.DockInsidePlotArea);
+                title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.FontColor, title.DockInsidePlotArea);
                 title.TextElement.TextWrapping = TextWrapping.Wrap;
 
                 // Set Border Properties 
@@ -966,9 +1107,9 @@ namespace Visifire.Charts
                 title.Visual.CornerRadius = title.CornerRadius;
                 title.Visual.Cursor = (title.Cursor == null)? Cursors.Arrow : title.Cursor;
                 title.Visual.SetValue(Canvas.ZIndexProperty, title.GetValue(Canvas.ZIndexProperty));
-                // AttachToolTip
+
                 title.AttachToolTip(title.Chart, title, title.TextElement);
-                ObservableObject.AttachHref(title.Chart, title.TextElement, title.Href, title.HrefTarget);
+                title.AttachHref(title.Chart, title.TextElement, title.Href, title.HrefTarget);
 
                 return true;
             }
@@ -980,8 +1121,13 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        /// <summary>
+        /// UpdateVisual is used for partial rendering
+        /// </summary>
+        /// <param name="PropertyName">Name of the property</param>
+        /// <param name="Value">Value of the property</param>
         internal override void UpdateVisual(String propertyName, Object Value)
-        {
+        {   
             if (!ApplyProperties(this))
                 this.FirePropertyChanged(propertyName);
         }
@@ -1027,6 +1173,7 @@ namespace Visifire.Charts
             InnerCanvas.Children.Add(TextElement);
             Visual.Child = InnerCanvas;
             Visual.Opacity = this.Opacity;
+
             // Set Properties
             ApplyProperties(this);
 
@@ -1040,7 +1187,7 @@ namespace Visifire.Charts
             // Set TextElement position inside Title Visual
             if (VerticalAlignment == VerticalAlignment.Center || VerticalAlignment == VerticalAlignment.Stretch)
             {
-                if (HorizontalAlignment == HorizontalAlignment.Left)
+                if (HorizontalAlignment == HorizontalAlignment.Left || HorizontalAlignment == HorizontalAlignment.Right)
                 {   
                     RotateTransform rt = new RotateTransform();
 
@@ -1051,28 +1198,8 @@ namespace Visifire.Charts
                     InnerCanvas.Height = TextBlockDesiredSize.Width;
                     InnerCanvas.Width = TextBlockDesiredSize.Height;
 
-                    Visual.Width = TextBlockDesiredSize.Height;
-
                     TextElement.SetValue(Canvas.LeftProperty, (Double)0);
                     TextElement.SetValue(Canvas.TopProperty, (Double)TextBlockDesiredSize.Width);
-
-                    SetTextAlignment4LeftAndRight();
-
-                }
-                else if (HorizontalAlignment == HorizontalAlignment.Right)
-                {
-                    RotateTransform rt = new RotateTransform();
-                    rt.Angle = 90;
-                    TextElement.RenderTransformOrigin = new Point(0, 0);
-                    TextElement.RenderTransform = rt;
-
-                    InnerCanvas.Height = TextBlockDesiredSize.Width;
-                    InnerCanvas.Width = TextBlockDesiredSize.Height;
-
-                    Visual.Width = TextBlockDesiredSize.Height;
-
-                    TextElement.SetValue(Canvas.LeftProperty, (Double)TextBlockDesiredSize.Height);
-                    TextElement.SetValue(Canvas.TopProperty, (Double)0);
 
                     SetTextAlignment4LeftAndRight();
                 }
@@ -1108,7 +1235,11 @@ namespace Visifire.Charts
         #region Data
 
 #if WPF
-        static Boolean _defaultStyleKeyApplied = false;            // Default Style key
+
+        /// <summary>
+        /// Whether the default style is applied
+        /// </summary>
+        private static Boolean _defaultStyleKeyApplied;
 #endif 
         #endregion Data
     }

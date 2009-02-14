@@ -21,10 +21,17 @@ using System.Windows.Markup;
 
 namespace SLVisifireChartsXap
 {
+    /// <summary>
+    /// SLVisifireChartsXap application class
+    /// </summary>
     public partial class App : Application
     {
+
         #region Public Methods
 
+        /// <summary>
+        /// Initializes a new instance of the SLVisifireChartsXap.Axis class
+        /// </summary>
         public App()
         {
             this.Startup += this.Application_Startup;
@@ -33,7 +40,7 @@ namespace SLVisifireChartsXap
 
             InitializeComponent();
 
-            _wrapper.DataXML += new EventHandler<DataXMLEventArgs>(Wrapper_OnDataXMLAdded);
+            _wrapper.DataXMLAdded += new EventHandler<DataXMLEventArgs>(Wrapper_DataXMLAdded);
 
             _wrapper.ReRender += new EventHandler(Wrapper_ReRender);
 
@@ -42,16 +49,70 @@ namespace SLVisifireChartsXap
             HtmlPage.RegisterScriptableObject("wrapper", _wrapper);
 
             HtmlPage.RegisterScriptableObject("App", this);
-
-            //AddDialog(_wrapper);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// List of Charts currently rendered
+        /// </summary>
+        [ScriptableMember]
+        public List<Chart> Charts
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Public Events And Delegates
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Properties
+
+        /// <summary>
+        /// Dialog box to show message or information
+        /// </summary>
+        private Dialog Dialog
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Logger logs information.
+        /// </summary>
+        private Logger Logger
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// On wrapper resized
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Wrapper_OnResize(object sender, ResizeEventArgs e)
+        /// <param name="sender">sender</param>
+        /// <param name="e">ResizeEventArgs</param>
+        private void Wrapper_OnResize(object sender, ResizeEventArgs e)
         {
             _chartWidth = e.Width;
             _chartHeight = e.Height;
@@ -60,9 +121,9 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// On Data Xml Added
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Wrapper_OnDataXMLAdded(object sender, DataXMLEventArgs e)
+        /// <param name="sender">sender</param>
+        /// <param name="e">DataXMLEventArgs</param>
+        private void Wrapper_DataXMLAdded(object sender, DataXMLEventArgs e)
         {
             if (e.DataXML != null)
                 _xmlQueue.Enqueue(e.DataXML);
@@ -78,16 +139,12 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Force wrapper to ReRender the Chart
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Wrapper_ReRender(object sender, EventArgs e)
+        /// <param name="sender">sender</param>
+        /// <param name="e">EventArgs</param>
+        private void Wrapper_ReRender(object sender, EventArgs e)
         {
             RenderEngine();
         }
-
-        #endregion
-
-        #region Private Methods
 
         /// <summary>
         /// Handle display of single and multiple charts
@@ -183,7 +240,7 @@ namespace SLVisifireChartsXap
             {
                 _controlId = e.InitParams["controlId"].ToString(CultureInfo.InvariantCulture);
             }
-            
+
             if (e.InitParams.ContainsKey("setVisifireChartsRef"))
             {
                 _setVisifireChartsRefFunctionName = e.InitParams["setVisifireChartsRef"].ToString(CultureInfo.InvariantCulture);
@@ -285,7 +342,7 @@ namespace SLVisifireChartsXap
                     RenderEngine();
                 }
 
-                //download Next XML
+                // Download next XML
                 DownloadXML();
             }
             else
@@ -317,7 +374,7 @@ namespace SLVisifireChartsXap
         {
             // Add Logger
             Logger = new Logger();
-            Logger.Log("Error Log " + Dialog.VersionInfo + ":\n--------------------------------");
+            Logger.Log("Error Log " + Dialog.Message + ":\n--------------------------------");
             Logger.LogLine("Copy & Paste the contents of this log in www.visifire.com/forums for support.\n");
             Logger.Visibility = Visibility.Collapsed;
 
@@ -333,26 +390,8 @@ namespace SLVisifireChartsXap
             // Add Dialog
             Dialog = new Dialog();
             Dialog.Visibility = Visibility.Collapsed;
-            Dialog.VersionInfo = GetAssemblyVersion();
+            Dialog.Message = GetAssemblyVersion();
             wrapper.LayoutRoot.Children.Add(Dialog);
-        }
-
-        /// <summary>
-        /// Dialog box to show message or information
-        /// </summary>
-        private Dialog Dialog
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Logger logs information.
-        /// </summary>
-        private Logger Logger
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -395,11 +434,10 @@ namespace SLVisifireChartsXap
             FindByType(ref _charts, chartCanvas as Panel, typeof(Chart));
 
             foreach (Chart chart in _charts)
-            {   
+            {
                 Charts.Add(chart);
                 chart.LogLevel = _logLevel;
                 chart.ControlId = _controlId;
-                chart.IsInJsMode = true;
             }
 
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
@@ -432,11 +470,11 @@ namespace SLVisifireChartsXap
 
             return chartCanvas;
         }
-        
+
         /// <summary>
         /// Finds list of objects of specified type.
         /// </summary>
-        public static void FindByType(ref List<UIElement> tResult, Panel parent, Type objType)
+        private static void FindByType(ref List<UIElement> tResult, Panel parent, Type objType)
         {
             if (parent != null)
             {
@@ -456,15 +494,10 @@ namespace SLVisifireChartsXap
         }
 
         /// <summary>
-        /// List of Charts currently rendered
+        /// Event handler attached with Loaded event of chart canvas
         /// </summary>
-        [ScriptableMember]
-        public List<Chart> Charts
-        {
-            get;
-            set;
-        }
-
+        /// <param name="sender">Object</param>
+        /// <param name="e">RoutedEventArgs</param>
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
         {
             _chartReady = true;
@@ -508,8 +541,8 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Handler for application unhandled exception
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Object</param>
+        /// <param name="e">ApplicationUnhandledExceptionEventArgs</param>
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
             if (_logLevel == 1)
@@ -539,30 +572,106 @@ namespace SLVisifireChartsXap
 
         #endregion
 
+        #region Internal Methods
+
+        #endregion
+
+        #region Internal Events And Delegates
+
+        #endregion
+
         #region Data
 
-        private Int32 _logLevel = 0;                                // Lavel of logging 
-        private String _dataUri = null;                             // Data xml 
-        private String _dataXml = null;                             // Data xml file uri
-        private String _baseUri = null;                             // Base address of uri
+        /// <summary>
+        /// Lavel of logging 
+        /// </summary>
+        private Int32 _logLevel = 0; 
 
-        private Double _chartWidth = Double.NaN;                    // Chart width
-        private Double _chartHeight = Double.NaN;                   // Chart height
-        private Canvas _chartCanv;                                  // Chart canvas is used to draw new charts
-        private Wrapper _wrapper = new Wrapper();                   // Wrapper for chart as user control
+        /// <summary>
+        /// Data xml 
+        /// </summary>
+        private String _dataUri = null;  
 
-        private Queue<String> _xmlQueue = new Queue<string>();      // Queue for storing chart data xml
-        private Queue<String> _uriQueue = new Queue<string>();      // Queue for storing xml file uri
+        /// <summary>
+        /// Data xml file uri
+        /// </summary>
+        private String _dataXml = null; 
 
-        private Boolean _chartReady = false;                        // If chart canvas is already rendered
-        private Boolean _firstChart = true;                         // Is it the first chart need to draw
+        /// <summary>
+        /// Base address of uri
+        /// </summary>
+        private String _baseUri = null;
 
-        private String _onChartLoadedFunctionName;                  // Function to be invoked to fire loaded event for chart
-        private String _onChartPreLoadedFunctionName;               // Function to be invoked to fire pre loaded event for chart
-        private String _setVisifireChartsRefFunctionName;           // After loading the chart this function should be always fired to set the array of charts in Visifire2 class
-        private String _controlId;                                  // Silverlight Object Id
+        /// <summary>
+        /// Chart width
+        /// </summary>
+        private Double _chartWidth = Double.NaN;
+
+        /// <summary>
+        /// Chart height
+        /// </summary>
+        private Double _chartHeight = Double.NaN;
+
+        /// <summary>
+        /// Chart canvas is used to draw new charts
+        /// </summary>
+        private Canvas _chartCanv; 
+        
+        /// <summary>
+        ///  Wrapper for chart as user control
+        /// </summary>
+        private Wrapper _wrapper = new Wrapper();
+        
+        /// <summary>
+        /// Queue for storing chart data xml
+        /// </summary>
+        private Queue<String> _xmlQueue = new Queue<string>();
+        
+        /// <summary>
+        /// Queue for storing xml file uri
+        /// </summary>
+        private Queue<String> _uriQueue = new Queue<string>();
+
+        /// <summary>
+        /// If chart canvas is already rendered
+        /// </summary>
+        private Boolean _chartReady = false;
+        
+        /// <summary>
+        /// Is it the first chart need to draw
+        /// </summary>
+        private Boolean _firstChart = true;
+
+        /// <summary>
+        /// Function to be invoked to fire loaded event for chart
+        /// </summary>
+        private String _onChartLoadedFunctionName;
+
+        /// <summary>
+        /// Function to be invoked to fire pre loaded event for chart
+        /// </summary>
+        private String _onChartPreLoadedFunctionName;
+        
+        /// <summary>
+        /// After loading the chart this function should be always fired to set the array of charts in Visifire2 class
+        /// </summary>
+        private String _setVisifireChartsRefFunctionName;
+
+        /// <summary>
+        /// Silverlight Object Id
+        /// </summary>
+        private String _controlId;
+
+        /// <summary>
+        /// Webclient is used for downloading chart data xml
+        /// </summary>
         WebClient _webclient;
-        private List<UIElement> _charts;                            // List of Charts
+
+        /// <summary>
+        /// List of Charts
+        /// </summary>
+        private List<UIElement> _charts;
+
         #endregion
     }
 }

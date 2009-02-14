@@ -6,7 +6,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="vc:Chart">
-                    <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0"
+                    <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" Opacity="{TemplateBinding Opacity}"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
 
                         <Grid x:Name="ShadowGrid" Margin="0,0,0,0" Canvas.ZIndex="0" ></Grid>
@@ -59,8 +59,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                                     <StackPanel x:Name="RightOuterLegendPanel" Orientation="Horizontal" ></StackPanel>
                                     <StackPanel x:Name="RightOuterTitlePanel" Orientation="Horizontal" ></StackPanel>
                                 </StackPanel>
-
+                                
                                 <!-- Margin="{TemplateBinding Padding}" -->
+                                
                                 <Grid x:Name="CenterOuterGrid" Margin="0" Grid.Row="1" Grid.Column="1" Canvas.ZIndex="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -180,7 +181,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                         </Border>
                         <Canvas x:Name="BevelCanvas" Canvas.ZIndex="2" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Canvas>
                         <StackPanel x:Name="CenterDockInsidePlotAreaPanel" Canvas.ZIndex="3" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
-                        <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="400" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
+                        <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
                     </Grid>

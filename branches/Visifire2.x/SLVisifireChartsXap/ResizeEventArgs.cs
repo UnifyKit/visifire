@@ -15,21 +15,34 @@
     under a flexible commercial license designed to meet your specific usage and 
     distribution requirements. If you have already obtained a commercial license 
     from Webyog, you can use this file under those license terms.
- 
+    
 */
 
 using System;
 
 namespace SLVisifireChartsXap
 {
-    public class ResizeEventArgs:EventArgs
+    /// <summary>
+    /// SLVisifireChartsXap.ResizeEventArgs class
+    /// </summary>
+    public class ResizeEventArgs: EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the SLVisifireChartsXap.ResizeEventArgs class
+        /// </summary>
         public ResizeEventArgs()
             : base()
         {
         }
 
+        /// <summary>
+        /// Width property
+        /// </summary>
         public Double Width { get; set; }
+
+        /// <summary>
+        /// Height property
+        /// </summary>
         public Double Height { get; set; }
     }
 }

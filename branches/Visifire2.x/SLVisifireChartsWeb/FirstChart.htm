@@ -18,10 +18,10 @@
 
             var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
                + '     <vc:Chart.Titles>'
-               + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
+               + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True" Cursor="Hand">'
+               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
@@ -32,11 +32,10 @@
                + '         </vc:DataSeries>'
                + '     </vc:Chart.Series>'
                + ' </vc:Chart>';
-
+                
             // Set Chart XML
-            vChart.setDataUri("data.xml");
+            vChart.setDataXml(chartXml);
 
-            // Render chart
             vChart.render("VisifireChart0");
             
         </script>

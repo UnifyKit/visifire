@@ -16,15 +16,12 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.Chart class 
+    /// </summary>
     [TestClass]
     public class ChartTest : SilverlightControlTest
     {
-
-        void chart_Loaded(object sender, RoutedEventArgs e)
-        {
-            isLoaded = true;
-        }
-
         #region Chart asynchronous test
         /// <summary>
         /// Testing the Chart Properties asynchronously
@@ -35,172 +32,172 @@ namespace SLVisifireChartsTest
         [Asynchronous]
         public void TestingChartPropertiesAsync()
         {
-            chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
 
-            isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
-            Common.CreateAndAddDefaultDataSeries(chart);
+            Common.CreateAndAddDefaultDataSeries(_chart);
 
-            TestPanel.Children.Add(chart);
+            TestPanel.Children.Add(_chart);
 
             bool isPropertyChanged = false;
             int numberOfPropertiesAdded = 0;
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.Background = new SolidColorBrush(Colors.Red);
+                _chart.Background = new SolidColorBrush(Colors.Red);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.LightingEnabled = true;
+                _chart.LightingEnabled = true;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.ShadowEnabled = true;
+                _chart.ShadowEnabled = true;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.BorderBrush = new SolidColorBrush(Colors.Green);
+                _chart.BorderBrush = new SolidColorBrush(Colors.Green);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.BorderThickness = new Thickness(2);
+                _chart.BorderThickness = new Thickness(2);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.BorderStyle = BorderStyles.Dashed;
+                _chart.BorderStyle = BorderStyles.Dashed;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.CornerRadius = new CornerRadius(5);
+                _chart.CornerRadius = new CornerRadius(5);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.Bevel = true;
+                _chart.Bevel = true;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.ColorSet = "Visifire2";
+                _chart.ColorSet = "Visifire2";
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.Margin = new Thickness(10);
+                _chart.Margin = new Thickness(10);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.Padding = new Thickness(8);
+                _chart.Padding = new Thickness(8);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.Theme = "Theme2";
+                _chart.Theme = "Theme2";
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                chart.View3D = true;
+                _chart.View3D = true;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
 
             EnqueueConditional(() => { return isPropertyChanged; });
             isPropertyChanged = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
                 {
                     Assert.AreEqual(13, numberOfPropertiesAdded, "One or more property has not been applied.");
                 });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -244,7 +241,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             DefineABigChart(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.Equals(chart.Height, TestPanel.ActualHeight),
@@ -253,16 +250,6 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
         }
         #endregion
-
-        public void DefineABigChart(Chart chart)
-        {
-            chart.Height = TestPanel.ActualHeight + 300;
-            chart.Width = TestPanel.ActualWidth + 300;
-
-            chart.Background = new SolidColorBrush(Colors.LightGray);
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-        }
 
         #region CreateInXaml
         /// <summary>
@@ -277,7 +264,7 @@ namespace SLVisifireChartsTest
 
             Chart chart = result as Chart;
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.IsNotNull(chart._rootElement));
@@ -331,7 +318,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.View3D));
@@ -361,7 +348,7 @@ namespace SLVisifireChartsTest
             }
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.ScrollingEnabled));
 
@@ -379,7 +366,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.IsTrue(chart.AnimationEnabled));
@@ -398,7 +385,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
               () => Assert.IsFalse(chart.Bevel));
@@ -421,7 +408,7 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.BorderBrush));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -440,7 +427,7 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                () => Assert.AreEqual(new Thickness(0.5), chart.BorderThickness));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -455,7 +442,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.AreEqual(BorderStyles.Solid, chart.BorderStyle));
@@ -464,7 +451,7 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the Color default property value.
+        /// Check the Background default property value.
         /// </summary>
         [TestMethod]
         [Asynchronous]
@@ -474,7 +461,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Background));
@@ -493,7 +480,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.AreEqual("Visifire1", chart.ColorSet));
@@ -510,7 +497,7 @@ namespace SLVisifireChartsTest
         {
             Chart chart = new Chart();
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsNotNull(chart.Height),
@@ -528,7 +515,7 @@ namespace SLVisifireChartsTest
         {
             Chart chart = new Chart();
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsNotNull(chart.Width),
@@ -548,7 +535,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsTrue(chart.LightingEnabled));
@@ -567,7 +554,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.AreEqual(new CornerRadius(0, 0, 0, 0), chart.CornerRadius));
@@ -586,7 +573,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsFalse(chart.ShadowEnabled));
@@ -605,7 +592,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.AreEqual("Theme1", chart.Theme));
@@ -624,7 +611,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsNull(chart.ToolTipText));
@@ -643,7 +630,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                () => Assert.IsTrue(chart.Watermark));
@@ -671,7 +658,7 @@ namespace SLVisifireChartsTest
                 () => chart.View3D = true,
                 () => Assert.IsTrue(chart.View3D));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -686,13 +673,13 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => chart.AnimationEnabled = false,
                 () => Assert.IsFalse(chart.AnimationEnabled));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -722,7 +709,7 @@ namespace SLVisifireChartsTest
                 () => chart.ScrollingEnabled = false,
                 () => Assert.IsFalse((Boolean)chart.ScrollingEnabled));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -743,7 +730,7 @@ namespace SLVisifireChartsTest
                 () => chart.Bevel = true,
                 () => Assert.IsTrue(chart.Bevel));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -767,12 +754,12 @@ namespace SLVisifireChartsTest
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.BorderBrush),
                 () => Assert.AreEqual(new Thickness(2), chart.BorderThickness));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
         /// <summary>
-        /// Check Color new property value
+        /// Check Background new property value
         /// </summary>
         [TestMethod]
         [Asynchronous]
@@ -787,7 +774,7 @@ namespace SLVisifireChartsTest
                 () => chart.Background = new SolidColorBrush(Colors.Magenta),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), chart.Background));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -804,11 +791,11 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             CreateAsyncTask(chart,
-                () => EnqueueSleep(sleepTime),
+                () => EnqueueSleep(_sleepTime),
                 () => chart.ColorSet = "VisiGray",
                 () => Assert.AreEqual("VisiGray", chart.ColorSet));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -830,7 +817,7 @@ namespace SLVisifireChartsTest
                 () => Assert.AreEqual(600, chart.Width),
                 () => Assert.AreEqual(500, chart.Height));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -851,7 +838,7 @@ namespace SLVisifireChartsTest
                 () => chart.LightingEnabled = true,
                 () => Assert.IsTrue(chart.LightingEnabled));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -872,7 +859,7 @@ namespace SLVisifireChartsTest
                 () => chart.ShadowEnabled = true,
                 () => Assert.IsTrue(chart.ShadowEnabled));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -892,7 +879,7 @@ namespace SLVisifireChartsTest
                 () => chart.CornerRadius = new CornerRadius(5, 5, 5, 5),
                 () => Assert.AreEqual(new CornerRadius(5, 5, 5, 5), chart.CornerRadius));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -912,7 +899,7 @@ namespace SLVisifireChartsTest
                 () => chart.Theme = "Theme3",
                 () => Assert.AreEqual("Theme3", chart.Theme));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -932,7 +919,7 @@ namespace SLVisifireChartsTest
                 () => chart.ToolTipText = "This is a Chart",
                 () => Assert.AreEqual("This is a Chart", chart.ToolTipText));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -952,7 +939,7 @@ namespace SLVisifireChartsTest
                 () => chart.Watermark = false,
                 () => Assert.IsFalse(chart.Watermark));
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -971,45 +958,39 @@ namespace SLVisifireChartsTest
             Object result = XamlReader.Load(Resource.Chart_Xaml);
             Assert.IsInstanceOfType(result, typeof(Chart));
 
-            chart = result as Chart;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+            _chart = result as Chart;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
-            TestPanel.Children.Add(chart);
+            TestPanel.Children.Add(_chart);
 
             Int32 iterations = 20;
             String msg = Common.AssertAverageDuration(50, iterations, delegate
             {
-                chart.Series.Add((DataSeries)XamlReader.Load(Resource.DataSeries_BigXaml));
+                _chart.Series.Add((DataSeries)XamlReader.Load(Resource.DataSeries_BigXaml));
             });
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
                 {
-                    htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                    htmlElement2.SetStyleAttribute("top", "540px");
-                    htmlElement2.SetProperty("value", msg + " Click here to exit.");
-                    System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                    _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                    _htmlElement2.SetStyleAttribute("top", "540px");
+                    _htmlElement2.SetProperty("value", msg + " Click here to exit.");
+                    System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
                 });
 
             EnqueueCallback(() =>
                 {
-                    htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Chart_OnClick));
+                    _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
                 });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetProperty("value", "Testing DataSeries behaviour via Xaml:- " + iterations + " DataSeries with " + chart.Series[0].DataPoints.Count + " DataPoints each. ");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetProperty("value", "Testing DataSeries behaviour via Xaml:- " + iterations + " DataSeries with " + _chart.Series[0].DataPoints.Count + " DataPoints each. ");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
 
         #endregion
-
-        void Chart_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-        }
 
         #region TestChartLoaded
 
@@ -1022,25 +1003,25 @@ namespace SLVisifireChartsTest
         [Asynchronous]
         public void ChartLoaded()
         {
-            chart = new Chart();
-            isLoaded = false;
+            _chart = new Chart();
+            _isLoaded = false;
 
-            chart.Width = 400;
-            chart.Height = 300;
+            _chart.Width = 400;
+            _chart.Height = 300;
 
-            Common.CreateAndAddDefaultDataSeries(chart);
+            Common.CreateAndAddDefaultDataSeries(_chart);
 
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
-            TestPanel.Children.Add(chart);
+            TestPanel.Children.Add(_chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(delegate
             {
-                chart.Loaded -= new RoutedEventHandler(chart_Loaded);
+                _chart.Loaded -= new RoutedEventHandler(chart_Loaded);
             });
 
             EnqueueTestComplete();
@@ -1090,7 +1071,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.AnimationEnabled = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             bool isTitleAdded = false;
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -1114,9 +1095,9 @@ namespace SLVisifireChartsTest
                 }
             };
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
             isTitleAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1130,7 +1111,7 @@ namespace SLVisifireChartsTest
 
             EnqueueConditional(() => { return isTitleAdded; });
             isTitleAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1144,7 +1125,7 @@ namespace SLVisifireChartsTest
 
             EnqueueConditional(() => { return isTitleAdded; });
             isTitleAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1158,7 +1139,7 @@ namespace SLVisifireChartsTest
 
             EnqueueConditional(() => { return isTitleAdded; });
             isTitleAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1173,7 +1154,7 @@ namespace SLVisifireChartsTest
 
             EnqueueConditional(() => { return isTitleAdded; });
             isTitleAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1293,14 +1274,6 @@ namespace SLVisifireChartsTest
         }
         #endregion CheckControlTemplate
 
-        /// <summary>
-        /// Gets a default instance of Control (or a derived type) to test.
-        /// </summary>
-        public Control DefaultControlToTest
-        {
-            get { return new Chart(); }
-        }
-
         #region CheckChartTitles
         /// <summary>
         /// Assign Title contents to different Charts.
@@ -1325,13 +1298,38 @@ namespace SLVisifireChartsTest
                 };
                 chart.Titles.Add(title);
                 chart.Titles.Add(chart.Titles[0]);
-                EnqueueSleep(sleepTime);
+                EnqueueSleep(_sleepTime);
             }
             EnqueueTestComplete();
         }
 
         #endregion CheckChartTitles
 
+        /// <summary>
+        /// Gets a chart
+        /// </summary>
+        /// <param name="chart"></param>
+        public void DefineABigChart(Chart chart)
+        {
+            chart.Height = TestPanel.ActualHeight + 300;
+            chart.Width = TestPanel.ActualWidth + 300;
+
+            chart.Background = new SolidColorBrush(Colors.LightGray);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+        }
+
+        /// <summary>
+        /// Gets a default instance of Control (or a derived type) to test.
+        /// </summary>
+        public Control DefaultControlToTest
+        {
+            get { return new Chart(); }
+        }
+
+        /// <summary>
+        /// Gets a default instances of Chart to test.
+        /// </summary>
         public IEnumerable<Chart> ChartToTest
         {
             get
@@ -1346,13 +1344,53 @@ namespace SLVisifireChartsTest
             }
         }
 
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
         #region Private Data
+        /// <summary>
+        /// Reference for Chart
+        /// </summary>
+        private Chart _chart;
 
-        const int sleepTime = 1000;
-        Chart chart;
-        bool isLoaded = false;
-        System.Windows.Browser.HtmlElement htmlElement1, htmlElement2;
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
 
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 2000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
+        
         #endregion
     }
 }

@@ -1,4 +1,24 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+#if WPF
 
 using System;
 using System.Collections.Generic;
@@ -16,15 +36,16 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
-
-
 #endif
 
 using Visifire.Commons;
 
 namespace Visifire.Charts
 {
-
+    /// <summary>
+    /// Visifire.Charts.RectangularChartShapeParams class
+    /// (Used for column and bar charts)
+    /// </summary>
     internal class RectangularChartShapeParams
     {
         public Size Size { get; set; }
@@ -42,7 +63,6 @@ namespace Visifire.Charts
         public Double Depth { get; set; }
         public Boolean IsTopOfStack { get; set; }
         public Boolean IsStacked { get; set; }
-
         public Boolean IsMarkerEnabled { get; set; }
         public Brush MarkerColor { get; set; }
         public Brush MarkerBorderColor { get; set; }
@@ -50,7 +70,6 @@ namespace Visifire.Charts
         public Thickness MarkerBorderThickness { get; set; }
         public double MarkerScale { get; set; }
         public MarkerTypes MarkerType { get; set; }
-
         public Boolean IsLabelEnabled { get; set; }
         public Brush LabelBackground { get; set; }
         public Brush LabelFontColor { get; set; }
@@ -62,28 +81,178 @@ namespace Visifire.Charts
         public String LabelText { get; set; }
     }
 
-    public class SortedDataPoints
+    /// <summary>
+    ///  Visifire.Charts.SortedDataPoints class
+    ///  SortedDataPoints used to store DataPoints with positive and negative values 
+    /// </summary>
+    public class SorteDataPoints
     {
-        public SortedDataPoints()
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.SortedDataPoints class
+        /// </summary>
+        public SorteDataPoints()
         {
         }
-        public SortedDataPoints(List<DataPoint> positive, List<DataPoint> negative)
+
+        /// <summary>
+        /// Sorte DataPoints
+        /// </summary>
+        /// <param name="positive">Positive DataPoints</param>
+        /// <param name="">Negative DataPoints</param>
+        public SorteDataPoints(List<DataPoint> positive, List<DataPoint> negative)
         {
             Positive = positive;
             Negative = negative;
         }
 
+        /// <summary>
+        /// List of DataPoints with Positive values
+        /// </summary>
         public List<DataPoint> Positive { get; private set; }
+
+        /// <summary>
+        /// List of DataPoints with Negative values
+        /// </summary>
         public List<DataPoint> Negative { get; private set; }
     }
 
+    /// <summary>
+    /// Visifire.Charts.ColumnChart class
+    /// </summary>
     public class ColumnChart
     {
-        internal static Canvas GetMarker(Chart chart, RectangularChartShapeParams columnParams, DataPoint dataPoint, Double left, Double top)
+        #region Public Methods
+
+        #endregion
+
+        #region Public Properties
+
+        #endregion
+
+        #region Public Events And Delegates
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Properties
+
+        /// <summary>
+        /// Current working DataSeries
+        /// </summary>
+        private static DataSeries CurrentDataSeries
         {
-            Canvas markerCanvas = new Canvas();
-            markerCanvas.Width = columnParams.Size.Width;
-            markerCanvas.Height = columnParams.Size.Height;
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Set position of the marker
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="chart">Chart</param>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="labelText">label text</param>
+        /// <param name="markerSize">Size of the marker</param>
+        /// <param name="canvasLeft">Left position of marker canvas</param>
+        /// <param name="canvasTop">Top position of marker canvas</param>
+        /// <param name="markerPosition">Position of the Marker</param>
+        private static void SetMarkerPosition(RectangularChartShapeParams columnParams, Chart chart, DataPoint dataPoint, String labelText, Size markerSize, Double canvasLeft, Double canvasTop, Point markerPosition)
+        {
+            if (columnParams.IsLabelEnabled && !String.IsNullOrEmpty(labelText))
+            {
+                dataPoint.Marker.CreateVisual();
+
+                if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
+                    dataPoint.Marker.TextOrientation = Orientation.Vertical;
+                else
+                    dataPoint.Marker.TextOrientation = Orientation.Horizontal;
+
+                if (columnParams.IsPositive)
+                {
+                    if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                    {
+                        if (canvasTop - dataPoint.Marker.MarkerActualSize.Width - dataPoint.Marker.MarkerSize.Height < 0)
+                            columnParams.LabelStyle = LabelStyles.Inside;
+                    }
+                    else
+                    {
+                        if (canvasTop - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height < 0)
+                            columnParams.LabelStyle = LabelStyles.Inside;
+                    }
+                }
+                else
+                {
+                    if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                    {
+                        if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Width + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                            columnParams.LabelStyle = LabelStyles.Inside;
+                    }
+                    else
+                    {
+                        if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                            columnParams.LabelStyle = LabelStyles.Inside;
+                    }
+                }
+
+                dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+
+                if (!columnParams.IsMarkerEnabled)
+                {
+                    if (chart.View3D)
+                    {
+                        if (columnParams.LabelStyle == LabelStyles.OutSide)
+                        {
+                            if (columnParams.IsPositive)
+                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS, markerSize.Height / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS);
+                            else
+                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2, markerSize.Height / 2);
+                        }
+                        else
+                            dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2, markerSize.Height / 2);
+                    }
+                }
+                else
+                {
+                    if (chart.View3D)
+                    {
+                        columnParams.LabelStyle = LabelStyles.Inside;
+                    }
+                }
+
+                if (columnParams.IsPositive)
+                    dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Bottom : AlignmentY.Top;
+                else
+                    dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Top : AlignmentY.Bottom;
+            }
+        }
+
+        /// <summary>
+        /// Returns marker for DataPoint
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="columnParams"></param>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="left">Left position of MarkerCanvas</param>
+        /// <param name="top">Top position</param>
+        /// <returns>Marker canvas</returns>
+        private static Canvas GetMarker(Chart chart, RectangularChartShapeParams columnParams, DataPoint dataPoint, Double left, Double top)
+        {
+            Canvas markerCanvas = new Canvas() { Width = columnParams.Size.Width, Height = columnParams.Size.Height };
 
             markerCanvas.SetValue(Canvas.LeftProperty, left);
             markerCanvas.SetValue(Canvas.TopProperty, top);
@@ -91,9 +260,7 @@ namespace Visifire.Charts
             if (columnParams.IsMarkerEnabled || columnParams.IsLabelEnabled)
             {
                 Size markerSize = new Size(columnParams.MarkerSize, columnParams.MarkerSize);
-
                 String labelText = columnParams.IsLabelEnabled ? columnParams.LabelText : "";
-                Boolean markerBevel = false;
 
                 if (!columnParams.IsMarkerEnabled)
                 {
@@ -101,149 +268,312 @@ namespace Visifire.Charts
                     columnParams.MarkerBorderColor = new SolidColorBrush(Colors.Transparent);
                 }
 
-                dataPoint.Marker = new Marker(columnParams.MarkerType, columnParams.MarkerScale, markerSize, markerBevel, columnParams.MarkerColor, labelText);
+                dataPoint.Marker = CreateNewMarker(columnParams, dataPoint, markerSize, labelText);
 
-                dataPoint.Marker.MarkerSize = markerSize;
-                dataPoint.Marker.BorderColor = columnParams.MarkerBorderColor;
-                dataPoint.Marker.BorderThickness = columnParams.MarkerBorderThickness.Left;
-                dataPoint.Marker.MarkerType = columnParams.MarkerType;
-                dataPoint.Marker.FontColor = columnParams.LabelFontColor;
-                dataPoint.Marker.FontFamily = columnParams.LabelFontFamily;
-                dataPoint.Marker.FontSize = columnParams.LabelFontSize;
-                dataPoint.Marker.FontStyle = columnParams.LabelFontStyle;
-                dataPoint.Marker.FontWeight = columnParams.LabelFontWeight;
-                dataPoint.Marker.TextBackground = columnParams.LabelBackground;
-
-                Point positionXY = new Point();
+                Point markerPosition = new Point();
 
                 if (columnParams.IsPositive)
                     if (chart.View3D)
-                        positionXY = new Point(columnParams.Size.Width / 2, 0);
+                        markerPosition = new Point(columnParams.Size.Width / 2, 0);
                     else
-                        positionXY = new Point(columnParams.Size.Width / 2, 0);
+                        markerPosition = new Point(columnParams.Size.Width / 2, 0);
                 else
                     if (chart.View3D)
-                        positionXY = new Point(columnParams.Size.Width / 2, columnParams.Size.Height);
+                        markerPosition = new Point(columnParams.Size.Width / 2, columnParams.Size.Height);
                     else
-                        positionXY = new Point(columnParams.Size.Width / 2, columnParams.Size.Height);
+                        markerPosition = new Point(columnParams.Size.Width / 2, columnParams.Size.Height);
 
-                if (columnParams.IsLabelEnabled && !String.IsNullOrEmpty(labelText))
-                {
-                    dataPoint.Marker.CreateVisual();
+                SetMarkerPosition(columnParams, chart, dataPoint, labelText, markerSize, left, top, markerPosition);
 
-                    if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
-                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
-                    else
-                        dataPoint.Marker.TextOrientation = Orientation.Horizontal;
-
-                    if (columnParams.IsPositive)
-                    {
-                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
-                        {
-                            if (top + dataPoint.Marker.MarkerActualSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness < chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                        else
-                        {
-                            if (top + dataPoint.Marker.MarkerActualSize.Height < (chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) / 2)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                    }
-                    else
-                    {
-                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
-                        {
-                            if ((chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness + dataPoint.Marker.MarkerSize.Height)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                        else
-                        {
-                            if ((chart.ActualHeight - chart.PlotArea.PlotAreaBorderElement.Height) / 2 + top + positionXY.Y + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.PlotAreaBorderElement.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                    }
-
-                    dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
-
-                    if (!columnParams.IsMarkerEnabled)
-                    {
-                        if (chart.View3D)
-                        {
-                            if (columnParams.LabelStyle == LabelStyles.OutSide)
-                            {
-                                if (columnParams.IsPositive)
-                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness, markerSize.Height + chart.ChartArea.PlankDepth + chart.ChartArea.PlankThickness);
-                                else
-                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
-                            }
-                            else
-                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
-                        }
-                    }
-                    else
-                    {
-                        if (chart.View3D)
-                        {
-                            columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                    }
-
-                    if (columnParams.IsPositive)
-                        dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Bottom : AlignmentY.Top;
-                    else
-                        dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Top : AlignmentY.Bottom;
-
-                }
-
+                columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
+                dataPoint.Marker.FontColor = columnParams.LabelFontColor;
 
                 dataPoint.Marker.CreateVisual();
 
-                dataPoint.Marker.AddToParent(markerCanvas, positionXY.X, positionXY.Y, new Point(0.5, 0.5));
-
+                dataPoint.Marker.AddToParent(markerCanvas, markerPosition.X, markerPosition.Y, new Point(0.5, 0.5));
             }
 
             return markerCanvas;
         }
 
-        static DateTime start;
+        /// <summary>
+        /// Calculate width of each column
+        /// </summary>
+        /// <param name="left">Left position</param>
+        /// <param name="widthPerColumn">Width of a column</param>
+        /// <param name="width">Width of the scale in pixel</param>
+        /// <returns>final width of DataPoint</returns>
+        private static Double CalculateWidthOfEachColumn(ref Double left, Double widthPerColumn, Double width)
+        {   
+            Double finalWidth = widthPerColumn;
+            Double minPosValue = 0;
+            Double maxPosValue = width;
+            if (left < minPosValue)
+            {
+                finalWidth = left + widthPerColumn - minPosValue;
+                left = minPosValue;
+            }
+            else if (left + widthPerColumn > maxPosValue)
+            {
+                finalWidth = maxPosValue - left;
+            }
+            return finalWidth;
+        }
+
+        /// <summary>
+        /// Get columns Z-Index
+        /// </summary>
+        /// <param name="left">Left position</param>
+        /// <param name="top">Top position</param>
+        /// <param name="isPositive">Whether DataPoint Value is positive or negative</param>
+        /// <returns>Zindex as Int32</returns>
+        private static Int32 GetColumnZIndex(Double left, Double top, Boolean isPositive)
+        {
+            Int32 Zi = 0;
+            Int32 ioffset = (Int32)left;
+
+            if (ioffset == 0)
+                ioffset++;
+
+            Zi = (isPositive) ? Zi + (Int32)(ioffset) : Zi + Int32.MinValue + (Int32)(ioffset);
+
+            return Zi;
+        }
+
+        /// <summary>
+        /// Get ZIndex for StackedColumn visual
+        /// </summary>
+        /// <param name="left">Left position</param>
+        /// <param name="top">Top position</param>
+        /// <param name="isPositive">Whether column value is negative or positive</param>
+        /// <param name="index"></param>
+        /// <returns>Zindex as Int32</returns>
+        private static Int32 GetStackedColumnZIndex(Double left, Double top, Boolean isPositive, Int32 index)
+        {
+            Int32 ioffset = (Int32)(left);
+            Int32 topOffset = (Int32)(index);
+
+            Int32 zindex = 0;
+            if (isPositive)
+            {
+                zindex = (Int32)(ioffset + topOffset);
+            }
+            else
+            {
+                if (ioffset == 0)
+                    ioffset = 1;
+                zindex = Int32.MinValue + (Int32)(ioffset + topOffset);
+            }
+
+            return zindex;
+        }
+
+        /// <summary>
+        /// Apply column chart animation
+        /// </summary>
+        /// <param name="column">Column visual reference</param>
+        /// <param name="storyboard">Storyboard</param>
+        /// <param name="columnParams">Column parameters</param>
+        /// <returns>Storyboard</returns>
+        private static Storyboard ApplyColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams)
+        {
+            ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
+            column.RenderTransform = scaleTransform;
+
+            if (columnParams.IsPositive)
+            {
+                column.RenderTransformOrigin = new Point(0.5, 1);
+            }
+            else
+            {
+                column.RenderTransformOrigin = new Point(0.5, 0);
+            }
+
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
+            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 1);
+            List<KeySpline> splines = AnimationHelper.GenerateKeySplineList
+                (
+                new Point(0, 0), new Point(1, 1),
+                new Point(0, 1), new Point(0.5, 1)
+                );
+
+            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", 1, frameTimes, values, splines);
+
+            storyboard.Children.Add(growAnimation);
+
+            return storyboard;
+        }
+
+        /// <summary>
+        /// Apply animation for StackedColumn chart
+        /// </summary>
+        /// <param name="column">Column visual reference</param>
+        /// <param name="storyboard">Storyboard</param>
+        /// <param name="columnParams">Column params</param>
+        /// <param name="begin">Animation begin time</param>
+        /// <param name="duration">Animation duration</param>
+        /// <returns>Storyboard</returns>
+        private static Storyboard ApplyStackedColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams, Double begin, Double duration)
+        {
+            ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
+            column.RenderTransform = scaleTransform;
+
+            column.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1.5, 0.75, 1.125, 0.9325, 1);
+            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.25 * duration, 0.5 * duration, 0.75 * duration, 1.0 * duration, 1.25 * duration);
+            List<KeySpline> splines = AnimationHelper.GenerateKeySplineList
+                (
+                new Point(0, 0), new Point(1, 0.5),
+                new Point(0, 0), new Point(0.5, 1),
+                new Point(0, 0), new Point(1, 0.5),
+                new Point(0, 0), new Point(0.5, 1),
+                new Point(0, 0), new Point(1, 0.5),
+                new Point(0, 0), new Point(0.5, 1)
+                );
+
+            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", begin + 0.5, frameTimes, values, splines);
+
+            storyboard.Children.Add(growAnimation);
+
+            return storyboard;
+        }
+
+        #endregion
+
+        #region Internal Methods
+
+        /// <summary>
+        /// Set column parameters
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="chart">Chart reference</param>
+        /// <param name="dataPoint">dataPoint</param>
+        /// <param name="IsPositive">Whether the DataPoint YValue is positive or negative</param>
+        internal static void SetColumnParms(ref RectangularChartShapeParams columnParams, ref Chart chart, DataPoint dataPoint, Boolean isPositive)
+        {
+            columnParams.Bevel = dataPoint.Parent.Bevel;
+            columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
+            columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
+            columnParams.BorderBrush = dataPoint.BorderColor;
+            columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+            columnParams.BorderStyle = ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle);
+            columnParams.IsPositive = isPositive;
+            columnParams.BackgroundBrush = dataPoint.Color;
+
+            columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
+            columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
+            columnParams.MarkerColor = dataPoint.MarkerColor;
+            columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
+            columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
+            columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
+            columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
+
+            columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
+            columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+            columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
+            columnParams.LabelBackground = dataPoint.LabelBackground;
+            columnParams.LabelFontColor = dataPoint.LabelFontColor;
+            columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
+            columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
+            columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
+            columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
+        }
+        
+        /// <summary>
+        /// Create new Marker
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="markerSize">Marker Size</param>
+        /// <returns>Marker</returns>
+        internal static Marker CreateNewMarker(RectangularChartShapeParams columnParams, DataPoint dataPoint, Size markerSize, String labelText)
+        {
+            Boolean markerBevel = false;
+
+            Marker marker = new Marker(columnParams.MarkerType, columnParams.MarkerScale, markerSize, markerBevel, columnParams.MarkerColor, labelText);
+
+            marker.MarkerSize = markerSize;
+            marker.BorderColor = columnParams.MarkerBorderColor;
+            marker.BorderThickness = columnParams.MarkerBorderThickness.Left;
+            marker.MarkerType = columnParams.MarkerType;
+            marker.FontColor = columnParams.LabelFontColor;
+            marker.FontFamily = columnParams.LabelFontFamily;
+            marker.FontSize = columnParams.LabelFontSize;
+            marker.FontStyle = columnParams.LabelFontStyle;
+            marker.FontWeight = columnParams.LabelFontWeight;
+            marker.TextBackground = columnParams.LabelBackground;
+
+            return marker;
+        }
+
+        /// <summary>
+        /// Get a Dictionary of releted DataSeries list with a particular axis, Where axis works as key.
+        /// </summary>
+        /// <param name="seriesList">DataSeries List</param>
+        /// <returns>Dictionary[Axis, Dictionary[Axis, Int32]]</returns>
+        internal static Dictionary<Axis, Dictionary<Axis, Int32>> GetSeriesIndex(List<DataSeries> seriesList)
+        {
+            Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = new Dictionary<Axis, Dictionary<Axis, Int32>>();
+
+            var seriesByAxis = (from series in seriesList
+                                where series.Enabled == true
+                                group series by new
+                                {
+                                    series.PlotGroup.AxisX,
+                                    series.PlotGroup.AxisY
+                                });
+
+            Int32 index = 0;
+
+            foreach (var entry in seriesByAxis)
+            {
+                if (seriesIndex.ContainsKey(entry.Key.AxisY))
+                {
+                    if (!seriesIndex[entry.Key.AxisY].ContainsKey(entry.Key.AxisX))
+                    {
+                        seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
+                    }
+                }
+                else
+                {
+                    seriesIndex.Add(entry.Key.AxisY, new Dictionary<Axis, Int32>());
+                    seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
+                }
+            }
+
+            return seriesIndex;
+        }
+        
+        /// <summary>
+        /// Get visual object for ColumnChart
+        /// </summary>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
+        /// <param name="plotDetails">PlotDetails</param>
+        /// <param name="dataSeriesList4Rendering">DataSeriesList with render as Column chart</param>
+        /// <param name="chart">Chart</param>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="animationEnabled">Whether animation is enabled for chart</param>
+        /// <returns>Column chart Canvas</returns>
         internal static Canvas GetVisualObjectForColumnChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
 
-            //#region Testing
-
-            //start = DateTime.UtcNow;
-            //Double totalTime = 0;
-            //Double totalDuration = 0;
-            //System.Diagnostics.Debug.WriteLine("Total time taken by ColumnChart render function");
-
-            //#endregion
-
-            Double columnGapRatio = 0.1;
-
-            Dictionary<Double, SortedDataPoints> sortedDataPoints = null;
-
-            sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
+            Dictionary<Double, SorteDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
 
             List<Double> xValues = sortedDataPoints.Keys.ToList();
 
-            Canvas visual = new Canvas();
-            visual.Width = width;
-            visual.Height = height;
-
-            Canvas labelCanvas = new Canvas();
-            labelCanvas.Width = width;
-            labelCanvas.Height = height;
-
-            Canvas columnCanvas = new Canvas();
-            columnCanvas.Width = width;
-            columnCanvas.Height = height;
+            Canvas visual = new Canvas() { Width = width, Height = height };
+            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
+            Canvas columnCanvas = new Canvas() { Width = width, Height = height };
 
             List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.Column select plots).ToList();
 
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[plotGroupList[0].DataSeriesList[0]] + 1);
+
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
 
@@ -258,12 +588,9 @@ namespace Visifire.Charts
             Double dataMinimumGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, dataAxisDifference + (Double)axisXwithMinInterval.InternalAxisMinimum);
             Double minDiffGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
 
-            if (dataMinimumGap > 0 && minDiffGap > 0)
-                minDiffGap = Math.Min(minDiffGap, dataMinimumGap);
-            else
-                minDiffGap = Math.Max(minDiffGap, dataMinimumGap);
+            minDiffGap = (dataMinimumGap > 0 && minDiffGap > 0) ? Math.Min(minDiffGap, dataMinimumGap) : Math.Max(minDiffGap, dataMinimumGap);
 
-            Double maxColumnWidth = minDiffGap * (1 - columnGapRatio);
+            Double maxColumnWidth = minDiffGap * (1 - COLUMN_GAP_RATIO);
 
             Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
 
@@ -271,56 +598,19 @@ namespace Visifire.Charts
 
             Boolean plankDrawn = false;
 
-            //#region Testing
-
-            //DateTime end = DateTime.UtcNow;
-            //totalDuration = (end - start).TotalSeconds;
-            //totalTime = totalDuration;
-
-            //#endregion
-
             foreach (Double xValue in xValues)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
                 columnParams.ShadowOffset = 5;
                 columnParams.Depth = depth3d;
 
-                #region Testing
-
-                start = DateTime.UtcNow;
-
-                #endregion
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {
-                    columnParams.Bevel = dataPoint.Parent.Bevel;
-                    columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                    columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                    columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                    columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
+                    SetColumnParms(ref columnParams, ref chart, dataPoint, true);
+
                     columnParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, dataPoint.RadiusX.Value.TopRight, 0, 0);
                     columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight, 0, 0);
-                    columnParams.IsPositive = true;
-                    columnParams.BackgroundBrush = dataPoint.Color;
-
-                    columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                    columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                    columnParams.MarkerColor = dataPoint.MarkerColor;
-                    columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                    columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                    columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                    columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                    columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                    columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                    columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                    columnParams.LabelBackground = dataPoint.LabelBackground;
-                    columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                    columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                    columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                    columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                    columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
                     PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
 
@@ -329,8 +619,6 @@ namespace Visifire.Charts
                         limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
                     if (plotGroup.AxisY.InternalAxisMaximum < 0)
                         limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-
-                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
 
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
@@ -344,18 +632,7 @@ namespace Visifire.Charts
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double columnHeight = Math.Abs(top - bottom);
 
-                    Double finalWidth = widthPerColumn;
-                    Double minPosValue = 0;
-                    Double maxPosValue = width;
-                    if (left < minPosValue)
-                    {
-                        finalWidth = left + widthPerColumn - minPosValue;
-                        left = minPosValue;
-                    }
-                    else if (left + widthPerColumn > maxPosValue)
-                    {
-                        finalWidth = maxPosValue - left;
-                    }
+                    Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
 
                     if (finalWidth < 0)
                         continue;
@@ -373,12 +650,6 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        //end = DateTime.UtcNow;
-                        //totalDuration = (end - start).TotalSeconds;
-                        //System.Diagnostics.Debug.WriteLine("Time taken for DataPoint" + xValue + " : " + totalDuration);
-                        //totalTime += totalDuration;
-                        //start = DateTime.UtcNow;
-
                         columnFaces = Get2DColumn(columnParams);
                         columnVisual = columnFaces.Visual;
                     }
@@ -399,54 +670,22 @@ namespace Visifire.Charts
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
-                        DataSeriesRef = dataPoint.Parent;
+                        CurrentDataSeries = dataPoint.Parent;
 
                         // Apply animation to the data points i.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                     }
-
-                    #region Testing
-
-                    //end = DateTime.UtcNow;
-                    //totalDuration = (end - start).TotalSeconds;
-                    //System.Diagnostics.Debug.WriteLine("Time taken for DataPoint" + xValue + " : " + totalDuration);
-                    //totalTime += totalDuration;
-                    #endregion
                 }
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Negative)
                 {
-                    columnParams.Bevel = dataPoint.Parent.Bevel;
-                    columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                    columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                    columnParams.BorderBrush = dataPoint.BorderColor;
-                    columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                    columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
+                    SetColumnParms(ref columnParams, ref chart, dataPoint, false);
+
                     columnParams.XRadius = new CornerRadius(0, 0, dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
                     columnParams.YRadius = new CornerRadius(0, 0, dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
-                    columnParams.IsPositive = false;
-                    columnParams.BackgroundBrush = dataPoint.Color;
-
-                    columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                    columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                    columnParams.MarkerColor = dataPoint.MarkerColor;
-                    columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                    columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                    columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                    columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                    columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                    columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                    columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                    columnParams.LabelBackground = dataPoint.LabelBackground;
-                    columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                    columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                    columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                    columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                    columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
                     PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
 
@@ -456,31 +695,17 @@ namespace Visifire.Charts
                     if (plotGroup.AxisY.InternalAxisMaximum < 0)
                         limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-                    //List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromSortedPoints(sortedDataPoints[xValue]);
-
                     List<DataSeries> indexSeriesList = plotDetails.GetSeriesFromDataPoint(dataPoint);
                     Int32 drawingIndex = indexSeriesList.IndexOf(dataPoint.Parent);
 
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue);
-                    //left = drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     left = left + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * widthPerColumn;
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
                     Double columnHeight = Math.Abs(top - bottom);
 
+                    Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
 
-                    Double finalWidth = widthPerColumn;
-                    Double minPosValue = 0;
-                    Double maxPosValue = width;
-                    if (left < minPosValue)
-                    {
-                        finalWidth = left + widthPerColumn - minPosValue;
-                        left = minPosValue;
-                    }
-                    else if (left + widthPerColumn > maxPosValue)
-                    {
-                        finalWidth = maxPosValue - left;
-                    }
                     if (finalWidth < 0)
                         continue;
 
@@ -517,19 +742,17 @@ namespace Visifire.Charts
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
-                        DataSeriesRef = dataPoint.Parent;
+                        CurrentDataSeries = dataPoint.Parent;
 
                         // Apply animation to the data points i.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                     }
 
                 }
             }
-            
-            start = DateTime.UtcNow; // used for testing
 
             if (!plankDrawn && chart.View3D && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum < 0 && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum > 0)
             {
@@ -553,18 +776,19 @@ namespace Visifire.Charts
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
 
-            //#region Testing
-
-            //end = DateTime.UtcNow;
-            //totalDuration = (end - start).TotalSeconds;
-            //totalTime += totalDuration;
-            //System.Diagnostics.Debug.WriteLine("Total time taken by ColumnChart : " + totalTime);
-
-            //#endregion
-
             return visual;
         }
 
+        /// <summary>
+        /// Get visual object for stacked column chart
+        /// </summary>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
+        /// <param name="plotDetails">PlotDetails</param>
+        /// <param name="chart">Chart</param>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="animationEnabled">Whether animation is enabled for chart</param>
+        /// <returns>Column chart Canvas</returns>
         internal static Canvas GetVisualObjectForStackedColumnChart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -572,21 +796,12 @@ namespace Visifire.Charts
             List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedColumn select plots).ToList();
 
             Double widthDivisionFactor = plotDetails.DrawingDivisionFactor;
-            Double columnGapRatio = 0.1;
 
             Boolean plankDrawn = false;
 
-            Canvas visual = new Canvas();
-            visual.Width = width;
-            visual.Height = height;
-
-            Canvas labelCanvas = new Canvas();
-            labelCanvas.Width = width;
-            labelCanvas.Height = height;
-
-            Canvas columnCanvas = new Canvas();
-            columnCanvas.Width = width;
-            columnCanvas.Height = height;
+            Canvas visual = new Canvas() { Width = width, Height = height };
+            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
+            Canvas columnCanvas = new Canvas() { Width = width, Height = height };
 
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[plotGroupList[0].DataSeriesList[0]] + 1);
@@ -603,12 +818,12 @@ namespace Visifire.Charts
                     continue;
 
                 Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
-                
+
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
                 minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
-                Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - columnGapRatio);
+                Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
                 Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
@@ -629,79 +844,38 @@ namespace Visifire.Charts
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
-                    //----------------------------------------
-                    Double finalWidth = widthPerColumn;
-                    Double minPosValue = 0;
-                    Double maxPosValue = width;
-                    if (left < minPosValue)
-                    {
-                        finalWidth = left + widthPerColumn - minPosValue;
-                        left = minPosValue;
-                    }
-                    else if (left + widthPerColumn > maxPosValue)
-                    {
-                        finalWidth = maxPosValue - left;
-                    }
+                    Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
+
                     if (finalWidth < 0)
                         continue;
-
-                    //----------------------------------------
 
                     Double top;
                     Double columnHeight;
                     Double prevSum = 0;
-                    //Int32 index = 1;
-
                     Int32 positiveIndex = 1;
                     Int32 negativeIndex = 1;
+
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
 
-                        columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                        columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                        columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
+                        SetColumnParms(ref columnParams, ref chart, dataPoint, true);
+
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
                         {
                             columnParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, dataPoint.RadiusX.Value.TopRight, 0, 0);
                             columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight, 0, 0);
                         }
-                        columnParams.IsPositive = true;
-
-                        columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                        columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                        columnParams.MarkerColor = dataPoint.MarkerColor;
-                        columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                        columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                        columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                        columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                        columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                        columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                        columnParams.LabelBackground = dataPoint.LabelBackground;
-                        columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                        columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                        columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                        columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                        columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
                         top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
                         prevSum += dataPoint.InternalYValue;
 
-                        columnParams.BackgroundBrush = dataPoint.Color;
-
                         columnParams.Size = new Size(finalWidth, columnHeight);
-
-                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -733,70 +907,43 @@ namespace Visifire.Charts
                             if (dataPoint.Parent.Storyboard == null)
                                 dataPoint.Parent.Storyboard = new Storyboard();
 
-                            DataSeriesRef = dataPoint.Parent;
+                            CurrentDataSeries = dataPoint.Parent;
 
                             // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                         }
 
                         bottom = top;
                     }
 
                     prevSum = 0;
-                    
-                    //index--;
+
                     top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
 
-                        columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                        columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                        columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
+                        SetColumnParms(ref columnParams, ref chart, dataPoint, false);
+
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
                         {
                             columnParams.XRadius = new CornerRadius(0, 0, dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
                             columnParams.YRadius = new CornerRadius(0, 0, dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
                         }
-                        columnParams.IsPositive = false;
-
-                        columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                        columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                        columnParams.MarkerColor = dataPoint.MarkerColor;
-                        columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                        columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                        columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                        columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                        columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                        columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                        columnParams.LabelBackground = dataPoint.LabelBackground;
-                        columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                        columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                        columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                        columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                        columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
                         bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
                         prevSum += dataPoint.InternalYValue;
 
-                        columnParams.BackgroundBrush = dataPoint.Color;
-
                         columnParams.Size = new Size(finalWidth, columnHeight);
-
-                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -828,13 +975,13 @@ namespace Visifire.Charts
                             if (dataPoint.Parent.Storyboard == null)
                                 dataPoint.Parent.Storyboard = new Storyboard();
 
-                            DataSeriesRef = dataPoint.Parent;
+                            CurrentDataSeries = dataPoint.Parent;
 
                             // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                         }
 
                         top = bottom;
@@ -866,6 +1013,16 @@ namespace Visifire.Charts
             return visual;
         }
 
+        /// <summary>
+        /// Get visual object for stacked column100 chart
+        /// </summary>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
+        /// <param name="plotDetails">PlotDetails</param>
+        /// <param name="chart">Chart</param>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="animationEnabled">Whether animation is enabled for chart</param>
+        /// <returns>Column chart Canvas</returns>
         internal static Canvas GetVisualObjectForStackedColumn100Chart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -873,7 +1030,6 @@ namespace Visifire.Charts
             List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedColumn100 select plots).ToList();
 
             Double widthDivisionFactor = plotDetails.DrawingDivisionFactor;
-            Double columnGapRatio = 0.1;
 
             Boolean plankDrawn = false;
 
@@ -909,7 +1065,7 @@ namespace Visifire.Charts
 
                 minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
-                Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - columnGapRatio);
+                Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
                 Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
@@ -929,24 +1085,10 @@ namespace Visifire.Charts
                     Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * widthPerColumn - (maxColumnWidth / 2);
                     Double bottom = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
-                    //----------------------------------------
+                    Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
 
-                    Double finalWidth = widthPerColumn;
-                    Double minPosValue = 0;
-                    Double maxPosValue = width;
-                    if (left < minPosValue)
-                    {
-                        finalWidth = left + widthPerColumn - minPosValue;
-                        left = minPosValue;
-                    }
-                    else if (left + widthPerColumn > maxPosValue)
-                    {
-                        finalWidth = maxPosValue - left;
-                    }
                     if (finalWidth < 0)
                         continue;
-
-                    //----------------------------------------
 
                     Double absoluteSum = plotGroup.XWiseStackedDataList[xValue].AbsoluteYValueSum;
 
@@ -966,13 +1108,8 @@ namespace Visifire.Charts
                     {
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
+                        SetColumnParms(ref columnParams, ref chart, dataPoint, true);
 
-                        columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                        columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                        columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
                         if (columnParams.IsTopOfStack)
                         {
@@ -980,37 +1117,12 @@ namespace Visifire.Charts
                             columnParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopLeft, dataPoint.RadiusY.Value.TopRight, 0, 0);
                         }
 
-                        columnParams.IsPositive = true;
-
-                        columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                        columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                        columnParams.MarkerColor = dataPoint.MarkerColor;
-                        columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                        columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                        columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                        columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                        columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                        columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                        columnParams.LabelBackground = dataPoint.LabelBackground;
-                        columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                        columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                        columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                        columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                        columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
-
                         percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
                         top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
                         columnHeight = Math.Abs(top - bottom);
 
                         prevSum += percentYValue;
-
-                        columnParams.BackgroundBrush = dataPoint.Color;
-
                         columnParams.Size = new Size(finalWidth, columnHeight);
-
-                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -1023,7 +1135,6 @@ namespace Visifire.Charts
                         }
                         else
                         {
-
                             column = Get2DColumn(columnParams);
                             columnVisual = column.Visual;
                         }
@@ -1043,57 +1154,34 @@ namespace Visifire.Charts
                             if (dataPoint.Parent.Storyboard == null)
                                 dataPoint.Parent.Storyboard = new Storyboard();
 
-                            DataSeriesRef = dataPoint.Parent;
+                            CurrentDataSeries = dataPoint.Parent;
 
                             // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                         }
                         bottom = top;
                     }
 
                     prevSum = 0;
-                    //index = 1;
                     top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
+                        SetColumnParms(ref columnParams, ref chart, dataPoint, false);
 
-                        columnParams.Bevel = dataPoint.Parent.Bevel;
-                        columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-                        columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-                        columnParams.BorderBrush = dataPoint.BorderColor;
-                        columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-                        columnParams.BorderStyle = Graphics.BorderStyleToStrokeDashArray((BorderStyles)dataPoint.BorderStyle);
+
                         columnParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
                         if (columnParams.IsTopOfStack)
                         {
                             columnParams.XRadius = new CornerRadius(0, 0, dataPoint.RadiusX.Value.BottomRight, dataPoint.RadiusX.Value.BottomLeft);
                             columnParams.YRadius = new CornerRadius(0, 0, dataPoint.RadiusY.Value.BottomRight, dataPoint.RadiusY.Value.BottomLeft);
                         }
-                        columnParams.IsPositive = false;
-
-                        columnParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-                        columnParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-                        columnParams.MarkerColor = dataPoint.MarkerColor;
-                        columnParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-                        columnParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-                        columnParams.MarkerScale = (Double)dataPoint.MarkerScale;
-                        columnParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-                        columnParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-                        columnParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        columnParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-                        columnParams.LabelBackground = dataPoint.LabelBackground;
-                        columnParams.LabelFontColor = Graphics.ApplyLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
-                        columnParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-                        columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
-                        columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                        columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
 
                         percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
 
@@ -1103,11 +1191,7 @@ namespace Visifire.Charts
 
                         prevSum += percentYValue;
 
-                        columnParams.BackgroundBrush = dataPoint.Color;
-
                         columnParams.Size = new Size(finalWidth, columnHeight);
-
-                        //columnParams.Size = new Size(widthPerColumn, columnHeight);
 
                         Faces column;
                         Panel columnVisual = null;
@@ -1139,21 +1223,21 @@ namespace Visifire.Charts
                             if (dataPoint.Parent.Storyboard == null)
                                 dataPoint.Parent.Storyboard = new Storyboard();
 
-                            DataSeriesRef = dataPoint.Parent;
+                            CurrentDataSeries = dataPoint.Parent;
 
                             // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = ApplyMarkerAnimationToColumnChart(dataPoint.Marker, dataPoint.Parent.Storyboard, 1);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
                         }
 
                         top = bottom;
                     }
 
                 }
-
             }
+
             if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1179,40 +1263,11 @@ namespace Visifire.Charts
             return visual;
         }
 
-        private static Dictionary<Axis, Dictionary<Axis, Int32>> GetSeriesIndex(List<DataSeries> seriesList)
-        {
-            Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = new Dictionary<Axis, Dictionary<Axis, Int32>>();
-
-            var seriesByAxis = (from series in seriesList
-                                where series.Enabled == true
-                                group series
-                                    by new
-                                    {
-                                        series.PlotGroup.AxisX,
-                                        series.PlotGroup.AxisY
-                                    });
-
-            Int32 index = 0;
-
-            foreach (var entry in seriesByAxis)
-            {
-                if (seriesIndex.ContainsKey(entry.Key.AxisY))
-                {
-                    if (!seriesIndex[entry.Key.AxisY].ContainsKey(entry.Key.AxisX))
-                    {
-                        seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
-                    }
-                }
-                else
-                {
-                    seriesIndex.Add(entry.Key.AxisY, new Dictionary<Axis, Int32>());
-                    seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
-                }
-            }
-
-            return seriesIndex;
-        }
-
+        /// <summary>
+        /// Create 2D column for a DataPoint
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <returns>Faces for column</returns>
         internal static Faces Get2DColumn(RectangularChartShapeParams columnParams)
         {
             Faces faces = new Faces();
@@ -1233,15 +1288,7 @@ namespace Visifire.Charts
 
             columnVisual.Children.Add(columnBase);
 
-            //DateTime end = DateTime.UtcNow;
-            //Double totalDuration = (end - start).TotalSeconds;
-            //System.Diagnostics.Debug.WriteLine("Column creation : " + totalDuration);
 
-
-            // if (((!columnParams.IsStacked) || (columnParams.IsStacked && columnParams.IsTopOfStack))
-            //    && columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
-
-            start = DateTime.UtcNow;
 
             if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
             {
@@ -1266,10 +1313,6 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
             }
 
-            //end = DateTime.UtcNow;
-            //totalDuration = (end - start).TotalSeconds;
-            //System.Diagnostics.Debug.WriteLine("Bevel calculation : " + totalDuration);
-
             if (!columnParams.Lighting && columnParams.Bevel)
             {
                 Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(columnParams.Size.Width, columnParams.Size.Height,
@@ -1287,8 +1330,6 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
                 faces.Parts.Add(null);
             }
-
-            start = DateTime.UtcNow;
 
             if (columnParams.Shadow)
             {
@@ -1336,31 +1377,36 @@ namespace Visifire.Charts
                 }
 
                 Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(columnParams.Size.Width, shadowHeight, xRadius, yRadius, columnParams.IsStacked ? 3 : 5);
-                //TranslateTransform tt = new TranslateTransform() { X = columnParams.ShadowOffset, Y = shadowVerticalOffset };
                 shadowGrid.SetValue(Canvas.TopProperty, shadowVerticalOffset);
                 shadowGrid.SetValue(Canvas.LeftProperty, columnParams.ShadowOffset);
                 shadowGrid.Opacity = 0.7;
                 shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
-                //shadowGrid.RenderTransform = tt;
                 columnVisual.Children.Add(shadowGrid);
             }
-
-
-            //end = DateTime.UtcNow;
-            //totalDuration = (end - start).TotalSeconds;
-            //System.Diagnostics.Debug.WriteLine("Shadow calculation : " + totalDuration);
-            //faces.VisualComponents.Add(columnVisual);
 
             faces.Visual = columnVisual;
 
             return faces;
         }
 
+        /// <summary>
+        /// Returns faces for 3D column
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <returns>Faces</returns>
         internal static Faces Get3DColumn(RectangularChartShapeParams columnParams)
         {
             return Get3DColumn(columnParams, null, null, null);
         }
 
+        /// <summary>
+        /// Returns faces for 3D column
+        /// </summary>
+        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="frontBrush">Brush for front face</param>
+        /// <param name="topBrush">Brush for top face</param>
+        /// <param name="rightBrush">Brush for right face</param>
+        /// <returns>Faces</returns>
         internal static Faces Get3DColumn(RectangularChartShapeParams columnParams, Brush frontBrush, Brush topBrush, Brush rightBrush)
         {
             Faces faces = new Faces();
@@ -1415,7 +1461,6 @@ namespace Visifire.Charts
             top.SetValue(Canvas.TopProperty, -columnParams.Depth);
             right.SetValue(Canvas.LeftProperty, columnParams.Size.Width);
 
-
             faces.Visual = columnVisual;
 
             faces.VisualComponents.Add(front);
@@ -1424,140 +1469,20 @@ namespace Visifire.Charts
 
             return faces;
         }
+        
+        #endregion
 
-        private static Int32 GetColumnZIndex(Double left, Double top, Boolean isPositive)
-        {
-            Int32 Zi = 0;
-            Int32 ioffset = (Int32)left;
-            if (ioffset == 0)
-                ioffset++;
+        #region Internal Events And Delegates
 
-            if (isPositive)
-            {
-                Zi = Zi + (Int32)(ioffset);
-            }
-            else
-            {
-                Zi = Zi + Int32.MinValue + (Int32)(ioffset);
-            }
-            return Zi;
-        }
+        #endregion
 
-        private static Int32 GetStackedColumnZIndex(Double left, Double top, Boolean isPositive, Int32 index)
-        {
-            Int32 ioffset = (Int32)(left);
-            Int32 topOffset = (Int32)(index);
-          
-            Int32 zindex = 0;
-            if (isPositive)
-            {
-                zindex = (Int32)(ioffset + topOffset);
-            }
-            else
-            {
-                if (ioffset == 0)
-                    ioffset = 1;
-                zindex = Int32.MinValue + (Int32)(ioffset + topOffset);
-            }
-            return zindex;
-        }
+        #region Data
+        
+        /// <summary>
+        /// Gap ratio between two column
+        /// </summary>
+        internal static Double COLUMN_GAP_RATIO = 0.1;
 
-        private static List<KeySpline> GenerateKeySplineList(params Point[] values)
-        {
-            List<KeySpline> splines = new List<KeySpline>();
-            for (Int32 i = 0; i < values.Length; i += 2)
-                splines.Add(GetKeySpline(values[i], values[i + 1]));
-
-            return splines;
-        }
-
-        private static KeySpline GetKeySpline(Point controlPoint1, Point controlPoint2)
-        {
-            return new KeySpline() { ControlPoint1 = controlPoint1, ControlPoint2 = controlPoint2 };
-        }
-
-
-        private static Storyboard ApplyColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams)
-        {
-
-            ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
-            column.RenderTransform = scaleTransform;
-
-            if (columnParams.IsPositive)
-            {
-                column.RenderTransformOrigin = new Point(0.5, 1);
-            }
-            else
-            {
-                column.RenderTransformOrigin = new Point(0.5, 0);
-            }
-
-            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
-            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 1);
-            List<KeySpline> splines = GenerateKeySplineList
-                (
-                new Point(0, 0), new Point(1, 1),
-                new Point(0, 1), new Point(0.5, 1)
-                );
-
-            DoubleAnimationUsingKeyFrames growAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleY)", 1, frameTimes, values, splines);
-
-            storyboard.Children.Add(growAnimation);
-
-            return storyboard;
-        }
-
-        private static Storyboard ApplyStackedColumnChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams, Double begin, Double duration)
-        {
-            ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
-            column.RenderTransform = scaleTransform;
-
-            column.RenderTransformOrigin = new Point(0.5, 0.5);
-
-            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1.5, 0.75, 1.125, 0.9325, 1);
-            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.25 * duration, 0.5 * duration, 0.75 * duration, 1.0 * duration, 1.25 * duration);
-            List<KeySpline> splines = GenerateKeySplineList
-                (
-                new Point(0, 0), new Point(1, 0.5),
-                new Point(0, 0), new Point(0.5, 1),
-                new Point(0, 0), new Point(1, 0.5),
-                new Point(0, 0), new Point(0.5, 1),
-                new Point(0, 0), new Point(1, 0.5),
-                new Point(0, 0), new Point(0.5, 1)
-                );
-
-            DoubleAnimationUsingKeyFrames growAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, scaleTransform, "(ScaleTransform.ScaleY)", begin + 0.5, frameTimes, values, splines);
-            storyboard.Stop();
-            storyboard.Children.Add(growAnimation);
-
-            return storyboard;
-        }
-
-        private static Storyboard ApplyMarkerAnimationToColumnChart(Marker marker, Storyboard storyboard, Double beginTime)
-        {
-            if (marker == null) return storyboard;
-
-            DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
-            DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.75);
-            List<KeySpline> splines = GenerateKeySplineList
-                (
-                new Point(0, 0), new Point(1, 1),
-                new Point(0, 0), new Point(0.5, 1)
-                );
-
-            marker.Visual.Opacity = 0;
-
-            DoubleAnimationUsingKeyFrames opacityAnimation = Graphics.CreateDoubleAnimation(DataSeriesRef, marker.Visual, "(UIElement.Opacity)", beginTime + 0.5, frameTimes, values, splines);
-            //storyboard.Stop();
-            storyboard.Children.Add(opacityAnimation);
-
-            return storyboard;
-        }
-
-        private static DataSeries DataSeriesRef
-        {
-            get;
-            set;
-        }
+        #endregion
     }
 }

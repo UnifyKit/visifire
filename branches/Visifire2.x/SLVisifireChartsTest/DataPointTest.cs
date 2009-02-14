@@ -13,9 +13,14 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.DataPoint class 
+    /// </summary>
     [TestClass]
     public class DataPointTest : SilverlightControlTest
     {
+
+        #region TestDataPointPropertyChange
         /// <summary>
         /// Test DataPoint property changed event.
         /// </summary>
@@ -28,15 +33,15 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             DataSeries dataSeries = new DataSeries();
             DataPoint dataPoint = null;
@@ -69,11 +74,13 @@ namespace SLVisifireChartsTest
                 dataPoint.YValue = rand.Next(-100, 100);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
 
         }
+        #endregion
 
+        #region DataPointDecimalXValueChecking
         /// <summary>
         /// Test DataPoints with Decimal values in the second series
         /// </summary>
@@ -88,7 +95,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -99,8 +106,8 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -119,7 +126,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -137,14 +144,16 @@ namespace SLVisifireChartsTest
                     j++;
                 }
                 chart.Series.Add(dataSeries2);
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetProperty("value", "Testing DataSeries Behaviour :- First DataSeries with all positive XValues and Second DataSeries with all Decimal XValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetProperty("value", "Testing DataSeries Behaviour :- First DataSeries with all positive XValues and Second DataSeries with all Decimal XValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region DataPointRepeatedXValueChecking
         /// <summary>
         /// Test DataPoints with repeated XValues in the series
         /// </summary>
@@ -160,7 +169,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -185,18 +194,20 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetProperty("value", "Testing DataSeries Behaviour with repeated XValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetProperty("value", "Testing DataSeries Behaviour with repeated XValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region DataPointStressXValueChecking
         /// <summary>
         /// Stress testing DataPoints with hundreds of XValues
         /// </summary>
@@ -213,7 +224,7 @@ namespace SLVisifireChartsTest
             chart.ScrollingEnabled = false;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -227,7 +238,7 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             String msg = Common.AssertAverageDuration(100, 2, delegate
             {
@@ -243,22 +254,24 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries1);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", numberOfDataPoints + " XValues added. " + msg + " Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", numberOfDataPoints + " XValues added. " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        #region DataPointDecimalXValueChecking2
         /// <summary>
         /// Performance testing DataPoints with decimal XValues
         /// </summary>
@@ -274,7 +287,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -313,19 +326,21 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", " DataSeries with decimal XValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", " DataSeries with decimal XValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region DataPointAxisXLabelChecking
         /// <summary>
         /// Performance testing DataPoints with AxisXLabels
         /// </summary>
@@ -341,7 +356,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -386,19 +401,21 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", " DataSeries with decimal XValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", " DataSeries with decimal XValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region DataPointRandomXValuesChecking
         /// <summary>
         /// Performance testing DataPoints with random XValues
         /// </summary>
@@ -414,7 +431,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -444,19 +461,21 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", " DataSeries with random XValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", " DataSeries with random XValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region ZeroPieChecking
         /// <summary>
         /// Checking Pie with single dataPoint with zero value
         /// </summary>
@@ -479,12 +498,14 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTask(chart,
-                () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
 
             EnqueueTestComplete();
 
         }
+        #endregion
 
+        #region SinglePieChecking
         /// <summary>
         /// Checking Pie with single dataPoint
         /// </summary>
@@ -506,12 +527,14 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTask(chart,
-                () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
 
             EnqueueTestComplete();
 
         }
+        #endregion
 
+        #region SingleDoughnutChecking
         /// <summary>
         /// Checking Doughnut with single dataPoint
         /// </summary>
@@ -533,12 +556,14 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTask(chart,
-                () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
 
             EnqueueTestComplete();
 
         }
+        #endregion
 
+        #region PieCheckingWithAllZeroValues
         /// <summary>
         /// Checking Pie with all zero values
         /// </summary>
@@ -565,12 +590,14 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTask(chart,
-               () => Assert.IsTrue(isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+               () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
 
             EnqueueTestComplete();
 
         }
+        #endregion
 
+        #region DataPointStressTesting
         /// <summary>
         /// Stress testing DataPoints with thousand values under different RenderAs.
         /// </summary>
@@ -590,7 +617,7 @@ namespace SLVisifireChartsTest
             bool isPropertyChanged = false;
             bool isRenderOver = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -620,7 +647,7 @@ namespace SLVisifireChartsTest
             });
             chart.Series.Add(dataSeries);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -631,14 +658,14 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. ");
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", msg + " Total chart loading time : " + totalDuration + "s");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. ");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", msg + " Total chart loading time : " + totalDuration + "s");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             isPropertyChanged = false;
@@ -662,8 +689,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -689,8 +716,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -717,8 +744,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -746,8 +773,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -774,8 +801,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -802,8 +829,8 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
@@ -828,17 +855,19 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s. Click here to exit.");
-                htmlElement2.RemoveAttribute("value");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " with " + numberOfDataPoints + " DataPoints. Total load time : " + totalDuration + "s. Click here to exit.");
+                _htmlElement2.RemoveAttribute("value");
                 isRenderOver = true;
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        #region DataPointDecimalYValuesChecking
         /// <summary>
         /// Testing DataPoints with YValues
         /// </summary>
@@ -853,7 +882,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Axis axisX = new Axis();
@@ -896,25 +925,21 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", "DataPoints with larger YValues. Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "DataPoints with larger YValues. Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
-        void HtmlElement_OnClick(object sender, HtmlEventArgs e)
-        {
-            EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-        }
-
+        #region DataPointEventChecking
         /// <summary>
         /// Testing DataPoint Event checking
         /// </summary>
@@ -928,7 +953,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -945,45 +970,46 @@ namespace SLVisifireChartsTest
                 dataPoint.YValue = rand.Next(-100, 100);
                 dataPoint.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonUp event fired");
+                    _htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonUp event fired");
                 };
 
                 dataPoint.MouseEnter += delegate(Object sender, MouseEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseEnter event fired");
+                    _htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseEnter event fired");
                 };
 
                 dataPoint.MouseLeave += delegate(Object sender, MouseEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "Click here to exit. MouseLeave event fired");
+                    _htmlElement1.SetProperty("value", "Click here to exit. MouseLeave event fired");
                 };
 
                 dataPoint.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonDown event fired");
+                    _htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseLeftButtonDown event fired");
                 };
 
                 dataPoint.MouseMove += delegate(Object sender, MouseEventArgs e)
                 {
-                    htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseMove event fired");
+                    _htmlElement1.SetProperty("value", "DataPoint YValue: " + (sender as DataPoint).InternalYValue + " MouseMove event fired");
                 };
 
                 dataSeries.DataPoints.Add(dataPoint);
             }
             chart.Series.Add(dataSeries);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", "Check Mouse events for DataPoints");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "Check Mouse events for DataPoints");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
         #region CheckNewPropertyValue
         /// <summary>
@@ -1036,7 +1062,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[5].Exploded = true,
                 () => Assert.IsTrue((Boolean)dataSeries.DataPoints[5].Exploded));
@@ -1060,7 +1086,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1090,7 +1116,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1120,7 +1146,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1150,7 +1176,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1180,7 +1206,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1210,7 +1236,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1240,7 +1266,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1270,7 +1296,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1300,7 +1326,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1329,7 +1355,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Pie;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1360,7 +1386,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1391,7 +1417,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1421,7 +1447,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1451,7 +1477,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1481,7 +1507,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[1].MarkerType = MarkerTypes.Cross,
                 () => dataSeries.DataPoints[2].MarkerType = MarkerTypes.Diamond,
@@ -1511,7 +1537,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1542,7 +1568,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1573,7 +1599,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1603,7 +1629,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1634,7 +1660,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1687,7 +1713,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1716,7 +1742,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1747,7 +1773,7 @@ namespace SLVisifireChartsTest
             dataSeries.DataPoints[0].BorderThickness = new Thickness(2);
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1776,7 +1802,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1807,7 +1833,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1839,7 +1865,7 @@ namespace SLVisifireChartsTest
             dataSeries.BorderThickness = new Thickness(1);
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -1852,7 +1878,7 @@ namespace SLVisifireChartsTest
                     }
                 });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
         }
         #endregion CheckNewPropertyValue
 
@@ -1872,7 +1898,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1897,7 +1923,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1924,7 +1950,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1953,7 +1979,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1981,7 +2007,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2010,7 +2036,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2039,7 +2065,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2068,7 +2094,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2097,7 +2123,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2126,7 +2152,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2155,7 +2181,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2184,7 +2210,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2213,7 +2239,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2242,7 +2268,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2271,7 +2297,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2299,7 +2325,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2328,7 +2354,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2358,7 +2384,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2387,7 +2413,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2416,7 +2442,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2445,7 +2471,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2474,7 +2500,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2503,7 +2529,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2531,7 +2557,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2560,7 +2586,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2574,6 +2600,10 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        /// <summary>
+        /// Create a DataSeries
+        /// </summary>
+        /// <returns></returns>
         private DataSeries CreateDataSeries()
         {
             Random rand = new Random();
@@ -2591,17 +2621,47 @@ namespace SLVisifireChartsTest
             return dataSeries;
         }
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HtmlElement_OnClick(object sender, HtmlEventArgs e)
         {
-            isLoaded = true;
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
         }
 
         #region Private Data
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
 
-        bool isLoaded = false;
-        const int sleepTime = 1000;
-        System.Windows.Browser.HtmlElement htmlElement1;
-        System.Windows.Browser.HtmlElement htmlElement2;
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 1000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

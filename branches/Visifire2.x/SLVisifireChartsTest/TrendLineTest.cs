@@ -10,10 +10,13 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.TrendLine class 
+    /// </summary>
     [TestClass]
     public class TrendLineTest:SilverlightControlTest
     {
-
+        #region CheckTrendLineDefaultPropertyValue
         /// <summary>
         /// Check the default value of Enabled
         /// </summary>
@@ -181,6 +184,7 @@ namespace SLVisifireChartsTest
 
             EnqueueTestComplete();
         }
+        #endregion
 
         #region CheckTrendLineNewPropertyValue
         /// <summary>
@@ -403,6 +407,7 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region TestTrendLinesCollectionChanged
         /// <summary>
         /// Check the TrendLines collection changed. 
         /// </summary> 
@@ -506,20 +511,35 @@ namespace SLVisifireChartsTest
             EnqueueSleep(1000);
             EnqueueTestComplete();
         }
+        #endregion
 
-        void chart_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, RoutedEventArgs e)
         {
             isLoaded = true;
         }
 
+        /// <summary>
+        /// Gets a default instance of TrendLine to test.
+        /// </summary>
         private TrendLine TrendLineToTest
         {
             get { return new TrendLine() { Value = 60, Orientation = Orientation.Horizontal }; }
         }
 
         #region Private Data
-
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
         private const int sleepTime = 1000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
         private bool isLoaded = false;
 
         #endregion

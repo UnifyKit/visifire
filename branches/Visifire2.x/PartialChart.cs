@@ -1,4 +1,25 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+
+*/
+
+#if WPF
+
 using System;
 using System.Windows;
 using System.Collections.Generic;
@@ -12,7 +33,6 @@ using System.IO;
 using System.Xml;
 using System.Threading;
 using System.Collections.ObjectModel;
-
 
 #else
 
@@ -41,14 +61,10 @@ namespace Visifire.Charts
         #region Public Methods
 
         /// <summary>
-        /// On Template applied
+        /// Load controls from template
         /// </summary>
-        public override void OnApplyTemplate()
-        {   
-            base.OnApplyTemplate();
-
-            #region "Loading TemplateChild"
-
+        private void LoadControlsFromTemplate()
+        {
             _rootElement = GetTemplateChild(RootElementName) as Grid;
 
             _shadowGrid = GetTemplateChild(ShadowGridName) as Grid;
@@ -132,90 +148,65 @@ namespace Visifire.Charts
             _centerDockInsidePlotAreaPanel = GetTemplateChild(CenterDockInsidePlotAreaPanelName) as StackPanel;
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
-            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;
+            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;    
+        }
 
-            
-            if (ToolTips.Count == 0)
-            {
-                ToolTip toolTip = new ToolTip() { Chart = this, Visibility = Visibility.Collapsed };
-                ToolTips.Add(toolTip);
-            }
-            
-
-            _toolTip = ToolTips[0];
-            _toolTip.Chart = this;
-
-            //_toolTip.OnSizeChanged += delegate(object sender, MouseEventArgs e)
-            //{
-            //     //UpdateToolTipPosition(this, e);
-            //};
-
-            _toolTipCanvas.Children.Add(_toolTip);
-
-            #endregion       
-
+        /// <summary>
+        /// Set Margin for various elements to maintain effects like Shadow and Bevel
+        /// </summary>
+        public void SetMarginOfElements()
+        {
             if (ShadowEnabled)
             {
                 _chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
                 _bevelCanvas.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
             }
             
-            _chartAreaOriginalMargin = new Thickness(_chartAreaGrid.Margin.Left, _chartAreaGrid.Margin.Top, _chartAreaGrid.Margin.Right, _chartAreaGrid.Margin.Bottom);
+            _chartAreaMargin = new Thickness(_chartAreaGrid.Margin.Left, _chartAreaGrid.Margin.Top, _chartAreaGrid.Margin.Right, _chartAreaGrid.Margin.Bottom);
 
             if (Bevel)
             {   
                 _chartAreaGrid.Margin = new Thickness(
-                    _chartAreaOriginalMargin.Left + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Top + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Right + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Bottom + BEVEL_DEPTH);
+                    _chartAreaMargin.Left + BEVEL_DEPTH,
+                    _chartAreaMargin.Top + BEVEL_DEPTH,
+                    _chartAreaMargin.Right + BEVEL_DEPTH,
+                    _chartAreaMargin.Bottom + BEVEL_DEPTH);
             }
-            
-            ApplyLighting();
-            
-            SetEventsToToolTipObject();
+        }
+
+        /// <summary>
+        /// OnApplyTemplate() function is invoked whenever application code
+        /// or internal processes such as a rebuilding layout pass. 
+        /// </summary>
+        public override void OnApplyTemplate()
+        {   
+            base.OnApplyTemplate();
+
+            LoadControlsFromTemplate();
 
             LoadWatermark();
 
-            if(StyleDictionary == null)
+            if (StyleDictionary == null)
                 LoadTheme("Theme1");
 
             LoadColorSets();
-            
-            IsTemplateApplied = true;
 
-            if (!String.IsNullOrEmpty(ToolTipText))
-                AttachToolTip(this,this, this);
-                        
-            AttachEvents2Visual(this, this, this._rootElement);
+            LoadToolTips();
 
-            AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
+            SetMarginOfElements();
 
-           
-/*          
-            this.EventChanged += delegate
-            {
-                 AttachEvents2Visual(this, this, this._rootElement);
-#if WPF
-                 AttachEvents2Visual(this, this, this._plotCanvas);
-#endif
-            };
-*/
+            ApplyLighting();
+
+            AttachToolTipAndEvents();
+
+            BindProperties();
+
             _internalAnimationEnabled = AnimationEnabled;
 
             if (_internalAnimationEnabled)
                 _rootElement.IsHitTestVisible = false;
 
-        }
-
-        internal override void OnToolTipTextPropertyChanged(string NewValue)
-        {   
-            base.OnToolTipTextPropertyChanged(NewValue);
-            DetachToolTip(this._toolTipCanvas);
-
-            if (!String.IsNullOrEmpty(NewValue))
-                AttachToolTip(this, this, this);
-
+            _isTemplateApplied = true;
         }
 
         #endregion
@@ -223,47 +214,227 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
-        /// Bevel canvas as Bevel Visual
+        /// Identifies the Visifire.Charts.Chart.MinScrollingGap dependency property.
         /// </summary>
-        internal Canvas BevelVisual
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// MinimumGap between two DataPoint in Plotarea
-        /// </summary>
-        internal Int32 FixedDataPoints
-        {   
-            get
-            {
-                return (Int32)GetValue(FixedDataPointsProperty);
-            }
-            set
-            {
-                SetValue(FixedDataPointsProperty, value);
-            }
-        }
-
-        private static readonly DependencyProperty FixedDataPointsProperty = DependencyProperty.Register
-            ("FixedDataPoints",
-            typeof(Int32),
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
+        /// </returns>
+        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
+            ("MinimumGap",
+            typeof(Nullable<Double>),
             typeof(Chart),
-            new PropertyMetadata(OnFixedDataPointsChanged));
-
-        private static void OnFixedDataPointsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
-            Chart c = d as Chart;
-            c.CallRender();
-        }
+            new PropertyMetadata(OnMinimumGapPropertyChanged));
 
         /// <summary>
-        /// MinimumGap between two DataPoint in Plotarea
+        /// Identifies the Visifire.Charts.Chart.ScrollingEnabled dependency property.
         /// </summary>
-#if SL
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.ScrollingEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ScrollingEnabledProperty = DependencyProperty.Register
+            ("ScrollingEnabled",
+            typeof(Nullable<Boolean>),
+            typeof(Chart),
+            new PropertyMetadata(OnScrollingEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.View3D dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.View3D dependency property.
+        /// </returns>
+        public static readonly DependencyProperty View3DProperty = DependencyProperty.Register
+            ("View3D",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnView3DPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.HrefTarget dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.HrefTarget dependency property.
+        /// </returns>
+        public static readonly DependencyProperty HrefTargetProperty = DependencyProperty.Register
+            ("HrefTarget",
+            typeof(HrefTargets),
+            typeof(Chart),
+            new PropertyMetadata(OnHrefTargetChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.Href dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.Href dependency property.
+        /// </returns>
+        public static readonly DependencyProperty HrefProperty = DependencyProperty.Register
+            ("Href",
+            typeof(String),
+            typeof(Chart),
+            new PropertyMetadata(OnHrefChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.Theme dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.Theme dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ThemeProperty = DependencyProperty.Register
+            ("Theme",
+            typeof(String),
+            typeof(Chart),
+            new PropertyMetadata(OnThemePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty AnimationEnabledProperty = DependencyProperty.Register
+            ("AnimationEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            null);
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.InternalBorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.InternalBorderThickness dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+           ("InternalBorderThickness",
+           typeof(Thickness),
+           typeof(Chart),
+           new PropertyMetadata(OnInternalBorderThicknessChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.BorderStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.BorderStyle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty BorderStyleProperty = DependencyProperty.Register
+            ("BorderStyle",
+            typeof(BorderStyles),
+            typeof(Chart),
+            null);
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.InternalBackground dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.InternalBackground dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBackgroundProperty = DependencyProperty.Register
+          ("InternalBackground",
+          typeof(Brush),
+          typeof(Chart),
+          new PropertyMetadata(OnInternalBackgroundPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.Bevel dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.Bevel dependency property.
+        /// </returns>
+        public static readonly DependencyProperty BevelProperty = DependencyProperty.Register
+            ("Bevel",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnBevelPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.ColorSet dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.ColorSet dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ColorSetProperty = DependencyProperty.Register
+            ("ColorSet",
+            typeof(String),
+            typeof(Chart),
+            new PropertyMetadata(OnColorSetPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.ColorSets dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.ColorSets dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ColorSetsProperty = DependencyProperty.Register
+            ("ColorSets",
+            typeof(ColorSets),
+            typeof(Chart),
+            null);
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.LightingEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.LightingEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LightingEnabledProperty = DependencyProperty.Register
+            ("LightingEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnLightingEnabledPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.CornerRadius dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.CornerRadius dependency property.
+        /// </returns>
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register
+            ("CornerRadius",
+            typeof(CornerRadius),
+            typeof(Chart),
+            null);
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.ShadowEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.ShadowEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
+            ("ShadowEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnShadowEnabledPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.Watermark dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.Watermark dependency property.
+        /// </returns>
+        public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register
+            ("Watermark",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnWatermarkPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.PlotArea dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.PlotArea dependency property.
+        /// </returns>
+        public static readonly DependencyProperty PlotAreaProperty = DependencyProperty.Register
+        ("PlotArea",
+        typeof(PlotArea),
+        typeof(Chart),
+        new PropertyMetadata(OnPlotAreaPropertyChanged));
+
+        /// <summary>
+        /// Minimum gap between two DataPoint of same series in Plotarea
+        /// </summary>
+#if SL  
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
-#endif
+#endif  
         public Nullable<Double> MinimumGap
         {   
             get
@@ -279,18 +450,6 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
-            ("MinimumGap",
-            typeof(Nullable<Double>),
-            typeof(Chart),
-            new PropertyMetadata(OnMinimumGapPropertyChanged));
-
-        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.CallRender();
-        }
-        
         /// <summary>
         /// Enable or disable 3D effect
         /// </summary>
@@ -314,23 +473,6 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty ScrollingEnabledProperty = DependencyProperty.Register
-            ("ScrollingEnabled",
-            typeof(Nullable<Boolean>),
-            typeof(Chart),
-            new PropertyMetadata(OnScrollingEnabledPropertyChanged));
-
-        /// <summary>
-        /// Event handler view3DProperty changed event
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnScrollingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.CallRender();  
-        }
-
         /// <summary>
         /// Enable or disable 3D effect
         /// </summary>
@@ -345,24 +487,10 @@ namespace Visifire.Charts
                 return (Boolean)GetValue(View3DProperty);
             }
         }
-
-        public static readonly DependencyProperty View3DProperty = DependencyProperty.Register
-            ("View3D",
-            typeof(Boolean),
-            typeof(Chart),
-            new PropertyMetadata(OnView3DPropertyChanged));
-
+        
         /// <summary>
-        /// Event handler view3DProperty changed event
+        /// Target window Property for hyperlink 
         /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnView3DPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.CallRender();
-        }
-
         public HrefTargets HrefTarget
         {
             get
@@ -375,18 +503,9 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty HrefTargetProperty = DependencyProperty.Register
-            ("HrefTarget",
-            typeof(HrefTargets),
-            typeof(Chart),
-            new PropertyMetadata(OnHrefTargetChanged));
-
-        private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            ObservableObject.AttachHref(c, c, c.Href, (HrefTargets)e.NewValue);
-        }
-
+        /// <summary>
+        /// Hyperlink Property
+        /// </summary>
         public String Href
         {
             get
@@ -398,19 +517,10 @@ namespace Visifire.Charts
                 SetValue(HrefProperty, value);
             }
         }
-
-        public static readonly DependencyProperty HrefProperty = DependencyProperty.Register
-            ("Href",
-            typeof(String),
-            typeof(Chart),
-            new PropertyMetadata(OnHrefChanged));
-
-        private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            ObservableObject.AttachHref(c, c, e.NewValue.ToString(), c.HrefTarget);
-        }
-
+        
+        /// <summary>
+        /// Name of the theme to be applied
+        /// </summary>
         public String Theme
         {
             get
@@ -423,30 +533,870 @@ namespace Visifire.Charts
             }
         }
 
-        public static readonly DependencyProperty ThemeProperty = DependencyProperty.Register
-            ("Theme",
-            typeof(String),
-            typeof(Chart),
-            new PropertyMetadata(OnThemePropertyChanged));
-            
-        private static void OnThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Enabled or disables animation
+        /// </summary>
+        public Boolean AnimationEnabled
         {
-            Chart c = d as Chart;
-            c.LoadTheme((String)e.NewValue);
-            c.CallRender();
+            get
+            {   
+                if (!IsInDesignMode)
+                {   
+                    if (String.IsNullOrEmpty(AnimationEnabledProperty.ToString()))
+                    {
+                        return false;
+                    }
+                    else
+                        return (Boolean)GetValue(AnimationEnabledProperty);
+                }
+                else
+                    return false;
+            }
+            set
+            {
+                SetValue(AnimationEnabledProperty, value);
+            }
+        }
+
+        #region BorderProperties
+
+        /// <summary>
+        /// BorderThickness property
+        /// </summary>
+        public new Thickness BorderThickness
+        {
+            get
+            {
+                return (Thickness)GetValue(BorderThicknessProperty);
+            }
+            set
+            {
+                SetValue(BorderThicknessProperty, value);
+                SetValue(InternalBorderThicknessProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Sets the border line style
+        /// </summary>
+        public BorderStyles BorderStyle
+        {
+            get
+            {
+                return (BorderStyles)GetValue(BorderStyleProperty);
+            }
+            set
+            {
+                SetValue(BorderStyleProperty, value);
+            }
         }
         
-        internal void LoadTheme(String themeName)
+        #endregion
+
+        /// <summary>
+        /// Background color property
+        /// </summary>
+        public new Brush Background
+        {   
+            get
+            {   
+                return (Brush)GetValue(BackgroundProperty);
+            }
+            set
+            {
+                SetValue(BackgroundProperty, value);
+                SetValue(InternalBackgroundProperty, value);
+            }
+        }
+        
+        /// <summary>
+        /// Enabled or disables the bevel effect
+        /// </summary>
+        public Boolean Bevel
+        {
+            get
+            {
+                return (Boolean)GetValue(BevelProperty);
+            }
+            set
+            {
+                SetValue(BevelProperty, value);
+            }
+        }
+        
+        /// <summary>
+        /// Set of colors that will be used for the DataPoints
+        /// </summary>
+        public String ColorSet
+        {
+            get
+            {
+                return (String)GetValue(ColorSetProperty);
+            }
+            set
+            {
+                SetValue(ColorSetProperty, value);
+            }
+        }
+        
+        /// <summary>
+        /// Set of colors that will be used for the DataPoints
+        /// </summary>
+        public ColorSets ColorSets
+        {
+            get
+            {
+                return (ColorSets)GetValue(ColorSetsProperty);
+            }
+            set
+            {
+                SetValue(ColorSetsProperty, value);
+            }
+        }
+                       
+        /// <summary>
+        /// Enabled or disabled automatic color shading
+        /// </summary>
+        public Boolean LightingEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(LightingEnabledProperty);
+            }
+            set
+            {
+                SetValue(LightingEnabledProperty, value);
+            }
+        }
+        
+        /// <summary>
+        /// Sets the parameter used to create rounded or elliptical corners of the element
+        /// </summary>
+#if WPF
+        [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
+#else
+        [System.ComponentModel.TypeConverter(typeof(Converters.CornerRadiusConverter))]
+#endif
+        public CornerRadius CornerRadius
+        {
+            get
+            {
+                return (CornerRadius)GetValue(CornerRadiusProperty);
+            }
+            set
+            {
+                SetValue(CornerRadiusProperty, value);
+            }
+        }
+        
+        /// <summary>
+        /// Enables or disables the shadow for the element
+        /// </summary>
+        public Boolean ShadowEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ShadowEnabledProperty);
+            }
+            set
+            {
+                SetValue(ShadowEnabledProperty, value);
+            }
+        }
+           
+        /// <summary>
+        /// Enables or disables the "Powered by Visifire" watermark
+        /// </summary>
+        public Boolean Watermark
+        {
+            get
+            {
+                return (Boolean)GetValue(WatermarkProperty);
+            }
+            set
+            {
+                SetValue(WatermarkProperty, value);
+            }
+        }
+                
+        /// <summary>
+        /// PlotArea of the chart
+        /// </summary>
+        public PlotArea PlotArea
+        {
+            get
+            {
+                return (PlotArea)GetValue(PlotAreaProperty);
+            }
+            set
+            {
+                SetValue(PlotAreaProperty, value);
+                PlotArea.Chart = this;
+                PlotArea.PropertyChanged -= Element_PropertyChanged;
+                PlotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+            }
+        }
+
+        /// <summary>
+        /// AxesX as AxisCollection of type Axis
+        /// </summary>
+        public AxisCollection AxesX
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// AxesX as AxisCollection of type Axis
+        /// </summary>
+        public AxisCollection AxesY
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Titles as TitleCollection of type Title
+        /// </summary>
+        public TitleCollection Titles
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Legends as LegendCollection of type Legend
+        /// </summary>
+        public LegendCollection Legends
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// ToolTips as ToolTipCollection of type ToolTip
+        /// </summary>
+        public ToolTipCollection ToolTips
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// TrendLines as TrendLineCollection of type TrendLine
+        /// </summary>
+        public TrendLineCollection TrendLines
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Collection of DataSeries
+        /// </summary>
+        public DataSeriesCollection Series
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        #region Public Events
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+             
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Initializes the various properties of the class
+        /// </summary>
+        private void Init()
+        {
+#if WPF
+            NameScope.SetNameScope(this, new NameScope());
+#endif
+            Watermark = true;
+
+            //ColorSets = new ColorSets();
+            ToolTips = new ToolTipCollection();
+
+            // Initialize title list
+            Titles = new TitleCollection();
+
+            // Initialize legend list
+            Legends = new LegendCollection();
+
+            // Initialize trendLine list
+            TrendLines = new TrendLineCollection();
+
+            // Initialize AxesX list
+            AxesX = new AxisCollection();
+
+            // Initialize AxesY list
+            AxesY = new AxisCollection();
+
+            // Initialize Series list
+            Series = new DataSeriesCollection();
+
+            // Initialize PlotArea
+            PlotArea = new PlotArea() { Chart = this };
+
+            // Attach event handler on collection changed event with ToolTip collection
+            ToolTips.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ToolTips_CollectionChanged);
+
+            // Attach event handler on collection changed event with Title collection
+            Titles.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Titles_CollectionChanged);
+
+            // Attach event handler on collection changed event with Legend collection
+            Legends.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Legends_CollectionChanged);
+
+            // Attach event handler on collection changed event with TrendLines collection
+            TrendLines.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(TrendLines_CollectionChanged);
+
+            // Attach event handler on collection changed event with DataSeries collection
+            Series.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Series_CollectionChanged);
+
+            // Attach event handler on collection changed event with AxisX collection
+            (AxesX as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
+
+            // Attach event handler on collection changed event with AxisY collection
+            (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
+
+            // Initialize Internal ColorSet list
+            InternalColorSets = new ColorSets();
+        }
+
+        /// <summary>
+        /// OnMouseMoveLeave chart set ToolTip position
+        /// ToolTip at current mouse position over the chart control        
+        /// </summary>
+        /// <param name="sender">Chart as object</param>
+        /// <param name="e">MouseEventArgs</param>
+        private void Chart_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (ToolTipEnabled)
+            {
+                if (_toolTip.Visibility == Visibility.Visible)
+                    _toolTip.Hide();
+            }
+            else
+            {
+                _toolTip.Hide();
+            }
+            _toolTip.Text = "";
+        }
+
+        /// <summary>
+        /// OnMouseMoveOver chart set ToolTip position
+        /// ToolTip at current mouse position over the chart control        
+        /// </summary>
+        /// <param name="sender">Chart as object</param>
+        /// <param name="e">MouseEventArgs</param>
+        private void Chart_MouseMove(object sender, MouseEventArgs e)
+        {
+            UpdateToolTipPosition(sender, e);
+        }
+
+        /// <summary>
+        /// Event handler manages the addition and removal of tooltip from tooltip list of chart
+        /// </summary>
+        private void ToolTips_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (ToolTip toolTip in e.NewItems)
+                    {
+                        if (toolTip.Style == null && StyleDictionary != null)
+                        {
+                            Style myStyle = StyleDictionary["ToolTip"] as Style;
+
+                            if (myStyle != null)
+                                toolTip.Style = myStyle;
+                        }
+
+                        toolTip.Chart = this;
+                    }
+                }
+            }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            {
+                foreach (ToolTip toolTip in e.OldItems)
+                    (toolTip.Chart as Chart)._toolTipCanvas.Children.Remove(toolTip);
+            }
+        }
+
+        /// <summary>
+        /// Event handler manages the addition and removal of Axis from AxesX list of chart
+        /// </summary>
+        private void AxesX_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Boolean isAutoAxis = false;
+
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (Axis axis in e.NewItems)
+                    {
+                        axis.Chart = this;
+
+                        if (axis._isAutoGenerated)
+                            isAutoAxis = true;
+
+                        if (axis.AxisLabels != null)
+                            axis.AxisLabels.Chart = this;
+
+                        foreach (ChartGrid cg in axis.Grids)
+                            cg.Chart = this;
+
+                        foreach (Ticks ticks in axis.Ticks)
+                            ticks.Chart = this;
+
+                        axis.IsNotificationEnable = false;
+
+                        if (axis.StartFromZero == null)
+                            axis.StartFromZero = false;
+
+                        axis.IsNotificationEnable = true;
+
+                        axis.PropertyChanged -= Element_PropertyChanged;
+                        axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                    }
+                }
+            }
+
+            if (!isAutoAxis)
+            {
+                InvokeRender();
+            }
+        }
+
+        /// <summary>
+        /// Event handler manages the addition and removal of Axis from AxesY list of chart
+        /// </summary>
+        private void AxesY_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Boolean isAutoAxis = false;
+
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (Axis axis in e.NewItems)
+                    {   
+                        axis.Chart = this;
+
+                        if (axis._isAutoGenerated)
+                            isAutoAxis = true;
+
+                        axis.AxisRepresentation = AxisRepresentations.AxisY;
+
+                        if (axis.AxisLabels != null)
+                            axis.AxisLabels.Chart = this;
+
+                        foreach (ChartGrid cg in axis.Grids)
+                            cg.Chart = this;
+
+                        foreach (Ticks ticks in axis.Ticks)
+                            ticks.Chart = this;
+
+                        axis.IsNotificationEnable = false;
+
+                        if (axis.StartFromZero == null)
+                            axis.StartFromZero = true;
+
+                        axis.IsNotificationEnable = true;
+
+                        axis.PropertyChanged -= Element_PropertyChanged;
+                        axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                    }
+                }
+            }
+
+            if (!isAutoAxis)
+            {
+                InvokeRender();
+            }
+        }
+
+        /// <summary>
+        /// Event handler manages the addition and removal of title from chart
+        /// </summary>
+        private void Titles_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                ObservableCollection<Title> titles = sender as ObservableCollection<Title>;
+
+                if (e.NewItems != null)
+                {
+                    foreach (Title title in e.NewItems)
+                    {
+                        title.Chart = this;
+                        title.PropertyChanged -= Element_PropertyChanged;
+                        title.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                    }
+                }
+            }
+
+            InvokeRender();
+        }
+        
+        /// <summary>
+        /// Event handler manages the addition and removal of legend from chart
+        /// </summary>
+        /// <param name="sender">Legend</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
+        private void Legends_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Boolean isAutoLegend = false;
+
+            if (e.NewItems != null)
+            {
+                foreach (Legend legend in e.NewItems)
+                {
+                    if (legend._isAutoGenerated)
+                        isAutoLegend = true;
+
+                    if (Legends.Count > 0)
+                    {   
+                        if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
+                            legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
+                    }
+
+                    legend.Chart = this;
+                    legend.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                }
+
+            }
+
+            if (!isAutoLegend)
+            {
+                InvokeRender();
+            }
+        }
+        
+        /// <summary>
+        /// Event handler manages the addition and removal of trendLine from chart
+        /// </summary>
+        /// <param name="sender">TrendLine</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
+        private void TrendLines_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {   
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                {   
+                    foreach (TrendLine trendLine in e.NewItems)
+                    {
+                        trendLine.Chart = this;
+
+                        if (!String.IsNullOrEmpty(this.Theme))
+                        {   
+                            trendLine.ApplyStyleFromTheme(this, "TrendLine");
+                        }
+
+                        trendLine.PropertyChanged -= Element_PropertyChanged;
+                        trendLine.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                    }
+                }
+
+            }
+
+            InvokeRender();
+        }
+
+        /// <summary>
+        /// Event handler manages the addition and removal of DataSeries from Series list of chart
+        /// </summary>
+        private void Series_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                    foreach (DataSeries ds in e.NewItems)
+                    {
+                        ds.Chart = this;
+
+                        foreach (DataPoint dp in ds.DataPoints)
+                        {
+                            dp.Chart = this;
+                        }
+
+                        if (!String.IsNullOrEmpty(this.Theme))
+                            ds.ApplyStyleFromTheme(this, "DataSeries");
+
+                        ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
+                        ds.PropertyChanged -= Element_PropertyChanged;
+                        ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
+                    }
+                 
+            }
+
+            InvokeRender();
+        }
+              
+        /// <summary>
+        /// Event handler manages property change of visifire elements, like Title, Legends, DataSeries etc.
+        /// </summary>
+        /// <param name="sender">ObservableObject</param>
+        /// <param name="e">PropertyChangedEventArgs</param>
+        private void Element_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            InvokeRender();
+        }
+
+        /// <summary>
+        /// Load watermark for www.visifire.com, present at the right and top side corner of the chart.
+        /// </summary>
+        private void LoadWatermark()
+        {
+            if (Watermark)
+            {
+                WaterMarkElement = new TextBlock();
+                WaterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
+                WaterMarkElement.VerticalAlignment = VerticalAlignment.Top;
+                WaterMarkElement.Margin = new Thickness(0, 3, 5, 0);
+                WaterMarkElement.SetValue(Canvas.ZIndexProperty, 90000);
+                WaterMarkElement.Text = "www.visifire.com";
+                WaterMarkElement.TextDecorations = TextDecorations.Underline;
+                WaterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
+                WaterMarkElement.FontSize = 9;
+                AttachHref(this, WaterMarkElement, "http://www.visifire.com", HrefTargets._blank);
+                _rootElement.Children.Add(WaterMarkElement);
+            }
+        }
+
+        /// <summary>
+        /// Loads color sets from chart resource
+        /// </summary>
+        private void LoadColorSets()
+        {
+            string resourceName = "Visifire.Charts.ColorSets.xaml"; // Resource location for embedded color sets
+            ColorSets embeddedColorSets;                            // Embedded color sets
+
+            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(resourceName))
+            {
+                if (s != null)
+                {
+                    System.IO.StreamReader reader = new System.IO.StreamReader(s);
+
+                    String xaml = reader.ReadToEnd();
+#if WPF
+                    embeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
+#else
+                    embeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
+#endif
+                    if (embeddedColorSets == null)
+                        System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
+
+                    if (InternalColorSets == null)
+                        InternalColorSets = new ColorSets();
+
+                    if (embeddedColorSets != null)
+                        InternalColorSets.AddRange(embeddedColorSets);
+
+                    if (ColorSets != null)
+                        foreach (ColorSet colorSet in ColorSets)
+                            InternalColorSets.Add(colorSet);
+
+                    reader.Close();
+                    s.Close();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Some property needs to bind with the existing property in control before first time render. 
+        /// And binding should be done only once. 
+        /// </summary>
+        private void BindProperties()
+        {
+            System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
+            binding.Source = this;
+            binding.Mode = System.Windows.Data.BindingMode.OneWay;
+            base.SetBinding(InternalBackgroundProperty, binding);
+
+            System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
+            binding1.Source = this;
+            binding1.Mode = System.Windows.Data.BindingMode.OneWay;
+            base.SetBinding(InternalBorderThicknessProperty, binding1);
+        }
+
+        /// <summary>
+        /// Prepare chart area for drawing
+        /// </summary>
+        private void PrepareChartAreaForDrawing()
+        {
+            // Create new ChartArea
+            if (ChartArea == null)
+                ChartArea = new ChartArea(this as Chart);
+            
+            ApplyChartBevel();
+
+            ApplyChartShadow(this.ActualWidth, this.ActualHeight);
+
+            _renderLapsedCounter = 0;
+        }
+
+        /// <summary>
+        /// Apply Bevel effect to Chart
+        /// </summary>
+        /// <returns>If success return true else false.</returns>
+        private Boolean ApplyChartBevel()
+        {
+            if (Bevel && _rootElement != null)
+            {
+                if (_chartBorder.ActualWidth == 0 && _chartBorder.ActualHeight == 0)
+                {
+                    return false;
+                }
+
+                _chartAreaGrid.Margin = new Thickness(
+                    _chartAreaMargin.Left + BEVEL_DEPTH,
+                    _chartAreaMargin.Top + BEVEL_DEPTH,
+                    _chartAreaMargin.Right,
+                    _chartAreaMargin.Bottom);
+
+                _chartAreaGrid.UpdateLayout();
+
+                _bevelCanvas.Children.Clear();
+
+                Brush topBrush = Graphics.GetBevelTopBrush(this.Background);
+                Brush leftBrush = Graphics.GetBevelSideBrush(0, this.Background);
+                Brush rightBrush = Graphics.GetBevelSideBrush(170, this.Background);
+                Brush bottomBrush = Graphics.GetBevelSideBrush(180, this.Background);
+
+                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(
+                    _chartBorder.ActualWidth - _chartBorder.BorderThickness.Left - _chartBorder.BorderThickness.Right - _chartAreaMargin.Right - _chartAreaMargin.Left,
+                    _chartBorder.ActualHeight - _chartBorder.BorderThickness.Top - _chartBorder.BorderThickness.Bottom - _chartAreaMargin.Top - _chartAreaMargin.Bottom,
+                BEVEL_DEPTH, BEVEL_DEPTH, topBrush, leftBrush, rightBrush, bottomBrush);
+
+                if (LightingEnabled)
+                {
+                    _chartLightingBorder.Opacity = 0.4;
+                }
+
+                BevelVisual.Margin = new Thickness(0, 0, 0, 0);
+                BevelVisual.IsHitTestVisible = false;
+                BevelVisual.SetValue(Canvas.TopProperty, _chartAreaMargin.Top + _chartBorder.BorderThickness.Top);
+                BevelVisual.SetValue(Canvas.LeftProperty, _chartAreaMargin.Left + _chartBorder.BorderThickness.Left);
+
+                _bevelCanvas.Children.Add(BevelVisual);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Remove bevel effect from chart
+        /// </summary>
+        private void RemoveChartBevel()
+        {
+            if (_isTemplateApplied)
+            {
+                if (BevelVisual != null && _bevelCanvas != null)
+                {
+                    _bevelCanvas.Children.Clear();
+                    _chartAreaGrid.Margin = new Thickness(0);
+                }
+            }
+        }
+              
+        /// <summary>
+        /// Apply lighting effect for chart
+        /// </summary>
+        private void ApplyLighting()
+        {
+            if (_chartLightingBorder != null)
+            {
+                if (LightingEnabled)
+                {
+                    _chartLightingBorder.Visibility = Visibility.Visible;
+                    _chartLightingBorder.Opacity = 0.4;
+                }
+                else
+                {
+                    _chartLightingBorder.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Apply shadow effect on chart
+        /// (Creates a shadow layer behind the chart)
+        /// </summary>
+        /// <param name="Height">Chart width</param>
+        /// <param name="Width">Chart height</param>
+        private void ApplyChartShadow(Double width, Double height)
+        {
+            if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
+            {
+                _shadowGrid.Children.Clear();
+
+                if (_rootElement != null)
+                {
+                    // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
+                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
+                    ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
+                    ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
+                    ChartShadowLayer.IsHitTestVisible = false;
+                    ChartShadowLayer.SetValue(Canvas.ZIndexProperty, 0);
+
+                    _shadowGrid.Children.Add(ChartShadowLayer);
+
+                    ChartShadowLayer.Margin = new Thickness(Chart.SHADOW_DEPTH, Chart.SHADOW_DEPTH, 0, 0);
+
+                    if (this._chartBorder != null)
+                        this._chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+
+                    _isShadowApplied = true;
+                }
+            }
+
+            if (ShadowEnabled && ChartShadowLayer != null)
+                ChartShadowLayer.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Removes Chart shadow
+        /// </summary>
+        private void RemoveShadow()
+        {
+            if (_isTemplateApplied && !ShadowEnabled)
+            {
+                _chartBorder.Margin = new Thickness(0, 0, 0, 0);
+                _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
+                _isShadowApplied = false;
+            }
+        }
+
+        /// <summary>
+        /// Loads themes from resource file and select specific theme using theme name
+        /// </summary>
+        /// <param name="themeName">String themeName</param>
+        private void LoadTheme(String themeName)
         {
             if (String.IsNullOrEmpty(themeName))
                 return;
-            
+
             StyleDictionary = null;
 
             string fooResourceName = "Visifire.Charts." + themeName + ".xaml";
 
             using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(fooResourceName))
-            {   
+            {
                 if (s == null)
                 {
 #if WPF             
@@ -458,7 +1408,7 @@ namespace Visifire.Charts
 
                     if (srif == null)
                         throw new Exception(fooResourceName + " Theme file not found as application resources.");
-                    
+
                     using (System.IO.Stream s1 = srif.Stream)
                     {
                         if (s1 != null)
@@ -502,207 +1452,148 @@ namespace Visifire.Charts
             }
         }
 
-        #region AnimationProperty
+        /// <summary>
+        /// Loads default ToolTips if required.
+        /// Currently only one tooltip is supported
+        /// </summary>
+        private void LoadToolTips()
+        {
+            if (ToolTips.Count == 0)
+            {
+                ToolTip toolTip = new ToolTip() { Chart = this, Visibility = Visibility.Collapsed };
+                ToolTips.Add(toolTip);
+            }
+
+            _toolTip = ToolTips[0];
+
+            _toolTip.Chart = this;
+
+            _toolTipCanvas.Children.Add(_toolTip);
+
+            // Attach events to the root element of the chart to track mouse movement over chart.
+            this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
+        }
 
         /// <summary>
-        /// Enabled or disables animation
+        /// Attach events and tooltip to chart
         /// </summary>
-        public Boolean AnimationEnabled
+        private void AttachToolTipAndEvents()
         {
-            get
-            {   
-                if (!IsInDesignMode)
-                {   
-                    if (String.IsNullOrEmpty(AnimationEnabledProperty.ToString()))
-                    {
-                        return false;
-                    }
-                    else
-                        return (Boolean)GetValue(AnimationEnabledProperty);
-                }
-                else
-                    return false;
-            }
-            set
-            {
-                SetValue(AnimationEnabledProperty, value);
-            }
-        }
+            if (!String.IsNullOrEmpty(ToolTipText))
+                AttachToolTip(this, this, this);
 
-        public static readonly DependencyProperty AnimationEnabledProperty = DependencyProperty.Register
-            ("AnimationEnabled",
-            typeof(Boolean),
-            typeof(Chart),
-            null);
+            AttachEvents2Visual(this, this, this._rootElement);
+
+            AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
+        }
 
         /// <summary>
-        /// Set the type of animation
+        /// MinScrollingGapProperty changed call back function
         /// </summary>
-        internal AnimationType AnimationType
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get
-            {
-                if (GetValue(AnimationTypeProperty) == null)
-                {
-                    return AnimationType.Type1;
-                }
-                else
-                    return (AnimationType)GetValue(AnimationTypeProperty);
-            }
-            set
-            {
-                SetValue(AnimationTypeProperty, value);
-            }
+            Chart c = d as Chart;
+            c.InvokeRender();
         }
-
-        public static readonly DependencyProperty AnimationTypeProperty = DependencyProperty.Register
-            ("AnimationType",
-            typeof(AnimationType),
-            typeof(Chart),
-            null);
 
         /// <summary>
-        /// Sets the duration for animation
+        /// ScrollingEnabledProperty changed call back function
         /// </summary>
-        internal Double AnimationDuration
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnScrollingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get
-            {
-
-                return ((Double)GetValue(AnimationDurationProperty) == 0) ? 1 : Math.Abs((Double)GetValue(AnimationDurationProperty));
-            }
-            set
-            {
-                SetValue(AnimationDurationProperty, value);
-            }
+            Chart c = d as Chart;
+            c.InvokeRender();
         }
 
-        public static readonly DependencyProperty AnimationDurationProperty = DependencyProperty.Register
-            ("AnimationDuration",
-            typeof(Double),
-            typeof(Chart),
-            null);
-
-        #endregion
-
-        #region BorderProperties
-
-        public new Thickness BorderThickness
+        /// <summary>
+        /// View3DProperty changed call back function
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnView3DPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get
-            {
-                return (Thickness)GetValue(BorderThicknessProperty);
-            }
-            set
-            {
-                SetValue(BorderThicknessProperty, value);
-                SetValue(InternalBorderThicknessProperty, value);
-            }
+            Chart c = d as Chart;
+            c.InvokeRender();
         }
 
-        public static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
-           ("InternalBorderThickness",
-           typeof(Thickness),
-           typeof(Chart),
-           new PropertyMetadata(OnInternalBorderThicknessChanged));
+        /// <summary>
+        /// HrefTargetProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.AttachHref(c, c, c.Href, (HrefTargets)e.NewValue);
+        }
 
+        /// <summary>
+        /// HrefProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.AttachHref(c, c, e.NewValue.ToString(), c.HrefTarget);
+        }
+
+        /// <summary>
+        /// ThemeProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.LoadTheme((String)e.NewValue);
+            c.InvokeRender();
+        }
+
+        /// <summary>
+        /// InternalBorderProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnInternalBorderThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
 
             c.RemoveChartBevel();
-            c.CallRender();
-
-            //if (c.ApplyChartBevel())
-            //{
-            //    if ((Boolean)c.Bevel == true)
-            //    {
-            //        c.CallRender();
-            //    }
-            //    else
-            //    {
-            //        c.RemoveChartBevel();
-            //    }
-            //}
+            c.InvokeRender();
         }
 
         /// <summary>
-        /// Sets the border line style
+        /// InternalBackgroundProperty changed call back function
         /// </summary>
-        public BorderStyles BorderStyle
-        {
-            get
-            {
-
-                return (BorderStyles)GetValue(BorderStyleProperty);
-            }
-            set
-            {
-                SetValue(BorderStyleProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty BorderStyleProperty = DependencyProperty.Register
-            ("BorderStyle",
-            typeof(BorderStyles),
-            typeof(Chart),
-            null);
-
-        #endregion
-
-        public new Brush Background
-        {   
-            get
-            {   
-                return (Brush)GetValue(BackgroundProperty);
-            }
-            set
-            {
-                SetValue(BackgroundProperty, value);
-                SetValue(InternalBackgroundProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty InternalBackgroundProperty = DependencyProperty.Register
-          ("InternalBackground",
-          typeof(Brush),
-          typeof(Chart),
-          new PropertyMetadata(OnInternalBackgroundPropertyChanged));
-
-
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnInternalBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Chart c = d as Chart;
-            //c._chartBorder.Background = (Brush) e.NewValue;
             c.RemoveChartBevel();
-            c.CallRender();
-
-            if (c.ApplyChartBevel())
-            {
-                if ((Boolean)c.Bevel == true)
-                {
-                    c.CallRender();
-                }
-                else
-                {
-                    c.RemoveChartBevel();
-                }
-            }
-
-            //c.CallRender();
+            c.ApplyChartBevel();
+            c.InvokeRender();
         }
 
+        /// <summary>
+        /// InternalPropertyProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnInternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            //c.RemoveChartBevel();
-            //c.CallRender();
 
             if (c.ApplyChartBevel())
             {
                 if ((Boolean)c.Bevel == true)
                 {
-                    c.CallRender();
+                    c.InvokeRender();
                 }
                 else
                 {
@@ -712,91 +1603,125 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enabled or disables the bevel effect
+        /// Property changed call back function
         /// </summary>
-        public Boolean Bevel
-        {
-            get
-            {
-                return (Boolean)GetValue(BevelProperty);
-            }
-            set
-            {
-                SetValue(BevelProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty BevelProperty = DependencyProperty.Register
-            ("Bevel",
-            typeof(Boolean),
-            typeof(Chart),
-            new PropertyMetadata(OnBevelPropertyChanged));
-
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBevelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
             c.RemoveChartBevel();
-            c.CallRender();
-
-            //c.ApplyChartBevel();
-
-            //if ((Boolean)e.NewValue == true)
-            //{
-            //    c.CallRender();
-            //}
-            //else
-            //{
-                
-            //}
+            c.InvokeRender();
         }
 
         /// <summary>
-        /// Set of colors that will be used for the DataPoints
+        /// Property changed call back function
         /// </summary>
-        public String ColorSet
-        {
-            get
-            {
-                return (String)GetValue(ColorSetProperty);
-            }
-            set
-            {
-                SetValue(ColorSetProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty ColorSetProperty = DependencyProperty.Register
-            ("ColorSet",
-            typeof(String),
-            typeof(Chart),
-            new PropertyMetadata(OnColorSetPropertyChanged));
-
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnColorSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.CallRender();
+            c.InvokeRender();
         }
 
         /// <summary>
-        /// Set of colors that will be used for the DataPoints
+        /// Property changed call back function
         /// </summary>
-        public ColorSets ColorSets
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLightingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get
-            {
-                return (ColorSets)GetValue(ColorSetsProperty);
-            }
-            set
-            {
-                SetValue(ColorSetsProperty, value);
-            }
+            Chart c = d as Chart;
+            c.ApplyLighting();
         }
 
-        public static readonly DependencyProperty ColorSetsProperty = DependencyProperty.Register
-            ("ColorSets",
-            typeof(ColorSets),
-            typeof(Chart),
-            null);
+        /// <summary>
+        /// Property changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+
+            if ((Boolean)e.NewValue == true)
+            {
+                c.ApplyChartShadow(c.ActualWidth, c.ActualHeight);
+            }
+            else
+            {
+                c.RemoveShadow();
+            }
+
+            c.ApplyChartBevel();
+        }
+
+        /// <summary>
+        /// WaterMarkElementProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnWatermarkPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+
+            if (c.WaterMarkElement != null)
+                c.WaterMarkElement.Visibility = ((Boolean)e.NewValue) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// PlotAreaProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnPlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart chart = d as Chart;
+            PlotArea plotArea = (PlotArea)e.NewValue;
+            plotArea.Chart = chart;
+            plotArea.PropertyChanged -= chart.Element_PropertyChanged;
+            plotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(chart.Element_PropertyChanged);
+
+            chart.InvokeRender();
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        /// <summary>
+        /// Chart shadow layer is created and added to ShadowGrid, present in template
+        /// </summary>
+        private Grid ChartShadowLayer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// TextBlock element for water Mark
+        /// </summary>
+        private TextBlock WaterMarkElement
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Foreground is a default property of a Control and it is not applicable in chart
+        /// Hides the Foreground property in control
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        private new Brush Foreground
+        {
+            get;
+            set;
+        }
+        
+        #endregion
+                
+        #region Internal Properties
 
         /// <summary>
         /// Set of colors that will be used for the DataPoints
@@ -808,123 +1733,52 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enabled or disabled automatic color shading
+        /// Collection of DataSeries
         /// </summary>
-        public Boolean LightingEnabled
-        {
-            get
-            {
-                return (Boolean)GetValue(LightingEnabledProperty);
-            }
-            set
-            {
-                SetValue(LightingEnabledProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty LightingEnabledProperty = DependencyProperty.Register
-            ("LightingEnabled",
-            typeof(Boolean),
-            typeof(Chart),
-            new PropertyMetadata(OnLightingEnabledPropertyChanged));
-
-        private static void OnLightingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.ApplyLighting();
-        }
-
-        /// <summary>
-        /// Sets the parameter used to create rounded or elliptical corners of the element
-        /// </summary>
-#if WPF
-        [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
-#else
-        [System.ComponentModel.TypeConverter(typeof(Converters.CornerRadiusConverter))]
-#endif
-        public CornerRadius CornerRadius
-        {
-            get
-            {
-                return (CornerRadius)GetValue(CornerRadiusProperty);
-            }
-            set
-            {
-                SetValue(CornerRadiusProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(Chart), null);
-
-        /// <summary>
-        /// Enables or disables the shadow for the element
-        /// </summary>
-        public Boolean ShadowEnabled
-        {
-            get
-            {
-                return (Boolean)GetValue(ShadowEnabledProperty);
-            }
-            set
-            {
-                SetValue(ShadowEnabledProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register("ShadowEnabled", typeof(Boolean), typeof(Chart), new PropertyMetadata(OnShadowEnabledPropertyChanged));
-
-        private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-
-            if ((Boolean)e.NewValue == true)
-            {
-                c.ApplyChartShadow(c.ActualHeight, c.ActualWidth);
-            }
-            else
-            {
-                c.RemoveShadow();
-            }
-
-            c.ApplyChartBevel();
-        }
-   
-        /// <summary>
-        /// Enables or disables the "Powered by Visifire" watermark
-        /// </summary>
-        public Boolean Watermark
-        {
-            get
-            {
-                return (Boolean)GetValue(WatermarkProperty);
-            }
-            set
-            {
-                SetValue(WatermarkProperty, value);
-            }
-        }
-
-        public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register("Watermark", typeof(Boolean), typeof(Chart), new PropertyMetadata(OnWatermarkPropertyChanged));
-
-        private static void OnWatermarkPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-
-            if (c.WaterMarkElement != null)
-                c.WaterMarkElement.Visibility = ((Boolean)e.NewValue) ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        #region Titles Property
-
-        /// <summary>
-        /// AxesX as Observable collection of type Axis
-        /// </summary>
-        public AxisCollection AxesX
+        internal List<DataSeries> InternalSeries
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Bevel canvas as Bevel Visual
+        /// </summary>
+        internal Canvas BevelVisual
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// PlotDetails holds plotting information.
+        /// As example grouping of series depending upon axis types and RenderAs type of Series.
+        /// </summary>
+        internal PlotDetails PlotDetails
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Chart area is the entire area defined by the chart
+        /// Chart area manages jobs related plotting the graph.
+        /// </summary>
+        internal ChartArea ChartArea
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// StyleDictionary of themes
+        /// </summary>
+        internal ResourceDictionary StyleDictionary
+        {
+            get;
+            set;
+        }
+        
         /// <summary>
         /// AxesX as Observable collection of type Axis
         /// </summary>
@@ -933,16 +1787,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-
-        /// <summary>
-        /// AxesY as Observable collection of type Axis
-        /// </summary>
-        public AxisCollection AxesY
-        {
-            get;
-            set;
-        }
-
+        
         /// <summary>
         /// AxesY as Observable collection of type Axis
         /// </summary>
@@ -951,327 +1796,113 @@ namespace Visifire.Charts
             get;
             set;
         }
+
+        #endregion
         
+        #region Internal Methods
+
         /// <summary>
-        /// Titles as Observable collection of type Title
+        /// Check if exception is a dueto negative size error
         /// </summary>
-        public TitleCollection Titles
+        /// <param name="e">ArgumentException</param>
+        /// <returns>Boolean</returns>
+        internal Boolean CheckSizeError(ArgumentException e)
         {
-            get;
-            set;
-        }
+            if (e == null)
+                return false;
 
-        public LegendCollection Legends
-        {
-            get;
-            set;
-        }
+            String stackTrace = e.StackTrace.TrimStart();
 
-        public ToolTipCollection ToolTips
-        {
-            get;
-            set;
-        }
-
-        public TrendLineCollection TrendLines
-        {
-            get;
-            set;
-        }
-        #endregion
-
-
-
-        public PlotArea PlotArea
-        {
-            get
+            if (stackTrace.Contains("set_Height(Double value)")
+            || stackTrace.Contains("set_Width(Double value)")
+            || e.Message == "Height must be non-negative." || e.Message == "Width must be non-negative.")
             {
-                return (PlotArea)GetValue(PlotAreaProperty);
-            }
-            set
-            {   
-                SetValue(PlotAreaProperty, value);
-                PlotArea.Chart = this;
-                PlotArea.PropertyChanged -= PlotArea_PropertyChanged;
-                PlotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(PlotArea_PropertyChanged);
-            }
-        }
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine("------------------------------------------");
+                System.Diagnostics.Debug.WriteLine("The following SizeChanged Error is handled");
+                System.Diagnostics.Debug.WriteLine("------------------------------------------");
+                System.Diagnostics.Debug.WriteLine(e.Message);
+                if (e.StackTrace != null)
+                    System.Diagnostics.Debug.WriteLine(e.StackTrace);
 
-        public static readonly DependencyProperty PlotAreaProperty = DependencyProperty.Register
-        ("PlotArea",
-        typeof(PlotArea),
-        typeof(Chart),
-        new PropertyMetadata(OnPlotAreaPropertyChanged));
-
-        private static void OnPlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart chart = d as Chart;
-            PlotArea plotArea = (PlotArea) e.NewValue;
-            plotArea.Chart = chart;
-            plotArea.PropertyChanged -= chart.PlotArea_PropertyChanged;
-            plotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(chart.PlotArea_PropertyChanged);
-     
-        }
-        
-        void PlotArea_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        #region Series Property
-
-        /// <summary>
-        /// Collection of DataSeries
-        /// </summary>
-#if SL
-        [System.Windows.Browser.ScriptableMember]
+                System.Diagnostics.Debug.WriteLine("------------------------------------------");
 #endif
-        internal List<DataSeries> InternalSeries
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Collection of DataSeries
-        /// </summary>
-        public ObservableCollection<DataSeries> Series
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        ///// <summary>
-        ///// ToolTip text property for the Chart
-        ///// </summary>
-        //public String ToolTipText
-        //{
-        //    get
-        //    {
-        //        return (String)GetValue(ToolTipTextProperty);
-        //    }
-        //    set
-        //    {
-        //        SetValue(ToolTipTextProperty, value);
-        //    }
-        //}
-
-        //public static readonly DependencyProperty ToolTipTextProperty = DependencyProperty.Register
-        //    ("ToolTipText",
-        //    typeof(String),
-        //    typeof(Chart),
-        //    null);
-
-        #endregion
-
-        #region Public Events
-
-        #endregion
-
-        #region Protected Methods
-
-        #endregion
-
-        #region Internal Properties
-
-        internal PlotDetails PlotDetails
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Currently visible ChartArea
-        /// </summary>
-        internal ChartArea ChartArea
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Private Delegates
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Removes Chart shadow
-        /// </summary>
-        private void RemoveShadow()
-        {
-            if (IsTemplateApplied && !ShadowEnabled)
-            {
-                _chartBorder.Margin = new Thickness(0, 0, 0, 0);
-                _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
-                IsShadowApplied = false;
-            }
-        }
-
-        private void LoadWatermark()
-        {
-            if (Watermark)
-            {
-                WaterMarkElement = new TextBlock();
-                WaterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
-                WaterMarkElement.VerticalAlignment = VerticalAlignment.Top;
-                WaterMarkElement.Margin = new Thickness(0, 3, 5, 0);
-                WaterMarkElement.SetValue(Canvas.ZIndexProperty, 90000);
-                WaterMarkElement.Text = "www.visifire.com";
-                WaterMarkElement.TextDecorations = TextDecorations.Underline;
-                WaterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
-                WaterMarkElement.FontSize = 9;
-                ObservableObject.AttachHref(this, WaterMarkElement, "http://www.visifire.com", HrefTargets._blank);
-                _rootElement.Children.Add(WaterMarkElement);
-            }
-        }
-
-        private void LoadColorSets()
-        {
-            string fooResourceName = "Visifire.Charts.ColorSets.xaml";
-            ColorSets embeddedColorSets;
-
-            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(fooResourceName))
-            {   
-                if (s != null)
-                {   
-                    System.IO.StreamReader reader = new System.IO.StreamReader(s);
-
-                    String xaml = reader.ReadToEnd();
-#if WPF
-                    embeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
-#else
-                    embeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
-#endif
-
-                    if (embeddedColorSets == null)
-                        System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
-
-                    if (InternalColorSets == null)
-                        InternalColorSets = new ColorSets();
-                    
-                    if (embeddedColorSets != null)
-                        InternalColorSets.AddRange(embeddedColorSets);
-
-                    if(ColorSets != null)
-                        foreach (ColorSet colorSet in ColorSets)
-                            InternalColorSets.Add(colorSet);
-                        
-                    reader.Close();
-                    s.Close();
-                }
-            }
-        }
-
-        private void SetEventsToToolTipObject()
-        {
-            this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
-        }
-
-
-        void Chart_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (ToolTipEnabled)
-            {
-                if (_toolTip.Visibility == Visibility.Visible)
-                    _toolTip.Hide();
+                return true;
             }
             else
-            {
-                _toolTip.Hide();
-            }
-            _toolTip.Text = "";
-        }
-
-        Point MousePosition
-        {
-            get;
-            set;
-        }
-
-        internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
-        {
-            
-            //if (e == null && _mouseEventArgs == null)
-            //    return;
-            //Chart_MouseMoveSetToolTipPosition(sender, (e == null) ? _mouseEventArgs : e);
-
-            Chart_MouseMoveSetToolTipPosition(sender, e);
+                return false;
         }
 
         /// <summary>
-        /// OnMouseMoveOver chart set ToolTip position
-        /// ToolTip at current mouse position over the chart control        
+        /// On ToolTipText PropertyChanged event This function is invoked
         /// </summary>
-        /// <param name="sender">Chart as object</param>
-        /// <param name="e">MouseEventArgs</param>
-        private void Chart_MouseMoveSetToolTipPosition(object sender, MouseEventArgs e)
+        /// <param name="NewValue"></param>
+        internal override void OnToolTipTextPropertyChanged(string newValue)
         {
-            // _mouseEventArgs = e;
+            base.OnToolTipTextPropertyChanged(newValue);
+            DetachToolTip(this._toolTipCanvas);
 
+            if (!String.IsNullOrEmpty(newValue))
+                AttachToolTip(this, this, this);
+        }
+
+        /// <summary>
+        /// Update position of the tooltip according to mouse position
+        /// </summary>
+        /// <param name="sender">FrameworkElement</param>
+        /// <param name="e">MouseEventArgs</param>
+        internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
+        {
             if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
-            {   
+            {
                 Double x = e.GetPosition(this).X;
                 Double y = e.GetPosition(this).Y;
 
                 #region Set position of ToolTip
+
                 _toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 _toolTip.UpdateLayout();
 
-                Size size = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
+                Size toolTipSize = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
 
-                //System.Diagnostics.Debug.WriteLine("Size :" + size.ToString());
+                y = y - (toolTipSize.Height + 5);
 
-                Double toolTipWidth = size.Width;
-                Double toolTipHeight = size.Height;
+                x = x - toolTipSize.Width / 2;
 
-                y = y - (toolTipHeight + 5);
+                if (x <= 0)
+                {
+                    x = e.GetPosition(this).X + 10;
+                    y = e.GetPosition(this).Y + 20;
 
-                x = x - toolTipWidth / 2;
+                    if ((y + toolTipSize.Height) >= this.ActualHeight)
+                        y = this.ActualHeight - toolTipSize.Height;
+                }
 
-                    if (x <= 0)
-                    {
-                        x = e.GetPosition(this).X + 10;
-                        y = e.GetPosition(this).Y + 20;
+                if ((x + toolTipSize.Width) >= this.ActualWidth)
+                {
+                    x = e.GetPosition(this).X - toolTipSize.Width;
+                    y = e.GetPosition(this).Y - toolTipSize.Height;
+                }
 
-                        if ((y + toolTipHeight) >= this.ActualHeight)
-                            y = this.ActualHeight - toolTipHeight;
-                    }
-                    
-                    if ((x + toolTipWidth) >= this.ActualWidth)
-                    {
-                        x = e.GetPosition(this).X - toolTipWidth;
-                        y = e.GetPosition(this).Y - toolTipHeight;
-                    }
+                if (y < 0)
+                    y = e.GetPosition(this).Y + 20;
 
-                    if (y < 0)
-                        y = e.GetPosition(this).Y + 20;
+                if (x + toolTipSize.Width > this.ActualWidth)
+                    x = x + toolTipSize.Width - this.ActualWidth;
 
-                    if (x + toolTipWidth > this.ActualWidth)
-                        x = x + toolTipWidth - this.ActualWidth;
-                    
-                    
-                    if (toolTipWidth == _toolTip.MaxWidth)
-                        x = 0;
-                    
-                    if (x < 0)
-                    {
-                        x = 0;
-                    }
+                if (toolTipSize.Width == _toolTip.MaxWidth)
+                    x = 0;
 
-               
+                if (x < 0)
+                {
+                    x = 0;
+                }
 
                 _toolTip.SetValue(Canvas.LeftProperty, x);
 
                 _toolTip.SetValue(Canvas.TopProperty, y);
 
                 Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
-                //System.Diagnostics.Debug.WriteLine("LEft =" + left.ToString());
-
 
                 #endregion
             }
@@ -1282,639 +1913,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages the addition and removal of title from chart
-        /// </summary>
-        private void Titles_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                ObservableCollection<Title> titles = sender as ObservableCollection<Title>;
-
-                if (e.NewItems != null)
-                {
-                    foreach (Title title in e.NewItems)
-                    {
-                        title.Chart = this;
-                        title.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Title_PropertyChanged);
-                    }
-                }
-            }
-
-            CallRender();
-
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    CallRender();
-            //}
-        }
-
-        void Title_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        void Legends_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-            {
-                foreach (Legend legend in e.NewItems)
-                {
-                    if (Legends.Count > 0)
-                    {   
-                        if (String.IsNullOrEmpty((String)legend.GetValue(NameProperty)))
-                            legend.SetValue(NameProperty, "Legend" + Legends.IndexOf(legend));
-                    }
-
-                    legend.Chart = this;
-                    legend.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(legend_PropertyChanged);
-                }
-
-            }
-
-            if (IsRenderCallAllowed)
-                CallRender();
-
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    if(IsRenderCallAllowed)
-            //        CallRender();
-            //}
-        }
-
-        void legend_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        void TrendLines_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                if (e.NewItems != null)
-                {   
-                    foreach (TrendLine trendLine in e.NewItems)
-                    {
-                        trendLine.Chart = this;
-
-                        if (!String.IsNullOrEmpty(this.Theme))
-                        {   
-                            trendLine.ApplyStyleFromTheme(this, "TrendLine");
-                        }
-
-                        trendLine.PropertyChanged -= trendLine_PropertyChanged;
-                        trendLine.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(trendLine_PropertyChanged);
-                    }
-                }
-
-            }
-
-            CallRender();
-
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    CallRender();
-            //}
-        }
-
-        void trendLine_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        /// <summary>
-        /// Event handler manages the addition and removal of DataSeries from Series list of chart
-        /// </summary>
-        void Series_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                if (e.NewItems != null)
-                    foreach (DataSeries ds in e.NewItems)
-                    {
-                        ds.Chart = this;
-
-                        foreach (DataPoint dp in ds.DataPoints)
-                        {
-                            dp.Chart = this;
-                        }
-
-                        if (!String.IsNullOrEmpty(this.Theme))
-                            ds.ApplyStyleFromTheme(this, "DataSeries");
-
-                        ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
-                        ds.PropertyChanged -= Series_PropertyChanged;
-                        ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Series_PropertyChanged);
-                    }
-                 
-            }
-
-            CallRender();
-
-            //}
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    CallRender();
-            //}
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            //{   
-            //    //if (ChartArea != null)
-            //    //    ChartArea.ClearPlotAreaChildren();
-            //    CallRender();
-            //}
-        }
-
-        void Series_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        /// <summary>
-        /// Event handler manages the addition and removal of Axis from AxesY list of chart
-        /// </summary>
-        void AxesY_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Boolean isAutoAxis = false;
-
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                if (e.NewItems != null)
-                {   
-                    foreach (Axis axis in e.NewItems)
-                    {
-                        axis.Chart = this;
-
-                        if (axis.Tag != null && axis.Tag.ToString() == "AutoAxis")
-                            isAutoAxis = true;
-
-                        axis.AxisRepresentation = AxisRepresentations.AxisY;
-
-                        if (axis.AxisLabels != null)
-                            axis.AxisLabels.Chart = this;
-
-                        foreach (ChartGrid cg in axis.Grids)
-                            cg.Chart = this;
-
-                        foreach (Ticks ticks in axis.Ticks)
-                            ticks.Chart = this;
-                        
-                        axis.IsNotificationEnable = false;
-
-                        if (!String.IsNullOrEmpty(this.Theme))
-                        {
-                            axis.ApplyStyleFromTheme(this, "AxisY");
-                        }
-
-                        if(axis.StartFromZero == null) 
-                            axis.StartFromZero = true;
-
-                        axis.IsNotificationEnable = true;
-
-                        axis.PropertyChanged -= AxesY_PropertyChanged;
-                        axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxesY_PropertyChanged);
-                    }
-                }
-            }
-
-            if (!isAutoAxis)
-            {
-                CallRender();
-            }
-
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    if (!isAutoAxis)
-            //    {
-            //        CallRender();
-            //    }
-            //}
-        }
-
-        void AxesY_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        /// <summary>
-        /// Event handler manages the addition and removal of Axis from AxesX list of chart
-        /// </summary>
-        void AxesX_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Boolean isAutoAxis = false;
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                if (e.NewItems != null)
-                {   
-                    foreach (Axis axis in e.NewItems)
-                    {
-                        axis.Chart = this;
-
-                        if (axis.Tag != null && axis.Tag.ToString() == "AutoAxis")
-                            isAutoAxis = true;
-
-                        if (axis.AxisLabels != null)
-                            axis.AxisLabels.Chart = this;
-
-                        foreach (ChartGrid cg in axis.Grids)
-                            cg.Chart = this;
-
-                        foreach (Ticks ticks in axis.Ticks)
-                            ticks.Chart = this;
-
-                        axis.IsNotificationEnable = false;
-
-                        if (!String.IsNullOrEmpty(this.Theme))
-                        {
-                            axis.ApplyStyleFromTheme(this, "AxisX");                           
-                        }
-                        
-                        if (axis.StartFromZero == null)
-                            axis.StartFromZero = false;
-
-                        axis.IsNotificationEnable = true;
-
-                        axis.PropertyChanged -= AxesX_PropertyChanged;
-                        axis.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxesX_PropertyChanged);
-                    }
-                }
-            }
-
-            if (!isAutoAxis)
-            {
-                CallRender();
-            }
-
-            //else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            //{
-            //    if (!isAutoAxis)
-            //    {
-            //        CallRender();
-            //    }
-            //}
-        }
-
-        void AxesX_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            CallRender();
-        }
-
-        void PropertyBindingBeforeFirstTimeRender()
-        {
-            System.Windows.Data.Binding binding = new System.Windows.Data.Binding("Background");
-            binding.Source = this;
-            binding.Mode = System.Windows.Data.BindingMode.OneWay;
-            base.SetBinding(InternalBackgroundProperty, binding);
-
-            System.Windows.Data.Binding binding1 = new System.Windows.Data.Binding("BorderThickness");
-            binding1.Source = this;
-            binding1.Mode = System.Windows.Data.BindingMode.OneWay;
-            base.SetBinding(InternalBorderThicknessProperty, binding1);
-        }
-
-        /// <summary>
-        /// Create visual tree before rendering
-        /// </summary>
-        /// <returns></returns>
-        private ChartArea CreateVisualTree()
-        {
-
-            // Create new ChartArea
-            ChartArea chartArea = new ChartArea(this as Chart);
-            
-            chartArea.PropertyChanged += new EventHandler(ChartArea_PropertyChanged);
-
-            PropertyBindingBeforeFirstTimeRender();
-
-            return chartArea;
-        }
-        
-        void ChartArea_PropertyChanged(object sender, EventArgs e)
-        {
-            CallRender();
-        }
-
-        /// <summary>
-        /// Render() replace the existing Chart with a new Chart
-        /// </summary>
-        internal void Render()
-        {   
-            if (IsTemplateApplied)
-            {   
-                if ((!RENDER_LOCK ) && _rootElement != null)    
-                {
-                    System.Diagnostics.Debug.WriteLine("Render______");
-
-                    if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
-                        return;                        
-
-                    RENDER_LOCK = true;
-
-                    try
-                    {
-                        if(ChartArea == null)
-                            ChartArea = CreateVisualTree();
-
-                        ApplyChartBevel();
-                        
-                        ApplyChartShadow(this.ActualHeight, this.ActualWidth);
-
-                        _leftAxisPanel.Children.Clear();
-                        _bottomAxisPanel.Children.Clear();
-                        _topAxisPanel.Children.Clear();
-                        _rightAxisPanel.Children.Clear();
-
-                        _renderLapsedCounter = 0;
-                        ChartArea.Draw(this);
-
-                        // System.Diagnostics.Debug.WriteLine("Debug End");
-
-                    }
-                    catch (Exception e)
-                    {    
-                         RENDER_LOCK = false;
-                         throw new Exception(e.Message, e);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region Private Properties
-
-        private TextBlock WaterMarkElement
-        {
-            get;
-            set;
-        }
-
-        // Hides the Foreground property in control
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        private new Brush Foreground
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Internal Property
-
-        internal Boolean IsShadowApplied
-        {
-            get;
-            set;
-        }
-
-        internal ResourceDictionary StyleDictionary
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Internal Methods
-
-        /// <summary>
-        /// Apply Bevel effect to Chart
-        /// </summary>
-        /// <returns>If success return true else false.</returns>
-        internal Boolean ApplyChartBevel()
-        {
-            if (Bevel && _rootElement != null)
-            {
-                if (_chartBorder.ActualWidth == 0 && _chartBorder.ActualHeight == 0)
-                {
-                    return false;
-                }
-
-                _chartAreaGrid.Margin = new Thickness(
-                    _chartAreaOriginalMargin.Left + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Top + BEVEL_DEPTH,
-                    _chartAreaOriginalMargin.Right,
-                    _chartAreaOriginalMargin.Bottom);
-                _chartAreaGrid.UpdateLayout();
-
-                _bevelCanvas.Children.Clear();
-
-                Brush topBrush = Graphics.GetBevelTopBrush(this.Background);
-                Brush leftBrush = Graphics.GetBevelSideBrush(0, this.Background);
-                Brush rightBrush = Graphics.GetBevelSideBrush(170, this.Background);
-                Brush bottomBrush = Graphics.GetBevelSideBrush(180, this.Background);
-
-                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(
-                    _chartBorder.ActualWidth - _chartBorder.BorderThickness.Left - _chartBorder.BorderThickness.Right - _chartAreaOriginalMargin.Right - _chartAreaOriginalMargin.Left,
-                    _chartBorder.ActualHeight - _chartBorder.BorderThickness.Top - _chartBorder.BorderThickness.Bottom - _chartAreaOriginalMargin.Top - _chartAreaOriginalMargin.Bottom,
-                BEVEL_DEPTH, BEVEL_DEPTH, topBrush, leftBrush, rightBrush, bottomBrush);
-
-                if (LightingEnabled)
-                {   
-                    _chartLightingBorder.Opacity = 0.4;
-                }
-
-                BevelVisual.Margin = new Thickness(0, 0, 0, 0);
-                BevelVisual.IsHitTestVisible = false;
-                BevelVisual.SetValue(Canvas.TopProperty, _chartAreaOriginalMargin.Top + _chartBorder.BorderThickness.Top);
-                BevelVisual.SetValue(Canvas.LeftProperty, _chartAreaOriginalMargin.Left + _chartBorder.BorderThickness.Left);
-                _bevelCanvas.Children.Add(BevelVisual);
-            }
-            // else
-            //    _chartAreaGrid.Margin = new Thickness(0);
-
-            return true;
-        }
-
-        internal void RemoveChartBevel()
-        {
-            if (IsTemplateApplied)
-            {
-                if (BevelVisual != null && _bevelCanvas != null)
-                {
-                    _bevelCanvas.Children.Clear();
-                    _chartAreaGrid.Margin = new Thickness(0);
-                }
-            }
-        }
-
-        internal Grid ChartShadowGrid
-        {
-            get;
-            set;
-        }
-
-        internal void ApplyChartShadow(Double Height, Double Width)
-        {
-            if (!IsShadowApplied && ShadowEnabled && !Double.IsNaN(Height) && Height != 0 && !Double.IsNaN(Width) && Width != 0)
-            {
-                _shadowGrid.Children.Clear();
-
-                if (_rootElement != null)
-                {
-                    // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
-                    ChartShadowGrid = ExtendedGraphics.Get2DRectangleShadow(Width - Chart.SHADOW_DEPTH, Height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
-                    ChartShadowGrid.Width = Width - Chart.SHADOW_DEPTH;
-                    ChartShadowGrid.Height = Height - Chart.SHADOW_DEPTH;
-                    ChartShadowGrid.IsHitTestVisible = false;
-                    ChartShadowGrid.SetValue(Canvas.ZIndexProperty, 0);
-
-                    _shadowGrid.Children.Add(ChartShadowGrid);
-
-                    ChartShadowGrid.Margin = new Thickness(Chart.SHADOW_DEPTH, Chart.SHADOW_DEPTH, 0, 0);
-
-                    if (this._chartBorder != null)
-                        this._chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
-
-                    IsShadowApplied = true;
-                }
-            }
-
-            if (ShadowEnabled && ChartShadowGrid != null)
-                ChartShadowGrid.Visibility = Visibility.Visible;
-            //else
-            //    ChartShadowGrid.Visibility = Visibility.Collapsed;
-        }
-//#if WPF
-//        [STAThread]
-//#endif    
-        internal void CallRender()
-        {
-            if (IsTemplateApplied)
-            {
-#if WPF
-
-                if (RENDER_LOCK)
-                    _renderLapsedCounter++;
-                else if (Application.Current != null && Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                else
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else       
-            if (RENDER_LOCK)
-                _renderLapsedCounter++;
-            else
-            {
-                if (IsInDesignMode)
-                    Render();
-                else
-                    this.Dispatcher.BeginInvoke(Render);
-            }
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Initializes the various properties of the class
-        /// </summary>
-        internal void Init()
-        {
-
-#if WPF
-            NameScope.SetNameScope(this, new NameScope());
-#endif
-            Watermark = true;
-
-            //ColorSets = new ColorSets();
-            ToolTips = new ToolTipCollection();
-
-            // Initialize title list
-            Titles = new TitleCollection();
-
-            // Initialize legend list
-            Legends = new LegendCollection();
-
-            TrendLines = new TrendLineCollection();
-
-            // Initialize AxesX list
-            AxesX = new AxisCollection();
-
-            // Initialize AxesY list
-            AxesY = new AxisCollection();
-
-            // Initialize Series list
-            Series = new DataSeriesCollection();
-
-            PlotArea = new PlotArea();
-            PlotArea.Chart = this;
-
-            ToolTips.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ToolTips_CollectionChanged);
-
-            // Attach event handler for the Title collection changed event
-            Titles.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Titles_CollectionChanged);
-
-            // Attach event handler for the Legend collection changed event
-            Legends.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Legends_CollectionChanged);
-
-            // Attach event handler for the TrendLine collection changed event
-            TrendLines.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(TrendLines_CollectionChanged);
-
-            // Attach event handler for the Series collection changed event
-            Series.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Series_CollectionChanged);
-
-            // Attach event handler for the AxesX collection changed event
-            (AxesX as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
-
-            // Attach event handler for the AxisY collection changed event
-            (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
-
-            InternalColorSets = new ColorSets();
-        }
-
-        void ToolTips_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                ObservableCollection<ToolTip> titles = sender as ObservableCollection<ToolTip>;
-
-                if (e.NewItems != null)
-                {
-                    foreach (ToolTip toolTip in e.NewItems)
-                    {
-                        if (toolTip.Style == null && StyleDictionary != null)
-                        {
-                            Style myStyle = StyleDictionary["ToolTip"] as Style;
-
-                            if (myStyle != null)
-                                toolTip.Style = myStyle;
-                        }
-
-                        toolTip.Chart = this;
-                        
-                    }
-                }
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                foreach (ToolTip toolTip in e.OldItems)
-                    (toolTip.Chart as Chart)._toolTipCanvas.Children.Remove(toolTip);
-            }
-        }
-
-        /// <summary>
-        /// Apply lighting effect for chart
-        /// </summary>
-        internal void ApplyLighting()
-        {
-            if (_chartLightingBorder != null)
-            {
-                if (LightingEnabled)
-                {
-                    _chartLightingBorder.Visibility = Visibility.Visible;
-                    _chartLightingBorder.Opacity = 0.4;
-                }
-                else
-                {
-                    _chartLightingBorder.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        /// <summary>
         /// Get collection of titles which are docked inside PlotArea
         /// Using LINQ
         /// </summary>
         /// <returns>List of Titles docked inside PlotArea </returns>
         internal List<Title> GetTitlesDockedInsidePlotArea()
-        {   
+        {
             if (Titles != null)
             {
                 var titlesDockedInsidePlotArea =
@@ -1929,10 +1933,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get collection of titles which are docked outside PlotArea
+        /// Get collection of titles which are docked out side PlotArea
         /// Using LINQ
         /// </summary>
-        /// <returns>List of Titles docked inside PlotArea </returns>
+        /// <returns>List of Titles docked out side PlotArea</returns>
         internal List<Title> GetTitlesDockedOutSidePlotArea()
         {
             if (Titles != null)
@@ -1947,26 +1951,213 @@ namespace Visifire.Charts
             else
                 return null;
         }
+        
+        /// <summary>
+        /// Render redraws the chart
+        /// </summary>
+        internal void Render()
+        {
+            if (_isTemplateApplied && !_renderLock && _rootElement != null)
+            {
+                if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
+                    return;
+
+                _renderLock = true;
+
+                try
+                {
+                    PrepareChartAreaForDrawing();
+                    ChartArea.Draw(this);
+                }
+                catch (Exception e)
+                {
+                    _renderLock = false;
+                    if (CheckSizeError(e as ArgumentException))
+                        return;
+                    else
+                        throw new Exception(e.Message, e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Render is a delegate to a method that takes no arguments and does not return a value,
+        /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
+        /// </summary>
+        internal void InvokeRender()
+        {
+            if (_isTemplateApplied)
+            {
+                if (_renderLock)
+                    _renderLapsedCounter++;
+                else
+                {   
+#if WPF             
+                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
+                    else
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
+#else
+                    if (IsInDesignMode)
+                        Render();
+                    else
+                        this.Dispatcher.BeginInvoke(Render);
+#endif              
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Calculate font color of DataPoint labels depending upon chart background
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="labelFontColor">labelFontColor</param>
+        /// <param name="labelStyle">labelStyle</param>
+        /// <returns>Brush</returns>
+        internal static Brush CalculateDataPointLabelFontColor(Chart chart, DataPoint dataPoint, Brush labelFontColor, LabelStyles labelStyle)
+        {
+            Brush returnBrush = dataPoint.LabelFontColor;
+
+            if (labelFontColor == null)
+            {
+                Double intensity;
+
+                if (labelStyle == LabelStyles.Inside && dataPoint.Parent.RenderAs != RenderAs.Line)
+                {
+                    intensity = Graphics.GetBrushIntensity(dataPoint.Color);
+                    returnBrush = Graphics.GetDefaultFontColor(intensity);
+                }
+                else
+                {
+                    if (chart.PlotArea.Background == null)
+                    {
+                        if (chart.Background == null)
+                        {
+                            returnBrush = new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            intensity = Graphics.GetBrushIntensity(chart.Background);
+                            returnBrush = Graphics.GetDefaultFontColor(intensity);
+                        }
+                    }
+                    else
+                    {
+                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                        returnBrush = Graphics.GetDefaultFontColor(intensity);
+                    }
+                }
+            }
+
+            return returnBrush;
+        }
+
+        /// <summary>
+        /// Calculate FontColor for text elements over chart depending upon chart background and dockInsidePlotArea
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="color">FontColor</param>
+        /// <param name="dockInsidePlotArea">DockInsidePlotArea</param>
+        /// <returns>new calculated FontColor</returns>
+        internal static Brush CalculateFontColor(Chart chart, Brush color, Boolean dockInsidePlotArea)
+        {
+            Brush brush = color;
+            Double intensity;
+            if (color == null)
+            {
+                if (!dockInsidePlotArea)
+                {
+                    if (chart != null)
+                    {
+                        if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                        {
+                            brush = new SolidColorBrush(Colors.Black);
+                        }
+                        else
+                        {
+                            intensity = Graphics.GetBrushIntensity(chart.Background);
+                            brush = Graphics.GetDefaultFontColor(intensity);
+                        }
+                    }
+                }
+                else
+                {   
+                    if (chart.PlotArea != null)
+                    {
+                        if (Graphics.AreBrushesEqual(chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.Background == null)
+                        {
+                            if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                            {
+                                brush = new SolidColorBrush(Colors.Black);
+                            }
+                            else
+                            {
+                                intensity = Graphics.GetBrushIntensity(chart.Background);
+                                brush = Graphics.GetDefaultFontColor(intensity);
+                            }
+                        }
+                        else
+                        {
+                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                            brush = Graphics.GetDefaultFontColor(intensity);
+                        }
+                    }
+                }
+            }
+            return brush;
+        }
 
         #endregion
 
-        #region Internal Events
-#if WPF
-        internal delegate void RenderDelegate();        // Delegate used for attaching Render() function as target while Invoking Render() using Dispatcher.
+        #region Internal Events And Delegates
+
+#if WPF 
+        /// <summary>
+        /// RenderDelegate is used for attaching Render() function as target while Invoking Render() using Dispatcher.
+        /// </summary>
+        internal delegate void RenderDelegate();
 #endif
+
         #endregion
 
         #region Data
 
-        // internal MouseEventArgs _mouseEventArgs;
-        internal bool RENDER_LOCK = false;                                  // Render process Lock to recover from 
-        internal static Double SHADOW_DEPTH = 4;                            // Shadow Depth for chart
-        internal static Double BEVEL_DEPTH = 5;                             // Bevel Depth for chart
-        internal Int32 _renderLapsedCounter;                                // Noumber of time UI render is not done called due to RENDER_LOCK
-        private Thickness _chartAreaOriginalMargin;
-        internal Boolean IsRenderCallAllowed = true;
-        internal Boolean _internalAnimationEnabled = false;
+        /// <summary>
+        /// Whether shadow effect of chart is applied or not
+        /// </summary>
+        private Boolean _isShadowApplied;
+
+        /// <summary>
+        /// Chart area margin
+        /// </summary>
+        private Thickness _chartAreaMargin;
         
+        /// <summary>
+        /// Shadow Depth for chart
+        /// </summary>
+        internal static Double SHADOW_DEPTH = 4;
+
+        /// <summary>
+        /// Bevel Depth for chart
+        /// </summary>
+        internal static Double BEVEL_DEPTH = 5;   
+
+        /// <summary>
+        /// Number of time render call is lapsed or failed due to render lock
+        /// </summary>
+        internal Int32 _renderLapsedCounter;
+
+        /// <summary>
+        /// Render lock is used to protect chart from multiple render
+        /// </summary>
+        internal bool _renderLock = false;
+        
+        /// <summary>
+        /// Is used to handle inactive the animation after first time render
+        /// </summary>
+        internal Boolean _internalAnimationEnabled = false;
+       
         #endregion
     }
 }

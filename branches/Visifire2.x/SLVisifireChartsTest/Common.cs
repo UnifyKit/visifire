@@ -16,9 +16,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// Common testing utilities and constants.
+    /// </summary> 
     public static class Common
     {
-
         /// <summary>
         /// Delta used for high precision assertions.
         /// </summary> 

@@ -12,11 +12,12 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for TrendLineTest
+    /// This class runs the unit tests Visifire.Charts.TrendLine class 
     /// </summary>
     [TestClass]
     public class TrendLineTest
     {
+        #region CheckTrendLineDefaultPropertyValue
         /// <summary>
         /// Check the default value of Enabled
         /// </summary>
@@ -33,13 +34,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue((Boolean)trendLine.Enabled);
             }
@@ -64,13 +65,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(Orientation.Horizontal, trendLine.Orientation);
             }
@@ -95,13 +96,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(AxisTypes.Primary, trendLine.AxisType);
             }
@@ -126,13 +127,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), trendLine.LineColor);
             }
@@ -157,13 +158,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(2, trendLine.LineThickness);
             }
@@ -188,13 +189,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(LineStyles.Solid, trendLine.LineStyle);
             }
@@ -219,13 +220,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse(trendLine.ShadowEnabled);
             }
@@ -233,6 +234,7 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
         #region CheckTrendLineNewPropertyValue
         /// <summary>
@@ -253,13 +255,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.Enabled = true;
                 Assert.IsTrue((Boolean)trendLine.Enabled);
@@ -287,13 +289,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.Value = 3;
                 trendLine.Orientation = Orientation.Vertical;
@@ -322,13 +324,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 chart.Series[0].AxisYType = AxisTypes.Secondary;
                 trendLine.AxisType = AxisTypes.Secondary;
@@ -357,13 +359,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.LineColor = new SolidColorBrush(Colors.Cyan);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Cyan), trendLine.LineColor);
@@ -391,13 +393,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.LineThickness = 5;
                 Assert.AreEqual(5, trendLine.LineThickness);
@@ -425,13 +427,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
                  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.LineStyle = LineStyles.Dashed;
                 Assert.AreEqual(LineStyles.Dashed, trendLine.LineStyle);
@@ -459,13 +461,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.ShadowEnabled = true;
                 Assert.IsTrue(trendLine.ShadowEnabled);
@@ -493,13 +495,13 @@ namespace WPFVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 trendLine.Orientation = Orientation.Vertical;
                 trendLine.Value = 2;
@@ -511,6 +513,7 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
+        #region TestTrendLinesCollectionChanged
         /// <summary>
         /// Check the TrendLines collection changed. 
         /// </summary> 
@@ -526,7 +529,7 @@ namespace WPFVisifireChartsTest
 
             Int32 trendLinesAdded = 0;
 
-            isLoaded = false;
+            _isLoaded = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -575,7 +578,7 @@ namespace WPFVisifireChartsTest
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(6, trendLinesAdded);
             }
@@ -583,20 +586,31 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
+        /// <summary>
+        /// Instances that should be used across all TrendLine tests.
+        /// </summary>
         private TrendLine TrendLineToTest
         {
             get { return new TrendLine() { Value = 60, Orientation = Orientation.Horizontal }; }
         }
 
-        void chart_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        private bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

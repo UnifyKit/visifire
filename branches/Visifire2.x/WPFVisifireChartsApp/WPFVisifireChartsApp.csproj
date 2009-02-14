@@ -85,57 +85,6 @@
     <BlendEmbeddedFont Include="Fonts\segoeuiz.ttf">
       <IsSystemFont>True</IsSystemFont>
     </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\arial.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\arialbd.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\arialbi.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ariali.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ARIALN.TTF">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ARIALNB.TTF">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ARIALNBI.TTF">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ARIALNI.TTF">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\ariblk.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\verdana.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\verdanab.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\verdanai.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\verdanaz.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\cour.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\courbd.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\courbi.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
-    <BlendEmbeddedFont Include="Fonts\couri.ttf">
-      <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

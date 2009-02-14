@@ -12,6 +12,9 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.Title class 
+    /// </summary>
     [TestClass]
     public class TitleTest : SilverlightControlTest
     {
@@ -44,8 +47,8 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             title.PropertyChanged += (object sender, System.ComponentModel.PropertyChangedEventArgs e)
                 =>
@@ -98,7 +101,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Verdana"), chart.Titles[0].FontFamily));
@@ -124,7 +127,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(12, (Double)chart.Titles[0].FontSize, Common.HighPrecisionDelta));
@@ -150,7 +153,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Titles[0].FontColor));
@@ -176,7 +179,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Normal, chart.Titles[0].FontStyle));
@@ -202,7 +205,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, chart.Titles[0].FontWeight));
@@ -228,7 +231,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(HorizontalAlignment.Center, chart.Titles[0].HorizontalAlignment));
@@ -254,7 +257,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(VerticalAlignment.Top, chart.Titles[0].VerticalAlignment));
@@ -280,7 +283,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.Titles[0].Padding));
@@ -306,7 +309,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.Titles[0].Margin));
@@ -332,7 +335,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(false, chart.Titles[0].DockInsidePlotArea));
 
@@ -357,7 +360,7 @@ namespace SLVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual("", chart.Titles[0].Text));
 
@@ -382,7 +385,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new CornerRadius(0, 0, 0, 0), chart.Titles[0].CornerRadius));
@@ -410,7 +413,7 @@ namespace SLVisifireChartsTest
             title.Background = new SolidColorBrush(Colors.LightGray);
             chart.Titles.Add(title);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(TextAlignment.Center, chart.Titles[0].TextAlignment));
@@ -440,7 +443,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
                 delegate
@@ -467,7 +470,7 @@ namespace SLVisifireChartsTest
                     }
                 });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
                 {
@@ -516,7 +519,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -561,7 +564,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -583,7 +586,7 @@ namespace SLVisifireChartsTest
                         title.VerticalAlignment = VerticalAlignment.Stretch;
                         Assert.AreEqual(value, title.VerticalAlignment);
 
-                        EnqueueSleep(sleepTime);
+                        EnqueueSleep(_sleepTime);
                     }
                 }
             );
@@ -611,7 +614,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -666,33 +669,33 @@ namespace SLVisifireChartsTest
 
             title.MouseEnter += delegate(Object sender, MouseEventArgs e)
              {
-                 htmlElement1.SetProperty("value", "Title MouseEnter event fired");
+                 _htmlElement1.SetProperty("value", "Title MouseEnter event fired");
              };
 
             title.MouseLeave += delegate(Object sender, MouseEventArgs e)
             {
-                htmlElement1.SetProperty("value", "Title MouseLeave event fired");
+                _htmlElement1.SetProperty("value", "Title MouseLeave event fired");
             };
 
             title.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
             {
-                htmlElement1.SetProperty("value", "Title MouseLeftButtonUp event fired");
+                _htmlElement1.SetProperty("value", "Title MouseLeftButtonUp event fired");
             };
 
             title.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
             {
-                htmlElement1.SetProperty("value", "Title MouseLeftButtonDown event fired");
+                _htmlElement1.SetProperty("value", "Title MouseLeftButtonDown event fired");
             };
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.TitleTest_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.TitleTest_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", "Click here to exit.");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
 
         }
         #endregion
@@ -716,7 +719,7 @@ namespace SLVisifireChartsTest
             chart.Width = 400;
             chart.Height = 300;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             this.TestPanel.Children.Add(chart);
@@ -741,7 +744,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -751,30 +754,22 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", numberOfTitles + " Titles are added. Click here to exit.");
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", numberOfTitles + " Titles are added. Click here to exit.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", msg + " Total Chart Loading Time: " + totalDuration + "s");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.TitleTest_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.TitleTest_OnClick));
             });
         }
         #endregion Performance and Stress
-
-        void TitleTest_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement2);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-        }
 
         /// <summary>
         /// Instances that should be used across all Title tests.
@@ -802,17 +797,49 @@ namespace SLVisifireChartsTest
             }
         }
 
-        void chart_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for click event of html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TitleTest_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
-            isLoaded = true;
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, RoutedEventArgs e)
+        {
+            _isLoaded = true;
         }
 
         #region Private Data
 
-        const int sleepTime = 1000;
-        System.Windows.Browser.HtmlElement htmlElement1;
-        System.Windows.Browser.HtmlElement htmlElement2;
-        bool isLoaded = false;
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 1000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

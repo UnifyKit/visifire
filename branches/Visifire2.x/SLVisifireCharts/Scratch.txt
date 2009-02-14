@@ -1,4 +1,12 @@
-﻿All Vertical Axis With Scroll
+﻿        /// <summary>
+        /// Whether the render call is allowed by chart itself during render process.
+        /// During render process, elements properties and chart elements collections are changed. This should not cause render call. 
+        /// So this variable is used to protect PropertyChanged event fire during render process.
+        /// </summary>
+        internal Boolean _isInvokeRenderAllowed = true;
+
+
+All Vertical Axis With Scroll
 + Horizontal With Scroll + Non Scroll
 
 if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)

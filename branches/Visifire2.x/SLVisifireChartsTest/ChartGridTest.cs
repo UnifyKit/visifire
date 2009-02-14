@@ -9,9 +9,13 @@ using Visifire.Charts;
 using Visifire.Commons;
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.ChartGrid class 
+    /// </summary>
     [TestClass]
     public class ChartGridTest:SilverlightControlTest
     {
+        #region CheckChartGridDefaultPropertyValue
         /// <summary>
         /// Check the default value of Enabled
         /// </summary>
@@ -25,7 +29,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -50,7 +54,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0.25, chart.AxesY[0].Grids[0].LineThickness));
 
@@ -70,7 +74,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesY[0].Grids[0].LineColor));
 
@@ -90,12 +94,13 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, chart.AxesY[0].Grids[0].LineStyle));
 
             EnqueueTestComplete();
         }
+        #endregion
 
         #region CheckChartGridNewPropertyValue
         /// <summary>
@@ -236,7 +241,10 @@ namespace SLVisifireChartsTest
 
         #region Private Data
 
-        private const int sleepTime = 1000;
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 1000;
 
         #endregion
     }

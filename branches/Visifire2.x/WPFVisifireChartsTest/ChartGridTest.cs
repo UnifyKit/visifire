@@ -11,11 +11,12 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for ChartGridTest
+    /// This class runs the unit tests Visifire.Charts.ChartGrid class 
     /// </summary>
     [TestClass]
     public class ChartGridTest
     {
+        #region CheckChartGridDefaultPropertyValue
         /// <summary>
         /// Check the default value of Enabled
         /// </summary>
@@ -34,13 +35,13 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue((Boolean)grid.Enabled);
                 Assert.IsTrue((Boolean)grid.Enabled);
@@ -67,13 +68,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(0.25, grid.LineThickness);
             }
@@ -99,13 +100,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), grid.LineColor);
             }
@@ -131,13 +132,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(LineStyles.Solid, grid.LineStyle);
             }
@@ -163,13 +164,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(grid.InterlacedColor);
             }
@@ -177,6 +178,7 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
         #region CheckChartGridNewPropertyValue
         /// <summary>
@@ -199,13 +201,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesX.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.Enabled = true;
                 Assert.IsTrue((Boolean)grid.Enabled);
@@ -234,13 +236,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.Interval = 20;
                 Assert.AreEqual(20, grid.Interval);
@@ -269,13 +271,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.LineColor = new SolidColorBrush(Colors.Red);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), grid.LineColor);
@@ -304,13 +306,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.LineThickness = 1;
                 Assert.AreEqual(1, grid.LineThickness);
@@ -339,13 +341,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.LineStyle = LineStyles.Dashed;
                 Assert.AreEqual(LineStyles.Dashed, grid.LineStyle);
@@ -374,13 +376,13 @@ namespace WPFVisifireChartsTest
             axis.Grids.Add(grid);
             chart.AxesY.Add(axis);
             
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 grid.InterlacedColor = new SolidColorBrush(Colors.Gray);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), grid.InterlacedColor);
@@ -392,14 +394,21 @@ namespace WPFVisifireChartsTest
 
         #endregion
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

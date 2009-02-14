@@ -32,6 +32,23 @@ namespace Visifire.Commons
     /// </summary>
     public class Converters
     {
+        public class ValueConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return true;
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+            {
+                if ((String)value == String.Empty)
+                    return Double.NaN;
+                else
+                    return Double.Parse((String)value, System.Globalization.CultureInfo.InvariantCulture);
+            }
+        }
+
+#if SL
         /// <summary>
         /// NullableDouble converter
         /// </summary>
@@ -252,5 +269,7 @@ namespace Visifire.Commons
             }
             private delegate FontWeight FontWeightMethod();
         }
+#endif
+
     }
 }

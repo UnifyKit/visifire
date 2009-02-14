@@ -13,9 +13,13 @@ using Visifire.Commons;
 
 namespace SLVisifireChartsTest
 {
+    /// <summary>
+    /// This class runs the unit tests Visifire.Charts.DataSeries class 
+    /// </summary>
     [TestClass]
     public class DataSeriesTest : SilverlightControlTest
     {
+        #region PieStressChecking
         /// <summary>
         /// Stress testing Pie Chart
         /// </summary>
@@ -30,7 +34,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -59,7 +63,7 @@ namespace SLVisifireChartsTest
                     chart.Series.Add(dataSeries);
                 });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -69,22 +73,24 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Total Series Calculation: " + msg + " Click here to exit");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Series Calculation: " + msg + " Click here to exit");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        #region ExplodedPieChecking
         /// <summary>
         /// Testing Pie Chart exploded
         /// </summary>
@@ -94,14 +100,14 @@ namespace SLVisifireChartsTest
         {
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
 
-            chart = new Chart();
-            chart.Width = 500;
-            chart.Height = 300;
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
 
-            isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
-            TestPanel.Children.Add(chart);
+            TestPanel.Children.Add(_chart);
 
             Random rand = new Random();
 
@@ -115,77 +121,50 @@ namespace SLVisifireChartsTest
                 dataSeries.DataPoints.Add(dataPoint);
 
             }
-            chart.Series.Add(dataSeries);
+            _chart.Series.Add(dataSeries);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", "Click here to View3D(true/false).");
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Switch Pie/Doughnut.");
-                htmlElement3 = Common.GetDisplayMessageButton(htmlElement3);
-                htmlElement3.SetStyleAttribute("top", "560px");
-                htmlElement3.SetProperty("value", "Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount + ". Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement3);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to View3D(true/false).");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch Pie/Doughnut.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.SwitchDataSeries_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.SwitchDataSeries_OnClick));
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
             });
 
         }
+        #endregion
 
-        void View3D_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            if (chart.View3D)
-                chart.View3D = false;
-            else
-                chart.View3D = true;
-
-            htmlElement3.SetProperty("value", "Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount + ". Click here to exit.");
-        }
-
-        void SwitchDataSeries_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            if (chart.Series[0].RenderAs == RenderAs.Pie)
-                chart.Series[0].RenderAs = RenderAs.Doughnut;
-            else
-                chart.Series[0].RenderAs = RenderAs.Pie;
-
-            htmlElement3.SetProperty("value", "Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount + ". Click here to exit.");
-        }
-
-        void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement3);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-        }
-
+        #region DoughnutStressChecking
         /// <summary>
         /// Stress testing Doughnut Chart
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         [Asynchronous]
         public void DoughnutStressChecking()
         {
@@ -196,7 +175,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -224,7 +203,7 @@ namespace SLVisifireChartsTest
                     chart.Series.Add(dataSeries);
                 });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -235,26 +214,28 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Total Series Calculation " + msg + " Click here to exit");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Series Calculation " + msg + " Click here to exit");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        #region DataSeriesBarChecking
         /// <summary>
         /// Testing DataSeries Bar Chart
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         [Asynchronous]
         public void DataSeriesBarChecking()
         {
@@ -265,7 +246,7 @@ namespace SLVisifireChartsTest
             chart.Height = 450;
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -296,7 +277,7 @@ namespace SLVisifireChartsTest
                     chart.Series.Add(dataSeries);
                 });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -305,29 +286,30 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            //EnqueueTestComplete();
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Total Series Calculation " + msg + " Click here to exit");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfDataPoints + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Series Calculation " + msg + " Click here to exit");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        #region DataSeriesEventChecking
         /// <summary>
         /// Testing DataSeries Event
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         [Asynchronous]
         public void DataSeriesEventChecking()
         {
@@ -338,7 +320,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Random rand = new Random();
@@ -358,39 +340,41 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             dataSeries.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
             {
-                htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + "MouseLeftButtonUp event fired");
+                _htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + "MouseLeftButtonUp event fired");
             };
 
             dataSeries.MouseEnter += delegate(Object sender, MouseEventArgs e)
             {
-                htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + " MouseEnter event fired");
+                _htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + " MouseEnter event fired");
             };
 
             dataSeries.MouseLeave += delegate(Object sender, MouseEventArgs e)
             {
-                htmlElement1.SetProperty("value", "Click here to exit. MouseLeave event fired");
+                _htmlElement1.SetProperty("value", "Click here to exit. MouseLeave event fired");
             };
 
             dataSeries.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
             {
-                htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + " MouseLeftButtonDown event fired");
+                _htmlElement1.SetProperty("value", "DataSeries RenderAs: " + (sender as DataPoint).Parent.RenderAs + " MouseLeftButtonDown event fired");
             };
 
             EnqueueCallback(() =>
             {
-                htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            htmlElement1.SetProperty("value", "Mouse over the DataPoints");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "Mouse over the DataPoints");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region MultiSeriesChartChecking1
         /// <summary>
         /// Testing Multi DataSeries Chart
         /// </summary>
@@ -406,7 +390,7 @@ namespace SLVisifireChartsTest
             chart.View3D = true;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -415,12 +399,12 @@ namespace SLVisifireChartsTest
 
             Random rand = new Random();
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -438,11 +422,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries1);
                 Assert.AreEqual(1, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -461,11 +445,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries2);
                 Assert.AreEqual(2, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -484,11 +468,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries3);
                 Assert.AreEqual(3, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -507,11 +491,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries4);
                 Assert.AreEqual(4, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -531,11 +515,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries5);
                 Assert.AreEqual(5, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -555,7 +539,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries6);
                 Assert.AreEqual(6, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Click here to exit. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Click here to exit. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -566,7 +550,9 @@ namespace SLVisifireChartsTest
                 EnqueueTestComplete();
             });
         }
+        #endregion
 
+        #region MultiSeriesChartChecking2
         /// <summary>
         /// Testing Multi DataSeries Chart
         /// </summary>
@@ -581,7 +567,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -590,8 +576,8 @@ namespace SLVisifireChartsTest
 
             Random rand = new Random();
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -609,11 +595,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries1);
                 Assert.AreEqual(1, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -632,11 +618,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries2);
                 Assert.AreEqual(2, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -655,11 +641,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries3);
                 Assert.AreEqual(3, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -678,11 +664,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries4);
                 Assert.AreEqual(4, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -701,11 +687,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries5);
                 Assert.AreEqual(5, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -725,11 +711,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries6);
                 Assert.AreEqual(6, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -748,11 +734,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries7);
                 Assert.AreEqual(7, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             isDataSeriesAdded = false;
 
             EnqueueCallback(() =>
@@ -771,7 +757,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries8);
                 Assert.AreEqual(8, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries8.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries8.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -782,11 +768,13 @@ namespace SLVisifireChartsTest
                 EnqueueTestComplete();
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region MultiSeriesChartCheckingWithSecondaryAxis
         /// <summary>
         /// Testing Multi DataSeries Chart with Secondary axis
         /// </summary>
@@ -803,7 +791,7 @@ namespace SLVisifireChartsTest
 
             chart.ScrollingEnabled = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -814,10 +802,10 @@ namespace SLVisifireChartsTest
 
             Axis axis = new Axis();
             axis.Interval = 1;
-            axis.Color = new SolidColorBrush(Colors.LightGray);
+            axis.Background = new SolidColorBrush(Colors.LightGray);
             chart.AxesX.Add(axis);
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
             EnqueueSleep(1000);
 
             EnqueueCallback(() =>
@@ -835,7 +823,7 @@ namespace SLVisifireChartsTest
                 }
                 chart.Series.Add(dataSeries1);
                 Assert.AreEqual(1, chart.Series.Count);
-                htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueCallback(() =>
@@ -854,7 +842,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries2);
                 Assert.AreEqual(2, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -878,7 +866,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries3);
                 Assert.AreEqual(3, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -902,7 +890,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries4);
                 Assert.AreEqual(4, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -925,7 +913,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries5);
                 Assert.AreEqual(5, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -950,7 +938,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries6);
                 Assert.AreEqual(6, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -973,7 +961,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries7);
                 Assert.AreEqual(7, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -997,7 +985,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries8);
                 Assert.AreEqual(8, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries8.RenderAs + " with " + numberOfDataPoints + " DataPoints. Click here to exit. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries8.RenderAs + " with " + numberOfDataPoints + " DataPoints. Click here to exit. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => { return isDataSeriesAdded; });
@@ -1008,11 +996,13 @@ namespace SLVisifireChartsTest
                 EnqueueTestComplete();
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region PieDoughnutChartChecking
         /// <summary>
         /// Testing Pie/Doughnut Chart loading
         /// </summary>
@@ -1028,7 +1018,7 @@ namespace SLVisifireChartsTest
             chart.View3D = true;
 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -1037,8 +1027,8 @@ namespace SLVisifireChartsTest
 
             Random rand = new Random();
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1055,10 +1045,10 @@ namespace SLVisifireChartsTest
                 }
                 chart.Series.Add(dataSeries1);
                 Assert.AreEqual(1, chart.Series.Count);
-                htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1080,10 +1070,10 @@ namespace SLVisifireChartsTest
                 }
                 chart.Series.Add(dataSeries2);
                 Assert.AreEqual(1, chart.Series.Count);
-                htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1105,10 +1095,10 @@ namespace SLVisifireChartsTest
                 }
                 chart.Series.Add(dataSeries3);
                 Assert.AreEqual(1, chart.Series.Count);
-                htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1130,7 +1120,7 @@ namespace SLVisifireChartsTest
                 }
                 chart.Series.Add(dataSeries4);
                 Assert.AreEqual(1, chart.Series.Count);
-                htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueCallback(() =>
@@ -1138,11 +1128,13 @@ namespace SLVisifireChartsTest
                 EnqueueTestComplete();
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
+        #region MultiSeriesBarChartCheckingWithSecondaryAxis
         /// <summary>
         /// Testing Bar MultiSeries Chart loading
         /// </summary>
@@ -1156,7 +1148,7 @@ namespace SLVisifireChartsTest
             chart.Height = 500;
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Int32 numberOfDataPoints = 0;
@@ -1165,8 +1157,8 @@ namespace SLVisifireChartsTest
 
             TestPanel.Children.Add(chart);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1185,11 +1177,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries1);
                 Assert.AreEqual(1, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries1.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1208,11 +1200,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries2);
                 Assert.AreEqual(2, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries2.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1232,11 +1224,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries3);
                 Assert.AreEqual(3, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries3.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1256,11 +1248,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries4);
                 Assert.AreEqual(4, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries4.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1280,11 +1272,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries5);
                 Assert.AreEqual(5, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries5.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1303,11 +1295,11 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries6);
                 Assert.AreEqual(6, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries6.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1327,32 +1319,25 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries7);
                 Assert.AreEqual(7, chart.Series.Count);
                 isDataSeriesAdded = true;
-                htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement1.SetProperty("value", dataSeries7.RenderAs + " with " + numberOfDataPoints + " DataPoints. Number of Render Count: " + chart.ChartArea._renderCount);
             });
 
             EnqueueConditional(() => isDataSeriesAdded);
             isDataSeriesAdded = false;
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
 
             EnqueueCallback(() =>
             {
                 EnqueueTestComplete();
             });
 
-            htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-            htmlElement1.SetStyleAttribute("width", "900px");
-            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
         }
+        #endregion
 
-        void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(htmlElement3);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-        }
-
+        #region TestDataPointsCollectionChanged
         /// <summary>
         /// Test the DataPoints collection changed event
         /// </summary>
@@ -1386,8 +1371,8 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueConditional(() => { return isLoaded; });
-            EnqueueSleep(sleepTime);
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
 
             dataSeries.DataPoints.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
                 =>
@@ -1413,9 +1398,10 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(1, dataPointsAdded);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
+        #endregion
 
         #region CheckDataseriesNewPropertyValue
         /// <summary>
@@ -1435,7 +1421,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.RenderAs = RenderAs.Bubble,
                 () => Assert.AreEqual(RenderAs.Bubble, dataSeries.RenderAs));
@@ -1462,7 +1448,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.Color = new SolidColorBrush(Colors.Cyan),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Cyan), dataSeries.Color));
@@ -1489,7 +1475,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LegendText = "Legend1",
                 () => Assert.AreEqual("Legend1", dataSeries.LegendText));
@@ -1520,7 +1506,7 @@ namespace SLVisifireChartsTest
             dataSeries.ShowInLegend = true;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.Legend = "Legend0",
                 () => Assert.AreEqual("Legend0", dataSeries.Legend));
@@ -1546,7 +1532,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Pie;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.Bevel = true,
                 () => Assert.AreEqual(true, dataSeries.Bevel));
@@ -1571,7 +1557,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LightingEnabled = true,
                 () => Assert.AreEqual(true, dataSeries.LightingEnabled));
@@ -1595,7 +1581,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LineThickness = 1,
                 () => Assert.AreEqual(1, dataSeries.LineThickness));
@@ -1619,7 +1605,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, dataSeries.LineStyle));
@@ -1643,7 +1629,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.ShadowEnabled = true,
                 () => Assert.AreEqual(true, dataSeries.ShadowEnabled));
@@ -1667,7 +1653,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.ShowInLegend = true,
                 () => Assert.AreEqual(true, dataSeries.ShowInLegend));
@@ -1692,7 +1678,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.StartAngle = 90,
                 () => Assert.AreEqual(90, dataSeries.StartAngle));
@@ -1716,7 +1702,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.XValueFormatString = "#,#.0#'%'",
                 () => Assert.AreEqual("#,#.0#'%'", dataSeries.XValueFormatString));
@@ -1740,7 +1726,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.YValueFormatString = "#,#.0#",
                 () => Assert.AreEqual("#,#.0#", dataSeries.YValueFormatString));
@@ -1765,7 +1751,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.ZValueFormatString = "#,#.0#",
                 () => Assert.AreEqual("#,#.0#", dataSeries.ZValueFormatString));
@@ -1789,7 +1775,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.ToolTipText = "#AxisLabel",
                 () => Assert.AreEqual("#AxisLabel", dataSeries.ToolTipText));
@@ -1813,7 +1799,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.AxisYType = AxisTypes.Secondary,
                 () => Assert.AreEqual(AxisTypes.Secondary, dataSeries.AxisYType));
@@ -1837,7 +1823,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelEnabled = true,
                 () => Assert.AreEqual(true, dataSeries.LabelEnabled));
@@ -1862,7 +1848,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelText = "Visifire",
                 () => Assert.AreEqual("Visifire", dataSeries.LabelText));
@@ -1887,7 +1873,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelFontFamily = new FontFamily("MS Trebuchet"),
                 () => Assert.AreEqual(new FontFamily("MS Trebuchet"), dataSeries.LabelFontFamily));
@@ -1912,7 +1898,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelFontSize = 14,
                 () => Assert.AreEqual(14, dataSeries.LabelFontSize));
@@ -1937,7 +1923,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelFontColor = new SolidColorBrush(Colors.DarkGray),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.DarkGray), dataSeries.LabelFontColor));
@@ -1962,7 +1948,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelFontWeight = FontWeights.Bold,
                 () => Assert.AreEqual(FontWeights.Bold, dataSeries.LabelFontWeight));
@@ -1987,7 +1973,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelFontStyle = FontStyles.Italic,
                 () => Assert.AreEqual(FontStyles.Italic, dataSeries.LabelFontStyle));
@@ -2012,7 +1998,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelBackground = new SolidColorBrush(Colors.Green),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Green), dataSeries.LabelBackground));
@@ -2037,7 +2023,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelStyle = LabelStyles.Inside,
                 () => Assert.AreEqual(LabelStyles.Inside, dataSeries.LabelStyle));
@@ -2062,7 +2048,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineEnabled = false,
                 () => Assert.AreEqual(false, dataSeries.LabelLineEnabled));
@@ -2087,7 +2073,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineColor = new SolidColorBrush(Colors.Magenta),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), dataSeries.LabelLineColor));
@@ -2112,7 +2098,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineThickness = 2,
                 () => Assert.AreEqual(2, dataSeries.LabelLineThickness));
@@ -2137,7 +2123,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, dataSeries.LabelLineStyle));
@@ -2161,7 +2147,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Column;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerEnabled = true,
                 () => Assert.AreEqual(true, dataSeries.MarkerEnabled));
@@ -2186,7 +2172,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTest(chart,
                 () => dataSeries.MarkerType = MarkerTypes.Diamond,
                 () => Assert.AreEqual(MarkerTypes.Diamond, dataSeries.MarkerType));
@@ -2211,7 +2197,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerBorderThickness = new Thickness(1),
                 () => Assert.AreEqual(new Thickness(1), dataSeries.MarkerBorderThickness));
@@ -2236,7 +2222,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerSize = 15,
                 () => Assert.AreEqual(15, dataSeries.MarkerSize));
@@ -2261,7 +2247,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerColor = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), dataSeries.MarkerColor));
@@ -2285,7 +2271,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerBorderColor = new SolidColorBrush(Colors.Purple),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Purple), dataSeries.MarkerBorderColor));
@@ -2308,7 +2294,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.MarkerScale = 10,
                 () => Assert.AreEqual(10, dataSeries.MarkerScale));
@@ -2332,7 +2318,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.RadiusX = new CornerRadius(5, 5, 5, 5),
                 () => dataSeries.RadiusY = new CornerRadius(5, 5, 5, 5),
@@ -2363,7 +2349,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(RenderAs.Column, dataSeries.RenderAs));
 
@@ -2389,7 +2375,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.Color));
 
@@ -2415,7 +2401,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries1);
             chart.Series.Add(dataSeries2);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2445,7 +2431,7 @@ namespace SLVisifireChartsTest
             dataSeries.ShowInLegend = true;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual("Legend0", dataSeries.Legend));
 
@@ -2470,7 +2456,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue(dataSeries.Bevel));
 
@@ -2493,7 +2479,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)dataSeries.LightingEnabled));
 
@@ -2515,7 +2501,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(AxisTypes.Primary, dataSeries.AxisYType));
 
@@ -2537,7 +2523,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue(dataSeries.Bevel));
 
@@ -2559,7 +2545,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(dataSeries.ShadowEnabled));
 
@@ -2581,7 +2567,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)dataSeries.ShowInLegend));
 
@@ -2605,7 +2591,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries1);
             chart.Series.Add(dataSeries2);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)dataSeries1.ShowInLegend),
                 () => Assert.IsTrue((Boolean)dataSeries2.ShowInLegend));
@@ -2629,7 +2615,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, dataSeries.LineThickness));
 
@@ -2652,7 +2638,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, dataSeries.LineStyle));
 
@@ -2675,7 +2661,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0, dataSeries.StartAngle));
 
@@ -2697,7 +2683,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.BorderColor));
 
@@ -2720,7 +2706,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), dataSeries.BorderThickness));
 
@@ -2743,7 +2729,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.LabelBackground));
 
@@ -2765,7 +2751,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)dataSeries.LabelEnabled));
 
@@ -2788,7 +2774,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)dataSeries.LabelEnabled));
 
@@ -2811,7 +2797,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.LabelFontColor));
 
@@ -2834,7 +2820,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Arial"), dataSeries.LabelFontFamily));
 
@@ -2857,7 +2843,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(10
                     , dataSeries.LabelFontSize));
@@ -2881,7 +2867,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Normal, dataSeries.LabelFontStyle));
 
@@ -2904,7 +2890,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, dataSeries.LabelFontWeight));
 
@@ -2927,7 +2913,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.LabelLineEnabled));
 
@@ -2950,7 +2936,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), dataSeries.LabelLineColor));
 
@@ -2973,7 +2959,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, dataSeries.LabelLineStyle));
 
@@ -2996,7 +2982,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0, dataSeries.LabelLineThickness));
 
@@ -3019,7 +3005,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LabelStyles.OutSide, dataSeries.LabelStyle));
 
@@ -3043,7 +3029,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LabelStyles.Inside, dataSeries.LabelStyle));
 
@@ -3066,7 +3052,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.MarkerBorderColor));
 
@@ -3089,7 +3075,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(dataSeries.MarkerBorderThickness));
 
@@ -3112,7 +3098,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)dataSeries.MarkerEnabled));
 
@@ -3135,7 +3121,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, dataSeries.MarkerScale));
 
@@ -3158,7 +3144,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual((Double)(dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), (Double)dataSeries.MarkerSize, Common.HighPrecisionDelta));
 
@@ -3181,7 +3167,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(MarkerTypes.Circle, dataSeries.MarkerType));
 
@@ -3203,7 +3189,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new CornerRadius(0, 0, 0, 0), dataSeries.RadiusX),
                 () => Assert.AreEqual(new CornerRadius(0, 0, 0, 0), dataSeries.RadiusY));
@@ -3226,7 +3212,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual("#AxisXLabel, #YValue", dataSeries.ToolTipText));
 
@@ -3234,6 +3220,7 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region Performance Tests
         /// <summary>
         /// Performance and Stress
         /// </summary>
@@ -3252,7 +3239,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = true;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -3284,7 +3271,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -3294,20 +3281,20 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
 
@@ -3329,7 +3316,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = false;
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             TestPanel.Children.Add(chart);
@@ -3361,7 +3348,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueConditional(() => { return isLoaded; });
+            EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
             {
@@ -3371,23 +3358,28 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                htmlElement1 = Common.GetDisplayMessageButton(htmlElement1);
-                htmlElement1.SetStyleAttribute("width", "900px");
-                htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Redraw Count: " + chart.ChartArea._redrawCount + ". Number of Render Count: " + chart.ChartArea._renderCount);
-                htmlElement2 = Common.GetDisplayMessageButton(htmlElement2);
-                htmlElement2.SetStyleAttribute("top", "540px");
-                htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(htmlElement2);
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(sleepTime);
+            EnqueueSleep(_sleepTime);
             EnqueueCallback(() =>
             {
-                htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
         }
+        #endregion
 
+        /// <summary>
+        /// Create DataSeries
+        /// </summary>
+        /// <returns></returns>
         private DataSeries CreateDataSeries()
         {
             Random rand = new Random();
@@ -3406,6 +3398,10 @@ namespace SLVisifireChartsTest
             return dataSeries;
         }
 
+        /// <summary>
+        /// Create DataSeries with ZValue
+        /// </summary>
+        /// <returns></returns>
         private DataSeries CreateDataSeries2()
         {
             Random rand = new Random();
@@ -3423,20 +3419,111 @@ namespace SLVisifireChartsTest
             return dataSeries;
         }
 
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void View3D_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            if (_chart.View3D)
+                _chart.View3D = false;
+            else
+                _chart.View3D = true;
+
+            _htmlElement3.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SwitchDataSeries_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            if (_chart.Series[0].RenderAs == RenderAs.Pie)
+                _chart.Series[0].RenderAs = RenderAs.Doughnut;
+            else
+                _chart.Series[0].RenderAs = RenderAs.Pie;
+
+            _htmlElement3.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
 
-        bool isLoaded = false;
-        Chart chart;
-        Boolean isDataSeriesAdded = false;
-        const int sleepTime = 2000;
-        private System.Windows.Browser.HtmlElement htmlElement1;
-        private System.Windows.Browser.HtmlElement htmlElement2;
-        private System.Windows.Browser.HtmlElement htmlElement3;
+        /// <summary>
+        /// Whether DataSeries is added inside the chart
+        /// </summary>
+        private Boolean isDataSeriesAdded = false;
+
+        /// <summary>
+        /// Reference for Chart
+        /// </summary>
+        private Chart _chart;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement3;
+
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 2000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
+        
         #endregion
     }
 }

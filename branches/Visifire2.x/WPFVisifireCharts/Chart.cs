@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -64,7 +85,6 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.PlotGridName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.PlotAreaShadowCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.DrawingCanvasName, Type = typeof(Canvas))]
-    // [TemplatePart(Name = Chart.PlotAreaBevelCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.CenterDockInsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.CenterDockOutsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.ToolTipCanvasName, Type = typeof(Canvas))]
@@ -78,8 +98,12 @@ namespace Visifire.Charts
     {
         #region Public Methods
 
+        /// <summary>
+        /// Initializes a new instance of the Visifire.Charts.Chart class
+        /// </summary>
         public Chart()
         {
+            // Initializes the various properties of the chart 
             this.Init();
 
             // Apply default Style
@@ -89,20 +113,32 @@ namespace Visifire.Charts
                 _defaultStyleKeyApplied = true;
             }
 
-            this.Loaded +=new RoutedEventHandler(Chart_Loaded);
+            // Attach event handler for loaded event
+            this.Loaded += new RoutedEventHandler(Chart_Loaded);
+
+            // Attach event handler for size changed event
             this.SizeChanged += new SizeChangedEventHandler(Chart_SizeChanged);
         }
 
+        /// <summary>
+        /// Event handler for SizeChanged event of the chart
+        /// </summary>
         void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Call Render
-            if(!Double.IsNaN(e.NewSize.Width) && !Double.IsNaN(e.NewSize.Height) && e.NewSize.Width!=0 && e.NewSize.Height!=0)
+            if (!Double.IsNaN(e.NewSize.Width) && !Double.IsNaN(e.NewSize.Height) && e.NewSize.Width != 0 && e.NewSize.Height != 0)
+            {
+                // Render the chart with new size
                 Render();
+            }
         }
 
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
         void Chart_Loaded(object sender, RoutedEventArgs e)
         {
-           Render();
+            // Render the chart with new size
+            Render();
         }
 
         #endregion
@@ -117,39 +153,10 @@ namespace Visifire.Charts
 
         #region Protected Methods
 
-        /// <summary>
-        /// When overridden in a derived class, participates in rendering operations
-        /// that are directed by the layout system. The rendering instructions for this
-        /// element are not used directly when this method is invoked, and are instead
-        /// preserved for later asynchronous use by layout and drawing.
-        /// </summary>
-        /// <param name="drawingContext">
-        /// The drawing instructions for a specific element. This context is provided
-        /// to the layout system.
-        /// </param>
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-
-            if (IsTemplateApplied)
-            {
-                // Call Render
-                //CallRender();
-            }
-        }
-
         #endregion
 
         #region Internal Properties
 
-        /// <summary>
-        /// Describes visual content using draw, push, and pop commands.
-        /// </summary>
-        internal DrawingContext DrawingContext
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Private Delegates
@@ -170,7 +177,10 @@ namespace Visifire.Charts
 
         #region Data
 
-        private static Boolean _defaultStyleKeyApplied = false;     // If ChartPropertyTypeMetaData Applied
+        /// <summary>
+        /// Whether the default style is applied
+        /// </summary>
+        private static Boolean _defaultStyleKeyApplied; 
 
         #endregion
     }

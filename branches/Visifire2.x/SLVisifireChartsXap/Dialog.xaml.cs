@@ -12,27 +12,33 @@ using System.Windows.Shapes;
 
 namespace SLVisifireChartsXap
 {
+    /// <summary>
+    /// SLVisifireChartsXap.Dialog class
+    /// </summary>
     public partial class Dialog : UserControl
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Initializes a new instance of the SLVisifireChartsXap.Dialog class
+        /// </summary>
         public Dialog()
         {
             InitializeComponent();
+
             this.DialogOutStoryBoard.Completed += new EventHandler(DialogOutStoryBoard_Completed);
             CloseButton.Click += new RoutedEventHandler(CloseButton_Click);
             this.SetValue(Canvas.ZIndexProperty, 1000000);
         }
 
-        void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogOutStoryBoard.Begin();
-        }
+        #endregion
 
-        void DialogOutStoryBoard_Completed(object sender, EventArgs e)
-        {
-            this.Visibility = Visibility.Collapsed;
-        }
+        #region Public Properties
 
-        public String VersionInfo
+        /// <summary>
+        /// Message text
+        /// </summary>
+        public String Message
         {
             set
             {
@@ -44,35 +50,62 @@ namespace SLVisifireChartsXap
             }
         }
 
-        public Boolean Visible
+        #endregion
+
+        #region Public Events And Delegates
+
+        #endregion
+
+        #region Protected Methods
+
+        #endregion
+
+        #region Internal Properties
+
+        #endregion
+
+        #region Private Properties
+
+        #endregion
+
+        #region Private Delegates
+
+        #endregion
+
+        #region Private Methods
+        
+        /// <summary>
+        /// Event handler on click event for close button
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">RoutedEventArgs</param>
+        void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            get
-            {
-                return (Boolean) GetValue(VisibleProperty);
-            }
-            set
-            {
-                SetValue(VisibleProperty, value);
-            }
+            DialogOutStoryBoard.Begin();
         }
 
-        public readonly static DependencyProperty VisibleProperty  = DependencyProperty.Register(
-        "Visible",
-        typeof(Boolean),
-        typeof(Dialog), new PropertyMetadata(OnVisiblePropertyChanged));
-
-        private static void OnVisiblePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Event handler for completed event of storyBoard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void DialogOutStoryBoard_Completed(object sender, EventArgs e)
         {
-            Dialog d = sender as Dialog;
-
-            if((Boolean)e.NewValue  == true)
-            {
-                d.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                d.Visibility = Visibility.Collapsed;
-            }
+            this.Visibility = Visibility.Collapsed;
         }
+
+        #endregion
+
+        #region Internal Methods
+
+        #endregion
+
+        #region Internal Events And Delegates
+
+        #endregion
+
+        #region Data
+
+        #endregion
     }
 }

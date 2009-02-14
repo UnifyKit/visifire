@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+  
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -55,7 +75,6 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.BottomInnerPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.BottomInnerLegendPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.BottomInnerTitlePanelName, Type = typeof(StackPanel))]
-    //[TemplatePart(Name = Chart.LeftInnerPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.LeftInnerTitlePanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.LeftInnerLegendPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.RightInnerPanelName, Type = typeof(StackPanel))]
@@ -67,7 +86,6 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.PlotGridName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.PlotAreaShadowCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.DrawingCanvasName, Type = typeof(Canvas))]
-    //[TemplatePart(Name = Chart.PlotAreaBevelCanvasName, Type = typeof(Canvas))]
     [TemplatePart(Name = Chart.CenterDockInsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.CenterDockOutsidePlotAreaPanelName, Type = typeof(StackPanel))]
     [TemplatePart(Name = Chart.ToolTipCanvasName, Type = typeof(Canvas))]
@@ -78,8 +96,9 @@ namespace Visifire.Charts
     public partial class Chart
     {
         #region Public Methods
+
         /// <summary>
-        /// Constructor for the Chart class, Initializations should be done here
+        /// Initializes a new instance of the Visifire.Charts.Chart class
         /// </summary>
         public Chart()
         {
@@ -92,32 +111,10 @@ namespace Visifire.Charts
             // Attach event handler for size changed event
             SizeChanged += new SizeChangedEventHandler(Chart_SizeChanged);
 
-            // Attaching loaded event with Chart
+            // Attach event handler for loaded event
             this.Loaded += new RoutedEventHandler(Chart_Loaded);
 
         }
-
-
-
-        ///// <summary>
-        ///// Sets value for specific property of chart
-        ///// This function is used for setting property from JavaScript only
-        ///// </summary>
-        ///// <param name="propertyName">Name of the property as String</param>
-        ///// <param name="value">Property Value as String</param>
-        //[System.Windows.Browser.ScriptableMember()]
-        //public void SetPropertyFromJs(String propertyName, String value)
-        //{
-        //    try
-        //    {
-        //        JsHelper.SetProperty(this, propertyName, value);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        String s = String.Format(@"Unable to update {0} property, Property not found.\n [{1}]", propertyName, e.Message);
-        //        throw new Exception(s);
-        //    }
-        //}
 
         #endregion
 
@@ -127,6 +124,7 @@ namespace Visifire.Charts
         /// Height of the chart
         /// </summary>
         [ScriptableMember]
+
         public new Double Height
         {
             get
@@ -157,7 +155,7 @@ namespace Visifire.Charts
 
         /// <summary>
         /// LogLevel is used to keep track the value of loglevel, this property is set from CreateChart() function in App Class in project SLVisifireChartsXap
-        /// This Property can not be used by user.
+        /// This Property cannot be used by user.
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Int32 LogLevel
@@ -167,7 +165,7 @@ namespace Visifire.Charts
         }
 #if SL
         /// <summary>
-        /// If Chart is drawn using JavaScript, This property will be set from project SLVisifireChartsXap.
+        /// If Chart is drawn using JavaScript, This property will be set to true from project SLVisifireChartsXap.
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Boolean IsInJsMode
@@ -176,6 +174,7 @@ namespace Visifire.Charts
             set;
         }
 #endif
+
         #endregion
 
         #region Public Events
@@ -207,19 +206,24 @@ namespace Visifire.Charts
 
         #region Private Methods
 
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Chart_Loaded(object sender, RoutedEventArgs e)
         {
             // Render the chart with new size
-            CallRender();
+            InvokeRender();
         }
 
         /// <summary>
-        /// Event handler for managing the change in size of the chart
+        /// Event handler for SizeChanged event of the chart
         /// </summary>
         private void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Render the chart with new size
-            CallRender();
+            InvokeRender();
         }
 
         #endregion

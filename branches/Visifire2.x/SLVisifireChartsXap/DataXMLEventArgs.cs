@@ -22,14 +22,27 @@ using System;
 
 namespace SLVisifireChartsXap
 {
+    /// <summary>
+    /// SLVisifireChartsXap.DataXMLEventArgs
+    /// </summary>
     public class DataXMLEventArgs : EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the SLVisifireChartsXap.DataXMLEventArgs class
+        /// </summary>
         public DataXMLEventArgs()
             : base()
         {
         }
 
+        /// <summary>
+        /// Data XML
+        /// </summary>
         public String DataXML { get; set; }
+
+        /// <summary>
+        /// Data Uri
+        /// </summary>
         public String DataUri { get; set; }
     }
 }

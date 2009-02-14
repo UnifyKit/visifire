@@ -1,17 +1,12 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="500" Height="300" Theme="Theme1" View3D="False" AnimationEnabled="True"
-          >
+Width="400" Height="300" Theme="Theme1" View3D="True">
   
   <vc:Chart.Titles>
     <vc:Title Text="Top 10 Emerging Mobile Market Carriers"/>
   </vc:Chart.Titles>
 
   <vc:Chart.AxesX>
-    <vc:Axis Interval="1" Title="Company" LineThickness="0">
-      <vc:Axis.Ticks>
-        <vc:Ticks Enabled="False"/>
-      </vc:Axis.Ticks>
-    </vc:Axis>
+    <vc:Axis Interval="1" Title="Company"/>
   </vc:Chart.AxesX>
 
   <vc:Chart.AxesY>
@@ -19,7 +14,7 @@ Width="500" Height="300" Theme="Theme1" View3D="False" AnimationEnabled="True"
   </vc:Chart.AxesY>
 
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column">
+    <vc:DataSeries RenderAs="Bar">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76"/>
         <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />

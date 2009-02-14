@@ -12,11 +12,12 @@ using Visifire.Commons;
 namespace WPFVisifireChartsTest
 {
     /// <summary>
-    /// Summary description for LegendTest
+    /// This class runs the unit tests Visifire.Charts.Legend class 
     /// </summary>
     [TestClass]
     public class LegendTest
     {
+        #region CheckLegendDefaultPropertyValue
         /// <summary>
         /// Check the default value of Href
         /// </summary>
@@ -30,14 +31,14 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
             
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Legends[0].Href);
             }
@@ -59,13 +60,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(Visifire.Commons.HrefTargets._self, chart.Legends[0].HrefTarget);
             }
@@ -87,13 +88,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(6, chart.Legends[0].LabelMargin);
             }
@@ -115,13 +116,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(4), chart.Legends[0].Padding);
             }
@@ -143,13 +144,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(HorizontalAlignment.Center, chart.Legends[0].HorizontalAlignment);
             }
@@ -171,13 +172,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(VerticalAlignment.Bottom, chart.Legends[0].VerticalAlignment);
             }
@@ -199,43 +200,15 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.Legends[0].BorderColor);
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        /// <summary>
-        /// Check the default value of BorderStyle
-        /// </summary>
-        [TestMethod]
-        public void BorderStyleDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.AnimationEnabled = false;
-            chart.Width = 500;
-            chart.Height = 300;
-
-            CreateAndAddDefaultDataSeries(chart);
-             
-            isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (isLoaded)
-            {
-                Assert.AreEqual(BorderStyles.Solid, chart.Legends[0].BorderStyle);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -255,13 +228,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new Thickness(0), chart.Legends[0].BorderThickness);
             }
@@ -283,13 +256,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Legends[0].Background);
             }
@@ -311,13 +284,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsFalse(chart.Legends[0].DockInsidePlotArea);
             }
@@ -339,13 +312,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue((Boolean)chart.Legends[0].Enabled);
             }
@@ -367,13 +340,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Legends[0].FontColor);
             }
@@ -395,13 +368,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new FontFamily("Arial"), chart.Legends[0].FontFamily);
             }
@@ -423,13 +396,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(9, chart.Legends[0].FontSize, Common.HighPrecisionDelta);
             }
@@ -451,13 +424,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontStyles.Normal, chart.Legends[0].FontStyle);
             }
@@ -479,13 +452,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontWeights.Normal, chart.Legends[0].FontWeight);
             }
@@ -507,13 +480,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
  
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsTrue(chart.Legends[0].LightingEnabled);
             }
@@ -535,13 +508,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(new CornerRadius(0), chart.Legends[0].CornerRadius);
             }
@@ -563,13 +536,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Legends[0].Title);
             }
@@ -591,13 +564,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(HorizontalAlignment.Stretch, chart.Legends[0].TitleAlignmentX);
             }
@@ -619,13 +592,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(TextAlignment.Center, chart.Legends[0].TitleTextAlignment);
             }
@@ -647,13 +620,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.LightGray), chart.Legends[0].TitleBackground);
             }
@@ -675,13 +648,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Legends[0].TitleFontColor);
             }
@@ -703,13 +676,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.IsNull(chart.Legends[0].TitleFontFamily);
             }
@@ -731,13 +704,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(10, chart.Legends[0].TitleFontSize);
             }
@@ -759,13 +732,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontStyles.Normal, chart.Legends[0].TitleFontStyle);
             }
@@ -787,13 +760,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(FontWeights.Normal, chart.Legends[0].TitleFontWeight);
             }
@@ -815,13 +788,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 Assert.AreEqual(3, chart.Legends[0].EntryMargin);
             }
@@ -829,6 +802,7 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
 
         #region CheckNewPropertyValue
         /// <summary>
@@ -850,13 +824,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.HrefTarget = HrefTargets._blank;
                 legend.Href = "http://www.visifire.com";
@@ -886,13 +860,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.LabelMargin = 10;
                 Assert.AreEqual(10, legend.LabelMargin);
@@ -921,13 +895,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.LabelMargin = 10;
                 Assert.AreEqual(10, legend.LabelMargin);
@@ -956,13 +930,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.VerticalAlignment = VerticalAlignment.Top;
                 Assert.AreEqual(VerticalAlignment.Top, legend.VerticalAlignment);
@@ -991,13 +965,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.HorizontalAlignment = HorizontalAlignment.Left;
                 Assert.AreEqual(HorizontalAlignment.Left, legend.HorizontalAlignment);
@@ -1028,13 +1002,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.BorderThickness = new Thickness(2);
                 Assert.AreEqual(new Thickness(2), legend.BorderThickness);
@@ -1064,13 +1038,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.BorderColor = new SolidColorBrush(Colors.Red);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.BorderColor);
@@ -1099,13 +1073,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart); 
 
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.Background = new SolidColorBrush(Colors.Red);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.Background);
@@ -1134,13 +1108,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.DockInsidePlotArea = true;
                 Assert.IsTrue(legend.DockInsidePlotArea);
@@ -1169,13 +1143,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.Enabled = false;
                 Assert.AreEqual(false, legend.Enabled);
@@ -1204,13 +1178,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.FontColor = new SolidColorBrush(Colors.Red);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.FontColor);
@@ -1239,13 +1213,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.FontSize = 14;
                 Assert.AreEqual(14, legend.FontSize, Common.HighPrecisionDelta);
@@ -1274,13 +1248,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.FontFamily = new FontFamily("Times New Roman");
                 Assert.AreEqual(new FontFamily("Times New Roman"), legend.FontFamily);
@@ -1309,13 +1283,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.FontStyle = FontStyles.Italic;
                 Assert.AreEqual(FontStyles.Italic, legend.FontStyle);
@@ -1344,13 +1318,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.FontWeight = FontWeights.Bold;
                 Assert.AreEqual(FontWeights.Bold, legend.FontWeight);
@@ -1380,13 +1354,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.LightingEnabled = true;
                 Assert.IsTrue(legend.LightingEnabled);
@@ -1415,13 +1389,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.Padding = new Thickness(12);
                 Assert.AreEqual(new Thickness(12), legend.Padding);
@@ -1450,13 +1424,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.Margin = new Thickness(10);
                 Assert.AreEqual(new Thickness(10), legend.Margin);
@@ -1485,13 +1459,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.CornerRadius = new CornerRadius(5);
                 Assert.AreEqual(new CornerRadius(5), legend.CornerRadius);
@@ -1520,13 +1494,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.Title = "Legend";
                 Assert.AreEqual("Legend", legend.Title);
@@ -1555,13 +1529,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleAlignmentX = HorizontalAlignment.Right;
                 Assert.AreEqual(HorizontalAlignment.Right, legend.TitleAlignmentX);
@@ -1591,13 +1565,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleBackground = new SolidColorBrush(Colors.Gray);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), legend.TitleBackground);
@@ -1627,13 +1601,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleFontColor = new SolidColorBrush(Colors.Red);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.TitleFontColor);
@@ -1663,13 +1637,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleFontSize = 15;
                 Assert.AreEqual(15, legend.TitleFontSize);
@@ -1699,13 +1673,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleFontFamily = new FontFamily("Times New Roman");
                 Assert.AreEqual(new FontFamily("Times New Roman"), legend.TitleFontFamily);
@@ -1735,13 +1709,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleFontStyle = FontStyles.Italic;
                 Assert.AreEqual(FontStyles.Italic, legend.TitleFontStyle);
@@ -1771,13 +1745,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.TitleFontWeight = FontWeights.Bold;
                 Assert.AreEqual(FontWeights.Bold, legend.TitleFontWeight);
@@ -1807,13 +1781,13 @@ namespace WPFVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
              
-            isLoaded = false;
+            _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             Window window = new Window();
             window.Content = chart;
             window.Show();
-            if (isLoaded)
+            if (_isLoaded)
             {
                 legend.ToolTipText = "Legend ToolTip";
                 Assert.AreEqual("Legend ToolTip", legend.ToolTipText);
@@ -1824,6 +1798,10 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
+        /// <summary>
+        /// Create DataSeries with Legend
+        /// </summary>
+        /// <param name="chart"></param>
         public void CreateAndAddDefaultDataSeries(Chart chart)
         {
             DataSeries dataSeries = new DataSeries();
@@ -1845,14 +1823,21 @@ namespace WPFVisifireChartsTest
             chart.Series.Add(dataSeries);
         }
 
-        void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            isLoaded = true;
+            _isLoaded = true;
         }
 
         #region Private Data
-
-        bool isLoaded = false;
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
 
         #endregion
     }

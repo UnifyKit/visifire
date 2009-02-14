@@ -63,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\AnimationHelper.cs">
+      <Link>AnimationHelper.cs</Link>
+    </Compile>
     <Compile Include="..\AreaChart.cs">
       <Link>AreaChart.cs</Link>
     </Compile>
@@ -101,6 +104,9 @@
     </Compile>
     <Compile Include="..\ColumnChart.cs">
       <Link>ColumnChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Converters.cs">
+      <Link>Converters.cs</Link>
     </Compile>
     <Compile Include="..\DataPoint.cs">
       <Link>DataPoint.cs</Link>
@@ -166,7 +172,6 @@
       <Link>XWiseData.cs</Link>
     </Compile>
     <Compile Include="Chart.cs" />
-    <Compile Include="Converters.cs" />
     <Compile Include="JsHelper.cs" />
     <Compile Include="Logger.xaml.cs">
       <DependentUpon>Logger.xaml</DependentUpon>
