@@ -404,7 +404,7 @@ namespace SLVisifireChartsTest
             String msg = Common.AssertAverageDuration(200, 1, delegate
             {
                 dataSeries = new DataSeries();
-                dataSeries.Bevel = true;
+                dataSeries.Bevel = false;
                 dataSeries.RenderAs = RenderAs.Column;
 
                 for (Int32 i = 0; i < 1000; i++)

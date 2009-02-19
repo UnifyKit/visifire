@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using System.ComponentModel;
 
 #else
@@ -13,6 +14,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using System.Collections.Generic;
 
 #endif
@@ -32,7 +34,7 @@ namespace Visifire.Charts
         #region Public Methods
 
         /// <summary>
-        /// Initializes a new instance of the Visifire.Charts.Legend. class
+        /// Initializes a new instance of the Visifire.Charts.Legend class
         /// </summary>
         public Legend()
         {
@@ -77,30 +79,6 @@ namespace Visifire.Charts
             typeof(String),
             typeof(Legend),
             new PropertyMetadata(OnHrefChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.MaximumWidth dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.MaximumWidth dependency property.
-        /// </returns>
-        public static readonly DependencyProperty MaximumWidthProperty = DependencyProperty.Register
-            ("MaximumWidth",
-            typeof(Double),
-            typeof(Legend),
-            new PropertyMetadata(OnMaxWidthPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.MaximumHeight dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.MaximumHeight dependency property.
-        /// </returns>
-        public static readonly DependencyProperty MaximumHeightProperty = DependencyProperty.Register
-            ("MaximumHeight",
-            typeof(Double),
-            typeof(Legend),
-            new PropertyMetadata(OnMaxHeightPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.LabelMargin dependency property.
@@ -435,6 +413,9 @@ namespace Visifire.Charts
            typeof(Legend),
            new PropertyMetadata(OnEntryMarginPropertyPropertyChanged));
 
+        /// <summary>
+        /// Get or set the HrefTarget property
+        /// </summary>
         public HrefTargets HrefTarget
         {
             get
@@ -447,6 +428,9 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the Href porperty
+        /// </summary>
         public String Href
         {
             get
@@ -483,37 +467,26 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the maximum height of the legend
+        /// Get or set the Cursor property
         /// </summary>
-        public Double MaximumWidth
+        public new Cursor Cursor
         {
             get
             {
-                return (Double)GetValue(MaximumWidthProperty);
+                return base.Cursor;
             }
             set
             {
-                SetValue(MaximumWidthProperty, value);
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
             }
         }
 
         /// <summary>
-        /// Get or Set the maximum height of the Legend
-        /// </summary>
-        public Double MaximumHeight
-        {
-            get
-            {
-                return (Double)GetValue(MaximumHeightProperty);
-            }
-            set
-            {
-                SetValue(MaximumHeightProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Get or Set the label margin of the Legend
+        /// Get or set the label margin of the Legend
         /// </summary>
         public Double LabelMargin
         {
@@ -528,7 +501,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the padding of the Legend
+        /// Get or set the padding of the Legend
         /// </summary>
         public new Thickness Padding
         {
@@ -548,7 +521,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the HorizontalAlignment property of the Legend
+        /// Get or set the HorizontalAlignment property of the Legend
         /// </summary>
         public new HorizontalAlignment HorizontalAlignment
         {
@@ -572,7 +545,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the VerticalAlignment property of the Legend
+        /// Get or set the VerticalAlignment property of the Legend
         /// </summary>
         public new VerticalAlignment VerticalAlignment
         {
@@ -595,7 +568,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the BorderColor property of the Legend
+        /// Get or set the BorderColor property of the Legend
         /// </summary>
         public Brush BorderColor
         {
@@ -610,7 +583,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the BorderThickness property of the Legend
+        /// Get or set the BorderThickness property of the Legend
         /// </summary>
         public new Thickness BorderThickness
         {
@@ -633,7 +606,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the Background property of the Legend
+        /// Get or set the Background property of the Legend
         /// </summary>
         public new Brush Background
         {
@@ -656,7 +629,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the DockInsidePlotArea property of the Legend
+        /// Get or set the DockInsidePlotArea property of the Legend
         /// </summary>
         public Boolean DockInsidePlotArea
         {
@@ -671,7 +644,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the Enabled property of the Legend
+        /// Get or set the Enabled property of the Legend
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -690,7 +663,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the FontColor property of the Legend
+        /// Get or set the FontColor property of the Legend
         /// </summary>
         public Brush FontColor
         {
@@ -706,7 +679,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the FontFamily property of the Legend
+        /// Get or set the FontFamily property of the Legend
         /// </summary>
         public new FontFamily FontFamily
         {
@@ -733,7 +706,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the FontSize property of the Legend
+        /// Get or set the FontSize property of the Legend
         /// </summary>
         public new Double FontSize
         {
@@ -757,7 +730,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the FontStyle property of the Legend
+        /// Get or set the FontStyle property of the Legend
         /// </summary>
 #if WPF
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
@@ -783,7 +756,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the FontWeight property of the Legend
+        /// Get or set the FontWeight property of the Legend
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
@@ -809,7 +782,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the LightingEnabled property of the Legend
+        /// Get or set the LightingEnabled property of the Legend
         /// </summary>
         public Boolean LightingEnabled
         {
@@ -829,7 +802,7 @@ namespace Visifire.Charts
         [System.ComponentModel.TypeConverter(typeof(Converters.CornerRadiusConverter))]
 #endif
         /// <summary>
-        /// Get or Set the CornerRadius property of the Legend
+        /// Get or set the CornerRadius property of the Legend
         /// </summary>
         public CornerRadius CornerRadius
         {
@@ -844,7 +817,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the Title property of the Legend
+        /// Get or set the Title property of the Legend
         /// </summary>
         public String Title
         {
@@ -859,7 +832,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleAlignmentX property of the Legend
+        /// Get or set the TitleAlignmentX property of the Legend
         /// </summary>
         public HorizontalAlignment TitleAlignmentX
         {
@@ -874,7 +847,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleTextAlignment property of the Legend
+        /// Get or set the TitleTextAlignment property of the Legend
         /// </summary>
         public TextAlignment TitleTextAlignment
         {
@@ -889,7 +862,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleBackground property of the Legend
+        /// Get or set the TitleBackground property of the Legend
         /// </summary>
         public Brush TitleBackground
         {
@@ -904,7 +877,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleFontColor property of the Legend
+        /// Get or set the TitleFontColor property of the Legend
         /// </summary>
         public Brush TitleFontColor
         {
@@ -919,7 +892,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleFontFamily property of the Legend
+        /// Get or set the TitleFontFamily property of the Legend
         /// </summary>
         public FontFamily TitleFontFamily
         {
@@ -934,7 +907,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleFontSize property of the Legend
+        /// Get or set the TitleFontSize property of the Legend
         /// </summary>
         public Double TitleFontSize
         {
@@ -949,7 +922,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleFontStyle property of the Legend
+        /// Get or set the TitleFontStyle property of the Legend
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontStyleConverter))]
@@ -967,7 +940,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the TitleFontWeight property of the Legend
+        /// Get or set the TitleFontWeight property of the Legend
         /// </summary>
         public FontWeight TitleFontWeight
         {
@@ -982,7 +955,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the EntryMargin property of the Legend
+        /// Get or set the EntryMargin property of the Legend
         /// </summary>
         public Double EntryMargin
         {
@@ -1009,7 +982,25 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Orientation of Legend
+        /// Get or set the maximum width of the legend
+        /// </summary>
+        internal Double MaximumWidth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get or set the maximum height of the Legend
+        /// </summary>
+        internal Double MaximumHeight
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get or set theOrientation of Legend
         /// </summary>
         internal Orientation Orientation
         {
@@ -1018,7 +1009,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Maximum number of rows in Legend
+        /// Get or set the Maximum number of rows in Legend
         /// </summary>
         internal Int32 MaxRows
         {
@@ -1027,7 +1018,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Maximum number of columns in Legend
+        /// Get or set the Maximum number of columns in Legend
         /// </summary>
         internal Int32 MaxColumns
         {
@@ -1100,7 +1091,7 @@ namespace Visifire.Charts
         #region Private Methods
 
         /// <summary>
-        /// Event handler attached with HrefTarget property changed event of AxisLabels elements
+        /// Event handler attached with HrefTarget property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1111,7 +1102,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with Href property changed event of AxisLabels elements
+        /// Event handler attached with Href property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1120,31 +1111,9 @@ namespace Visifire.Charts
             Legend c = d as Legend;
             c.FirePropertyChanged("Href");
         }
-
-        /// <summary>
-        /// Event handler attached with MaximumWidth property changed event of AxisLabels elements
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("MaximumWidth");
-        }
-
-        /// <summary>
-        /// Event handler attached with MaximumHeight property changed event of AxisLabels elements
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("MaximumHeight");
-        }
         
         /// <summary>
-        /// Event handler attached with LabelMargin property changed event of AxisLabels elements
+        /// Event handler attached with LabelMargin property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1157,7 +1126,7 @@ namespace Visifire.Charts
 #if WPF    
     
         /// <summary>
-        /// Event handler attached with Padding property changed event of AxisLabels elements
+        /// Event handler attached with Padding property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1168,7 +1137,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with HorizontalAlignment property changed event of AxisLabels elements
+        /// Event handler attached with HorizontalAlignment property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1179,7 +1148,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with VerticalAlignment property changed event of AxisLabels elements
+        /// Event handler attached with VerticalAlignment property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1190,7 +1159,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// OpacityProperty changed call back function
+        /// Event handler attached with Opacity property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1202,7 +1171,7 @@ namespace Visifire.Charts
 #endif
 
         /// <summary>
-        /// Event handler attached with BorderColor property changed event of AxisLabels elements
+        /// Event handler attached with BorderColor property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1215,7 +1184,7 @@ namespace Visifire.Charts
 #if WPF
         
         /// <summary>
-        /// Event handler attached with BorderThickness property changed event of AxisLabels elements
+        /// Event handler attached with BorderThickness property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1226,7 +1195,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with Background property changed event of AxisLabels elements
+        /// Event handler attached with Background property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1238,7 +1207,7 @@ namespace Visifire.Charts
 #endif
 
         /// <summary>
-        /// Event handler attached with DockInsidePlotArea property changed event of AxisLabels elements
+        /// Event handler attached with DockInsidePlotArea property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1249,7 +1218,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with Enabled property changed event of AxisLabels elements
+        /// Event handler attached with Enabled property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1260,7 +1229,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with FontColor property changed event of AxisLabels elements
+        /// Event handler attached with FontColor property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1273,7 +1242,7 @@ namespace Visifire.Charts
 #if WPF
         
         /// <summary>
-        /// Event handler attached with FontFamily property changed event of AxisLabels elements
+        /// Event handler attached with FontFamily property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1284,7 +1253,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with FontSize property changed event of AxisLabels elements
+        /// Event handler attached with FontSize property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1295,7 +1264,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with FontStyle property changed event of AxisLabels elements
+        /// Event handler attached with FontStyle property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1306,7 +1275,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with FontWeight property changed event of AxisLabels elements
+        /// Event handler attached with FontWeight property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1319,7 +1288,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Event handler attached with LightingEnabled property changed event of AxisLabels elements
+        /// Event handler attached with LightingEnabled property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1330,7 +1299,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with CornerRadius property changed event of AxisLabels elements
+        /// Event handler attached with CornerRadius property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1341,7 +1310,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with Title property changed event of AxisLabels elements
+        /// Event handler attached with Title property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1352,7 +1321,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleAlignmentX property changed event of AxisLabels elements
+        /// Event handler attached with TitleAlignmentX property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1363,7 +1332,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleTextAlignment property changed event of AxisLabels elements
+        /// Event handler attached with TitleTextAlignment property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1374,7 +1343,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleBackground property changed event of AxisLabels elements
+        /// Event handler attached with TitleBackground property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1385,7 +1354,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with TitleFontColor property changed event of AxisLabels elements
+        /// Event handler attached with TitleFontColor property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1396,7 +1365,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleFontFamily property changed event of AxisLabels elements
+        /// Event handler attached with TitleFontFamily property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1407,7 +1376,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleFontStyle property changed event of AxisLabels elements
+        /// Event handler attached with TitleFontStyle property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1418,7 +1387,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleFontSize property changed event of AxisLabels elements
+        /// Event handler attached with TitleFontSize property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1429,7 +1398,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with TitleFontWeight property changed event of AxisLabels elements
+        /// Event handler attached with TitleFontWeight property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1440,7 +1409,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with EntryMargin property changed event of AxisLabels elements
+        /// Event handler attached with EntryMargin property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1477,7 +1446,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Apply font properties of the title of the Legend
+        /// Apply font properties of the title of Legend
         /// </summary>
         /// <param name="title"></param>
         private void ApplyFontProperty(Title title)
@@ -1577,7 +1546,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns max entry size of legend
         /// </summary>
-        /// <returns></returns>
+        /// <returns>EntrySize</returns>
         private EntrySize GetMaxSymbolAndColumnWidth()
         {
             EntrySize entrySize = new EntrySize();
@@ -1842,9 +1811,9 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creats the content of the Legend
+        /// Create the content of the Legend
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Grid</returns>
         private Grid CreateLegendContent()
         {
             Grid legendContent = new Grid();
@@ -1887,7 +1856,7 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Create visual object of a Legend
+        /// Create visual object of the Legend
         /// </summary>
         internal void CreateVisualObject()
         {

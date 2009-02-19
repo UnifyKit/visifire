@@ -25,7 +25,7 @@ namespace WPFVisifireChartsTest
         public void EnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -56,7 +56,7 @@ namespace WPFVisifireChartsTest
         public void OrientationDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -87,7 +87,7 @@ namespace WPFVisifireChartsTest
         public void AxisTypeDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -118,7 +118,7 @@ namespace WPFVisifireChartsTest
         public void LineColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -149,7 +149,7 @@ namespace WPFVisifireChartsTest
         public void LineThicknessDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -180,7 +180,7 @@ namespace WPFVisifireChartsTest
         public void LineStyleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -211,7 +211,7 @@ namespace WPFVisifireChartsTest
         public void ShadowEnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -248,11 +248,12 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
             TrendLine trendLine = TrendLineToTest;
+            trendLine.Enabled = false;
             chart.TrendLines.Add(trendLine);
                  
             _isLoaded = false;
@@ -272,6 +273,40 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            TrendLine trendLine = TrendLineToTest;
+            chart.TrendLines.Add(trendLine);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                trendLine.Opacity = 0.5;
+                Assert.AreEqual(0.5, trendLine.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the new value of Orientation. 
         /// </summary> 
         [TestMethod]
@@ -282,7 +317,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -317,7 +352,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -352,7 +387,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -386,7 +421,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -420,7 +455,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -454,7 +489,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -488,7 +523,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -525,7 +560,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Int32 trendLinesAdded = 0;
 

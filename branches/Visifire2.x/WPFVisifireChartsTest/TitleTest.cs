@@ -517,6 +517,38 @@ namespace WPFVisifireChartsTest
         #endregion CheckDefaultPropertyValue
 
         #region CheckNewPropertyValue
+
+        /// <summary>
+        /// Check the new value of Enabled. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Enabled.")]
+        [Owner("[....]")]
+        public void EnabledNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            Title title = TitleToTest;
+            chart.Titles.Add(title);
+
+                 
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                chart.Titles[0].Enabled = false;
+                Assert.IsFalse((Boolean)chart.Titles[0].Enabled);
+            }
+        }
+
         /// <summary> 
         /// Check Titles new property values
         /// </summary> 
@@ -552,6 +584,9 @@ namespace WPFVisifireChartsTest
                 title.Padding = new Thickness(5);
                 title.Margin = new Thickness(2);
                 title.CornerRadius = new CornerRadius(1, 1, 1, 1);
+                title.ToolTipText = "Title";
+                title.Opacity = 0.5;
+                title.Cursor = Cursors.Hand;
             }
                  
             _isLoaded = false;
@@ -562,22 +597,28 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                foreach (Title title in chart.Titles) Assert.AreEqual(false, title.DockInsidePlotArea);
-                foreach (Title title in chart.Titles) Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), title.Background);
-                foreach (Title title in chart.Titles) Assert.AreEqual(new Thickness(1), title.BorderThickness);
-                foreach (Title title in chart.Titles) Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Yellow), title.BorderColor);
-                foreach (Title title in chart.Titles) Assert.AreEqual("Title", title.Text);
-                foreach (Title title in chart.Titles) Assert.AreEqual(TextAlignment.Center, title.TextAlignment);
-                foreach (Title title in chart.Titles) Assert.AreEqual(new FontFamily("Trebuchet MS"), title.FontFamily);
-                foreach (Title title in chart.Titles) Assert.AreEqual(11, (Double)title.FontSize, Common.HighPrecisionDelta);
-                foreach (Title title in chart.Titles) Assert.AreEqual(FontStyles.Normal, title.FontStyle);
-                foreach (Title title in chart.Titles) Assert.AreEqual(FontWeights.Bold, title.FontWeight);
-                foreach (Title title in chart.Titles) Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), title.FontColor);
-                foreach (Title title in chart.Titles) Assert.AreEqual(HorizontalAlignment.Center, title.HorizontalAlignment);
-                foreach (Title title in chart.Titles) Assert.AreEqual(VerticalAlignment.Top, title.VerticalAlignment);
-                foreach (Title title in chart.Titles) Assert.AreEqual(new Thickness(5), title.Padding);
-                foreach (Title title in chart.Titles) Assert.AreEqual(new Thickness(2), title.Margin);
-                foreach (Title title in chart.Titles) Assert.AreEqual(new CornerRadius(1, 1, 1, 1), title.CornerRadius);
+                foreach (Title title in chart.Titles)
+                {
+                    Assert.AreEqual(false, title.DockInsidePlotArea);
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), title.Background);
+                    Assert.AreEqual(new Thickness(1), title.BorderThickness);
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Yellow), title.BorderColor);
+                    Assert.AreEqual("Title", title.Text);
+                    Assert.AreEqual(TextAlignment.Center, title.TextAlignment);
+                    Assert.AreEqual(new FontFamily("Trebuchet MS"), title.FontFamily);
+                    Assert.AreEqual(11, (Double)title.FontSize, Common.HighPrecisionDelta);
+                    Assert.AreEqual(FontStyles.Normal, title.FontStyle);
+                    Assert.AreEqual(FontWeights.Bold, title.FontWeight);
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), title.FontColor);
+                    Assert.AreEqual(HorizontalAlignment.Center, title.HorizontalAlignment);
+                    Assert.AreEqual(VerticalAlignment.Top, title.VerticalAlignment);
+                    Assert.AreEqual(new Thickness(5), title.Padding);
+                    Assert.AreEqual(new Thickness(2), title.Margin);
+                    Assert.AreEqual(new CornerRadius(1, 1, 1, 1), title.CornerRadius);
+                    Assert.AreEqual("Title", title.ToolTipText);
+                    Assert.AreEqual(0.5, title.Opacity, Common.HighPrecisionDelta);
+                    Assert.AreEqual(Cursors.Hand, title.Cursor);
+                }
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -782,6 +823,18 @@ namespace WPFVisifireChartsTest
                 // Simple standard Title 
                 yield return new Title();
 
+            }
+        }
+
+        /// <summary>
+        /// New Title instance
+        /// </summary>
+        public Title TitleToTest
+        {
+            get
+            {
+                // Simple standard Title 
+                return new Title() { Text = "Visifire" };
             }
         }
 

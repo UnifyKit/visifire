@@ -573,6 +573,109 @@ namespace WPFVisifireChartsTest
         #endregion
 
         #region CheckNewPropertyValue
+
+        /// <summary>
+        /// Check the Enabled property value
+        /// </summary>
+        [TestMethod]
+        public void CheckEnabledPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    dataSeries.DataPoints[i].Enabled = false;
+                    Assert.IsFalse((Boolean)dataSeries.DataPoints[i].Enabled);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the ZValue property value
+        /// </summary>
+        [TestMethod]
+        public void CheckZValuePropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            dataSeries.RenderAs = RenderAs.Bubble;
+            Random rand = new Random();
+
+            List<Double> zValue = new List<Double>();
+            Double z = 0;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    dataSeries.DataPoints[i].ZValue = (z = rand.Next(100,500));
+                    zValue.Add(z);
+                    Assert.AreEqual(zValue[i], dataSeries.DataPoints[i].ZValue);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the Opacity property value
+        /// </summary>
+        [TestMethod]
+        public void CheckOpacityPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    dataSeries.DataPoints[i].Opacity = 0.5;
+                    Assert.AreEqual(0.5, dataSeries.DataPoints[i].Opacity, Common.HighPrecisionDelta);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         /// <summary>
         /// Check the Color property value
         /// </summary>
@@ -633,6 +736,42 @@ namespace WPFVisifireChartsTest
                 {
                     dataSeries.DataPoints[i].Exploded = true;
                     Assert.IsTrue((Boolean)dataSeries.DataPoints[i].Exploded);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the HrefAndHrefTarget property value
+        /// </summary>
+        [TestMethod]
+        public void CheckHrefAndHrefTargetPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            dataSeries.RenderAs = RenderAs.Pie;
+
+            chart.Series.Add(dataSeries);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    dataSeries.DataPoints[i].Href = "http://www.visifire.com";
+                    dataSeries.DataPoints[i].HrefTarget = HrefTargets._blank;
+                    Assert.AreEqual("http://www.visifire.com", dataSeries.DataPoints[i].Href);
+                    Assert.AreEqual(HrefTargets._blank, dataSeries.DataPoints[i].HrefTarget);
                 }
             }
 
@@ -1516,7 +1655,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             DataSeries dataSeries = CreateDataSeries2();
 
@@ -1542,6 +1681,41 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+
+        /// <summary>
+        /// Check the Cursor property value
+        /// </summary>
+        [TestMethod]
+        public void CheckCursorPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+            
+
+            DataSeries dataSeries = CreateDataSeries2();
+
+            chart.Series.Add(dataSeries);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    dataSeries.DataPoints[i].Cursor = Cursors.Hand;
+                    Assert.AreEqual(Cursors.Hand, dataSeries.DataPoints[i].Cursor);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         #region CheckDefaultPropertyValue
@@ -1646,7 +1820,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             DataSeries dataSeries = CreateDataSeries1();
 
@@ -2304,7 +2478,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             DataSeries dataSeries = CreateDataSeries1();
 

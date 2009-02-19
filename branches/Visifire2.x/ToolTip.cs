@@ -42,7 +42,7 @@ using System.Windows.Input;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// ToolTip class
+    /// Visifire.Charts.ToolTip class
     /// </summary>
 #if SL
     [System.Windows.Browser.ScriptableType]
@@ -174,7 +174,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Text property of ToolTip
+        /// Get or set the Text property of ToolTip
         /// </summary>
         public String Text
         {
@@ -184,12 +184,13 @@ namespace Visifire.Charts
             }
             set
             {
-                SetValue(TextProperty, Visifire.Commons.ObservableObject.GetFormattedMultilineText(value.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                String val = Visifire.Commons.ObservableObject.GetFormattedMultilineText(value);
+                SetValue(TextProperty, val);
             }
         }
 
         /// <summary>
-        /// CornerRadius property of ToolTip
+        /// Get or set the CornerRadius property of ToolTip
         /// </summary>
         public CornerRadius CornerRadius
         {
@@ -204,7 +205,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Property Text
+        /// Get or set the FontColor of ToolTip Text
         /// </summary>
         public Brush FontColor
         {

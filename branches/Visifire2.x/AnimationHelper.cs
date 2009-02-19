@@ -67,7 +67,7 @@ namespace Visifire.Commons
         /// Returns list of KeySpline
         /// </summary>
         /// <param name="count">Required number of KeySplines</param>
-        /// <returns></returns>
+        /// <returns>List of KeySpline</returns>
         public static List<KeySpline> GenerateKeySplineList(int count)
         {
             List<KeySpline> splines = new List<KeySpline>();
@@ -81,8 +81,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Returns a new KeySpline
         /// </summary>
-        /// <param name="controlPoint1">First controlPoint</param>
-        /// <param name="controlPoint2">Second controlPoint</param>
+        /// <param name="controlPoint1">First control point</param>
+        /// <param name="controlPoint2">Second control point</param>
         /// <returns>KeySpline</returns>
         internal static KeySpline GetKeySpline(Point controlPoint1, Point controlPoint2)
         {
@@ -90,15 +90,15 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Creates DoubleAnimation
+        /// Create DoubleAnimation
         /// </summary>
         /// <param name="parentObj">Storyboard parent object</param>
         /// <param name="target">Animation target object</param>
         /// <param name="property">Property path to animate</param>
         /// <param name="beginTime">Animation begin time</param>
-        /// <param name="frameTime">Frame times</param>
-        /// <param name="values">Target values</param>
-        /// <param name="splines">Splines</param>
+        /// <param name="frameTime">Frame time collection</param>
+        /// <param name="values">Target value collection</param>
+        /// <param name="splines">List of KeySpline</param>
         /// <returns>DoubleAnimationUsingKeyFrames</returns>
         internal static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(FrameworkElement parentObj, DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
         {
@@ -133,15 +133,16 @@ namespace Visifire.Commons
         #region Internal Methods
 
         /// <summary>
-        /// Apply Opacity animation to an object
+        /// Apply Opacity animation to a Marker
         /// </summary>
         /// <param name="marker">Marker to animate</param>
         /// <param name="parentObj">Storyboard parent Object</param>
         /// <param name="storyboard">Storyboard reference</param>
-        /// <param name="beginTime">Begin time</param>
+        /// <param name="beginTime">Animation begin time</param>
+        /// <param name="targetValue">Target opacity value</param>
         /// <returns>Storyboard</returns>
         internal static Storyboard ApplyOpacityAnimation(Marker marker, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double targetValue)
-        {
+        {   
             if (marker != null && parentObj != null)
                 return ApplyOpacityAnimation(marker.Visual, parentObj, storyboard, beginTime, 0.75, targetValue);
             else
@@ -156,6 +157,7 @@ namespace Visifire.Commons
         /// <param name="storyboard">Storyboard reference</param>
         /// <param name="beginTime">Begin time</param>
         /// <param name="duration">Animation duration</param>
+        /// <param name="targetValue">Target opacity value</param>
         /// <returns>Storyboard</returns>
         internal static Storyboard ApplyOpacityAnimation(FrameworkElement objectToAnimate, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double duration, Double targetValue)
         {
@@ -179,10 +181,10 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Returns list of KeySpline from Point array
+        /// Returns list of KeySpline from point array
         /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="values">List of points</param>
+        /// <returns>List of KeySpline</returns>
         internal static List<KeySpline> GenerateKeySplineList(params Point[] values)
         {
             List<KeySpline> splines = new List<KeySpline>();
@@ -201,9 +203,6 @@ namespace Visifire.Commons
         #region Data
 
         #endregion
-
-        
-       
     }
 
 }

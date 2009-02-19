@@ -203,7 +203,7 @@ namespace Visifire.Charts
             new PropertyMetadata(OnShadowEnabledPropertyChanged));
 
         /// <summary>
-        /// Set or get HrefTarget property of PlotArea
+        /// Get or set HrefTarget property of PlotArea
         /// </summary>
         public HrefTargets HrefTarget
         {
@@ -218,7 +218,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Href property of PlotArea
+        /// Get or set Href property of PlotArea
         /// </summary>
         public String Href
         {
@@ -256,7 +256,26 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Bevel property of PlotArea for Bevel effect
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get or set Bevel property of PlotArea for Bevel effect
         /// </summary>
         public Boolean Bevel
         {
@@ -271,7 +290,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set or get BorderColor property of PlotArea
+        /// Get or set BorderColor property of PlotArea
         /// </summary>
         public Brush BorderColor
         {
@@ -287,7 +306,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Set or get ToolTipText property for the Chart
+        /// Get or set ToolTipText property for the Chart
         /// </summary>
         public override String ToolTipText
         {
@@ -305,7 +324,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get BorderThickness property of PlotArea
+        /// Get or set BorderThickness property of PlotArea
         /// </summary>
         public new Thickness BorderThickness
         {
@@ -325,7 +344,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get LightingEnabled property of PlotArea
+        /// Get or set LightingEnabled property of PlotArea
         /// </summary>
         public Boolean LightingEnabled
         {
@@ -341,7 +360,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Set or get CornerRadius property of PlotArea
+        /// Get or set CornerRadius property of PlotArea
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
@@ -361,7 +380,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get ShadowEnabled property of PlotArea
+        /// Get or set ShadowEnabled property of PlotArea
         /// </summary>
         public Boolean ShadowEnabled
         {
@@ -376,7 +395,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set or get Background property of PlotArea
+        /// Get or set Background property of PlotArea
         /// </summary>
         public new Brush Background
         {
@@ -630,7 +649,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates a new border element for PlotArea
+        /// Creates new border element for PlotArea
         /// </summary>
         /// <returns>Border</returns>
         internal Border GetNewBorderElement()
@@ -648,7 +667,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Update PlotArea with new Property Values
+        /// Update PlotArea with new property values
         /// </summary>
         internal void UpdateProperties()
         {
@@ -692,11 +711,14 @@ namespace Visifire.Charts
         /// </summary>
         internal void ApplyBevel(Double plankDepth, Double plankThickness)
         {
+            if (_bevelCanvas != null)
+                BevelGrid.Children.Remove(_bevelCanvas);
+            
             if (Bevel)
             {
                 Chart chart = Chart as Chart;
 
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(BorderElement.Width - BorderThickness.Left - BorderThickness.Right// - plankDepth
+                _bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(BorderElement.Width - BorderThickness.Left - BorderThickness.Right// - plankDepth
                 , BorderElement.Height - BorderThickness.Top - BorderThickness.Bottom //+ ((chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? 0 : (-plankDepth - plankThickness))
                 , Charts.Chart.BEVEL_DEPTH, Charts.Chart.BEVEL_DEPTH
                 , Graphics.GetBevelTopBrush(BorderElement.Background)
@@ -704,12 +726,12 @@ namespace Visifire.Charts
                 , Graphics.GetBevelSideBrush(180, BorderElement.Background)
                 , Graphics.GetBevelSideBrush(90, BorderElement.Background));
 
-                bevelCanvas.SetValue(Canvas.LeftProperty, BorderThickness.Left);
-                bevelCanvas.SetValue(Canvas.TopProperty, BorderThickness.Top);
+                _bevelCanvas.SetValue(Canvas.LeftProperty, BorderThickness.Left);
+                _bevelCanvas.SetValue(Canvas.TopProperty, BorderThickness.Top);
 
-                bevelCanvas.IsHitTestVisible = false;
-                BevelGrid.Children.Clear();
-                BevelGrid.Children.Add(bevelCanvas);
+                _bevelCanvas.IsHitTestVisible = false;
+                
+                BevelGrid.Children.Add(_bevelCanvas);
             }
         }
 
@@ -817,6 +839,11 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        /// <summary>
+        /// Canvas for bevel
+        /// </summary>
+        Canvas _bevelCanvas;
 
 #if WPF
         /// <summary>

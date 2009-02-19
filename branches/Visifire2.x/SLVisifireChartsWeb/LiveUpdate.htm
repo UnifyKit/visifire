@@ -44,7 +44,7 @@
                + '         <vc:Title Text="Visifire Title"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True" LabelText="abc">'
+               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
@@ -79,15 +79,15 @@
             {   
                 if (chart != null)
                 {
-                  //  try 
+                    try 
                        {
-                        // for (var i = 0; i < chart.Series[0].DataPoints.length; i++)
+                         for (var i = 0; i < chart.Series[0].DataPoints.length; i++)
                             chart.Series[0].DataPoints[dataPointIndex].SetPropertyFromJs("YValue", newValue);
                        }
                      
-                     //catch (e)
+                     catch (e)
                      {
-                        //alert(e);
+                        alert(e);
                      }
                 }
             };
@@ -96,7 +96,7 @@
             {
                 updateYValue(Math.abs(Math.random() * 100 - 10 * dataPointIndex), dataPointIndex++);
                 dataPointIndex = (dataPointIndex > 4) ? 0 : dataPointIndex;
-                setTimeout(timer, 100);
+                setTimeout(timer, 1000);
             };
             
         </script>

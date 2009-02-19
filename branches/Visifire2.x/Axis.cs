@@ -51,6 +51,9 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.Axis class
+    /// </summary>
 #if SL
     [System.Windows.Browser.ScriptableType]
 #endif
@@ -63,13 +66,13 @@ namespace Visifire.Charts
         /// </summary>
         public Axis()
         {
-            // Initialize list of ChartGrids list as Grids
+            // Initialize list of ChartGrid list
             Grids = new ChartGridCollection();
 
             // Initialize list of Ticks list 
             Ticks = new TicksCollection();
 
-            // Create AxisLebels element
+            // Initialize AxisLabels element
             AxisLabels = new AxisLabels();
 
             // Attach event handler on collection changed event with chart grid collection
@@ -449,7 +452,26 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set href target property of the axis
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get or set the href target property of the axis
         /// </summary>
         public HrefTargets HrefTarget
         {
@@ -569,7 +591,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Get or Set the padding of the Legend
+        /// Get or set the padding of the axis
         /// </summary>
         public new Thickness Padding
         {
@@ -694,7 +716,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the maximum value for the Axis
+        /// Get or set the maximum value for the axis
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -751,8 +773,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set start from zero property of the axis
-        /// Forces the axis to include zero or atleast have either Axisminimum or AxisMaximum as zero
+        /// Get or set start from zero property of the axis. 
+        /// Forces the axis to include zero or atleast have either AxisMinimum or AxisMaximum as zero
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> StartFromZero
@@ -776,7 +798,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Gets or sets the prefix for the axis labels in this axis
+        /// Get or set the prefix for the axis labels used in the axis
         /// </summary>
         public String Prefix
         {
@@ -791,7 +813,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Gets or sets the suffix for the labels used in the axis
+        /// Get or set the suffix for the axis labels used in the axis
         /// </summary>
         public String Suffix
         {
@@ -806,7 +828,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Gets or sets the scaling values for the axis
+        /// Get or set the scaling values for the axis
         /// </summary>
         public String ScalingSet
         {
@@ -822,7 +844,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Gets or sets the format string that must be used with the axis labels
+        /// Get or set the format string that can be used with the axis labels
         /// </summary>
         public String ValueFormatString
         {
@@ -837,8 +859,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set scrollbar offset value property of the axis
-        /// ScrollBarOffset value can be accessed after the chart is rendered. Value Range 0 to 1
+        /// Get or set scrollbar offset value property of the axis. 
+        /// ScrollBarOffset value can be accessed after the chart is rendered. Value range from 0 to 1
         /// </summary>
         public Double ScrollBarOffset
         {
@@ -872,7 +894,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Collection of grids
+        /// Collection of grids for an axis
         /// </summary>
         public ChartGridCollection Grids
         {
@@ -881,7 +903,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Collection of Ticks for an axis
+        /// Collection of ticks for an axis
         /// </summary>
         public TicksCollection Ticks
         {
@@ -947,7 +969,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the data maximum for the axis
+        /// Get or set the data maximum for the axis
         /// </summary>
         internal Double Maximum
         {
@@ -956,7 +978,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the data minimum for the axis
+        /// Get or set the data minimum for the axis
         /// </summary>
         internal Double Minimum
         {
@@ -965,7 +987,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or gets MajorGrid element
+        /// Get or set majorgrid element
         /// </summary>
         internal ChartGrid MajorGridsElement
         {
@@ -974,7 +996,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or gets the scroll bar
+        /// Get or set the scroll bar
         /// </summary>
         internal ScrollBar ScrollBarElement
         {
@@ -983,7 +1005,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or gets axis ScrollViewer element
+        /// Get or set axis scrollviewer element
         /// </summary>
         internal Canvas ScrollViewerElement
         {   
@@ -992,7 +1014,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets or gets the major ticks
+        /// Get or set the major ticks
         /// </summary>
         internal Ticks MajorTicksElement
         {
@@ -1001,7 +1023,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or gets the axis title element
+        /// Get or set the axis title element
         /// </summary>
         internal Title AxisTitleElement
         {
@@ -1010,7 +1032,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// AxisManager of the Axis
+        /// Get or set the axis manager of the axis
         /// </summary>
         internal AxisManager AxisManager
         {
@@ -1028,7 +1050,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Line for Axis
+        /// Line for axis
         /// </summary>
         internal Line AxisLine
         {
@@ -1037,8 +1059,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or Gets the axis orientation
-        /// Vertical = AxisY for all types except bar
+        /// Get or set the axis orientation. 
+        /// Vertical = AxisY for all types except bar, 
         /// Horizontal = AxesX for types except bar
         /// </summary>
         internal Orientation AxisOrientation
@@ -1054,7 +1076,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Axis representation
+        /// Get or set the axis representation
         /// </summary>
         internal AxisRepresentations AxisRepresentation
         {
@@ -1072,7 +1094,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or gets the width of the axis
+        /// Get or set the width of the axis
         /// </summary>
         internal new Double Width
         {
@@ -1081,7 +1103,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// sets or gets the height of the axis
+        /// Get or set the height of the axis
         /// </summary>
         internal new Double Height
         {
@@ -1112,7 +1134,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Axis start offset
+        /// Get or set the axis start offset
         /// </summary>
         internal Double StartOffset
         {
@@ -1121,7 +1143,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Axis end offset
+        /// Get or set the axis end offset
         /// </summary>
         internal Double EndOffset
         {
@@ -1130,7 +1152,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Axis skip offset
+        /// Get or set the axis skip offset
         /// </summary>
         internal Int32 SkipOfset
         {
@@ -1143,6 +1165,9 @@ namespace Visifire.Charts
 
         #region Private Properties
         
+        /// <summary>
+        /// StackPanel used for internal purpose
+        /// </summary>
         private Canvas InternalStackPanel
         {
             get;
@@ -1151,6 +1176,9 @@ namespace Visifire.Charts
 
         #region Hidden Control Properties
 
+        /// <summary>
+        /// Get or set
+        /// </summary>
         private new FontFamily FontFamily
         {
             get;
@@ -1280,9 +1308,7 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
             axis.FirePropertyChanged("Background");
         }
-#endif
 
-#if WPF
         /// <summary>
         /// OpacityProperty changed call back function
         /// </summary>
@@ -1296,7 +1322,7 @@ namespace Visifire.Charts
 #endif
 
         /// <summary>
-        /// Event handler manages axislabels property change of axis
+        /// Event handler manages axislabels property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1313,7 +1339,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages property changed event of axislabels element
+        /// Event handler manages property change event of axislabels element
         /// </summary>
         /// <param name="sender">ObservableObject</param>
         /// <param name="e">PropertyChangedEventArgs</param>
@@ -1323,7 +1349,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages href target property change of axis
+        /// Event handler manages href target property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1334,84 +1360,84 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages href property change of axis
+        /// Event handler manages href property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("Href");
         }
 
         /// <summary>
-        /// Event handler manages interval property change of axis
+        /// Event handler manages interval property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("Interval");
         }
 
         /// <summary>
-        /// Event handler manages linecolor property change of axis
+        /// Event handler manages linecolor property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("LineColor");
         }
 
         /// <summary>
-        /// Event handler manages linethickness property change of axis
+        /// Event handler manages linethickness property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("LineThickness");
         }
 
         /// <summary>
-        /// Event handler manages linestyle property change of axis
+        /// Event handler manages linestyle property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("LineStyle");
         }
 
         /// <summary>
-        /// Event handler manages title property change of axis
+        /// Event handler manages title property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnTitlePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("Title");
         }
 
         /// <summary>
-        /// Event handler manages titlefontcolor property change of axis
+        /// Event handler manages titlefontcolor property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnTitleFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("");
+            axis.FirePropertyChanged("TitleFontColor");
         }
 
         /// <summary>
-        /// Event handler manages titlefontfamily property change of axis
+        /// Event handler manages titlefontfamily property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1422,7 +1448,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages titlefontsize property of axis
+        /// Event handler manages titlefontsize property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1433,7 +1459,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages titlefontstyle property change of axis
+        /// Event handler manages titlefontstyle property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1444,7 +1470,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages title fontweight property change of axis
+        /// Event handler manages title fontweight property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1455,7 +1481,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages axistype property change of axis
+        /// Event handler manages axistype property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1466,7 +1492,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages axis maximum property change of axis
+        /// Event handler manages axis maximum property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1477,7 +1503,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages axis minimum property change of axis
+        /// Event handler manages axis minimum property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1488,7 +1514,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages include zero property change of axis
+        /// Event handler manages include zero property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1499,7 +1525,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages start from zero property change of axis
+        /// Event handler manages start from zero property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1510,7 +1536,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages prefix property change of axis
+        /// Event handler manages prefix property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1521,7 +1547,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages suffix property change of axis
+        /// Event handler manages suffix property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1532,7 +1558,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages scaling set property change of axis
+        /// Event handler manages scaling set property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1543,7 +1569,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages value format string property change of axis
+        /// Event handler manages value format string property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1554,7 +1580,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages scrollbar offset property change of axis
+        /// Event handler manages scrollbar offset property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1565,7 +1591,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages enabled property change of axis
+        /// Event handler manages enabled property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1722,9 +1748,15 @@ namespace Visifire.Charts
             #endregion
         }
 
-        /// <summary>
+       /// <summary>
         /// Create line for axis
-        /// </summary>
+       /// </summary>
+       /// <param name="y1">Y1</param>
+       /// <param name="y2">Y2</param>
+       /// <param name="x1">X1</param>
+       /// <param name="x2">X2</param>
+       /// <param name="width">Axis width</param>
+       /// <param name="height">Axis height</param>
         private void CreateAxisLine(Double y1, Double y2, Double x1, Double x2, Double width, Double height)
         {
             AxisLine = new Line() { Y1 = y1, Y2 = y2, X1 = x1, X2 = x2, Width = width, Height = height };
@@ -1736,6 +1768,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Clip vertical axis
         /// </summary>
+        /// <param name="ticksWidth">Ticks width</param>
         private void ClipVerticalAxis(Double ticksWidth)
         {
             // Clip at top or bottom of the scrallable axis in order to avoid axislabel clip 
@@ -1753,10 +1786,6 @@ namespace Visifire.Charts
                 pathFigure.StartPoint = new Point(0, -(clipAdditionValue - 1));
                 pathFigure.Segments = new PathSegmentCollection();
 
-                //pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(ScrollViewerElement.Width , -(clipAdditionValue - 1))));
-                //               pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(ScrollViewerElement.Width, Height + clipAdditionValue)));
-                //               pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, Height + clipAdditionValue)));
-                
                 // Do not change the order of the lines below
                 // Segmens required to create the rectangle
                 pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(ScrollViewerElement.Width - ticksWidth, - (clipAdditionValue-1))));
@@ -2050,6 +2079,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Clip horizontal axis
         /// </summary>
+        /// <param name="ticksHeight">Ticks height</param>
         private void ClipHorizontalAxis(Double ticksHeight)
         {
             // Clip at left or right the scrallable axis in order to avoid axislabel clip 
@@ -2167,6 +2197,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Create axis title visual
         /// </summary>
+        /// <param name="margin">Margin between axis title and axis scale</param>
         private void CreateAxisTitleVisual(Thickness margin)
         {
             AxisTitleElement.Margin = margin;
@@ -2208,7 +2239,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the axis limits considering the widths of the columns that will be drawn in the chart
+        /// Set the axis limits considering the width of the columns that will be drawn in the chart
         /// </summary>
         private bool SetAxesXLimits()
         {
@@ -2223,7 +2254,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the limits such that the gap between plot area and the Columns will be minimum
+        /// Set the limits such that the gap between plot area and the Columns will be minimum
         /// </summary>
         private bool SetAxisLimitForMinimumGap()
         {
@@ -2363,7 +2394,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Calculate and return default interval for axis
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Interval as Double</returns>
         private Double GenerateDefaultInterval()
         {
             if (AxisType == AxisTypes.Primary)
@@ -2672,6 +2703,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Creates the visual element for the Axis
         /// </summary>
+        /// <param name="Chart">Chart</param>
         internal void CreateVisualObject(Chart Chart)
         {
             IsNotificationEnable = false;

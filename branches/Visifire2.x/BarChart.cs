@@ -42,7 +42,7 @@ using Visifire.Commons;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// Visifire.Charts.ColumnChart class
+    /// Visifire.Charts.BarChart class
     /// </summary>
     internal class BarChart
     {
@@ -84,10 +84,11 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
+
         /// <summary>
         /// Set position of the marker
         /// </summary>
-        /// <param name="barParams">RectangularChartShapeParams</param>
+        /// <param name="barParams">Bar parameters</param>
         /// <param name="chart">Chart</param>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="labelText">label text</param>
@@ -140,14 +141,14 @@ namespace Visifire.Charts
             }
 
         }
-
+      
         /// <summary>
         /// Calculate height of each bar
         /// </summary>
-        /// <param name="left">Left position</param>
-        /// <param name="widthPerColumn">Width of a column</param>
-        /// <param name="width">Width of the scale in pixel</param>
-        /// <returns>Final height of a bar</returns>
+        /// <param name="top">Top position</param>
+        /// <param name="heightPerBar">Height of a bar</param>
+        /// <param name="height">Height of chart canvas</param>
+        /// <returns>Final height of each bar</returns>
         private static Double CalculateHeightOfEachColumn(ref Double top, Double heightPerBar, Double height)
         {
             Double finalHeight = heightPerBar;
@@ -168,7 +169,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get columns Z-Index
+        /// Get Bar Z-Index
         /// </summary>
         /// <param name="left">Left position</param>
         /// <param name="top">Top position</param>
@@ -192,7 +193,7 @@ namespace Visifire.Charts
         /// <param name="top">Top position</param>
         /// <param name="top">Actual Width of chart canvas</param>
         /// <param name="top">Actual Height of chart canvas</param>
-        /// <param name="isPositive">Whether column value is negative or positive</param>
+        /// <param name="isPositive">Whether DataPoint value is negative or positive</param>
         /// <returns>Zindex as Int32</returns>
         private static Int32 GetStackedBarZIndex(Double left, Double top, Double width, Double height, Boolean isPositive)
         {
@@ -209,16 +210,16 @@ namespace Visifire.Charts
         /// <summary>
         /// Apply bar chart animation
         /// </summary>
-        /// <param name="column">Bar visual reference</param>
+        /// <param name="bar">Bar visual reference</param>
         /// <param name="storyboard">Storyboard</param>
         /// <param name="barParams">Bar parameters</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyBarChartAnimation(Panel bar, Storyboard storyboard, RectangularChartShapeParams columnParams)
+        private static Storyboard ApplyBarChartAnimation(Panel bar, Storyboard storyboard, RectangularChartShapeParams barParams)
         {
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleX = 0 };
             bar.RenderTransform = scaleTransform;
 
-            if (columnParams.IsPositive)
+            if (barParams.IsPositive)
             {
                 bar.RenderTransformOrigin = new Point(0, 0.5);
             }
@@ -244,18 +245,18 @@ namespace Visifire.Charts
         /// <summary>
         /// Apply animation for StackedBar chart
         /// </summary>
-        /// <param name="column">Bar visual reference</param>
+        /// <param name="bar">Bar visual reference</param>
         /// <param name="storyboard">Storyboard</param>
         /// <param name="barParams">Bar params</param>
         /// <param name="begin">Animation begin time</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyStackedBarChartAnimation(Panel column, Storyboard storyboard, RectangularChartShapeParams columnParams, Double begin, Double duration)
+        private static Storyboard ApplyStackedBarChartAnimation(Panel bar, Storyboard storyboard, RectangularChartShapeParams barParams, Double begin, Double duration)
         {
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleX = 0 };
-            column.RenderTransform = scaleTransform;
+            bar.RenderTransform = scaleTransform;
 
-            column.RenderTransformOrigin = new Point(0.5, 0.5);
+            bar.RenderTransformOrigin = new Point(0.5, 0.5);
 
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1.5, 0.75, 1.125, 0.9325, 1);
             DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, 0.25 * duration, 0.5 * duration, 0.75 * duration, 1.0 * duration, 1.25 * duration);
@@ -278,12 +279,11 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
-
         /// <summary>
         /// Returns marker for DataPoint
         /// </summary>
         /// <param name="chart">Chart</param>
-        /// <param name="barParams">RectangularChartShapeParams</param>
+        /// <param name="barParams">Bar parameters</param>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="left">Left position of MarkerCanvas</param>
         /// <param name="top">Top position</param>
@@ -324,7 +324,7 @@ namespace Visifire.Charts
 
                 SetMarkerPosition(barParams, chart, dataPoint, labelText, markerSize, left, top, markerPosition);
 
-                barParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)barParams.LabelStyle);
+                barParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor,(dataPoint.YValue == 0)? LabelStyles.OutSide : (LabelStyles)barParams.LabelStyle);
                 dataPoint.Marker.FontColor = barParams.LabelFontColor;
 
                 dataPoint.Marker.CreateVisual();
@@ -338,19 +338,19 @@ namespace Visifire.Charts
         /// <summary>
         /// Get visual object for bar chart
         /// </summary>
-        /// <param name="width">Width of the chart</param>
-        /// <param name="height">Height of the chart</param>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
         /// <param name="plotDetails">PlotDetails</param>
         /// <param name="dataSeriesList4Rendering">DataSeries list</param>
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
-        /// <param name="animationEnabled">Whether animation is emnabled</param>
+        /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Bar chart canvas</returns>
         internal static Canvas GetVisualObjectForBarChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
 
-            Dictionary<Double, SorteDataPoints> sortedDataPoints = null;
+            Dictionary<Double, SortDataPoints> sortedDataPoints = null;
 
             sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Bar);
 
@@ -568,14 +568,14 @@ namespace Visifire.Charts
         /// <summary>
         /// Get visual object for StackedBar chart
         /// </summary>
-        /// <param name="width">Width of the chart</param>
-        /// <param name="height">Height of the chart</param>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
         /// <param name="plotDetails">PlotDetails</param>
         /// <param name="dataSeriesList4Rendering">DataSeries list</param>
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
-        /// <param name="animationEnabled">Whether animation is emnabled</param>
-        /// <returns>Bar chart canvas</returns>
+        /// <param name="animationEnabled">Whether animation is enabled</param>
+        /// <returns>StackedBar chart canvas</returns>
         internal static Canvas GetVisualObjectForStackedBarChart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -803,7 +803,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns>Bar chart Canvas</returns>
+        /// <returns>StackedBar100 chart Canvas</returns>
         internal static Canvas GetVisualObjectForStackedBar100Chart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, Boolean animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -1035,43 +1035,43 @@ namespace Visifire.Charts
         /// <summary>
         /// Create 2D bar for a DataPoint
         /// </summary>
-        /// <param name="barParams">RectangularChartShapeParams</param>
+        /// <param name="barParams">Bar parameters</param>
         /// <returns>Faces for bar</returns>
-        internal static Faces Get2DBar(RectangularChartShapeParams columnParams)
+        internal static Faces Get2DBar(RectangularChartShapeParams barParams)
         {
             Faces faces = new Faces();
             faces.Parts = new List<FrameworkElement>();
 
-            Grid columnVisual = new Grid();
+            Grid barVisual = new Grid();
 
-            columnVisual.Width = columnParams.Size.Width;
-            columnVisual.Height = columnParams.Size.Height;
+            barVisual.Width = barParams.Size.Width;
+            barVisual.Height = barParams.Size.Height;
 
-            Brush background = (columnParams.Lighting ? Graphics.GetLightingEnabledBrush(columnParams.BackgroundBrush, "Linear", null) : columnParams.BackgroundBrush);
+            Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
 
-            Canvas columnBase = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Size.Height,
-                columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
-                background, columnParams.XRadius, columnParams.YRadius);
+            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Size.Height,
+                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
+                background, barParams.XRadius, barParams.YRadius);
 
-            (columnBase.Children[0] as FrameworkElement).Tag = "ColumnBase";
-            faces.Parts.Add(columnBase.Children[0] as FrameworkElement);
+            (barBase.Children[0] as FrameworkElement).Tag = "ColumnBase";
+            faces.Parts.Add(barBase.Children[0] as FrameworkElement);
 
-            columnVisual.Children.Add(columnBase);
+            barVisual.Children.Add(barBase);
 
-            if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
+            if (barParams.Size.Height > 7 && barParams.Size.Width > 14 && barParams.Bevel)
             {
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(columnParams.Size.Width - columnParams.BorderThickness - columnParams.BorderThickness, columnParams.Size.Height - columnParams.BorderThickness - columnParams.BorderThickness, 6, 6,
-                    Graphics.GetBevelTopBrush(columnParams.BackgroundBrush),
-                    Graphics.GetBevelSideBrush((columnParams.Lighting ? -70 : 0), columnParams.BackgroundBrush),
-                    Graphics.GetBevelSideBrush((columnParams.Lighting ? -110 : 180), columnParams.BackgroundBrush),
+                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(barParams.Size.Width - barParams.BorderThickness - barParams.BorderThickness, barParams.Size.Height - barParams.BorderThickness - barParams.BorderThickness, 6, 6,
+                    Graphics.GetBevelTopBrush(barParams.BackgroundBrush),
+                    Graphics.GetBevelSideBrush((barParams.Lighting ? -70 : 0), barParams.BackgroundBrush),
+                    Graphics.GetBevelSideBrush((barParams.Lighting ? -110 : 180), barParams.BackgroundBrush),
                     null);
 
                 foreach (FrameworkElement fe in bevelCanvas.Children)
                     faces.Parts.Add(fe);
 
-                bevelCanvas.SetValue(Canvas.LeftProperty, columnParams.BorderThickness);
-                bevelCanvas.SetValue(Canvas.TopProperty, columnParams.BorderThickness);
-                columnVisual.Children.Add(bevelCanvas);
+                bevelCanvas.SetValue(Canvas.LeftProperty, barParams.BorderThickness);
+                bevelCanvas.SetValue(Canvas.TopProperty, barParams.BorderThickness);
+                barVisual.Children.Add(bevelCanvas);
             }
             else
             {
@@ -1081,9 +1081,9 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
             }
 
-            if (columnParams.Lighting && columnParams.Bevel)
+            if (barParams.Lighting && barParams.Bevel)
             {
-                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(columnParams.Size.Width, columnParams.Size.Height,
+                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.Size.Width, barParams.Size.Height,
                     Graphics.GetLeftGradianceBrush(63),
                     Graphics.GetLeftGradianceBrush(63),
                     Orientation.Horizontal);
@@ -1091,7 +1091,7 @@ namespace Visifire.Charts
                 foreach (FrameworkElement fe in gradienceCanvas.Children)
                     faces.Parts.Add(fe);
 
-                columnVisual.Children.Add(gradienceCanvas);
+                barVisual.Children.Add(gradienceCanvas);
             }
             else
             {
@@ -1099,27 +1099,27 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
             }
 
-            if (columnParams.Shadow)
+            if (barParams.Shadow)
             {
                 Double shadowVerticalOffsetGap = 1;
-                Double shadowVerticalOffset = columnParams.ShadowOffset - shadowVerticalOffsetGap;
-                Double shadowHeight = columnParams.Size.Height;
-                CornerRadius xRadius = columnParams.XRadius;
-                CornerRadius yRadius = columnParams.YRadius;
-                if (columnParams.IsStacked)
+                Double shadowVerticalOffset = barParams.ShadowOffset - shadowVerticalOffsetGap;
+                Double shadowHeight = barParams.Size.Height;
+                CornerRadius xRadius = barParams.XRadius;
+                CornerRadius yRadius = barParams.YRadius;
+                if (barParams.IsStacked)
                 {
-                    if (columnParams.IsPositive)
+                    if (barParams.IsPositive)
                     {
-                        if (columnParams.IsTopOfStack)
+                        if (barParams.IsTopOfStack)
                         {
-                            shadowHeight = columnParams.Size.Height - columnParams.ShadowOffset;
-                            shadowVerticalOffset = columnParams.ShadowOffset - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
+                            shadowHeight = barParams.Size.Height - barParams.ShadowOffset;
+                            shadowVerticalOffset = barParams.ShadowOffset - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
                             xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
                             yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
                         }
                         else
                         {
-                            shadowHeight = columnParams.Size.Height + 6;
+                            shadowHeight = barParams.Size.Height + 6;
                             shadowVerticalOffset = -2;
                             xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
                             yRadius = new CornerRadius(0, 0, 0, 0);
@@ -1127,62 +1127,62 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        if (columnParams.IsTopOfStack)
+                        if (barParams.IsTopOfStack)
                         {
-                            shadowHeight = columnParams.Size.Height - columnParams.ShadowOffset;
+                            shadowHeight = barParams.Size.Height - barParams.ShadowOffset;
                             xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
                             yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
                         }
                         else
                         {
-                            shadowHeight = columnParams.Size.Height + columnParams.ShadowOffset + 2;
+                            shadowHeight = barParams.Size.Height + barParams.ShadowOffset + 2;
                             shadowVerticalOffset = -2;
                             xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
                             yRadius = new CornerRadius(0, 0, 0, 0);
                         }
                     }
                 }
-                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(columnParams.Size.Width, shadowHeight, xRadius, yRadius, columnParams.IsStacked ? 3 : 5);
-                TranslateTransform tt = new TranslateTransform() { X = columnParams.ShadowOffset, Y = shadowVerticalOffset };
+                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(barParams.Size.Width, shadowHeight, xRadius, yRadius, barParams.IsStacked ? 3 : 5);
+                TranslateTransform tt = new TranslateTransform() { X = barParams.ShadowOffset, Y = shadowVerticalOffset };
                 shadowGrid.Opacity = 0.7;
                 shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
                 shadowGrid.RenderTransform = tt;
-                columnVisual.Children.Add(shadowGrid);
+                barVisual.Children.Add(shadowGrid);
             }
 
-            faces.VisualComponents.Add(columnVisual);
+            faces.VisualComponents.Add(barVisual);
 
-            faces.Visual = columnVisual;
+            faces.Visual = barVisual;
 
             return faces;
         }
 
         /// <summary>
-        /// Create 3D column for a DataPoint
+        /// Create 3D bar for a DataPoint
         /// </summary>
-        /// <param name="barParams">RectangularChartShapeParams</param>
+        /// <param name="barParams">Bar parameters</param>
         /// <returns>Faces for bar</returns>
-        internal static Faces Get3DBar(RectangularChartShapeParams columnParams)
+        internal static Faces Get3DBar(RectangularChartShapeParams barParams)
         {
             Faces faces = new Faces();
             faces.Parts = new List<FrameworkElement>();
-            Canvas columnVisual = new Canvas();
+            Canvas barVisual = new Canvas();
 
-            columnVisual.Width = columnParams.Size.Width;
-            columnVisual.Height = columnParams.Size.Height;
+            barVisual.Width = barParams.Size.Width;
+            barVisual.Height = barParams.Size.Height;
 
-            Brush frontBrush = columnParams.Lighting ? Graphics.GetFrontFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
-            Brush topBrush = columnParams.Lighting ? Graphics.GetTopFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
-            Brush rightBrush = columnParams.Lighting ? Graphics.GetRightFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
+            Brush frontBrush = barParams.Lighting ? Graphics.GetFrontFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
+            Brush topBrush = barParams.Lighting ? Graphics.GetTopFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
+            Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
 
-            Canvas front = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Size.Height,
-                columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
+            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Size.Height,
+                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(front.Children[0] as FrameworkElement);
 
-            Canvas top = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Depth,
-                columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
+            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Depth,
+                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(top.Children[0] as FrameworkElement);
@@ -1192,8 +1192,8 @@ namespace Visifire.Charts
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Canvas right = ExtendedGraphics.Get2DRectangle(columnParams.Depth, columnParams.Size.Height,
-                columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
+            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.Depth, barParams.Size.Height,
+                barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(right.Children[0] as FrameworkElement);
@@ -1203,15 +1203,14 @@ namespace Visifire.Charts
             skewTransRight.AngleY = -45;
             right.RenderTransform = skewTransRight;
 
-            columnVisual.Children.Add(front);
-            columnVisual.Children.Add(top);
-            columnVisual.Children.Add(right);
+            barVisual.Children.Add(front);
+            barVisual.Children.Add(top);
+            barVisual.Children.Add(right);
 
-            top.SetValue(Canvas.TopProperty, -columnParams.Depth);
-            right.SetValue(Canvas.LeftProperty, columnParams.Size.Width);
+            top.SetValue(Canvas.TopProperty, -barParams.Depth);
+            right.SetValue(Canvas.LeftProperty, barParams.Size.Width);
 
-
-            faces.Visual = columnVisual;
+            faces.Visual = barVisual;
 
             faces.VisualComponents.Add(front);
             faces.VisualComponents.Add(top);
@@ -1238,73 +1237,3 @@ namespace Visifire.Charts
     }
 }
 
-
-///// <summary>
-///// Set bar parameters
-///// </summary>
-///// <param name="barParams">RectangularChartShapeParams</param>
-///// <param name="chart">Chart reference</param>
-///// <param name="dataPoint">dataPoint</param>
-///// <param name="IsPositive">Whether the DataPoint YValue is positive or negative</param>
-//private static void SetBarParams(ref RectangularChartShapeParams barParams, DataPoint dataPoint, Chart chart, Boolean isPositive)
-//{   
-//    barParams.Bevel = dataPoint.Parent.Bevel;
-//    barParams.Lighting = (Boolean)dataPoint.LightingEnabled;
-//    barParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
-//    barParams.BorderBrush = dataPoint.BorderColor;
-//    barParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
-//    barParams.BorderStyle = ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle);
-//    barParams.IsPositive = isPositive;
-//    barParams.BackgroundBrush = dataPoint.Color;
-
-//    barParams.IsMarkerEnabled = (Boolean)dataPoint.MarkerEnabled;
-//    barParams.MarkerType = (MarkerTypes)dataPoint.MarkerType;
-//    barParams.MarkerColor = dataPoint.MarkerColor;
-//    barParams.MarkerBorderColor = dataPoint.MarkerBorderColor;
-//    barParams.MarkerBorderThickness = (Thickness)dataPoint.MarkerBorderThickness;
-//    barParams.MarkerScale = (Double)dataPoint.MarkerScale;
-//    barParams.MarkerSize = (Double)dataPoint.MarkerSize;
-
-//    barParams.IsLabelEnabled = (Boolean)dataPoint.LabelEnabled;
-//    barParams.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-//    barParams.LabelText = dataPoint.TextParser(dataPoint.LabelText);
-//    barParams.LabelBackground = dataPoint.LabelBackground;
-//    barParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)barParams.LabelStyle);
-//    barParams.LabelFontSize = (Double)dataPoint.LabelFontSize;
-//    barParams.LabelFontFamily = dataPoint.LabelFontFamily;
-//    barParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
-//    barParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
-//}
-
-//private static Dictionary<Axis, Dictionary<Axis, Int32>> GetSeriesIndex(List<DataSeries> seriesList)
-//{
-//    Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = new Dictionary<Axis, Dictionary<Axis, Int32>>();
-
-//    var seriesByAxis = (from series in seriesList
-//                        group series
-//                            by new
-//                            {
-//                                series.PlotGroup.AxisX,
-//                                series.PlotGroup.AxisY
-//                            });
-
-//    Int32 index = 0;
-
-//    foreach (var entry in seriesByAxis)
-//    {
-//        if (seriesIndex.ContainsKey(entry.Key.AxisY))
-//        {
-//            if (!seriesIndex[entry.Key.AxisY].ContainsKey(entry.Key.AxisX))
-//            {
-//                seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
-//            }
-//        }
-//        else
-//        {
-//            seriesIndex.Add(entry.Key.AxisY, new Dictionary<Axis, Int32>());
-//            seriesIndex[entry.Key.AxisY].Add(entry.Key.AxisX, index++);
-//        }
-//    }
-
-//    return seriesIndex;
-//}

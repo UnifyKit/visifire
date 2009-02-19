@@ -324,7 +324,7 @@ namespace Visifire.Charts
             new PropertyMetadata(OnDockInsidePlotAreaPropertyChanged));
 
         /// <summary>
-        /// Set or get Enabled property of title
+        /// Get or set the Enabled property of title
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -344,7 +344,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Set or get HrefTarget property of title
+        /// Get or set the HrefTarget property of title
         /// </summary>
         public HrefTargets HrefTarget
         {   
@@ -359,7 +359,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Href property of title
+        /// Get or set the Href property of title
         /// </summary>
         public String Href
         {
@@ -395,11 +395,30 @@ namespace Visifire.Charts
 #endif
             }
         }
+
+        /// <summary>
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
                 
         #region Font Properties
 
         /// <summary>
-        /// Set or get FontFamily property of title
+        /// Get or set the FontFamily property of title
         /// </summary>
         public new FontFamily FontFamily
         {
@@ -426,7 +445,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get FontSize property of title
+        /// Get or set the FontSize property of title
         /// </summary>
         public new Double FontSize
         {
@@ -450,7 +469,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get FontColor property of title text
+        /// Get or set the FontColor property of title text
         /// </summary>
         public Brush FontColor
         {
@@ -465,7 +484,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get FontStyle property of title text
+        /// Get or set the FontStyle property of title text
         /// </summary>
 #if WPF
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
@@ -491,7 +510,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get FontWeight property of title text
+        /// Get or set the FontWeight property of title text
         /// </summary>
 #if WPF
          [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
@@ -517,7 +536,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Text property of title
+        /// Get or set the Text property of title
         /// </summary>
         public String Text
         {
@@ -536,7 +555,7 @@ namespace Visifire.Charts
         #region Border Properties
 
         /// <summary>
-        /// Set or get BorderColor property of title
+        /// Get or set the BorderColor property of title
         /// </summary>
         public Brush BorderColor
         {
@@ -551,7 +570,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get BorderThickness of title
+        /// Get or set the BorderThickness of title
         /// </summary>
         public new Thickness BorderThickness
         {
@@ -574,7 +593,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get CornerRadius property of title
+        /// Get or set the CornerRadius property of title
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
@@ -596,7 +615,7 @@ namespace Visifire.Charts
         #endregion
 
         /// <summary>
-        /// Set or get Background property of title
+        /// Get or set the Background property of title
         /// </summary>
         public new Brush Background
         {
@@ -621,7 +640,7 @@ namespace Visifire.Charts
         #region Alignment
 
         /// <summary>
-        /// Set or get HorizontalAlignment property of title
+        /// Get or set the HorizontalAlignment property of title
         /// </summary>
         public new HorizontalAlignment HorizontalAlignment
         {
@@ -645,7 +664,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get VerticalAlignment property of title
+        /// Get or set the VerticalAlignment property of title
         /// </summary>
         public new VerticalAlignment VerticalAlignment
         {
@@ -670,7 +689,7 @@ namespace Visifire.Charts
         #endregion
 
         /// <summary>
-        /// Set or get Margin property of title
+        /// Get or set the Margin property of title
         /// </summary>
         public new Thickness Margin
         {
@@ -693,7 +712,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Padding property of title
+        /// Get or set the Padding property of title
         /// </summary>
         public new Thickness Padding
         {
@@ -716,7 +735,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Property property TextAlignment
+        /// Get or set the Property property TextAlignment
         /// </summary>
         public TextAlignment TextAlignment
         {
@@ -731,7 +750,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get DockInsidePlotArea property of title
+        /// Get or set the DockInsidePlotArea property of title
         /// (Whether the title will be docked inside PlotArea)
         /// </summary>
         public Boolean DockInsidePlotArea
@@ -895,7 +914,6 @@ namespace Visifire.Charts
             title.FirePropertyChanged("Opacity");
         }
 #endif
-
         /// <summary>
         /// FontColorProperty changed call back function
         /// </summary>
@@ -1078,6 +1096,7 @@ namespace Visifire.Charts
         /// Apply all style properties of the Title
         /// </summary>
         /// <param name="title">Title</param>
+        /// <returns>Boolean</returns>
         private static Boolean ApplyProperties(Title title)
         {   
             if (title.Visual != null)
@@ -1124,9 +1143,9 @@ namespace Visifire.Charts
         /// <summary>
         /// UpdateVisual is used for partial rendering
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(String propertyName, Object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(String propertyName, Object value)
         {   
             if (!ApplyProperties(this))
                 this.FirePropertyChanged(propertyName);

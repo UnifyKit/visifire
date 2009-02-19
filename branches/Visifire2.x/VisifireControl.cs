@@ -25,7 +25,7 @@ namespace Visifire.Commons
         #region Public Methods
 
         /// <summary>
-        /// VisifireControl base class constructor
+        /// Initializes a new instance of the Visifire.Commons.VisifireControl class
         /// </summary>
         public VisifireControl()
         {
@@ -33,7 +33,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Accepts absolute or relative Uri, builds and returns abslute path
+        /// Accepts absolute or relative Uri, builds and returns absolute path
         /// </summary>
         /// <param name="path">Path as String</param>
         /// <returns>String</returns>

@@ -24,7 +24,6 @@ namespace WPFVisifireChartsTest
         public void EnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -58,7 +57,6 @@ namespace WPFVisifireChartsTest
         public void LineThicknessDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -90,7 +88,6 @@ namespace WPFVisifireChartsTest
         public void LineColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -122,7 +119,6 @@ namespace WPFVisifireChartsTest
         public void LineStyleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -154,7 +150,6 @@ namespace WPFVisifireChartsTest
         public void InterlacedColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
             chart.Width = 500;
             chart.Height = 300;
 
@@ -192,7 +187,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -228,7 +222,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
             ChartGrid grid = new ChartGrid();
@@ -253,6 +246,40 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            ChartGrid grid = new ChartGrid();
+            Axis axis = new Axis();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                grid.Opacity = 0.5;
+                Assert.AreEqual(0.5, grid.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the new value of LineColor. 
         /// </summary> 
         [TestMethod]
@@ -263,7 +290,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
             ChartGrid grid = new ChartGrid();
@@ -298,7 +324,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
             ChartGrid grid = new ChartGrid();
@@ -333,7 +358,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
             ChartGrid grid = new ChartGrid();
@@ -368,7 +392,6 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             Common.CreateAndAddDefaultDataSeries(chart);
             ChartGrid grid = new ChartGrid();

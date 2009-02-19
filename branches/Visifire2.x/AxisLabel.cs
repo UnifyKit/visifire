@@ -39,6 +39,9 @@ using System.Diagnostics;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.AxisLabel class
+    /// </summary>
     internal class AxisLabel
     {
         #region Public Methods
@@ -128,7 +131,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Visual lable element
+        /// Visual label element
         /// </summary>
         internal Canvas Visual
         {
@@ -137,7 +140,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns the top most point of the Axis label canvas
+        /// Returns the top most point of the axis label canvas
         /// </summary>
         internal Double ActualTop
         {
@@ -182,7 +185,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns the width of the axis labels canvas
+        /// Returns the width of the axis label canvas
         /// </summary>
         internal Double ActualWidth
         {
@@ -227,8 +230,9 @@ namespace Visifire.Charts
         }
 
         #region Font Properties
+
         /// <summary>
-        /// Font size of the Axis Labels
+        /// Font size of the axis labels
         /// </summary>
         internal Double FontSize
         {
@@ -237,7 +241,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font family of the AxisLabels
+        /// Font family of the axis labels
         /// </summary>
         internal FontFamily FontFamily
         {
@@ -246,7 +250,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font Color of the AxisLabels
+        /// Font Color of the axis labels
         /// </summary>
         internal Brush FontColor
         {
@@ -255,7 +259,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font Style of the AxisLabels
+        /// Font Style of the axis labels
         /// </summary>
         internal FontStyle FontStyle
         {
@@ -264,7 +268,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font Weight of the AxisLabels
+        /// Font Weight of the axis labels
         /// </summary>
         internal FontWeight FontWeight
         {
@@ -291,7 +295,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// To apply rotation to the Text element
+        /// To apply rotation to the text element
         /// </summary>
         private RotateTransform Rotation
         {
@@ -304,7 +308,7 @@ namespace Visifire.Charts
         #region Private Methods
 
         /// <summary>
-        /// Sets the position of the label based on the angle and the Position Property
+        /// Set the position of the label based on the angle and the Position Property
         /// </summary>
         private void SetPosition()
         {
@@ -344,7 +348,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// set the position for axis that will be placed to the right of plot area
+        /// Set the position for axis that will be placed to the right of plot area
         /// </summary>
         /// <param name="newPos"></param>
         private void SetPositionRight(Point newPos)
@@ -395,7 +399,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// set the position for axis that will be placed to the left of plot area
+        /// Set the position for axis that will be placed to the left of plot area
         /// </summary>
         /// <param name="newPos"></param>
         private void SetPositionLeft(Point newPos)
@@ -447,7 +451,7 @@ namespace Visifire.Charts
             }
         }
         /// <summary>
-        /// set the position for axis that will be placed to the bottom of plot area
+        /// Set the position for axis that will be placed to the bottom of plot area
         /// </summary>
         /// <param name="newPos"></param>
         private void SetPositionBottom(Point newPos)
@@ -494,7 +498,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// set the position for axis that will be placed to the top of plot area
+        /// Set the position for axis that will be placed to the top of plot area
         /// </summary>
         /// <param name="newPos"></param>
         private void SetPositionTop(Point newPos)
@@ -584,7 +588,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Create visual for a AxisLabel
+        /// Create visual for AxisLabel
         /// </summary>
         internal void CreateVisualObject()
         {
@@ -606,19 +610,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Static Methods
-        /// <summary>
-        /// Returns a positive angle
-        /// The angle must always be between -90 and 90
-        /// </summary>
+
+       /// <summary>
+       /// Returns a positive angle. 
+       /// The angle must always be between -90 and 90 
+       /// </summary>
+       /// <param name="angle">Angle</param>
+       /// <returns>Angle as Double</returns>
         internal static Double GetAngle(Double angle)
         {
             return (angle >= 0 ? angle : 360 + angle);
         }
 
-        /// <summary>
-        /// Returns the radian for of the angle.
-        /// Internall calls Angle to get positive angle value
-        /// </summary>
+       /// <summary>
+       /// Returns the radian for the angle. 
+       /// Internal calls angle to get positive angle value
+       /// </summary>
+       /// <param name="angle">Angle</param>
+       /// <returns>Angle as Double</returns>
         internal static Double GetRadians(Double angle)
         {
             return Math.PI / 180 * GetAngle(angle);

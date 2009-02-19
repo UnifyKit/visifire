@@ -191,10 +191,10 @@ namespace Visifire.Charts
         /// <summary>
         /// Create line in 2D and place inside a canvas
         /// </summary>
-        /// <param name="lineParams"></param>
+        /// <param name="lineParams">Line parameters</param>
         /// <param name="line">line path reference</param>
         /// <param name="lineShadow">line shadow path reference</param>
-        /// <returns>Returns canvas with line</returns>
+        /// <returns>Canvas</returns>
         private static Canvas GetLine2D(LineChartShapeParams lineParams, out Path line, out Path lineShadow)
         {
             Canvas visual = new Canvas();
@@ -228,6 +228,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Apply marker properties
         /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="markerSize">Marker size</param>
         private static void ApplyMarkerProperties(DataPoint dataPoint, Size markerSize)
         {
             dataPoint.Marker.MarkerSize = markerSize;
@@ -246,9 +248,9 @@ namespace Visifire.Charts
         /// Apply animation for line chart
         /// </summary>
         /// <param name="canvas">Line chart canvas</param>
-        /// <param name="storyboard">storyboard</param>
-        /// <param name="isLineCanvas">If canvas is line canvas</param>
-        /// <returns></returns>
+        /// <param name="storyboard">Storyboard</param>
+        /// <param name="isLineCanvas">Whether canvas is line canvas</param>
+        /// <returns>Storyboard</returns>
         private static Storyboard ApplyLineChartAnimation(Panel canvas, Storyboard storyboard, Boolean isLineCanvas)
         {
             LinearGradientBrush opacityMaskBrush = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
@@ -298,7 +300,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns></returns>
+        /// <returns>Canvas</returns>
         internal static Canvas GetVisualObjectForLineChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;

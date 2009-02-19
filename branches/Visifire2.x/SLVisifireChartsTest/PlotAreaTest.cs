@@ -231,6 +231,7 @@ namespace SLVisifireChartsTest
         #endregion
 
         #region CheckPlotAreaNewPropertyValue
+        
         /// <summary>
         /// Check the new value of Bevel. 
         /// </summary> 
@@ -253,6 +254,31 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => chart.PlotArea.Bevel = true,
                 () => Assert.IsTrue(chart.PlotArea.Bevel));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            chart.AnimationEnabled = false;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            chart.PlotArea = new PlotArea();
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => chart.PlotArea.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, chart.PlotArea.Opacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

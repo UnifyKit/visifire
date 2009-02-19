@@ -16,6 +16,7 @@ namespace SLVisifireChartsTest
     public class ChartGridTest:SilverlightControlTest
     {
         #region CheckChartGridDefaultPropertyValue
+        
         /// <summary>
         /// Check the default value of Enabled
         /// </summary>
@@ -100,6 +101,26 @@ namespace SLVisifireChartsTest
 
             EnqueueTestComplete();
         }
+
+        /// <summary>
+        /// Check the default value of InterlacedColor
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void InterlacedColorDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Common.AssertBrushesAreEqual(null, chart.AxesY[0].Grids[0].InterlacedColor));
+
+            EnqueueTestComplete();
+        }
         #endregion
 
         #region CheckChartGridNewPropertyValue
@@ -125,7 +146,39 @@ namespace SLVisifireChartsTest
 
             CreateAsyncTask(chart,
                 () => grid.Enabled = true,
-                () => Assert.IsTrue((Boolean)grid.Enabled));
+                () => Assert.IsTrue((Boolean)grid.Enabled),
+                () => chart.AxesY[0].Grids[0].Enabled = false,
+                () => Assert.IsFalse((Boolean)chart.AxesY[0].Grids[0].Enabled));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesX.Add(axis);
+
+            CreateAsyncTask(chart,
+                () => grid.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, grid.Opacity, Common.HighPrecisionDelta),
+                () => chart.AxesY[0].Grids[0].Opacity = 0.5,
+                () => Assert.AreEqual(0.5, chart.AxesY[0].Grids[0].Opacity, Common.HighPrecisionDelta));
+            
 
             EnqueueTestComplete();
         }
@@ -234,6 +287,33 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => grid.LineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, grid.LineStyle));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of InterlacedColor. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of InterlacedColor.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void InterlacedColorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            Axis axis = new Axis();
+            ChartGrid grid = new ChartGrid();
+            axis.Grids.Add(grid);
+            chart.AxesY.Add(axis);
+
+            CreateAsyncTask(chart,
+                () => grid.InterlacedColor = new SolidColorBrush(Colors.LightGray),
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.LightGray), grid.InterlacedColor));
 
             EnqueueTestComplete();
         }

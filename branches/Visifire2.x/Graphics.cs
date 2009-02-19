@@ -28,8 +28,14 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.Faces class
+    /// </summary>
     public class Faces
     {
+        /// <summary>
+        /// Initializes a new instance of Visifire.Charts.Faces class
+        /// </summary>
         public Faces()
         {
             VisualComponents = new List<FrameworkElement>();
@@ -63,7 +69,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        ///  Label canvas reference for faces
+        /// Label canvas reference for faces
         /// </summary>
         public Canvas LabelCanvas
         {
@@ -73,11 +79,16 @@ namespace Visifire.Charts
 
     }
 
+    /// <summary>
+    /// Visifire.Charts.ExtendedGraphics class
+    /// </summary>
     internal class ExtendedGraphics
     {
+        /// <summary>
+        /// Initializes a new instance of Visifire.Charts.ExtendedGraphics class
+        /// </summary>
         public ExtendedGraphics()
         {
-
         }
 
         #region Static Methods
@@ -85,7 +96,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns dash array for border
         /// </summary>
-        /// <param name="borderStyle">borderStyle as BorderStyles</param>
+        /// <param name="borderStyle">BorderStyle as BorderStyles</param>
         /// <returns>DashArray as DoubleCollection</returns>
         internal static DoubleCollection GetDashArray(BorderStyles borderStyle)
         {
@@ -135,11 +146,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Get the corrected corner radius
         /// </summary>
-        /// <param name="radius"></param>
-        /// <param name="limit"></param>
-        /// <returns></returns>
+        /// <param name="radius">Radius as CornerRadius</param>
+        /// <param name="limit">Limit as Double</param>
+        /// <returns>CornerRadius</returns>
         private static CornerRadius GetCorrectedRadius(CornerRadius radius,Double limit)
         {
            return new CornerRadius(
@@ -151,10 +162,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Get corner shadow gradient brush for a rectangle
         /// </summary>
-        /// <param name="corner"></param>
-        /// <returns></returns>
+        /// <param name="corner">Corner as Corners</param>
+        /// <returns>Brush</returns>
         private static Brush GetCornerShadowGradientBrush(Corners corner)
         {
             RadialGradientBrush gradBrush = new RadialGradientBrush();
@@ -186,10 +197,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Get side shadow gradient brush for a rectangle
         /// </summary>
-        /// <param name="direction"></param>
-        /// <returns></returns>
+        /// <param name="direction">Direction as Directions</param>
+        /// <returns>Brush</returns>
         private static Brush GetSideShadowGradientBrush(Directions direction)
         {
             LinearGradientBrush gradBrush = new LinearGradientBrush();
@@ -219,10 +230,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Clone a DoubleCollection
         /// </summary>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Collection as DoubleCollection</param>
+        /// <returns>DoubleCollection</returns>
         public static DoubleCollection CloneCollection(DoubleCollection collection)
         {
             DoubleCollection newCollection = new DoubleCollection();
@@ -235,6 +246,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Creates and returns a rectangle based on the given params
         /// </summary>
+        /// <param name="width">Visual width</param>
+        /// <param name="height">Visual height</param>
+        /// <param name="strokeThickness">StrokeThickness</param>
+        /// <param name="strokeDashArray">StrokeDashArray</param>
+        /// <param name="stroke">Stroke</param>
+        /// <param name="fill">Fill color</param>
+        /// <param name="xRadius">XRadius as CornerRadius</param>
+        /// <param name="yRadius">YRadius as CornerRadius</param>
+        /// <returns>Canvas</returns>
         public static Canvas Get2DRectangle(Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
         {
             Canvas canvas = new Canvas();
@@ -270,6 +290,18 @@ namespace Visifire.Charts
             return canvas;
         }
 
+        /// <summary>
+        /// Creates and returns a rectangle bevel layer based on the given params
+        /// </summary>
+        /// <param name="width">Visual width</param>
+        /// <param name="height">Visual height</param>
+        /// <param name="bevelX">BevelX as Double</param>
+        /// <param name="bevelY">BevelY as Double</param>
+        /// <param name="topBrush">TopBrush</param>
+        /// <param name="leftBrush">LeftBrush</param>
+        /// <param name="rightBrush">RightBrush</param>
+        /// <param name="bottomBrush">BottomBrush</param>
+        /// <returns>Canvas</returns>
         public static Canvas Get2DRectangleBevel(Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
         {
             Canvas canvas = new Canvas();
@@ -320,7 +352,16 @@ namespace Visifire.Charts
             return canvas;
         }
 
-        public static Canvas Get2DRectangleGradiance(Double width, Double height, Brush brush1, Brush brush2,Orientation orientation)
+        /// <summary>
+        /// Creates and returns a rectangle gradient layer based on the given params
+        /// </summary>
+        /// <param name="width">Visual width</param>
+        /// <param name="height">visual height</param>
+        /// <param name="brush1">Brush1</param>
+        /// <param name="brush2">Brush2</param>
+        /// <param name="orientation">Orientation</param>
+        /// <returns>Canvas</returns>
+        public static Canvas Get2DRectangleGradiance(Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
         {
             Canvas canvas = new Canvas();
 
@@ -371,12 +412,16 @@ namespace Visifire.Charts
             return canvas;
         }
 
-        //public static PathGeometry Get2DRectangleClip(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius)
-        //{
-        //    return GetRectanglePathGeometry(width, height, GetCorrectedRadius(xRadius, width), GetCorrectedRadius(yRadius, height));
-        //}
-
-        public static Grid Get2DRectangleShadow(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius,Double minCurvature)
+        /// <summary>
+        /// Creates and returns a rectangle shadow based on the given params
+        /// </summary>
+        /// <param name="width">Visual width</param>
+        /// <param name="height">Visual height</param>
+        /// <param name="xRadius">XRadius as CornerRadius</param>
+        /// <param name="yRadius">YRadius as CornerRadius</param>
+        /// <param name="minCurvature">MinCurvature as Double</param>
+        /// <returns>Grid</returns>
+        public static Grid Get2DRectangleShadow(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius, Double minCurvature)
         {
             CornerRadius tempXRadius = new CornerRadius(Math.Max(xRadius.TopLeft, minCurvature), Math.Max(xRadius.TopRight, minCurvature), Math.Max(xRadius.BottomRight, minCurvature), Math.Max(xRadius.BottomLeft, minCurvature));
             CornerRadius tempYRadius = new CornerRadius(Math.Max(yRadius.TopLeft, minCurvature), Math.Max(yRadius.TopRight, minCurvature), Math.Max(yRadius.BottomRight, minCurvature), Math.Max(yRadius.BottomLeft, minCurvature));
@@ -435,15 +480,25 @@ namespace Visifire.Charts
 
 namespace Visifire.Commons
 {
+    /// <summary>
+    /// Visifire.Commons.Graphics class
+    /// </summary>
     public class Graphics
     {
+        /// <summary>
+        /// Initializes a new instance of Visifire.Commons.Graphics class
+        /// </summary>
         public Graphics()
         {
-
         }
 
         #region Static Methods
 
+        /// <summary>
+        /// Calculates visual size
+        /// </summary>
+        /// <param name="visual">Visual as FrameworkElement</param>
+        /// <returns>Visual size</returns>
         internal static Size CalculateVisualSize(FrameworkElement visual)
         {
             Size retVal = new Size(0,0);;
@@ -457,6 +512,12 @@ namespace Visifire.Commons
             return retVal;
         }
 
+        /// <summary>
+        /// Calculates textblock size
+        /// </summary>
+        /// <param name="radianAngle">RadianAngle as Double</param>
+        /// <param name="textBlock">TextBlock</param>
+        /// <returns>TextBlock size</returns>
         internal static Size CalculateTextBlockSize(Double radianAngle, TextBlock textBlock)
         {
             Double actualHeight;
@@ -494,15 +555,26 @@ namespace Visifire.Commons
             return new Size(actualWidth, actualHeight);
         }
 
-
+        /// <summary>
+        /// Generate double collection
+        /// </summary>
+        /// <param name="values">Array of double values</param>
+        /// <returns>DoubleCollection</returns>
         internal static DoubleCollection GenerateDoubleCollection(params Double[] values)
         {
             DoubleCollection collection = new DoubleCollection();
+
             foreach (Double value in values)
                 collection.Add(value);
+
             return collection;
         }
 
+        /// <summary>
+        /// Creates and returns a right gradient brush
+        /// </summary>
+        /// <param name="alpha">Alpha as Int32</param>
+        /// <returns>Brush</returns>
         internal static Brush GetRightGradianceBrush(Int32 alpha)
         {
             LinearGradientBrush gradBrush = new LinearGradientBrush();
@@ -518,6 +590,11 @@ namespace Visifire.Commons
             return gradBrush;
         }
 
+        /// <summary>
+        /// Creates and returns a top face brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetTopFaceBrush(Brush brush)
         {
             if (typeof(SolidColorBrush).Equals(brush.GetType()))
@@ -559,6 +636,11 @@ namespace Visifire.Commons
             }
         }
 
+        /// <summary>
+        /// Creates and returns a right face brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetRightFaceBrush(Brush brush)
         {
             if (brush != null)
@@ -606,6 +688,11 @@ namespace Visifire.Commons
                 return null;
         }
 
+        /// <summary>
+        /// Creates and returns a front face brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetFrontFaceBrush(Brush brush)
         {
             if (typeof(SolidColorBrush).Equals(brush.GetType()))
@@ -629,6 +716,11 @@ namespace Visifire.Commons
             }
         }
 
+        /// <summary>
+        /// Creates and returns a left gradient brush
+        /// </summary>
+        /// <param name="alpha">Alpha as Int32</param>
+        /// <returns>Brush</returns>
         internal static Brush GetLeftGradianceBrush(Int32 alpha)
         {
             LinearGradientBrush gradBrush = new LinearGradientBrush();
@@ -644,6 +736,11 @@ namespace Visifire.Commons
             return gradBrush;
         }
 
+        /// <summary>
+        /// Creates and returns a line segment
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>LineSegment</returns>
         public static LineSegment GetLineSegment(Point point)
         {
             LineSegment lineSegment = new LineSegment();
@@ -651,6 +748,14 @@ namespace Visifire.Commons
             return lineSegment;
         }
 
+        /// <summary>
+        /// Creates and returns an arc segment
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <param name="size">Size</param>
+        /// <param name="rotation">Rotation as Double</param>
+        /// <param name="sweep">Sweep as SweepDirection</param>
+        /// <returns>ArcSegment</returns>
         public static ArcSegment GetArcSegment(Point point, Size size, Double rotation, SweepDirection sweep)
         {
             ArcSegment arcSegment = new ArcSegment();
@@ -661,29 +766,55 @@ namespace Visifire.Commons
             return arcSegment;
         }
 
+        /// <summary>
+        /// Convert scale based on the parameters
+        /// </summary>
+        /// <param name="fromScaleMin">FromScaleMin</param>
+        /// <param name="fromScaleMax">FromScaleMax</param>
+        /// <param name="fromValue">FromValue</param>
+        /// <param name="toScaleMin">ToScaleMin</param>
+        /// <param name="toScaleMax">ToScaleMax</param>
+        /// <returns>Double</returns>
         public static Double ConvertScale(Double fromScaleMin, Double fromScaleMax, Double fromValue, Double toScaleMin, Double toScaleMax)
         {
             return ((fromValue - fromScaleMin) * (toScaleMax - toScaleMin) / (fromScaleMax - fromScaleMin)) + toScaleMin;
         }
         
-        /// <summary>
-        /// converts value to pixel position
-        /// </summary>
+       /// <summary>
+        /// Converts value to pixel position
+       /// </summary>
+       /// <param name="positionMin">Min position</param>
+       /// <param name="positionMax">Max position</param>
+       /// <param name="valueMin">Min value</param>
+       /// <param name="valueMax">Max value</param>
+       /// <param name="value">Value</param>
+       /// <returns>Double</returns>
         public static Double ValueToPixelPosition(Double positionMin, Double positionMax, Double valueMin, Double valueMax, Double value)
         {
             return ((value - valueMin) / (valueMax - valueMin)) * (positionMax - positionMin) + positionMin;
         }
 
-        
         /// <summary>
         /// Converts pixel position to value
         /// </summary>
+        /// <param name="positionMin">Min position</param>
+        /// <param name="positionMax">Max position</param>
+        /// <param name="valueMin">Min value</param>
+        /// <param name="valueMax">Max value</param>
+        /// <param name="position">position</param>
+        /// <returns>Double</returns>
         public static Double PixelPositionToValue(Double positionMin, Double positionMax, Double valueMin, Double valueMax, Double position)
         {
             return ((position - positionMin) / (positionMax - positionMin) * (valueMax - valueMin)) + valueMin;
         }
 
-        public static GradientStop GetGradientStop(Color color,Double stop)
+        /// <summary>
+        /// Creates and returns gradient stop
+        /// </summary>
+        /// <param name="color">Color as Color</param>
+        /// <param name="stop">Stop as Double</param>
+        /// <returns>GradientStop</returns>
+        public static GradientStop GetGradientStop(Color color, Double stop)
         {
             GradientStop gradStop = new GradientStop();
             gradStop.Color = color;
@@ -691,8 +822,17 @@ namespace Visifire.Commons
             return gradStop;
         }
 
-        public static Brush CreateLinearGradientBrush(Double angle,Point start,Point end,List<Color> colors,List<Double> stops)
-        {
+        /// <summary>
+        /// Creates and returns a linear gradient brush
+        /// </summary>
+        /// <param name="angle">Angle</param>
+        /// <param name="start">Start point</param>
+        /// <param name="end">End point</param>
+        /// <param name="colors">List of color</param>
+        /// <param name="stops">List of Double</param>
+        /// <returns>Brush</returns>
+        public static Brush CreateLinearGradientBrush(Double angle, Point start, Point end, List<Color> colors, List<Double> stops)
+        { 
             LinearGradientBrush brush = new LinearGradientBrush();
             if (colors.Count != stops.Count)
                 throw new Exception("Colors and Stops arrays don't match");
@@ -715,6 +855,12 @@ namespace Visifire.Commons
             return brush;
         }
 
+        /// <summary>
+        /// Creates and returns bevel top brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <param name="angle">Angle</param>
+        /// <returns>Brush</returns>
         internal static Brush GetBevelTopBrush(Brush brush, Double angle)
         {
             if (brush != null)
@@ -753,21 +899,45 @@ namespace Visifire.Commons
                 return null;
         }
 
+        /// <summary>
+        /// Creates and returns bevel side brush
+        /// </summary>
+        /// <param name="angle">Angle</param>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetBevelSideBrush(Double angle, Brush brush)
         {
             return Graphics.GetLightingEnabledBrush(brush, angle, "Linear", new Double[] { 0.75, 0.97});
         }
 
+        /// <summary>
+        /// Creates and returns a bevel top brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetBevelTopBrush(Brush brush)
         {
             return GetBevelTopBrush(brush, 90);
         }
 
+        /// <summary>
+        /// Creates and returns a lighting brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Brush</returns>
         internal static Brush GetLightingEnabledBrush3D(Brush brush)
         {
             return GetLightingEnabledBrush(brush, "Linear", new Double[] { 0.65, 0.55 });
         }
 
+        /// <summary>
+        /// Creates and returns a lighting brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <param name="angle">Angle</param>
+        /// <param name="type">Type as String</param>
+        /// <param name="colorIntensies">Array of Double</param>
+        /// <returns>Brush</returns>
         internal static Brush GetLightingEnabledBrush(Brush brush, Double angle, String type, Double[] colorIntensies)
         {
             if (brush != null)
@@ -805,11 +975,24 @@ namespace Visifire.Commons
 
         }
  
+        /// <summary>
+        /// Creates and returns a lighting brush
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <param name="type">Type as String</param>
+        /// <param name="colorIntensies">Array of Double</param>
+        /// <returns>Brush</returns>
         internal static Brush GetLightingEnabledBrush(Brush brush, String type, Double[] colorIntensies)
         {
              return GetLightingEnabledBrush(brush, -90, type, colorIntensies);
         }
         
+        /// <summary>
+        /// Creates and returns a radial gradient brush
+        /// </summary>
+        /// <param name="colors">List of color</param>
+        /// <param name="stops">List of Double</param>
+        /// <returns>Brush</returns>
         public static Brush CreateRadialGradientBrush(List<Color> colors, List<Double> stops)
         {
             RadialGradientBrush brush = new RadialGradientBrush();
@@ -826,6 +1009,11 @@ namespace Visifire.Commons
             return brush;
         }
 
+        /// <summary>
+        /// Creates and returns a brush intensity
+        /// </summary>
+        /// <param name="brush">Brush</param>
+        /// <returns>Double</returns>
         public static Double GetBrushIntensity(Brush brush)
         {
             Color color = new Color();
@@ -853,6 +1041,11 @@ namespace Visifire.Commons
             return intensity;
         }
 
+        /// <summary>
+        /// Creates and returns a default font color based on intensity
+        /// </summary>
+        /// <param name="intensity">Intensity as Double</param>
+        /// <returns>Brush</returns>
         public static Brush GetDefaultFontColor(Double intensity)
         {
             Brush brush = null;
@@ -867,6 +1060,12 @@ namespace Visifire.Commons
             return brush;
         }
 
+        /// <summary>
+        /// Compare brushes
+        /// </summary>
+        /// <param name="first">First brush</param>
+        /// <param name="second">Second brush</param>
+        /// <returns></returns>
         internal static bool AreBrushesEqual(Brush first, Brush second)
         {
             // If the default comparison is true, that's good enough.
@@ -892,8 +1091,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Converts a color in String form to Solid Color Brush
         /// </summary>
-        /// <param name="colorCode"></param>
-        /// <returns></returns>
+        /// <param name="colorCode">ColorCode as String</param>
+        /// <returns>Brush</returns>
         public static Brush ParseSolidColor(String colorCode)
         {
 #if WPF
@@ -906,8 +1105,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Returns a darker shade of the color by decreasing the brightness by the given intensity value
         /// </summary>
-        /// <param name="color"></param>
-        /// <param name="intensity"></param>
+        /// <param name="color">Color as Color</param>
+        /// <param name="intensity">Intensity as Double</param>
         /// <returns></returns>
         public static Color GetDarkerColor(Color color, Double intensity)
         {
@@ -925,8 +1124,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Returns a lighter shade of the color by increasing the brightness by the given intensity value
         /// </summary>
-        /// <param name="color"></param>
-        /// <param name="intensity"></param>
+        /// <param name="color">Color as Color</param>
+        /// <param name="intensity">Intensity as Double</param>
         /// <returns></returns>
         public static Color GetLighterColor(Color color, Double intensity)
         {
@@ -939,6 +1138,14 @@ namespace Visifire.Commons
             return lighterShade;
         }
 
+        /// <summary>
+        /// Creates and returns a lighter color based on the parameters
+        /// </summary>
+        /// <param name="color">Color as Color</param>
+        /// <param name="intensityR">IntensityR as Double</param>
+        /// <param name="intensityG">IntensityG as Double</param>
+        /// <param name="intensityB">IntensityB as Double</param>
+        /// <returns>Color</returns>
         public static Color GetLighterColor(Color color, Double intensityR, Double intensityG, Double intensityB)
         {
             Color lighterShade = new Color();
@@ -977,6 +1184,11 @@ namespace Visifire.Commons
             return retVal;
         }
 
+        /// <summary>
+        /// Creates and returns a lighting brush
+        /// </summary>
+        /// <param name="lightingEnabled">Whether lighting is enabled</param>
+        /// <returns>Brush</returns>
         public static Brush LightingBrush(Boolean lightingEnabled)
         {
             Brush brush;
@@ -1004,6 +1216,9 @@ namespace Visifire.Commons
 
         #region Constants
 
+        /// <summary>
+        /// Array of font sizes
+        /// </summary>
         public static Double[] DefaultFontSizes = { 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40 };
 
         #endregion

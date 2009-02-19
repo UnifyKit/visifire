@@ -106,7 +106,6 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                _chart.BorderStyle = BorderStyles.Dashed;
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
             });
@@ -327,6 +326,26 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the HrefAndHrefTArget default property value.
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckHrefAndHrefTArgetDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(null, chart.Href),
+                () => Assert.AreEqual(HrefTargets._self, chart.HrefTarget));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the ScrollingEnabled default property value
         /// </summary>
         [TestMethod]
@@ -432,21 +451,21 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the BorderStyle default property value.
+        /// Check the Padding default property value.
         /// </summary>
         [TestMethod]
         [Asynchronous]
-        public void CheckBorderStyleDefaultValue()
+        public void CheckPaddingDefaultValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-               () => Assert.AreEqual(BorderStyles.Solid, chart.BorderStyle));
+               () => Assert.AreEqual(new Thickness(5), chart.Padding));
 
+            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -582,6 +601,25 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the ToolTipEnabled default property value.
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckToolTipEnabledDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+               () => Assert.IsTrue(chart.ToolTipEnabled));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the Theme default property value.
         /// </summary>
         [TestMethod]
@@ -657,6 +695,48 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => chart.View3D = true,
                 () => Assert.IsTrue(chart.View3D));
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check HrefAndHrefTarget new property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckHrefAndHrefTargetNewPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTask(chart,
+                () => chart.Href = "http://www.visifire.com",
+                () => chart.HrefTarget=HrefTargets._blank,
+                () => Assert.AreEqual("http://www.visifire.com", chart.Href),
+                () => Assert.AreEqual(HrefTargets._blank, chart.HrefTarget));
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check Opacity new property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckOpacityNewPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTask(chart,
+                () => chart.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, chart.Opacity, Common.HighPrecisionDelta));
 
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
@@ -747,10 +827,8 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             CreateAsyncTask(chart,
-                () => chart.BorderStyle = BorderStyles.Dotted,
                 () => chart.BorderBrush = new SolidColorBrush(Colors.Black),
                 () => chart.BorderThickness = new Thickness(2),
-                () => Assert.AreEqual(BorderStyles.Dotted, chart.BorderStyle),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.BorderBrush),
                 () => Assert.AreEqual(new Thickness(2), chart.BorderThickness));
 
@@ -798,6 +876,27 @@ namespace SLVisifireChartsTest
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
+
+        /// <summary>
+        /// Check Padding new property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckPaddingPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTask(chart,
+                () => chart.Padding = new Thickness(12),
+                () => Assert.AreEqual(new Thickness(12), chart.Padding));
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+
 
         /// <summary>
         /// Check ChartSize new property value
@@ -858,6 +957,26 @@ namespace SLVisifireChartsTest
                 () => chart.Background = new SolidColorBrush(Colors.Red),
                 () => chart.ShadowEnabled = true,
                 () => Assert.IsTrue(chart.ShadowEnabled));
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check ToolTipEnabled new property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckToolTipEnabledPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTask(chart,
+                () => chart.ToolTipEnabled = false,
+                () => Assert.IsFalse(chart.ToolTipEnabled));
 
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
@@ -1166,6 +1285,58 @@ namespace SLVisifireChartsTest
 
         #endregion
 
+        #region ChartEventTesting
+        /// <summary>
+        /// Testing events in Chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void ChartEventChecking()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            TestPanel.Children.Add(chart);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            chart.MouseEnter += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Chart MouseEnter event fired");
+            };
+
+            chart.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Chart MouseLeave event fired");
+            };
+
+            chart.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Chart MouseLeftButtonUp event fired");
+            };
+
+            chart.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Chart MouseLeftButtonDown event fired");
+            };
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
+
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+
+        }
+
+        #endregion
+
         #region CheckObservableTitlesCollection
         /// <summary>
         /// Testing Observable title colection using a instanciated title.
@@ -1362,6 +1533,8 @@ namespace SLVisifireChartsTest
         void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 

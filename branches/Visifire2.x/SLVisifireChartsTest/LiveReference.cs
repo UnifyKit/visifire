@@ -39,7 +39,6 @@ namespace SLVisifireChartsTest
 
             Element = element;
             TestPanel.Children.Add(Element); 
-            //_testBase.TestPanel.Children.Add(Element);
         }
 
         /// <summary>

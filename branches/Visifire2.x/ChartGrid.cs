@@ -22,9 +22,8 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
-
     /// <summary>
-    /// Grids of axis
+    /// Visifire.Charts.ChartGrid class. It contains grids of axis.
     /// </summary>
     public class ChartGrid : ObservableObject
     {
@@ -127,7 +126,7 @@ namespace Visifire.Charts
             new PropertyMetadata(OnInterlacedColorPropertyChanged));
 
         /// <summary>
-        /// Grid interval
+        /// Get or set the grid interval
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -165,7 +164,7 @@ namespace Visifire.Charts
        }
 
        /// <summary>
-       /// Grid line style
+       /// Get or set the grid line style
        /// </summary>
        public LineStyles LineStyle
        {
@@ -180,7 +179,7 @@ namespace Visifire.Charts
        }
 
         /// <summary>
-       /// Grid interlaced color
+       /// Get or set the grid interlaced color
         /// </summary>
        public Brush InterlacedColor
        {
@@ -189,7 +188,7 @@ namespace Visifire.Charts
        }
        
        /// <summary>
-       /// Grid line thickness 
+       /// Get or set the grid line thickness 
        /// </summary>
        public Double LineThickness
        {   
@@ -223,7 +222,7 @@ namespace Visifire.Charts
        }
 
        /// <summary>
-       /// Grid line color
+       /// Get or set the grid line color
        /// </summary>
        public Brush LineColor
        {
@@ -250,7 +249,7 @@ namespace Visifire.Charts
         #region Internal Properties
         
         /// <summary>
-        /// Visual element for major ticks
+        /// Visual element for grid
         /// </summary>
         internal Canvas Visual
         {
@@ -277,7 +276,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Minimum value for the axis
+        /// Minimum data value for the axis
         /// </summary>
         internal Double DataMinimum
         {
@@ -286,7 +285,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Maximum value for the axis
+        /// Maximum data value for the axis
         /// </summary>
         internal Double DataMaximum
         {
@@ -295,7 +294,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the width of the major tick canvas. will be used only with the Horizontal axis
+        /// Get or set the width of the grid canvas, will be used only with the Horizontal axis
         /// </summary>
         internal new Double Width
         {
@@ -310,7 +309,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the height of the major tick canvas. will be used ony with the vertical axis 
+        /// Get or set the height of the grid canvas, will be used ony with the vertical axis 
         /// </summary>
         internal new Double Height
         {
@@ -325,7 +324,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Placement decides how the ticks have to be positioned 
+        /// Placement decides how the grids have to be positioned 
         /// </summary>
         internal PlacementTypes Placement
         {
@@ -359,9 +358,11 @@ namespace Visifire.Charts
 
         #region Private Methods
         
-        /// <summary>
-        /// Creates the major ticks and also positions them appropriately
-        /// </summary>
+       /// <summary>
+        /// Creates grids and also position them appropriately
+       /// </summary>
+       /// <param name="animationEnabled">Whether animation is enabled</param>
+       /// <param name="animationDuration">Animation duration</param>
         private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
         {
             Double interval = (Double)Interval; // Interval  for the chart grid
@@ -377,7 +378,7 @@ namespace Visifire.Charts
             Double position = 0;                // value of the line position for the running loop cycle
             Double prevPosition = 0;            // value of the line position for the previous position
 
-            // if axis X then and the First data point is in a gap between the prescribed interval the index must start from the 
+            // if axisX and the first data point is in a gap between the prescribed interval, the index must start from the 
             // datapoint rather than the axis minimum
             if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
                 index = (Decimal)DataMinimum;
@@ -586,6 +587,13 @@ namespace Visifire.Charts
         /// <summary>
         /// Generates a Double animation sequence with fixed parameters
         /// </summary>
+        /// <param name="target">Animation target object</param>
+        /// <param name="property">Animation target property</param>
+        /// <param name="from">Start value</param>
+        /// <param name="to">End value</param>
+        /// <param name="begin">Animation begin time</param>
+        /// <param name="duration">Animation duration</param>
+        /// <returns>DoubleAnimationUsingKeyFrames</returns>
         private DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double from, Double to, Double begin, Double duration)
         {
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
@@ -621,7 +629,7 @@ namespace Visifire.Charts
         /// <summary>
         /// IntervalProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -632,7 +640,7 @@ namespace Visifire.Charts
         /// <summary>
         /// EnabledProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -643,7 +651,7 @@ namespace Visifire.Charts
         /// <summary>
         /// LineColorProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -654,7 +662,7 @@ namespace Visifire.Charts
         /// <summary>
         /// LineStyleProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -665,7 +673,7 @@ namespace Visifire.Charts
         /// <summary>
         /// LineThicknessProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -676,7 +684,7 @@ namespace Visifire.Charts
         /// <summary>
         /// InterlacedColorProperty changed call back function
         /// </summary>
-        /// <param name="d">Chart</param>
+        /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnInterlacedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -723,8 +731,12 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Creates the visual element for the Major ticks
+        /// Creates the visual element for chart grid
         /// </summary>
+        /// <param name="width">ChartVisualCanvas width</param>
+        /// <param name="height">ChartVisualCanvas height</param>
+        /// <param name="animationEnabled">Whether animation is enabled</param>
+        /// <param name="animationDuration">Animation duration</param>
         internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double animationDuration)
         {   
             if (!(Boolean)Enabled)
@@ -741,7 +753,6 @@ namespace Visifire.Charts
             if (animationEnabled)
             {
                 Storyboard = new Storyboard();
-                //Visual.Resources.Add(Storyboard.GetHashCode().ToString(), Storyboard);
 
                 ScaleTransform st = new ScaleTransform() { ScaleX = 1, ScaleY = 1 };
                 Visual.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -759,11 +770,11 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Update visual does partial upadte
+        /// Update visual used for partial update
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(string PropertyName, object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(string propertyName, object value)
         {
             if (Visual != null)
             {
@@ -778,7 +789,7 @@ namespace Visifire.Charts
                 }
             }
             else
-                FirePropertyChanged(PropertyName);
+                FirePropertyChanged(propertyName);
         }
 
         #endregion
@@ -790,12 +801,12 @@ namespace Visifire.Charts
         #region Data
 
         /// <summary>
-        /// Set the width of the major tick canvas. will be used only with the Horizontal axis
+        /// Set the width of the grid canvas, will be used only with the Horizontal axis
         /// </summary>
         private Double _width;
 
         /// <summary>
-        /// Set the height of the major tick canvas. will be used ony with the vertical axis 
+        /// Set the height of the grid canvas, will be used ony with the vertical axis 
         /// </summary>
         private Double _height;
 

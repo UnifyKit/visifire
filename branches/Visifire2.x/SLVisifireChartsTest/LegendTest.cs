@@ -341,7 +341,7 @@ namespace SLVisifireChartsTest
         /// <summary>
         /// Check the default value of LightingEnabled
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         [Asynchronous]
         public void LightingEnabledDefaultValue()
         {
@@ -351,7 +351,6 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            chart.Legends[0].Background = new SolidColorBrush(Colors.Red);
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue(chart.Legends[0].LightingEnabled));
@@ -370,15 +369,15 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
 
-            Legend legend = new Legend();
-            legend.SetValue(Control.NameProperty, "Legend0");
-            chart.Legends.Add(legend);
+            //Legend legend = new Legend();
+            //legend.SetValue(Control.NameProperty, "Legend0");
+            //chart.Legends.Add(legend);
 
-            CreateAndAddDefaultDataSeries(chart, legend);
+            CreateAndAddDefaultDataSeries(chart);
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(new CornerRadius(1), legend.CornerRadius));
+                () => Assert.AreEqual(new CornerRadius(1), chart.Legends[0].CornerRadius));
 
             EnqueueTestComplete();
         }
@@ -556,10 +555,10 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
+            EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, chart.Legends[0].TitleFontWeight));
 
-            EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -609,6 +608,58 @@ namespace SLVisifireChartsTest
                 () => legend.HrefTarget = HrefTargets._blank,
                 () => legend.Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", legend.Href));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Legend legend = new Legend();
+            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            chart.Legends.Add(legend);
+
+            CreateAndAddDefaultDataSeries(chart, legend);
+
+            CreateAsyncTask(chart,
+                () => legend.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, legend.Opacity, Common.HighPrecisionDelta));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of Cursor. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Cursor.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void CursorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Legend legend = new Legend();
+            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            chart.Legends.Add(legend);
+
+            CreateAndAddDefaultDataSeries(chart, legend);
+
+            CreateAsyncTask(chart,
+                () => legend.Cursor = Cursors.Hand,
+                () => Assert.AreEqual(Cursors.Hand, legend.Cursor));
 
             EnqueueTestComplete();
         }
@@ -1563,6 +1614,7 @@ namespace SLVisifireChartsTest
         }
 
         #region Private Data
+
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>

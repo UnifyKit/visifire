@@ -144,7 +144,7 @@ namespace Visifire.Charts
             // Add all the titles to chart of type dock inside
             AddTitles(Chart, true, remainingSize.Height, remainingSize.Width, out isLeftOrRightAlignedTitlesExist);
 
-            // Add all the legends to chart of type dock outside
+            // Add all the legends to chart of type dock inside
             AddLegends(Chart, true, remainingSize.Height, remainingSize.Width);
 
             RetainOldScrollOffsetOfScrollViewer();
@@ -166,18 +166,18 @@ namespace Visifire.Charts
         public Canvas PlottingCanvas { get; set; }
 
         /// <summary>
-        ///  ChartVisualCanvas is the canvas where grids and trendlines and datapoints are drawn. 
+        ///  ChartVisualCanvas is the canvas where grids, trendlines and datapoints are drawn. 
         /// </summary>
         public Canvas ChartVisualCanvas { get; set; }
 
         /// <summary>
-        /// Chart scrollviewer is the main viewport of the scrollable chart
-        /// Is loaded from generic.xaml and its nothing but PlotAreaScrollViewer;
+        /// Chart scrollviewer is the main viewport of the scrollable chart. 
+        /// Is loaded from generic.xaml and its nothing but PlotAreaScrollViewer
         /// </summary>
         public ScrollViewer PlotAreaScrollViewer { get; set; }
 
         /// <summary>
-        /// Chart
+        /// Chart reference
         /// </summary>
         public Chart Chart  { get;  set; }
 
@@ -194,7 +194,7 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Containes all the details about the data required for various plotting puposes
+        /// Containes all the details about the data required for various plotting purposes
         /// </summary>
         internal PlotDetails PlotDetails
         {
@@ -352,7 +352,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Retain old ScrollOffset value of chart ScrollViewer to stop auto scrolling with keys for wpf only.
+        /// Retain old ScrollOffset value of chart ScrollViewer to stop auto scrolling with keys for wpf only. 
         /// For Silverlight IsTabStop property is already set to false 
         /// </summary>
         private void RetainOldScrollOffsetOfScrollViewer()
@@ -386,7 +386,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Reset all pannels of titles(DockedOutSide PlotArea) and legends(DockedOutSide PlotArea) to 0
+        /// Reset all panels of titles(DockedOutSide PlotArea) and legends(DockedOutSide PlotArea) to 0
         /// </summary>
         private void ResetTitleAndLegendPannelsSize()
         {
@@ -402,8 +402,9 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get size of the of the PlotArea
+        /// Get size of the PlotArea
         /// </summary>
+        /// <param name="boundingRec">Bounding rectangle size</param>
         /// <returns></returns>
         private Size CalculatePlotAreaSize(Size boundingRec)
         {
@@ -444,13 +445,11 @@ namespace Visifire.Charts
 
             return boundingRec;
         }
-
-       
         
         /// <summary>
         /// Create the center layout of the ChartArea
         /// </summary>
-        /// <returns>Grid</returns>
+        /// <param name="chart">Chart</param>
         private void CreatePlotArea(Chart chart)
         {
             if (Chart.PlotArea == null)
@@ -485,6 +484,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Calculate max available size for legends
         /// </summary>
+        /// <param name="boundingRec">Bounding rectangle size</param>
         /// <returns>max available size for legends</returns>
         private Size CalculateLegendMaxSize(Size boundingRec)
         {
@@ -524,7 +524,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Populate InternalAxesX list from AxesX collection
         /// InternalAxesX is used while rendering the chart, AxesX collection is not used.
-        /// Each render must work with a single set of non variable data set otherwise chart wont render properly.
+        /// Each render must work with a single set of non variable data set otherwise chart won't render properly.
         /// </summary>
         private void PopulateInternalAxesXList()
         {
@@ -537,7 +537,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Populate InternalAxesY list from AxesY collection
         /// InternalAxesY is used while rendering the chart, AxesY collection is not used.
-        /// Each render must work with a single set of non variable data set otherwise chart wont render properly.
+        /// Each render must work with a single set of non variable data set otherwise chart won't render properly.
         /// </summary>
         private void PopulateInternalAxesYList()
         {
@@ -550,7 +550,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Populate InternalSeries list from Series collection
         /// InternalSeries is used while rendering the chart, Series collection is not used.
-        /// Each render must work with a single set of non variable data set otherwise chart wont render properly.
+        /// Each render must work with a single set of non variable data set otherwise chart won't render properly.
         /// </summary>
         private void PopulateInternalSeriesList()
         {
@@ -1074,7 +1074,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Update plotarea layout setting with new size
         /// </summary>
-        /// <param name="newSize">new Size of the plotarea layout</param>
+        /// <param name="newSize">New Size of the plotarea layout</param>
         private void UpdateLayoutSettings(Size newSize)
         {
             Chart._drawingCanvas.Height = newSize.Height;
@@ -1173,6 +1173,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Draws the horizontal 3D Plank
         /// </summary>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="plankThickness">PlankThickness</param>
+        /// <param name="position">Position</param>
         private void DrawHorizontalPlank(Double plankDepth, Double plankThickness, Double position)
         {
             Brush frontBrush, topBrush, rightBrush;
@@ -1223,34 +1226,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Draws the Horizontal 3D Plank
-        /// </summary>
-        private void DrawHorizontalPlank(Double width, Double plankDepth, Double plankThickness, Double plankOpacity)
-        {
-            if (Double.IsNaN(PlotAreaCanvas.ActualWidth) || PlotAreaCanvas.ActualWidth <= 0)
-                return;
-
-            RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-            columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
-
-            columnParams.Lighting = true;
-            columnParams.Size = new Size(width, plankThickness);
-            columnParams.Depth = plankDepth;
-
-            Faces plankFaces = ColumnChart.Get3DColumn(columnParams);
-            Panel plank = plankFaces.Visual;
-
-            plank.SetValue(Canvas.LeftProperty, plankDepth + plankThickness);
-            plank.SetValue(Canvas.TopProperty, PlotAreaCanvas.ActualHeight + plankThickness);
-            plank.SetValue(Canvas.ZIndexProperty, -1);
-            plank.SetValue(Canvas.OpacityProperty, plankOpacity);
-
-            PlottingCanvas.Children.Add(plank);
-        }
-
-        /// <summary>
         /// Draws the Vertical 3D Plank
         /// </summary>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="plankThickness">PlankThickness</param>
         private void DrawVerticalPlank(Double plankDepth, Double plankThickness)
         {
             RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1297,6 +1276,10 @@ namespace Visifire.Charts
         /// <summary>
         /// Draws the Vertical 3D Plank
         /// </summary>
+        /// <param name="height">Height of the PlotArea canvas</param>
+        /// <param name="plankDepth">PlankDepth</param>
+        /// <param name="plankThickness">PlankThickness</param>
+        /// <param name="plankOpacity">PlankOpacity</param>
         private void DrawVerticalPlank(Double height, Double plankDepth, Double plankThickness, Double plankOpacity)
         {
             RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1393,10 +1376,13 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Create visual of grids of axis add to ChartVisualCanvas
+        /// Create visual of grids of axis and add to ChartVisualCanvas
         /// </summary>
         /// <param name="axis">Axis</param>
-        /// <param name="trendLinesReferingToAAxes">List of trendLine</param>
+        /// <param name="width">ChartVisualCanvas width</param>
+        /// <param name="height">ChartVisualCanvas height</param>
+        /// <param name="isAnimationEnabled">Whether animation is enabled</param>
+        /// <param name="styleName">Style</param>
         private void AddGrids(Axis axis, Double width, Double height, Boolean isAnimationEnabled, String styleName)
         {
             foreach (ChartGrid grid in axis.Grids)
@@ -1440,6 +1426,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Renders charts based on the orientation type
         /// </summary>
+        /// <param name="newSize">NewSize</param>
         private void RenderChart(Size newSize)
         {
             ClearPlotAreaChildren();
@@ -1541,7 +1528,7 @@ namespace Visifire.Charts
         /// Save Axis scrollbar Offset and reset scroll-viewer content margin
         /// </summary>
         /// <param name="axis">Axis</param>
-        /// <param name="scrollBarOffset">Double scrollBarOffset</param>
+        /// <param name="scrollBarOffset">ScrollBarOffset as Double</param>
         private void SaveAxisContentOffsetAndResetMargin(Axis axis, Double scrollBarOffset)
         {
             axis.CurrentScrollScrollBarOffset = scrollBarOffset / axis.ScrollBarElement.Maximum;
@@ -1658,7 +1645,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Render DataSeries to visual
+        /// Render DataSeries to visual. 
         /// (Render each plotgroup from the plotgroup list of plotdetails)
         /// </summary>
         private void RenderSeries()
@@ -1702,7 +1689,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// calls the appropriate chart rendering function to render the series available in the series list.
+        /// Calls the appropriate chart rendering function to render the series available in the series list.
         /// Creates a layer as per the drawing index
         /// </summary>
         /// <param name="seriesListForRendering">List of selected dataseries</param>
@@ -1772,7 +1759,7 @@ namespace Visifire.Charts
 
             ApplyOpacity();
 
-            AttachEventsToolTipHref2DataSeries(dataSeriesList4Rendering);
+            AttachEventsToolTipHref2DataSeries();
 
             return renderedCanvas;
         }
@@ -1804,8 +1791,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Animate DataPoints,
-        /// Begin the storyboard associated with each DataSeries) 
+        /// Animate DataPoints. 
+        /// Begin the storyboard associated with each DataSeries
         /// </summary>
         private void Animate()
         {
@@ -1884,7 +1871,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set style of each dataseries in series from theme
+        /// Set style of each dataseries from theme
         /// </summary>
         /// <param name="chart">Chart </param>
         private void SetSeriesStyleFromTheme()
@@ -1929,7 +1916,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set style of legends from theme
+        /// Set style of each legend from theme
         /// </summary>
         private void SetLegendStyleFromTheme()
         {
@@ -2164,7 +2151,10 @@ namespace Visifire.Charts
         /// <summary>
         /// Add Legends to ChartArea
         /// </summary>
-        /// <param name="chart"></param>
+        /// <param name="chart">Chart</param>
+        /// <param name="DockInsidePlotArea">DockInsidePlotArea</param>
+        /// <param name="Height">Ramaining height available for Legend</param>
+        /// <param name="Width">Remaining width available for Legend</param>
         private void AddLegends(Chart chart, Boolean DockInsidePlotArea, Double Height, Double Width)
         {
             List<Legend> dockTest = (from legend in chart.Legends
@@ -2174,7 +2164,7 @@ namespace Visifire.Charts
             if (dockTest.Count <= 0)
                 return;
 
-            if (chart.InternalSeries.Count == 1 || (chart.InternalSeries[0].RenderAs == RenderAs.Pie || chart.InternalSeries[0].RenderAs == RenderAs.Doughnut))
+            if ((chart.InternalSeries.Count == 1 || (chart.InternalSeries[0].RenderAs == RenderAs.Pie || chart.InternalSeries[0].RenderAs == RenderAs.Doughnut)) && (Boolean)chart.InternalSeries[0].Enabled)
             {
                 Legend legend = null;
                 foreach (Legend entry in chart.Legends)
@@ -2328,8 +2318,6 @@ namespace Visifire.Charts
             {
                 foreach (Legend legend in legendsOnTop)
                 {
-                    legend.IsNotificationEnable = false;
-
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
                     if (!Double.IsNaN(Width) && Width > 0)
@@ -2342,8 +2330,6 @@ namespace Visifire.Charts
 
                     if (legend.Visual != null)
                         topLegendPanel.Children.Add(legend.Visual);
-
-                    legend.IsNotificationEnable = true;
                 }
             }
 
@@ -2353,8 +2339,6 @@ namespace Visifire.Charts
                 legendsOnBottom.Reverse();
                 foreach (Legend legend in legendsOnBottom)
                 {
-                    legend.IsNotificationEnable = false;
-
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
                     if (!Double.IsNaN(Width) && Width > 0)
@@ -2366,8 +2350,6 @@ namespace Visifire.Charts
                     legend.CreateVisualObject();
                     if (legend.Visual != null)
                         bottomLegendPanel.Children.Add(legend.Visual);
-
-                    legend.IsNotificationEnable = true;
                 }
             }
 
@@ -2375,8 +2357,6 @@ namespace Visifire.Charts
             {
                 foreach (Legend legend in legendsOnLeft)
                 {
-                    legend.IsNotificationEnable = false;
-
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = Layouts.FlowLayout;
                     if (!Double.IsNaN(Height) && Height > 0)
@@ -2389,7 +2369,6 @@ namespace Visifire.Charts
                     if (legend.Visual != null)
                         leftLegendPanel.Children.Add(legend.Visual);
 
-                    legend.IsNotificationEnable = true;
                 }
             }
 
@@ -2398,8 +2377,6 @@ namespace Visifire.Charts
                 legendsOnRight.Reverse();
                 foreach (Legend legend in legendsOnRight)
                 {
-                    legend.IsNotificationEnable = false;
-
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = Layouts.FlowLayout;
                     if (!Double.IsNaN(Height) && Height > 0)
@@ -2411,8 +2388,6 @@ namespace Visifire.Charts
                     legend.CreateVisualObject();
                     if (legend.Visual != null)
                         rightLegendPanel.Children.Add(legend.Visual);
-
-                    legend.IsNotificationEnable = true;
                 }
             }
 
@@ -2420,8 +2395,6 @@ namespace Visifire.Charts
             {
                 foreach (Legend legend in legendsAtCenter)
                 {
-                    legend.IsNotificationEnable = false;
-
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
                     if (legend.MaximumWidth == 0)
@@ -2431,8 +2404,6 @@ namespace Visifire.Charts
 
                     if (legend.Visual != null)
                         centerPanel.Children.Add(legend.Visual);
-
-                    legend.IsNotificationEnable = true;
                 }
             }
         }
@@ -2440,7 +2411,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Add titles to ChartArea
         /// </summary>
-        /// <param name="chart"></param>
+        /// <param name="chart">Chart</param>
+        /// <param name="DockInsidePlotArea">DockInsidePlotArea</param>
+        /// <param name="height">Height avilable for title</param>
+        /// <param name="width">Width available for title</param>
+        /// <param name="isHLeftOrRightVCenterTitlesExists">Whether horizontal or vertical titles exists</param>
         private void AddTitles(Chart chart, Boolean DockInsidePlotArea, Double height, Double width, out Boolean isHLeftOrRightVCenterTitlesExists)
         {
             IList<Title> titles;
@@ -2695,8 +2670,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Set center grid margin of the ChartArea
         /// </summary>
-        /// <param name="NewSize"></param>
-        /// <returns></returns>
+        /// <param name="NewSize">NewSize</param>
+        /// <returns>NewSize</returns>
         private Size SetChartAreaCenterGridMargin(Size newSize)
         {
             Double left = GetChartAreaCenterGridLeftMargin();
@@ -2738,7 +2713,6 @@ namespace Visifire.Charts
         /// <summary>
         /// Set properties of specific axes
         /// </summary>
-        /// <param name="chart"></param>
         private void SetAxesProperties()
         {
             AxisX = PlotDetails.GetAxisXFromChart(Chart, AxisTypes.Primary);
@@ -2766,7 +2740,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Apply Opacity to dataseries and datapoints visual
+        /// Apply Opacity to DataSeries and DataPoints visual
         /// </summary>
         private void ApplyOpacity()
         {
@@ -2806,10 +2780,9 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Attach Events for each DataSeries and DataPoints
+        /// Attach events for each DataSeries and DataPoints
         /// </summary>
-        /// <param name="Series"></param>
-        private void AttachEventsToolTipHref2DataSeries(List<DataSeries> Series)
+        private void AttachEventsToolTipHref2DataSeries()
         {
             foreach (DataSeries ds in Chart.InternalSeries)
             {
@@ -2853,7 +2826,7 @@ namespace Visifire.Charts
 
                     #region Attach Href
 
-                    dp.SetHref2DataPointVisualFaces(dp);
+                    dp.SetHref2DataPointVisualFaces();
 
                     #endregion
 
@@ -2875,8 +2848,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates the various regions required for drawing the charts
+        /// Creates the various regions required for drawing vertical charts
         /// </summary>
+        /// <param name="chartSize">Chart size as Double</param>
+        /// <param name="NewSize">NewSize</param>
+        /// <returns>Size</returns>
         private Size CreateRegionsForVerticalCharts(Double chartSize, Size NewSize)
         {   
             Double chartCanvasHeight = 0;
@@ -2889,7 +2865,7 @@ namespace Visifire.Charts
             else
             {
                 if (Chart.View3D)
-                {
+                {   
                     Double plankOpacity = 0.3;
 
                     // Draw 3D horizontal plank 
@@ -2928,8 +2904,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates the various regions required for drawing the charts
+        /// Creates the various regions required for drawing horizontal charts
         /// </summary>
+        /// <param name="chartSize">Chart size as Double</param>
+        /// <param name="NewSize">NewSize</param>
+        /// <returns>Size</returns>
         private Size CreateRegionsForHorizontalCharts(Double chartSize, Size NewSize)
         {
             Double chartCanvasHeight = 0;
@@ -2967,8 +2946,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates the various regions required for drawing the charts
+        /// Creates the various regions required for drawing the charts without Axis
         /// </summary>
+        /// <param name="NewSize">NewSize</param>
+        /// <returns>Size</returns>
         private Size CreateRegionsForChartsWithoutAxis(Size NewSize)
         {
             Double chartCanvasHeight = 0;
@@ -3012,11 +2993,14 @@ namespace Visifire.Charts
             System.Diagnostics.Debug.WriteLine("Loaded() >");
         }
 
-        /// <summary>
+       /// <summary>
         /// Add Title visual to DrawingArea
-        /// </summary>
-        /// <param name="title">Title to add</param>
-        /// <param name="panel">Where to add</param>
+       /// </summary>
+       /// <param name="chart">Chart</param>
+       /// <param name="title">Title to add</param>
+       /// <param name="panel">Panel where title to be added</param>
+       /// <param name="width">Available width for title</param>
+       /// <param name="height">Available height for title</param>
         private void AddTitle(Chart chart, Title title, Panel panel, Double width, Double height)
         {
             Double tempFontSize = title.FontSize;
@@ -3108,22 +3092,6 @@ namespace Visifire.Charts
 
         #region Static Methods
 
-        /// <summary>
-        /// converts value to position
-        /// </summary>
-        private static Double ValueToPosition(Double positionMin, Double positionMax, Double valueMin, Double valueMax, Double value)
-        {
-            return ((value - valueMin) / (valueMax - valueMin)) * (positionMax - positionMin);
-        }
-
-        /// <summary>
-        /// Converts position to value
-        /// </summary>
-        private static Double PositionToValue(Double positionMin, Double positionMax, Double valueMin, Double valueMax, Double position)
-        {
-            return ((position) / (positionMax - positionMin) * (valueMax - valueMin)) + valueMin;
-        }
-
         #endregion
 
         #region Data
@@ -3134,7 +3102,7 @@ namespace Visifire.Charts
         internal static Double GRID_ANIMATION_DURATION = 1;             
 
         /// <summary>
-        /// Chart scroll-viewer Offset for horizontal chart
+        /// Chart scroll-viewer Offset for horizontal chart. 
         /// It is used to show the grid lines properly at the right hand side of the scroll-viewer
         /// </summary>
         internal static Double SCROLLVIEWER_OFFSET4HORIZONTAL_CHART = 1;            

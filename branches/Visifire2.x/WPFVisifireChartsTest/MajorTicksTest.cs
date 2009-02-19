@@ -175,7 +175,39 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
-        
+
+        /// <summary>
+        /// Check Opacity new value
+        /// </summary>
+        [TestMethod]
+        public void CheckNewOpacity()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            Ticks tick = new Ticks();
+            Axis axis = new Axis();
+            axis.Ticks.Add(tick);
+            chart.AxesX.Add(axis);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                tick.Opacity = 0.5;
+                Assert.AreEqual(0.5, tick.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         /// <summary>
         /// Check LineThickness new value
         /// </summary>

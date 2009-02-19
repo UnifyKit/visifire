@@ -82,7 +82,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// TextParser is used to pars text
+        /// TextParser is used to parse text
         /// </summary>
         /// <param name="unParsed">String unParsed</param>
         /// <returns>parsed as string</returns>
@@ -634,7 +634,7 @@ namespace Visifire.Charts
             new PropertyMetadata(OnMarkerScalePropertychanged));
 
         /// <summary>
-        /// Set or get HrefTarget property of DataPoint
+        /// Get or set the HrefTarget property of DataPoint
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableHrefTargetsConverter))]
@@ -655,7 +655,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Href property of DataPoint
+        /// Get or set the Href property of DataPoint
         /// </summary>
         public String Href
         {
@@ -696,7 +696,29 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the value that will appear on Y-Axis for all charts.
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                if (base.Cursor == null)
+                    return _parent.Cursor;
+                else
+                    return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get or set the value that will appear on Y-Axis for all charts.
         /// In the case of Pie and Doughnut, the YValue will be considered for calculating the percentages.
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
@@ -713,8 +735,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the value that will appear on Y-Axis for all charts.
-        /// In the case of Pie and Doughnut, the YValue will be considered for calculating the percentages.
+        /// Get the YValue that will be used for Internal purpose.
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         internal Double InternalYValue
@@ -731,8 +752,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the value that will appear on Y-Axis for all charts. 
-        /// In the case of Pie and Doughnut, the YValue will be considered for calculating the percentages.
+        /// Get or set the value that will appear on X-Axis for all charts. 
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         public Double XValue
@@ -748,7 +768,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the value that will appear for bubble charts only
+        /// Get or set the value that will appear for bubble charts only
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         public Double ZValue
@@ -779,10 +799,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the color of the DataPoint
-        /// </summary>
-        /// <summary>
-        /// Sets the DataPoint Color
+        /// Get or set the color of the DataPoint
         /// </summary>
         public Brush Color
         {
@@ -805,7 +822,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set the BorderStyle property
+        /// Enables or disables the DataPoint
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -824,7 +841,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the ExplodeOffset. This is used in Pie/Doughnut charts.
+        /// Get or set the Exploded property. This is used in Pie/Doughnut charts.
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Exploded
@@ -840,7 +857,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the LightingEnabled property
+        /// Get or set the LightingEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> LightingEnabled
@@ -863,7 +880,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set the ShadowEnabled property
+        /// Get or set the ShadowEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> ShadowEnabled
@@ -890,7 +907,7 @@ namespace Visifire.Charts
         #region Label Properties
 
         /// <summary>
-        /// Sets the LabelEnabled property
+        /// Get or set the LabelEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> LabelEnabled
@@ -909,7 +926,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelText property
+        /// Get or set the LabelText property
         /// </summary>
         public String LabelText
         {
@@ -927,7 +944,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelFontFamily property
+        /// Get or set the LabelFontFamily property
         /// </summary>
         public FontFamily LabelFontFamily
         {
@@ -945,7 +962,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelFontSize property
+        /// GEt or set the LabelFontSize property
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -968,7 +985,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelFontColor property
+        /// Get or set the LabelFontColor property
         /// </summary>
         public Brush LabelFontColor
         {
@@ -987,7 +1004,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the LabelFontWeight property
+        /// Get or set the LabelFontWeight property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontWeightConverter))]
@@ -1009,7 +1026,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelFontStyle property
+        /// Get or set the LabelFontStyle property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontStyleConverter))]
@@ -1031,7 +1048,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the LabelBackground property
+        /// Get or set the LabelBackground property
         /// </summary>
         public Brush LabelBackground
         {
@@ -1050,7 +1067,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelStyle property
+        /// Get or set the LabelStyle property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableLabelStylesConverter))]
@@ -1072,7 +1089,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelLineEnabled property
+        /// Get or set the LabelLineEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> LabelLineEnabled
@@ -1102,7 +1119,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelLineColor property
+        /// Get or set the LabelLineColor property
         /// </summary>
         public Brush LabelLineColor
         {
@@ -1120,7 +1137,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the LabelLineThickness property
+        /// Get or set the LabelLineThickness property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -1143,7 +1160,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LabelLineStyle property
+        /// Get or set the LabelLineStyle property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableLineStylesConverter))]
@@ -1168,7 +1185,7 @@ namespace Visifire.Charts
         #region Marker Properties
 
         /// <summary>
-        /// Sets the MarkerEnabled property
+        /// Get or set the MarkerEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> MarkerEnabled
@@ -1187,7 +1204,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerStyle property
+        /// Get or set the MarkerStyle property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableMarkerTypesConverter))]
@@ -1208,7 +1225,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerBorderThickness property
+        /// Get or set the MarkerBorderThickness property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableThicknessConverter))]
@@ -1245,7 +1262,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerBorderColor property
+        /// Get or set the MarkerBorderColor property
         /// </summary>
         public Brush MarkerBorderColor
         {
@@ -1273,7 +1290,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerSize property
+        /// Get or set the MarkerSize property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -1294,7 +1311,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerColor property
+        /// Get or set the MarkerColor property
         /// </summary>
         public Brush MarkerColor
         {
@@ -1317,7 +1334,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the MarkerScale property
+        /// Get or set the MarkerScale property
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -1340,7 +1357,7 @@ namespace Visifire.Charts
         #endregion Marker Properties
 
         /// <summary>
-        /// Sets the ToolTipText for the DataPoint
+        /// Get or set the ToolTipText for the DataPoint
         /// </summary>
         public override String ToolTipText
         {   
@@ -1361,7 +1378,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the ShowInLegend property
+        /// Get or set the ShowInLegend property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> ShowInLegend
@@ -1384,7 +1401,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets the LegendText
+        /// Get or set the LegendText
         /// </summary>
         public String LegendText
         {
@@ -1412,7 +1429,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set the BorderThickness property
+        /// Get or set the BorderThickness property
         /// </summary>
         public new Nullable<Thickness> BorderThickness
         {
@@ -1438,7 +1455,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set the BorderColor property
+        /// Get or set the BorderColor property
         /// </summary>
         public Brush BorderColor
         {
@@ -1459,6 +1476,9 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the BorderStyle property
+        /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableBorderStylesConverter))]
 #endif
@@ -1482,7 +1502,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the RadiusX property
+        /// Get or set the RadiusX property
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
@@ -1505,7 +1525,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the RadiusY property
+        /// Get or set the RadiusY property
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
@@ -1551,95 +1571,101 @@ namespace Visifire.Charts
 
         #region Protected Methods
 
-            internal override void UpdateVisual(String PropertyName, object Value)
-            {   
-                switch(PropertyName)
-                {
-                    case "Color":
+        /// <summary>
+        /// UpdateVisual is used for partial rendering
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(String propertyName, object value)
+        {   
+            switch(propertyName)
+            {
+                case "Color":
 
-                        #region Color
+                    #region Color
 
-                        Value = Color;
+                    value = Color;
 
-                        if (Faces != null && Faces.Parts != null)
+                    if (Faces != null && Faces.Parts != null)
+                    {
+                        switch(Parent.RenderAs)
                         {
-                            switch(Parent.RenderAs)
-                            {
-                                case RenderAs.Column:
-                                case RenderAs.Bar:
-                                case RenderAs.StackedBar:
-                                case RenderAs.StackedBar100:
-                                case RenderAs.StackedColumn:
-                                case RenderAs.StackedColumn100:
+                            case RenderAs.Column:
+                            case RenderAs.Bar:
+                            case RenderAs.StackedBar:
+                            case RenderAs.StackedBar100:
+                            case RenderAs.StackedColumn:
+                            case RenderAs.StackedColumn100:
 
-                                    if (!(Parent.Chart as Chart).View3D)
-                                    {
-                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Path).Fill = (((Boolean)Parent.LightingEnabled) ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.745, 0.99}) : (Brush)Value);
-                                        if (Faces.Parts[1] != null) (Faces.Parts[1] as Polygon).Fill = Graphics.GetBevelTopBrush((Brush)Value);
-                                        if (Faces.Parts[2] != null) (Faces.Parts[2] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -70 : 0), (Brush)Value);
-                                        if (Faces.Parts[3] != null) (Faces.Parts[3] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -110 : 180), (Brush)Value);
-                                        if (Faces.Parts[4] != null) (Faces.Parts[4] as Polygon).Fill = null;
-                                        if (Faces.Parts[5] != null) (Faces.Parts[5] as Shape).Fill = Graphics.GetLeftGradianceBrush(63);
-                                        if (Faces.Parts[6] != null) (Faces.Parts[6] as Shape).Fill = ((Parent.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Graphics.GetRightGradianceBrush(63) : Graphics.GetLeftGradianceBrush(63);
-                                    }
-                                    else
-                                    {   
-                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)Value) : (Brush)Value ;   // Front brush
-                                        if (Faces.Parts[1] != null) (Faces.Parts[1] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)Value) : (Brush)Value;      // Top brush
-                                        if (Faces.Parts[2] != null) (Faces.Parts[2] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)Value) : (Brush)Value;    // Right
-                                    }
+                                if (!(Parent.Chart as Chart).View3D)
+                                {
+                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Path).Fill = (((Boolean)Parent.LightingEnabled) ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.745, 0.99}) : (Brush)value);
+                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Polygon).Fill = Graphics.GetBevelTopBrush((Brush)value);
+                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -70 : 0), (Brush)value);
+                                    if (Faces.Parts[3] != null) (Faces.Parts[3] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -110 : 180), (Brush)value);
+                                    if (Faces.Parts[4] != null) (Faces.Parts[4] as Polygon).Fill = null;
+                                    if (Faces.Parts[5] != null) (Faces.Parts[5] as Shape).Fill = Graphics.GetLeftGradianceBrush(63);
+                                    if (Faces.Parts[6] != null) (Faces.Parts[6] as Shape).Fill = ((Parent.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Graphics.GetRightGradianceBrush(63) : Graphics.GetLeftGradianceBrush(63);
+                                }
+                                else
+                                {   
+                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value ;   // Front brush
+                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)value) : (Brush)value;      // Top brush
+                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)value) : (Brush)value;    // Right
+                                }
+                                
+                            break;
+                                
+                            case RenderAs.Bubble:
+                                if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = ((Parent.Chart as Chart).View3D ? Graphics.GetLightingEnabledBrush3D((Brush)value) : ((Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.99, 0.745 }) : (Brush)value));
+                                
+                            break;
+
+                            case RenderAs.Pie:
+                            case RenderAs.Doughnut:
+
+                                SectorChartShapeParams pieParams = (SectorChartShapeParams)this.VisualParams;
+                                pieParams.Background = (Brush)value;
+
+                                if (!(Parent.Chart as Chart).View3D)
+                                {
+                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Radial", null) : (Brush)value;
+
+                                    if (Faces.Parts[1] != null)
+                                        (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
+
+                                    if (Faces.Parts[2] != null)
+                                        (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
+
+                                    if (Faces.Parts[3] != null)
+                                        (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
                                     
+                                    if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts[4] != null)
+                                        (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
+                                }
+                                else
+                                {   
+                                    foreach (FrameworkElement fe in Faces.Parts)
+                                        if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
+                                }
                                 break;
-                                    
-                                case RenderAs.Bubble:
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = ((Parent.Chart as Chart).View3D ? Graphics.GetLightingEnabledBrush3D((Brush)Value) : ((Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.99, 0.745 }) : (Brush)Value));
-                                    
-                                break;
 
-                                case RenderAs.Pie:
-                                case RenderAs.Doughnut:
-
-                                    SectorChartShapeParams pieParams = (SectorChartShapeParams)this.VisualParams;
-                                    pieParams.Background = (Brush)Value;
-
-                                    if (!(Parent.Chart as Chart).View3D)
-                                    {
-                                        if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Radial", null) : (Brush)Value;
-
-                                        if (Faces.Parts[1] != null)
-                                            (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
-
-                                        if (Faces.Parts[2] != null)
-                                            (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
-
-                                        if (Faces.Parts[3] != null)
-                                            (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(-0.745, -0.85), PieChart.GetDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(0.745, -0.99), PieChart.GetDoubleCollection(0, 1));
-                                        
-                                        if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts[4] != null)
-                                            (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(-0.745, -0.85), PieChart.GetDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, PieChart.GetDoubleCollection(0.745, -0.99), PieChart.GetDoubleCollection(0, 1));
-                                    }
-                                    else
-                                    {   
-                                        foreach (FrameworkElement fe in Faces.Parts)
-                                            if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
-                                    }
-                                    break;
-
-                            }
                         }
+                    }
 
-                        UpdateMarkerAndLegend(Value);
+                    UpdateMarkerAndLegend(value);
 
-   #endregion
-                        break;
+                    #endregion
 
-                    default:
+                    break;
 
-                        FirePropertyChanged(PropertyName);
+                default:
 
-                        break;
-                }
+                    FirePropertyChanged(propertyName);
+
+                    break;
             }
+        }
             
         #endregion
 
@@ -1655,7 +1681,7 @@ namespace Visifire.Charts
             }
 
         /// <summary>
-        /// Get or set Geometric faces of DataPoint
+        /// Get or set geometric faces of DataPoint
         /// </summary>
         internal Faces Faces
         {
@@ -1664,7 +1690,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Get or set Label visual of the DataPoint
+        /// Get or set label visual of the DataPoint
         /// </summary>
         internal Grid LabelVisual
         {
@@ -1821,7 +1847,6 @@ namespace Visifire.Charts
         {
             DataPoint dataPoint = d as DataPoint;
             dataPoint.UpdateVisual("Color", e.NewValue);
-            //dataPoint.FirePropertyChanged("Color");
         }
         
         /// <summary>
@@ -1846,7 +1871,7 @@ namespace Visifire.Charts
 
             if (dataPoint.Parent != null && dataPoint.Parent.Chart != null && (dataPoint.Parent.Chart as Chart).ChartArea != null && (dataPoint.Chart as Chart).ChartArea._isAnimationFired && (dataPoint.Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
             {
-                dataPoint.ExploreOrUnexploreAnimation();
+                dataPoint.ExplodeOrUnexplodeAnimation();
 
             }
         }
@@ -2197,7 +2222,7 @@ namespace Visifire.Charts
         /// MouseLeftButtonUp event handler for handling interactive animation
         /// </summary>
         /// <param name="sender">FrameworkElement</param>
-        /// <param name="e">MouseEventArgs</param>
+        /// <param name="e">MouseButtonEventArgs</param>
         private void Visual_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             InteractiveAnimation();
@@ -2252,9 +2277,9 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Explore or unexplore animation for Pie and Doughnut
+        /// Explode or unexplode animation for Pie and Doughnut
         /// </summary>
-        private void ExploreOrUnexploreAnimation()
+        private void ExplodeOrUnexplodeAnimation()
         {
             if ((Boolean)Exploded)
             {
@@ -2313,7 +2338,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Update marker and legend for dataPoint
         /// </summary>
-        /// <param name="Value"></param>
+        /// <param name="Value">Color value</param>
         private void UpdateMarkerAndLegend(object colorValue)
         {
             if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
@@ -2332,11 +2357,8 @@ namespace Visifire.Charts
                     Marker.UpdateMarker();
                 }
                 else
-                //if (Parent.RenderAs == RenderAs.Line)
-                {
                     Marker.BorderColor = (Brush)colorValue;
                     Marker.UpdateMarker();
-                }
 
             }
 
@@ -2357,7 +2379,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void InteractiveAnimation()
         {
-            // interactivity animation is not running already and the slice is not exploded
+            // If interactivity animation is not running already and the slice is not exploded
             // then explode the slice
             if (!_interativityAnimationState)
             {
@@ -2395,12 +2417,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Attach events to each and every individual face of Faces
         /// </summary>
-        /// <param name="faces"></param>
+        /// <param name="Object">Object where events to be attached</param>
         internal void AttachEvent2DataPointVisualFaces(ObservableObject Object)
         {
-            //if (LegendMarker != null)
-            //    ObservableObject.AttachEvents2Visual(this, this.LegendMarker.Visual);
-
             if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
             {
                 if (Faces != null)
@@ -2430,45 +2449,35 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100)
+            else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea 
+                || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line)
             {
-                //if (Parent.Faces != null)
-                //{
-                //    foreach (FrameworkElement face in Parent.Faces.VisualComponents)
-                //    {
-                //        AttachEvents2Visual(Object, this, face);
-                //    }
-                //}
-
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
             }
-            else if (Parent.RenderAs == RenderAs.Line)
+            else if (Faces != null)
             {
-                 if (Marker != null)
-                     AttachEvents2Visual(Object, this, Marker.Visual);
-            }
-            else
-            {
-                if (Faces != null)
+                if (Parent.RenderAs == RenderAs.Point)
                 {
-                    if (Parent.RenderAs == RenderAs.Point)
+                    foreach (FrameworkElement face in Faces.VisualComponents)
                     {
-                        foreach (FrameworkElement face in Faces.VisualComponents)
-                        {
-                            AttachEvents2Visual(Object, this, face);
-                        }
+                        AttachEvents2Visual(Object, this, face);
                     }
-                    else
-                        AttachEvents2Visual(Object, this, Faces.Visual);
+                }
+                else
+                {
+                    AttachEvents2Visual(Object, this, Faces.Visual);
+
+                    if (Marker != null)
+                        AttachEvents2Visual(Object, this, Marker.Visual);
                 }
             }
         }
 
         /// <summary>
-        /// Set Cursor property for DataPoint visual faces
+        /// Set Href property for DataPoint visual faces
         /// </summary>
-        internal void SetHref2DataPointVisualFaces(ObservableObject Object)
+        internal void SetHref2DataPointVisualFaces()
         {
             if (Faces != null)
                 if (Faces.VisualComponents.Count != 0)

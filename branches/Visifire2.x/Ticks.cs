@@ -163,7 +163,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Major Tick interval
+        /// Get or set the Major Tick interval
         /// </summary>
 #if SL  
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -184,7 +184,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// ToolTipText property
+        /// Get or set the ToolTipText property
         /// ( NotImplemented )
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -201,7 +201,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Major Tick LineColor
+        /// Get or set the Major Tick LineColor
         /// </summary>
         public Brush LineColor
         {
@@ -216,7 +216,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Major Tick LineThickness
+        /// Get or set the Major Tick LineThickness
         /// </summary>
         public Double LineThickness
         {
@@ -231,7 +231,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Major Tick LineStyle
+        /// Get or set the Major Tick LineStyle
         /// </summary>
         public LineStyles LineStyle
         {
@@ -246,7 +246,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Length of the ticks
+        /// Get or set the Length of the ticks
         /// </summary>
         public Double TickLength
         {
@@ -287,7 +287,7 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Visual element for major ticks
+        /// Visual element for Major Ticks
         /// </summary>
         internal Canvas Visual
         {
@@ -332,7 +332,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the width of the major tick canvas. will be used only with the Horizontal axis
+        /// Set the width of the Major Tick canvas, will be used only with the Horizontal axis
         /// </summary>
         internal new Double Width
         {
@@ -347,7 +347,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the height of the major tick canvas. will be used ony with the vertical axis 
+        /// Set the height of the Major Tick canvas, will be used ony with the vertical axis 
         /// </summary>
         internal new Double Height
         {
@@ -592,7 +592,7 @@ namespace Visifire.Charts
         #region Internal Methods
         
         /// <summary>
-        ///  Set the parameters for the major ticks
+        /// Set the parameters for the Major Ticks
         /// </summary>
         /// <param name="placementTypes">placementType</param>
         /// <param name="width">Width of ticks</param>
@@ -608,7 +608,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates the visual element for the Major ticks
+        /// Creates the visual element for the Major Ticks
         /// </summary>
         internal void CreateVisualObject()
         {
@@ -624,11 +624,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// UpdatesVisual is used for partial update
+        /// UpdateVisual is used for partial update
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(string PropertyName, object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(string propertyName, object value)
         {   
             if (Visual != null)
                 foreach (Line line in Visual.Children)
@@ -638,7 +638,7 @@ namespace Visifire.Charts
                     line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
                 }
             else
-                FirePropertyChanged(PropertyName);
+                FirePropertyChanged(propertyName);
         }
 
         #endregion
@@ -650,12 +650,12 @@ namespace Visifire.Charts
         #region Data
 
         /// <summary>
-        /// Set the width of the major tick canvas. will be used only with the Horizontal axis
+        /// Set the width of the Major Tick canvas, will be used only with the Horizontal axis
         /// </summary>
         private Double _width;
 
         /// <summary>
-        ///  Set the height of the major tick canvas. will be used ony with the vertical axis
+        ///  Set the height of the Major Tick canvas, will be used ony with the vertical axis
         /// </summary>
         private Double _height;
 

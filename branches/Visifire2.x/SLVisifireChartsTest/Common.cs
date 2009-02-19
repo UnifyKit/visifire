@@ -220,6 +220,10 @@ namespace SLVisifireChartsTest
 
         }
 
+        /// <summary>
+        /// Create and add DataSeries
+        /// </summary>
+        /// <param name="chart">Chart</param>
         public static void CreateAndAddDefaultDataSeries(Chart chart)
         {
             DataSeries dataSeries = new DataSeries();
@@ -240,6 +244,33 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
         }
 
+        /// <summary>
+        /// Create and add DataSeries to scrollable chart
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        public static void CreateAndAddDataSeriesWithMoreDataPoints(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+
+            dataSeries.RenderAs = RenderAs.Column;
+
+            Random rand = new Random();
+
+            for (Int32 i = 0; i < 25; i++)
+            {
+                DataPoint datapoint = new DataPoint();
+                datapoint.AxisXLabel = "a" + i;
+                datapoint.YValue = rand.Next(0, 100);
+                dataSeries.DataPoints.Add(datapoint);
+            }
+
+            chart.Series.Add(dataSeries);
+        }
+
+        /// <summary>
+        /// Create default Axes
+        /// </summary>
+        /// <param name="chart">Chart</param>
         public static void CreateDefaultAxis(Chart chart)
         {
             Axis axisX = new Axis();
@@ -249,6 +280,11 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(axisY);
         }
 
+        /// <summary>
+        /// Create a html button to display custom messages
+        /// </summary>
+        /// <param name="htmlElement"></param>
+        /// <returns></returns>
         public static System.Windows.Browser.HtmlElement GetDisplayMessageButton(System.Windows.Browser.HtmlElement htmlElement)
         {
             htmlElement = System.Windows.Browser.HtmlPage.Document.CreateElement("button");

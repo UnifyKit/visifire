@@ -310,18 +310,6 @@ namespace Visifire.Charts
            new PropertyMetadata(OnInternalBorderThicknessChanged));
 
         /// <summary>
-        /// Identifies the Visifire.Charts.Chart.BorderStyle dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Chart.BorderStyle dependency property.
-        /// </returns>
-        public static readonly DependencyProperty BorderStyleProperty = DependencyProperty.Register
-            ("BorderStyle",
-            typeof(BorderStyles),
-            typeof(Chart),
-            null);
-
-        /// <summary>
         /// Identifies the Visifire.Charts.Chart.InternalBackground dependency property.
         /// </summary>
         /// <returns>
@@ -430,7 +418,7 @@ namespace Visifire.Charts
         new PropertyMetadata(OnPlotAreaPropertyChanged));
 
         /// <summary>
-        /// Minimum gap between two DataPoint of same series in Plotarea
+        /// Minimum gap between two DataPoint of same series in PlotArea
         /// </summary>
 #if SL  
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -534,7 +522,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enabled or disables animation
+        /// Enables or disables animation
         /// </summary>
         public Boolean AnimationEnabled
         {
@@ -573,21 +561,6 @@ namespace Visifire.Charts
             {
                 SetValue(BorderThicknessProperty, value);
                 SetValue(InternalBorderThicknessProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Sets the border line style
-        /// </summary>
-        public BorderStyles BorderStyle
-        {
-            get
-            {
-                return (BorderStyles)GetValue(BorderStyleProperty);
-            }
-            set
-            {
-                SetValue(BorderStyleProperty, value);
             }
         }
         
@@ -655,7 +628,7 @@ namespace Visifire.Charts
         }
                        
         /// <summary>
-        /// Enabled or disabled automatic color shading
+        /// Enables or disables automatic color shading
         /// </summary>
         public Boolean LightingEnabled
         {
@@ -747,7 +720,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// AxesX as AxisCollection of type Axis
+        /// AxesY as AxisCollection of type Axis
         /// </summary>
         public AxisCollection AxesY
         {
@@ -876,7 +849,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// OnMouseMoveLeave chart set ToolTip position
+        /// OnMouseMoveLeave chart set ToolTip position. 
         /// ToolTip at current mouse position over the chart control        
         /// </summary>
         /// <param name="sender">Chart as object</param>
@@ -896,7 +869,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// OnMouseMoveOver chart set ToolTip position
+        /// OnMouseMoveOver chart set ToolTip position. 
         /// ToolTip at current mouse position over the chart control        
         /// </summary>
         /// <param name="sender">Chart as object</param>
@@ -909,6 +882,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler manages the addition and removal of tooltip from tooltip list of chart
         /// </summary>
+        /// <param name="sender">ToolTips</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void ToolTips_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -939,6 +914,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler manages the addition and removal of Axis from AxesX list of chart
         /// </summary>
+        /// <param name="sender">AxesX</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void AxesX_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             Boolean isAutoAxis = false;
@@ -985,6 +962,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler manages the addition and removal of Axis from AxesY list of chart
         /// </summary>
+        /// <param name="sender">AxesY</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void AxesY_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             Boolean isAutoAxis = false;
@@ -1033,6 +1012,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler manages the addition and removal of title from chart
         /// </summary>
+        /// <param name="sender">Titles</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void Titles_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -1120,6 +1101,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler manages the addition and removal of DataSeries from Series list of chart
         /// </summary>
+        /// <param name="sender">Series</param>
+        /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void Series_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -1179,7 +1162,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Loads color sets from chart resource
+        /// Load color sets from chart resource
         /// </summary>
         private void LoadColorSets()
         {
@@ -1251,7 +1234,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Apply Bevel effect to Chart
+        /// Apply bevel effect to Chart
         /// </summary>
         /// <returns>If success return true else false.</returns>
         private Boolean ApplyChartBevel()
@@ -1383,7 +1366,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Loads themes from resource file and select specific theme using theme name
+        /// Load theme from resource file and select specific theme using theme name
         /// </summary>
         /// <param name="themeName">String themeName</param>
         private void LoadTheme(String themeName)
@@ -1453,7 +1436,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Loads default ToolTips if required.
+        /// Loads default ToolTips if required. 
         /// Currently only one tooltip is supported
         /// </summary>
         private void LoadToolTips()
@@ -1555,7 +1538,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// InternalBorderProperty changed call back function
+        /// InternalBorderThicknessProperty changed call back function
         /// </summary>
         /// <param name="d">Chart</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1709,7 +1692,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Foreground is a default property of a Control and it is not applicable in chart
+        /// Foreground is a default property of a Control and it is not applicable in chart. 
         /// Hides the Foreground property in control
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -1751,8 +1734,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// PlotDetails holds plotting information.
-        /// As example grouping of series depending upon axis types and RenderAs type of Series.
+        /// PlotDetails holds plotting information. 
+        /// As example, grouping of series depending upon axis types and RenderAs type of Series.
         /// </summary>
         internal PlotDetails PlotDetails
         {
@@ -1761,8 +1744,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Chart area is the entire area defined by the chart
-        /// Chart area manages jobs related plotting the graph.
+        /// Chart area is the entire area defined by the chart. 
+        /// Chart area manages jobs related to plotting the graph.
         /// </summary>
         internal ChartArea ChartArea
         {
@@ -1802,7 +1785,7 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Check if exception is a dueto negative size error
+        /// Check if exception occurred due to negative size error
         /// </summary>
         /// <param name="e">ArgumentException</param>
         /// <returns>Boolean</returns>
@@ -1834,7 +1817,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// On ToolTipText PropertyChanged event This function is invoked
+        /// On ToolTipText PropertyChanged event, this function is invoked
         /// </summary>
         /// <param name="NewValue"></param>
         internal override void OnToolTipTextPropertyChanged(string newValue)
@@ -1914,7 +1897,7 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Get collection of titles which are docked inside PlotArea
-        /// Using LINQ
+        /// using LINQ
         /// </summary>
         /// <returns>List of Titles docked inside PlotArea </returns>
         internal List<Title> GetTitlesDockedInsidePlotArea()
@@ -1933,8 +1916,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get collection of titles which are docked out side PlotArea
-        /// Using LINQ
+        /// Get collection of titles which are docked outside PlotArea
+        /// using LINQ
         /// </summary>
         /// <returns>List of Titles docked out side PlotArea</returns>
         internal List<Title> GetTitlesDockedOutSidePlotArea()
@@ -1981,7 +1964,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Render is a delegate to a method that takes no arguments and does not return a value,
+        /// Render is a delegate to a method that takes no arguments and does not return a value, 
         /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
         /// </summary>
         internal void InvokeRender()
@@ -2059,7 +2042,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="color">FontColor</param>
         /// <param name="dockInsidePlotArea">DockInsidePlotArea</param>
-        /// <returns>new calculated FontColor</returns>
+        /// <returns>Brush</returns>
         internal static Brush CalculateFontColor(Chart chart, Brush color, Boolean dockInsidePlotArea)
         {
             Brush brush = color;
@@ -2154,7 +2137,7 @@ namespace Visifire.Charts
         internal bool _renderLock = false;
         
         /// <summary>
-        /// Is used to handle inactive the animation after first time render
+        /// Is used to handle inactive animation after first time render
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
        

@@ -69,7 +69,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -83,6 +83,101 @@ namespace WPFVisifireChartsTest
             {
                 Assert.IsNull(chart.AxesX[0].Background);
                 Assert.IsNull(chart.AxesY[0].Background);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the default value of ScrollBarOffset for vertical chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        public void ScrollBarOffsetVerticalChartDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the default value of Href.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of Href.")]
+        [Owner("[....]")]
+        public void HrefAndHrefTargetDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.IsNull(_axisX.Href);
+                Assert.IsNull(_axisY.Href);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the default value of ScrollBarOffset for horizontal chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        public void ScrollBarOffsetHorizontalChartDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -539,9 +634,38 @@ namespace WPFVisifireChartsTest
             window.Close();
         }
 
+        /// <summary>
+        /// Check the default value of ValueFormatString. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ValueFormatString.")]
+        [Owner("[....]")]
+        public virtual void ValueFormatStringDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual("###,##0.##", chart.AxesX[0].ValueFormatString);
+                Assert.AreEqual("###,##0.##", chart.AxesY[0].ValueFormatString);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
 
         /// <summary>
-        /// Check the default value of AxisType. 
+        /// Check the default value of AxisType.
         /// </summary> 
         [TestMethod]
         [Description("Check the default value of AxisType.")]
@@ -642,6 +766,191 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the new value of Opacity.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.Opacity = 0.5;
+                Assert.AreEqual(0.5, _axisX.Opacity, Common.HighPrecisionDelta);
+                _axisY.Opacity = 0.5;
+                Assert.AreEqual(0.5, _axisY.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+
+        }
+
+        /// <summary>
+        /// Check the new value of Padding.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Padding.")]
+        [Owner("[....]")]
+        public void PaddingNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.Padding = new Thickness(10);
+                Assert.AreEqual(new Thickness(10), _axisX.Padding);
+                _axisY.Padding = new Thickness(10);
+                Assert.AreEqual(new Thickness(10), _axisY.Padding);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+
+        }
+
+        /// <summary>
+        /// Check the new value of Cursor.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Cursor.")]
+        [Owner("[....]")]
+        public void CursorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.Cursor = Cursors.Arrow;
+                Assert.AreEqual(Cursors.Arrow, _axisX.Cursor);
+                _axisY.Cursor = Cursors.Arrow;
+                Assert.AreEqual(Cursors.Arrow, _axisY.Cursor);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+
+        }
+
+        /// <summary>
+        /// Check the new value of ScrollBarOffset for vertical chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        public void ScrollBarOffsetVerticalChartNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.ScrollBarOffset = 1;
+                Assert.AreEqual(1, _axisX.ScrollBarOffset);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the new value of ScrollBarOffset for horizontal chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        public void ScrollBarOffsetHorizontalChartNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            chart.Series[0].RenderAs = RenderAs.Bar;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.ScrollBarOffset = 0;
+                Assert.AreEqual(0, _axisX.ScrollBarOffset);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the new value of Enabled. 
         /// </summary> 
         [TestMethod]
@@ -672,6 +981,80 @@ namespace WPFVisifireChartsTest
                 Assert.IsFalse((Boolean)_axisX.Enabled);
                 _axisY.Enabled = false;
                 Assert.IsFalse((Boolean)_axisY.Enabled);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the new value of ValueFormatString.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ValueFormatString.")]
+        [Owner("[....]")]
+        public void ValueFormatStringNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.ValueFormatString = "#0.#'%'";
+                Assert.AreEqual("#0.#'%'", _axisX.ValueFormatString);
+                _axisY.ValueFormatString = "#0.#'%'";
+                Assert.AreEqual("#0.#'%'", _axisY.ValueFormatString);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the new value of Href.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Href.")]
+        [Owner("[....]")]
+        public void HrefAndHrefTargetNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.Href = "http://www.visifire.com";
+                Assert.AreEqual("http://www.visifire.com", _axisX.Href);
+                _axisY.Href = "http://www.visifire.com";
+                Assert.AreEqual("http://www.visifire.com", _axisY.Href);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1377,7 +1760,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             _axisX = new Axis();
             _axisY = new Axis();

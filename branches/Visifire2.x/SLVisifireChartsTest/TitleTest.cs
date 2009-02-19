@@ -424,6 +424,34 @@ namespace SLVisifireChartsTest
         #endregion CheckDefaultPropertyValue
 
         #region CheckNewPropertyValue
+        
+        /// <summary>
+        /// Check the new value of Enabled. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Enabled.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void EnabledNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            Title title = TitleToTest;
+            chart.Titles.Add(title);
+
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => chart.Titles[0].Enabled = false,
+                () => Assert.IsFalse((Boolean)chart.Titles[0].Enabled));
+
+            EnqueueTestComplete();
+        }
+
         /// <summary> 
         /// Check Titles new property values
         /// </summary> 
@@ -467,6 +495,8 @@ namespace SLVisifireChartsTest
                         title.Margin = new Thickness(2);
                         title.CornerRadius = new CornerRadius(1, 1, 1, 1);
                         title.ToolTipText = "Title";
+                        title.Opacity = 0.5;
+                        title.Cursor = Cursors.Hand;
                     }
                 });
 
@@ -493,8 +523,39 @@ namespace SLVisifireChartsTest
                         Assert.AreEqual(new Thickness(2), title.Margin);
                         Assert.AreEqual(new CornerRadius(1, 1, 1, 1), title.CornerRadius);
                         Assert.AreEqual("Title", title.ToolTipText);
+                        Assert.AreEqual(0.5, title.Opacity, Common.HighPrecisionDelta);
+                        Assert.AreEqual(Cursors.Hand, title.Cursor);
                     }
                 });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of HrefAndHrefTarget property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Href and HrefTarget.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void HrefAndHrefTargetNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            Title title = TitleToTest;
+            chart.Titles.Add(title);
+
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => chart.Titles[0].Href = "http://www.visifire.com",
+                () => Assert.AreEqual("http://www.visifire.com", chart.Titles[0].Href),
+                () => chart.Titles[0].HrefTarget = HrefTargets._blank,
+                () => Assert.AreEqual(HrefTargets._blank, chart.Titles[0].HrefTarget));
 
             EnqueueTestComplete();
         }
@@ -645,7 +706,7 @@ namespace SLVisifireChartsTest
 
         #region TitleEventTesting
         /// <summary>
-        /// Testing Evnets in Title
+        /// Testing events in Title
         /// </summary>
         [TestMethod]
         [Asynchronous]
@@ -793,7 +854,6 @@ namespace SLVisifireChartsTest
             {
                 // Simple standard Title 
                 return new Title() { Text = "Visifire" };
-
             }
         }
 

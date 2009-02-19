@@ -29,19 +29,19 @@
 
                         var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1" AnimationEnabled="True" Bevel="True" BorderThickness="2" BorderBrush="Black" View3D="False">'
                            + '     <vc:Chart.Titles>'
-                           + '         <vc:Title Enabled="False" Text="Athens 2004 Olympics" FontSize="14" Cursor="Hand"/>'
+                           + '         <vc:Title Enabled="False" Text="Athens 2004 Olympics" FontSize="14"/>'
                            + '     </vc:Chart.Titles>'
 
                            + '     <vc:Chart.ToolTips>'
-                           + '         <vc:ToolTip FontSize="8" Background="AliceBlue"></vc:ToolTip>'
+                           + '         <vc:ToolTip FontSize="8" Background="AliceBlue"/>'
                            + '     </vc:Chart.ToolTips>'
                            
                            + '     <vc:Chart.AxesX>'
-                           + '         <vc:Axis Title="Country" />'
+                           + '         <vc:Axis Title="Country"/>'
                            + '     </vc:Chart.AxesX>'
 
                            + '     <vc:Chart.AxesY>'
-                           + '         <vc:Axis Title="Gold Medals Won" />'
+                           + '         <vc:Axis Title="Gold Medals Won"/>'
                            + '    </vc:Chart.AxesY>'
                             
                            + '     <vc:Chart.PlotArea>'
@@ -49,7 +49,7 @@
                            + '     </vc:Chart.PlotArea>'
 
                            + '     <vc:Chart.Series>'
-                           + '         <vc:DataSeries RenderAs="Line" LabelEnabled="True" Cursor="Hand">'
+                           + '         <vc:DataSeries RenderAs="Line" LabelEnabled="True">'
                            + '             <vc:DataSeries.DataPoints>'
                            + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
                            + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
@@ -62,7 +62,6 @@
                            + ' </vc:Chart>';
 
                         // Set Chart XML
-                        vChart.setDataUri("data.xml");
                         vChart.setDataXml(chartXml);
 
                         /* 

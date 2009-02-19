@@ -110,7 +110,8 @@ namespace SLVisifireChartsTest
 
         #endregion
 
-        #region CheckAngleNewPropertyValue
+        #region CheckNewPropertyValue
+        
         /// <summary>
         /// Check the New value for Angle.
         /// </summary> 
@@ -118,7 +119,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for Angle.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckAngleNewPropertyValue()
+        public void AngleNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -144,13 +145,77 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the New value for Interval.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value for Interval.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void IntervalNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            _axisX.AxisLabels.Interval = 2;
+            _axisY.AxisLabels.Interval = 20;
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(2, _axisX.AxisLabels.Interval),
+                () => Assert.AreEqual(20, _axisY.AxisLabels.Interval));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the New value for Opacity.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value for Opacity.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            _axisX.AxisLabels.Opacity = 0.5;
+            _axisY.AxisLabels.Opacity = 0.5;
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(0.5, _axisX.AxisLabels.Opacity, Common.HighPrecisionDelta),
+                () => Assert.AreEqual(0.5, _axisY.AxisLabels.Opacity, Common.HighPrecisionDelta));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the New value for FontSize.
         /// </summary> 
         [TestMethod]
         [Description("Check the new value for FontSize.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckFontSizeNewPropertyValue()
+        public void FontSizeNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -182,7 +247,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for FontFamily.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckFontFamilyNewPropertyValue()
+        public void FontFamilyNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -214,7 +279,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for FontColor.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckFontColorNewPropertyValue()
+        public void FontColorNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -246,7 +311,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for FontStyle.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckFontStyleNewPropertyValue()
+        public void FontStyleNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -278,7 +343,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for FontWeight.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckFontWeightNewPropertyValue()
+        public void FontWeightNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -309,7 +374,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for Rows.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckRowsNewPropertyValue()
+        public void RowsNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -336,7 +401,7 @@ namespace SLVisifireChartsTest
         [Description("Check the new value for TextWrap.")]
         [Owner("[....]")]
         [Asynchronous]
-        public void CheckTextWrapNewPropertyValue()
+        public void TextWrapNewValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;

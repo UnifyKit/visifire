@@ -24,6 +24,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using System.Windows.Shapes;
 
 
@@ -33,7 +34,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
+using System.Windows.Input;
 
 #endif
 using Visifire.Commons;
@@ -42,7 +43,7 @@ namespace Visifire.Charts
 {
 
     /// <summary>
-    /// TrendLine can ve used to draw lines to indicate significance of certain points
+    /// TrendLine can be used to draw lines to indicate significance of certain points
     /// </summary>
     public class TrendLine : ObservableObject
     {
@@ -63,7 +64,7 @@ namespace Visifire.Charts
         /// Identifies the Visifire.Charts.TrendLine.Enabled dependency property.
         /// </summary>
         /// <returns>
-        /// The identifier for the Visifire.Charts.TrendLineEnabled. dependency property.
+        /// The identifier for the Visifire.Charts.TrendLine.Enabled dependency property.
         /// </returns>
         public static readonly DependencyProperty EnabledProperty = DependencyProperty.Register(
             "Enabled",
@@ -236,7 +237,26 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Color of the TrendLine
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Color of the TrendLine
         /// </summary>
         public Brush LineColor
         {
@@ -251,7 +271,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Line thickness of TrendLine
+        /// Get or set the Line thickness of TrendLine
         /// </summary>
         public Double LineThickness
         {
@@ -266,7 +286,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Line style of TrendLine
+        /// Get or set the Line style of TrendLine
         /// </summary>
         public LineStyles LineStyle
         {
@@ -296,7 +316,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Value of the TrendLine
+        /// Get or set the Value of the TrendLine
         /// </summary>
         public Double Value
         {
@@ -311,7 +331,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// AxisType of the TrendLine
+        /// Get or set the AxisType of the TrendLine
         /// </summary>
         public AxisTypes AxisType
         {
@@ -326,7 +346,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Orientation of the TrendLine
+        /// Get or set the Orientation of the TrendLine. 
         /// Whether the TrendLine should be vertically oriented or horizontally oriented
         /// </summary>
         public Orientation Orientation
@@ -342,7 +362,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get HrefTarget property of TrendLine
+        /// Get or set the HrefTarget property of TrendLine
         /// </summary>
         public HrefTargets HrefTarget
         {
@@ -357,7 +377,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set or get Href property of TrendLine
+        /// Get or set the Href property of TrendLine
         /// </summary>
         public String Href
         {
@@ -383,13 +403,18 @@ namespace Visifire.Charts
 
         #region Internal Properties
 
-
+        /// <summary>
+        /// Axis reference
+        /// </summary>
         internal Axis ReferingAxis
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// TrendLine canvas
+        /// </summary>
         internal Canvas Visual
         {
             get;
@@ -577,12 +602,12 @@ namespace Visifire.Charts
         /// <summary>
         /// UpdateVisual is used for partial rendering
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(string PropertyName, object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(string propertyName, object value)
         {
             if (Line == null || Shadow == null)
-                FirePropertyChanged(PropertyName);
+                FirePropertyChanged(propertyName);
             else
                 ApplyProperties();
         }
@@ -590,8 +615,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Create visual objects for TrendLine
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="width">Width of the ChartCanvas</param>
+        /// <param name="height">Height of the ChartCanvas</param>
         internal void CreateVisualObject(Double width, Double height)
         {
             if (ReferingAxis == null || !(Boolean)Enabled)
@@ -602,6 +627,7 @@ namespace Visifire.Charts
 
             Visual = new Canvas();
             Visual.Opacity = this.Opacity;
+            Visual.Cursor = this.Cursor;
             Double shadowThickness = LineThickness + 2;
             Line = new Line();
             Shadow = new Line();

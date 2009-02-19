@@ -4,24 +4,22 @@ using System.Globalization;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// AxisManager class calculates the max value, min value, interval and 'number of intervals'
+    /// AxisManager class calculates the max value, min value, interval and number of intervals
     /// of the axis.
     /// </summary>
     internal class AxisManager
     {
-
         #region Public Methods
 
         #region "Constructor"
+
         /// <summary>
-        /// AxisManager class calculates the max value, min value, interval and 'number of intervals'
-        /// of the axis.
+        /// Initializes a new instance of the Visifire.Charts.AxisManager class
         /// </summary>
         /// <param name="maxValue">Maximum Value.</param>
         /// <param name="minValue">Minimum Value.</param>
         /// <param name="startFromZero">Makes sure that the zero is included in the axis range</param>
-        /// <param name="allowLimitOverflow">Applies limits so that axis range doesnt cross it</param>
-
+        /// <param name="allowLimitOverflow">Applies limits so that axis range doesn't cross it</param>
         public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride)
         {
             if (maxValue < minValue)
@@ -150,7 +148,7 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
-        /// Get or Set maximum number of intervals.
+        /// Get or set the maximum number of intervals.
         /// </summary>
         public Int16 MaximumNoOfInterval
         {
@@ -172,7 +170,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Write only property used to include zero in the axis range.
+        /// Write-only property used to include zero in the axis range.
         /// </summary>
         public Boolean IncludeZero
         {
@@ -185,7 +183,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set the axis maximum value.
+        /// Get or set the axis maximum value.
         /// </summary>
         public Double AxisMaximumValue
         {
@@ -195,17 +193,13 @@ namespace Visifire.Charts
             }
             set
             {
-                //if ((Decimal)value < this._max)
-                //{
-                //    throw new ArgumentOutOfRangeException("Invalid property value:: Maximum axis value should be greater than or equals to the max data value.");
-                //}       
                 this._axisMaximumValue = (Decimal)value;
                 this._overrideAxisMaximumValue = true;
             }
         }
 
         /// <summary>
-        /// Get or Set the interval.
+        /// Get or set the interval.
         /// </summary>
         public Double Interval
         {
@@ -225,15 +219,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set axis minimum value.
+        /// Get or set the axis minimum value.
         /// </summary>
         public Double AxisMinimumValue
         {
             set
             {
-                //if ((Decimal)value > this._min)
-                //    throw new ArgumentOutOfRangeException("Invalid property value:: Minimum axis value should be less than or equals to the min data value.");
-
                 this._axisMinimumValue = (Decimal)value;
                 this._overrideAxisMinimumValue = true;
             }
@@ -244,7 +235,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set minimum data value
+        /// Get or set minimum data value
         /// </summary>
         public Double MinimumValue
         {
@@ -259,7 +250,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or Set minimum data value
+        /// Get or set maximum data value
         /// </summary>
         public Double MaximumValue
         {
@@ -275,6 +266,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
+
         /// <summary>
         /// Returns the number of Intervals in the calculated range.
         /// </summary>
@@ -290,11 +282,11 @@ namespace Visifire.Charts
         /// <returns>Returns an integer.</returns>
         private Int64 RemoveDecimalPoint(Decimal number)
         {
-            // Number is already is an integer.
+            // Number is already an integer.
             if ((Int64)(number) == number)
                 return (Int64)(number);
             else
-                // Multiply 10 to move the decimal point to the one digit right.
+                // Multiply 10 to move the decimal point to one digit right.
                 while ((Int64)(number) != number)
                     number = number * 10;
 
@@ -310,7 +302,7 @@ namespace Visifire.Charts
         private Int16 IndexOfDecimalPoint(Decimal number)
         {
             Int16 count = 0;                  // local variable as counter.
-
+            
             // While number is not an integer.
             while ((Int64)(number) != number)
             {
@@ -327,10 +319,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-
         private Int64 RemoveZeroFromInt(Int64 number)
         {
-            // While the number is divide by 10.
+            // While the number is divided by 10.
             while ((number % 10) == 0)
                 number = number / 10;
 
@@ -343,7 +334,6 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-
         private Int16 NoOfZeroAtEndInInt(Int64 number)
         {
             Int16 count = 0;            // Keep track the no of zeros.
@@ -364,7 +354,6 @@ namespace Visifire.Charts
         /// <param name="mantissaOrExponent">According to the argument mantissa or exponent will be returned.</param>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns mantissa or exponent.</returns>
-
         private Int64 GetMantissaOrExponent(MantissaOrExponent mantissaOrExponent, Decimal number)
         {
             if (mantissaOrExponent == MantissaOrExponent.Exponent)
@@ -385,12 +374,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Finds the order of magnitude of a number.
+        /// Finds the order of magnitude of a number. 
         /// Note: A number rounded to the nearest power of 10 is called an order of magnitude.
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-
         private Int32 OrderOfMagnitude(Decimal number)
         {
             Int64 mantissa;                       // Mantissa of number.
@@ -410,7 +398,7 @@ namespace Visifire.Charts
         /// Rounding down the value of axis maximum value. 
         /// </summary>
         /// <param name="axisMaxValue">Axis maximum value.</param>
-        /// <param name="intervalValue">interval value.</param>
+        /// <param name="intervalValue">Interval value.</param>
         /// <returns></returns>
         private Decimal RoundAxisMaximumValue(Decimal axisMaxValue, Decimal intervalValue)
         {
@@ -426,7 +414,7 @@ namespace Visifire.Charts
         /// Rounding Up the value of axis minimum value.
         /// </summary>
         /// <param name="axisMinValue">Axis minimum value.</param>
-        /// <param name="intervalValue">interval value.</param>
+        /// <param name="intervalValue">Interval value.</param>
         private Decimal RoundAxisMinimumValue(Decimal axisMinValue, Decimal intervalValue)
         {
             axisMinValue = axisMinValue / intervalValue;
@@ -442,7 +430,6 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="intervalValue">Interval value.</param>
         /// <returns>Reduced interval.</returns>
-
         private Decimal ReduceInterval(Decimal intervalValue)
         {
             Int64 mantissa;                       // Mantissa of interval value.
@@ -468,7 +455,6 @@ namespace Visifire.Charts
         /// Function calculates the max value, min value, interval and number of intervals of the axis
         /// for a single value range.
         /// </summary>
-
         private void CalculateSingle()
         {
             Int16 loop = 0;        // No of iteration.
@@ -534,12 +520,12 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-        // input parameters.
+        // Input parameters.
         private Decimal _min;                      // Min data value.
         private Decimal _max;                      // Max data value.
         private Int16 _maxNoOfInterval = 10;       // Maximum number of intervals.
 
-        // values calculated by this class.
+        // Values calculated by this class.
         private Decimal _interval;                 // The interval size.
         private Decimal _axisMaximumValue;         // Calculated Maximum value of the axis.
         private Decimal _axisMinimumValue;         // Calculated Minimum value of the axis.

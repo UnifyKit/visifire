@@ -25,7 +25,7 @@ namespace WPFVisifireChartsTest
         public void BevelDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -53,7 +53,7 @@ namespace WPFVisifireChartsTest
         public void BorderColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -81,7 +81,7 @@ namespace WPFVisifireChartsTest
         public void BorderThicknessDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -109,7 +109,7 @@ namespace WPFVisifireChartsTest
         public void BackgroundDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -137,7 +137,7 @@ namespace WPFVisifireChartsTest
         public void HrefDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -165,7 +165,7 @@ namespace WPFVisifireChartsTest
         public void HrefTargetDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -193,7 +193,7 @@ namespace WPFVisifireChartsTest
         public void LightingEnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -221,7 +221,7 @@ namespace WPFVisifireChartsTest
         public void ShadowEnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -249,7 +249,7 @@ namespace WPFVisifireChartsTest
         public void CornerRadiusDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -277,7 +277,7 @@ namespace WPFVisifireChartsTest
         public void ToolTipTextDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -300,6 +300,7 @@ namespace WPFVisifireChartsTest
         #endregion
 
         #region CheckPlotAreaNewPropertyValue
+        
         /// <summary>
         /// Check the new value of Bevel. 
         /// </summary> 
@@ -311,7 +312,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -335,6 +336,39 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            chart.PlotArea = new PlotArea();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                chart.PlotArea.Opacity = 0.5;
+                Assert.AreEqual(0.5, chart.PlotArea.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the new value of Bevel. 
         /// </summary> 
         [TestMethod]
@@ -345,7 +379,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -379,7 +413,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -412,7 +446,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -445,7 +479,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -478,7 +512,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -512,7 +546,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -546,7 +580,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -579,7 +613,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
@@ -613,7 +647,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Common.CreateAndAddDefaultDataSeries(chart);
 

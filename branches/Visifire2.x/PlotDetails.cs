@@ -52,7 +52,7 @@ namespace Visifire.Charts
         /// </summary>
         public PlotDetails(Chart chart)
         {   
-            // create a plot groups list
+            // Create a plot groups list
             this.PlotGroups = new List<PlotGroup>();
 
             // To store all the axisX labels for the primary axisX;
@@ -88,7 +88,7 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// List of different types of plots grouped based on RenderAs, AxisXType and AxisYType
+        /// List of different types of plot groups based on RenderAs, AxisXType and AxisYType
         /// </summary>
         internal List<PlotGroup> PlotGroups
         {
@@ -119,7 +119,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Stores the number of divisions to Divide the height/width available for each datapoint while rendering in multiseries combinations
+        /// Stores the number of divisions to Divide the height/width available for each datapoint while rendering in multiseries combinations. 
         /// Also used for calculating AxisX limits
         /// </summary>
         internal Int32 DrawingDivisionFactor
@@ -138,7 +138,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Dictionary that stores the Series Drawing Indexes, the KEy is the DataSeries itself
+        /// Dictionary that stores the Series Drawing Indexes, the Key is the DataSeries itself
         /// </summary>
         internal Dictionary<DataSeries, Int32> SeriesDrawingIndex
         {
@@ -147,7 +147,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of unique AxisX labels
+        /// List of unique AxisX primary labels
         /// </summary>
         internal Dictionary<Double, String> AxisXPrimaryLabels
         {
@@ -156,7 +156,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of unique AxisX labels
+        /// List of unique AxisX secondary labels
         /// </summary>
         internal Dictionary<Double, String> AxisXSecondaryLabels
         {
@@ -173,7 +173,7 @@ namespace Visifire.Charts
             set;
         }
         /// <summary>
-        /// Whether all primary secondary axis labels are present
+        /// Whether all secondary axis labels are present
         /// </summary>
         internal Boolean IsAllSecondaryAxisXLabelsPresent
         {
@@ -195,19 +195,19 @@ namespace Visifire.Charts
             // Identifies the various plot groups and populates the list
             PopulatePlotGroups();
 
-            // Generates a index set that identifies the oder in which the series must be drawn(Layering order)
+            // Generates a index set that identifies the order in which the series must be drawn(layering order)
             SeriesDrawingIndex = GenerateDrawingOrder();
 
-            // Gets a unique set of axis Labels by AxisX type
+            // Gets a unique set of axis labels by AxisX type
             AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
             AxisXSecondaryLabels = GetAxisXLabels(AxisTypes.Secondary);
 
-            // set Labels count state
+            // Set Labels count state
             SetLabelsCountState();
         }
 
         /// <summary>
-        /// 
+        /// Set labels count state
         /// </summary>
         private void SetLabelsCountState()
         {
@@ -651,7 +651,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="chart">Reference to the chart</param>
         /// <param name="axisType">Axis type to be selected</param>
-        /// <returns></returns>
+        /// <returns>Axis</returns>
         internal Axis GetAxisXFromChart(Chart chart, AxisTypes axisType)
         {
             var axisList = from axis in chart.InternalAxesX where axis.AxisType == axisType select axis;
@@ -684,14 +684,14 @@ namespace Visifire.Charts
             foreach (DataSeries series in Chart.InternalSeries)
             {   
                 series.IsNotificationEnable = false;
-                series.ZIndex = series.ZIndex - Chart.InternalSeries.Count;
-                series.ZIndex += index++;
+                series.InternalZIndex = series.InternalZIndex - Chart.InternalSeries.Count;
+                series.InternalZIndex += index++;
                 series.IsNotificationEnable = true;
             }
         }
 
         /// <summary>
-        /// Calculates end returns the drawing order for all the series for a given chart
+        /// Calculates and returns the drawing order for all the series for a given chart
         /// </summary>
         /// <returns>A dictionary containing DataSeries as key and its corresponding drawing index</returns>
         private Dictionary<DataSeries, Int32> GenerateDrawingOrder()
@@ -727,7 +727,7 @@ namespace Visifire.Charts
             Func<IGrouping<DataSeries, Int32>, Int32> ElementSelector = delegate(IGrouping<DataSeries, Int32> entry) { return entry.Last(); };
 
             // create a dictionary of seriesIndex by converting the result into a dictionary
-            Dictionary<DataSeries, Int32> sortedSeriesIndexGroupedBySeries = (from series in Chart.InternalSeries orderby series.ZIndex group series.ZIndex by series).ToDictionary(KeySelector, ElementSelector);
+            Dictionary<DataSeries, Int32> sortedSeriesIndexGroupedBySeries = (from series in Chart.InternalSeries orderby series.InternalZIndex group series.InternalZIndex by series).ToDictionary(KeySelector, ElementSelector);
 
             // Generate index for each chart type
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Column, sortedSeriesIndexGroupedBySeries);
@@ -813,11 +813,11 @@ namespace Visifire.Charts
 
         /// <summary>
         /// From a given list all series with a particular RenderAs type are selected.
-        /// From such a list the largest index is obtainded. this index is applied to all series with same RenderAs type
+        /// From such a list the largest index is obtainded. This index is applied to all series with same RenderAs type
         /// </summary>
         /// <param name="renderAs">RenderAs type for selecting the series</param>
-        /// <param name="seriesIndexDictionary">list which will be used to select the series</param>
-        /// <returns>return the updated list</returns>
+        /// <param name="seriesIndexDictionary">List which will be used to select the series</param>
+        /// <returns>Return the updated list</returns>
         private Dictionary<DataSeries, Int32> GenerateIndexByRenderAs(RenderAs renderAs, Dictionary<DataSeries, Int32> seriesIndexDictionary)
         {
             // Get all series of a particular render as type
@@ -843,13 +843,13 @@ namespace Visifire.Charts
 
         /// <summary>
         /// From a given list all series with a particular RenderAs type and same reference to axisX and axisY are selected.
-        /// From such a list the largest index is obtainded. this index is applied to all series with same RenderAs type
+        /// From such a list the largest index is obtainded. This index is applied to all series with same RenderAs type
         /// </summary>
         /// <param name="renderAs">RenderAs type for selecting the series</param>
         /// <param name="axisXType">Reference to the axisX</param>
         /// <param name="axisYType">Reference to the axisY</param>
-        /// <param name="seriesIndexDictionary">list which will be used to select the series</param>
-        /// <returns></returns>
+        /// <param name="seriesIndexDictionary">List which will be used to select the series</param>
+        /// <returns>Return the updated list</returns>
         private Dictionary<DataSeries, Int32> GenerateIndexByRenderAs(RenderAs renderAs, AxisTypes axisXType, AxisTypes axisYType, Dictionary<DataSeries, Int32> seriesIndexDictionary)
         {
             // Get all series of a particular render as typeand same reference to axisX and axisY
@@ -893,7 +893,7 @@ namespace Visifire.Charts
         
         /// <summary>
         /// Generates AxisLabels for this PlotGroup and returns a dictionary
-        /// that holds XValue as key,  AxisLabel as value
+        /// that holds XValue as key, AxisLabel as value
         /// </summary>
         private Dictionary<Double, String> GetAxisXLabels(AxisTypes axisXType)
         {
@@ -1003,7 +1003,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the maximum value from a given set of minimum differences
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Double</returns>
         internal Double GetMaxOfMinDifferencesForXValue()
         {
             return (from plotData in PlotGroups
@@ -1014,7 +1014,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the maximum value from a given set of minimum differences by renderas type
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Double</returns>
         internal Double GetMaxOfMinDifferencesForXValue(RenderAs renderAs)
         {
             return (from plotData in PlotGroups
@@ -1025,7 +1025,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the minimum value from a given set of minimum differences
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Double</returns>
         internal Double GetMinOfMinDifferencesForXValue()
         {
             return (from plotData in PlotGroups
@@ -1036,7 +1036,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the minimum value from a given set of minimum differences by render as type
         /// </summary>
-        /// <returns></returns>
+        /// <param name="renderAs">RenderAs</param>
+        /// <returns>Double</returns>
         internal Double GetMinOfMinDifferencesForXValue(RenderAs renderAs)
         {
             return (from plotData in PlotGroups
@@ -1047,7 +1048,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the minimum value from a given set of minimum differences by render as types
         /// </summary>
-        /// <returns></returns>
+        /// <param name="renderAs">RenderAs</param>
+        /// <returns>Double</returns>
         internal Double GetMinOfMinDifferencesForXValue(params RenderAs[] renderAs)
         {
             return (from plotData in PlotGroups
@@ -1068,7 +1070,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns series count using secondary axis-x
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Series count</returns>
         internal Int32 GetCountOfSeriesUsingAxisXSecondary()
         {
             return (from series in Chart.InternalSeries where series.AxisXType == AxisTypes.Secondary select series).Count();
@@ -1077,7 +1079,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get count of series using primary axis-x
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Series count</returns>
         internal Int32 GetCountOfSeriesUsingAxisXPrimary()
         {
             return (from series in Chart.InternalSeries where series.AxisXType == AxisTypes.Primary select series).Count();
@@ -1086,7 +1088,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Return series count using secondary axis-y
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Series count</returns>
         internal Int32 GetCountOfSeriesUsingAxisYSecondary()
         {
             return (from series in Chart.InternalSeries where series.AxisYType == AxisTypes.Secondary select series).Count();
@@ -1095,15 +1097,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns series count using primary axis-y 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Series count</returns>
         internal Int32 GetCountOfSeriesUsingAxisYPrimary()
         {
             return (from series in Chart.InternalSeries where series.AxisYType == AxisTypes.Primary select series).Count();
         }
 
         /// <summary>
-        /// Returns true if series count is equals to no of dataSeries having renderAs type StackedArea100 
-        /// or StackedBar100 or StackedColumn100 else false
+        /// Returns true if series count is equal to no of dataSeries having renderAs type StackedArea100 
+        /// or StackedBar100 or StackedColumn100, else false
         /// </summary>
         /// <returns>Boolean</returns>
         internal Boolean GetStacked100OverrideState()
@@ -1121,7 +1123,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="renderAs">RenderAs</param>
         /// <returns>Dictionary[Double, SortedDataPoints]</returns>
-        internal Dictionary<Double, SorteDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs)
+        internal Dictionary<Double, SortDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs)
         {   
             List<PlotGroup> selectedGroup = (from plotGroup in PlotGroups where plotGroup.RenderAs == renderAs select plotGroup).ToList();
 
@@ -1141,14 +1143,14 @@ namespace Visifire.Charts
 
             var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.XValue);
 
-            Dictionary<Double, SorteDataPoints> entries = new Dictionary<Double, SorteDataPoints>();
+            Dictionary<Double, SortDataPoints> entries = new Dictionary<Double, SortDataPoints>();
 
             foreach (var groupEntry in dataPointsGroupedByXValues)
             {
                 List<DataPoint> positiveDataPoints = (from data in groupEntry where data.InternalYValue > 0 select data).ToList();
                 List<DataPoint> negativeDataPoints = (from data in groupEntry where data.InternalYValue <= 0 select data).ToList();
 
-                entries.Add(groupEntry.Key, new SorteDataPoints(positiveDataPoints, negativeDataPoints));
+                entries.Add(groupEntry.Key, new SortDataPoints(positiveDataPoints, negativeDataPoints));
             }
 
             return entries;
@@ -1161,7 +1163,7 @@ namespace Visifire.Charts
         /// <param name="axisX">axis-x</param>
         /// <param name="axisY">axis-y</param>
         /// <returns>Returns datapoints grouped by XValue</returns>
-        internal Dictionary<Double, SorteDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs, Axis axisX, Axis axisY)
+        internal Dictionary<Double, SortDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs, Axis axisX, Axis axisY)
         {
             List<PlotGroup> selectedGroup = (from plotGroup in PlotGroups where plotGroup.RenderAs == renderAs && plotGroup.AxisX == axisX && plotGroup.AxisY == axisY select plotGroup).ToList();
 
@@ -1181,14 +1183,14 @@ namespace Visifire.Charts
 
             var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.XValue);
 
-            Dictionary<Double, SorteDataPoints> entries = new Dictionary<Double, SorteDataPoints>();
+            Dictionary<Double, SortDataPoints> entries = new Dictionary<Double, SortDataPoints>();
 
             foreach (var groupEntry in dataPointsGroupedByXValues)
             {
                 List<DataPoint> positiveDataPoints = (from data in groupEntry where data.InternalYValue > 0 select data).ToList();
                 List<DataPoint> negativeDataPoints = (from data in groupEntry where data.InternalYValue <= 0 select data).ToList();
 
-                entries.Add(groupEntry.Key, new SorteDataPoints(positiveDataPoints, negativeDataPoints));
+                entries.Add(groupEntry.Key, new SortDataPoints(positiveDataPoints, negativeDataPoints));
             }
 
             return entries;
@@ -1197,7 +1199,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns minimum interval of axis-x
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Axis</returns>
         internal Axis GetAxisXMinimumInterval()
         {
             Double minInterval = (Double)(from axis in Chart.InternalAxesX select axis.InternalInterval).Min();
@@ -1209,9 +1211,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns division factor (Number of distinct parent) from sorted datapoints set
         /// </summary>
-        /// <param name="sortedSet"></param>
-        /// <returns></returns>
-        internal Int32 GetDivisionFactor(SorteDataPoints sortedSet)
+        /// <param name="sortedSet">SortedDataPoints</param>
+        /// <returns>Int32</returns>
+        internal Int32 GetDivisionFactor(SortDataPoints sortedSet)
         {
             List<DataPoint> lists = new List<DataPoint>();
 
@@ -1227,7 +1229,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="sortedSet">SortedDataPoints</param>
         /// <returns>List of dataseries</returns>
-        internal List<DataSeries> GetSeriesFromSortedPoints(SorteDataPoints sortedSet)
+        internal List<DataSeries> GetSeriesFromSortedPoints(SortDataPoints sortedSet)
         {
             List<DataPoint> lists = new List<DataPoint>();
 
@@ -1240,7 +1242,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the list of Series belonging to a DataPoint value
         /// </summary>
-        /// <param name="dataPoint">dataPoint</param>
+        /// <param name="dataPoint">DataPoint</param>
         /// <returns>List of dataseries</returns>
         internal List<DataSeries> GetSeriesFromDataPoint(DataPoint dataPoint)
         {
@@ -1271,12 +1273,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns max division factor
-        /// Where division factor is the number of distinct parent(dataseries) from sorted a datapoints set
+        /// Returns max division factor, 
+        /// Where division factor is the number of distinct parent(dataseries) from sorted datapoints set
         /// </summary>
-        /// <param name="sortedDataPointList"></param>
-        /// <returns></returns>
-        internal Int32 GetMaxDivision(Dictionary<Double, SorteDataPoints> sortedDataPointList)
+        /// <param name="sortedDataPointList">Dictionary of SortedDataPoints</param>
+        /// <returns>Int32</returns>
+        internal Int32 GetMaxDivision(Dictionary<Double, SortDataPoints> sortedDataPointList)
         {
             List<Double> values = sortedDataPointList.Keys.ToList();
 
@@ -1348,7 +1350,7 @@ namespace Visifire.Charts
         /// Returns datapoint in stacked order (positive to negative order)
         /// </summary>
         /// <param name="plotGroup">PlotGroup</param>
-        /// <returns>Dictionary[Double, List[DataPoint]] </returns>
+        /// <returns>Dictionary[Double, List[DataPoint]]</returns>
         internal Dictionary<Double, List<DataPoint>> GetDataPointInStackOrder(PlotGroup plotGroup)
         {
             Double[] xValues = plotGroup.XWiseStackedDataList.Keys.ToArray();

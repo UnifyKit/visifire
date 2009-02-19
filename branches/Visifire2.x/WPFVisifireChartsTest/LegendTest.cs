@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -25,7 +26,7 @@ namespace WPFVisifireChartsTest
         public void HrefDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -54,7 +55,7 @@ namespace WPFVisifireChartsTest
         public void HrefTargetDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -82,7 +83,7 @@ namespace WPFVisifireChartsTest
         public void LabelMarginDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -110,7 +111,7 @@ namespace WPFVisifireChartsTest
         public void PaddingDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -138,7 +139,7 @@ namespace WPFVisifireChartsTest
         public void HorizontalAlignmentDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -166,7 +167,7 @@ namespace WPFVisifireChartsTest
         public void VerticalAlignmentDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -194,7 +195,7 @@ namespace WPFVisifireChartsTest
         public void BorderColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -222,7 +223,7 @@ namespace WPFVisifireChartsTest
         public void BorderThicknessDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -250,7 +251,7 @@ namespace WPFVisifireChartsTest
         public void BackgroundDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -278,7 +279,7 @@ namespace WPFVisifireChartsTest
         public void DockInsidePlotAreaDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -306,7 +307,7 @@ namespace WPFVisifireChartsTest
         public void EnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -334,7 +335,7 @@ namespace WPFVisifireChartsTest
         public void FontColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -362,7 +363,7 @@ namespace WPFVisifireChartsTest
         public void FontFamilyDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -390,7 +391,7 @@ namespace WPFVisifireChartsTest
         public void FontSizeDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -418,7 +419,7 @@ namespace WPFVisifireChartsTest
         public void FontStyleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -446,7 +447,7 @@ namespace WPFVisifireChartsTest
         public void FontWeightDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -474,7 +475,7 @@ namespace WPFVisifireChartsTest
         public void LightingEnabledDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -502,7 +503,7 @@ namespace WPFVisifireChartsTest
         public void CornerRadiusDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -530,7 +531,7 @@ namespace WPFVisifireChartsTest
         public void TitleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -558,7 +559,7 @@ namespace WPFVisifireChartsTest
         public void TitleAlignmentXDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -586,7 +587,7 @@ namespace WPFVisifireChartsTest
         public void TitleTextAlignmentDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -614,7 +615,7 @@ namespace WPFVisifireChartsTest
         public void TitleBackgroundDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -642,7 +643,7 @@ namespace WPFVisifireChartsTest
         public void TitleFontColorDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -670,7 +671,7 @@ namespace WPFVisifireChartsTest
         public void TitleFontFamilyDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -698,7 +699,7 @@ namespace WPFVisifireChartsTest
         public void TitleFontSizeDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -726,7 +727,7 @@ namespace WPFVisifireChartsTest
         public void TitleFontStyleDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -754,7 +755,7 @@ namespace WPFVisifireChartsTest
         public void TitleFontWeightDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -782,7 +783,7 @@ namespace WPFVisifireChartsTest
         public void EntryMarginDefaultValue()
         {
             Chart chart = new Chart();
-            chart.AnimationEnabled = false;
+            
             chart.Width = 500;
             chart.Height = 300;
 
@@ -816,7 +817,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -852,7 +853,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -887,7 +888,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -922,7 +923,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -957,7 +958,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -993,7 +994,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1029,7 +1030,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1065,7 +1066,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1100,7 +1101,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1125,6 +1126,41 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the new value of Cursor. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Cursor.")]
+        [Owner("[....]")]
+        public void CursorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Legend legend = new Legend();
+            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            chart.Legends.Add(legend);
+
+            CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                legend.Cursor = Cursors.Hand;
+                Assert.AreEqual(Cursors.Hand, legend.Cursor);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the new value of Enabled. 
         /// </summary> 
         [TestMethod]
@@ -1135,7 +1171,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1170,7 +1206,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1205,7 +1241,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1240,7 +1276,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1275,7 +1311,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1310,7 +1346,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1345,7 +1381,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1381,7 +1417,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1416,7 +1452,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1451,7 +1487,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1486,7 +1522,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1520,7 +1556,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1556,7 +1592,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1592,7 +1628,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1628,7 +1664,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1664,7 +1700,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1700,7 +1736,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1736,7 +1772,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1772,7 +1808,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
+            
 
             Legend legend = new Legend();
             legend.SetValue(FrameworkElement.NameProperty, "Legend0");
@@ -1791,6 +1827,42 @@ namespace WPFVisifireChartsTest
             {
                 legend.ToolTipText = "Legend ToolTip";
                 Assert.AreEqual("Legend ToolTip", legend.ToolTipText);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the new value of Opacity. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]
+        [Owner("[....]")]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            
+
+            Legend legend = new Legend();
+            legend.SetValue(FrameworkElement.NameProperty, "Legend0");
+            legend.Title = "Legend";
+            chart.Legends.Add(legend);
+
+            CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                legend.Opacity = 0.5;
+                Assert.AreEqual(0.5, legend.Opacity, Common.HighPrecisionDelta);
             }
 
             window.Dispatcher.InvokeShutdown();

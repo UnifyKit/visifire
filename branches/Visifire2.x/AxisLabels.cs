@@ -45,6 +45,9 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.AxisLabels class
+    /// </summary>
     public class AxisLabels : ObservableObject
     {
         #region Public Methods
@@ -120,6 +123,18 @@ namespace Visifire.Charts
             typeof(FontFamily),
             typeof(AxisLabels),
             new PropertyMetadata(OnFontFamilyPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.Opacity dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty OpacityProperty = DependencyProperty.Register
+            ("Opacity",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
 #endif
 
         /// <summary>
@@ -215,7 +230,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Axis Labels interval
+        /// Get or set the axis labels interval
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -236,7 +251,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets or Gets the axis label angle
+        /// Get or set the axis labels angle
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
@@ -257,7 +272,30 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enables or disables AxisLabels 
+        /// Get or set the Opacity property
+        /// </summary>
+        public new Double Opacity
+        {
+           get
+           {
+               return (Double)GetValue(OpacityProperty);
+           }
+           set
+           {
+        #if SL
+               if (Opacity != value)
+               {
+                   SetValue(OpacityProperty, value);
+                   FirePropertyChanged("Opacity");
+               }
+        #else
+                SetValue(OpacityProperty, value);
+        #endif
+           }
+        }
+
+        /// <summary>
+        /// Enables or disables axis labels
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -276,7 +314,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font family of AxisLabels 
+        /// Get or set the font family of axis labels
         /// </summary>
         public new FontFamily FontFamily
         {
@@ -303,7 +341,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the Color for the text in AxisLabels 
+        /// Get or set the color for the text in axis labels 
         /// </summary>
         public Brush FontColor
         {
@@ -324,7 +362,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the Styles for the text like "Italic" or "Normal"
+        /// Get or set the styles for the text like "Italic" or "Normal"
         /// </summary>
 #if WPF
          [TypeConverter(typeof(System.Windows.FontStyleConverter))]
@@ -350,7 +388,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Sets how the font appears. It takes values like "Bold", "Normal", "Black" etc
+        /// Get or set how the font appears. It takes values like "Bold", "Normal", "Black" etc
         /// </summary>
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
@@ -378,7 +416,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Font Size of axis labels
+        /// Get or set the font Size of axis labels
         /// </summary>
         public new Double FontSize
         {
@@ -402,7 +440,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Number of rows of the axis labels
+        /// Get or set the number of rows of the axis labels
         /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableInt32Converter))]
@@ -420,7 +458,7 @@ namespace Visifire.Charts
         }
              
         /// <summary>
-        /// Parent of DataPoints 
+        /// Get or set the parent as Axis
         /// </summary>
         public new Axis Parent
         {
@@ -457,7 +495,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sets the maximum width of the labels relative to chart size
+        /// Get or set the maximum width of the labels relative to chart size
         /// </summary>
         internal TextWrapping TextWrap
         {
@@ -508,7 +546,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the width of the axis labels canvas. will be used only with the Horizontal axis
+        /// Get or set the width of the axis labels canvas, will be used only with the Horizontal axis
         /// </summary>
         internal new Double Width
         {
@@ -517,7 +555,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Set the height of the axis labels canvas. will be used ony with the vertical axis 
+        /// Get or set the height of the axis labels canvas, will be used ony with the vertical axis 
         /// </summary>
         internal new Double Height
         {
@@ -553,7 +591,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Reference to the axis which holds this AxisLabels
+        /// Reference to the axis which holds this axis labels
         /// </summary>
         internal Axis ParentAxis
         {
@@ -562,7 +600,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Number of pixels by which the top of the axislabels has overshot the actual canvas top
+        /// Number of pixels by which the top of the axis labels has overshot the actual canvas top
         /// </summary>
         internal Double TopOverflow
         {
@@ -624,7 +662,7 @@ namespace Visifire.Charts
         #region Private Methods
 
         /// <summary>
-        /// Event handler attached with Interval property changed event of AxisLabels elements
+        /// Event handler attached with Interval property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -635,7 +673,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with Angle property changed event of AxisLabels elements
+        /// Event handler attached with Angle property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -646,7 +684,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with Enabled property changed event of AxisLabels elements
+        /// Event handler attached with Enabled property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -659,7 +697,7 @@ namespace Visifire.Charts
 #if WPF
 
         /// <summary>
-        /// Event handler attached with FontFamily property changed event of AxisLabels elements
+        /// Event handler attached with FontFamily property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -670,7 +708,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with FontStyle property changed event of AxisLabels elements
+        /// Event handler attached with FontStyle property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -681,7 +719,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with FontWeight property changed event of AxisLabels elements
+        /// Event handler attached with FontWeight property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -692,7 +730,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Event handler attached with FontSize property changed event of AxisLabels elements
+        /// Event handler attached with FontSize property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -701,10 +739,21 @@ namespace Visifire.Charts
             AxisLabels axisLabels = d as AxisLabels;
             axisLabels.FirePropertyChanged("FontSize");
         }
+
+        /// <summary>
+        /// OpacityProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.FirePropertyChanged("Opacity");
+        }
 #endif
 
         /// <summary>
-        /// Event handler attached with TextWrap property changed event of AxisLabels elements
+        /// Event handler attached with TextWrap property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -715,7 +764,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler attached with Rows property changed event of AxisLabels elements
+        /// Event handler attached with Rows property changed event of axislabels element
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -746,7 +795,7 @@ namespace Visifire.Charts
         /// <param name="NoOfLabels">Number of labels</param>
         /// <param name="Angle">Angle of labels</param>
         /// <param name="Rows">Number of rows</param>
-        /// <returns></returns>
+        /// <returns>Double</returns>
         private Double CalculateAutoInterval(Double CurrentInterval, Double AxisWidth, Int32 NoOfLabels, Double Angle, Int32 Rows)
         {
             Double retVal = 1;
@@ -875,8 +924,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Auto formats the AxisLabel text if bigger for Vertical charts
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">Text as String</param>
+        /// <returns>Formatted text as String</returns>
         private String AutoFormatMultilineText(String text)
         {
             String multiLineText = "";
@@ -996,7 +1045,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Labels will be positioned for the axis that will appear to the bottom of the plot area
+        /// Labels will be positioned for the axis that will appear to the left of the plot area
         /// </summary>
         private void PositionLabelsLeft()
         {
@@ -1141,7 +1190,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Labels will be positioned for the axis that will appear to the left of the plot area
+        /// Labels will be positioned for the axis that will appear to the bottom of the plot area
         /// </summary>
         private void PositionLabelsBottom()
         {
@@ -1202,7 +1251,6 @@ namespace Visifire.Charts
         /// <summary>
         /// This is for axis with placement setting as top or bottom
         /// </summary>
-        /// <returns></returns>
         private void CalculateHorizontalOverflow()
         {   
             // Check if the label list contains any labels or not (if not then set the overflow to 0)
@@ -1260,7 +1308,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// returns the proper angle value for calculation
+        /// Returns the proper angle value for calculation
         /// </summary>
         private Double GetAngle()
         {
@@ -1270,6 +1318,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Calculates default font size based on a scaling criteria
         /// </summary>
+        /// <param name="area">Double</param>
+        /// <returns>FontSize as Double</returns>
         private Double CalculateFontSize(Double area)
         {
             if (Double.IsNaN(FontSize) || FontSize <= 0)
@@ -1285,7 +1335,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="initialFontSize">Double</param>
         /// <param name="width">Double</param>
-        /// <returns></returns>
+        /// <returns>FontSize as Double</returns>
         private Double AutoAdjustFontSize(Double initialFontSize, Double width)
         {
             Double minimumFontSize = 8;
@@ -1462,7 +1512,7 @@ namespace Visifire.Charts
         /// <param name="noOfRows">Number of rows</param>
         /// <param name="angle">Rotation angle of labels</param>
         /// <param name="axisWidth">Width of the axis</param>
-        /// <returns></returns>
+        /// <returns>Offset as Int32</returns>
         private Int32 CalculateSkipOffset(Int32 noOfRows, Double angle, Double axisWidth)
         {
             Int32 skipOffset = 0;             // Skip offset
@@ -1495,7 +1545,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Return formatted string from a given value depending upon scaling set and value format string
+        /// Returns formatted string from a given value depending upon scaling set and value format string
         /// </summary>
         /// <param name="value">Double value</param>
         /// <returns>String</returns>
@@ -1541,9 +1591,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Update visual used for partial update
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(string PropertyName, object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(string propertyName, object value)
         {   
             if (Visual != null)
             {
@@ -1554,7 +1604,7 @@ namespace Visifire.Charts
                 }
             }
             else
-                FirePropertyChanged(PropertyName);
+                FirePropertyChanged(propertyName);
         }
 
         /// <summary>
@@ -1603,6 +1653,7 @@ namespace Visifire.Charts
             // Set the position of the labels
             SetLabelPosition();
 
+            Visual.Opacity = Opacity;
         }
 
         #endregion

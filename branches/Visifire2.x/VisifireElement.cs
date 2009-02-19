@@ -47,7 +47,7 @@ namespace Visifire.Commons
 #if SL
 
         /// <summary>
-        /// Sets value for specific property of chart.
+        /// Sets value for specific property of chart. 
         /// This function is used for setting property from JavaScript only
         /// </summary>
         /// <param name="propertyName">Name of the property as String</param>
@@ -343,8 +343,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Update TextProperty of the tooltip element from ToolTipTextProperty of VisifireElement
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">FrameworkElement</param>
+        /// <param name="e">MouseEventArgs</param>
         private void UpdateToolTip(object sender, MouseEventArgs e)
         {
             if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
@@ -406,8 +406,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Attach events to a visual
         /// </summary>
-        /// <param name="Object">obj with which event is attached</param>
-        /// <param name="Visual">FrameworkElement</param>
+        /// <param name="obj">Object with which event is attached</param>
+        /// <param name="visual">FrameworkElement</param>
         internal static void AttachEvents2Visual(VisifireElement obj, FrameworkElement visual)
         {   
             if (visual != null)
@@ -417,9 +417,9 @@ namespace Visifire.Commons
         /// <summary>
         /// Attach events to a visual
         /// </summary>
-        /// <param name="Object">obj with which event is attached</param>
-        /// <param name="Sender">sender will be passed to the event-handler</param>
-        /// <param name="Visual">visual object with which event will be attached</param>
+        /// <param name="obj">Object with which event is attached</param>
+        /// <param name="senderElement">sender will be passed to the event-handler</param>
+        /// <param name="visual">visual object with which event will be attached</param>
         internal static void AttachEvents2Visual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
         {
             if (visual == null)
@@ -459,9 +459,9 @@ namespace Visifire.Commons
         /// <summary>
         /// Attach MouseDownEvent event to a visual
         /// </summary>
-        /// <param name="Object">obj with which event is attached</param>
-        /// <param name="Sender">sender will be passed as sender while firing event</param>
-        /// <param name="Visual">visual object with which event will be attached</param>
+        /// <param name="obj">obj with which event is attached</param>
+        /// <param name="senderElement">sender will be passed as sender while firing event</param>
+        /// <param name="visual">visual object with which event will be attached</param>
         internal static void AttachEvents2Visual4MouseDownEvent(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
         {
             if (visual == null)
@@ -479,8 +479,8 @@ namespace Visifire.Commons
         /// Attach tooltip with a framework element
         /// </summary>
         /// <param name="control">Control reference</param>
-        /// <param name="elements">FrameworkElements list</param>
-        /// <param name="toolTipText">Tooltip text</param>
+        /// <param name="element">Object reference</param>
+        /// <param name="visualElements">FrameworkElements list</param>
         public void AttachToolTip(VisifireControl control, ObservableObject element, System.Collections.Generic.List<FrameworkElement> visualElements)
         {
             // Show ToolTip on mouse move over the chart element
@@ -491,10 +491,10 @@ namespace Visifire.Commons
         /// <summary>
         /// Attach Href with a framework element
         /// </summary>
-        /// <param name="Control">Chart Control</param>
-        /// <param name="Element">FrameworkElement</param>
-        /// <param name="Href">Href</param>
-        /// <param name="HrefTarget">HrefTarget</param>
+        /// <param name="control">Chart Control</param>
+        /// <param name="element">FrameworkElement</param>
+        /// <param name="href">Href</param>
+        /// <param name="hrefTarget">HrefTarget</param>
         internal void AttachHref(VisifireControl control, FrameworkElement element, String href, HrefTargets hrefTarget)
         {
             if (element == null)
@@ -517,7 +517,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="control">Control reference</param>
         /// <param name="element">FrameworkElement</param>
-        /// <param name="toolTipText">Tooltip text</param>
+        /// <param name="visualObject">FrameworlElement</param>
         internal void AttachToolTip(VisifireControl control, VisifireElement element, FrameworkElement visualObject)
         {
             if (visualObject == null || control == null || element == null)
@@ -537,7 +537,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Detach ToolTip from a visual element
         /// </summary>
-        /// <param name="VisualObject"></param>
+        /// <param name="VisualObject">FrameworkElement</param>
         internal void DetachToolTip(FrameworkElement visualObject)
         {
             if (visualObject != null)
@@ -555,7 +555,7 @@ namespace Visifire.Commons
         #region Internal Events
 
         /// <summary>
-        /// EventChanged event is firef if any event is attached
+        /// EventChanged event is fired if any event is attached
         /// </summary>
         internal event EventHandler EventChanged;
 

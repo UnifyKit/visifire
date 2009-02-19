@@ -505,6 +505,36 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region ZeroDoughnutChecking
+        /// <summary>
+        /// Checking Doughnut with single dataPoint with zero value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void ZeroDoughnutChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Doughnut;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 0;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
         #region SinglePieChecking
         /// <summary>
         /// Checking Pie with single dataPoint
@@ -563,6 +593,760 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region SingleColumnChecking
+        /// <summary>
+        /// Checking Column with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleColumnChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleBarChecking
+        /// <summary>
+        /// Checking Bar with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleBarChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleAreaChecking
+        /// <summary>
+        /// Checking Area with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleAreaChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Area;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleLineChecking
+        /// <summary>
+        /// Checking Line with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleLineChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SinglePointChecking
+        /// <summary>
+        /// Checking Point with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SinglePointChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Point;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleBubbleChecking
+        /// <summary>
+        /// Checking Bubble with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleBubbleChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bubble;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedColumnChecking
+        /// <summary>
+        /// Checking StackedColumn with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedColumnChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedColumn100Checking
+        /// <summary>
+        /// Checking StackedColumn100 with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedColumn100Checking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedBarChecking
+        /// <summary>
+        /// Checking StackedBar with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedBarChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedBar100Checking
+        /// <summary>
+        /// Checking StackedBar100 with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedBar100Checking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedAreaChecking
+        /// <summary>
+        /// Checking StackedArea with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedAreaChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedArea100Checking
+        /// <summary>
+        /// Checking StackedArea100 with single dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedArea100Checking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = 18;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SinglePieNullValueChecking
+        /// <summary>
+        /// Checking Pie with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SinglePieNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleDoughnutNullValueChecking
+        /// <summary>
+        /// Checking Doughnut with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleDoughnutNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Doughnut;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleColumnNullValueChecking
+        /// <summary>
+        /// Checking Column with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleColumnNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleBarNullValueChecking
+        /// <summary>
+        /// Checking Bar with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleBarNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleAreaNullValueChecking
+        /// <summary>
+        /// Checking Area with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleAreaNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Area;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleLineNullValueChecking
+        /// <summary>
+        /// Checking Line with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleLineNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SinglePointNullValueChecking
+        /// <summary>
+        /// Checking Point with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SinglePointNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Point;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleBubbleNullValueChecking
+        /// <summary>
+        /// Checking Bubble with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleBubbleNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bubble;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedColumnNullValueChecking
+        /// <summary>
+        /// Checking StackedColumn with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedColumnNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedColumn100NullValueChecking
+        /// <summary>
+        /// Checking StackedColumn100 with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedColumn100NullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedBarNullValueChecking
+        /// <summary>
+        /// Checking StackedBar with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedBarNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedBar100NullValueChecking
+        /// <summary>
+        /// Checking StackedBar100 with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedBar100NullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedAreaNullValueChecking
+        /// <summary>
+        /// Checking StackedArea with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedAreaNullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region SingleStackedArea100NullValueChecking
+        /// <summary>
+        /// Checking StackedArea100 with NullValue dataPoint
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void SingleStackedArea100NullValueChecking()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea100;
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.YValue = Double.NaN;
+            dataSeries.DataPoints.Add(dataPoint);
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
         #region PieCheckingWithAllZeroValues
         /// <summary>
         /// Checking Pie with all zero values
@@ -574,12 +1358,46 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 500;
             chart.Height = 300;
-
+            chart.View3D = true;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             DataSeries dataSeries = new DataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
+            for (Int32 i = 0; i < 5; i++)
+            {
+                DataPoint dataPoint = new DataPoint();
+                dataPoint.XValue = i + 1;
+                dataPoint.YValue = 0;
+                dataSeries.DataPoints.Add(dataPoint);
+            }
+            chart.Series.Add(dataSeries);
+
+            CreateAsyncTask(chart,
+               () => Assert.IsTrue(_isLoaded, "There is some problem in " + dataSeries.RenderAs + "chart rendering."));
+
+            EnqueueTestComplete();
+
+        }
+        #endregion
+
+        #region DoughnutCheckingWithAllZeroValues
+        /// <summary>
+        /// Checking Doughnut with all zero values
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void DoughnutCheckingWithAllZeroValues()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+            chart.View3D = true;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Doughnut;
             for (Int32 i = 0; i < 5; i++)
             {
                 DataPoint dataPoint = new DataPoint();
@@ -612,7 +1430,6 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
             chart.View3D = false;
             chart.ScrollingEnabled = false;
-            //
 
             bool isPropertyChanged = false;
             bool isRenderOver = false;
@@ -623,13 +1440,13 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Axis axisX = new Axis();
-            //axisX.Interval = 1;
             chart.AxesX.Add(axisX);
 
             Random rand = new Random();
 
             DataSeries dataSeries = new DataSeries();
             dataSeries.RenderAs = RenderAs.Column;
+            dataSeries.LabelEnabled = false;
 
             Int32 numberOfDataPoints = 0;
             Double totalDuration = 0;
@@ -1012,6 +1829,74 @@ namespace SLVisifireChartsTest
         #endregion
 
         #region CheckNewPropertyValue
+
+        /// <summary>
+        /// Check the Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckEnabledPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries();
+
+            chart.Series.Add(dataSeries);
+
+            Random rand = new Random();
+            EnqueueSleep(2000);
+
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                    {
+                        dataSeries.DataPoints[i].Enabled = false;
+                        Assert.IsFalse((Boolean)dataSeries.DataPoints[i].Enabled);
+                    }
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the ZValue property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckZValuePropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Bubble;
+
+            List<Double> zValue = new List<Double>();
+            Double z = 0;
+
+            chart.Series.Add(dataSeries);
+
+            Random rand = new Random();
+            EnqueueSleep(2000);
+
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                    {
+                        dataSeries.DataPoints[i].ZValue = (z = rand.Next(100, 500));
+                        zValue.Add(z);
+                        Assert.AreEqual(zValue[i], dataSeries.DataPoints[i].ZValue);
+                    }
+                });
+
+            EnqueueTestComplete();
+        }
+
         /// <summary>
         /// Check the Color property value
         /// </summary>
@@ -1067,6 +1952,37 @@ namespace SLVisifireChartsTest
                 () => dataSeries.DataPoints[5].Exploded = true,
                 () => Assert.IsTrue((Boolean)dataSeries.DataPoints[5].Exploded));
 
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the HrefAndHrefTarget property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckHrefAndHrefTargetPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                    {
+                        dataSeries.DataPoints[i].Href = "http://www.visifire.com";
+                        dataSeries.DataPoints[i].HrefTarget = HrefTargets._blank;
+                        Assert.AreEqual("http://www.visifire.com", dataSeries.DataPoints[i].Href);
+                        Assert.AreEqual(HrefTargets._blank, dataSeries.DataPoints[i].HrefTarget);
+                    }
+                });
             EnqueueTestComplete();
         }
 
@@ -1880,9 +2796,95 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
         }
-        #endregion CheckNewPropertyValue
+
+        /// <summary>
+        /// Check the Opacity property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckOpacityPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+
+            DataSeries dataSeries = CreateDataSeries();
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTest(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                    {
+                        dataSeries.DataPoints[i].Opacity = 0.5;
+                        Assert.AreEqual(0.5, dataSeries.DataPoints[i].Opacity, Common.HighPrecisionDelta);
+                    }
+                });
+
+            EnqueueSleep(_sleepTime);
+        }
+
+        /// <summary>
+        /// Check the Cursor property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckCursorPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+
+            DataSeries dataSeries = CreateDataSeries();
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTest(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                    {
+                        dataSeries.DataPoints[i].Cursor = Cursors.Hand;
+                        Assert.AreEqual(Cursors.Hand, dataSeries.DataPoints[i].Cursor);
+                    }
+                });
+
+            EnqueueSleep(_sleepTime);
+        }
+
+        #endregion CheckNewPropertyValue       
 
         #region CheckDefaultPropertyValue
+
+        /// <summary>
+        /// Check the Enabled default property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckEnabledDefaultPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries();
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 10; i++)
+                        Assert.IsTrue((Boolean)dataSeries.DataPoints[i].Enabled);
+                });
+
+            EnqueueTestComplete();
+        }
+
         /// <summary>
         /// Check the ShowInLegend default property value
         /// </summary>

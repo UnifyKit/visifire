@@ -47,6 +47,9 @@ using System.Windows.Data;
 
 namespace Visifire.Charts
 {
+    /// <summary>
+    /// Visifire.Charts.DataSeries class
+    /// </summary>
 #if SL
     [System.Windows.Browser.ScriptableType]
 #endif
@@ -659,7 +662,17 @@ namespace Visifire.Charts
         
         /// <summary>
         /// Get or set ZIndex property
-        /// (Will be used to decide which series comes in front which one goes back)
+        /// (Will be used to decide which series comes in front and which one goes back)
+        /// </summary>
+        internal Int32 InternalZIndex
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get or set ZIndex property
+        /// (Will be used to decide which series comes in front and which one goes back)
         /// </summary>
         public Int32 ZIndex
         {
@@ -669,12 +682,13 @@ namespace Visifire.Charts
             }
             set
             {
+                InternalZIndex = value;
                 SetValue(ZIndexProperty, value);
             }
         }
 
         /// <summary>
-        /// Get or set the BorderStyle property
+        /// Enables or disables DataSeries
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
@@ -716,6 +730,25 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or set the Cursor property
+        /// </summary>
+        public new Cursor Cursor
+        {
+            get
+            {
+                return base.Cursor;
+            }
+            set
+            {
+                if (base.Cursor != value)
+                {
+                    base.Cursor = value;
+                    FirePropertyChanged("Cursor");
+                }
+            }
+        }
+
+        /// <summary>
         /// Get or set the RenderAs property (Chart type)
         /// </summary>
         public RenderAs RenderAs
@@ -732,7 +765,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set HrefTarget property
+        /// Get or set the HrefTarget property
         /// </summary>
         public HrefTargets HrefTarget
         {
@@ -1398,7 +1431,7 @@ namespace Visifire.Charts
         #endregion Marker Properties
 
         /// <summary>
-        /// Get or set Internal Start angle property
+        /// Get or set the Internal Start angle property
         /// </summary>
          internal Double InternalStartAngle
          {
@@ -1409,8 +1442,8 @@ namespace Visifire.Charts
          }
          
         /// <summary>
-         /// Get or set StartAngle property
-        /// Sets the StartAngle property. This property is generally used in Pie/Doughnut.
+        /// Get or set the StartAngle property. 
+        /// This property is generally used in Pie/Doughnut.
         /// </summary>
         public Double StartAngle
         {   
@@ -1559,11 +1592,6 @@ namespace Visifire.Charts
                         case RenderAs.Doughnut:
                             return "#AxisXLabel, #YValue(#Percentage%)";
 
-                        case RenderAs.Line:
-                        case RenderAs.Area:
-                        case RenderAs.StackedArea:
-                            return "#AxisXLabel, #YValue";
-
                         default:
                             return "#AxisXLabel, #YValue";
                                  
@@ -1603,7 +1631,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Get or set the AxisY Type
+        /// Get or set the AxisYType property
         /// </summary>
         public AxisTypes AxisYType
         {
@@ -1615,6 +1643,12 @@ namespace Visifire.Charts
             {
                 SetValue(AxisYTypeProperty, value);
             }
+        }
+
+        private Brush Foreground
+        {
+            get;
+            set;
         }
         
         #endregion
@@ -1628,11 +1662,11 @@ namespace Visifire.Charts
         /// <summary>
         /// UpdateVisual is used for partial rendering
         /// </summary>
-        /// <param name="PropertyName">Name of the property</param>
-        /// <param name="Value">Value of the property</param>
-        internal override void UpdateVisual(String PropertyName, object Value)
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        internal override void UpdateVisual(String propertyName, object value)
         {
-            if (PropertyName == "Color")
+            if (propertyName == "Color")
             {
                 if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
                 {
@@ -1641,13 +1675,13 @@ namespace Visifire.Charts
 
                         if ((Chart as Chart).View3D)
                         {
-                            Brush sideBrush = (Boolean)LightingEnabled ? Graphics.GetRightFaceBrush((Brush)Value) : (Brush)Value;
-                            Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)Value) : (Brush)Value;
+                            Brush sideBrush = (Boolean)LightingEnabled ? Graphics.GetRightFaceBrush((Brush)value) : (Brush)value;
+                            Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)value) : (Brush)value;
 
                             foreach (FrameworkElement fe in Faces.Parts)
                             {
                                 if (fe.Tag.ToString() == "AreaBase")
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)Value) : (Brush)Value;
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
                                 else if (fe.Tag.ToString() == "Side")
                                     (fe as Shape).Fill = sideBrush;
                                 else if (fe.Tag.ToString() == "Top")
@@ -1660,11 +1694,11 @@ namespace Visifire.Charts
                             {
                                 if (fe.Tag.ToString() == "AreaBase")
                                 {
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", null) : (Brush)Value;
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
                                 }
                                 else if (fe.Tag.ToString() == "Bevel")
                                 {
-                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)Value);
+                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
                                 }
                             }
                         }
@@ -1678,7 +1712,7 @@ namespace Visifire.Charts
                     if (VisualParams != null)
                     {
                         LineChartShapeParams lineParams = VisualParams as LineChartShapeParams;
-                        (Faces.Parts[0] as Path).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)Value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)Value;
+                        (Faces.Parts[0] as Path).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)value;
                         foreach (DataPoint dp in DataPoints)
                             dp.UpdateVisual("Color", null);
                     }
@@ -1721,7 +1755,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// This storyboard has to be used for animating the DataSeries
+        /// This storyboard is used for animating the DataSeries
         /// </summary>
         internal Storyboard Storyboard
         {
@@ -1730,8 +1764,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Total Count of DataSeries of the group to which this series belongs
-        /// This count is helpfun while rendering, the space allocated for the columns at a particular XValue 
+        /// Total Count of DataSeries of the group to which this series belongs. 
+        /// This count is helpful while rendering, the space allocated for the columns at a particular XValue 
         /// must be divided between indivisual datapoints of different series with same XValue
         /// </summary>
         internal Int32 SeriesCountOfSameRenderAs
@@ -1741,7 +1775,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Faces holds the visual object references assocuated with this DataSeries
+        /// Faces holds the visual object references associated with this DataSeries
         /// </summary>
         internal Faces Faces
         {
@@ -1776,6 +1810,7 @@ namespace Visifire.Charts
 
         #region Private Property
 
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         private new Brush Background
         {
             get;
@@ -2029,7 +2064,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// PLabelFontColorroperty changed call back function
+        /// LabelFontColorProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -2313,6 +2348,7 @@ namespace Visifire.Charts
         private static void OnZIndexPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
+            dataSeries.InternalZIndex = (Int32) e.NewValue;
             dataSeries.FirePropertyChanged("ZIndex");
         }
 
@@ -2409,41 +2445,39 @@ namespace Visifire.Charts
         /// Attach tooltip with a framework element
         /// </summary>
         /// <param name="control">Control reference</param>
-        /// <param name="elements">FrameworkElements list</param>
-        /// <param name="toolTipText">Tooltip text</param>
-        internal void AttachAreaToolTip(VisifireControl Control, List<FrameworkElement> Elements)
+        /// <param name="elements">FrameworkElement list</param>
+        internal void AttachAreaToolTip(VisifireControl control, List<FrameworkElement> elements)
         {
             // Show ToolTip on mouse move over the chart element
-            foreach (FrameworkElement element in Elements)
+            foreach (FrameworkElement element in elements)
             {
                 element.MouseMove += delegate(object sender, MouseEventArgs e)
                 {
                     Point position = e.GetPosition(this.Faces.Visual);
-                    Double xValue = Graphics.PixelPositionToValue(0, this.Faces.Visual.Width, (Double)(Control as Chart).ChartArea.AxisX.AxisManager.AxisMinimumValue, (Double)(Control as Chart).ChartArea.AxisX.AxisManager.AxisMaximumValue, position.X);
+                    Double xValue = Graphics.PixelPositionToValue(0, this.Faces.Visual.Width, (Double)(control as Chart).ChartArea.AxisX.AxisManager.AxisMinimumValue, (Double)(control as Chart).ChartArea.AxisX.AxisManager.AxisMaximumValue, position.X);
                     DataPoint dataPoint = GetNearestDataPoint(xValue);
 
                     if (dataPoint.ToolTipText == null)
                     {
-                        Control._toolTip.Text = "";
-                        Control._toolTip.Hide();
+                        control._toolTip.Text = "";
+                        control._toolTip.Hide();
                         return;
                     }
                     else
                     {
-                        Control._toolTip.Text = dataPoint.TextParser(dataPoint.ToolTipText);
+                        control._toolTip.Text = dataPoint.TextParser(dataPoint.ToolTipText);
 
-                        if (Control.ToolTipEnabled)
-                            Control._toolTip.Show();
+                        if (control.ToolTipEnabled)
+                            control._toolTip.Show();
 
-                        (Control as Chart).UpdateToolTipPosition(sender, e);
+                        (control as Chart).UpdateToolTipPosition(sender, e);
                     }
                 };
 
                 // Hide ToolTip on mouse out from the chart element
                 element.MouseLeave += delegate(object sender, MouseEventArgs e)
                 {
-                    //if (Control.ToolTipElement.Visibility == Visibility.Visible)
-                    Control._toolTip.Hide();
+                    control._toolTip.Hide();
                 };
             }
         }

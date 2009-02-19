@@ -696,6 +696,64 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the Enabled property value
+        /// </summary>
+        [TestMethod]
+        public void CheckEnabledPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                dataSeries.Enabled = false;
+                Assert.IsFalse((Boolean)dataSeries.Enabled);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the Opacity property value
+        /// </summary>
+        [TestMethod]
+        public void CheckOpacityPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries2();
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                dataSeries.Opacity = 0.5;
+                Assert.AreEqual(0.5, dataSeries.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+
+        }
+        /// <summary>
         /// Check the Color property value
         /// </summary>
         [TestMethod]
@@ -711,6 +769,8 @@ namespace WPFVisifireChartsTest
             Random rand = new Random();
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.ShowInLegend = true;
+
             chart.Series.Add(dataSeries);
 
             Window window = new Window();
@@ -741,6 +801,8 @@ namespace WPFVisifireChartsTest
             Random rand = new Random();
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.ShowInLegend = true;
+
             chart.Series.Add(dataSeries);
 
             Window window = new Window();
@@ -777,6 +839,7 @@ namespace WPFVisifireChartsTest
             legend.SetValue(FrameworkElement.NameProperty, "Legend1");
             chart.Legends.Add(legend);
 
+            dataSeries.ShowInLegend = true;
             Window window = new Window();
             window.Content = chart;
             window.Show();
@@ -889,6 +952,7 @@ namespace WPFVisifireChartsTest
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
             Window window = new Window();
@@ -917,6 +981,7 @@ namespace WPFVisifireChartsTest
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
             Window window = new Window();
@@ -1798,12 +1863,13 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                dataSeries1.ZIndex = 10;
-                Assert.AreEqual(10, dataSeries1.ZIndex);
+                dataSeries1.ZIndex = 100;
+                Assert.AreEqual(100, dataSeries1.ZIndex);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+
         #endregion
 
         #region CheckDataSeriesDefaultPropertyValue

@@ -36,7 +36,7 @@ using System.Linq;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// One or more than one DataSeries are grouped in to a PlotGroup
+    /// One or more than one DataSeries are grouped into a PlotGroup
     /// </summary>
     internal class PlotGroup
     {
@@ -75,7 +75,7 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// PlotGroup is Enabled if atleast one dataSeries in DataSeriesList is Enabled
+        /// PlotGroup is enabled if atleast one dataSeries in DataSeriesList is enabled
         /// </summary>
         internal bool IsEnabled
         {
@@ -195,7 +195,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Store the calculated minimum difference value for the XValues in this group
+        /// Stores the calculated minimum difference value for the XValues in this group
         /// </summary>
         internal Double MinDifferenceX
         {
@@ -238,8 +238,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Gets minimum difference from Double value array.
         /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="values">Array of values</param>
+        /// <returns>Double</returns>
 #if DEBUG
         internal Double GetMinDifference(Double[] values)
 #else
@@ -266,6 +266,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
         /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>

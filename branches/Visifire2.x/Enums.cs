@@ -25,8 +25,8 @@ namespace Visifire.Charts
     /// </summary>
     public enum AxisTypes 
     { 
-        Primary, 
-        Secondary 
+        Primary = 0, 
+        Secondary = 1 
     }
 
     /// <summary>
@@ -34,10 +34,10 @@ namespace Visifire.Charts
     /// </summary>
     internal enum PlacementTypes 
     {
-        Top,
-        Left,
-        Right,
-        Bottom 
+        Top = 0,
+        Left = 1,
+        Right = 2,
+        Bottom = 3 
     }
 
     /// <summary>
@@ -90,14 +90,14 @@ namespace Visifire.Charts
     }
 
     /// <summary>
-    /// defines the various chart orientations
+    /// Defines the various chart orientations
     /// </summary>
     internal enum ChartOrientationType 
     {
-        Undefined,     // Undefined - not yet assigned 
-        Vertical,      // Vertical - charts of type point, bubble line, column(all similar types), area(all similar types)
-        Horizontal,    // Horizontal - charts of type bar(all similar types)
-        NoAxis         // NoAxis - charts of type pie or doughnut
+        Undefined = 0,     // Undefined - not yet assigned 
+        Vertical = 1,      // Vertical - charts of type point, bubble line, column(all similar types), area(all similar types)
+        Horizontal = 2,    // Horizontal - charts of type bar(all similar types)
+        NoAxis = 3         // NoAxis - charts of type pie or doughnut
     }
 
     /// <summary>
@@ -105,8 +105,8 @@ namespace Visifire.Charts
     /// </summary>
     internal enum AxisRepresentations 
     { 
-        AxisX, 
-        AxisY 
+        AxisX = 0, 
+        AxisY = 1 
     };
 
     /// <summary>

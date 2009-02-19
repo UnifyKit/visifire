@@ -42,7 +42,7 @@ using Visifire.Commons;
 namespace Visifire.Charts
 {
     /// <summary>
-    /// Visifire.Charts.BubbleChart bubble chart
+    /// Visifire.Charts.BubbleChart class
     /// </summary>
     internal class BubbleChart
     {
@@ -99,7 +99,7 @@ namespace Visifire.Charts
             bubbleGrid.RenderTransform = translateTransform;
 
             Random rand = new Random((Int32)DateTime.Now.Ticks);
-            double begin = rand.NextDouble();
+            Double begin = rand.NextDouble();
 
             Double hPitchSize = width / 5;
 
@@ -165,8 +165,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Get visual object for bubble chart
         /// </summary>
-        /// <param name="width">Width of the charat</param>
-        /// <param name="height">Height of the charat</param>
+        /// <param name="width">Width of the chart</param>
+        /// <param name="height">Height of the chart</param>
         /// <param name="plotDetails">plotDetails</param>
         /// <param name="seriesList">List of DataSeries</param>
         /// <param name="chart">Chart</param>

@@ -160,6 +160,165 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region BrokenLineChart
+        /// <summary>
+        /// Testing broken line chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void BrokenLineChartChecking()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+
+            for (Int32 i = 0; i < 12; i++)
+            {
+                DataPoint dataPoint = new DataPoint();
+                if (i != 2 && i != 3)
+                    dataPoint.YValue = rand.Next(10, 100);
+                dataSeries.DataPoints.Add(dataPoint);
+
+            }
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+            });
+        }
+        #endregion
+
+        #region CheckConnectedLineChart4DisabledDataPoints
+        /// <summary>
+        /// Testing connected line chart if few DataPoints are disabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckConnectedLineChart4DisabledDataPoints()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+
+            for (Int32 i = 0; i < 12; i++)
+            {
+                DataPoint dataPoint = new DataPoint();
+                if (i == 2 || i == 3)
+                    dataPoint.Enabled = false;
+                dataPoint.YValue = rand.Next(10, 100);
+                dataSeries.DataPoints.Add(dataPoint);
+
+            }
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+            });
+        }
+        #endregion
+
+        #region CheckPieChartLegend4DisabledDataSeriesAndEnabledDataPoint
+        /// <summary>
+        /// Testing pie chart legend if DataSeries is disabled and few DataPoints are enabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckPieChartLegend4DisabledDataSeriesAndEnabledDataPoint()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+            dataSeries.Enabled = false;
+
+            for (Int32 i = 0; i < 12; i++)
+            {
+                DataPoint dataPoint = new DataPoint();
+                if (i == 1 || i == 2)
+                    dataPoint.Enabled = true;
+                dataPoint.YValue = rand.Next(10, 100);
+                dataSeries.DataPoints.Add(dataPoint);
+
+            }
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+            });
+        }
+        #endregion
+
         #region DoughnutStressChecking
         /// <summary>
         /// Stress testing Doughnut Chart
@@ -1404,6 +1563,388 @@ namespace SLVisifireChartsTest
         #endregion
 
         #region CheckDataseriesNewPropertyValue
+
+        #region CheckEnabledProperty4AllchartTypes
+
+        /// <summary>
+        /// Check the Column Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckColumnEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Bar Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckBarEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Area Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckAreaEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Area;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Bubble Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckBubbleEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Bubble;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Point Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckPointEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Point;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Pie Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckPieEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Doughnut Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckDoughnutEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Doughnut;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the Line Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckLineEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedColumn Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedColumnEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedColumn100 Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedColumn100EnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedBar Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedBarEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedBar100 Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedBar100EnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedArea Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedAreaEnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        /// <summary>
+        /// Check the StackedArea100 Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckStackedArea100EnabledProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.StackedArea100;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Enabled = false,
+                () => Assert.IsFalse((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
+        #endregion
+
         /// <summary>
         /// Check the RenderAs property value
         /// </summary>
@@ -1418,6 +1959,7 @@ namespace SLVisifireChartsTest
             Random rand = new Random();
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Area;
 
             chart.Series.Add(dataSeries);
 
@@ -1493,7 +2035,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             Random rand = new Random();
 
@@ -1578,7 +2119,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-
+            dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
             EnqueueSleep(_sleepTime);
@@ -1602,7 +2143,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-
+            dataSeries.RenderAs = RenderAs.Line;
             chart.Series.Add(dataSeries);
 
             EnqueueSleep(_sleepTime);
@@ -1672,7 +2213,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -1682,6 +2222,36 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => dataSeries.StartAngle = 90,
                 () => Assert.AreEqual(90, dataSeries.StartAngle));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the ZIndex property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckZIndexProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+            chart.View3D = true;
+
+            DataSeries dataSeries1 = CreateDataSeries();
+            dataSeries1.RenderAs = RenderAs.Column;
+            dataSeries1.Color = new SolidColorBrush(Colors.Orange);
+            chart.Series.Add(dataSeries1);
+
+            DataSeries dataSeries2 = CreateDataSeries();
+            dataSeries2.RenderAs = RenderAs.Area;
+            dataSeries2.Color = new SolidColorBrush(Colors.Red);
+            chart.Series.Add(dataSeries2);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries1.ZIndex = 100,
+                () => Assert.AreEqual(100, dataSeries1.ZIndex));
 
             EnqueueTestComplete();
         }
@@ -1745,7 +2315,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries2();
             dataSeries.RenderAs = RenderAs.Bubble;
 
@@ -1770,7 +2339,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
 
             chart.Series.Add(dataSeries);
@@ -1779,6 +2347,33 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => dataSeries.ToolTipText = "#AxisLabel",
                 () => Assert.AreEqual("#AxisLabel", dataSeries.ToolTipText));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the HrefAndHrefTarget property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckHrefAndHrefTargetPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+
+            DataSeries dataSeries = CreateDataSeries();
+            dataSeries.RenderAs = RenderAs.Pie;
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Href = "http://www.visifire.com",
+                () => dataSeries.HrefTarget = HrefTargets._blank,
+                () => Assert.AreEqual("http://www.visifire.com", dataSeries.Href),
+            () => Assert.AreEqual(HrefTargets._blank, dataSeries.HrefTarget));
 
             EnqueueTestComplete();
         }
@@ -2313,7 +2908,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
 
             chart.Series.Add(dataSeries);
@@ -2327,9 +2921,58 @@ namespace SLVisifireChartsTest
 
             EnqueueTestComplete();
         }
+
+        /// <summary>
+        /// Check the Opacity property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckOpacityPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            DataSeries dataSeries = CreateDataSeries();
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => dataSeries.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, dataSeries.Opacity, Common.HighPrecisionDelta));
+
+            EnqueueTestComplete();
+        }
+
         #endregion
 
         #region CheckDataSeriesDefaultPropertyValue
+
+        /// <summary>
+        /// Check the Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckEnabledDefaultProperty()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = CreateDataSeries();
+
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue((Boolean)dataSeries.Enabled));
+
+            EnqueueTestComplete();
+
+        }
+
         /// <summary>
         /// Check the RenderAs property value
         /// </summary>

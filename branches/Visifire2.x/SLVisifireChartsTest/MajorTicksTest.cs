@@ -20,7 +20,7 @@ namespace SLVisifireChartsTest
     [TestClass]
     public class TicksTest : SilverlightControlTest
     {
-        #region Test default property value
+        #region CheckingDefaultPropertyValue
         /// <summary>
         /// Check LineThickness default value
         /// </summary>
@@ -103,9 +103,30 @@ namespace SLVisifireChartsTest
 
             EnqueueTestComplete();
         }
+
+        /// <summary>
+        /// Check Enabled default value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckDefaultEnabled()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue((Boolean)chart.AxesX[0].Ticks[0].Enabled));
+
+            EnqueueTestComplete();
+        }
         #endregion
 
-        #region Test new property value
+        #region CheckingNewPropertyValue
+
         /// <summary>
         /// Check LineThickness new value
         /// </summary>
@@ -126,6 +147,28 @@ namespace SLVisifireChartsTest
                 () => Assert.AreEqual(2, chart.AxesX[0].Ticks[0].LineThickness),
                 () => chart.AxesY[0].Ticks[0].LineThickness = 2,
                 () => Assert.AreEqual(2, chart.AxesY[0].Ticks[0].LineThickness));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check Opacity new value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckNewOpacity()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+            chart.AnimationEnabled = false;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => chart.AxesX[0].Ticks[0].Opacity = 0.5,
+                () => Assert.AreEqual(0.5, chart.AxesX[0].Ticks[0].Opacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }
@@ -201,6 +244,32 @@ namespace SLVisifireChartsTest
                     Assert.AreEqual(2, chart.AxesX[0].Ticks[0].Interval);
                     chart.AxesY[0].Ticks[0].Interval = 25;
                     Assert.AreEqual(25, chart.AxesY[0].Ticks[0].Interval);
+                });
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check Enabled new value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckNewEnabled()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+            chart.AnimationEnabled = false;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    chart.AxesX[0].Ticks[0].Enabled = false;
+                    Assert.IsFalse((Boolean)chart.AxesX[0].Ticks[0].Enabled);
+                    chart.AxesY[0].Ticks[0].Enabled = false;
+                    Assert.IsFalse((Boolean)chart.AxesY[0].Ticks[0].Enabled);
                 });
             EnqueueTestComplete();
         }

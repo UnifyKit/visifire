@@ -5,6 +5,7 @@ using Microsoft.Silverlight.Testing;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Markup;
+using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -66,6 +67,78 @@ namespace SLVisifireChartsTest
                 () => Assert.IsNull(chart.AxesY[0].Background));
 
             EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default value of ScrollBarOffset for vertical chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ScrollBarOffsetVerticalChartDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDataSeriesWithMoreDataPoints(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default value of ScrollBarOffset for horizontal chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ScrollBarOffsetHorizontalChartDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDataSeriesWithMoreDataPoints(chart);
+            chart.Series[0].RenderAs = RenderAs.Bar;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the default value of Href.")]
+        [Asynchronous]
+        public void HrefAndHrefTargetDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => Assert.AreEqual(null, _axisX.Href),
+                () => Assert.AreEqual(HrefTargets._self, _axisX.HrefTarget),
+                () => Assert.AreEqual(null, _axisY.Href),
+                () => Assert.AreEqual(HrefTargets._self, _axisY.HrefTarget));
         }
 
         /// <summary>
@@ -135,6 +208,33 @@ namespace SLVisifireChartsTest
                 () => Assert.AreEqual(0.5, chart.AxesY[0].LineThickness));
 
             EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default value of ValueFormatString.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of ValueFormatString.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ValueFormatStringDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            chart.AnimationEnabled = false;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+               () => Assert.AreEqual("###,##0.##", _axisX.ValueFormatString),
+               () => Assert.AreEqual("###,##0.##", _axisY.ValueFormatString));
         }
 
         /// <summary>
@@ -439,6 +539,29 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
         }
 
+        /// <summary>
+        /// Check the default value of Enabled.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of Enabled.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void EnabledDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue((Boolean)chart.AxesX[0].Enabled),
+                () => Assert.IsTrue((Boolean)chart.AxesY[0].Enabled));
+
+
+            EnqueueTestComplete();
+        }
+
 
         #endregion
 
@@ -456,7 +579,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-            chart.AnimationEnabled = false;
 
             _axisX = new Axis();
             _axisY = new Axis();
@@ -471,6 +593,192 @@ namespace SLVisifireChartsTest
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Blue), _axisX.Background),
                 () => _axisY.Background = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), _axisY.Background));
+        }
+
+
+        /// <summary>
+        /// Check the Enabled property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Enabled.")]
+        [Asynchronous]
+        public void EnabledNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => _axisX.Enabled = false,
+                () => Assert.IsFalse((Boolean)_axisX.Enabled),
+                () => _axisY.Enabled = false,
+                () => Assert.IsFalse((Boolean)_axisY.Enabled));
+
+        }
+        
+        /// <summary>
+        /// Check the Opacity property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Opacity.")]    
+        [Asynchronous]
+        public void OpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => _axisX.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, _axisX.Opacity, Common.HighPrecisionDelta),
+                () => _axisY.Opacity = 0.5,
+                () => Assert.AreEqual(0.5, _axisY.Opacity, Common.HighPrecisionDelta));
+        }
+
+        /// <summary>
+        /// Check the Padding property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Padding.")]
+        [Asynchronous]
+        public void PaddingNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => _axisX.Padding = new Thickness(10),
+                () => Assert.AreEqual(new Thickness(10), _axisX.Padding),
+                () => _axisY.Padding = new Thickness(10),
+                () => Assert.AreEqual(new Thickness(10), _axisY.Padding));
+        }
+
+        /// <summary>
+        /// Check the Href property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Href.")]
+        [Asynchronous]
+        public void HrefAndHrefTargetNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => _axisX.Href = "http://www.visifire.com",
+                () => _axisX.HrefTarget=HrefTargets._blank,
+                () => Assert.AreEqual("http://www.visifire.com", _axisX.Href),
+                () => _axisY.Href = "http://www.visifire.com",
+                () => _axisY.HrefTarget = HrefTargets._blank,
+                () => Assert.AreEqual("http://www.visifire.com", _axisY.Href));
+        }
+
+        /// <summary>
+        /// Check the Cursor property value
+        /// </summary>
+        [TestMethod]
+        [Description("Check the new value of Cursor.")]
+        [Asynchronous]
+        public void CursorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 600;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+                () => _axisX.Cursor = Cursors.Hand,
+                () => Assert.AreEqual(Cursors.Hand, _axisX.Cursor),
+                () => _axisY.Cursor = Cursors.Hand,
+                () => Assert.AreEqual(Cursors.Hand, _axisY.Cursor));
+        }
+
+        /// <summary>
+        /// Check the new value of ScrollBarOffset with vertical chart. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ScrollBarOffsetVerticalChartNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDataSeriesWithMoreDataPoints(chart);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => chart.AxesX[0].ScrollBarOffset = 1,
+                () => Assert.AreEqual(1, chart.AxesX[0].ScrollBarOffset));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of ScrollBarOffset with horizontal chart.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ScrollBarOffset.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ScrollBarOffsetHorizontalChartNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDataSeriesWithMoreDataPoints(chart);
+            chart.Series[0].RenderAs = RenderAs.Bar;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => chart.AxesX[0].ScrollBarOffset = 0,
+                () => Assert.AreEqual(0, chart.AxesX[0].ScrollBarOffset));
+
+            EnqueueTestComplete();
         }
 
         /// <summary>
@@ -1059,6 +1367,35 @@ namespace SLVisifireChartsTest
                () => Assert.AreEqual("AxisY", _axisY.ToolTipText));
         }
 
+        /// <summary>
+        /// Check the new value of ValueFormatString.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value of ValueFormatString.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void ValueFormatStringNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            chart.AnimationEnabled = false;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTest(chart,
+               () => _axisX.ValueFormatString = "#0.#'%'",
+               () => Assert.AreEqual("#0.#'%'", _axisX.ValueFormatString),
+               () => _axisY.ValueFormatString = "#0.#'%'",
+               () => Assert.AreEqual("#0.#'%'", _axisY.ValueFormatString));
+        }
+
         #endregion
 
         #region CheckAxisLabelMultiLineText
@@ -1211,6 +1548,79 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region AxisEventTesting
+        /// <summary>
+        /// Testing events in Axis
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void AxisEventChecking()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            TestPanel.Children.Add(chart);
+
+            _axisX = new Axis();
+            chart.AxesX.Add(_axisX);
+            _axisY = new Axis();
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _axisX.MouseEnter += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseEnter event fired");
+            };
+            _axisY.MouseEnter += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseEnter event fired");
+            };
+
+            _axisX.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeave event fired");
+            };
+            _axisY.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeave event fired");
+            };
+
+            _axisX.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeftButtonUp event fired");
+            };
+            _axisY.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeftButtonUp event fired");
+            };
+
+            _axisX.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeftButtonDown event fired");
+            };
+            _axisY.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
+            {
+                _htmlElement1.SetProperty("value", "Axis MouseLeftButtonDown event fired");
+            };
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
+
+            _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+            _htmlElement1.SetStyleAttribute("width", "900px");
+            _htmlElement1.SetProperty("value", "Click here to exit.");
+            System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+
+        }
+
+        #endregion
+
         /// <summary>
         /// Gets a default instance of Axis to test.
         /// </summary>
@@ -1227,6 +1637,18 @@ namespace SLVisifireChartsTest
         private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             _isLoaded = true;
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
         #region Private Data
@@ -1249,6 +1671,11 @@ namespace SLVisifireChartsTest
         /// AxisY reference
         /// </summary>
         private Axis _axisY;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
 
         #endregion
     }

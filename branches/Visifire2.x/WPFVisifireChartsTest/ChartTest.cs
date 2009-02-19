@@ -430,30 +430,6 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the BorderStyle default property value.
-        /// </summary>
-        [TestMethod]
-        public void CheckBorderStyleDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-                Assert.AreEqual(BorderStyles.Solid, chart.BorderStyle);
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        /// <summary>
         /// Check the Background default property value.
         /// </summary>
         [TestMethod]
@@ -472,6 +448,30 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Background);
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the Padding default property value.
+        /// </summary>
+        [TestMethod]
+        public void CheckPaddingDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+                Assert.AreEqual(new Thickness(5), chart.Padding);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -568,6 +568,30 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
                 Assert.IsFalse(chart.ShadowEnabled);
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the ToolTipEnabled default property value.
+        /// </summary>
+        [TestMethod]
+        public void CheckToolTipEnabledDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+                Assert.IsTrue(chart.ToolTipEnabled);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -676,6 +700,89 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check Opacity new value
+        /// </summary>
+        [TestMethod]
+        public void CheckOpacityNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            chart.Opacity = 0.5;
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(0.5, chart.Opacity, Common.HighPrecisionDelta);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check Cursor new value
+        /// </summary>
+        [TestMethod]
+        public void CheckCursorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            chart.Cursor = Cursors.Hand;
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(Cursors.Hand, chart.Cursor);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check HrefAndHrefTarget new value
+        /// </summary>
+        [TestMethod]
+        public void CheckHrefAndHrefTargetNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            chart.Href = "http://www.visifire.com";
+            chart.HrefTarget = HrefTargets._blank;
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual("http://www.visifire.com", chart.Href);
+                Assert.AreEqual(HrefTargets._blank, chart.HrefTarget);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check AnimationEnabled new property value
         /// </summary>
         [TestMethod]
@@ -684,9 +791,7 @@ namespace WPFVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
-
             chart.AnimationEnabled = false;
-
             _isLoaded = false;
 
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -739,7 +844,6 @@ namespace WPFVisifireChartsTest
 
             chart.BorderThickness = new Thickness(1);
             chart.BorderBrush = new SolidColorBrush(Colors.Black);
-            chart.BorderStyle = BorderStyles.Dashed;
 
             _isLoaded = false;
 
@@ -752,7 +856,6 @@ namespace WPFVisifireChartsTest
             {
                 Assert.AreEqual(new Thickness(1), chart.BorderThickness);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.BorderBrush);
-                Assert.AreEqual(BorderStyles.Dashed, chart.BorderStyle);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -842,6 +945,33 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check Padding new property value
+        /// </summary>
+        [TestMethod]
+        public void CheckPaddingPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            chart.Padding = new Thickness(12);
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(new Thickness(12), chart.Padding);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check LightingEnabled new property value
         /// </summary>
         [TestMethod]
@@ -894,6 +1024,32 @@ namespace WPFVisifireChartsTest
             window.Close();
         }
 
+        /// <summary>
+        /// Check ToolTipEnabled new property value
+        /// </summary>
+        [TestMethod]
+        public void CheckToolTipEnabledPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            chart.ToolTipEnabled = false;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+                Assert.IsFalse(chart.ToolTipEnabled);
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+
+        }
         /// <summary>
         /// Check CornerRadius new property value
         /// </summary>

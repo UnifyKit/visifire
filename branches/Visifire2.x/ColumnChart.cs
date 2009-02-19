@@ -82,24 +82,24 @@ namespace Visifire.Charts
     }
 
     /// <summary>
-    ///  Visifire.Charts.SortedDataPoints class
+    ///  Visifire.Charts.SortedDataPoints class. 
     ///  SortedDataPoints used to store DataPoints with positive and negative values 
     /// </summary>
-    public class SorteDataPoints
+    public class SortDataPoints
     {
         /// <summary>
         /// Initializes a new instance of the Visifire.Charts.SortedDataPoints class
         /// </summary>
-        public SorteDataPoints()
+        public SortDataPoints()
         {
         }
 
         /// <summary>
-        /// Sorte DataPoints
+        /// Sort DataPoints
         /// </summary>
         /// <param name="positive">Positive DataPoints</param>
         /// <param name="">Negative DataPoints</param>
-        public SorteDataPoints(List<DataPoint> positive, List<DataPoint> negative)
+        public SortDataPoints(List<DataPoint> positive, List<DataPoint> negative)
         {
             Positive = positive;
             Negative = negative;
@@ -163,7 +163,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Set position of the marker
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="columnParams">Column parameters</param>
         /// <param name="chart">Chart</param>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="labelText">label text</param>
@@ -245,7 +245,7 @@ namespace Visifire.Charts
         /// Returns marker for DataPoint
         /// </summary>
         /// <param name="chart">Chart</param>
-        /// <param name="columnParams"></param>
+        /// <param name="columnParams">Column parameters</param>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="left">Left position of MarkerCanvas</param>
         /// <param name="top">Top position</param>
@@ -285,7 +285,7 @@ namespace Visifire.Charts
 
                 SetMarkerPosition(columnParams, chart, dataPoint, labelText, markerSize, left, top, markerPosition);
 
-                columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)columnParams.LabelStyle);
+                columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0)? LabelStyles.OutSide:(LabelStyles)columnParams.LabelStyle);
                 dataPoint.Marker.FontColor = columnParams.LabelFontColor;
 
                 dataPoint.Marker.CreateVisual();
@@ -301,8 +301,8 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="left">Left position</param>
         /// <param name="widthPerColumn">Width of a column</param>
-        /// <param name="width">Width of the scale in pixel</param>
-        /// <returns>final width of DataPoint</returns>
+        /// <param name="width">Width of chart canvas</param>
+        /// <returns>Final width of DataPoint</returns>
         private static Double CalculateWidthOfEachColumn(ref Double left, Double widthPerColumn, Double width)
         {   
             Double finalWidth = widthPerColumn;
@@ -325,7 +325,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="left">Left position</param>
         /// <param name="top">Top position</param>
-        /// <param name="isPositive">Whether DataPoint Value is positive or negative</param>
+        /// <param name="isPositive">Whether DataPoint value is positive or negative</param>
         /// <returns>Zindex as Int32</returns>
         private static Int32 GetColumnZIndex(Double left, Double top, Boolean isPositive)
         {
@@ -345,8 +345,8 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="left">Left position</param>
         /// <param name="top">Top position</param>
-        /// <param name="isPositive">Whether column value is negative or positive</param>
-        /// <param name="index"></param>
+        /// <param name="isPositive">Whether column value is positive or negative</param>
+        /// <param name="index">Index</param>
         /// <returns>Zindex as Int32</returns>
         private static Int32 GetStackedColumnZIndex(Double left, Double top, Boolean isPositive, Int32 index)
         {
@@ -446,9 +446,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Set column parameters
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="columnParams">Column parameters</param>
         /// <param name="chart">Chart reference</param>
-        /// <param name="dataPoint">dataPoint</param>
+        /// <param name="dataPoint">DataPoint</param>
         /// <param name="IsPositive">Whether the DataPoint YValue is positive or negative</param>
         internal static void SetColumnParms(ref RectangularChartShapeParams columnParams, ref Chart chart, DataPoint dataPoint, Boolean isPositive)
         {
@@ -483,9 +483,10 @@ namespace Visifire.Charts
         /// <summary>
         /// Create new Marker
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="columnParams">Column parameters</param>
         /// <param name="dataPoint">DataPoint</param>
-        /// <param name="markerSize">Marker Size</param>
+        /// <param name="markerSize">Marker size</param>
+        /// <param name="labelText">Label text</param>
         /// <returns>Marker</returns>
         internal static Marker CreateNewMarker(RectangularChartShapeParams columnParams, DataPoint dataPoint, Size markerSize, String labelText)
         {
@@ -508,7 +509,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get a Dictionary of releted DataSeries list with a particular axis, Where axis works as key.
+        /// Get a dictionary of related DataSeries list with a particular axis, where axis works as key.
         /// </summary>
         /// <param name="seriesList">DataSeries List</param>
         /// <returns>Dictionary[Axis, Dictionary[Axis, Int32]]</returns>
@@ -546,7 +547,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Get visual object for ColumnChart
+        /// Get visual object for column chart
         /// </summary>
         /// <param name="width">Width of the PlotArea</param>
         /// <param name="height">Height of the PlotArea</param>
@@ -555,13 +556,13 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns>Column chart Canvas</returns>
+        /// <returns>Column chart canvas</returns>
         internal static Canvas GetVisualObjectForColumnChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
 
-            Dictionary<Double, SorteDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
+            Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
 
             List<Double> xValues = sortedDataPoints.Keys.ToList();
 
@@ -788,7 +789,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns>Column chart Canvas</returns>
+        /// <returns>StackedColumn chart canvas</returns>
         internal static Canvas GetVisualObjectForStackedColumnChart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -1022,7 +1023,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns>Column chart Canvas</returns>
+        /// <returns>StackedColumn100 chart Canvas</returns>
         internal static Canvas GetVisualObjectForStackedColumn100Chart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
@@ -1266,8 +1267,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Create 2D column for a DataPoint
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
-        /// <returns>Faces for column</returns>
+        /// <param name="columnParams">Column parameters</param>
+        /// <returns>Faces</returns>
         internal static Faces Get2DColumn(RectangularChartShapeParams columnParams)
         {
             Faces faces = new Faces();
@@ -1392,7 +1393,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns faces for 3D column
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="columnParams">Column parameters</param>
         /// <returns>Faces</returns>
         internal static Faces Get3DColumn(RectangularChartShapeParams columnParams)
         {
@@ -1402,7 +1403,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns faces for 3D column
         /// </summary>
-        /// <param name="columnParams">RectangularChartShapeParams</param>
+        /// <param name="columnParams">Column parameters</param>
         /// <param name="frontBrush">Brush for front face</param>
         /// <param name="topBrush">Brush for top face</param>
         /// <param name="rightBrush">Brush for right face</param>

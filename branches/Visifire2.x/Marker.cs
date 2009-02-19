@@ -45,6 +45,9 @@ using Visifire.Charts;
 
 namespace Visifire.Commons
 {
+    /// <summary>
+    /// Visifire.Commons.Marker class
+    /// </summary>
     public class Marker: IComparable
     {   
         #region Public Methods
@@ -78,8 +81,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Compare two Markers
         /// </summary>
-        /// <param name="o"></param>
-        /// <returns></returns>
+        /// <param name="o">Object</param>
+        /// <returns>int</returns>
         public int CompareTo(Object o)
         {
             Marker dataPoint = (Marker)o;
@@ -237,7 +240,7 @@ namespace Visifire.Commons
         #region Public Properties
 
         /// <summary>
-        /// Marker Visual
+        /// Get or set the Marker Visual
         /// </summary>
         public Grid Visual
         {
@@ -290,7 +293,7 @@ namespace Visifire.Commons
         }
         
         /// <summary>
-        /// Actual Size of Marker
+        /// Get or set the Actual Size of Marker
         /// </summary>
         public Size MarkerSize
         {
@@ -299,7 +302,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Text orientation of Marker label
+        /// Get or set the Text orientation of Marker label
         /// </summary>
         public Orientation TextOrientation
         {
@@ -308,7 +311,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// HorizontalAlignment of Marker label
+        /// Get or set the HorizontalAlignment of Marker label
         /// </summary>
         public AlignmentX TextAlignmentX
         {
@@ -323,7 +326,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// VerticalAlignment of Marker label
+        /// Get or set the VerticalAlignment of Marker label
         /// </summary>
         public AlignmentY TextAlignmentY
         {
@@ -338,7 +341,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Shape type of a Marker
+        /// Get or set the Shape type of a Marker
         /// </summary>
         public MarkerTypes MarkerType
         {
@@ -347,7 +350,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Margin of Marker
+        /// Get or set the Margin of Marker
         /// </summary>
         public Double Margin
         {
@@ -356,7 +359,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// LabelMargin is the margin of the label of Marker
+        /// Get or set the LabelMargin of the label of Marker
         /// </summary>
         public Double LabelMargin
         {
@@ -364,11 +367,10 @@ namespace Visifire.Commons
             set;
         }
 
-
         #region Font Properties
 
         /// <summary>
-        /// Property FontFamily
+        /// Get or set the marker label FontFamily
         /// </summary>
         public FontFamily FontFamily
         {
@@ -386,7 +388,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property FontSize
+        /// Get or set the marker label FontSize
         /// </summary>
         public Double FontSize
         {
@@ -404,7 +406,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property FontColor
+        /// Get or set the marker label FontColor
         /// </summary>
         public Brush FontColor
         {
@@ -420,7 +422,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property FontStyle
+        /// Get or set the marker label FontStyle
         /// </summary>
         public FontStyle FontStyle
         {
@@ -436,7 +438,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property FontWeight
+        /// Get or set the marker label FontWeight
         /// </summary>
         public FontWeight FontWeight
         {
@@ -452,7 +454,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property Text
+        /// Get or set the marker label Text
         /// </summary>
         public String Text
         {
@@ -468,7 +470,7 @@ namespace Visifire.Commons
 
 
         /// <summary>
-        /// Get or set background of marker label text 
+        /// Get or set the background of marker label text 
         /// </summary>
         public Brush TextBackground
         {
@@ -481,7 +483,7 @@ namespace Visifire.Commons
         #region Border Properties
 
         /// <summary>
-        /// Property BorderColor
+        /// Get or set the BorderColor
         /// </summary>
         public Brush BorderColor
         {
@@ -500,7 +502,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Property BorderThickness
+        /// Get or set the BorderThickness
         /// </summary>
         public Double BorderThickness
         {
@@ -515,18 +517,15 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Marker fill color
+        /// Get or set the Marker fill color
         /// </summary>
         public Brush MarkerFillColor
         {
             get;
             set;
         }
-        
 
         #endregion
-
-        
 
         #endregion
 
@@ -682,8 +681,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Create shape for Marker
         /// </summary>
-        /// <param name="xaml"></param>
-        /// <returns></returns>
+        /// <returns>Shape</returns>
         private Shape GetShape()
         {
             String xaml = null;
@@ -736,8 +734,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Create shape for Marker
         /// </summary>
-        /// <param name="xaml"></param>
-        /// <returns></returns>
+        /// <returns>FrameworkElement</returns>
         private FrameworkElement GetBevelLayer()
         {
             String xaml = null;
@@ -857,7 +854,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="rotateTransform">Ref RotateTransform</param>
         /// <param name="centerX">CenterX</param>
-        /// <param name="centerY">CenterX</param>
+        /// <param name="centerY">CenterY</param>
         /// <param name="angle">Angle</param>
         private void SetRotateTransformValues(ref RotateTransform rotateTransform, Double centerX, Double centerY, Double angle)
         {
@@ -1062,64 +1059,10 @@ namespace Visifire.Commons
             if (TextAlignmentY == AlignmentY.Center)
                 _markerShapePosition.Y += Math.Abs((TextBlockSize.Height - MarkerShape.Height) / 2);
 
-            //Int32 row, column;
-
-            //if (TextAlignmentX == AlignmentX.Left)
-            //{
-            //    _markerShapePosition.X = TextBlockSize.Width;
-            //    column = 0;
-            //}
-            //else if (TextAlignmentX == AlignmentX.Right)
-            //{
-            //    column = 2;
-            //}
-            //else
-            //{
-            //    TextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            //    column = 1;
-            //}
-
-            //if (TextAlignmentY == AlignmentY.Top)
-            //{
-            //    _markerShapePosition.Y = TextBlockSize.Height;
-            //    row = 0;
-            //}
-            //else if (TextAlignmentY == AlignmentY.Bottom)
-            //{
-            //    row = 2;
-            //}
-            //else
-            //{
-            //    TextBlock.VerticalAlignment = VerticalAlignment.Center;
-            //    row = 1;
-            //}
-
-            //TextBlock.SetValue(Grid.ColumnProperty, column);
-            //TextBlock.SetValue(Grid.RowProperty, row);
-
-            //if (TextBackgroundCanvas != null)
-            //{
-            //    TextBackgroundCanvas.Height = TextBlockSize.Height;
-            //    TextBackgroundCanvas.Width = TextBlockSize.Width;
-            //    TextBackgroundCanvas.SetValue(Grid.RowProperty, row);
-            //    TextBackgroundCanvas.SetValue(Grid.ColumnProperty, row);
-
-            //    if (TextAlignmentY == AlignmentY.Center)
-            //        TextBackgroundCanvas.VerticalAlignment = VerticalAlignment.Center;
-
-            //    if (TextAlignmentX == AlignmentX.Center)
-            //        TextBackgroundCanvas.HorizontalAlignment = HorizontalAlignment.Center;
-            //}
-
-            //if (TextAlignmentX == AlignmentX.Center)
-            //    _markerShapePosition.X += Math.Abs((TextBlockSize.Width - MarkerShape.Width) / 2);
-
-            //if (TextAlignmentY == AlignmentY.Center)
-            //    _markerShapePosition.Y += Math.Abs((TextBlockSize.Height - MarkerShape.Height) / 2);
         }
         
         /// <summary>
-        /// Get shadow color of shape of the Marker
+        /// Get shadow color of the Marker shape
         /// </summary>
         /// <returns></returns>
         private Brush GetMarkerShadowColor()

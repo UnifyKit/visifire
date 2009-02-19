@@ -32,6 +32,9 @@ namespace Visifire.Commons
     /// </summary>
     public class Converters
     {
+        /// <summary>
+        /// Value converter
+        /// </summary>
         public class ValueConverter : TypeConverter
         {
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

@@ -286,7 +286,8 @@ namespace WPFVisifireChartsTest
 
         #endregion
 
-        #region CheckAngleNewPropertyValue
+        #region CheckNewPropertyValue
+        
         /// <summary>
         /// Check the New value for Angle.
         /// </summary> 
@@ -319,6 +320,44 @@ namespace WPFVisifireChartsTest
                 _axisY.AxisLabels.Angle = 30;
                 Assert.AreEqual(-30, _axisX.AxisLabels.Angle);
                 Assert.AreEqual(30, _axisY.AxisLabels.Angle);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the new value for Opacity.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value for Opacity.")]
+        [Owner("[....]")]
+        public void CheckOpacityNewPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                _axisX.AxisLabels.Opacity = 0.5;
+                _axisY.AxisLabels.Opacity = 0.5;
+                Assert.AreEqual(0.5, _axisX.AxisLabels.Opacity, Common.HighPrecisionDelta);
+                Assert.AreEqual(0.5, _axisY.AxisLabels.Opacity, Common.HighPrecisionDelta);
             }
 
             window.Dispatcher.InvokeShutdown();

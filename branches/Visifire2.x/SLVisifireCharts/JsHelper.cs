@@ -33,7 +33,7 @@ using Visifire.Commons;
 namespace Visifire.Commons
 {
     /// <summary>
-    /// JavaScript Helper Class
+    /// JavaScript helper class
     /// </summary>
     public static class JsHelper
     {
@@ -74,6 +74,50 @@ namespace Visifire.Commons
                 // Set the value of the property of the sender object
                 if (property.PropertyType.Name == "Brush")
                     property.SetValue(sender, ((Brush)System.Windows.Markup.XamlReader.Load(value)), null);
+                else if (property.PropertyType.Equals(typeof(Cursor)))
+                {
+                    Cursor cursor = null;
+                    switch(value)
+                    {
+                        case "None":
+                            cursor = Cursors.None;
+                            break;
+
+                        case "Wait":
+                            cursor = Cursors.Wait;
+                            break;
+
+                        case "Hand":
+                            cursor = Cursors.Hand;
+                            break;
+
+                        case "Eraser":
+                            cursor = Cursors.Eraser;
+                            break;
+
+                        case "IBeam":
+                            cursor = Cursors.IBeam;
+                            break;
+
+                        case "SizeNS":
+                            cursor = Cursors.SizeNS;
+                            break;
+
+                        case "SizeWE":
+                            cursor = Cursors.SizeWE;
+                            break;
+
+                        case "Stylus":
+                            cursor = Cursors.Stylus;
+                            break;
+
+                        case "Arrow":
+                            cursor = Cursors.Arrow;
+                            break;
+                    }
+
+                    property.SetValue(sender, cursor, null);
+                }
                 else if (property.PropertyType.Equals(typeof(FontFamily)))
                 {
                     FontFamily ff = new FontFamily(value);
@@ -115,6 +159,8 @@ namespace Visifire.Commons
                     property.SetValue(sender, new CornerRadius(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<LabelStyles>)))
                     property.SetValue(sender, Enum.Parse(typeof(LabelStyles), value, true), null);
+                else if(property.PropertyType.Equals(typeof(Nullable<LineStyles>)))
+                    property.SetValue(sender, Enum.Parse(typeof(LineStyles), value, true), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<MarkerTypes>)))
                     property.SetValue(sender, Enum.Parse(typeof(MarkerTypes), value, true), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<BorderStyles>)))

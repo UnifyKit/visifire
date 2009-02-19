@@ -38,7 +38,7 @@ namespace Visifire.Charts
     
     /// <summary>
     /// X wise groupping of DataPoints
-    /// (DataPoints are grouped into Positive and negative collection)
+    /// (DataPoints are grouped into positive and negative collection)
     /// </summary>
     internal class XWiseStackedData
     {

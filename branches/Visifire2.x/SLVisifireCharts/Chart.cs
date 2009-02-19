@@ -91,7 +91,7 @@ namespace Visifire.Charts
     [TemplatePart(Name = Chart.ToolTipCanvasName, Type = typeof(Canvas))]
 
     #endregion
-
+    
     [System.Windows.Browser.ScriptableType]
     public partial class Chart
     {
@@ -124,7 +124,6 @@ namespace Visifire.Charts
         /// Height of the chart
         /// </summary>
         [ScriptableMember]
-
         public new Double Height
         {
             get
@@ -154,7 +153,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// LogLevel is used to keep track the value of loglevel, this property is set from CreateChart() function in App Class in project SLVisifireChartsXap
+        /// LogLevel is used to keep track the value of loglevel, this property is set from CreateChart() function in App Class in project SLVisifireChartsXap. 
         /// This Property cannot be used by user.
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -163,6 +162,7 @@ namespace Visifire.Charts
             get;
             set;
         }
+
 #if SL
         /// <summary>
         /// If Chart is drawn using JavaScript, This property will be set to true from project SLVisifireChartsXap.

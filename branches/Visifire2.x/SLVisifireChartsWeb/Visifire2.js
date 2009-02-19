@@ -1,39 +1,37 @@
 /*
-    Visifire2.js v2.0.10 beta
+Visifire2.js v2.1.0
     
-    Copyright (C) 2008 Webyog Softworks Private Limited
+Copyright (C) 2008 Webyog Softworks Private Limited
 
-    This file is a part of Visifire Charts.
+This file is a part of Visifire Charts.
  
-    Visifire is a free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Visifire is a free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
       
-    You should have received a copy of the GNU General Public License
-    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
   
-    If GPL is not suitable for your products or company, Webyog provides Visifire 
-    under a flexible commercial license designed to meet your specific usage and 
-    distribution requirements. If you have already obtained a commercial license 
-    from Webyog, you can use this file under those license terms.
+If GPL is not suitable for your products or company, Webyog provides Visifire 
+under a flexible commercial license designed to meet your specific usage and 
+distribution requirements. If you have already obtained a commercial license 
+from Webyog, you can use this file under those license terms.
 
 */
 
 
-if(!window.Visifire2)
-{
+if (!window.Visifire2) {
     /*  Visifire2
     
-        pXapPath     => Location of SL.Visifire.Charts.xap file path.
-        pId          => Silverlight object id.
-        pWidth       => Width of the chart container.
-        pHeight      => Height of the chart container.
-        pBackground  => Background of the silverlight object
-        pWindowless  => Whether the Silverlight object is windowless
+    pXapPath     => Location of SL.Visifire.Charts.xap file path.
+    pId          => Silverlight object id.
+    pWidth       => Width of the chart container.
+    pHeight      => Height of the chart container.
+    pBackground  => Background of the silverlight object
+    pWindowless  => Whether the Silverlight object is windowless
     */
-    window.Visifire2 = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless)
-    {
+    window.Visifire2 = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless) {
         this.id = null;                             // Silverlight object id.
         this.logLevel = 1;                          // Determines whether to log or not.
         this.xapPath = "SL.Visifire.Charts.xap";    // xap file path (default is taken as Visifire.xap in the same directory).
@@ -48,23 +46,22 @@ if(!window.Visifire2)
         this.loaded = null;                         // Loaded event handler.
         this.charts = null;                         // Chart references (One Visifire Chart object can contain more than one chart.)
 
-        // pId not present
-        if (Number(pId))
-        {
+        //  pId not present
+        if (Number(pId)) {
             if (pHeight)
                 this.background = pHeight;
-            
+
             pHeight = pWidth;
             pWidth = pId;
         }
-        else // pId present
+        else    // pId present
         {
             this.id = pId;
 
             if (pBackground)
                 this.background = pBackground;
         }
-        
+
         if (pXapPath)
             this.xapPath = pXapPath;
 
@@ -87,139 +84,129 @@ if(!window.Visifire2)
 
     window.Visifire2._slCount = 0;              // Number of Visifire controls exists in the current window.
 
-
-    /*  setWindowlessState
+    /*  Set windowless state of silverlight object
 
         pWindowless  => Whether the Silverlight object is windowless
     */
-    Visifire2.prototype.setWindowlessState = function(pWindowless)
-    {
-        if(pWindowless != null)
+    Visifire2.prototype.setWindowlessState = function(pWindowless) {
+        if (pWindowless != null)
             this.windowless = Boolean(pWindowless);
     }
+
+    /*  Set chart data Xml
     
-    Visifire2.prototype._getSlControl = function ()
-    {
-        var _uThisObject = this;
-        
-        if(_uThisObject.id != null)
-        {
-            var slControl = document.getElementById(_uThisObject.id);
-            return slControl;
-        }
-        
-        return null;        
-    }
-    
-    Visifire2.prototype.isLoaded = function()
-    {
+        pDataXml  => Chart data xml as string
+    */
+    Visifire2.prototype.setDataXml = function(pDataXml) {
         var slControl = this._getSlControl();
-        
-        try
-        {
-            if(slControl.Content.wrapper != null)
-                return true;
+
+        if (slControl != null && this.dataXml != null)
+            slControl.Content.wrapper.AddDataXML(pDataXml);
+
+        this.dataXml = pDataXml;
+    }
+
+    /*  Set data Uri to chart control
+
+        pDataUri  => Chart data uri as string
+    */
+    Visifire2.prototype.setDataUri = function(pDataUri) {
+        var slControl = this._getSlControl();
+
+        if (slControl != null && this.dataUri != null)
+            slControl.Content.wrapper.AddDataUri(pDataUri);
+
+        this.dataUri = pDataUri;
+    }
+
+    /*  Render the chart
+
+        pTargetElement  => Target div element
+    */
+    Visifire2.prototype.render = function(pTargetElement) {
+        var slControl = this._getSlControl();
+
+        if (slControl == null) {
+            this._render(pTargetElement);
         }
-        catch(ex)
-        {
-            return false;
+        else {
+            this._reRender(slControl);
         }
     }
-    
-    Visifire2.prototype.isDataLoaded = function()
-    {
+
+    /*  Set size of the chart control
+
+        pWidth   => Width of the chart
+        pHeight  => Height of the chart
+    */
+    Visifire2.prototype.setSize = function(pWidth, pHeight) {
         var slControl = this._getSlControl();
-        
-        return slControl.Content.wrapper.IsDataLoaded;
-    }
-    
-    Visifire2.prototype.setSize = function(pWidth,pHeight)
-    {
-        var slControl = this._getSlControl();
-        
-        if(slControl != null)
-        {
+
+        if (slControl != null) {
             slControl.width = pWidth;
             slControl.height = pHeight;
-            slControl.Content.wrapper.Resize(pWidth,pHeight);
+            slControl.Content.wrapper.Resize(pWidth, pHeight);
         }
-        else
-        {
+        else {
             this.width = pWidth;
             this.height = pHeight;
         }
     }
-    
-    Visifire2.prototype.setDataXml = function(pDataXml)
-    {
-        var slControl = this._getSlControl();
+
+    /*  Set LogLevel of the chart control
         
-        if(slControl != null && this.dataXml != null)
-            slControl.Content.wrapper.AddDataXML(pDataXml);
-        
-        this.dataXml = pDataXml;
-    }
-       
-    Visifire2.prototype.setDataUri = function(pDataUri)
-    {
-        var slControl = this._getSlControl();
-        
-        if(slControl != null && this.dataUri != null)
-            slControl.Content.wrapper.AddDataUri(pDataUri);
-        
-        this.dataUri = pDataUri;
-    }
-    
-    Visifire2.prototype.setLogLevel = function(level)
-    {
-        if(level != null)
+        level  => loglevel value used to generate a process log depending on logging level.
+
+    */
+    Visifire2.prototype.setLogLevel = function(level) {
+        if (level != null)
             this.logLevel = level;
-    }        
-    
-    Visifire2.prototype._isString = function() 
-    {
-        if (typeof arguments[0] == 'string') 
-            return true; 
-        
-        if (typeof arguments[0] == 'object') 
-        {  
-            var criterion = arguments[0].constructor.toString().match(/string/i); 
-            return (criterion != null);  
-        }
-        
-        return false;
     }
-    
-    Visifire2.prototype._validateChartElement = function(pElement)
-    {
-        if(this.logLevel != 0)
-        {           
-            for(var i = 0; i < this.elements.length; i++)
-                if(this.elements[i] == pElement)
-                    return;
-             
-            alert('Error occurred while attaching event.\nUnknown element "' + pElement + '".');
+
+    /*  Checks whether the silverlight control is loaded 
+    */
+    Visifire2.prototype.isLoaded = function() {
+        var slControl = this._getSlControl();
+
+        try {
+            if (slControl.Content.wrapper != null)
+                return true;
+        }
+        catch (ex) {
+            return false;
         }
     }
-    
-    Visifire2.prototype._validateEvent = function(pEvent)
-    {
-        if(this.logLevel != 0)
-        {
-            for(var i = 0; i < this.events.length; i++)
-                if(this.events[i] == pEvent)
-                    return;
-            
-            alert('Error occurred while attaching event.\nUnsupported event type "' + pEvent + '".');
-        }
+
+    /*  Whether the chart data xml is loaded and displayed into chart
+    */
+    Visifire2.prototype.isDataLoaded = function() {
+        var slControl = this._getSlControl();
+
+        return slControl.Content.wrapper.IsDataLoaded;
     }
-    
-    Visifire2.prototype._render = function(pTargetElement) 
-    {
+
+    /*  Returns current silverlight control reference 
+    */
+    Visifire2.prototype._getSlControl = function() {
+        var _uThisObject = this;
+
+        if (_uThisObject.id != null) {
+            var slControl = document.getElementById(_uThisObject.id);
+            return slControl;
+        }
+
+        return null;
+    }
+
+    /*  Render the chart
+           
+    pTargetElement  => Target div element
+    */
+    Visifire2.prototype._render = function(pTargetElement) {
         var _uThisObject = this;            // This Class
         var width;                          // Width of the chart container
         var height;                         // Height of the chart container
-        
+
         _uThisObject.targerElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
 
         width = (_uThisObject.width != null) ? _uThisObject.width : (_uThisObject.targerElement.offsetWidth != 0) ? _uThisObject.targerElement.offsetWidth : 500;
@@ -228,13 +215,13 @@ if(!window.Visifire2)
 
         if (!_uThisObject.id)
             _uThisObject.id = 'VisifireControl' + _uThisObject.index;
-        
+
         var html = '<object id="' + _uThisObject.id + '" data="data:application/x-silverlight," type="application/x-silverlight-2" width="' + width + '" height="' + height + '">';
 
         window["setVisifireChartsRef" + _uThisObject.index] = function(e) {
             _uThisObject.charts = e;
         }
-        
+
         if (_uThisObject.preLoad != null)
             eval("window.visifireChartPreLoad" + _uThisObject.index + "=" + _uThisObject.preLoad);
 
@@ -250,7 +237,7 @@ if(!window.Visifire2)
         html += "logLevel=" + _uThisObject.logLevel + ",";
 
         html += "controlId=" + _uThisObject.id + ",";
-        
+
         html += "setVisifireChartsRef=setVisifireChartsRef" + _uThisObject.index + ",";
 
         if (_uThisObject.preLoad != null)
@@ -296,23 +283,12 @@ if(!window.Visifire2)
 
         this.targerElement.innerHTML = html;
     }
-    
-    Visifire2.prototype._reRender = function(pSlControl)
-    {
+
+    /*  Re-render the chart
+
+        pSlControl  => Silverlight control reference
+    */
+    Visifire2.prototype._reRender = function(pSlControl) {
         pSlControl.Content.wrapper.ReRenderChart();
-    }
-    
-    Visifire2.prototype.render = function(pTargetElement)
-    {
-        var slControl = this._getSlControl();
-        
-        if(slControl == null)
-        {   
-            this._render(pTargetElement);       
-		}
-		else
-		{
-		    this._reRender(slControl);
-		}
     }
 }
