@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="SLVisifireApp.Combi5"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="8">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Combinational Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="Product A" RenderAs="Area" Cursor="Hand" LightingEnabled="False">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="52"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="46"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="33"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="28"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="12"/>
+                        <vc:DataPoint AxisXLabel="Jun" YValue="17"/>
+                        <vc:DataPoint AxisXLabel="Jul" YValue="14"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Product B" RenderAs="Line" Cursor="Hand" LineThickness="4" LineStyle="Dashed">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="48"/>
+                        <vc:DataPoint YValue="42"/>
+                        <vc:DataPoint YValue="22"/>
+                        <vc:DataPoint YValue="18"/>
+                        <vc:DataPoint YValue="16"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="12"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

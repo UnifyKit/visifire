@@ -1,0 +1,41 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" AnimationEnabled="False" ColorSet="Picasso" View3D="True" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Age-Wise Distribution of Google and Yahoo Users" FontSize="12"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis Title="Age">
+      <vc:Axis.AxisLabels>
+        <vc:AxisLabels Angle="-30"/>
+      </vc:Axis.AxisLabels>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Percentage Distribution" Suffix="%"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries Name="Google" RenderAs="Bar" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="18-24" YValue="19.33" />
+        <vc:DataPoint AxisXLabel="25-34" YValue="23.13" />
+        <vc:DataPoint AxisXLabel="35-44" YValue="22.34" />
+        <vc:DataPoint AxisXLabel="45-54" YValue="17.97" />
+        <vc:DataPoint AxisXLabel="55+" YValue="17.23" />
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Yahoo" RenderAs="Bar" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="17.91" />
+        <vc:DataPoint YValue="20.37" />
+        <vc:DataPoint YValue="22.93" />
+        <vc:DataPoint YValue="20.07" />
+        <vc:DataPoint YValue="18.72" />
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

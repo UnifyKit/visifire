@@ -1,0 +1,138 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Area Chart"/>
+  </vc:Chart.Titles>
+  <vc:Chart.AxesX>
+    <vc:Axis AxisMinimum="0" Interval="1"/>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Area" Bevel="False" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint XValue="0" YValue="45"/>
+        <vc:DataPoint XValue="1" YValue="50"/>
+        <vc:DataPoint XValue="2" YValue="43"/>
+        <vc:DataPoint XValue="3" YValue="48"/>
+        <vc:DataPoint XValue="4" YValue="42"/>
+        <vc:DataPoint XValue="5" YValue="62"/>
+        <vc:DataPoint XValue="6" YValue="50"/>
+        <vc:DataPoint XValue="7" YValue="38"/>
+        <vc:DataPoint XValue="8" YValue="50"/>
+        <vc:DataPoint XValue="9" YValue="43"/>
+        <vc:DataPoint XValue="10" YValue="52"/>
+        <vc:DataPoint XValue="11" YValue="42"/>
+        <vc:DataPoint XValue="12" YValue="60"/>
+        <vc:DataPoint XValue="13" YValue="46"/>
+        <vc:DataPoint XValue="14" YValue="36"/>
+        <vc:DataPoint XValue="15" YValue="30"/>
+        <vc:DataPoint XValue="16" YValue="38"/>
+        <vc:DataPoint XValue="17" YValue="32"/>
+        <vc:DataPoint XValue="18" YValue="42"/>
+        <vc:DataPoint XValue="19" YValue="56"/>
+        <vc:DataPoint XValue="20" YValue="40"/>
+        <vc:DataPoint XValue="21" YValue="22"/>
+        <vc:DataPoint XValue="22" YValue="32"/>
+        <vc:DataPoint XValue="23" YValue="37"/>
+        <vc:DataPoint XValue="24" YValue="42"/>
+        <vc:DataPoint XValue="25" YValue="38"/>
+        <vc:DataPoint XValue="26" YValue="34"/>
+        <vc:DataPoint XValue="27" YValue="30"/>
+        <vc:DataPoint XValue="28" YValue="36"/>
+        <vc:DataPoint XValue="29" YValue="42"/>
+        <vc:DataPoint XValue="30" YValue="38"/>
+        <vc:DataPoint XValue="31" YValue="24"/>
+        <vc:DataPoint XValue="32" YValue="28"/>
+        <vc:DataPoint XValue="33" YValue="22"/>
+        <vc:DataPoint XValue="34" YValue="30"/>
+        <vc:DataPoint XValue="35" YValue="35"/>
+        <vc:DataPoint XValue="36" YValue="38"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Area" Bevel="False" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint XValue="0" YValue="30"/>
+        <vc:DataPoint XValue="1" YValue="35"/>
+        <vc:DataPoint XValue="2" YValue="26"/>
+        <vc:DataPoint XValue="3" YValue="35"/>
+        <vc:DataPoint XValue="4" YValue="30"/>
+        <vc:DataPoint XValue="5" YValue="42"/>
+        <vc:DataPoint XValue="6" YValue="35"/>
+        <vc:DataPoint XValue="7" YValue="28"/>
+        <vc:DataPoint XValue="8" YValue="22"/>
+        <vc:DataPoint XValue="9" YValue="30"/>
+        <vc:DataPoint XValue="10" YValue="40"/>
+        <vc:DataPoint XValue="11" YValue="32"/>
+        <vc:DataPoint XValue="12" YValue="25"/>
+        <vc:DataPoint XValue="13" YValue="33"/>
+        <vc:DataPoint XValue="14" YValue="24"/>
+        <vc:DataPoint XValue="15" YValue="28"/>
+        <vc:DataPoint XValue="16" YValue="24"/>
+        <vc:DataPoint XValue="17" YValue="30"/>
+        <vc:DataPoint XValue="18" YValue="36"/>
+        <vc:DataPoint XValue="19" YValue="26"/>
+        <vc:DataPoint XValue="20" YValue="32"/>
+        <vc:DataPoint XValue="21" YValue="18"/>
+        <vc:DataPoint XValue="22" YValue="38"/>
+        <vc:DataPoint XValue="23" YValue="28"/>
+        <vc:DataPoint XValue="24" YValue="18"/>
+        <vc:DataPoint XValue="25" YValue="23"/>
+        <vc:DataPoint XValue="26" YValue="28"/>
+        <vc:DataPoint XValue="27" YValue="18"/>
+        <vc:DataPoint XValue="28" YValue="25"/>
+        <vc:DataPoint XValue="29" YValue="32"/>
+        <vc:DataPoint XValue="30" YValue="30"/>
+        <vc:DataPoint XValue="31" YValue="18"/>
+        <vc:DataPoint XValue="32" YValue="22"/>
+        <vc:DataPoint XValue="33" YValue="28"/>
+        <vc:DataPoint XValue="34" YValue="20"/>
+        <vc:DataPoint XValue="35" YValue="28"/>
+        <vc:DataPoint XValue="36" YValue="30"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Area" Bevel="false" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint XValue="0" YValue="15"/>
+        <vc:DataPoint XValue="1" YValue="18"/>
+        <vc:DataPoint XValue="2" YValue="12"/>
+        <vc:DataPoint XValue="3" YValue="20"/>
+        <vc:DataPoint XValue="4" YValue="10"/>
+        <vc:DataPoint XValue="5" YValue="18"/>
+        <vc:DataPoint XValue="6" YValue="14"/>
+        <vc:DataPoint XValue="7" YValue="11"/>
+        <vc:DataPoint XValue="8" YValue="8"/>
+        <vc:DataPoint XValue="9" YValue="12"/>
+        <vc:DataPoint XValue="10" YValue="18"/>
+        <vc:DataPoint XValue="11" YValue="12"/>
+        <vc:DataPoint XValue="12" YValue="18"/>
+        <vc:DataPoint XValue="13" YValue="13"/>
+        <vc:DataPoint XValue="14" YValue="9"/>
+        <vc:DataPoint XValue="15" YValue="12"/>
+        <vc:DataPoint XValue="16" YValue="8"/>
+        <vc:DataPoint XValue="17" YValue="12"/>
+        <vc:DataPoint XValue="18" YValue="16"/>
+        <vc:DataPoint XValue="19" YValue="22"/>
+        <vc:DataPoint XValue="20" YValue="14"/>
+        <vc:DataPoint XValue="21" YValue="7"/>
+        <vc:DataPoint XValue="22" YValue="10"/>
+        <vc:DataPoint XValue="23" YValue="13"/>
+        <vc:DataPoint XValue="24" YValue="16"/>
+        <vc:DataPoint XValue="25" YValue="20"/>
+        <vc:DataPoint XValue="26" YValue="10"/>
+        <vc:DataPoint XValue="27" YValue="14"/>
+        <vc:DataPoint XValue="28" YValue="18"/>
+        <vc:DataPoint XValue="29" YValue="22"/>
+        <vc:DataPoint XValue="30" YValue="18"/>
+        <vc:DataPoint XValue="31" YValue="28"/>
+        <vc:DataPoint XValue="32" YValue="18"/>
+        <vc:DataPoint XValue="33" YValue="12"/>
+        <vc:DataPoint XValue="34" YValue="8"/>
+        <vc:DataPoint XValue="35" YValue="12"/>
+        <vc:DataPoint XValue="36" YValue="20"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

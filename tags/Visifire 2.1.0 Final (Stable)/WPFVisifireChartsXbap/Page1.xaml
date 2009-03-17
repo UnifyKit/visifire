@@ -1,0 +1,54 @@
+﻿<Page x:Class="WPFVisifireChartsXbap.Page1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Page1" Background="#FFD6D6D6" 
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
+    >
+    <Page.Resources>
+        <Style x:Key="ChartStyle" TargetType="{x:Type vc:Chart}">
+            <Setter Property="Bevel" Value="True"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="Gray" Offset="0"/>
+                        <GradientStop Color="White" Offset=".5"/>
+                        <GradientStop Color="#FFB2ADAD" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TitleStyle" TargetType="{x:Type vc:Title}">
+            <Setter Property="FontColor" Value="Red"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+        <Style x:Key="DataSeriesStyle" TargetType="{x:Type vc:DataSeries}" >
+            <Setter Property="Color" Value="Blue"/>
+            <Setter Property="Bevel" Value="False"/>
+        </Style>
+    </Page.Resources>
+    <Grid x:Name="LayoutRoot" Height="300" Width="500">
+
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" Name="MyChart" 
+                  Theme="Theme1" AnimationEnabled="True" Style="{StaticResource ChartStyle}" Cursor="ArrowCD">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Area Chart" Style="{StaticResource TitleStyle}"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Column">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="25"/>
+                        <vc:DataPoint YValue="43"/>
+                        <vc:DataPoint YValue="76"/>
+                        <vc:DataPoint YValue="45"/>
+                        <vc:DataPoint YValue="65"/>
+                        <vc:DataPoint YValue="21"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid>
+</Page>

@@ -1,0 +1,26 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Pie Chart" Padding="6"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Pie" StartAngle="60" ShowInLegend="False" Bevel="False" Cursor="Hand" LabelLineStyle="Dotted" LabelLineColor="Black">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="5509"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="7047"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="10047"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="8508"/>
+        <vc:DataPoint AxisXLabel="May" YValue="6022"/>
+        <vc:DataPoint AxisXLabel="Jun" YValue="9047"/>
+        <vc:DataPoint AxisXLabel="Jul" YValue="7508"/>
+        <vc:DataPoint AxisXLabel="Aug" YValue="11222"/>
+        <vc:DataPoint AxisXLabel="Sep" YValue="5498"/>
+        <vc:DataPoint AxisXLabel="Oct" YValue="6754"/>
+        <vc:DataPoint AxisXLabel="Nov" YValue="8756"/>
+        <vc:DataPoint AxisXLabel="Dec" YValue="2340"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

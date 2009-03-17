@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Chart_ApplyTemplate" xml:space="preserve">
+    <value>&lt;ControlTemplate
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+    TargetType="vc:Chart"&gt; &lt;Grid x:Name="RootElement" Background="Transparent"&gt;
+    &lt;Border Name="ChartBorder"
+            Background="Yellow" Width="Auto" Height="Auto"
+            Margin="0,0,0,0" &gt;&lt;Grid x:Name="ChartAreaGrid" &gt;&lt;/Grid&gt;
+    &lt;/Border&gt;&lt;/Grid&gt;&lt;/ControlTemplate&gt;</value>
+    <comment>This is the template applied to chart.</comment>
+  </data>
+  <data name="Chart_AxisXaml" xml:space="preserve">
+    <value>&lt;vc:Chart Height="300" Width="400" Margin="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;
+         	&lt;vc:Chart.AxesX&gt;&lt;vc:Axis Interval="10" AxisMinimum="0" AxisMaximum="100" /&gt;&lt;/vc:Chart.AxesX&gt; &lt;vc:Chart.AxesY&gt;&lt;vc:Axis AxisMaximum="200" AxisMinimum="0" Interval="20"/&gt;&lt;/vc:Chart.AxesY&gt; &lt;vc:Chart.Series&gt;&lt;vc:DataSeries&gt;&lt;vc:DataSeries.DataPoints&gt;&lt;vc:DataPoint AxisXLabel="a" XValue="10" YValue="10"/&gt;&lt;vc:DataPoint AxisXLabel="b" XValue="20" YValue="20"/&gt;&lt;vc:DataPoint AxisXLabel="c" XValue="30" YValue="15"/&gt;&lt;vc:DataPoint AxisXLabel="d" XValue="40" YValue="30"/&gt;&lt;vc:DataPoint AxisXLabel="e" XValue="50" YValue="20"/&gt;&lt;/vc:DataSeries.DataPoints&gt;&lt;/vc:DataSeries&gt;&lt;/vc:Chart.Series&gt;
+        &lt;/vc:Chart&gt;</value>
+    <comment>This XAML fragment is used to test Chart Axis when it is loaded.</comment>
+  </data>
+  <data name="Chart_CustomTemplate" xml:space="preserve">
+    <value>&lt;ControlTemplate
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+    TargetType="vc:Chart"&gt; &lt;Grid x:Name="RootElement" Background="Transparent"&gt;
+    &lt;Border Name="ChartBorder"
+            Background="Yellow" Width="Auto" Height="Auto"
+            Margin="0,0,0,0" &gt;&lt;Grid x:Name="ChartAreaGrid" &gt;&lt;/Grid&gt;
+    &lt;/Border&gt;&lt;/Grid&gt;&lt;/ControlTemplate&gt;</value>
+  </data>
+  <data name="Chart_DefaultDataSeries" xml:space="preserve">
+    <value>&lt;vc:DataSeries xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;&lt;vc:DataSeries.DataPoints&gt;&lt;vc:DataPoint XValue="1" YValue="10"/&gt;&lt;vc:DataPoint XValue="2" YValue="20"/&gt;&lt;vc:DataPoint XValue="3" YValue="15"/&gt;&lt;vc:DataPoint XValue="4" YValue="30"/&gt;&lt;vc:DataPoint XValue="5" YValue="20"/&gt;&lt;/vc:DataSeries.DataPoints&gt;&lt;/vc:DataSeries&gt;</value>
+    <comment>This is a Default DataSeries used for Testing via XAML.</comment>
+  </data>
+  <data name="Chart_DefaultXaml" xml:space="preserve">
+    <value>&lt;vc:Chart Height="300" Width="400" Margin="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;
+         	&lt;vc:Chart.Titles&gt;
+                          &lt;vc:Title HorizontalAlignment="Center" FontSize="18" FontColor="#FFD6C8C8" Background="#FF934141" /&gt;
+        	&lt;/vc:Chart.Titles&gt; &lt;vc:Chart.Series&gt;&lt;vc:DataSeries&gt;&lt;vc:DataSeries.DataPoints&gt;&lt;vc:DataPoint XValue="1" YValue="10"/&gt;&lt;vc:DataPoint XValue="2" YValue="20"/&gt;&lt;vc:DataPoint XValue="3" YValue="15"/&gt;&lt;vc:DataPoint XValue="4" YValue="30"/&gt;&lt;vc:DataPoint XValue="5" YValue="20"/&gt;&lt;/vc:DataSeries.DataPoints&gt;&lt;/vc:DataSeries&gt;&lt;/vc:Chart.Series&gt;
+        &lt;/vc:Chart&gt;</value>
+    <comment>This is the default XAML used in testing.</comment>
+  </data>
+  <data name="Chart_EmptyTemplate" xml:space="preserve">
+    <value>&lt;ControlTemplate
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+    TargetType="vc:Chart"&gt; 
+    &lt;Grid
+            Background="Yellow" Width="Auto" Height="Auto"
+            Margin="0,0,0,0" &gt;
+    &lt;Border Background="Transparent" Width="Auto" Height="Auto"  /&gt;&lt;StackPanel Canvas.ZIndex="9000" Name="CenterPanel" Background="Transparent" Width="500" Height="300"/&gt;
+    &lt;/Grid&gt; &lt;/ControlTemplate&gt;</value>
+    <comment>Empty template applied to chart.</comment>
+  </data>
+  <data name="Chart_TitleContentPropertyXaml" xml:space="preserve">
+    <value>&lt;vc:Chart Height="300" Width="400" Margin="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;
+         	&lt;vc:Chart.Titles&gt;
+                          &lt;vc:Title Text="Chart Title" HorizontalAlignment="Center" FontSize="18" FontColor="#FFD6C8C8" Background="#FF934141" /&gt;
+        	&lt;/vc:Chart.Titles&gt;
+        &lt;/vc:Chart&gt;</value>
+    <comment>This is used to test Title element in chart via XAML.</comment>
+  </data>
+  <data name="Chart_Xaml" xml:space="preserve">
+    <value>&lt;vc:Chart Height="400" Width="600" Margin="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;
+&lt;/vc:Chart&gt;</value>
+  </data>
+  <data name="DataSeries_BigXaml" xml:space="preserve">
+    <value>&lt;vc:DataSeries RenderAs="Column" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"&gt;&lt;vc:DataSeries.DataPoints&gt;&lt;vc:DataPoint XValue="1" YValue="10"/&gt;&lt;vc:DataPoint XValue="2" YValue="20"/&gt;&lt;vc:DataPoint XValue="3" YValue="15"/&gt;&lt;vc:DataPoint XValue="4" YValue="30"/&gt;&lt;vc:DataPoint XValue="5" YValue="20"/&gt;&lt;vc:DataPoint XValue="6" YValue="20"/&gt;&lt;vc:DataPoint XValue="7" YValue="20"/&gt;&lt;vc:DataPoint XValue="8" YValue="20"/&gt;&lt;vc:DataPoint XValue="9" YValue="20"/&gt;&lt;vc:DataPoint XValue="10" YValue="20"/&gt;&lt;vc:DataPoint XValue="11" YValue="20"/&gt;&lt;vc:DataPoint XValue="12" YValue="20"/&gt;&lt;vc:DataPoint XValue="13" YValue="20"/&gt;&lt;vc:DataPoint XValue="14" YValue="20"/&gt;&lt;vc:DataPoint XValue="15" YValue="20"/&gt;&lt;vc:DataPoint XValue="16" YValue="20"/&gt;&lt;vc:DataPoint XValue="17" YValue="20"/&gt;&lt;vc:DataPoint XValue="18" YValue="20"/&gt;&lt;vc:DataPoint XValue="19" YValue="20"/&gt;&lt;vc:DataPoint XValue="20" YValue="20"/&gt;&lt;vc:DataPoint XValue="21" YValue="20"/&gt;&lt;vc:DataPoint XValue="22" YValue="20"/&gt;&lt;vc:DataPoint XValue="23" YValue="20"/&gt;&lt;vc:DataPoint XValue="24" YValue="20"/&gt;&lt;vc:DataPoint XValue="25" YValue="20"/&gt;&lt;vc:DataPoint XValue="26" YValue="20"/&gt;&lt;vc:DataPoint XValue="27" YValue="20"/&gt;&lt;vc:DataPoint XValue="28" YValue="20"/&gt;&lt;vc:DataPoint XValue="29" YValue="20"/&gt;&lt;vc:DataPoint XValue="30" YValue="20"/&gt;&lt;vc:DataPoint XValue="31" YValue="20"/&gt;&lt;vc:DataPoint XValue="32" YValue="20"/&gt;&lt;vc:DataPoint XValue="33" YValue="20"/&gt;&lt;vc:DataPoint XValue="34" YValue="20"/&gt;&lt;vc:DataPoint XValue="35" YValue="20"/&gt;&lt;vc:DataPoint XValue="36" YValue="20"/&gt;&lt;vc:DataPoint XValue="37" YValue="20"/&gt;&lt;vc:DataPoint XValue="38" YValue="20"/&gt;&lt;vc:DataPoint XValue="39" YValue="20"/&gt;&lt;vc:DataPoint XValue="40" YValue="20"/&gt;&lt;vc:DataPoint XValue="41" YValue="20"/&gt;&lt;vc:DataPoint XValue="42" YValue="20"/&gt;&lt;vc:DataPoint XValue="43" YValue="20"/&gt;&lt;vc:DataPoint XValue="44" YValue="20"/&gt;&lt;vc:DataPoint XValue="45" YValue="20"/&gt;&lt;vc:DataPoint XValue="46" YValue="20"/&gt;&lt;vc:DataPoint XValue="47" YValue="20"/&gt;&lt;vc:DataPoint XValue="48" YValue="20"/&gt;&lt;vc:DataPoint XValue="49" YValue="20"/&gt;&lt;vc:DataPoint XValue="50" YValue="20"/&gt;&lt;vc:DataPoint XValue="51" YValue="20"/&gt;&lt;vc:DataPoint XValue="52" YValue="20"/&gt;&lt;vc:DataPoint XValue="53" YValue="20"/&gt;&lt;vc:DataPoint XValue="54" YValue="20"/&gt;&lt;vc:DataPoint XValue="55" YValue="20"/&gt;&lt;vc:DataPoint XValue="56" YValue="20"/&gt;&lt;vc:DataPoint XValue="57" YValue="20"/&gt;&lt;vc:DataPoint XValue="58" YValue="20"/&gt;&lt;vc:DataPoint XValue="59" YValue="20"/&gt;&lt;vc:DataPoint XValue="60" YValue="20"/&gt;&lt;vc:DataPoint XValue="61" YValue="20"/&gt;&lt;vc:DataPoint XValue="62" YValue="20"/&gt;&lt;vc:DataPoint XValue="63" YValue="20"/&gt;&lt;vc:DataPoint XValue="64" YValue="20"/&gt;&lt;vc:DataPoint XValue="65" YValue="20"/&gt;&lt;vc:DataPoint XValue="66" YValue="20"/&gt;&lt;vc:DataPoint XValue="67" YValue="20"/&gt;&lt;vc:DataPoint XValue="68" YValue="20"/&gt;&lt;vc:DataPoint XValue="69" YValue="20"/&gt;&lt;vc:DataPoint XValue="70" YValue="20"/&gt;&lt;vc:DataPoint XValue="71" YValue="20"/&gt;&lt;vc:DataPoint XValue="72" YValue="20"/&gt;&lt;vc:DataPoint XValue="73" YValue="20"/&gt;&lt;vc:DataPoint XValue="74" YValue="20"/&gt;&lt;vc:DataPoint XValue="75" YValue="20"/&gt;&lt;vc:DataPoint XValue="76" YValue="20"/&gt;&lt;vc:DataPoint XValue="77" YValue="20"/&gt;&lt;vc:DataPoint XValue="78" YValue="20"/&gt;&lt;vc:DataPoint XValue="79" YValue="20"/&gt;&lt;vc:DataPoint XValue="80" YValue="20"/&gt;&lt;vc:DataPoint XValue="81" YValue="20"/&gt;&lt;vc:DataPoint XValue="82" YValue="20"/&gt;&lt;vc:DataPoint XValue="83" YValue="20"/&gt;&lt;vc:DataPoint XValue="84" YValue="20"/&gt;&lt;vc:DataPoint XValue="85" YValue="20"/&gt;&lt;vc:DataPoint XValue="86" YValue="20"/&gt;&lt;vc:DataPoint XValue="87" YValue="20"/&gt;&lt;vc:DataPoint XValue="88" YValue="20"/&gt;&lt;vc:DataPoint XValue="89" YValue="20"/&gt;&lt;vc:DataPoint XValue="90" YValue="20"/&gt;&lt;vc:DataPoint XValue="91" YValue="20"/&gt;&lt;vc:DataPoint XValue="92" YValue="20"/&gt;&lt;vc:DataPoint XValue="93" YValue="20"/&gt;&lt;vc:DataPoint XValue="94" YValue="20"/&gt;&lt;vc:DataPoint XValue="95" YValue="20"/&gt;&lt;vc:DataPoint XValue="96" YValue="20"/&gt;&lt;vc:DataPoint XValue="97" YValue="20"/&gt;&lt;vc:DataPoint XValue="98" YValue="20"/&gt;&lt;vc:DataPoint XValue="99" YValue="20"/&gt;&lt;vc:DataPoint XValue="100" YValue="20"/&gt;&lt;/vc:DataSeries.DataPoints&gt;&lt;/vc:DataSeries&gt;</value>
+  </data>
+  <data name="Title_ShortText" xml:space="preserve">
+    <value>Chart Title</value>
+    <comment>Short text used for testing chart title.</comment>
+  </data>
+</root>

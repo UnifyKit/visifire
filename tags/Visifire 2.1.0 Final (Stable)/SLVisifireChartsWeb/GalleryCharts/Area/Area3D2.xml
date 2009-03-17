@@ -1,0 +1,55 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Production Statistics" Padding="5"/>
+  </vc:Chart.Titles>
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Production"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Legends>
+    <vc:Legend EntryMargin="5" LabelMargin="3"/>
+  </vc:Chart.Legends>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Area" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="2000" YValue="280"/>
+        <vc:DataPoint AxisXLabel="2001" YValue="460"/>
+        <vc:DataPoint AxisXLabel="2002" YValue="720"/>
+        <vc:DataPoint AxisXLabel="2003" YValue="450"/>
+        <vc:DataPoint AxisXLabel="2004" YValue="600"/>
+        <vc:DataPoint AxisXLabel="2005" YValue="810"/>
+        <vc:DataPoint AxisXLabel="2006" YValue="620"/>
+        <vc:DataPoint AxisXLabel="2007" YValue="800"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Area" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="330"/>
+        <vc:DataPoint YValue="320"/>
+        <vc:DataPoint YValue="550"/>
+        <vc:DataPoint YValue="420"/>
+        <vc:DataPoint YValue="720"/>
+        <vc:DataPoint YValue="520"/>
+        <vc:DataPoint YValue="346"/>
+        <vc:DataPoint YValue="600"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries RenderAs="Area" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="180"/>
+        <vc:DataPoint YValue="260"/>
+        <vc:DataPoint YValue="420"/>
+        <vc:DataPoint YValue="234"/>
+        <vc:DataPoint YValue="330"/>
+        <vc:DataPoint YValue="450"/>
+        <vc:DataPoint YValue="620"/>
+        <vc:DataPoint YValue="190"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

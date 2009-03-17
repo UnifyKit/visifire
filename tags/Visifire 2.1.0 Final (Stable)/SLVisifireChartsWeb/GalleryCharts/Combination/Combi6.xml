@@ -1,0 +1,45 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Company Revenue and Profits 2007" Padding="2"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Amount ( Billion )" Prefix="$" LineThickness="0" />
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Legends>
+    <vc:Legend BorderColor="#bfe4e4" BorderThickness="0.25" LabelMargin="5" EntryMargin="2">
+      <vc:Legend.Background>
+        <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
+          <GradientStop Color="#f9f8f8" Offset="0.1"/>
+          <GradientStop Color="#f1fafa" Offset="0.4"/>
+          <GradientStop Color="#fcfefe" Offset="1"/>
+        </LinearGradientBrush>
+      </vc:Legend.Background>
+    </vc:Legend>
+  </vc:Chart.Legends>
+
+  <vc:Chart.Series>
+    <vc:DataSeries Name="Revenue" RenderAs="Column" LabelEnabled="True" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Client" YValue="4.28"/>
+        <vc:DataPoint AxisXLabel="Server and Tools" YValue="2.5"/>
+        <vc:DataPoint AxisXLabel="Business" YValue="4.3"/>
+        <vc:DataPoint AxisXLabel="Web Service" YValue="0.83"/>
+        <vc:DataPoint AxisXLabel="Devices" YValue="1.2"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries Name="Profit" RenderAs="Line" LabelEnabled="True" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="2.23"/>
+        <vc:DataPoint YValue="0.98"/>
+        <vc:DataPoint YValue="1.41"/>
+        <vc:DataPoint YValue="-0.41"/>
+        <vc:DataPoint YValue="-0.60"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

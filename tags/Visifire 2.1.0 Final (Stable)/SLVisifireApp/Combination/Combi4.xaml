@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="SLVisifireApp.Combi4"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray" Padding="8">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Performance of the Integrated Oil Companies"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.PlotArea>
+                <vc:PlotArea Background="#f9f9f9"/>
+            </vc:Chart.PlotArea>
+            
+            <vc:Chart.AxesY>
+                <vc:Axis AxisType="Primary" Title="Amount (millions of dollars)">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid InterlacedColor="White"/>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+                <vc:Axis AxisType="Secondary" Title="% Change in Revenue" Suffix="%"/>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Legends>
+                <vc:Legend EntryMargin="5" LabelMargin="5" FontSize="10"/>
+            </vc:Chart.Legends>
+
+                <vc:Chart.Series>
+                <vc:DataSeries LegendText="Revenue" RenderAs="Column" AxisYType="Primary" Cursor="Hand" ShowInLegend="True">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="ExxonMobil" YValue="370998"/>
+                        <vc:DataPoint AxisXLabel="Shell" YValue="306731"/>
+                        <vc:DataPoint AxisXLabel="BP" YValue="253621"/>
+                        <vc:DataPoint AxisXLabel="Chevron" YValue="198200"/>
+                        <vc:DataPoint AxisXLabel="Conoco" YValue="183364"/>
+                        <vc:DataPoint AxisXLabel="Marathon" YValue="63673"/>
+                        <vc:DataPoint AxisXLabel="Amerada" YValue="22747"/>
+                        <vc:DataPoint AxisXLabel="Occidental" YValue="15208"/>
+                        <vc:DataPoint AxisXLabel="Murphy" YValue="11877"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Net Income" RenderAs="Column" AxisYType="Primary" Cursor="Hand" ShowInLegend="True">
+                    <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="36130"/>
+                    <vc:DataPoint YValue="22940"/>
+                    <vc:DataPoint YValue="19314"/>
+                    <vc:DataPoint YValue="14099"/>
+                    <vc:DataPoint YValue="13529"/>
+                    <vc:DataPoint YValue="3022"/>
+                    <vc:DataPoint YValue="1242"/>
+                    <vc:DataPoint YValue="5281"/>
+                    <vc:DataPoint YValue="846"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="% Change in Revenue" RenderAs="Line" LightingEnabled="False"
+                               AxisYType="Secondary" Cursor="Hand" ShowInLegend="True">
+                    <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="24.5"/>
+                    <vc:DataPoint YValue="15.1"/>
+                    <vc:DataPoint YValue="25.1"/>
+                    <vc:DataPoint YValue="27.6"/>
+                    <vc:DataPoint YValue="33.9"/>
+                    <vc:DataPoint YValue="27.6"/>
+                    <vc:DataPoint YValue="35.9"/>
+                    <vc:DataPoint YValue="33.8"/>
+                    <vc:DataPoint YValue="42.1"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

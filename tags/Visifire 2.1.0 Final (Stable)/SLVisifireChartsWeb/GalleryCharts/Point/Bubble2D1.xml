@@ -1,0 +1,37 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+                   Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Largest Oil Producers"/>
+    <vc:Title Text="Bubble size indicates oil reserves" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis Title="Country" TitleFontSize="12">
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineThickness="0.25"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Production (billion barrels per day)"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="2006" RenderAs="Bubble" ZValueFormatString="#0.##" ToolTipText="Production: #YValue, Reserves: #ZValue" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="S.Arabia" YValue="10.2" ZValue="250"/>
+        <vc:DataPoint AxisXLabel="Russia" YValue="9.1" ZValue="110"/>
+        <vc:DataPoint AxisXLabel="USA" YValue="8.4" ZValue="80"/>
+        <vc:DataPoint AxisXLabel="Iran" YValue="4.2" ZValue="132"/>
+        <vc:DataPoint AxisXLabel="Mexico" YValue="3.9" ZValue="80"/>
+        <vc:DataPoint AxisXLabel="China" YValue="3.3" ZValue="70"/>
+        <vc:DataPoint AxisXLabel="Norway" YValue="3.6" ZValue="50"/>
+        <vc:DataPoint AxisXLabel="Canada" YValue="3.8" ZValue="179"/>
+        <vc:DataPoint AxisXLabel="Venezuela" YValue="2.7" ZValue="79"/>
+        <vc:DataPoint AxisXLabel="UAE" YValue="2.5" ZValue="98"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

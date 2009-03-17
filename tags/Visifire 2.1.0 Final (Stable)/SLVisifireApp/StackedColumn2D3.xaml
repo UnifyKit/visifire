@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="SLVisifireApp.StackedColumn2D3"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="theme_1" AnimationType="Type3">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Total Revenues"/>
+            </vc:Chart.Titles>
+            <vc:Chart.AxisY>
+                <vc:Axis Prefix="$" Title="Products Revenue"/>
+                <vc:Axis AxisType="Secondary" Prefix="$" Title="Services Revenue"/>
+            </vc:Chart.AxisY>
+
+            <vc:Chart.Series>
+            <vc:DataSeries LegendText="Product A" RenderAs="StackedColumn" ToolTipText="Product A, #AxisXLabel, #YValue" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint AxisXLabel="2001" YValue="32024"/>
+                    <vc:DataPoint AxisXLabel="2002" YValue="24021"/>
+                    <vc:DataPoint AxisXLabel="2003" YValue="40534"/>
+                    <vc:DataPoint AxisXLabel="2004" YValue="34036"/>
+                    <vc:DataPoint AxisXLabel="2005" YValue="42000"/>
+                    <vc:DataPoint AxisXLabel="2006" YValue="10293"/>
+                    <vc:DataPoint AxisXLabel="2007" YValue="28745"/>
+                    <vc:DataPoint AxisXLabel="2008" YValue="24365"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Product B" RenderAs="StackedColumn" ToolTipText="Product B, #AxisXLabel, #YValue" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="21038"/>
+                    <vc:DataPoint YValue="32018"/>
+                    <vc:DataPoint YValue="27362"/>
+                    <vc:DataPoint YValue="18363"/>
+                    <vc:DataPoint YValue="23980"/>
+                    <vc:DataPoint YValue="17362"/>
+                    <vc:DataPoint YValue="23463"/>
+                    <vc:DataPoint YValue="13280"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Service A" RenderAs="StackedColumn" AxisYType="Secondary" ToolTipText="Service A, #AxisXLabel, #YValue" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="19273"/>
+                    <vc:DataPoint YValue="25342"/>
+                    <vc:DataPoint YValue="32435"/>
+                    <vc:DataPoint YValue="23435"/>
+                    <vc:DataPoint YValue="12325"/>
+                    <vc:DataPoint YValue="10002"/>
+                    <vc:DataPoint YValue="9000"/>
+                    <vc:DataPoint YValue="8802"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Service B" RenderAs="StackedColumn" AxisYType="Secondary" ToolTipText="Service B, #AxisXLabel, #YValue" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="30020"/>
+                    <vc:DataPoint YValue="42001"/>
+                    <vc:DataPoint YValue="50023"/>
+                    <vc:DataPoint YValue="40020"/>
+                    <vc:DataPoint YValue="52122"/>
+                    <vc:DataPoint YValue="18329"/>
+                    <vc:DataPoint YValue="32889"/>
+                    <vc:DataPoint YValue="26030"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+            </vc:Chart.Series>
+
+        </vc:Chart>
+    </Grid>
+</UserControl>

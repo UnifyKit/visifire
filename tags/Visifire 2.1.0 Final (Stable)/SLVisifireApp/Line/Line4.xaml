@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="SLVisifireApp.Line4"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="6">
+
+            <vc:Chart.PlotArea>
+                <vc:PlotArea Background="#f0f0f0"/>
+            </vc:Chart.PlotArea>
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Line Chart"/>
+            </vc:Chart.Titles>
+            <vc:Chart.AxesY>
+                <vc:Axis>
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid InterlacedColor="White"/>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Line" Cursor="Hand" ShadowEnabled="True">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="2/8/07" YValue="6000"/>
+                        <vc:DataPoint AxisXLabel="2/9/07" YValue="3000"/>
+                        <vc:DataPoint AxisXLabel="2/10/07" YValue="4545"/>
+                        <vc:DataPoint AxisXLabel="2/11/07" YValue="3560"/>
+                        <vc:DataPoint AxisXLabel="2/12/07" YValue="4525"/>
+                        <vc:DataPoint AxisXLabel="2/1/08" YValue="2552"/>
+                        <vc:DataPoint AxisXLabel="2/2/08" YValue="3828"/>
+                        <vc:DataPoint AxisXLabel="2/3/08" YValue="2000"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

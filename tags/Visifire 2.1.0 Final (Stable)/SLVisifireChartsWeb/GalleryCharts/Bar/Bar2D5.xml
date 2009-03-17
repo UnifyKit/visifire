@@ -1,0 +1,34 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+  <vc:Chart.Background>
+    <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
+      <GradientStop Color="#e7e7e7" Offset="0.1"/>
+      <GradientStop Color="#eaeaea" Offset="0.5"/>
+      <GradientStop Color="#f8f8f8" Offset="1"/>
+    </LinearGradientBrush>
+  </vc:Chart.Background>
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Bar Chart"/>
+  </vc:Chart.Titles>
+  <vc:Chart.AxesX>
+    <vc:Axis Interval="1"/>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Bevel="False" RadiusX="6" RadiusY="6" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="35"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="42"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="50"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="66"/>
+        <vc:DataPoint AxisXLabel="May" YValue="75"/>
+        <vc:DataPoint AxisXLabel="Jun" YValue="72"/>
+        <vc:DataPoint AxisXLabel="Jul" YValue="68"/>
+        <vc:DataPoint AxisXLabel="Aug" YValue="55"/>
+        <vc:DataPoint AxisXLabel="Sep" YValue="40"/>
+        <vc:DataPoint AxisXLabel="Oct" YValue="38"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

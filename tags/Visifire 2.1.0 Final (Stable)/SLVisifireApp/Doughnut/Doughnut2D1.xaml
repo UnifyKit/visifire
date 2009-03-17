@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="SLVisifireApp.Doughnut2D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" AnimationEnabled="True" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Currency Exchange Rate Pairs"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.Legends>
+                <vc:Legend x:Name="Legend1" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="10"/>
+            </vc:Chart.Legends>
+            
+            <vc:Chart.Series>
+            <vc:DataSeries RenderAs="Doughnut" Cursor="Hand" Legend="Legend1" Bevel="True" >
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint AxisXLabel="US dollars/Euro" YValue="28.4"/>
+                    <vc:DataPoint AxisXLabel="US dollars/Yen" YValue="16.9"/>
+                    <vc:DataPoint AxisXLabel="US dollars/British pounds" YValue="13.6"/>
+                    <vc:DataPoint AxisXLabel="US dollars/All others" YValue="29.2"/>
+                    <vc:DataPoint AxisXLabel="Euro/All others" YValue="9.2"/>
+                    <vc:DataPoint AxisXLabel="All others" YValue="2.5"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

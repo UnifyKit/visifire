@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="SLVisifireApp.Column2D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="theme_1" AnimationType="Type3">
+            <vc:Chart.Titles>
+                <vc:Title Text="Athens 2004 Olympics"/>
+            </vc:Chart.Titles>
+            <vc:Chart.AxisX>
+                <vc:Axis Title="Country"/>
+            </vc:Chart.AxisX>
+            <vc:Chart.AxisY>
+                <vc:Axis Title="Gold Medals Won"/>
+            </vc:Chart.AxisY>
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Column"
+                               LabelEnabled="True" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="USA" YValue="35"/>
+                        <vc:DataPoint AxisXLabel="China" YValue="32"/>
+                        <vc:DataPoint AxisXLabel="Russia" YValue="27"/>
+                        <vc:DataPoint AxisXLabel="Australia" YValue="17"/>
+                        <vc:DataPoint AxisXLabel="Japan" YValue="16"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>
