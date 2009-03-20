@@ -559,7 +559,7 @@ namespace Visifire.Charts
 
                 PointCollection points = new PointCollection();
 
-                List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+                List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                 if (enabledDataPoints.Count <= 0)
                     continue;
@@ -571,7 +571,7 @@ namespace Visifire.Charts
                 DataPoint currentDataPoint = enabledDataPoints[0];
                 DataPoint nextDataPoint;
 
-                Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.XValue);
+                Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
                 Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -583,7 +583,7 @@ namespace Visifire.Charts
 
                     if (Double.IsNaN(currentDataPoint.InternalYValue)) continue;
 
-                    xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.XValue);
+                    xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
                     yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, currentDataPoint.InternalYValue);
 
                     points.Add(new Point(xPosition, yPosition));
@@ -605,7 +605,7 @@ namespace Visifire.Charts
                     }
                     if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
                     {
-                        Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.XValue);
+                        Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.InternalXValue);
                         Double yNextPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextDataPoint.InternalYValue);
 
                         Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
@@ -638,7 +638,7 @@ namespace Visifire.Charts
 
                 DataPoint lastDataPoint = enabledDataPoints[enabledDataPoints.Count - 1];
 
-                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
+                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.InternalXValue);
                 yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, lastDataPoint.InternalYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -659,7 +659,7 @@ namespace Visifire.Charts
                     }
                 }
 
-                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
+                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.InternalXValue);
                 yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -1482,7 +1482,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get intersection point between two lines
         /// </summary>
-        /// <param name="Line1Start">Line 1 start position</param>
+        /// <param name="Line1Start">Line 1 dateTime position</param>
         /// <param name="Line1End">Line 1 end position</param>
         /// <param name="Line2Start">Line 2 stsrt position</param>
         /// <param name="Line2End">Line 2 end position</param>

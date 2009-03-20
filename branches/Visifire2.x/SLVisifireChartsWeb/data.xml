@@ -1,35 +1,22 @@
-﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="400" Height="300" Theme="Theme1" View3D="False">
-  
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1" Width="500" Height="300">
   <vc:Chart.Titles>
-    <vc:Title Text="Top 10 Emerging Mobile Market Carriers"/>
+    <vc:Title Text="DateTime Axis Chart"/>
   </vc:Chart.Titles>
 
   <vc:Chart.AxesX>
-    <vc:Axis Interval="1" Title="Company"/>
+    <vc:Axis IntervalType="Weeks" Interval="1">
+    </vc:Axis>
   </vc:Chart.AxesX>
 
-  <vc:Chart.AxesY>
-    <vc:Axis Title="Subscriber (millions)"/>
-  </vc:Chart.AxesY>
-
-  <vc:Chart.TrendLines>
-    <vc:TrendLine Value="200"/>
-  </vc:Chart.TrendLines>
-  
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column" LabelEnabled="True">
+    <vc:DataSeries RenderAs="Column" LabelEnabled="True" XValueType="Date">
       <vc:DataSeries.DataPoints>
-        <vc:DataPoint AxisXLabel="ChinaMobile" YValue="349.76"/>
-        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
-        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
-        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
-        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
-        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="40.12" />
-        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
-        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
-        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
-        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+        <vc:DataPoint XValue="1/30/2000 12:00:12" YValue="20"/>
+        <vc:DataPoint XValue="2/15/2000 10:12:4" YValue="60"/>
+        <vc:DataPoint XValue="3/02/2000 23:00:6" YValue="30"/>
+        <vc:DataPoint XValue="3/03/2000 18:45:10" YValue="40"/>
+        <vc:DataPoint XValue="2/02/2000 12:00:00" YValue="15"/>
+        <vc:DataPoint XValue="12/30/2000 12:22:00" YValue="28"/>
       </vc:DataSeries.DataPoints>
     </vc:DataSeries>
   </vc:Chart.Series>

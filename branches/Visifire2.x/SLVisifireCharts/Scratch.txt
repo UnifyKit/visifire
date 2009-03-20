@@ -378,3 +378,142 @@ if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 //if (i == 1)
                 //    break;
             }
+
+
+
+ /// <summary>
+        /// Set DateTime in AxisXLabel
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="axis">Axis</param>
+        /// <param name="label">Axis labels</param>
+        private void SetDateTimeInAxisXLabel(DataPoint dataPoint, Axis axis, IntervalTypes intervalType)
+        {
+            if (String.IsNullOrEmpty(dataPoint.AxisXLabel))
+            {
+                String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ?  "h:mm:ss tt" :  "M/d/yyyy h:mm:ss tt";
+                valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
+                dataPoint.IsNotificationEnable = false;
+
+                DateTime dt = AlignIntervalStart(dataPoint.InternalXValueAsDateTime, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
+
+                if (intervalType == IntervalTypes.Years)
+                    dataPoint.AxisXLabel = (new DateTime(dataPoint.InternalXValueAsDateTime.Year, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+                else if (intervalType == IntervalTypes.Months)
+                    dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+                else
+                    dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+
+                System.Diagnostics.Debug.WriteLine("XValue =" + dataPoint.AxisXLabel.ToString());
+                dataPoint.IsNotificationEnable = true;
+            }
+        }
+        
+        
+        
+         // if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                            {   
+                                DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+
+                                if (newMinDate != minDate)
+                                {
+                                    Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    Chart.InternalSeries[0].IsNotificationEnable = true;
+
+                                    minDate = newMinDate;
+                                }
+                                
+                                
+                                
+                                
+                                
+                                
+		 // if (axisX.XValueType == ChartValueTypes.DateTime)
+         //               {
+         //                   if ((axisX.Interval == null || Double.IsNaN((Double)axisX.Interval)) &&
+         //                       (axisX.IntervalType == IntervalTypes.Years
+         //                       || axisX.IntervalType == IntervalTypes.Months
+         //                       || axisX.IntervalType == IntervalTypes.Weeks
+         //                       || axisX.IntervalType == IntervalTypes.Days
+         //                       || axisX.IntervalType == IntervalTypes.Auto
+         //                       )
+         //                   )
+         //                   {
+         //                       if (minDateRange.Days != 0)
+         //                           axisX.InternalIntervalType = intervalType;
+         //                       else
+         //                           axisX.InternalIntervalType = DateTimeHelper.GetAutoIntervalType(minDateRange, maxDateRange, axisX.IntervalType);
+         //                   }
+         //                   else
+         //                   {
+         //                       if (axisX.IntervalType == IntervalTypes.Auto)
+         //                           axisX.InternalIntervalType = intervalType;
+         //                       else
+         //                           axisX.InternalIntervalType = axisX.IntervalType;
+         //                   }
+         //               }
+        ///// <summary>
+        ///// Set DateTime in AxisXLabel
+        ///// </summary>
+        ///// <param name="dataPoint">DataPoint</param>
+        ///// <param name="axis">Axis</param>
+        ///// <param name="label">Axis labels</param>
+        //private void SetDateTimeInAxisXLabel(DataPoint dataPoint, Axis axis, IntervalTypes intervalType)
+        //{
+        //    if (String.IsNullOrEmpty(dataPoint.AxisXLabel))
+        //    {
+        //        String valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? "M/d/yyyy h:mm:ss tt" : axis.ValueFormatString;
+        //        dataPoint.IsNotificationEnable = false;
+
+        //        if (intervalType == IntervalTypes.Years)
+        //            dataPoint.AxisXLabel = (new DateTime(dataPoint.InternalXValueAsDateTime.Year, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+        //        else if (intervalType == IntervalTypes.Months)
+        //            dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+        //        else
+        //            dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+
+        //        System.Diagnostics.Debug.WriteLine("XValue =" + dataPoint.AxisXLabel.ToString());
+        //        dataPoint.IsNotificationEnable = true;
+        //    }
+        //}
+        
+        
+//if (intervalType == IntervalTypes.Hours)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = axisX.InternalInterval * 60;
+//    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = axisX.InternalInterval * 60 * 60;
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = axisX.InternalInterval * 60 * 60 * 1000;
+//}
+//else if (intervalType == IntervalTypes.Minutes)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60);
+//    if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 60);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 60 * 1000);
+//}
+//else if (intervalType == IntervalTypes.Seconds)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 3600);
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 1000);
+//}
+//else if (intervalType == IntervalTypes.Milliseconds)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 3600000);
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60000);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 1000);
+//}
+                                    
+                                    

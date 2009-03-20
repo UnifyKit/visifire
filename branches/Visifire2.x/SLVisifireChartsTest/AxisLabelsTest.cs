@@ -416,7 +416,6 @@ namespace SLVisifireChartsTest
             chart.AxesX.Add(_axisX);
 
             DataSeries dataSeries = new DataSeries();
-            DataPoint dataPoint = new DataPoint();
 
             dataSeries.RenderAs = RenderAs.Column;
 
@@ -426,7 +425,7 @@ namespace SLVisifireChartsTest
             {
                 DataPoint datapoint = new DataPoint();
                 datapoint.AxisXLabel = "VisifireSilverlight" + i;
-                dataPoint.YValue = rand.Next(0, 100);
+                datapoint.YValue = rand.Next(0, 100);
                 datapoint.XValue = i + 1;
                 dataSeries.DataPoints.Add(datapoint);
             }
@@ -677,7 +676,7 @@ namespace SLVisifireChartsTest
         private bool _isLoaded = false;
 
         /// <summary>
-        /// AxisX reference
+        /// axisX reference
         /// </summary>
         private Axis _axisX;
 

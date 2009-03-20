@@ -1941,7 +1941,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -2855,7 +2854,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(_sleepTime);
         }
 
-        #endregion CheckNewPropertyValue       
+        #endregion CheckNewPropertyValue
 
         #region CheckDefaultPropertyValue
 

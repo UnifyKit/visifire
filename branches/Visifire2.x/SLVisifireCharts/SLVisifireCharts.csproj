@@ -114,6 +114,9 @@
     <Compile Include="..\DataSeries.cs">
       <Link>DataSeries.cs</Link>
     </Compile>
+    <Compile Include="..\DateTimeHelper.cs">
+      <Link>DateTimeHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Enums.cs">
       <Link>Enums.cs</Link>
     </Compile>

@@ -482,7 +482,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// InnerArc start position
+        /// InnerArc dateTime position
         /// </summary>
         public Point InnerArcStart
         {
@@ -509,7 +509,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// OuterArc start position
+        /// OuterArc dateTime position
         /// </summary>
         public Point OuterArcStart
         {
@@ -536,7 +536,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// LabelLine start position
+        /// LabelLine dateTime position
         /// </summary>
         public Point LabelLineStartPoint
         {
@@ -638,7 +638,7 @@ namespace Visifire.Charts
         #region Private Properties
 
         /// <summary>
-        /// LabelLine start position
+        /// LabelLine dateTime position
         /// </summary>
         public Point LabelLineStartPoint
         {
@@ -2739,7 +2739,7 @@ namespace Visifire.Charts
         /// <param name="pieParams">Pie parameters</param>
         /// <param name="centroid">Centroid</param>
         /// <param name="center">Center</param>
-        /// <param name="arcStart">Arc start point</param>
+        /// <param name="arcStart">Arc dateTime point</param>
         /// <param name="arcStop">Arc stop point</param>
         /// <returns>Path</returns>
         private static Path GetPieFace(SectorChartShapeParams pieParams, Point3D centroid, Point3D center, Point3D arcStart, Point3D arcStop)
@@ -2797,9 +2797,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="doughnutParams">Doughnut parameters</param>
         /// <param name="centroid">Centroid</param>
-        /// <param name="arcInnerStart">Arc inner start point</param>
+        /// <param name="arcInnerStart">Arc inner dateTime point</param>
         /// <param name="arcInnerStop">Arc inner stop point</param>
-        /// <param name="arcOuterStart">Arc outer start point</param>
+        /// <param name="arcOuterStart">Arc outer dateTime point</param>
         /// <param name="arcOuterStop">Arc outer stop point</param>
         /// <param name="isTopFace">Whether a top face</param>
         /// <returns>Path</returns>
@@ -3049,8 +3049,8 @@ namespace Visifire.Charts
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            CurrentDataSeries.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-            CurrentDataPoint.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            CurrentDataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            CurrentDataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif
@@ -3198,8 +3198,8 @@ namespace Visifire.Charts
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            CurrentDataSeries.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-            CurrentDataPoint.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            CurrentDataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            CurrentDataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif
@@ -3757,7 +3757,7 @@ namespace Visifire.Charts
         /// <param name="width">Visual width</param>
         /// <param name="height">Visual height</param>
         /// <param name="series">DataSeries</param>
-        /// <param name="enabledDataPoints"> Enabled DataPoints in the DataSeries</param>
+        /// <param name="enabledDataPoints"> Enabled InternalDataPoints in the DataSeries</param>
         /// <param name="dataPoint">DataPoint reference</param>
         /// <param name="visual">visual canvas reference</param>
         /// <param name="faces">Visual faces</param>
@@ -3784,7 +3784,7 @@ namespace Visifire.Charts
                     // apply animation to the 3D sections
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
                         path.Opacity = 0;
                     }
                 }
@@ -3828,7 +3828,7 @@ namespace Visifire.Charts
         /// <param name="width">Visual width</param>
         /// <param name="height">Visual height</param>
         /// <param name="series">DataSeries</param>
-        /// <param name="enabledDataPoints"> Enabled DataPoints in the DataSeries</param>
+        /// <param name="enabledDataPoints"> Enabled InternalDataPoints in the DataSeries</param>
         /// <param name="dataPoint">DataPoint reference</param>
         /// <param name="visual">visual canvas reference</param>
         /// <param name="faces">Visual faces</param>
@@ -3961,7 +3961,7 @@ namespace Visifire.Charts
             if (series.Enabled == false)
                 return visual;
 
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
+            List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
 
@@ -4153,7 +4153,7 @@ namespace Visifire.Charts
             if (series.Enabled == false)
                 return visual;
 
-            List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
+            List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
 
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
@@ -4175,7 +4175,7 @@ namespace Visifire.Charts
             Double absoluteYValue;
             Double radiusDiff = 0;
 
-            var explodedDataPoints = (from datapoint in series.DataPoints where datapoint.Exploded == true && datapoint.InternalYValue != 0 select datapoint);
+            var explodedDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Exploded == true && datapoint.InternalYValue != 0 select datapoint);
             radiusDiff = (explodedDataPoints.Count() > 0) ? radius * 0.3 : 0;
 
             if (chart.View3D)
@@ -4301,7 +4301,7 @@ namespace Visifire.Charts
                             // apply animation to the 3D sections
                             if (animationEnabled)
                             {
-                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.DataPoints.Count) * (series.DataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
                                 path.Opacity = 0;
                             }
                         }

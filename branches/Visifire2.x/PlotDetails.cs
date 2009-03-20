@@ -51,7 +51,7 @@ namespace Visifire.Charts
         /// Initializes a new instance of the Visifire.Charts.PlotDetails class
         /// </summary>
         public PlotDetails(Chart chart)
-        {   
+        {
             // Create a plot groups list
             this.PlotGroups = new List<PlotGroup>();
 
@@ -66,6 +66,9 @@ namespace Visifire.Charts
 
             // Set default chart orientation
             this.ChartOrientation = ChartOrientationType.Undefined;
+
+            // Validate XValue type of the DataPoint and DataSeries
+            ValidateDataPointXValueType();
 
             // Calculate all the required details
             this.Calculate();
@@ -86,6 +89,15 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// List of all DataPoints in chart
+        /// </summary>
+        internal List<DataPoint> ListOfAllDataPoints
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// List of different types of plot groups based on RenderAs, AxisXType and AxisYType
@@ -120,7 +132,7 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Stores the number of divisions to Divide the height/width available for each datapoint while rendering in multiseries combinations. 
-        /// Also used for calculating AxisX limits
+        /// Also used for calculating axisX limits
         /// </summary>
         internal Int32 DrawingDivisionFactor
         {
@@ -147,7 +159,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of unique AxisX primary labels
+        /// List of unique axisX primary labels
         /// </summary>
         internal Dictionary<Double, String> AxisXPrimaryLabels
         {
@@ -156,7 +168,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of unique AxisX secondary labels
+        /// List of unique axisX secondary labels
         /// </summary>
         internal Dictionary<Double, String> AxisXSecondaryLabels
         {
@@ -187,24 +199,463 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Validate XValue type of the DataPoint and DataSeries
+        /// </summary>
+        private void ValidateDataPointXValueType()
+        {
+            foreach (DataSeries ds in Chart.InternalSeries)
+            {
+                foreach (DataPoint dp in ds.InternalDataPoints)
+                {
+                    if (ds.XValueType == ChartValueTypes.Auto)
+                    {
+                        ds.InternalXValueType = (dp.XValueType == ChartValueTypes.DateTime) ? ChartValueTypes.Date : dp.XValueType;
+                    }
+                    else if ((ds.XValueType == ChartValueTypes.Date || ds.XValueType == ChartValueTypes.DateTime || ds.XValueType == ChartValueTypes.Time)
+                        && dp.XValueType != ChartValueTypes.DateTime)
+                    {
+                        throw new Exception("Error occurred due to incorrect XValue format. XValue can be Double or DateTime for all DataPoints in a DataSeries.");
+                    }
+                    else if (ds.XValueType == ChartValueTypes.Numeric && dp.XValueType != ChartValueTypes.Numeric)
+                    {
+                        throw new Exception("Error occurred due to incorrect XValue format. XValue can be Double or DateTime for all DataPoints in a DataSeries according to XValueType of the DataSeries.");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Calculate PlotDetails
         /// </summary>
         private void Calculate()
         {
+            // Create Axis incase if it doesnt exist
+            CreateMissingAxes();
+
+            // Generate XValues for DataTime axis
+            GenerateXValueForDataTimeAxis();
+
             // Identifies the various plot groups and populates the list
             PopulatePlotGroups();
 
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             SeriesDrawingIndex = GenerateDrawingOrder();
 
-            // Gets a unique set of axis labels by AxisX type
+            // Create list of datapoints from all series
+            CreateListOfDataPoints();
+
+            // Gets a unique set of axis labels by axisX type
             AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
             AxisXSecondaryLabels = GetAxisXLabels(AxisTypes.Secondary);
 
             // Set Labels count state
             SetLabelsCountState();
         }
+
+        /// <summary>
+        /// Get List of DateTime from all DataSeries
+        /// </summary>
+        private List<DateTime> GetListOfXValue(Axis axis)
+        {
+
+            List<DateTime> xValuesAsDateTimeList = new List<DateTime>();
+
+            int dataSeriesIndex = 0, dataPointIndex = 0;
+
+            foreach (DataSeries ds in Chart.InternalSeries)
+            {
+                dataPointIndex = 0;
+
+                foreach (DataPoint dp in ds.InternalDataPoints)
+                {
+
+                    if (dp.InternalXValueAsDateTime == null)
+                    {
+                        throw new Exception("Wrong property value as date for XValue in DataPoint position " + dataPointIndex.ToString() + " and DataSeries position " + dataSeriesIndex.ToString());
+                    }
+
+                    try
+                    {
+                        if (dp.XValueType == ChartValueTypes.Numeric)
+                            throw new Exception();
+
+                        if (ds.InternalXValueType == ChartValueTypes.Auto || ds.InternalXValueType == ChartValueTypes.Date)
+                        {
+                            dp.InternalXValueAsDateTime = new DateTime(dp.InternalXValueAsDateTime.Date.Year, dp.InternalXValueAsDateTime.Date.Month, dp.InternalXValueAsDateTime.Date.Day);
+                            xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
+                        }
+                        else if (ds.InternalXValueType == ChartValueTypes.DateTime)
+                        {
+                            // if (axis.IntervalType == IntervalTypes.Years || axis.IntervalType == IntervalTypes.Months || axis.IntervalType == IntervalTypes.Weeks || axis.IntervalType == IntervalTypes.Days)
+                            //    xValuesAsDateTimeList.Add((DateTime)dp.InternalXValueAsDateTime.Date);
+                            // else
+                            xValuesAsDateTimeList.Add((DateTime)dp.InternalXValueAsDateTime);
+                        }
+                        else if (ds.InternalXValueType == ChartValueTypes.Time)
+                        {
+                            System.Diagnostics.Debug.WriteLine(dp.InternalXValueAsDateTime.TimeOfDay.ToString());
+                            dp.InternalXValueAsDateTime = DateTime.Parse("12/30/1899 " + dp.InternalXValueAsDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                            xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
+                        }
+                    }
+                    catch
+                    {
+                        throw new Exception("Wrong property value as date for XValue in DataPoint position " + dataPointIndex.ToString() + " and DataSeries position " + dataSeriesIndex.ToString());
+                    }
+
+                    dataPointIndex++;
+                }
+
+                dataSeriesIndex++;
+            }
+
+            return xValuesAsDateTimeList;
+        }
+
+        /// <summary>
+        /// Whether axis is a date time axis.
+        /// Also set up common XValue Type for axis
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        private Boolean CheckIsDateTimeAxis(Axis axis)
+        {
+            Boolean isDateTimeAxis = false;                             // Whether axisX is  DateTime axis
+            axis.XValueType = ChartValueTypes.Numeric;
+            Boolean isAnyDateTimeSeriesExist = false;
+
+            int seriesCount = (from dataSeries in Chart.InternalSeries
+                               where dataSeries.InternalXValueType == ChartValueTypes.Date
+                               select dataSeries).Count();
+
+            isAnyDateTimeSeriesExist = seriesCount > 0 ? true : false;
+
+            if (seriesCount == Chart.InternalSeries.Count) // Is chart having a DateTime Axis
+            {
+                isDateTimeAxis = true;
+                axis.XValueType = ChartValueTypes.Date;
+            }
+            else
+            {
+                seriesCount = (from dataSeries in Chart.InternalSeries
+                               where dataSeries.InternalXValueType == ChartValueTypes.DateTime
+                               select dataSeries).Count();
+
+                isAnyDateTimeSeriesExist = seriesCount > 0 ? true : isAnyDateTimeSeriesExist;
+
+                if (seriesCount == Chart.InternalSeries.Count) // Is chart having a DateTime Axis
+                {
+                    isDateTimeAxis = true;
+                    axis.XValueType = ChartValueTypes.DateTime;
+                }
+                else
+                {
+                    seriesCount = (from dataSeries in Chart.InternalSeries
+                                   where dataSeries.InternalXValueType == ChartValueTypes.Time
+                                   select dataSeries).Count();
+
+                    isAnyDateTimeSeriesExist = seriesCount > 0 ? true : isAnyDateTimeSeriesExist;
+
+                    if (seriesCount == Chart.InternalSeries.Count) // Is chart having a DateTime Axis
+                    {
+                        isDateTimeAxis = true;
+                        axis.XValueType = ChartValueTypes.Time;
+                    }
+                }
+            }
+
+            if (!isDateTimeAxis && isAnyDateTimeSeriesExist)
+            {
+                throw new Exception("Error occurred, different types of XValue type found in DataSeries. Check for property value applied for XValueType property of different DataSeries.");
+            }
+
+            return isDateTimeAxis;
+        }
+
+        /// <summary>
+        /// Generates XValues for DataTime axis
+        /// </summary>
+        private void GenerateXValueForDataTimeAxis()
+        {
+            Axis axisX = GetAxisXFromChart(Chart, AxisTypes.Primary);
+
+            if (axisX != null)
+            {
+                DateTime minDate = DateTime.Now, maxDate = DateTime.Now;    // Min and max date
+                TimeSpan minDateRange, maxDateRange;
+                axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTimes
+                Boolean isDateTimeAxis = CheckIsDateTimeAxis(axisX);
+
+                if (isDateTimeAxis)
+                {
+                    List<DateTime> xValuesAsDateTimeList = GetListOfXValue(axisX);
+
+                    if (xValuesAsDateTimeList.Count != 0)
+                    {
+                        DateTimeHelper.CalculateMinMaxDate(xValuesAsDateTimeList, out minDate, out maxDate, out minDateRange, out maxDateRange);
+
+                        IntervalTypes autoIntervalType = axisX.InternalIntervalType;
+                        Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 4 : 8;
+                        axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval);
+
+                        if (minDate == maxDate)
+                        {
+                            if (axisX.XValueType != ChartValueTypes.Time)
+                                minDate = minDate.AddDays(-1);
+                        }
+                           
+                        if (axisX.XValueType == ChartValueTypes.DateTime || axisX.XValueType == ChartValueTypes.Date)
+                        {
+                            Boolean isAcceptAutoIntervalType = false;
+
+                            if (axisX.XValueType == ChartValueTypes.Date && (
+                            axisX.IntervalType == IntervalTypes.Hours || axisX.IntervalType == IntervalTypes.Minutes
+                            || axisX.IntervalType == IntervalTypes.Seconds || axisX.IntervalType == IntervalTypes.Milliseconds
+                            || axisX.IntervalType == IntervalTypes.Auto))
+                                isAcceptAutoIntervalType = true;
+                            
+                            if (axisX.IntervalType == IntervalTypes.Auto)
+                            {
+                                isAcceptAutoIntervalType = true;
+                            }
+
+                            if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                            {
+                                if (axisX.IntervalType == IntervalTypes.Years)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Months || autoIntervalType == IntervalTypes.Weeks
+                                        || autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Months)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days
+                                        || autoIntervalType == IntervalTypes.Hours || autoIntervalType == IntervalTypes.Minutes
+                                        || autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Weeks)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Days)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Hours)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Minutes)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds)
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Seconds)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Milliseconds)
+                                        isAcceptAutoIntervalType = true;
+                                }
+                                else if (axisX.IntervalType == IntervalTypes.Milliseconds)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Milliseconds)
+                                        isAcceptAutoIntervalType = true;
+                                }
+
+                                axisX._isDateTimeAutoInterval = true;
+                            }
+
+                            if (axisX.InternalIntervalType != autoIntervalType)
+                            {
+                                axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
+                            }
+
+                            if (isAcceptAutoIntervalType)
+                                axisX.InternalIntervalType = autoIntervalType;
+
+                            DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+
+                            if (newMinDate != minDate)
+                            {
+                                Chart.InternalSeries[0].IsNotificationEnable = false;
+                                Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                Chart.InternalSeries[0].IsNotificationEnable = true;
+
+                                minDate = newMinDate;
+                            }
+                        }
+
+                        if (axisX.XValueType == ChartValueTypes.Time)
+                        {
+                            if (axisX.IntervalType == IntervalTypes.Years || axisX.IntervalType == IntervalTypes.Months
+                            || axisX.IntervalType == IntervalTypes.Weeks || axisX.IntervalType == IntervalTypes.Days
+                            || axisX.IntervalType == IntervalTypes.Auto)
+                            {
+                                if (autoIntervalType == IntervalTypes.Years || autoIntervalType == IntervalTypes.Months
+                                || autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days)
+                                    axisX.InternalIntervalType = IntervalTypes.Hours;
+                                else
+                                    axisX.InternalIntervalType = autoIntervalType;
+                            }
+                            else
+                            {
+                                if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                                {
+                                    if ((axisX.InternalIntervalType == IntervalTypes.Hours && maxDateRange.Hours == 0)
+                                        || (axisX.InternalIntervalType == IntervalTypes.Minutes && maxDateRange.Minutes == 0)
+                                        || (axisX.InternalIntervalType == IntervalTypes.Seconds && maxDateRange.Seconds == 0))
+                                    {
+                                        axisX.InternalIntervalType = autoIntervalType;
+                                    }
+                                }
+                            }
+
+                            if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                            {
+                                if (axisX.InternalIntervalType != autoIntervalType && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                {
+                                    axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
+
+                                }
+                                else
+                                    axisX.InternalInterval = 1;
+
+                                axisX._isDateTimeAutoInterval = true;
+                            }
+                            else
+                                axisX.InternalInterval = (Double)axisX.Interval;
+
+                            if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                            {
+                                DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+
+                                if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                {
+                                    Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    Chart.InternalSeries[0].IsNotificationEnable = true;
+
+                                    minDate = newMinDate;
+                                }
+                            }
+                        }
+
+                        axisX.MinDate = minDate;
+                        axisX.MaxDate = maxDate;
+
+                        if (Chart.InternalSeries.Count == 1 && Chart.InternalSeries[0].InternalDataPoints.Count == 1)
+                        {
+                            axisX._isAllXValueZero = false;
+                            DataPoint dp = Chart.InternalSeries[0].InternalDataPoints[0] as DataPoint;
+                            dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+
+                            if (dp.InternalXValue == 0)
+                            {
+                                axisX._isAllXValueZero = true;
+                                dp.InternalXValue = 1;
+                            }
+                        }
+                        else
+                        {
+                            axisX._isAllXValueZero = true;
+
+                            foreach (DataSeries ds in Chart.InternalSeries)
+                            {
+                                foreach (DataPoint dp in ds.InternalDataPoints)
+                                {
+                                    dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+
+                                    if (dp.InternalXValue == 0 && axisX._isAllXValueZero == true)
+                                        axisX._isAllXValueZero = true;
+                                    else
+                                        axisX._isAllXValueZero = false;
+
+                                    System.Diagnostics.Debug.WriteLine("XValue =" + dp.InternalXValue.ToString());
+                                }
+                            }
+
+                            if (axisX._isAllXValueZero == true)
+                            {
+                                foreach (DataSeries ds in Chart.InternalSeries)
+                                {
+                                    foreach (DataPoint dp in ds.InternalDataPoints)
+                                    {
+                                        dp.InternalXValue = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Update interval in terms of time according to interval type
+        /// </summary>
+        /// <param name="autoIntervalType">Auto interval type</param>
+        /// <param name="currentIntervalTypes">Current interval type</param>
+        /// <param name="intervalToUpdate">Interval to update</param>
+        /// <returns>Returns interval in terms of current interval type</returns>
+        private Double UpdateTimeIterval(IntervalTypes autoIntervalType, IntervalTypes currentIntervalTypes, Double intervalToUpdate)
+        {
+            if (autoIntervalType == IntervalTypes.Hours)
+            {
+                if (currentIntervalTypes == IntervalTypes.Minutes)
+                    intervalToUpdate = intervalToUpdate * 60;
+                else if (currentIntervalTypes == IntervalTypes.Seconds)
+                    intervalToUpdate = intervalToUpdate * 60 * 60;
+                else if (currentIntervalTypes == IntervalTypes.Milliseconds)
+                    intervalToUpdate = intervalToUpdate * 60 * 60 * 1000;
+            }
+            else if (autoIntervalType == IntervalTypes.Minutes)
+            {
+                if (currentIntervalTypes == IntervalTypes.Hours)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 60);
+                if (currentIntervalTypes == IntervalTypes.Seconds)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate * 60);
+                else if (currentIntervalTypes == IntervalTypes.Milliseconds)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate * 60 * 1000);
+            }
+            else if (autoIntervalType == IntervalTypes.Seconds)
+            {
+                if (currentIntervalTypes == IntervalTypes.Hours)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 3600);
+                if (currentIntervalTypes == IntervalTypes.Minutes)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 60);
+                else if (currentIntervalTypes == IntervalTypes.Milliseconds)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate * 1000);
+            }
+            else if (autoIntervalType == IntervalTypes.Milliseconds)
+            {
+                if (currentIntervalTypes == IntervalTypes.Hours)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 3600000);
+                if (currentIntervalTypes == IntervalTypes.Minutes)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 60000);
+                else if (currentIntervalTypes == IntervalTypes.Seconds)
+                    intervalToUpdate = Math.Ceiling(intervalToUpdate / 1000);
+            }
+
+            return intervalToUpdate;
+        }
+
 
         /// <summary>
         /// Set labels count state
@@ -215,22 +666,22 @@ namespace Visifire.Charts
             List<DataPoint> dataPointsListPri = new List<DataPoint>();
             List<DataPoint> dataPointsListSec = new List<DataPoint>();
 
-            // Populates the list with DataPoints with all availabel DataPoints from all DataSeries
+            // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
             foreach (DataSeries dataSeries in Chart.InternalSeries)
             {
-                List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList(); // where datapoint.Enabled == true
-                // Concatinate the lists of DataPoints if the axis type matches
+                List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList(); // where datapoint.Enabled == true
+                // Concatinate the lists of InternalDataPoints if the axis type matches
                 if (dataSeries.AxisXType == AxisTypes.Primary)
                     dataPointsListPri.InsertRange(dataPointsListPri.Count, enabledDataPoints);
                 else
                     dataPointsListSec.InsertRange(dataPointsListSec.Count, enabledDataPoints);
             }
 
-            var uniqueLabels4PrimaryAxisX = (from dataPoint in dataPointsListPri group dataPoint by dataPoint.XValue);
+            var uniqueLabels4PrimaryAxisX = (from dataPoint in dataPointsListPri group dataPoint by dataPoint.InternalXValue);
 
             IsAllPrimaryAxisXLabelsPresent = (AxisXPrimaryLabels.Count == uniqueLabels4PrimaryAxisX.Count());
 
-            var uniqueLabels4SecondaryAxisX = (from dataPoint in dataPointsListSec group dataPoint by dataPoint.XValue);
+            var uniqueLabels4SecondaryAxisX = (from dataPoint in dataPointsListSec group dataPoint by dataPoint.InternalXValue);
 
             IsAllSecondaryAxisXLabelsPresent = (AxisXSecondaryLabels.Count == uniqueLabels4SecondaryAxisX.Count());
 
@@ -417,7 +868,7 @@ namespace Visifire.Charts
                 SeriesToBeShownInLegend = (from entry in Chart.InternalSeries where entry.Enabled == true && (Boolean)entry.ShowInLegend == true select entry).ToList();
             else
                 SeriesToBeShownInLegend = Chart.InternalSeries;
-            
+
             Legend legend = null;
             if (SeriesToBeShownInLegend.Count > 0)
             {
@@ -480,9 +931,6 @@ namespace Visifire.Charts
         /// </summary>
         private void PopulatePlotGroups()
         {
-            // Create Axis incase if it doesnt exist
-            CreateMissingAxes();
-
             // Creates any required legends
             CreateLegends();
 
@@ -495,14 +943,14 @@ namespace Visifire.Charts
                                           dataSeries.AxisXType,
                                           dataSeries.AxisYType
                                       });
-            
+
             // Populate the plot groups by checking for validity of charts
             foreach (var plotGroup in plotGroupsData)
             {
                 // Get the overall orientation of the chart
                 ChartOrientationType plotGroupChartOrientation = GetChartOrientation(plotGroup.Key.RenderAs);
 
-                // Retrieve the reference for the AxisX and AxisY
+                // Retrieve the reference for the axisX and AxisY
                 Axis axisX = GetAxisXFromChart(Chart, plotGroup.Key.AxisXType);
                 Axis axisY = GetAxisYFromChart(Chart, plotGroup.Key.AxisYType);
 
@@ -587,7 +1035,7 @@ namespace Visifire.Charts
         /// Creates and adds a PlotGroup to the PlotGroups list
         /// </summary>
         /// <param name="renderAs">RenderAs type of the PlotGroup</param>
-        /// <param name="axisX">AxisX reference for the PlotGroup</param>
+        /// <param name="axisX">axisX reference for the PlotGroup</param>
         /// <param name="axisY">AxisY reference for the PlotGroup</param>
         /// <param name="series">List of DataSeries belonging to the PlotGroup</param>
         private void AddToPlotGroupsList(RenderAs renderAs, Axis axisX, Axis axisY, List<DataSeries> series)
@@ -682,7 +1130,7 @@ namespace Visifire.Charts
         {
             Int32 index = 0;
             foreach (DataSeries series in Chart.InternalSeries)
-            {   
+            {
                 series.IsNotificationEnable = false;
                 series.InternalZIndex = series.InternalZIndex - Chart.InternalSeries.Count;
                 series.InternalZIndex += index++;
@@ -890,38 +1338,60 @@ namespace Visifire.Charts
         {
             return (from plotGroup in PlotGroups where plotGroup.RenderAs == renderAs && plotGroup.IsEnabled select plotGroup).Count();
         }
-        
+
+        /// <summary>
+        /// Create list of datapoints from all series
+        /// </summary>
+        private void CreateListOfDataPoints()
+        {
+            // List of all datapoints in the chart
+            ListOfAllDataPoints = new List<DataPoint>();
+
+            // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
+            foreach (DataSeries dataSeries in Chart.InternalSeries)
+            {
+                // Concatinate the lists of InternalDataPoints if the axis type matches
+                if (dataSeries.Enabled == true)
+                {
+                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList(); //where datapoint.Enabled == true 
+
+                    ListOfAllDataPoints.InsertRange(ListOfAllDataPoints.Count, enabledDataPoints);
+                }
+            }
+        }
+
         /// <summary>
         /// Generates AxisLabels for this PlotGroup and returns a dictionary
-        /// that holds XValue as key, AxisLabel as value
+        /// that holds InternalXValue as key, AxisLabel as value
         /// </summary>
         private Dictionary<Double, String> GetAxisXLabels(AxisTypes axisXType)
         {
             // List of all datapoints in the chart
-            List<DataPoint> dataPointsList = new List<DataPoint>();
+            List<DataPoint> listOfAllDataPoints = (from dataPoint in ListOfAllDataPoints where dataPoint.Parent.AxisXType == axisXType select dataPoint).ToList();
 
-            // Populates the list with DataPoints with all availabel DataPoints from all DataSeries
-            foreach (DataSeries dataSeries in Chart.InternalSeries)
-            {
-                // Concatinate the lists of DataPoints if the axis type matches
-                if (dataSeries.AxisXType == axisXType && dataSeries.Enabled == true)
-                {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList(); //where datapoint.Enabled == true 
 
-                    dataPointsList.InsertRange(dataPointsList.Count, enabledDataPoints);
-                }
-            }
+            //// Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
+            //foreach (DataSeries dataSeries in Chart.InternalSeries)
+            //{
+            //    // Concatinate the lists of InternalDataPoints if the axis type matches
+            //    if (dataSeries.AxisXType == axisXType && dataSeries.Enabled == true)
+            //    {
+            //        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList(); //where datapoint.Enabled == true 
+
+            //        listOfAllDataPoints.InsertRange(listOfAllDataPoints.Count, enabledDataPoints);
+            //    }
+            //}
 
             // Contains a table which hold unique XValues and all the Axis Labels availabel for each XVAlue
-            var uniqueXValueDataPoints = (from dataPoint in dataPointsList where !String.IsNullOrEmpty(dataPoint.AxisXLabel) orderby dataPoint.XValue group dataPoint.AxisXLabel by dataPoint.XValue);
+            var uniqueXValueDataPoints = (from dataPoint in listOfAllDataPoints where !String.IsNullOrEmpty(dataPoint.AxisXLabel) orderby dataPoint.InternalXValue group dataPoint.AxisXLabel by dataPoint.InternalXValue);
 
             // A function to select a appropriate key for creating the final dictionary
             Func<IGrouping<Double, String>, Double> GetXValue = delegate(IGrouping<Double, String> entry) { return entry.Key; };
 
-            // A function to get the last axis label for a particular XValue for an available set of axis labels
+            // A function to get the last axis label for a particular InternalXValue for an available set of axis labels
             Func<IGrouping<Double, String>, String> GetAxisLabel = delegate(IGrouping<Double, String> entry) { return entry.Last(); };
 
-            // Generates the dictionary with XValue as key, AxisLabel as value
+            // Generates the dictionary with InternalXValue as key, AxisLabel as value
             return uniqueXValueDataPoints.ToDictionary(GetXValue, GetAxisLabel);
         }
 
@@ -931,7 +1401,7 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Returns the maximum data value for AxisX, no need to check primary or secondary
+        /// Returns the maximum data value for axisX, no need to check primary or secondary
         /// </summary>
         /// <returns>Returns the maximum data value as Double</returns>
         internal Double GetAxisXMaximumDataValue(Axis axisX)
@@ -954,7 +1424,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns the minimum data value for AxisX, no need to check primary or secondary
+        /// Returns the minimum data value for axisX, no need to check primary or secondary
         /// </summary>
         /// <param name="axisX"></param>
         /// <returns>Returns the minimum data value as Double</returns>
@@ -1058,6 +1528,21 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Returns the minimum value from a given set of minimum differences by render as types
+        /// </summary>
+        /// <param name="renderAs">RenderAs</param>
+        /// <returns>Double</returns>
+        internal Double GetXXX()
+        {
+            var xx = (from dataSeries in Chart.InternalSeries select dataSeries.InternalDataPoints);
+
+            Double count = xx.Count();
+
+            return count;
+
+        }
+
+        /// <summary>
         /// Returns a series list based on the render as type
         /// </summary>
         /// <param name="renderAs">RenderAs</param>
@@ -1119,12 +1604,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns datapoints grouped by XValue
+        /// Returns datapoints grouped by InternalXValue
         /// </summary>
         /// <param name="renderAs">RenderAs</param>
         /// <returns>Dictionary[Double, SortedDataPoints]</returns>
         internal Dictionary<Double, SortDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs)
-        {   
+        {
             List<PlotGroup> selectedGroup = (from plotGroup in PlotGroups where plotGroup.RenderAs == renderAs select plotGroup).ToList();
 
             List<DataPoint> dataPoints = new List<DataPoint>();
@@ -1134,14 +1619,14 @@ namespace Visifire.Charts
                 {
                     if (dataSeries.Enabled == true)
                     {
-                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                         dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
                     }
                 }
             }
 
-            var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.XValue);
+            var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.InternalXValue);
 
             Dictionary<Double, SortDataPoints> entries = new Dictionary<Double, SortDataPoints>();
 
@@ -1157,12 +1642,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns datapoints grouped by XValue
+        /// Returns datapoints grouped by InternalXValue
         /// </summary>
         /// <param name="renderAs">dataseries renderas type</param>
         /// <param name="axisX">axis-x</param>
         /// <param name="axisY">axis-y</param>
-        /// <returns>Returns datapoints grouped by XValue</returns>
+        /// <returns>Returns datapoints grouped by InternalXValue</returns>
         internal Dictionary<Double, SortDataPoints> GetDataPointsGroupedByXValue(RenderAs renderAs, Axis axisX, Axis axisY)
         {
             List<PlotGroup> selectedGroup = (from plotGroup in PlotGroups where plotGroup.RenderAs == renderAs && plotGroup.AxisX == axisX && plotGroup.AxisY == axisY select plotGroup).ToList();
@@ -1174,14 +1659,14 @@ namespace Visifire.Charts
                 {
                     if (dataSeries.Enabled == true)
                     {
-                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints where datapoint.Enabled == true select datapoint).ToList();
+                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                         dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
                     }
                 }
             }
 
-            var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.XValue);
+            var dataPointsGroupedByXValues = (from datapoint in dataPoints group datapoint by datapoint.InternalXValue);
 
             Dictionary<Double, SortDataPoints> entries = new Dictionary<Double, SortDataPoints>();
 
@@ -1251,11 +1736,11 @@ namespace Visifire.Charts
             Boolean IsDataSeriesExist = false;
             foreach (DataSeries ds in Chart.InternalSeries)
             {
-                if (ds.RenderAs == dataPoint.Parent.RenderAs && ds.Enabled == true) 
+                if (ds.RenderAs == dataPoint.Parent.RenderAs && ds.Enabled == true)
                 {
-                    foreach (DataPoint dp in ds.DataPoints)
+                    foreach (DataPoint dp in ds.InternalDataPoints)
                     {
-                        if (dp.XValue == dataPoint.XValue)
+                        if (dp.InternalXValue == dataPoint.InternalXValue)
                         {
                             IsDataSeriesExist = true;
                             break;
@@ -1399,6 +1884,4 @@ namespace Visifire.Charts
 
         #endregion
     }
-
-
 }

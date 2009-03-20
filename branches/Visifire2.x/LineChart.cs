@@ -345,7 +345,7 @@ namespace Visifire.Charts
                 Point startPoint = new Point(), endPoint = new Point();
                 Boolean IsStartPoint = true;
 
-                foreach (DataPoint dataPoint in series.DataPoints)
+                foreach (DataPoint dataPoint in series.InternalDataPoints)
                 {
                     if (dataPoint.Enabled == false)
                         continue;
@@ -358,7 +358,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
+                        xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
                         yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
                         // Create Marker

@@ -71,9 +71,6 @@ namespace Visifire.Charts
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(DataSeries), new FrameworkPropertyMetadata(typeof(DataSeries)));
                 _defaultStyleKeyApplied = true;
             }
-
-            NameScope.SetNameScope(this, new NameScope());
-            
 #else
             DefaultStyleKey = typeof(DataSeries);
 #endif
@@ -81,10 +78,13 @@ namespace Visifire.Charts
             // Initialize DataPoints list
             DataPoints = new ObservableCollection<DataPoint>();
 
+            // Initialize InternalDataPoints list
+            InternalDataPoints = new List<DataPoint>();
+
             // Attach event handler for the Title collection changed event
             DataPoints.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(DataPoints_CollectionChanged);
         }
-
+        
         #endregion
 
         #region Public Properties
@@ -648,6 +648,18 @@ namespace Visifire.Charts
             typeof(DataSeries),
             new PropertyMetadata(OnAxisYTypePropertyChanged));
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.XValueType dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.XValueType dependency property.
+        /// </returns>
+        public static readonly DependencyProperty XValueTypeProperty = DependencyProperty.Register
+            ("XValueType",
+            typeof(ChartValueTypes),
+            typeof(DataSeries),
+            new PropertyMetadata(OnXValueTypePropertyChanged));
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.ZIndex dependency property.
         /// </summary>
@@ -1580,20 +1592,31 @@ namespace Visifire.Charts
                 {   
                     if (GetValue(ToolTipTextProperty) == null)
                         return null;
+                    
+                    Chart chart = Chart as Chart;
 
                     switch (RenderAs)
                     {
                         case RenderAs.StackedColumn100:
                         case RenderAs.StackedBar100:
                         case RenderAs.StackedArea100:
-                            return "#AxisXLabel, #YValue(#Sum)";
+                            if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                                return "#XValue, #YValue(#Sum)";
+                            else
+                                return "#AxisXLabel, #YValue(#Sum)";
 
                         case RenderAs.Pie:
                         case RenderAs.Doughnut:
-                            return "#AxisXLabel, #YValue(#Percentage%)";
+                            if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                                return "#XValue, #YValue(#Percentage%)";
+                            else
+                                return "#AxisXLabel, #YValue(#Percentage%)";
 
                         default:
-                            return "#AxisXLabel, #YValue";
+                            if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                                return "#XValue, #YValue";
+                            else
+                                return "#AxisXLabel, #YValue";
                                  
                     }
                 }
@@ -1605,7 +1628,7 @@ namespace Visifire.Charts
                 SetValue(ToolTipTextProperty, value);
             }
         }
-        
+
         /// <summary>
         /// Collection of DataPoints
         /// </summary>
@@ -1645,12 +1668,22 @@ namespace Visifire.Charts
             }
         }
 
-        private Brush Foreground
+        /// <summary>
+        /// Type of scale used in axis
+        /// </summary>
+        public ChartValueTypes XValueType
         {
-            get;
-            set;
+            get
+            {
+                return (ChartValueTypes)GetValue(XValueTypeProperty);
+            }
+            set
+            {
+                SetValue(XValueTypeProperty, value);
+            }
         }
-        
+
+
         #endregion
 
         #region Public Events
@@ -1703,7 +1736,7 @@ namespace Visifire.Charts
                             }
                         }
 
-                        foreach (DataPoint dp in DataPoints)
+                        foreach (DataPoint dp in InternalDataPoints)
                             dp.UpdateVisual("Color", null);
                     }
                 }
@@ -1713,12 +1746,12 @@ namespace Visifire.Charts
                     {
                         LineChartShapeParams lineParams = VisualParams as LineChartShapeParams;
                         (Faces.Parts[0] as Path).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)value;
-                        foreach (DataPoint dp in DataPoints)
+                        foreach (DataPoint dp in InternalDataPoints)
                             dp.UpdateVisual("Color", null);
                     }
                 }
                 else
-                    foreach (DataPoint dp in DataPoints)
+                    foreach (DataPoint dp in InternalDataPoints)
                         dp.UpdateVisual("Color", null);
 
                 if (LegendMarker != null && LegendMarker.Visual != null)
@@ -1735,6 +1768,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// Collection of InternalDataPoints used for calculation
+        /// </summary>
+        internal List<DataPoint> InternalDataPoints
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Internal XValue Type 
+        /// </summary>
+        internal ChartValueTypes InternalXValueType
+        {   
+            get;
+            set;
+        }
 
         /// <summary>
         /// Visual Parameters
@@ -1765,8 +1816,8 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Total Count of DataSeries of the group to which this series belongs. 
-        /// This count is helpful while rendering, the space allocated for the columns at a particular XValue 
-        /// must be divided between indivisual datapoints of different series with same XValue
+        /// This count is helpful while rendering, the space allocated for the columns at a particular InternalXValue 
+        /// must be divided between indivisual datapoints of different series with same InternalXValue
         /// </summary>
         internal Int32 SeriesCountOfSameRenderAs
         {
@@ -1819,6 +1870,13 @@ namespace Visifire.Charts
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         private new Brush BorderBrush
+        {
+            get;
+            set;
+        }
+
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        private new Brush Foreground
         {
             get;
             set;
@@ -2341,6 +2399,18 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// XValueTypeProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnXValueTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.InternalXValueType = (ChartValueTypes) e.NewValue;
+            dataSeries.FirePropertyChanged("XValueType");
+        }
+        
+        /// <summary>
         /// ZIndexProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2357,14 +2427,14 @@ namespace Visifire.Charts
         /// </summary>
         private void UpdateMarkers()
         {
-            foreach (DataPoint dataPoint in DataPoints)
+            foreach (DataPoint dataPoint in InternalDataPoints)
                 dataPoint.UpdateMarker();
         }
         
         /// <summary>
-        /// DataPoints collection changed event handler
+        /// InternalDataPoints collection changed event handler
         /// </summary>
-        /// <param name="sender">DataPoints</param>
+        /// <param name="sender">InternalDataPoints</param>
         /// <param name="e">NotifyCollectionChangedEventArgs</param>
         private void DataPoints_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -2381,8 +2451,8 @@ namespace Visifire.Charts
                         if (Chart != null)
                             dataPoint.Chart = Chart;
 
-                        if (Double.IsNaN(dataPoint.XValue))
-                            dataPoint.XValue = this.DataPoints.Count;
+                        if (Double.IsNaN(dataPoint.InternalXValue))
+                            dataPoint.InternalXValue = this.DataPoints.Count;
                         dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint));
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
@@ -2395,21 +2465,21 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Find nearest DataPoint by XValue
+        /// Find nearest DataPoint by InternalXValue
         /// </summary>
-        /// <param name="xValue">Double XValue</param>
+        /// <param name="xValue">Double InternalXValue</param>
         /// <returns>DataPoint</returns>
         private DataPoint GetNearestDataPoint(Double xValue)
         {
-            DataPoint dp = this.DataPoints[0];
-            Double diff = Math.Abs(dp.XValue - xValue);
+            DataPoint dp = this.InternalDataPoints[0];
+            Double diff = Math.Abs(dp.InternalXValue - xValue);
 
-            for (Int32 i = 1; i < this.DataPoints.Count; i++)
+            for (Int32 i = 1; i < this.InternalDataPoints.Count; i++)
             {
-                if (Math.Abs(this.DataPoints[i].XValue - xValue) < diff)
+                if (Math.Abs(this.InternalDataPoints[i].InternalXValue - xValue) < diff)
                 {
-                    diff = Math.Abs(this.DataPoints[i].XValue - xValue);
-                    dp = this.DataPoints[i];
+                    diff = Math.Abs(this.InternalDataPoints[i].InternalXValue - xValue);
+                    dp = this.InternalDataPoints[i];
                 }
             }
 
@@ -2435,7 +2505,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void AttachEvent2DataSeriesVisualFaces()
         {
-            foreach (DataPoint dp in DataPoints)
+            foreach (DataPoint dp in InternalDataPoints)
             {
                 dp.AttachEvent2DataPointVisualFaces(this);
             }

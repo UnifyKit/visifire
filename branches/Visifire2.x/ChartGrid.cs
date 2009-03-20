@@ -378,7 +378,7 @@ namespace Visifire.Charts
             Double position = 0;                // value of the line position for the running loop cycle
             Double prevPosition = 0;            // value of the line position for the previous position
 
-            // if axisX and the first data point is in a gap between the prescribed interval, the index must start from the 
+            // if axisX and the first data point is in a gap between the prescribed interval, the index must dateTime from the 
             // datapoint rather than the axis minimum
             if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
                 index = (Decimal)DataMinimum;
@@ -602,9 +602,7 @@ namespace Visifire.Charts
             target.SetValue(NameProperty, target.GetType().Name + target.GetHashCode().ToString());
             Storyboard.SetTargetName(da, target.GetValue(NameProperty).ToString());
 
-            if (NameScope.GetNameScope(this) == null)
-                NameScope.SetNameScope(this, new NameScope());
-            this.RegisterName((string)target.GetValue(NameProperty), target);
+            Chart._rootElement.RegisterName((string)target.GetValue(NameProperty), target);
 
 #else
             Storyboard.SetTarget(da, target);

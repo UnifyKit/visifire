@@ -41,3 +41,9 @@
 #region Data
     
 #endregion
+
+Thirty days hath September, 
+April, June and November   
+All the rest have Thirty-one 
+Except February, which has Twenty-eight 
+or Twenty-nine on leap years. 

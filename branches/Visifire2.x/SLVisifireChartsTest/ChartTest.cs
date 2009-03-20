@@ -648,11 +648,12 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
+
             Common.CreateAndAddDefaultDataSeries(chart);
             EnqueueSleep(_sleepTime);
 
             CreateAsyncTask(chart,
-               () => Assert.IsNull(chart.ToolTipText));
+               () => Assert.IsNotNull(chart.ToolTipText));
 
             EnqueueTestComplete();
         }
@@ -714,7 +715,7 @@ namespace SLVisifireChartsTest
 
             CreateAsyncTask(chart,
                 () => chart.Href = "http://www.visifire.com",
-                () => chart.HrefTarget=HrefTargets._blank,
+                () => chart.HrefTarget = HrefTargets._blank,
                 () => Assert.AreEqual("http://www.visifire.com", chart.Href),
                 () => Assert.AreEqual(HrefTargets._blank, chart.HrefTarget));
 

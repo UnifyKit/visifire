@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
+using Visifire.Charts;
 
 namespace Visifire.Commons
 {
@@ -108,7 +109,7 @@ namespace Visifire.Commons
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            parentObj.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            (parentObj as DataSeries).Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif

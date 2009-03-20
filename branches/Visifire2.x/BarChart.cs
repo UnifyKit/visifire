@@ -165,7 +165,7 @@ namespace Visifire.Charts
                 finalHeight = maxPosValue - top;
             }
 
-            return finalHeight;
+            return (finalHeight < 2.5) ? 2.5 : finalHeight;
         }
 
         /// <summary>
@@ -197,9 +197,8 @@ namespace Visifire.Charts
         /// <returns>Zindex as Int32</returns>
         private static Int32 GetStackedBarZIndex(Double left, Double top, Double width, Double height, Boolean isPositive)
         {
-            Int32 yOffset = (Int32)(height - top);
             Double zOffset = Math.Pow(10, (Int32)(Math.Log10(width) - 1));
-            Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset) + Math.Pow(yOffset, 2));
+            Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
             Int32 zindex = (Int32)((top) * zOffset) + iOffset;
             if (isPositive)
                 return zindex;
@@ -694,7 +693,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -760,7 +759,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -927,7 +926,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -995,7 +994,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels

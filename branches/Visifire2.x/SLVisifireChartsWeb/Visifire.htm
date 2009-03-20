@@ -5,18 +5,16 @@
 
     <script type="text/javascript" src="./Visifire2.js"></script>
 
-    <style type="text/css">
-       
-    </style>
+    
 </head>
 <body>
     <div id="Div1">
 
         <script type="text/javascript">
-            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 400);
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 1480, 600);
             vChart.setDataUri('data.xml');
 
-            vChart.loaded = function(args) {
+            vChart.preLoad = function(args) {
                 var chart = args[0];
                 var brush = '<SolidColorBrush xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Color="#FF066600"/>'
 

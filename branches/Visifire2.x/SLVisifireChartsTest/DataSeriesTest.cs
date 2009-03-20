@@ -2362,7 +2362,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -2373,7 +2372,7 @@ namespace SLVisifireChartsTest
                 () => dataSeries.Href = "http://www.visifire.com",
                 () => dataSeries.HrefTarget = HrefTargets._blank,
                 () => Assert.AreEqual("http://www.visifire.com", dataSeries.Href),
-            () => Assert.AreEqual(HrefTargets._blank, dataSeries.HrefTarget));
+                () => Assert.AreEqual(HrefTargets._blank, dataSeries.HrefTarget));
 
             EnqueueTestComplete();
         }
@@ -2388,7 +2387,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -2612,7 +2610,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
 
@@ -2637,7 +2634,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -2646,7 +2642,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineEnabled = false,
-                () => Assert.AreEqual(false, dataSeries.LabelLineEnabled));
+                () => Assert.IsFalse((Boolean)dataSeries.LabelLineEnabled));
 
             EnqueueTestComplete();
         }
@@ -2661,7 +2657,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -2687,7 +2682,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -2711,7 +2705,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -2737,7 +2730,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Column;
             chart.Series.Add(dataSeries);
@@ -2760,7 +2752,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -2786,7 +2777,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
 
@@ -2811,7 +2801,6 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
-
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
 
@@ -2835,7 +2824,6 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
-
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;

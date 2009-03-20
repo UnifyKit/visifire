@@ -27,6 +27,11 @@ namespace Visifire.Charts
     /// </summary>
     public class DataSeriesCollection : ObservableCollection<DataSeries> { }
 
+    ///// <summary>
+    ///// Collection of ToolTips
+    ///// </summary>
+    //public class DataPointCollection : ObservableCollection<DataPoint> { }
+
     /// <summary>
     /// Collection of Axis
     /// </summary>

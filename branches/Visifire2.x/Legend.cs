@@ -1464,7 +1464,7 @@ namespace Visifire.Charts
                 title.FontWeight = TitleFontWeight;
 
             if (!String.IsNullOrEmpty(Title))
-                title.Text = Title;
+                title.Text = GetFormattedMultilineText(Title);
 
             title.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), TitleFontColor, this.DockInsidePlotArea);
         }

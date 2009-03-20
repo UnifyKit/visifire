@@ -207,6 +207,10 @@ namespace Visifire.Charts
                 _rootElement.IsHitTestVisible = false;
 
             _isTemplateApplied = true;
+
+#if WPF
+            NameScope.SetNameScope(this._rootElement, new NameScope());
+#endif
         }
 
         #endregion
@@ -598,7 +602,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set of colors that will be used for the DataPoints
+        /// Set of colors that will be used for the InternalDataPoints
         /// </summary>
         public String ColorSet
         {
@@ -613,7 +617,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set of colors that will be used for the DataPoints
+        /// Set of colors that will be used for the InternalDataPoints
         /// </summary>
         public ColorSets ColorSets
         {
@@ -794,9 +798,6 @@ namespace Visifire.Charts
         /// </summary>
         private void Init()
         {
-#if WPF
-            NameScope.SetNameScope(this, new NameScope());
-#endif
             Watermark = true;
 
             //ColorSets = new ColorSets();
@@ -838,7 +839,7 @@ namespace Visifire.Charts
             // Attach event handler on collection changed event with DataSeries collection
             Series.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Series_CollectionChanged);
 
-            // Attach event handler on collection changed event with AxisX collection
+            // Attach event handler on collection changed event with axisX collection
             (AxesX as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
 
             // Attach event handler on collection changed event with AxisY collection
@@ -1225,7 +1226,11 @@ namespace Visifire.Charts
             // Create new ChartArea
             if (ChartArea == null)
                 ChartArea = new ChartArea(this as Chart);
-            
+
+#if WPF
+            NameScope.SetNameScope(this._rootElement, new NameScope());
+#endif
+
             ApplyChartBevel();
 
             ApplyChartShadow(this.ActualWidth, this.ActualHeight);
@@ -1707,7 +1712,16 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Set of colors that will be used for the DataPoints
+        /// If scroll is activated by any cause then IsScrollingActivated should be set to true. 
+        /// </summary>
+        internal Boolean IsScrollingActivated
+        {   
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Set of colors that will be used for the InternalDataPoints
         /// </summary>
         internal ColorSets InternalColorSets
         {
@@ -1819,7 +1833,7 @@ namespace Visifire.Charts
         /// <summary>
         /// On ToolTipText PropertyChanged event, this function is invoked
         /// </summary>
-        /// <param name="NewValue"></param>
+        /// <param name="NewValue">New text value</param>
         internal override void OnToolTipTextPropertyChanged(string newValue)
         {
             base.OnToolTipTextPropertyChanged(newValue);

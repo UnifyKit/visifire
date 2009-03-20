@@ -639,7 +639,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (_isLoaded)
-                Assert.IsNull(chart.ToolTipText);
+                Assert.IsNotNull(chart.ToolTipText);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();

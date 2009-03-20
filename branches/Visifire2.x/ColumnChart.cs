@@ -83,7 +83,7 @@ namespace Visifire.Charts
 
     /// <summary>
     ///  Visifire.Charts.SortedDataPoints class. 
-    ///  SortedDataPoints used to store DataPoints with positive and negative values 
+    ///  SortedDataPoints used to store InternalDataPoints with positive and negative values 
     /// </summary>
     public class SortDataPoints
     {
@@ -95,10 +95,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sort DataPoints
+        /// Sort InternalDataPoints
         /// </summary>
-        /// <param name="positive">Positive DataPoints</param>
-        /// <param name="">Negative DataPoints</param>
+        /// <param name="positive">Positive InternalDataPoints</param>
+        /// <param name="">Negative InternalDataPoints</param>
         public SortDataPoints(List<DataPoint> positive, List<DataPoint> negative)
         {
             Positive = positive;
@@ -106,12 +106,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of DataPoints with Positive values
+        /// List of InternalDataPoints with Positive values
         /// </summary>
         public List<DataPoint> Positive { get; private set; }
 
         /// <summary>
-        /// List of DataPoints with Negative values
+        /// List of InternalDataPoints with Negative values
         /// </summary>
         public List<DataPoint> Negative { get; private set; }
     }
@@ -317,7 +317,8 @@ namespace Visifire.Charts
             {
                 finalWidth = maxPosValue - left;
             }
-            return finalWidth;
+
+            return (finalWidth < 2.5) ? 2.5 : finalWidth;
         }
 
         /// <summary>
@@ -673,7 +674,7 @@ namespace Visifire.Charts
 
                         CurrentDataSeries = dataPoint.Parent;
 
-                        // Apply animation to the data points i.e to the rectangles that form the columns
+                        // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
@@ -745,7 +746,7 @@ namespace Visifire.Charts
 
                         CurrentDataSeries = dataPoint.Parent;
 
-                        // Apply animation to the data points i.e to the rectangles that form the columns
+                        // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
@@ -910,7 +911,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -978,7 +979,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1157,7 +1158,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1226,7 +1227,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points i.e to the rectangles that form the columns
+                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels

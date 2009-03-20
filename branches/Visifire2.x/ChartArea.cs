@@ -571,6 +571,11 @@ namespace Visifire.Charts
             }
             else
                 Chart.InternalSeries = Chart.Series.ToList();
+
+            foreach (DataSeries ds in Chart.InternalSeries)
+            {
+                ds.InternalDataPoints = ds.DataPoints.ToList();
+            }
         }
 
         /// <summary>
@@ -585,36 +590,35 @@ namespace Visifire.Charts
             ds.Chart = Chart;
 
             DataPoint dp = new DataPoint();
-            dp.XValue = 1;
+            dp.InternalXValue = 1;
             dp.YValue = 70;
             dp.AxisXLabel = "Wall-Mart";
             dp.Chart = Chart;
-
             ds.DataPoints.Add(dp);
 
             dp = new DataPoint();
-            dp.XValue = 2;
+            dp.InternalXValue = 2;
             dp.YValue = 40;
             dp.AxisXLabel = "Exxon Mobil";
             dp.Chart = Chart;
             ds.DataPoints.Add(dp);
 
             dp = new DataPoint();
-            dp.XValue = 3;
+            dp.InternalXValue = 3;
             dp.YValue = 60;
             dp.AxisXLabel = "Shell";
             dp.Chart = Chart;
             ds.DataPoints.Add(dp);
 
             dp = new DataPoint();
-            dp.XValue = 4;
+            dp.InternalXValue = 4;
             dp.YValue = 27;
             dp.AxisXLabel = "BP";
             dp.Chart = Chart;
             ds.DataPoints.Add(dp);
 
             dp = new DataPoint();
-            dp.XValue = 5;
+            dp.InternalXValue = 5;
             dp.YValue = 54;
             dp.AxisXLabel = "General Motors";
             dp.Chart = Chart;
@@ -686,7 +690,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Draw AxisX
+        /// Draw axisX
         /// </summary>
         /// <param name="availableSize">Available size</param>
         /// <returns>
@@ -1084,6 +1088,7 @@ namespace Visifire.Charts
             Chart.PlotArea.BorderElement.Width = newSize.Width;
 
             Double chartSize = 0;
+
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 chartSize = newSize.Height;
             else
@@ -1099,7 +1104,9 @@ namespace Visifire.Charts
                 if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                 {
                     if (Chart.InternalSeries.Count > 0)
-                        chartSize = minGap * ((from series in Chart.InternalSeries select series.DataPoints.Count).Max());
+                    {
+                        chartSize = CalculatePlotAreaAutoSize(minGap);
+                    }
                 }
 
                 if (Double.IsNaN(newSize.Height) || newSize.Height <= 0 || Double.IsNaN(newSize.Width) || newSize.Width <= 0)
@@ -1107,17 +1114,27 @@ namespace Visifire.Charts
                     return; 
                 }
                 else
-                {   
+                {
+                    Chart.IsScrollingActivated = false;
+
                     if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                     {
-                        chartSize = (chartSize < newSize.Width) ? newSize.Width : chartSize;
+                        if (chartSize < newSize.Width)
+                            chartSize = newSize.Width;
+                        else
+                            Chart.IsScrollingActivated = true;
+
                         Chart._drawingCanvas.Width = chartSize;
                         Chart.PlotArea.BorderElement.Width = chartSize;
                     }
 
                     if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                     {
-                        chartSize = (chartSize < newSize.Height) ? newSize.Height : chartSize;
+                        if(chartSize < newSize.Height)
+                            chartSize = newSize.Height;
+                        else
+                            Chart.IsScrollingActivated = true;
+
                         Chart._drawingCanvas.Height = chartSize;
                         Chart.PlotArea.BorderElement.Height = chartSize;
                     }
@@ -1131,6 +1148,27 @@ namespace Visifire.Charts
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
         }
 
+        /// <summary>
+        /// Calculate PlotArea size for auto scroll
+        /// </summary>
+        /// <param name="minGap">MinGap value between datapoints</param>
+        /// <returns>Auto PlotArea size</returns>
+        private Double CalculatePlotAreaAutoSize(Double minGap)
+        {
+            Double chartSize;
+
+            if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
+            {   
+                //TimeSpan dateRange = AxisX.MaxDate.Subtract(AxisX.MinDate);
+                Double maxNoOfDataPoint = ((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                chartSize = minGap * maxNoOfDataPoint;
+            }
+            else
+                chartSize = minGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
+
+            return chartSize;
+        }
+        
         /// <summary>
         /// Set a blank dataseries if series collection of chart is empty
         /// </summary>
@@ -1146,7 +1184,7 @@ namespace Visifire.Charts
             for (Int32 i = 1; i <= 5; i++)
             {
                 DataPoint dp = new DataPoint();
-                dp.XValue = i;
+                dp.InternalXValue = i;
                 dp.YValue = 0;
                 dp.Color = new SolidColorBrush(Colors.Transparent);
                 dp.AxisXLabel = i.ToString();
@@ -1686,6 +1724,8 @@ namespace Visifire.Charts
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
             }
+
+            AttachEventsToolTipHref2DataSeries();
         }
 
         /// <summary>
@@ -1759,8 +1799,6 @@ namespace Visifire.Charts
 
             ApplyOpacity();
 
-            AttachEventsToolTipHref2DataSeries();
-
             return renderedCanvas;
         }
 
@@ -1777,7 +1815,7 @@ namespace Visifire.Charts
                     if (chartGrid.Storyboard != null)
                     {
 #if WPF
-                        chartGrid.Storyboard.Begin(chartGrid as FrameworkElement, true);
+                        chartGrid.Storyboard.Begin(Chart._rootElement, true);
 #else
                         chartGrid.Storyboard.Begin();
 #endif
@@ -1791,7 +1829,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Animate DataPoints. 
+        /// Animate InternalDataPoints. 
         /// Begin the storyboard associated with each DataSeries
         /// </summary>
         private void Animate()
@@ -1826,7 +1864,7 @@ namespace Visifire.Charts
                             series.Storyboard.Completed += delegate(object sender, EventArgs e)
                             {
                                 
-                                foreach (DataPoint dataPoint in series.DataPoints)
+                                foreach (DataPoint dataPoint in series.InternalDataPoints)
                                 {
                                     if ((Boolean)dataPoint.Exploded)
                                         dataPoint.InteractiveAnimation();
@@ -1835,7 +1873,7 @@ namespace Visifire.Charts
                             };
                         }
                         
-                        series.Storyboard.Begin(series as FrameworkElement, true);
+                        series.Storyboard.Begin(Chart._rootElement, true);
 #else
                             if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                             {
@@ -1843,7 +1881,7 @@ namespace Visifire.Charts
                                 {
                                     _isAnimationFired = true;
 
-                                    foreach (DataPoint dataPoint in series.DataPoints)
+                                    foreach (DataPoint dataPoint in series.InternalDataPoints)
                                     {
                                         if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
                                             dataPoint.InteractiveAnimation();
@@ -2109,7 +2147,7 @@ namespace Visifire.Charts
         /// Add entries to a legend
         /// </summary>
         /// <param name="legend">Legend</param>
-        /// <param name="dataPoints">List of DataPoints</param>
+        /// <param name="dataPoints">List of InternalDataPoints</param>
         private void AddEntriesToLegend(Legend legend, List<DataPoint> dataPoints)
         {
             foreach (DataPoint dataPoint in dataPoints)
@@ -2117,7 +2155,7 @@ namespace Visifire.Charts
                 if (!(Boolean)dataPoint.Enabled || !(Boolean)dataPoint.ShowInLegend)
                     continue;
 
-                String legendText = (String.IsNullOrEmpty(dataPoint.LegendText) ? dataPoint.Name : dataPoint.LegendText);
+                String legendText = (String.IsNullOrEmpty(dataPoint.LegendText) ? dataPoint.Name : ObservableObject.GetFormattedMultilineText(dataPoint.LegendText));
 
                 Brush markerColor = dataPoint._internalColor;
 
@@ -2180,7 +2218,7 @@ namespace Visifire.Charts
                         legend = (legends).First();
                 }
 
-                AddEntriesToLegend(legend, chart.InternalSeries[0].DataPoints.ToList());
+                AddEntriesToLegend(legend, chart.InternalSeries[0].InternalDataPoints.ToList());
             }
             else
             {
@@ -2216,12 +2254,12 @@ namespace Visifire.Charts
                             throw new Exception("Legend name is not specified in DataSeries..");
                         }
 
-                        String legendText = (String.IsNullOrEmpty(dataSeries.LegendText) ? dataSeries.Name : dataSeries.LegendText);
+                        String legendText = (String.IsNullOrEmpty(dataSeries.LegendText) ? dataSeries.Name : ObservableObject.GetFormattedMultilineText(dataSeries.LegendText));
 
                         Brush markerColor = dataSeries.Color;
-                        if (dataSeries.DataPoints.Count > 0)
+                        if (dataSeries.InternalDataPoints.Count > 0)
                         {
-                            DataPoint dataPoint = dataSeries.DataPoints[0];
+                            DataPoint dataPoint = dataSeries.InternalDataPoints[0];
                             markerColor = markerColor ?? dataPoint.Color;
                         }
 
@@ -2740,7 +2778,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Apply Opacity to DataSeries and DataPoints visual
+        /// Apply Opacity to DataSeries and InternalDataPoints visual
         /// </summary>
         private void ApplyOpacity()
         {
@@ -2751,7 +2789,7 @@ namespace Visifire.Charts
                     ds.Faces.Visual.Opacity = ds.Opacity;
                 }
 
-                foreach (DataPoint dp in ds.DataPoints)
+                foreach (DataPoint dp in ds.InternalDataPoints)
                 {
                     if (dp.Faces != null)
                     {
@@ -2764,6 +2802,8 @@ namespace Visifire.Charts
                                     face.Opacity = dp.Opacity * ds.Opacity;
                                 }
                             }
+                            else
+                                dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
                         }
                         else
                             dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
@@ -2780,7 +2820,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Attach events for each DataSeries and DataPoints
+        /// Attach events for each DataSeries and InternalDataPoints
         /// </summary>
         private void AttachEventsToolTipHref2DataSeries()
         {
@@ -2788,7 +2828,7 @@ namespace Visifire.Charts
             {
                 ds.AttachEvent2DataSeriesVisualFaces();
 
-                foreach (DataPoint dp in ds.DataPoints)
+                foreach (DataPoint dp in ds.InternalDataPoints)
                 {
                     dp.AttachEvent2DataPointVisualFaces(dp);
 

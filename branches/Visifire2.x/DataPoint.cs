@@ -61,10 +61,9 @@ namespace Visifire.Charts
         public DataPoint()
         {
             ToolTipText = String.Empty;
-            XValue = Double.NaN;
-            YValue = Double.NaN;
-            ZValue = Double.NaN;
-
+            InternalXValue = Double.NaN;
+            XValueType = ChartValueTypes.Numeric;
+            
             // Apply default style from generic
 #if WPF
             if (!_defaultStyleKeyApplied)
@@ -73,14 +72,24 @@ namespace Visifire.Charts
                 _defaultStyleKeyApplied = true;
             } 
 
-            NameScope.SetNameScope(this, new NameScope());
-
 #else
             DefaultStyleKey = typeof(DataPoint);
 #endif
-
         }
-
+        
+        /// <summary>
+        /// Set DateTime in AxisXLabel
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="axis">Axis</param>
+        /// <param name="label">Axis labels</param>
+        private String FormatDate4Labels(DateTime dt, Axis axis)
+        {
+            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+            valueFormatString = String.IsNullOrEmpty(Parent.XValueFormatString) ? valueFormatString : Parent.XValueFormatString;
+            return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture));
+        }
+        
         /// <summary>
         /// TextParser is used to parse text
         /// </summary>
@@ -99,10 +108,29 @@ namespace Visifire.Charts
                 if (String.IsNullOrEmpty(_parent.XValueFormatString))
                 {
                     if (Parent.PlotGroup != null)
-                        str = str.Replace("#XValue", Parent.PlotGroup.AxisX.GetFormattedString(XValue));
+                    {
+                        if ((Chart as Chart).ChartArea.AxisX != null && (Chart as Chart).ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                            str = str.Replace("#XValue", FormatDate4Labels(Convert.ToDateTime(InternalXValueAsDateTime), (Chart as Chart).ChartArea.AxisX));
+                        else if ((this.Parent.RenderAs == RenderAs.Pie || this.Parent.RenderAs == RenderAs.Doughnut) && (Parent.InternalXValueType != ChartValueTypes.Numeric))
+                        {
+                            str = str.Replace("#XValue", FormatDate4Labels(Convert.ToDateTime(InternalXValueAsDateTime), Parent.PlotGroup.AxisX));
+                        }
+                        else
+                            str = str.Replace("#XValue", Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue));
+                    }
                 }
                 else
-                    str = str.Replace("#XValue", XValue.ToString(Parent.XValueFormatString));
+                    if (Parent.PlotGroup != null)
+                    {
+                        if ((Chart as Chart).ChartArea.AxisX != null && (Chart as Chart).ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                            str = str.Replace("#XValue", FormatDate4Labels(Convert.ToDateTime(InternalXValueAsDateTime), (Chart as Chart).ChartArea.AxisX));
+                        else if ((this.Parent.RenderAs == RenderAs.Pie || this.Parent.RenderAs == RenderAs.Doughnut) && (Parent.InternalXValueType != ChartValueTypes.Numeric))
+                        {
+                            str = str.Replace("#XValue", FormatDate4Labels(Convert.ToDateTime(InternalXValueAsDateTime), Parent.PlotGroup.AxisX));
+                        }
+                        else
+                            str = str.Replace("#XValue", InternalXValue.ToString(Parent.XValueFormatString));
+                    }
             }
 
             if (str.Contains("##YValue"))
@@ -145,15 +173,16 @@ namespace Visifire.Charts
                 str = str.Replace("##Sum", "#Sum");
             else
             {
-                if (Parent.PlotGroup != null && Parent.PlotGroup.XWiseStackedDataList != null && Parent.PlotGroup.XWiseStackedDataList.ContainsKey(XValue))
+                if (Parent.PlotGroup != null && Parent.PlotGroup.XWiseStackedDataList != null && Parent.PlotGroup.XWiseStackedDataList.ContainsKey(InternalXValue))
                 {
                     Double sum = 0;
-                    sum += Parent.PlotGroup.XWiseStackedDataList[XValue].PositiveYValueSum;
-                    sum += Parent.PlotGroup.XWiseStackedDataList[XValue].NegativeYValueSum;
+                    sum += Parent.PlotGroup.XWiseStackedDataList[InternalXValue].PositiveYValueSum;
+                    sum += Parent.PlotGroup.XWiseStackedDataList[InternalXValue].NegativeYValueSum;
                     str = str.Replace("#Sum", Parent.PlotGroup.AxisY.GetFormattedString(sum));  //_stackSum[XValue].X contains sum of all data points with same X value
                 }
             }
-            return str;
+
+            return GetFormattedMultilineText(str);
         }
 
         #endregion
@@ -208,7 +237,7 @@ namespace Visifire.Charts
             ("YValue",
             typeof(Double),
             typeof(DataPoint),
-            new PropertyMetadata(OnYValuePropertyChanged));
+            new PropertyMetadata(Double.NaN, OnYValuePropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.XValue dependency property.
@@ -218,7 +247,7 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty XValueProperty = DependencyProperty.Register
             ("XValue",
-            typeof(Double),
+            typeof(Object),
             typeof(DataPoint),
             new PropertyMetadata(OnXValuePropertyChanged));
         
@@ -232,7 +261,7 @@ namespace Visifire.Charts
             ("ZValue",
             typeof(Double),
             typeof(DataPoint),
-            new PropertyMetadata(OnZValuePropertyChanged));
+            new PropertyMetadata(Double.NaN, OnZValuePropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.AxisXLabel dependency property.
@@ -754,19 +783,28 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the value that will appear on X-Axis for all charts. 
         /// </summary>
-        [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
-        public Double XValue
+        // [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
+        public Object XValue
         {   
             get
             {
-                return (Double)GetValue(XValueProperty);
+                return GetValue(XValueProperty);
             }
             set
             {
                 SetValue(XValueProperty, value);
             }
         }
-        
+
+        /// <summary>
+        /// Type of scale used in axis
+        /// </summary>
+        internal ChartValueTypes XValueType
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Get or set the value that will appear for bubble charts only
         /// </summary>
@@ -1411,7 +1449,12 @@ namespace Visifire.Charts
                 {
                     if (String.IsNullOrEmpty(_parent.LegendText))
                         if (this.Parent.RenderAs == RenderAs.Pie || this.Parent.RenderAs == RenderAs.Doughnut)
-                            return this.TextParser("#AxisXLabel");
+                        {
+                            if (Parent.InternalXValueType != ChartValueTypes.Numeric)
+                                return this.TextParser("#XValue");
+                            else
+                                return this.TextParser("#AxisXLabel");
+                        }
                         else
                             return this.Name;
                     else
@@ -1548,7 +1591,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Parent of DataPoints 
+        /// Parent of InternalDataPoints 
         /// </summary>
         public new DataSeries Parent
         {
@@ -1562,7 +1605,7 @@ namespace Visifire.Charts
                 _parent = value;
             }
         }
-        
+
         #endregion
 
         #region Public Events
@@ -1670,6 +1713,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// InternalXValue used for internally generated XValue of type double
+        /// </summary>
+        internal Double InternalXValue
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// InternalXValue used for internally generated XValue of type DateTime
+        /// </summary>
+        internal DateTime InternalXValueAsDateTime
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Get or set Marker which appears in Legend
@@ -1813,6 +1874,33 @@ namespace Visifire.Charts
         private static void OnXValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
+
+            try
+            {
+                if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
+                    dataPoint.InternalXValue = Convert.ToDouble(e.NewValue,System.Globalization.CultureInfo.InvariantCulture) ;
+                if (String.IsNullOrEmpty(e.NewValue.ToString()))
+                    dataPoint.InternalXValue = Double.NaN;
+                else
+                    dataPoint.InternalXValue = Double.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
+                
+                dataPoint.XValueType = ChartValueTypes.Numeric;
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Exception Handled… Now checking whether type of XValue is DateTime.");
+                try
+                {
+                    dataPoint.InternalXValueAsDateTime = (e.NewValue.GetType().Equals(typeof(DateTime))) ? (DateTime)e.NewValue : DateTime.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
+                    dataPoint.XValueType = ChartValueTypes.DateTime;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("XValue is not a DateTime.");
+                    throw new Exception(ex.Message, ex);
+                }
+            }
+            
             dataPoint.FirePropertyChanged("XValue");
         }
         
@@ -2198,7 +2286,7 @@ namespace Visifire.Charts
             DataPoint dataPoint = d as DataPoint;
             dataPoint.FirePropertyChanged("RadiusY");
         }
-        
+
         /// <summary>
         /// Returns cursor type of the DataPoint
         /// </summary>
@@ -2262,13 +2350,13 @@ namespace Visifire.Charts
             if (Parent.PlotGroup != null && Parent.PlotGroup.AxisX != null && Parent.PlotGroup.AxisX.AxisLabels != null)
             {
                 if (Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary != null &&
-                Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(XValue))
+                Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(InternalXValue))
                 {
-                    labelString = Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary[XValue];
+                    labelString = Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary[InternalXValue];
                 }
                 else
                 {
-                    labelString = Parent.PlotGroup.AxisX.GetFormattedString(XValue);
+                    labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
                 }
             }
             else
@@ -2289,7 +2377,7 @@ namespace Visifire.Charts
                 if (this.ExplodeAnimation != null)
                 {
 #if WPF             
-                    this.ExplodeAnimation.Begin(this as FrameworkElement, true);
+                    this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                     this.ExplodeAnimation.Begin();
 #endif
@@ -2304,7 +2392,7 @@ namespace Visifire.Charts
                     if (this.UnExplodeAnimation != null)
                     {
 #if WPF
-                        this.UnExplodeAnimation.Begin(this as FrameworkElement, true);
+                        this.UnExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                         this.UnExplodeAnimation.Begin();
 #endif
@@ -2313,7 +2401,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Calculate percentage value among DataPoints
+        /// Calculate percentage value among InternalDataPoints
         /// </summary>
         /// <returns>Double</returns>
         private Double Percentage()
@@ -2323,14 +2411,14 @@ namespace Visifire.Charts
             {
                 if ((Parent.Chart as Chart).PlotDetails != null)
                 {
-                    Double sum = (Parent.Chart as Chart).PlotDetails.GetAbsoluteSumOfDataPoints(Parent.DataPoints.ToList());
+                    Double sum = (Parent.Chart as Chart).PlotDetails.GetAbsoluteSumOfDataPoints(Parent.InternalDataPoints.ToList());
                     if (sum > 0) percentage = ((InternalYValue / sum) * 100);
                     else percentage = 0;
                 }
             }
             else if (Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedBar100 || Parent.RenderAs == RenderAs.StackedColumn100)
             {
-                percentage = InternalYValue / Parent.PlotGroup.XWiseStackedDataList[XValue].AbsoluteYValueSum * 100;// _stackSum[XValue].Y Contains Absolute sum
+                percentage = InternalYValue / Parent.PlotGroup.XWiseStackedDataList[InternalXValue].AbsoluteYValueSum * 100;// _stackSum[XValue].Y Contains Absolute sum
             }
             return percentage;
         }
@@ -2390,7 +2478,7 @@ namespace Visifire.Charts
                     if (this.ExplodeAnimation != null)
                     {
 #if WPF
-                        this.ExplodeAnimation.Begin(this as FrameworkElement, true);
+                        this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
 
                         this.ExplodeAnimation.Begin();
@@ -2405,7 +2493,7 @@ namespace Visifire.Charts
                     if (this.UnExplodeAnimation != null)
                     {
 #if WPF
-                        this.UnExplodeAnimation.Begin(this as FrameworkElement, true);
+                        this.UnExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                         this.UnExplodeAnimation.Begin();
 #endif                      

@@ -107,7 +107,7 @@ namespace Visifire.Commons
             ("ToolTipText",
             typeof(String),
             typeof(VisifireElement),
-            new PropertyMetadata(ToolTipTextPropertyChanged));
+            new PropertyMetadata(String.Empty, ToolTipTextPropertyChanged));
 
         /// <summary>
         /// ToolTipText property changed Event handler

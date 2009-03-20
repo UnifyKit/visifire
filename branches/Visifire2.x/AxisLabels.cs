@@ -865,12 +865,62 @@ namespace Visifire.Charts
                         if (AxisLabelContentDictionary.ContainsKey((Double)index))
                         {
                             if (ParentAxis.AxisOrientation == Orientation.Vertical)
-                                labelContent = GetFormattedMultilineText(AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index]));
+                                labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index]);
                             else
                                 labelContent = GetFormattedMultilineText(AxisLabelContentDictionary[(Double)index]);
                         }
                         else
-                            labelContent = GetFormattedString((Double)index);
+                        {
+                            if (ParentAxis.XValueType == ChartValueTypes.Date)
+                            {
+                                DateTime dt = ParentAxis.MinDate;
+                                Decimal tempIndex = index;
+
+                                if (ParentAxis._isAllXValueZero)
+                                    tempIndex--;
+
+                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+                                //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
+
+                                //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
+                                //    dt = new DateTime(dt.Year, 1, 1, 0, 0, 0);
+
+                                labelContent = FormatDate(dt, ParentAxis);
+                            }
+                            else if (ParentAxis.XValueType == ChartValueTypes.Time)
+                            {
+                                DateTime dt = ParentAxis.MinDate;
+                                Decimal tempIndex = index;
+                                
+                                System.Diagnostics.Debug.WriteLine("Index=" + index.ToString());
+                                if (ParentAxis._isAllXValueZero)
+                                    tempIndex--;
+
+                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+                                labelContent = FormatDate(dt, ParentAxis);
+                            }
+                            else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
+                            {   
+                                DateTime dt = ParentAxis.MinDate;
+                                Decimal tempIndex = index;
+                                
+                                if (ParentAxis._isAllXValueZero)
+                                    tempIndex--;
+
+                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+
+                                if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years 
+                                    || ParentAxis.IntervalType == IntervalTypes.Months || ParentAxis.InternalIntervalType == IntervalTypes.Months
+                                    || ParentAxis.IntervalType == IntervalTypes.Weeks || ParentAxis.InternalIntervalType == IntervalTypes.Weeks
+                                    || ParentAxis.IntervalType == IntervalTypes.Days || ParentAxis.InternalIntervalType == IntervalTypes.Days
+                                    )
+                                    dt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
+                             
+                                labelContent = FormatDate(dt, ParentAxis);
+                            }
+                            else
+                                labelContent = GetFormattedString((Double)index);
+                        }
                         
                         AxisLabel label = CreateLabel(labelContent);
 
@@ -913,12 +963,26 @@ namespace Visifire.Charts
                     LabelValues.Add(Maximum);
                 }
                 else
-                {
+                {   
                     return false;
                 }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Set DateTime in AxisXLabel
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="axis">Axis</param>
+        /// <param name="label">Axis labels</param>
+        private String FormatDate(DateTime dt, Axis axis)
+        {
+            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+            valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
+
+            return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -1223,6 +1287,7 @@ namespace Visifire.Charts
 
                 //Calculate vertical Position
                 Double top = 0;
+
                 if (GetAngle() != 0)
                 {
                     top = Math.Abs((label.ActualTextHeight / 2) * Math.Sin(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
@@ -1479,7 +1544,8 @@ namespace Visifire.Charts
                 if (rows > 2 && Double.IsNaN((Double)Angle))
                 {
                     Rows = 1;
-                    Angle = -45;
+
+                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
                     if (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval))
                         ParentAxis.SkipOfset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
@@ -1497,7 +1563,7 @@ namespace Visifire.Charts
 
                 if (rows > 2 && Double.IsNaN((Double)Angle))
                 {
-                    Angle = -45;
+                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
                 }
             }
 
@@ -1525,15 +1591,16 @@ namespace Visifire.Charts
             textBlock = SetFontProperties(textBlock);
             textBlock.Text = "ABCD";
 
-#if WPF
-            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-#endif
-                        
+            Size textBlockSize = Graphics.CalculateVisualSize(textBlock);
+
             while(overlap)
             {   
                 pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + skipOffset + Minimum);
-
+#if WPF
+                if (pixelInterval >= textBlockSize.Height)
+#else
                 if (pixelInterval >= textBlock.ActualHeight)
+#endif
                 {
                     overlap = false;
                 }

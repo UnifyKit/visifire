@@ -45,7 +45,7 @@ namespace Visifire.Charts
         /// Initializes a new instance of the Visifire.Charts.PlotGroup class.
         /// </summary>
         /// <param name="renderAs">RenderAs</param>
-        /// <param name="axisX">AxisX</param>
+        /// <param name="axisX">axisX</param>
         /// <param name="axisY">AxisY</param>
         public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY)
         {
@@ -141,7 +141,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Stores the maximum XValue for the group
+        /// Stores the maximum InternalXValue for the group
         /// </summary>
         internal Double MaximumX
         {
@@ -168,7 +168,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Stores the minimum XValue for the group
+        /// Stores the minimum InternalXValue for the group
         /// </summary>
         internal Double MinimumX
         {
@@ -206,6 +206,7 @@ namespace Visifire.Charts
             private set;
 #endif
         }
+
         #endregion
 
         #region Private Delegates
@@ -272,19 +273,19 @@ namespace Visifire.Charts
         /// </summary>
         internal void Update()
         {
-            // List to store a concatinated set of DataPoints from all DataSeries in this group
+            // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
             List<DataPoint> dataPoints = new List<DataPoint>();
 
-            // Populates the list with DataPoints with all availabel DataPoints from all DataSeries
+            // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
             // Also set the plotGropu reference to the current plot group
             foreach (DataSeries dataSeries in DataSeriesList)
             {
                 // check if data series is enabled
                 // if (dataSeries.Enabled == true)
                 {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList();
+                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
-                    // Concatinate the lists of DataPoints
+                    // Concatinate the lists of InternalDataPoints
                     dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
 
                     // set the plot group reference
@@ -299,24 +300,24 @@ namespace Visifire.Charts
             // all the datapoints from all DataSeries from this group
             foreach (DataPoint dataPoint in dataPoints)
             {
-                if (XWiseStackedDataList.ContainsKey(dataPoint.XValue))
+                if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
                 {   
                     // gets the existing  node
-                    xWiseData = XWiseStackedDataList[dataPoint.XValue];
+                    xWiseData = XWiseStackedDataList[dataPoint.InternalXValue];
                 }
                 else
-                {
+                {   
                     // Creates a new node
                     xWiseData = new XWiseStackedData();
-                    XWiseStackedDataList.Add(dataPoint.XValue, xWiseData);
+                    XWiseStackedDataList.Add(dataPoint.InternalXValue, xWiseData);
                 }
 
                 // add the datapoint to a node
                 AddXWiseStackedDataEntry(ref xWiseData, dataPoint);
             }
 
-            // Get a list of all XValues,YValues and ZValues from all DataPoints from all the DataSeries in this Group
-            var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.XValue) select dataPoint.XValue).Distinct();
+            // Get a list of all XValues,YValues and ZValues from all InternalDataPoints from all the DataSeries in this Group
+            var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct();
             var yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct();
             var zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct();
 

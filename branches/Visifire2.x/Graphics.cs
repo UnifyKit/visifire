@@ -826,7 +826,7 @@ namespace Visifire.Commons
         /// Creates and returns a linear gradient brush
         /// </summary>
         /// <param name="angle">Angle</param>
-        /// <param name="start">Start point</param>
+        /// <param name="dateTime">Start point</param>
         /// <param name="end">End point</param>
         /// <param name="colors">List of color</param>
         /// <param name="stops">List of Double</param>

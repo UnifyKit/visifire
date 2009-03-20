@@ -1663,7 +1663,7 @@ namespace SLVisifireChartsTest
         private bool _isLoaded = false;
 
         /// <summary>
-        /// AxisX reference
+        /// axisX reference
         /// </summary>
         private Axis _axisX;
 

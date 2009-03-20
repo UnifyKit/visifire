@@ -147,7 +147,7 @@ namespace Visifire.Commons
                     property.SetValue(sender, new Nullable<Boolean>(Convert.ToBoolean(value, CultureInfo.InvariantCulture)), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<Double>)))
                     property.SetValue(sender, new Nullable<Double>(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property.PropertyType.BaseType.Equals(typeof(Enum)))
+                else if (property.PropertyType.BaseType != null && property.PropertyType.BaseType.Equals(typeof(Enum)))
                     property.SetValue(sender, Enum.Parse(property.PropertyType, value, true), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<Thickness>)))
                     property.SetValue(sender, new Nullable<Thickness>(new Thickness(Convert.ToDouble(value, CultureInfo.InvariantCulture))), null);

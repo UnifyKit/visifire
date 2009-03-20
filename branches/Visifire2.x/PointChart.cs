@@ -169,14 +169,14 @@ namespace Visifire.Charts
 
                 PlotGroup plotGroup = series.PlotGroup;
 
-                foreach (DataPoint dataPoint in series.DataPoints)
+                foreach (DataPoint dataPoint in series.InternalDataPoints)
                 {
                     if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
                     {
                         continue;
                     }
 
-                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
+                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
 

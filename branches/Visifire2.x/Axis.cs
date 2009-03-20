@@ -399,8 +399,7 @@ namespace Visifire.Charts
            typeof(Double),
            typeof(Axis),
            new PropertyMetadata(Double.NaN, OnScrollBarOffsetChanged));
-
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.Enabled dependency property.
         /// </summary>
@@ -412,6 +411,33 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(Axis),
             new PropertyMetadata(OnEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.InternalIntervalType dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.InternalIntervalType dependency property.
+        /// </returns>
+        public static readonly DependencyProperty IntervalTypeProperty = DependencyProperty.Register
+            ("IntervalType",
+            typeof(IntervalTypes),
+            typeof(Axis),
+            new PropertyMetadata(OnIntervalTypePropertyChanged));
+
+        /// <summary>
+        /// Get or set the "AxisLabels element" property of the axis
+        /// </summary>
+        public IntervalTypes IntervalType
+        {
+            get
+            {
+                return (IntervalTypes)GetValue(IntervalTypeProperty);
+            }
+            set
+            {
+                SetValue(IntervalTypeProperty, value);
+            }
+        }
 
         /// <summary>
         /// Get or set the "AxisLabels element" property of the axis
@@ -773,7 +799,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set start from zero property of the axis. 
+        /// Get or set dateTime from zero property of the axis. 
         /// Forces the axis to include zero or atleast have either AxisMinimum or AxisMaximum as zero
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
@@ -923,6 +949,42 @@ namespace Visifire.Charts
 
         #region Internal Properties
 
+        /// <summary>
+        /// Internal interval type used to handle auto interval type 
+        /// </summary>
+        internal IntervalTypes InternalIntervalType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Axis XValue Types
+        /// </summary>
+        internal ChartValueTypes XValueType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Axis Minimum Date
+        /// </summary>
+        internal DateTime MinDate
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Axis Maximum Date
+        /// </summary>
+        internal DateTime MaxDate
+        {
+            get;
+            set;
+        }
+        
         /// <summary>
         /// Returns the visual element for the Axis
         /// </summary>
@@ -1134,7 +1196,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the axis start offset
+        /// Get or set the axis dateTime offset
         /// </summary>
         internal Double StartOffset
         {
@@ -1525,7 +1587,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages start from zero property change event of axis
+        /// Event handler manages dateTime from zero property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
@@ -1602,6 +1664,18 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Event handler manages interval type property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnIntervalTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.InternalIntervalType = (IntervalTypes) e.NewValue;
+            axis.FirePropertyChanged("IntervalType");
+        }
+        
+        /// <summary>
         /// Set up axis manager and calculate axis values
         /// </summary>
         private void SetUpAxisManager()
@@ -1628,10 +1702,10 @@ namespace Visifire.Charts
 
             // settings specific to axis X
             if (AxisRepresentation == AxisRepresentations.AxisX)
-            {
+            {   
                 Double interval = GenerateDefaultInterval();
                 if (interval > 0 || !Double.IsNaN(interval))
-                {
+                {   
                     AxisManager.Interval = interval;
                     InternalInterval = interval;
                 }
@@ -1740,9 +1814,8 @@ namespace Visifire.Charts
                 AxisTitleElement.FontWeight = this.TitleFontWeight;
 
             if (!String.IsNullOrEmpty(this.Title) && String.IsNullOrEmpty(AxisTitleElement.Text))
-                AxisTitleElement.Text = this.Title;
+                AxisTitleElement.Text = GetFormattedMultilineText(this.Title);
 
-            //if (this.TitleFontColor != null)
             AxisTitleElement.FontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), this.TitleFontColor, false);
 
             #endregion
@@ -2299,7 +2372,7 @@ namespace Visifire.Charts
                     AxisManager.AxisMinimumValue = Graphics.PixelPositionToValue(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, value - gap);
                 }
                 else
-                {
+                {   
                     AxisManager.AxisMinimumValue = (Double)AxisMinimum;
                 }
             }
@@ -2311,7 +2384,7 @@ namespace Visifire.Charts
                     AxisManager.AxisMinimumValue = Graphics.PixelPositionToValue(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, value - gap);
                 }
                 else
-                {
+                {   
                     AxisManager.AxisMinimumValue = (Double)AxisMinimum;
                 }
             }
@@ -2397,18 +2470,22 @@ namespace Visifire.Charts
         /// <returns>Interval as Double</returns>
         private Double GenerateDefaultInterval()
         {
+            if (_isDateTimeAutoInterval ||
+                (XValueType != ChartValueTypes.Numeric && IntervalType != IntervalTypes.Years && Double.IsNaN((Double)Interval) && Double.IsNaN((Double)AxisLabels.Interval) && !Double.IsNaN(InternalInterval) && InternalInterval >= 1))
+                return InternalInterval;
+
             if (AxisType == AxisTypes.Primary)
             {
                 if (Double.IsNaN((Double)Interval) && Double.IsNaN((Double)AxisLabels.Interval) && PlotDetails.IsAllPrimaryAxisXLabelsPresent)
-                {
+                {   
                     List<Double> uniqueXValues = (from entry in PlotDetails.AxisXPrimaryLabels orderby entry.Key select entry.Key).ToList();
 
                     if (uniqueXValues.Count > 0)
-                    {
+                    {   
                         Double minDiff = Double.MaxValue;
 
                         for (Int32 i = 0; i < uniqueXValues.Count - 1; i++)
-                        {
+                        {   
                             minDiff = Math.Min(minDiff, Math.Abs(uniqueXValues[i] - uniqueXValues[i + 1]));
                         }
 
@@ -2541,6 +2618,16 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
+        /// Add prefix and suffix
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        internal string AddPrefixAndSuffix(String str)
+        {
+           return Prefix + str + Suffix;
+        }
+
+        /// <summary>
         /// Return formatted string from a given value depending upon scaling set and value format string
         /// </summary>
         /// <param name="value">Double value</param>
@@ -2561,13 +2648,15 @@ namespace Visifire.Charts
                     sValue = ScaleValues[i];
                     sUnit = ScaleUnits[i];
                 }
-                str = Prefix + (value / sValue).ToString(ValueFormatString) + sUnit + Suffix;
+                str = (value / sValue).ToString(ValueFormatString) + sUnit;
             }
             else
             {   
                 str = value.ToString(ValueFormatString);
-                str = Prefix + str + Suffix;
+
             }
+
+            str = AddPrefixAndSuffix(str);
 
             return str;
         }
@@ -2762,6 +2851,9 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        internal Boolean _isDateTimeAutoInterval = false;
+        internal Boolean _isAllXValueZero = true;
 
         /// <summary>
         /// Stores the  orientation (vertical or horizontal) of the axis 

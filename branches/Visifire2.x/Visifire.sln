@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ColumnChart.cs = ColumnChart.cs
 		DataPoint.cs = DataPoint.cs
 		DataSeries.cs = DataSeries.cs
+		DateTimeHelper.cs = DateTimeHelper.cs
 		Defaults.cs = Defaults.cs
 		Enums.cs = Enums.cs
 		Graphics.cs = Graphics.cs

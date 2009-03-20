@@ -291,7 +291,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.IsNull(chart.PlotArea.ToolTipText);
+                Assert.IsNotNull(chart.PlotArea.ToolTipText);
             }
 
             window.Dispatcher.InvokeShutdown();
