@@ -20,6 +20,12 @@ namespace SLVisifireApp
         public Page()
         {
             InitializeComponent();
+
+            MyChart.Series[0].MouseLeftButtonDown += new MouseButtonEventHandler(Page_MouseLeftButtonDown);
+        }
+
+        void Page_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
         }
     }
 }

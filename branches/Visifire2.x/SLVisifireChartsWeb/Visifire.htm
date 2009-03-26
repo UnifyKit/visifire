@@ -18,9 +18,14 @@
                 var chart = args[0];
                 var brush = '<SolidColorBrush xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Color="#FF066600"/>'
 
-                chart.MouseLeftButtonUp = function(e) {
-                    alert(e.ControlId);
-                }
+                for (var seriesIndex = 0; seriesIndex < chart.Series.length; seriesIndex++) {
+                    chart.Series[seriesIndex].MouseLeftButtonUp = function(e) {
+                        e.SetPropertyFromJs("Opacity", "0.6");
+                    };
+                };
+                //                chart.MouseLeftButtonUp = function(e) {
+                //                    alert(e.ControlId);
+                //                }
             };
 
             vChart.render("Div1");

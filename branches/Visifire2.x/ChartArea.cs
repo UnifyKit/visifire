@@ -26,6 +26,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Markup;
 using System.IO;
@@ -37,6 +38,7 @@ using System;
 using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Collections.Generic;
 
@@ -2169,18 +2171,20 @@ namespace Visifire.Charts
 
                 Size markerSize;
                 if (dataPoint.Parent.RenderAs == RenderAs.Line)
-                    markerSize = new Size(18, 8);
+                    markerSize = new Size(8, 8);
                 else
                     markerSize = new Size(8, 8);
 
                 dataPoint.LegendMarker = new Marker(
-                        RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent),
+                        ((dataPoint.Parent.RenderAs == RenderAs.Line) ? (MarkerTypes)dataPoint.MarkerType : RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent)),
                         1,
                         markerSize,
                         markerBevel,
                         markerColor,
                         ""
                         );
+
+                dataPoint.LegendMarker.DataSeriesOfLegendMarker = dataPoint.Parent;
 
                 legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataPoint.LegendMarker));
             }
@@ -2272,7 +2276,10 @@ namespace Visifire.Charts
 
                         Size markerSize;
                         if (dataSeries.RenderAs == RenderAs.Line)
-                            markerSize = new Size(18, 8);
+                        {
+                            markerSize = new Size(8, 8);
+                           
+                        }
                         else
                             markerSize = new Size(8, 8);
 
@@ -2284,6 +2291,8 @@ namespace Visifire.Charts
                                 markerColor,
                                 ""
                                 );
+
+                        dataSeries.LegendMarker.DataSeriesOfLegendMarker = dataSeries;
 
                         legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
                     }
@@ -3111,7 +3120,7 @@ namespace Visifire.Charts
                     return dataSeries.MarkerType;
 
                 case RenderAs.Line:
-                    return MarkerTypes.Line;
+                    return dataSeries.MarkerType;
 
                 case RenderAs.Area:
                 case RenderAs.StackedArea:

@@ -620,6 +620,15 @@ namespace Visifire.Commons
             set;
         }
 
+        /// <summary>
+        /// DataSeries used in Legend for line chart
+        /// </summary>
+        internal DataSeries DataSeriesOfLegendMarker
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Private Properties
@@ -688,7 +697,6 @@ namespace Visifire.Commons
 
             switch (MarkerType)
             {
-
                 case MarkerTypes.Circle:
 
                     Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
@@ -706,17 +714,14 @@ namespace Visifire.Commons
 
                 case MarkerTypes.Diamond:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""11"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" Data=""M97.374908,52.791668 L94.541656,57.041668 L97.386475,61.010586 L100.59509,57.010422 z"" StrokeThickness=""0.8""/>");
-
                     break;
 
                 case MarkerTypes.Square:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""8"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" StrokeThickness=""0.8"" Data=""M160,40.166725 L160.00034,47.611012 L168.00789,47.611374 L168.00787,40.16637 z""/>");
-
                     break;
 
                 case MarkerTypes.Triangle:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""8"" Margin=""0,0,0,0"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" StrokeThickness=""0.8"" Data=""M163.89264,40.166725 L160.00034,46.921658 L168.00789,46.922005 z""/>");
-
                     break;
 
                 case MarkerTypes.Line:
@@ -763,7 +768,7 @@ namespace Visifire.Commons
                     color = (topBrush as LinearGradientBrush).GradientStops[2].Color.ToString();
 
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Stretch=""Fill"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" >
-    		        <Path.Stroke>
+                    <Path.Stroke>
     			        <RadialGradientBrush>
         			       <GradientStop Color=""{0}"" Offset=""0""/>
                          
@@ -772,7 +777,7 @@ namespace Visifire.Commons
         		        </RadialGradientBrush>
     		        </Path.Stroke>
     	            </Path>", Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[2].Color, .8).ToString(), color);
-
+                    
                     break;
 
                 case MarkerTypes.Diamond:
