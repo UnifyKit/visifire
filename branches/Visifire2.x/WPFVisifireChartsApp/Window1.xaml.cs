@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-// using System.Linq;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +16,6 @@ using System.ComponentModel;
 using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Media.Animation;
-using System.IO;
 
 namespace WPFVisifireChartsApp
 {

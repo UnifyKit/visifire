@@ -43,10 +43,15 @@ namespace Visifire.Commons
             : base()
         {
             // Attach event handler with EventChanged event of VisfiireElement
-            this.EventChanged += delegate
-            {   
-                FirePropertyChanged("MouseEvent");
-            };
+            // But do not attach the event for PlotArea beacuse PlotArea has overridden EventChanged as internal event
+            if (!this.GetType().Equals(typeof(PlotArea)))
+            {
+                // Attach event handler with EventChanged event of VisfiireElement
+                EventChanged += delegate
+                {
+                    FirePropertyChanged("MouseEvent");
+                };
+            }
 
             IsNotificationEnable = true;
         }

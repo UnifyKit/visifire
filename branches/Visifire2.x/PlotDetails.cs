@@ -386,9 +386,9 @@ namespace Visifire.Charts
                 DateTime minDate = DateTime.Now, maxDate = DateTime.Now;    // Min and max date
                 TimeSpan minDateRange, maxDateRange;
                 axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTimes
-                Boolean isDateTimeAxis = CheckIsDateTimeAxis(axisX);
+                axisX.IsDateTimeAxis = CheckIsDateTimeAxis(axisX);
 
-                if (isDateTimeAxis)
+                if (axisX.IsDateTimeAxis)
                 {
                     List<DateTime> xValuesAsDateTimeList = GetListOfXValue(axisX);
 
@@ -1128,13 +1128,12 @@ namespace Visifire.Charts
         /// </summary>
         private void SetIncrementalZIndexForSeries()
         {
-            Int32 index = 0;
-            foreach (DataSeries series in Chart.InternalSeries)
+            Int32 index =0;
+
+            foreach (DataSeries dataSeries in Chart.InternalSeries)
             {
-                series.IsNotificationEnable = false;
-                series.InternalZIndex = series.InternalZIndex - Chart.InternalSeries.Count;
-                series.InternalZIndex += index++;
-                series.IsNotificationEnable = true;
+                dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
+                dataSeries.InternalZIndex += index++;
             }
         }
 
@@ -1160,6 +1159,9 @@ namespace Visifire.Charts
             // Each Area chart has to be drawn in a different plane hence the depth incereases 
             // by the amount equal to the number of area charts
             layer3DCount += GetSeriesCountByRenderAs(RenderAs.Area);
+            //layer3DCount += GetSeriesCountByRenderAs(RenderAs.Line);
+            //layer3DCount += GetSeriesCountByRenderAs(RenderAs.Point);
+            //layer3DCount += GetSeriesCountByRenderAs(RenderAs.Bubble);
 
             // These charts are drawn on a different plane for each plot group hence the depth increases 
             // by the amount equal to the number of plots for these charts
@@ -1168,8 +1170,7 @@ namespace Visifire.Charts
 
             // Set the depth factor as the depth count
             Layer3DCount = layer3DCount;
-
-
+            
             // Functions to select the key and value from the grouped list obtained from LINQ.
             Func<IGrouping<DataSeries, Int32>, DataSeries> KeySelector = delegate(IGrouping<DataSeries, Int32> entry) { return entry.Key; };
             Func<IGrouping<DataSeries, Int32>, Int32> ElementSelector = delegate(IGrouping<DataSeries, Int32> entry) { return entry.Last(); };
@@ -1184,17 +1185,21 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Bar, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar100, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Line, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Point, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Bubble, sortedSeriesIndexGroupedBySeries);
 
             // Generate index for each chart type based on the AxisXType and AxisYType
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Primary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Primary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Secondary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea, AxisTypes.Secondary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
+            
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Primary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Primary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Secondary, AxisTypes.Primary, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedArea100, AxisTypes.Secondary, AxisTypes.Secondary, sortedSeriesIndexGroupedBySeries);
-
+            
             // create a List out of the result obtained by sorting the seriesIndex by ZIndex value
             List<KeyValuePair<DataSeries, Int32>> seriesIndexList = (from entry in sortedSeriesIndexGroupedBySeries orderby entry.Value select entry).ToList();
 
@@ -1208,7 +1213,7 @@ namespace Visifire.Charts
             Boolean ignore = false;     // is used to indicate whether the series has any affect on index or not
 
             // This is a array of ignorable render as types while calculating drawing index
-            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.Point, RenderAs.Bubble };
+            RenderAs[] ignorableCharts = { RenderAs.Line , RenderAs.Point, RenderAs.Bubble };
 
             // repeat the loop until the seriesIndexList becomes empty
             while (seriesIndexList.Count > 0)

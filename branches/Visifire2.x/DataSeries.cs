@@ -1232,10 +1232,10 @@ namespace Visifire.Charts
         {
             get
             {
-                if ((Boolean)LabelEnabled)
+                //if ((Boolean)LabelEnabled)
                     return (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
 
-                return false;
+                //return false;
             }
             set
             {
@@ -2453,6 +2453,7 @@ namespace Visifire.Charts
 
                         if (Double.IsNaN(dataPoint.InternalXValue))
                             dataPoint.InternalXValue = this.DataPoints.Count;
+
                         dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint));
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;

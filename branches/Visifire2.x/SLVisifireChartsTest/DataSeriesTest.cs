@@ -2897,6 +2897,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             DataSeries dataSeries = CreateDataSeries();
+            dataSeries.Bevel = false;
 
             chart.Series.Add(dataSeries);
 

@@ -33,10 +33,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Windows.Browser;
 #endif
 
 using Visifire.Commons;
+using System.ComponentModel;
 
 
 namespace Visifire.Charts
@@ -70,6 +71,12 @@ namespace Visifire.Charts
 #else
             DefaultStyleKey = typeof(PlotArea);
 #endif
+
+            // Attach event handler with EventChanged event of VisfiireElement
+            EventChanged += delegate
+            {
+                FirePropertyChanged("MouseEvent");
+            };
         }
 
         #endregion
@@ -420,6 +427,54 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Events And Delegates
+        
+        /// <summary>
+        /// Event handler for the MouseLeftButtonDown event 
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonDown
+        {
+            remove
+            {
+                _onMouseLeftButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseLeftButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseLeftButtonUp event 
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonUp
+        {
+            remove
+            {
+                _onMouseLeftButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseLeftButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
 
         #endregion
 
@@ -823,8 +878,7 @@ namespace Visifire.Charts
                         clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
                     }
                 }
-
-
+                
                 ShadowGrid.Clip = GetShadowClip(clipSize);
 
                 ShadowGrid.IsHitTestVisible = false;
@@ -832,13 +886,77 @@ namespace Visifire.Charts
                 ShadowGrid.UpdateLayout();
             }
         }
+
+        /// <summary>
+        /// Creates PlotAreaMouseButtonEventArgs
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        /// <returns>PlotAreaMouseButtonEventArgs</returns>
+        internal PlotAreaMouseButtonEventArgs CreatePlotAreaMouseButtonEventArgs(MouseButtonEventArgs e)
+        {
+            Chart chart = Chart as Chart;
+            PlotAreaMouseButtonEventArgs eventArgs = new PlotAreaMouseButtonEventArgs(e);
+
+            if (chart.ChartArea.AxisX != null)
+            {   
+                Double xValue;
+                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+                Double lenthInPixel =((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+
+                xValue = chart.ChartArea.AxisX.PixelPositionToValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
+
+                if (chart.ChartArea.AxisX.IsDateTimeAxis)
+                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                else
+                    eventArgs.XValue = xValue;
+            }
+
+            return eventArgs;
+        }
+
+        /// <summary>
+        /// Fire MouseLeftButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseLeftButtonDownEvent(MouseButtonEventArgs e)
+        {   
+            if(_onMouseLeftButtonDown != null)
+                _onMouseLeftButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
+        }
+
+        /// <summary>
+        /// Fire MouseLeftButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseLeftButtonUpEvent(MouseButtonEventArgs e)
+        {
+            if (_onMouseLeftButtonUp != null)
+                _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
+        }
+
         #endregion
 
         #region Internal Events And Delegates
 
+        /// <summary>
+        /// EventChanged event is fired if any event is attached
+        /// </summary>
+        internal new event EventHandler EventChanged;
+
         #endregion
 
         #region Data
+
+        /// <summary>
+        /// Handler for MouseLeftButtonDown event
+        /// </summary>
+        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseLeftButtonDown;
+
+        /// <summary>
+        /// Handler for MouseLeftButtonUp event
+        /// </summary>
+        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseLeftButtonUp; 
 
         /// <summary>
         /// Canvas for bevel

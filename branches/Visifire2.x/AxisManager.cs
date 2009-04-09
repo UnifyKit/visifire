@@ -140,7 +140,6 @@ namespace Visifire.Charts
                 this._interval = nextInterval;
 
             }
-
         }
 
         #endregion

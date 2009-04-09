@@ -150,6 +150,8 @@ namespace Visifire.Charts
             AddLegends(Chart, true, remainingSize.Height, remainingSize.Width);
 
             RetainOldScrollOffsetOfScrollViewer();
+
+            Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
         }
 
         #endregion
@@ -477,8 +479,8 @@ namespace Visifire.Charts
             Chart.PlotArea.AttachHref(Chart, Chart.PlotArea.BorderElement, Chart.PlotArea.Href, Chart.PlotArea.HrefTarget);
             Chart.PlotArea.DetachToolTip(Chart.PlotArea.BorderElement);
             Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, Chart.PlotArea.BorderElement);
-            Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
-
+            //Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
+            
             if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
                 chart._drawingCanvas.Children.Add(PlotAreaCanvas);
         }
@@ -1097,17 +1099,30 @@ namespace Visifire.Charts
                 chartSize = newSize.Width;
 
             if ((bool)Chart.ScrollingEnabled)
-            {
-                Double minGap = 10;
+            {   
+                // singlePlotWidth helps to generate PlotArea width inside scrollviewer.
+                // Viewport can be divided into one or more than one plots. Default value is 30 pixels.
+                Double singlePlotWidth = 10;
+
+                /* The following codes are for maintaining Scale of Axis
+                 * 
+                    if (AxisX != null && !Double.IsNaN((Double)AxisX.Scale) && AxisX.Scale > 0)
+                    {
+                        if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                            singlePlotWidth = newSize.Width / AxisX.Scale;
+                        else if(PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                            singlePlotWidth = newSize.Height / AxisX.Scale;
+                    }
+                */
 
                 if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
-                    minGap = (Double)Chart.MinimumGap;
+                    singlePlotWidth = (Double)Chart.MinimumGap;
 
                 if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-                {
+                {   
                     if (Chart.InternalSeries.Count > 0)
                     {
-                        chartSize = CalculatePlotAreaAutoSize(minGap);
+                        chartSize = CalculatePlotAreaAutoSize(singlePlotWidth);
                     }
                 }
 
@@ -1511,7 +1526,7 @@ namespace Visifire.Charts
 
             // Create the various region required for drawing charts
             switch (PlotDetails.ChartOrientation)
-            {
+            {   
                 case ChartOrientationType.Vertical:
                     chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, newSize);
                     // set chart Canvas position
@@ -1603,6 +1618,10 @@ namespace Visifire.Charts
 
 
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
+
+                AxisX._isScrollToOffsetEnabled = false;
+                AxisX.ScrollBarOffset = offset / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                AxisX._isScrollToOffsetEnabled = true;
             }
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
@@ -1624,7 +1643,12 @@ namespace Visifire.Charts
                     (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -offset);
 
 
-                SaveAxisContentOffsetAndResetMargin(AxisX, offset);
+                SaveAxisContentOffsetAndResetMargin(AxisX, (AxisX.ScrollBarElement.Maximum - offset));
+
+                AxisX._isScrollToOffsetEnabled = false;
+                AxisX.ScrollBarOffset = (AxisX.ScrollBarElement.Maximum - offset) / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                AxisX._isScrollToOffsetEnabled = true;
+
             }
             if (AxisX2 != null)
                 AxisX2.ScrollBarElement.Value = e.NewValue;
@@ -1660,7 +1684,7 @@ namespace Visifire.Charts
             }
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-            {
+            {   
                 Double offset = e.NewValue;
 #if SL
                 AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
@@ -1675,8 +1699,7 @@ namespace Visifire.Charts
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(0, offset, 0, 0);
-
-
+                
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
             }
 
@@ -1689,7 +1712,7 @@ namespace Visifire.Charts
         /// (Render each plotgroup from the plotgroup list of plotdetails)
         /// </summary>
         private void RenderSeries()
-        {
+        {   
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
 
             // Contains a list of serties as per the drawing order generated in the plotdetails
@@ -1702,16 +1725,15 @@ namespace Visifire.Charts
 
             // This loop will select series for rendering and it will repeat until all series have been rendered
             while (renderedSeriesCount < Chart.InternalSeries.Count)
-            {
+            {   
                 selectedDataSeries4Rendering = new List<DataSeries>();
-
+                
                 currentRenderAs = dataSeriesListInDrawingOrder[renderedSeriesCount].RenderAs;
 
                 currentDrawingIndex = PlotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[renderedSeriesCount]];
-
-
+                
                 for (Int32 i = renderedSeriesCount; i < Chart.InternalSeries.Count; i++)
-                {
+                {   
                     if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == PlotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
                         selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
                 }
@@ -1737,7 +1759,7 @@ namespace Visifire.Charts
         /// <param name="seriesListForRendering">List of selected dataseries</param>
         /// <returns>Canvas with rendered dataSeries visual</returns>
         private Canvas RenderSeriesFromList(List<DataSeries> dataSeriesList4Rendering)
-        {
+        {   
             Canvas renderedCanvas = null;
 
             switch (dataSeriesList4Rendering[0].RenderAs)
@@ -3036,6 +3058,9 @@ namespace Visifire.Charts
             Animate();
 
             Chart._internalAnimationEnabled = false;
+            
+            if (_isFirstTimeRender)
+                Chart.FireRenderedEvent();
 
             _isFirstTimeRender = false;
             
@@ -3136,7 +3161,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Events
-        
+       
         #endregion
 
         #region Static Methods

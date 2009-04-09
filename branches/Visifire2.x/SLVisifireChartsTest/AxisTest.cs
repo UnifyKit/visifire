@@ -86,10 +86,32 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset));
+                () => Assert.AreEqual(0, chart.AxesX[0].ScrollBarOffset));
 
             EnqueueTestComplete();
         }
+
+        ///// <summary>
+        ///// Check the default value of Scale. 
+        ///// </summary> 
+        //[TestMethod]
+        //[Description("Check the default value of Scale.")]
+        //[Owner("[....]")]
+        //[Asynchronous]
+        //public void ScaleDefaultValue()
+        //{
+        //    Chart chart = new Chart();
+        //    chart.Width = 400;
+        //    chart.Height = 300;
+
+        //    Common.CreateAndAddDefaultDataSeries(chart);
+
+        //    EnqueueSleep(_sleepTime);
+        //    CreateAsyncTask(chart,
+        //        () => Assert.AreEqual(Double.NaN, chart.AxesX[0].Scale));
+
+        //    EnqueueTestComplete();
+        //}
 
         /// <summary>
         /// Check the default value of ScrollBarOffset for horizontal chart. 
@@ -109,7 +131,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(Double.NaN, chart.AxesX[0].ScrollBarOffset));
+                () => Assert.AreEqual(0, chart.AxesX[0].ScrollBarOffset));
 
             EnqueueTestComplete();
         }
@@ -650,6 +672,32 @@ namespace SLVisifireChartsTest
                 () => _axisY.Opacity = 0.5,
                 () => Assert.AreEqual(0.5, _axisY.Opacity, Common.HighPrecisionDelta));
         }
+
+        ///// <summary>
+        ///// Check the Scale property value. 
+        ///// </summary> 
+        //[TestMethod]
+        //[Description("Check the new value of Scale.")]
+        //[Owner("[....]")]
+        //[Asynchronous]
+        //public void ScaleNewValue()
+        //{
+        //    Chart chart = new Chart();
+        //    chart.Width = 400;
+        //    chart.Height = 300;
+
+        //    _axisX = new Axis();
+        //    chart.AxesX.Add(_axisX);
+
+        //    Common.CreateAndAddDataSeriesWithMoreDataPoints(chart);
+
+        //    EnqueueSleep(_sleepTime);
+        //    CreateAsyncTask(chart,
+        //        () => _axisX.Scale = 7.5,
+        //        () => Assert.AreEqual(7.5, _axisX.Scale));
+
+        //    EnqueueTestComplete();
+        //}
 
         /// <summary>
         /// Check the Padding property value

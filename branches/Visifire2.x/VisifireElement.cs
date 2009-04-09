@@ -439,14 +439,30 @@ namespace Visifire.Commons
 
             visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
             {
-                if (obj._onMouseLeftButtonDown != null)
-                    obj._onMouseLeftButtonDown(senderElement, e);
+                if (obj.GetType().Equals(typeof(PlotArea)))
+                {
+                    (obj as PlotArea).FireMouseLeftButtonDownEvent(e);
+                }
+                else
+                {
+                    if (obj._onMouseLeftButtonDown != null)
+                    {
+                        obj._onMouseLeftButtonDown(senderElement, e);
+                    }
+                }
             };
 
             visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
             {
-                if (obj._onMouseLeftButtonUp != null)
-                    obj._onMouseLeftButtonUp(senderElement, e);
+                if (obj.GetType().Equals(typeof(PlotArea)))
+                {
+                    (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
+                }
+                else
+                {
+                    if (obj._onMouseLeftButtonUp != null)
+                        obj._onMouseLeftButtonUp(senderElement, e);
+                }
             };
 
             visual.MouseMove += delegate(object sender, MouseEventArgs e)

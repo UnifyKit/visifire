@@ -3838,14 +3838,14 @@ namespace Visifire.Charts
         /// <param name="zindex">Z index of the pie</param>
         /// <param name="isAnimationEnabled">Whether animation is enabled</param>
         /// <param name="labelStyleCounter">labelStyle count</param>
-        private static void Create2DPie(Double width, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Double offsetY, ref Int32 zindex, Boolean isAnimationEnabled, Int32 labelStyleCount)
+        private static void Create2DPie(Double width, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Double offsetY, ref Int32 zindex, Boolean isAnimationEnabled, Int32 labelStateCount)
         {
             #region 2D Pie
 
             PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
             PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
 
-            if (labelStyleCount == enabledDataPoints.Count)
+            if (labelStateCount == enabledDataPoints.Count)
                 pieParams.OuterRadius -= pieParams.OuterRadius * pieParams.ExplodeRatio;
 
             Canvas pieVisual = GetPie2D(ref faces, pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
@@ -4004,14 +4004,14 @@ namespace Visifire.Charts
 
             SectorChartShapeParams pieParams = null;
 
-            Int32 labelStyleCounter = 0;
+            Int32 labelStateCounter = 0;
 
             if (!chart.View3D)
             {
                 foreach (DataPoint dataPoint in enabledDataPoints)
                 {
-                    if (dataPoint.LabelStyle == LabelStyles.Inside)
-                        labelStyleCounter++;
+                    if (dataPoint.LabelStyle == LabelStyles.Inside || !(Boolean)dataPoint.LabelEnabled)
+                        labelStateCounter++;
                 }
             }
 
@@ -4100,7 +4100,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    Create2DPie(width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref offsetY, ref zindex, isAnimationEnabled, labelStyleCounter);
+                    Create2DPie(width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref offsetY, ref zindex, isAnimationEnabled, labelStateCounter);
                 }
 
                 Debug.WriteLine("Datapoint" + enabledDataPoints.IndexOf(dataPoint) + ": " + DateTime.Now.ToLongTimeString());
@@ -4196,14 +4196,14 @@ namespace Visifire.Charts
 
             SectorChartShapeParams pieParams = null;
 
-            Int32 labelStyleCounter = 0;
+            Int32 labelStateCounter = 0;
 
             if (!chart.View3D)
             {
                 foreach (DataPoint dataPoint in enabledDataPoints)
                 {
-                    if (dataPoint.LabelStyle == LabelStyles.Inside)
-                        labelStyleCounter++;
+                    if (dataPoint.LabelStyle == LabelStyles.Inside || !(Boolean)dataPoint.LabelEnabled)
+                        labelStateCounter++;
                 }
             }
 
@@ -4339,7 +4339,7 @@ namespace Visifire.Charts
                     PieDoughnut2DPoints unExplodedPoints = new PieDoughnut2DPoints();
                     PieDoughnut2DPoints explodedPoints = new PieDoughnut2DPoints();
 
-                    if (labelStyleCounter == enabledDataPoints.Count)
+                    if (labelStateCounter == enabledDataPoints.Count)
                     {
                         pieParams.OuterRadius -= pieParams.OuterRadius * pieParams.ExplodeRatio;
                         pieParams.InnerRadius = pieParams.OuterRadius / 2;

@@ -218,18 +218,6 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
-        /// Identifies the Visifire.Charts.Chart.MinScrollingGap dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
-        /// </returns>
-        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
-            ("MinimumGap",
-            typeof(Nullable<Double>),
-            typeof(Chart),
-            new PropertyMetadata(OnMinimumGapPropertyChanged));
-
-        /// <summary>
         /// Identifies the Visifire.Charts.Chart.ScrollingEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -422,22 +410,34 @@ namespace Visifire.Charts
         new PropertyMetadata(OnPlotAreaPropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Chart.MinScrollingGap dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
+        /// </returns>
+        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
+            ("MinimumGap",
+            typeof(Nullable<Double>),
+            typeof(Chart),
+            new PropertyMetadata(OnMinimumGapPropertyChanged));
+
+        /// <summary>
         /// Minimum gap between two DataPoint of same series in PlotArea
         /// </summary>
-#if SL  
+#if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
-#endif  
+#endif
         public Nullable<Double> MinimumGap
-        {   
+        {
             get
-            {   
+            {
                 if ((Nullable<Double>)GetValue(MinimumGapProperty) == null)
                     return 30;
                 else
                     return (Nullable<Double>)GetValue(MinimumGapProperty);
             }
             set
-            {   
+            {
                 SetValue(MinimumGapProperty, value);
             }
         }
@@ -780,6 +780,21 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Events
+
+        /// <summary>
+        /// Event handler for the Rendered event 
+        /// </summary>
+        public event EventHandler Rendered
+        {
+            remove
+            {
+                _rendered -= value;
+            }
+            add
+            {
+                _rendered += value;
+            }
+        }
 
         #endregion
 
@@ -1225,7 +1240,9 @@ namespace Visifire.Charts
         {
             // Create new ChartArea
             if (ChartArea == null)
+            {
                 ChartArea = new ChartArea(this as Chart);
+            }
 
 #if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
@@ -1476,17 +1493,6 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// MinScrollingGapProperty changed call back function
-        /// </summary>
-        /// <param name="d">Chart</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.InvokeRender();
-        }
-
-        /// <summary>
         /// ScrollingEnabledProperty changed call back function
         /// </summary>
         /// <param name="d">Chart</param>
@@ -1674,6 +1680,17 @@ namespace Visifire.Charts
             chart.InvokeRender();
         }
 
+        /// <summary>
+        /// MinScrollingGapProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
+
         #endregion
 
         #region Private Properties
@@ -1797,6 +1814,15 @@ namespace Visifire.Charts
         #endregion
         
         #region Internal Methods
+
+        /// <summary>
+        /// Fire Rendered event
+        /// </summary>
+        internal void FireRenderedEvent()
+        {
+            if (_rendered != null)
+                _rendered(this, null);
+        }
 
         /// <summary>
         /// Check if exception occurred due to negative size error
@@ -2119,6 +2145,9 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        
+        private EventHandler _rendered;
 
         /// <summary>
         /// Whether shadow effect of chart is applied or not

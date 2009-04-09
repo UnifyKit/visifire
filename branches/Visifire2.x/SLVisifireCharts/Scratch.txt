@@ -1,4 +1,44 @@
-﻿        /// <summary>
+﻿/// <summary>
+/// Identifies the Visifire.Charts.Axis.Scale dependency property.
+/// </summary>
+/// <returns>
+/// The identifier for the Visifire.Charts.Axis.Scale dependency property.
+/// </returns>
+public static DependencyProperty ScaleProperty = DependencyProperty.Register
+    ("Scale",
+    typeof(Double),
+    typeof(Axis),
+    new PropertyMetadata(Double.NaN, OnScalePropertyChanged));
+            
+/// <summary>
+/// Get or set the axis Scale property of the axis.
+/// Currently Scale property is applicable only for AxisX.
+/// </summary>
+public Double Scale
+{
+	get
+	{
+		return (Double)GetValue(ScaleProperty);
+	}
+	set
+	{
+		SetValue(ScaleProperty, value);
+	}
+}
+
+/// <summary>
+/// Event handler manages Scale property change event of axis
+/// </summary>
+/// <param name="d">DependencyObject</param>
+/// <param name="e">DependencyPropertyChangedEventArgs</param>
+private static void OnScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+{
+	Axis axis = d as Axis;
+	axis.FirePropertyChanged("Scale");
+}
+
+
+        /// <summary>
         /// Whether the render call is allowed by chart itself during render process.
         /// During render process, elements properties and chart elements collections are changed. This should not cause render call. 
         /// So this variable is used to protect PropertyChanged event fire during render process.

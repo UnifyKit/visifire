@@ -44,7 +44,7 @@
 
                 //debugger;
                 var chart = args[0];   // Chart reference.
-
+                                
                 /*  
                 Attach an event handler with 1st DataSeries of the 1st chart on MouseLeftButtonUp event.
                 DataPoint reference is received as event argument.
@@ -55,11 +55,8 @@
 
                 // Attach Events to a Title. Title reference is received as event argument.
                 chart.Titles[0].MouseLeftButtonUp = function(title) {
-                    alert(title.Text);
+                alert(title.Text);
                 }
-
-                //alert('Abc');
-               
             }
             
             // Render chart

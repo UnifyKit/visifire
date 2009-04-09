@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Visifire.Charts;
 using Visifire.Commons;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace SLVisifireApp
 {
@@ -20,12 +21,6 @@ namespace SLVisifireApp
         public Page()
         {
             InitializeComponent();
-
-            MyChart.Series[0].MouseLeftButtonDown += new MouseButtonEventHandler(Page_MouseLeftButtonDown);
-        }
-
-        void Page_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
         }
     }
 }

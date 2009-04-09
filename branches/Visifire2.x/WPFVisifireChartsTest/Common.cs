@@ -228,6 +228,25 @@ namespace WPFVisifireChartsTest
             chart.Series.Add(dataSeries);
         }
 
+        public static void CreateAndAddDefaultDataSeriesForScrolling(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+
+            dataSeries.RenderAs = RenderAs.Column;
+
+            Random rand = new Random();
+
+            for (Int32 i = 0; i < 20; i++)
+            {
+                DataPoint datapoint = new DataPoint();
+                datapoint.AxisXLabel = "a" + i;
+                datapoint.YValue = rand.Next(0, 100);
+                dataSeries.DataPoints.Add(datapoint);
+            }
+
+            chart.Series.Add(dataSeries);
+        }
+
         public static void CreateDefaultAxis(Chart chart)
         {
             Axis axisX = new Axis();

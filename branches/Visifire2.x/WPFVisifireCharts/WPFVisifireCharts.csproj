@@ -160,6 +160,9 @@
     <Compile Include="..\PlotArea.cs">
       <Link>PlotArea.cs</Link>
     </Compile>
+    <Compile Include="..\PlotAreaMouseButtonEventArgs.cs">
+      <Link>PlotAreaMouseButtonEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\PlotDetails.cs">
       <Link>PlotDetails.cs</Link>
     </Compile>

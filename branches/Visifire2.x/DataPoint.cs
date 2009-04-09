@@ -87,7 +87,7 @@ namespace Visifire.Charts
         {
             String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
             valueFormatString = String.IsNullOrEmpty(Parent.XValueFormatString) ? valueFormatString : Parent.XValueFormatString;
-            return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture));
+            return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
         }
         
         /// <summary>
@@ -1137,13 +1137,24 @@ namespace Visifire.Charts
                 if (LabelEnabled != null && (Boolean)LabelEnabled)
                 {   
                     Nullable<Boolean> retVal = null;
-                    if ((Nullable<Boolean>) GetValue(LabelLineEnabledProperty) == null)
-                        retVal = (_parent != null) ? _parent.LabelLineEnabled: null;
+                    if ((Nullable<Boolean>)GetValue(LabelLineEnabledProperty) == null)
+                    {
+                        if (_parent != null)
+                        {
+                            if ((_parent.RenderAs == RenderAs.Pie || _parent.RenderAs == RenderAs.Doughnut) && (LabelStyle == LabelStyles.OutSide))
+                                //retVal = (_parent != null) ? _parent.LabelLineEnabled : null;
+                                retVal = (_parent.LabelLineEnabled != null) ? _parent.LabelLineEnabled : true;
+                            else
+                                retVal = false;
+                        }
+                        else
+                            retVal = false;
+                    }
                     else
                         retVal = (Nullable<Boolean>)GetValue(LabelLineEnabledProperty);
  
-                    if(retVal == null && _parent != null)
-                        retVal = ((_parent.RenderAs == RenderAs.Pie || _parent.RenderAs == RenderAs.Doughnut) && (LabelStyle == LabelStyles.OutSide)) ? true : false;
+                    //if(retVal == null && _parent != null)
+                    //    retVal = ((_parent.RenderAs == RenderAs.Pie || _parent.RenderAs == RenderAs.Doughnut) && (LabelStyle == LabelStyles.OutSide)) ? true : false;
 
                     return retVal;
                 }

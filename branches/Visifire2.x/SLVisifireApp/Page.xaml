@@ -4,31 +4,22 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
->
+>   
     <Grid x:Name="LayoutRoot" HorizontalAlignment="Stretch" Background="White" Height="300" Width="500" VerticalAlignment="Stretch">
-
-        <vc:Chart Name="MyChart" Theme="Theme1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-Width="500" Height="300" ScrollingEnabled="False">
-
-            <vc:Chart.Titles>
-                <vc:Title Text="Date Axis"/>
-            </vc:Chart.Titles>
+        <vc:Chart Theme="Theme1" x:Name="MyChart">
 
             <vc:Chart.AxesX>
-                <vc:Axis IntervalType="Months" Interval="1">
-                </vc:Axis>
+                <vc:Axis IntervalType="Months" Interval="1"/>
             </vc:Chart.AxesX>
-
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" XValueType="Date" >
-                    <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1/5/2000 12:00:12" YValue="20" MarkerType="Circle" />
-                        <vc:DataPoint XValue="2/8/2000 10:12:4" YValue="10"/>
-                        <vc:DataPoint XValue="3/2/2000 23:00:6" YValue="30"/>
-                        <vc:DataPoint XValue="2/3/2000 18:45:10" YValue="40"/>
-                        <vc:DataPoint XValue="4/2/2000 12:00:00" YValue="15"/>
-                        <vc:DataPoint XValue="5/6/2000 12:22:00" YValue="28"/>
-                    </vc:DataSeries.DataPoints>
+                <vc:DataSeries RenderAs="Column">
+                        <vc:DataSeries.DataPoints>
+                            <vc:DataPoint XValue="1/1/2007" YValue="42"/>
+                            <vc:DataPoint XValue="2/2/2007" YValue="14"/>
+                            <vc:DataPoint XValue="3/1/2007" YValue="28"/>
+                            <vc:DataPoint XValue="4/2/2007" YValue="18"/>
+                            <vc:DataPoint XValue="5/3/2007" YValue="32"/>
+                        </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>

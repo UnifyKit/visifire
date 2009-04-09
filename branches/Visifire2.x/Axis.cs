@@ -85,7 +85,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.AxisLabels dependency property.
         /// </summary>
@@ -96,7 +96,7 @@ namespace Visifire.Charts
             ("AxisLabels",
             typeof(AxisLabels),
             typeof(Axis),
-            new PropertyMetadata(OnAxisLabels_PropertyChanged));
+            new PropertyMetadata(OnAxisLabelsPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.HrefTarget dependency property.
@@ -896,6 +896,8 @@ namespace Visifire.Charts
             }
             set
             {
+                if (value < 0 || value > 1)
+                    throw new Exception("Value does not fall under the expected range. ScrollBarOffset always varies from 0 to 1.");
                 SetValue(ScrollBarOffsetProperty, value);
             }
         }
@@ -953,6 +955,15 @@ namespace Visifire.Charts
         /// Internal interval type used to handle auto interval type 
         /// </summary>
         internal IntervalTypes InternalIntervalType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Axis is a DateTime axis
+        /// </summary>
+        internal Boolean IsDateTimeAxis
         {
             get;
             set;
@@ -1388,7 +1399,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnAxisLabels_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnAxisLabelsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
 
@@ -1649,7 +1660,9 @@ namespace Visifire.Charts
         private static void OnScrollBarOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.SetScrollBarValueFromOffset((Double)e.NewValue);
+
+            if(axis._isScrollToOffsetEnabled)
+                axis.SetScrollBarValueFromOffset((Double)e.NewValue);
         }
 
         /// <summary>
@@ -2618,6 +2631,17 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
+        /// Converts pixel position to value
+        /// </summary>
+        /// <param name="maxWidth">Pixel width of the scale</param>
+        /// <param name="position">Pixel position</param>
+        /// <returns>Double</returns>
+        internal Double PixelPositionToValue(Double maxWidth, Double pixelPosition)
+        {
+            return Graphics.PixelPositionToValue(0, maxWidth, InternalAxisMinimum, InternalAxisMaximum, pixelPosition);
+        }
+
+        /// <summary>
         /// Add prefix and suffix
         /// </summary>
         /// <param name="str"></param>
@@ -2695,9 +2719,14 @@ namespace Visifire.Charts
         internal Double GetScrollBarValueFromOffset(Double offset)
         {
             if (Double.IsNaN(offset))
-                offset = (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal) ? 1 : 0;
+                offset = 0;
 
-            return (ScrollBarElement.Maximum - ScrollBarElement.Minimum) * offset + ScrollBarElement.Minimum;
+            offset = (ScrollBarElement.Maximum - ScrollBarElement.Minimum) * offset + ScrollBarElement.Minimum;
+
+            if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                offset = ScrollBarElement.Maximum - offset;
+
+            return offset;
         }
 
         /// <summary>
@@ -2852,7 +2881,19 @@ namespace Visifire.Charts
 
         #region Data
 
+        /// <summary>
+        /// Whether ScrollBar scrolling is enabled due to change of ScrollBarOffset property
+        /// </summary>
+        internal Boolean _isScrollToOffsetEnabled = true;
+
+        /// <summary>
+        /// Whether Interval is auto-calculated for DateTime Axis
+        /// </summary>
         internal Boolean _isDateTimeAutoInterval = false;
+
+        /// <summary>
+        /// Whether all XValues are equals to zero
+        /// </summary>
         internal Boolean _isAllXValueZero = true;
 
         /// <summary>

@@ -260,7 +260,7 @@ namespace Visifire.Charts
                 minDiff = Math.Min(minDiff, Math.Abs(distinctValues[i] - distinctValues[i + 1]));
             }
 
-            // return the minimu difference
+            // return the minimum difference
             return minDiff;
         }
 

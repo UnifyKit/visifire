@@ -65,6 +65,60 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Converts XValue to DateTime
+        /// </summary>
+        /// <param name="minDate">Min DateTime Value</param>
+        /// <param name="XValue">XValue</param>
+        /// <param name="intervalTypes">IntervalTypes</param>
+        /// <returns>DateTime</returns>
+        public static DateTime XValueToDateTime(DateTime minDate, Double XValue, IntervalTypes intervalTypes)
+        {   
+            DateTime returnDate;
+            TimeSpan timespan = new TimeSpan();
+            
+            switch (intervalTypes)
+            {   
+                case IntervalTypes.Years:
+                    timespan = new TimeSpan(0, 0, (Int32)(XValue / 0.000001902587519025875), 0);
+                    break;
+
+                case IntervalTypes.Months:
+                    timespan = new TimeSpan(0, (Int32)(XValue / 0.00137), 0, 0);
+                    break;
+
+                case IntervalTypes.Weeks:
+                    timespan = new TimeSpan((Int32)XValue * 7, 0, 0, 0);
+                    break;
+
+                case IntervalTypes.Days:
+                    timespan = new TimeSpan((Int32)XValue, 0, 0, 0);
+                    break;
+
+                case IntervalTypes.Hours:
+                    timespan = new TimeSpan(0, (Int32)XValue, 0, 0);
+                    break;
+
+                case IntervalTypes.Minutes:
+                    timespan = new TimeSpan(0, 0, (Int32)XValue, 0);
+                    break;
+
+                case IntervalTypes.Seconds:
+                    timespan = new TimeSpan(0, 0, 0, (Int32)XValue);
+
+                    break;
+
+                case IntervalTypes.Milliseconds:
+                    timespan = new TimeSpan(0, 0, 0, 0, (Int32)XValue);
+                    
+                    break;
+            }
+
+            returnDate = minDate.Add(timespan);
+
+            return returnDate;
+        }
+        
+        /// <summary>
         /// Get Date difference in days
         /// </summary>
         /// <param name="dateTime1">First Date</param>
