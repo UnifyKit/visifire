@@ -72,48 +72,44 @@ namespace Visifire.Charts
         /// <param name="intervalTypes">IntervalTypes</param>
         /// <returns>DateTime</returns>
         public static DateTime XValueToDateTime(DateTime minDate, Double XValue, IntervalTypes intervalTypes)
-        {   
-            DateTime returnDate;
+        {
+            DateTime returnDate = minDate;
             TimeSpan timespan = new TimeSpan();
             
             switch (intervalTypes)
             {   
                 case IntervalTypes.Years:
-                    timespan = new TimeSpan(0, 0, (Int32)(XValue / 0.000001902587519025875), 0);
+                    returnDate = minDate.AddMinutes((XValue / 0.000001902587519025875));
                     break;
 
                 case IntervalTypes.Months:
-                    timespan = new TimeSpan(0, (Int32)(XValue / 0.00137), 0, 0);
+                    returnDate = minDate.AddHours((XValue / 0.00137));
                     break;
 
                 case IntervalTypes.Weeks:
-                    timespan = new TimeSpan((Int32)XValue * 7, 0, 0, 0);
+                    returnDate = minDate.AddDays(XValue * 7);
                     break;
 
                 case IntervalTypes.Days:
-                    timespan = new TimeSpan((Int32)XValue, 0, 0, 0);
+                    returnDate = minDate.AddDays(XValue);
                     break;
 
                 case IntervalTypes.Hours:
-                    timespan = new TimeSpan(0, (Int32)XValue, 0, 0);
+                    returnDate = minDate.AddHours(XValue);
                     break;
 
                 case IntervalTypes.Minutes:
-                    timespan = new TimeSpan(0, 0, (Int32)XValue, 0);
+                    returnDate = minDate.AddMinutes(XValue);
                     break;
 
                 case IntervalTypes.Seconds:
-                    timespan = new TimeSpan(0, 0, 0, (Int32)XValue);
-
+                    returnDate = minDate.AddSeconds(XValue);
                     break;
 
                 case IntervalTypes.Milliseconds:
-                    timespan = new TimeSpan(0, 0, 0, 0, (Int32)XValue);
-                    
+                    returnDate = minDate.AddMilliseconds(XValue);
                     break;
             }
-
-            returnDate = minDate.Add(timespan);
 
             return returnDate;
         }

@@ -202,7 +202,7 @@ namespace Visifire.Commons
                 // Set Alignment
                 SetAlignment4Label();
 
-
+                
                 // Add TextBlock into Visual
                 Visual.Children.Add(TextBlock);
 
@@ -677,6 +677,9 @@ namespace Visifire.Commons
             if (TextBlock != null)
             {
                 // Set TextElement properties 
+#if WPF
+                TextBlock.FlowDirection = FlowDirection.LeftToRight;
+#endif
                 TextBlock.FontFamily = FontFamily;
                 TextBlock.FontSize = FontSize;
                 TextBlock.FontStyle = FontStyle;

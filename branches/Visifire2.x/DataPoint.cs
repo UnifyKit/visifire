@@ -1747,10 +1747,10 @@ namespace Visifire.Charts
         /// Get or set Marker which appears in Legend
         /// </summary>
         internal Marker LegendMarker
-            {
-                get;
-                set;
-            }
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Get or set geometric faces of DataPoint
@@ -1764,7 +1764,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set label visual of the DataPoint
         /// </summary>
-        internal Grid LabelVisual
+        internal FrameworkElement LabelVisual
         {
             get;
             set;
@@ -1886,29 +1886,39 @@ namespace Visifire.Charts
         {
             DataPoint dataPoint = d as DataPoint;
 
-            try
+            if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
             {
-                if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
-                    dataPoint.InternalXValue = Convert.ToDouble(e.NewValue,System.Globalization.CultureInfo.InvariantCulture) ;
-                if (String.IsNullOrEmpty(e.NewValue.ToString()))
-                    dataPoint.InternalXValue = Double.NaN;
-                else
-                    dataPoint.InternalXValue = Double.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
-                
+                dataPoint.InternalXValue = Convert.ToDouble(e.NewValue, System.Globalization.CultureInfo.InvariantCulture);
                 dataPoint.XValueType = ChartValueTypes.Numeric;
             }
-            catch
+            else if ((e.NewValue.GetType().Equals(typeof(DateTime))))
             {
-                System.Diagnostics.Debug.WriteLine("Exception Handled… Now checking whether type of XValue is DateTime.");
+                dataPoint.InternalXValueAsDateTime = (DateTime)e.NewValue;
+                dataPoint.XValueType = ChartValueTypes.DateTime;
+            }
+            else
+            {
                 try
                 {
-                    dataPoint.InternalXValueAsDateTime = (e.NewValue.GetType().Equals(typeof(DateTime))) ? (DateTime)e.NewValue : DateTime.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
-                    dataPoint.XValueType = ChartValueTypes.DateTime;
+                    if (String.IsNullOrEmpty(e.NewValue.ToString()))
+                        dataPoint.InternalXValue = Double.NaN;
+                    else
+                        dataPoint.InternalXValue = Double.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
+
+                    dataPoint.XValueType = ChartValueTypes.Numeric;
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("XValue is not a DateTime.");
-                    throw new Exception(ex.Message, ex);
+                catch
+                {   
+                    try
+                    {
+                        dataPoint.InternalXValueAsDateTime = DateTime.Parse(Convert.ToString(e.NewValue, System.Globalization.CultureInfo.InvariantCulture), System.Globalization.CultureInfo.InvariantCulture);
+                        dataPoint.XValueType = ChartValueTypes.DateTime;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("XValue is not a DateTime.");
+                        throw new Exception(ex.Message, ex);
+                    }
                 }
             }
             

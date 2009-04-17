@@ -414,6 +414,7 @@ namespace Visifire.Commons
                 AttachEvents2Visual(obj, obj, visual);
         }
 
+
         /// <summary>
         /// Attach events to a visual
         /// </summary>
@@ -425,52 +426,128 @@ namespace Visifire.Commons
             if (visual == null)
                 return;
 
-            visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-            {
-                if (obj._onMouseEnter != null)
-                    obj._onMouseEnter(senderElement, e);
-            };
-
-            visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-            {
-                if (obj._onMouseLeave != null)
-                    obj._onMouseLeave(senderElement, e);
-            };
-
-            visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
-            {
-                if (obj.GetType().Equals(typeof(PlotArea)))
+            if (obj._onMouseEnter != null)
+                visual.MouseEnter += delegate(object sender, MouseEventArgs e)
                 {
-                    (obj as PlotArea).FireMouseLeftButtonDownEvent(e);
-                }
-                else
+                    if (obj._onMouseEnter != null)
+                        obj._onMouseEnter(senderElement, e);
+                };
+
+            if (obj._onMouseLeave != null)
+                visual.MouseLeave += delegate(object sender, MouseEventArgs e)
                 {
-                    if (obj._onMouseLeftButtonDown != null)
+                    if (obj._onMouseLeave != null)
+                        obj._onMouseLeave(senderElement, e);
+                };
+
+            PlotArea plotArea = obj as PlotArea;
+            object eventHandler;
+
+            if (plotArea != null)
+                eventHandler = plotArea.GetMouseLeftButtonDownEventHandler();
+            else
+                eventHandler = obj._onMouseLeftButtonDown;
+
+            if (eventHandler != null)
+                visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (plotArea != null)
                     {
-                        obj._onMouseLeftButtonDown(senderElement, e);
+                        plotArea.FireMouseLeftButtonDownEvent(e);
                     }
-                }
-            };
+                    else
+                    {
+                        if (obj._onMouseLeftButtonDown != null)
+                        {
+                            obj._onMouseLeftButtonDown(senderElement, e);
+                        }
+                    }
+                };
 
-            visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-            {
-                if (obj.GetType().Equals(typeof(PlotArea)))
-                {
-                    (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
-                }
-                else
-                {
-                    if (obj._onMouseLeftButtonUp != null)
-                        obj._onMouseLeftButtonUp(senderElement, e);
-                }
-            };
+            if (plotArea != null)
+                eventHandler = plotArea.GetMouseLeftButtonUpEventHandler();
+            else
+                eventHandler = obj._onMouseLeftButtonUp;
 
-            visual.MouseMove += delegate(object sender, MouseEventArgs e)
-            {
-                if (obj._onMouseMove != null)
-                    obj._onMouseMove(senderElement, e);
-            };
+            if (eventHandler != null)
+                visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj.GetType().Equals(typeof(PlotArea)))
+                    {
+                        (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseLeftButtonUp != null)
+                            obj._onMouseLeftButtonUp(senderElement, e);
+                    }
+                };
+
+            if (obj._onMouseMove != null)
+                visual.MouseMove += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseMove != null)
+                        obj._onMouseMove(senderElement, e);
+                };
         }
+
+        /// <summary>
+        /// Attach events to a visual
+        /// </summary>
+        /// <param name="obj">Object with which event is attached</param>
+        /// <param name="senderElement">sender will be passed to the event-handler</param>
+        /// <param name="visual">visual object with which event will be attached</param>
+        //internal static void AttachEvents2Visual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
+        //{
+        //    if (visual == null)
+        //        return;
+
+        //    visual.MouseEnter += delegate(object sender, MouseEventArgs e)
+        //    {
+        //        if (obj._onMouseEnter != null)
+        //            obj._onMouseEnter(senderElement, e);
+        //    };
+
+        //    visual.MouseLeave += delegate(object sender, MouseEventArgs e)
+        //    {
+        //        if (obj._onMouseLeave != null)
+        //            obj._onMouseLeave(senderElement, e);
+        //    };
+
+        //    visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+        //    {
+        //        if (obj.GetType().Equals(typeof(PlotArea)))
+        //        {
+        //            (obj as PlotArea).FireMouseLeftButtonDownEvent(e);
+        //        }
+        //        else
+        //        {
+        //            if (obj._onMouseLeftButtonDown != null)
+        //            {
+        //                obj._onMouseLeftButtonDown(senderElement, e);
+        //            }
+        //        }
+        //    };
+
+        //    visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+        //    {
+        //        if (obj.GetType().Equals(typeof(PlotArea)))
+        //        {
+        //            (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
+        //        }
+        //        else
+        //        {
+        //            if (obj._onMouseLeftButtonUp != null)
+        //                obj._onMouseLeftButtonUp(senderElement, e);
+        //        }
+        //    };
+
+        //    visual.MouseMove += delegate(object sender, MouseEventArgs e)
+        //    {
+        //        if (obj._onMouseMove != null)
+        //            obj._onMouseMove(senderElement, e);
+        //    };
+        //}
 
         /// <summary>
         /// Attach MouseDownEvent event to a visual

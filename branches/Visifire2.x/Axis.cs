@@ -2293,6 +2293,9 @@ namespace Visifire.Charts
         RECAL:
 
             AxisTitleElement.CreateVisualObject();
+#if WPF
+            AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
+#endif
             Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
             if (AxisOrientation == Orientation.Horizontal)

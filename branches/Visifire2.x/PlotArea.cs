@@ -935,6 +935,24 @@ namespace Visifire.Charts
                 _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
         }
 
+        /// <summary>
+        /// Get MouseLeftButtonDown EventHandler
+        /// </summary>
+        /// <returns></returns>
+        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonDownEventHandler()
+        {
+            return _onMouseLeftButtonDown;
+        }
+
+        /// <summary>
+        /// Get MouseLeftButtonUp EventHandler
+        /// </summary>
+        /// <returns></returns>
+        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonUpEventHandler()
+        {
+            return _onMouseLeftButtonUp;
+        }
+
         #endregion
 
         #region Internal Events And Delegates

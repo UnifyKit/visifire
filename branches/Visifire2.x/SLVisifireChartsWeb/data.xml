@@ -5,19 +5,17 @@
   </vc:Chart.Titles>
 
   <vc:Chart.AxesX>
-    <vc:Axis IntervalType="Weeks" Interval="1">
-    </vc:Axis>
+    <vc:Axis Interval="1"/>
   </vc:Chart.AxesX>
-
+  
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column" LabelEnabled="True" XValueType="Date">
+    <vc:DataSeries RenderAs="Column" LabelEnabled="True">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint XValue="1/30/2000 12:00:12" YValue="20"/>
         <vc:DataPoint XValue="2/15/2000 10:12:4" YValue="60"/>
         <vc:DataPoint XValue="3/02/2000 23:00:6" YValue="30"/>
         <vc:DataPoint XValue="3/03/2000 18:45:10" YValue="40"/>
         <vc:DataPoint XValue="2/02/2000 12:00:00" YValue="15"/>
-        <vc:DataPoint XValue="12/30/2000 12:22:00" YValue="28"/>
       </vc:DataSeries.DataPoints>
     </vc:DataSeries>
   </vc:Chart.Series>

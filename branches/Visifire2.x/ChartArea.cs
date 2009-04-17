@@ -110,16 +110,16 @@ namespace Visifire.Charts
             AddTitles(chart, false, actualChartSize.Height, actualChartSize.Width, out isLeftOrRightAlignedTitlesExist);
 
             // Calculate max size for legend
-            Size remainingSizeAfterAddtingTitles = CalculateLegendMaxSize(actualChartSize);
+            Size remainingSizeAfterAddingTitles = CalculateLegendMaxSize(actualChartSize);
 
             // Add all the legends to chart of type dock outside
-            AddLegends(chart, false, remainingSizeAfterAddtingTitles.Height, remainingSizeAfterAddtingTitles.Width);
+            AddLegends(chart, false, remainingSizeAfterAddingTitles.Height, remainingSizeAfterAddingTitles.Width);
 
             // Create PlotArea
             CreatePlotArea(chart);
 
             // Calculate PlotArea Size
-            Size plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddtingTitles);
+            Size plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddingTitles);
 
             // Need to recalculate PlotArea size if any title exist with left or right aligned
             if (isLeftOrRightAlignedTitlesExist)
@@ -130,9 +130,9 @@ namespace Visifire.Charts
 
                 ResetTitleAndLegendPannelsSize();
 
-                remainingSizeAfterAddtingTitles = CalculateLegendMaxSize(actualChartSize);
+                remainingSizeAfterAddingTitles = CalculateLegendMaxSize(actualChartSize);
 
-                plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddtingTitles);
+                plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddingTitles);
             }
 
             HideAllAxesScrollBars();
@@ -362,8 +362,9 @@ namespace Visifire.Charts
         private void RetainOldScrollOffsetOfScrollViewer()
         {
 #if WPF     
-            if(_isFirstTimeRender)
-            {   
+            // The code below is to stop scrolling using key
+            if (_isFirstTimeRender)
+            {
                 Chart._plotAreaScrollViewer.ScrollChanged += delegate(object sender, ScrollChangedEventArgs e)
                 {
                     if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis && AxisX != null)
@@ -685,8 +686,8 @@ namespace Visifire.Charts
                 axis.ScrollBarElement.LargeChange = 80;
             }
 
-            if (_isFirstTimeRender)
-            {
+            // if (_isFirstTimeRender)
+            {   
                 axis.Scroll -= AxesXScrollBarElement_Scroll;
                 axis.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
                 axis.SetScrollBarValueFromOffset(axis.ScrollBarOffset);
@@ -1620,7 +1621,11 @@ namespace Visifire.Charts
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
 
                 AxisX._isScrollToOffsetEnabled = false;
-                AxisX.ScrollBarOffset = offset / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                offset = offset / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                
+                if (!Double.IsNaN(offset))
+                    AxisX.ScrollBarOffset = (offset > 1) ? 1 : (offset < 0) ? 0 : offset;
+
                 AxisX._isScrollToOffsetEnabled = true;
             }
 
@@ -1646,7 +1651,11 @@ namespace Visifire.Charts
                 SaveAxisContentOffsetAndResetMargin(AxisX, (AxisX.ScrollBarElement.Maximum - offset));
 
                 AxisX._isScrollToOffsetEnabled = false;
-                AxisX.ScrollBarOffset = (AxisX.ScrollBarElement.Maximum - offset) / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                offset = (AxisX.ScrollBarElement.Maximum - offset) / (AxisX.ScrollBarElement.Maximum - AxisX.ScrollBarElement.Minimum);
+                
+                if(!Double.IsNaN(offset))
+                    AxisX.ScrollBarOffset = (offset > 1) ? 1 : (offset < 0) ? 0 : offset;
+
                 AxisX._isScrollToOffsetEnabled = true;
 
             }
@@ -2234,15 +2243,22 @@ namespace Visifire.Charts
                 foreach (Legend entry in chart.Legends)
                     entry.Entries.Clear();
 
-                if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(chart.InternalSeries[0].Legend) || !String.IsNullOrEmpty(chart.InternalSeries[0].InternalLegendName)))
+                // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(chart.InternalSeries[0].Legend) || !String.IsNullOrEmpty(chart.InternalSeries[0].InternalLegendName)))
+                if (chart.Legends.Count > 0)
                 {
                     var legends = from entry in chart.Legends
-                                  where (entry.Name == chart.InternalSeries[0].Legend || entry.Name == chart.InternalSeries[0].InternalLegendName) && entry.DockInsidePlotArea == DockInsidePlotArea
+                                  where
+                                  // (entry.Name == chart.InternalSeries[0].Legend || entry.Name == chart.InternalSeries[0].InternalLegendName) && entry.DockInsidePlotArea == DockInsidePlotArea
+                                  (entry.Name == chart.InternalSeries[0].Legend && entry.DockInsidePlotArea == DockInsidePlotArea)
                                   select entry;
 
                     if (legends.Count() > 0)
                         legend = (legends).First();
+
                 }
+
+                if (legend == null)
+                       return;
 
                 AddEntriesToLegend(legend, chart.InternalSeries[0].InternalDataPoints.ToList());
             }
@@ -2261,13 +2277,17 @@ namespace Visifire.Charts
 
                     foreach (DataSeries dataSeries in seriesToBeShownInLegend)
                     {
-                        if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(dataSeries.Legend)
-                            || !String.IsNullOrEmpty(dataSeries.InternalLegendName)))
-                        {
+                        // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(dataSeries.Legend)
+                        // || !String.IsNullOrEmpty(dataSeries.InternalLegendName)))
+                        if (chart.Legends.Count > 0)
+                        {   
                             legend = null;
                             var legends = from entry in chart.Legends
-                                          where (entry.Name == dataSeries.Legend
-                                          || entry.Name == dataSeries.InternalLegendName)
+                                          where (
+                                          entry.Name == dataSeries.Legend
+                                          // entry.Name == dataSeries.Legend
+                                          // || entry.Name == dataSeries.InternalLegendName
+                                          )
                                           && entry.DockInsidePlotArea == DockInsidePlotArea
                                           select entry;
 
@@ -2277,7 +2297,8 @@ namespace Visifire.Charts
 
                         if (legend == null)
                         {
-                            throw new Exception("Legend name is not specified in DataSeries..");
+                            continue;
+                            // throw new Exception("Legend name is not specified in DataSeries..");
                         }
 
                         String legendText = (String.IsNullOrEmpty(dataSeries.LegendText) ? dataSeries.Name : ObservableObject.GetFormattedMultilineText(dataSeries.LegendText));
@@ -2300,7 +2321,6 @@ namespace Visifire.Charts
                         if (dataSeries.RenderAs == RenderAs.Line)
                         {
                             markerSize = new Size(8, 8);
-                           
                         }
                         else
                             markerSize = new Size(8, 8);

@@ -1847,11 +1847,11 @@ namespace Visifire.Charts
         /// <summary>
         /// InternalLegendName is used for automatic linking a Legend with a DataSeries
         /// </summary>
-        internal String InternalLegendName
-        {
-            get;
-            set;
-        }
+        //internal String InternalLegendName
+        //{
+        //    get;
+        //    set;
+        //}
 
         #endregion
 
@@ -1986,7 +1986,6 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged("LegendText");
-            dataSeries.InternalLegendName = (String)e.NewValue;
         }
 
         /// <summary>
@@ -1997,6 +1996,7 @@ namespace Visifire.Charts
         private static void OnLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
+            // dataSeries.InternalLegendName = (String)e.NewValue;
             dataSeries.FirePropertyChanged("Legend");
         }
 
@@ -2454,7 +2454,8 @@ namespace Visifire.Charts
                         if (Double.IsNaN(dataPoint.InternalXValue))
                             dataPoint.InternalXValue = this.DataPoints.Count;
 
-                        dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint));
+                        if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
+                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint));
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(DataPoint_PropertyChanged);

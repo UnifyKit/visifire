@@ -1136,7 +1136,8 @@ namespace Visifire.Charts
                         if (!String.IsNullOrEmpty(this.Theme))
                             ds.ApplyStyleFromTheme(this, "DataSeries");
 
-                        ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
+                        if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
+                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
                         ds.PropertyChanged -= Element_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
                     }
