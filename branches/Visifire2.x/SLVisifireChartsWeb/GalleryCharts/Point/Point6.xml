@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" AnimationEnabled="False" ScrollingEnabled="False">
+          Theme="Theme3" ScrollingEnabled="False" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Point Chart"/>

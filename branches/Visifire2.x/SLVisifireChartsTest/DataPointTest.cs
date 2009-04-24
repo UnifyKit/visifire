@@ -2662,7 +2662,7 @@ namespace SLVisifireChartsTest
                 delegate
                 {
                     for (Int32 i = 0; i < 10; i++)
-                    {
+                    {   
                         dataSeries.DataPoints[i].ShowInLegend = true;
                         dataSeries.DataPoints[i].LegendText = "DataPoint" + i;
                         Assert.AreEqual("DataPoint" + i, dataSeries.DataPoints[i].LegendText);

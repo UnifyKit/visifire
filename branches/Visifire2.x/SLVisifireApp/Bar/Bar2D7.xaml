@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme3" AnimationEnabled="False" ColorSet="DullShades">
+        <vc:Chart Theme="Theme3" ColorSet="DullShades">
             <vc:Chart.Background>
                 <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
                     <GradientStop Color="#000000" Offset="0"/>

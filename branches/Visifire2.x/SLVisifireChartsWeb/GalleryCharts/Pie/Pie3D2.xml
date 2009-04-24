@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+          Theme="Theme2" View3D="True" BorderBrush="Gray" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="Screen Resolutions Market Share"/>

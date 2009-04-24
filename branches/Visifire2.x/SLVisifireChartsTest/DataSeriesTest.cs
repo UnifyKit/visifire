@@ -252,10 +252,14 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                try
+                {
+                    _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                    _htmlElement1.SetStyleAttribute("width", "900px");
+                    _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                    System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                }
+                catch { }
             });
 
             EnqueueCallback(() =>
@@ -4059,10 +4063,14 @@ namespace SLVisifireChartsTest
         private void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            try
+            {
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            }
+            catch { }
         }
 
         /// <summary>
@@ -4103,10 +4111,14 @@ namespace SLVisifireChartsTest
         private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            try
+            {
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            }
+            catch { }
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" AnimationEnabled="False" ColorSet="Visifire2" View3D="False">
+          Theme="Theme3" ColorSet="Visifire2" View3D="False" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Bubble Chart" />

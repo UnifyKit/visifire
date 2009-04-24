@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                   Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+                   Theme="Theme1" BorderBrush="Gray" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="Largest Oil Producers"/>

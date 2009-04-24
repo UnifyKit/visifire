@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="8">
+        <vc:Chart Theme="Theme2" BorderBrush="Gray" Padding="8">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Combination Chart"/>

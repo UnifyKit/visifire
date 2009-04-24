@@ -163,7 +163,7 @@ namespace SLVisifireChartsXap
                 _firstChart = false;
             }
             else if (_xmlQueue.Count > 0 && _chartReady)
-            {
+            {   
                 _chartCanv = CreateChart();
 
                 _wrapper.LayoutRoot.Children.Clear();
@@ -183,7 +183,6 @@ namespace SLVisifireChartsXap
                                 _wrapper.LayoutRoot.Children.RemoveAt(i);
                                 chartCanvas.Loaded -= chartCanv_Loaded;
                                 tempChartCanvas.Children.Add(chartCanvas);
-
                             }
                         }
                         catch (Exception e)
@@ -361,7 +360,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta7";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta8";
 
             return version;
         }

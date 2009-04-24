@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme3" AnimationEnabled="False" View3D="True" Padding="5">
+        <vc:Chart Theme="Theme3" View3D="True" Padding="5">
             
             <vc:Chart.Titles>
                 <vc:Title Text="Total Population in Less Developed Countries" HorizontalAlignment="Left" />

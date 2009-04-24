@@ -147,6 +147,9 @@
     <Compile Include="..\PlotAreaMouseButtonEventArgs.cs">
       <Link>PlotAreaMouseButtonEventArgs.cs</Link>
     </Compile>
+    <Compile Include="..\PlotAreaMouseEventArgs.cs">
+      <Link>PlotAreaMouseEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\PlotDetails.cs">
       <Link>PlotDetails.cs</Link>
     </Compile>

@@ -34,8 +34,6 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            chart.Titles = new TitleCollection();
-
             Title title = new Title();
             title.Text = "Title1";
             title.FontSize = 15;

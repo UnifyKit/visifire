@@ -5,20 +5,22 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
 >
-    <Grid x:Name="LayoutRoot" Width="500" Height="300">
-        <vc:Chart Theme="Theme1">
-        
+
+     <Grid x:Name="LayoutRoot" Width="500" Height="350">
+        <vc:Chart Theme="Theme1" Name="chart" Width="500" Height="300">
+            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
-                    <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1/1/2008" YValue="10"/>
-                        <vc:DataPoint XValue="1/2/2008" YValue="20"/>
-                        <vc:DataPoint XValue="1/3/2008" YValue="20"/>
-                        <vc:DataPoint XValue="1/4/2008" YValue="20"/>
-                        <vc:DataPoint XValue="1/5/2008" YValue="10"/>
-                    </vc:DataSeries.DataPoints>
-                </vc:DataSeries>
-            </vc:Chart.Series>
+                    <vc:DataSeries RenderAs="Column">
+                        <vc:DataSeries.DataPoints>
+                            <vc:DataPoint XValue="1/1/2009 1:1:20" YValue="10"/>
+                            <vc:DataPoint XValue="2/1/2009 2:2:20" YValue="20"/>
+                            <vc:DataPoint XValue="3/2/2009 2:3:28" YValue="20"/>
+                            <vc:DataPoint XValue="4/12/2009 1:18:10" YValue="10"/>
+                            <vc:DataPoint XValue="5/30/2009 6:10:12" YValue="10"/>
+                            <vc:DataPoint XValue="8/8/2009 20:12:28" YValue="20"/>
+                        </vc:DataSeries.DataPoints>
+                    </vc:DataSeries>
+                </vc:Chart.Series>
         </vc:Chart>
     </Grid>
 </UserControl>

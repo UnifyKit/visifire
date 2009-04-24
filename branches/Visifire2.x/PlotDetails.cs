@@ -68,7 +68,7 @@ namespace Visifire.Charts
             this.ChartOrientation = ChartOrientationType.Undefined;
 
             // Validate XValue type of the DataPoint and DataSeries
-            ValidateDataPointXValueType();
+            SetDataPointsNameAndValidateDataPointXValueType();
 
             // Calculate all the required details
             this.Calculate();
@@ -203,14 +203,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Validate XValue type of the DataPoint and DataSeries
         /// </summary>
-        private void ValidateDataPointXValueType()
+        private void SetDataPointsNameAndValidateDataPointXValueType()
         {
+            Int32 dsIndex = 0;
             foreach (DataSeries ds in Chart.InternalSeries)
             {
                 foreach (DataPoint dp in ds.InternalDataPoints)
                 {
                     if (ds.XValueType == ChartValueTypes.Auto)
-                    {
+                    {   
                         ds.InternalXValueType = (dp.XValueType == ChartValueTypes.DateTime) ? ChartValueTypes.Date : dp.XValueType;
                     }
                     else if ((ds.XValueType == ChartValueTypes.Date || ds.XValueType == ChartValueTypes.DateTime || ds.XValueType == ChartValueTypes.Time)
@@ -223,6 +224,8 @@ namespace Visifire.Charts
                         throw new Exception("Error occurred due to incorrect XValue format. XValue can be Double or DateTime for all DataPoints in a DataSeries according to XValueType of the DataSeries.");
                     }
                 }
+
+                dsIndex++;
             }
         }
 

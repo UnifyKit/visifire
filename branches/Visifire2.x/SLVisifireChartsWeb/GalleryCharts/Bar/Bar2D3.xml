@@ -1,8 +1,8 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+          Theme="Theme1" BorderBrush="Gray" Width="450" Height="475">
 
   <vc:Chart.PlotArea>
-    <vc:PlotArea Color="#f1f1f1"/>
+    <vc:PlotArea Background="#f1f1f1"/>
   </vc:Chart.PlotArea>
   <vc:Chart.Titles>
     <vc:Title Text="Monthly Production"/>

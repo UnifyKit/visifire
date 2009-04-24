@@ -25,17 +25,11 @@
             <Setter Property="Bevel" Value="False"/>
         </Style>
     </Page.Resources>
-    <Grid x:Name="LayoutRoot" Height="300" Width="500">
-
-        <vc:Chart Theme="Theme1" Style="{StaticResource ChartStyle}">
-
+    <Grid x:Name="LayoutRoot" Height="330" Width="500">
+        <vc:Chart Theme="Theme1" Style="{DynamicResource ChartStyle}">
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire with axis Scale" Style="{StaticResource TitleStyle}"/>
+                <vc:Title Text="Visifire Chart" Style="{StaticResource TitleStyle}"/>
             </vc:Chart.Titles>
-
-                <vc:Chart.AxesX>
-                <vc:Axis/>
-            </vc:Chart.AxesX>
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column" Style="{StaticResource DataSeriesStyle}">
                     <vc:DataSeries.DataPoints>

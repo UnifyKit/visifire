@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" AnimationEnabled="False" ColorSet="Visifire2" View3D="True">
+          Theme="Theme3" ColorSet="Visifire2" View3D="True" Width="500" Height="300">
   <vc:Chart.Background>
     <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1" >
       <GradientStop Color="#000000" Offset="0"/>

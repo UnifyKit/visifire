@@ -326,6 +326,8 @@ namespace Visifire.Charts
                 barParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor,(dataPoint.YValue == 0)? LabelStyles.OutSide : (LabelStyles)barParams.LabelStyle);
                 dataPoint.Marker.FontColor = barParams.LabelFontColor;
 
+                dataPoint.Marker.Tag = dataPoint;
+
                 dataPoint.Marker.CreateVisual();
 
                 dataPoint.Marker.AddToParent(markerCanvas, markerPosition.X, markerPosition.Y, new Point(0.5, 0.5));
@@ -1048,18 +1050,18 @@ namespace Visifire.Charts
 
             Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
 
-            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Size.Height,
+            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 background, barParams.XRadius, barParams.YRadius);
 
-            (barBase.Children[0] as FrameworkElement).Tag = "ColumnBase";
+            (barBase.Children[0] as FrameworkElement).Name = "ColumnBase" + barBase.Children[0].GetHashCode().ToString();
             faces.Parts.Add(barBase.Children[0] as FrameworkElement);
 
             barVisual.Children.Add(barBase);
 
             if (barParams.Size.Height > 7 && barParams.Size.Width > 14 && barParams.Bevel)
             {
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(barParams.Size.Width - barParams.BorderThickness - barParams.BorderThickness, barParams.Size.Height - barParams.BorderThickness - barParams.BorderThickness, 6, 6,
+                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(barParams.TagReference, barParams.Size.Width - barParams.BorderThickness - barParams.BorderThickness, barParams.Size.Height - barParams.BorderThickness - barParams.BorderThickness, 6, 6,
                     Graphics.GetBevelTopBrush(barParams.BackgroundBrush),
                     Graphics.GetBevelSideBrush((barParams.Lighting ? -70 : 0), barParams.BackgroundBrush),
                     Graphics.GetBevelSideBrush((barParams.Lighting ? -110 : 180), barParams.BackgroundBrush),
@@ -1082,7 +1084,7 @@ namespace Visifire.Charts
 
             if (barParams.Lighting && barParams.Bevel)
             {
-                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.Size.Width, barParams.Size.Height,
+                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                     Graphics.GetLeftGradianceBrush(63),
                     Graphics.GetLeftGradianceBrush(63),
                     Orientation.Horizontal);
@@ -1141,7 +1143,7 @@ namespace Visifire.Charts
                         }
                     }
                 }
-                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(barParams.Size.Width, shadowHeight, xRadius, yRadius, barParams.IsStacked ? 3 : 5);
+                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(barParams.TagReference, barParams.Size.Width, shadowHeight, xRadius, yRadius, barParams.IsStacked ? 3 : 5);
                 TranslateTransform tt = new TranslateTransform() { X = barParams.ShadowOffset, Y = shadowVerticalOffset };
                 shadowGrid.Opacity = 0.7;
                 shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
@@ -1174,13 +1176,13 @@ namespace Visifire.Charts
             Brush topBrush = barParams.Lighting ? Graphics.GetTopFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
             Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
 
-            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Size.Height,
+            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(front.Children[0] as FrameworkElement);
 
-            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.Size.Width, barParams.Depth,
+            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
@@ -1191,7 +1193,7 @@ namespace Visifire.Charts
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.Depth, barParams.Size.Height,
+            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 

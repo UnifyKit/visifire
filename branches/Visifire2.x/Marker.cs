@@ -156,6 +156,12 @@ namespace Visifire.Commons
             MarkerShape = GetShape();
             MarkerShadow = GetShape();
 
+            if (MarkerShape != null)
+                MarkerShape.Tag = Tag;
+
+            if (MarkerShadow != null)
+                MarkerShadow.Tag = Tag;
+
             // Set shadow properties
             MarkerShadow.Fill = GetMarkerShadowColor();
             TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
@@ -187,7 +193,7 @@ namespace Visifire.Commons
                 Visual.ColumnDefinitions.Add(new ColumnDefinition());
 
                 // Create TextBlock for Label of the Marker
-                TextBlock = new TextBlock();
+                TextBlock = new TextBlock() { Tag = this.Tag };
 
                 // Apply TextBlock Properties 
                 ApplyTextBlockProperties();
@@ -238,6 +244,15 @@ namespace Visifire.Commons
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Tag property
+        /// </summary>
+        public Object Tag
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Get or set the Marker Visual
@@ -805,7 +820,7 @@ namespace Visifire.Commons
                     Double height = MarkerSize.Height * ScaleFactor;
                     Double width = MarkerSize.Width * ScaleFactor;
 
-                    Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(width, height,
+                    Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(this.Tag as FrameworkElement , width, height,
                     3, 3,
                     topBrush,
                     Graphics.GetBevelSideBrush(0, MarkerFillColor),
@@ -847,7 +862,7 @@ namespace Visifire.Commons
     	            </Path>", Graphics.GetDarkerColor((topBrush as LinearGradientBrush).GradientStops[1].Color, .8).ToString(), color);
 
                     break;
-
+                    
             }
 
 #if WPF

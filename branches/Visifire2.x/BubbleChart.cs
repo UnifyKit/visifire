@@ -243,7 +243,7 @@ namespace Visifire.Charts
 
                     marker.TextAlignmentX = AlignmentX.Center;
                     marker.TextAlignmentY = AlignmentY.Center;
-
+                    marker.Tag = dataPoint;
                     marker.CreateVisual();
 
                     Double gap = (markerScale * (Double)dataPoint.MarkerScale * (Double)dataPoint.MarkerSize) / 2;

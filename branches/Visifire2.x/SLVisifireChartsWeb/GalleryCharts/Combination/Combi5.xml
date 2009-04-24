@@ -1,32 +1,36 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="8">
+Width="500" Height="300" Theme="Theme2" BorderBrush="Gray" Padding="8" BorderThickness="0.5" ScrollingEnabled="False">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Combinational Chart"/>
   </vc:Chart.Titles>
 
+  <vc:Chart.AxesX>
+    <vc:Axis IntervalType="Months" Interval="1" ValueFormatString="MMM"/>
+  </vc:Chart.AxesX>
+
   <vc:Chart.Series>
-    <vc:DataSeries LegendText="Product A" RenderAs="Area" Cursor="Hand" LightingEnabled="False">
+    <vc:DataSeries LegendText="Product A" RenderAs="Area">
       <vc:DataSeries.DataPoints>
-        <vc:DataPoint AxisXLabel="Jan" YValue="52"/>
-        <vc:DataPoint AxisXLabel="Feb" YValue="46"/>
-        <vc:DataPoint AxisXLabel="Mar" YValue="33"/>
-        <vc:DataPoint AxisXLabel="Apr" YValue="28"/>
-        <vc:DataPoint AxisXLabel="May" YValue="12"/>
-        <vc:DataPoint AxisXLabel="Jun" YValue="17"/>
-        <vc:DataPoint AxisXLabel="Jul" YValue="14"/>
+        <vc:DataPoint XValue="Jan-01" YValue="52"/>
+        <vc:DataPoint XValue="Feb-01" YValue="46"/>
+        <vc:DataPoint XValue="Mar-01" YValue="33"/>
+        <vc:DataPoint XValue="Apr-01" YValue="28"/>
+        <vc:DataPoint XValue="May-01" YValue="12"/>
+        <vc:DataPoint XValue="Jun-01" YValue="17"/>
+        <vc:DataPoint XValue="Jul-01" YValue="14"/>
       </vc:DataSeries.DataPoints>
     </vc:DataSeries>
 
-    <vc:DataSeries LegendText="Product B" RenderAs="Line" Cursor="Hand" LineThickness="4" LineStyle="Dashed">
+    <vc:DataSeries LegendText="Product B" RenderAs="Line" LineThickness="4" LineStyle="Dashed">
       <vc:DataSeries.DataPoints>
-        <vc:DataPoint YValue="48"/>
-        <vc:DataPoint YValue="42"/>
-        <vc:DataPoint YValue="22"/>
-        <vc:DataPoint YValue="18"/>
-        <vc:DataPoint YValue="16"/>
-        <vc:DataPoint YValue="9"/>
-        <vc:DataPoint YValue="12"/>
+        <vc:DataPoint XValue="Jan-01" YValue="48"/>
+        <vc:DataPoint XValue="Feb-01" YValue="42"/>
+        <vc:DataPoint XValue="Mar-01" YValue="22"/>
+        <vc:DataPoint XValue="Apr-01" YValue="18"/>
+        <vc:DataPoint XValue="May-01" YValue="16"/>
+        <vc:DataPoint XValue="Jun-01" YValue="9"/>
+        <vc:DataPoint XValue="Jul-01" YValue="12"/>
       </vc:DataSeries.DataPoints>
     </vc:DataSeries>
   </vc:Chart.Series>

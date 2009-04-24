@@ -305,7 +305,7 @@ namespace Visifire.Charts
             ("CornerRadius",
             typeof(CornerRadius),
             typeof(Legend),
-            new PropertyMetadata(OnCornerRadiusPropertyChanged));
+            new PropertyMetadata(new CornerRadius(1), OnCornerRadiusPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.Title dependency property.
@@ -365,7 +365,7 @@ namespace Visifire.Charts
             ("TitleFontFamily",
             typeof(FontFamily),
             typeof(Legend),
-            new PropertyMetadata(OnTitleFontFamilyPropertyChanged));
+            new PropertyMetadata(new FontFamily("Arial"), OnTitleFontFamilyPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.TitleFontSize dependency property.

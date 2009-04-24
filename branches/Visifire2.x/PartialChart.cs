@@ -148,7 +148,7 @@ namespace Visifire.Charts
             _centerDockInsidePlotAreaPanel = GetTemplateChild(CenterDockInsidePlotAreaPanelName) as StackPanel;
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
-            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;    
+            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;  
         }
 
         /// <summary>
@@ -187,10 +187,10 @@ namespace Visifire.Charts
             LoadWatermark();
 
             if (StyleDictionary == null)
-                LoadTheme("Theme1");
-
-            LoadColorSets();
-
+                LoadTheme("Theme1", false);
+#if SL
+            LoadOrUpdateColorSets();
+#endif
             LoadToolTips();
 
             SetMarginOfElements();
@@ -395,7 +395,7 @@ namespace Visifire.Charts
             ("Watermark",
             typeof(Boolean),
             typeof(Chart),
-            new PropertyMetadata(OnWatermarkPropertyChanged));
+            new PropertyMetadata(true, OnWatermarkPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.PlotArea dependency property.
@@ -813,8 +813,6 @@ namespace Visifire.Charts
         /// </summary>
         private void Init()
         {
-            Watermark = true;
-
             //ColorSets = new ColorSets();
             ToolTips = new ToolTipCollection();
 
@@ -1137,7 +1135,13 @@ namespace Visifire.Charts
                             ds.ApplyStyleFromTheme(this, "DataSeries");
 
                         if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
-                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
+                        {
+                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + ds.GetHashCode().ToString());
+                            ds._isAutoName = true;
+                        }
+                        else
+                            ds._isAutoName = false;
+
                         ds.PropertyChanged -= Element_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
                     }
@@ -1162,7 +1166,7 @@ namespace Visifire.Charts
         /// </summary>
         private void LoadWatermark()
         {
-            if (Watermark)
+            if (WaterMarkElement == null)
             {
                 WaterMarkElement = new TextBlock();
                 WaterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
@@ -1174,49 +1178,64 @@ namespace Visifire.Charts
                 WaterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
                 WaterMarkElement.FontSize = 9;
                 AttachHref(this, WaterMarkElement, "http://www.visifire.com", HrefTargets._blank);
+                WaterMarkElement.Visibility = (Watermark) ? Visibility.Visible : Visibility.Collapsed;
                 _rootElement.Children.Add(WaterMarkElement);
             }
         }
 
         /// <summary>
-        /// Load color sets from chart resource
+        /// Load or Update color sets from chart resource
         /// </summary>
-        private void LoadColorSets()
+        private void LoadOrUpdateColorSets()
         {
-            string resourceName = "Visifire.Charts.ColorSets.xaml"; // Resource location for embedded color sets
-            ColorSets embeddedColorSets;                            // Embedded color sets
-
-            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(resourceName))
+            if (EmbeddedColorSets == null)
             {
-                if (s != null)
+                string resourceName = "Visifire.Charts.ColorSets.xaml"; // Resource location for embedded color sets
+
+                using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(resourceName))
                 {
-                    System.IO.StreamReader reader = new System.IO.StreamReader(s);
+                    if (s != null)
+                    {
+                        System.IO.StreamReader reader = new System.IO.StreamReader(s);
 
-                    String xaml = reader.ReadToEnd();
+                        String xaml = reader.ReadToEnd();
 #if WPF
-                    embeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
+                        EmbeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
 #else
-                    embeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
+                        EmbeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
 #endif
-                    if (embeddedColorSets == null)
-                        System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
+                        if (EmbeddedColorSets == null)
+                            System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
-                    if (InternalColorSets == null)
-                        InternalColorSets = new ColorSets();
+                        if (InternalColorSets == null)
+                            InternalColorSets = new ColorSets();
 
-                    if (embeddedColorSets != null)
-                        InternalColorSets.AddRange(embeddedColorSets);
+                        if (EmbeddedColorSets != null)
+                            InternalColorSets.AddRange(EmbeddedColorSets);
 
-                    if (ColorSets != null)
-                        foreach (ColorSet colorSet in ColorSets)
-                            InternalColorSets.Add(colorSet);
+                        if (ColorSets != null)
+                            InternalColorSets.AddRange(ColorSets);
+                        //foreach (ColorSet colorSet in ColorSets)
+                        //    InternalColorSets.Add(colorSet);
 
-                    reader.Close();
-                    s.Close();
+                        reader.Close();
+                        s.Close();
+                    }
                 }
             }
+            else
+            {
+                InternalColorSets.Clear();
+
+                if (EmbeddedColorSets != null)
+                    InternalColorSets.AddRange(EmbeddedColorSets);
+
+                if (ColorSets != null)
+                    InternalColorSets.AddRange(ColorSets);
+            }
+
         }
-        
+
         /// <summary>
         /// Some property needs to bind with the existing property in control before first time render. 
         /// And binding should be done only once. 
@@ -1284,7 +1303,7 @@ namespace Visifire.Charts
                 Brush rightBrush = Graphics.GetBevelSideBrush(170, this.Background);
                 Brush bottomBrush = Graphics.GetBevelSideBrush(180, this.Background);
 
-                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(
+                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(null,
                     _chartBorder.ActualWidth - _chartBorder.BorderThickness.Left - _chartBorder.BorderThickness.Right - _chartAreaMargin.Right - _chartAreaMargin.Left,
                     _chartBorder.ActualHeight - _chartBorder.BorderThickness.Top - _chartBorder.BorderThickness.Bottom - _chartAreaMargin.Top - _chartAreaMargin.Bottom,
                 BEVEL_DEPTH, BEVEL_DEPTH, topBrush, leftBrush, rightBrush, bottomBrush);
@@ -1354,7 +1373,7 @@ namespace Visifire.Charts
                 if (_rootElement != null)
                 {
                     // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
-                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
+                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(this, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                     ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.IsHitTestVisible = false;
@@ -1392,7 +1411,7 @@ namespace Visifire.Charts
         /// Load theme from resource file and select specific theme using theme name
         /// </summary>
         /// <param name="themeName">String themeName</param>
-        private void LoadTheme(String themeName)
+        private void LoadTheme(String themeName, Boolean isThemePropertyChanged)
         {
             if (String.IsNullOrEmpty(themeName))
                 return;
@@ -1444,6 +1463,7 @@ namespace Visifire.Charts
 
             if (StyleDictionary != null)
             {
+#if SL
                 if (Style == null)
                 {
                     Style myStyle = StyleDictionary["Chart"] as Style;
@@ -1451,6 +1471,20 @@ namespace Visifire.Charts
                     if (myStyle != null)
                         Style = myStyle;
                 }
+#else
+                Style myStyle = StyleDictionary["Chart"] as Style;
+
+                _isThemeChanged = isThemePropertyChanged;
+
+                if (myStyle != null)
+                {
+                    if (isThemePropertyChanged)
+                        Style = myStyle;
+                    else if(Style == null)
+                        Style = myStyle;
+                }
+
+#endif
             }
             else
             {
@@ -1484,7 +1518,7 @@ namespace Visifire.Charts
         /// Attach events and tooltip to chart
         /// </summary>
         private void AttachToolTipAndEvents()
-        {
+        {   
             if (!String.IsNullOrEmpty(ToolTipText))
                 AttachToolTip(this, this, this);
 
@@ -1545,7 +1579,7 @@ namespace Visifire.Charts
         private static void OnThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.LoadTheme((String)e.NewValue);
+            c.LoadTheme((String)e.NewValue, (e.OldValue == null)?false:true);
             c.InvokeRender();
         }
 
@@ -1695,6 +1729,16 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Properties
+
+
+        /// <summary>
+        /// Embedded color sets
+        /// </summary>
+        private ColorSets EmbeddedColorSets
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Chart shadow layer is created and added to ShadowGrid, present in template
@@ -1990,6 +2034,10 @@ namespace Visifire.Charts
 
                 try
                 {
+#if WPF
+                    // WPF supports Dynamic Styling. So need to update ColorSets. 
+                    LoadOrUpdateColorSets();
+#endif
                     PrepareChartAreaForDrawing();
                     ChartArea.Draw(this);
                 }
@@ -2184,7 +2232,14 @@ namespace Visifire.Charts
         /// Is used to handle inactive animation after first time render
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
-       
+
+#if WPF
+        /// <summary>
+        /// Whether Theme is changed by the user
+        /// </summary>
+        internal Boolean _isThemeChanged = false;
+#endif
+
         #endregion
     }
 }

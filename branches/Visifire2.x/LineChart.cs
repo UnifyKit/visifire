@@ -140,6 +140,8 @@ namespace Visifire.Charts
 
             dataPoint.Marker.Control = chart;
 
+            dataPoint.Marker.Tag = dataPoint;
+
             dataPoint.Marker.CreateVisual();
 
             dataPoint.Marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
@@ -195,10 +197,10 @@ namespace Visifire.Charts
         /// <param name="line">line path reference</param>
         /// <param name="lineShadow">line shadow path reference</param>
         /// <returns>Canvas</returns>
-        private static Canvas GetLine2D(LineChartShapeParams lineParams, out Path line, out Path lineShadow)
+        private static Canvas GetLine2D(DataSeries tagReference, LineChartShapeParams lineParams, out Path line, out Path lineShadow)
         {
             Canvas visual = new Canvas();
-            line = new Path();
+            line = new Path(){ Tag = tagReference };
 
             line.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             line.StrokeThickness = lineParams.LineThickness;
@@ -207,7 +209,7 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                lineShadow = new Path();
+                lineShadow = new Path(){ Tag = tagReference };
                 lineShadow.Stroke = new SolidColorBrush(Colors.LightGray);
                 lineShadow.StrokeThickness = lineParams.LineThickness;
                 lineShadow.Opacity = 0.5;
@@ -395,7 +397,7 @@ namespace Visifire.Charts
                 series.Faces.Parts = new List<FrameworkElement>();
 
                 Path polyline, PolylineShadow;
-                Canvas line2dCanvas = GetLine2D(lineParams, out polyline, out PolylineShadow);
+                Canvas line2dCanvas = GetLine2D(series, lineParams, out polyline, out PolylineShadow);
 
                 series.Faces.Parts.Add(polyline);
                 visual.Children.Add(line2dCanvas);

@@ -189,6 +189,8 @@ namespace Visifire.Charts
                     String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
 
+                    marker.Tag = dataPoint;
+                    
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     if (marker.MarkerType != MarkerTypes.Cross)

@@ -45,7 +45,7 @@
     <Style x:Key="PlotArea" TargetType="vc:PlotArea">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>
-        <Setter Property="Color" Value="Orange" ></Setter>
+        <Setter Property="Background" Value="Orange" ></Setter>
     </Style>
     
     <Style x:Key="MainTitle" TargetType="vc:Title" >

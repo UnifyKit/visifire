@@ -69,15 +69,31 @@ namespace Visifire.Commons
             IsNotificationEnable = false;
 
             Chart chart = control as Chart;
-
-            if (Style == null)
-                if (chart.StyleDictionary != null)
-                {
+            if (chart.StyleDictionary != null)
+            {
+#if SL
+                if (Style == null)
+                {   
                     Style myStyle = chart.StyleDictionary[keyName] as Style;
-
+                    
                     if (myStyle != null)
                         Style = myStyle;
                 }
+#else
+
+                Style myStyle = chart.StyleDictionary[keyName] as Style;
+
+                System.Diagnostics.Debug.WriteLine(keyName);
+                if (myStyle != null)
+                {
+                    if((Chart as Chart)._isThemeChanged)
+                        Style = myStyle;
+                    else if(Style == null)
+                         Style = myStyle;
+                }
+
+#endif
+            }
 
             IsNotificationEnable = oldIsNotificationEnable;
         }

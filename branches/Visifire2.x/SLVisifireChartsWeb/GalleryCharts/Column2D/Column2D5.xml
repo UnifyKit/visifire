@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" AnimationEnabled="False" ColorSet="Caravan" BorderBrush="Gray">
+          Theme="Theme2" ColorSet="Caravan" BorderBrush="Gray" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="List of Top 5 Countries by GDP"/>

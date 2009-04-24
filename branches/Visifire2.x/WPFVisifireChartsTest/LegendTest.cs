@@ -517,7 +517,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(new CornerRadius(0), chart.Legends[0].CornerRadius);
+                Assert.AreEqual(new CornerRadius(1), chart.Legends[0].CornerRadius);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -685,7 +685,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.IsNull(chart.Legends[0].TitleFontFamily);
+                Assert.AreEqual(new FontFamily("Arial"), chart.Legends[0].TitleFontFamily);
             }
 
             window.Dispatcher.InvokeShutdown();

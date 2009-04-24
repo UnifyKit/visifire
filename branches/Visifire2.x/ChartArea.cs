@@ -2301,9 +2301,23 @@ namespace Visifire.Charts
                             // throw new Exception("Legend name is not specified in DataSeries..");
                         }
 
-                        String legendText = (String.IsNullOrEmpty(dataSeries.LegendText) ? dataSeries.Name : ObservableObject.GetFormattedMultilineText(dataSeries.LegendText));
+                        String legendText;
+                        
+                        if(String.IsNullOrEmpty(dataSeries.LegendText))
+                        {
+                            if(dataSeries._isAutoName)
+                            {
+                                String[] s = dataSeries.Name.Split('_');
+                                legendText = s[0];
+                            }
+                            else
+                                legendText = dataSeries.Name;
+                           }
+                        else
+                            legendText = ObservableObject.GetFormattedMultilineText(dataSeries.LegendText);
 
                         Brush markerColor = dataSeries.Color;
+
                         if (dataSeries.InternalDataPoints.Count > 0)
                         {
                             DataPoint dataPoint = dataSeries.InternalDataPoints[0];
@@ -2311,6 +2325,7 @@ namespace Visifire.Charts
                         }
 
                         Boolean markerBevel;
+
                         if (dataSeries.RenderAs == RenderAs.Point || dataSeries.RenderAs == RenderAs.Bubble
                             || dataSeries.RenderAs == RenderAs.Line)
                             markerBevel = false;
@@ -3079,8 +3094,7 @@ namespace Visifire.Charts
 
             Chart._internalAnimationEnabled = false;
             
-            if (_isFirstTimeRender)
-                Chart.FireRenderedEvent();
+            Chart.FireRenderedEvent();
 
             _isFirstTimeRender = false;
             
@@ -3088,7 +3102,7 @@ namespace Visifire.Charts
         }
 
        /// <summary>
-        /// Add Title visual to DrawingArea
+       /// Add Title visual to DrawingArea
        /// </summary>
        /// <param name="chart">Chart</param>
        /// <param name="title">Title to add</param>

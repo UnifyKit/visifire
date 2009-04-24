@@ -753,9 +753,15 @@ namespace Visifire.Charts
             set
             {
                 if (base.Cursor != value)
-                {
+                {   
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    if (DataPoints != null)
+                    {
+                        foreach (DataPoint dp in DataPoints)
+                            dp.SetCursor2DataPointVisualFaces();
+                    }
+                    else
+                        FirePropertyChanged("Cursor");
                 }
             }
         }
@@ -1059,11 +1065,7 @@ namespace Visifire.Charts
             {
                 if (String.IsNullOrEmpty((String)GetValue(LabelTextProperty)))
                 {
-                    if (RenderAs == RenderAs.StackedArea100 || RenderAs == RenderAs.StackedArea100 || RenderAs == RenderAs.StackedArea100)
-                    {
-                        return "#Sum";
-                    }
-                    else if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie)
+                    if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie)
                     {
                         return "#Percentage";
                     }
@@ -1607,17 +1609,16 @@ namespace Visifire.Charts
 
                         case RenderAs.Pie:
                         case RenderAs.Doughnut:
-                            if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                            if (InternalXValueType != ChartValueTypes.Numeric)
                                 return "#XValue, #YValue(#Percentage%)";
                             else
                                 return "#AxisXLabel, #YValue(#Percentage%)";
 
                         default:
-                            if (chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                            if (chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
                                 return "#XValue, #YValue";
                             else
                                 return "#AxisXLabel, #YValue";
-                                 
                     }
                 }
                 else
@@ -1713,11 +1714,11 @@ namespace Visifire.Charts
 
                             foreach (FrameworkElement fe in Faces.Parts)
                             {
-                                if (fe.Tag.ToString() == "AreaBase")
+                                if (fe.Name.StartsWith("AreaBase"))
                                     (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
-                                else if (fe.Tag.ToString() == "Side")
+                                else if (fe.Name.StartsWith("Side"))
                                     (fe as Shape).Fill = sideBrush;
-                                else if (fe.Tag.ToString() == "Top")
+                                else if (fe.Name.StartsWith("Top"))
                                     (fe as Shape).Fill = topBrush;
                             }
                         }
@@ -1725,11 +1726,11 @@ namespace Visifire.Charts
                         {   
                             foreach (FrameworkElement fe in Faces.Parts)
                             {
-                                if (fe.Tag.ToString() == "AreaBase")
+                                if (fe.Name.StartsWith("AreaBase"))
                                 {
                                     (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
                                 }
-                                else if (fe.Tag.ToString() == "Bevel")
+                                else if (fe.Name.StartsWith("Bevel"))
                                 {
                                     (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
                                 }
@@ -2455,7 +2456,12 @@ namespace Visifire.Charts
                             dataPoint.InternalXValue = this.DataPoints.Count;
 
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
-                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint));
+                        {
+                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + this.GetHashCode().ToString());
+                            dataPoint._isAutoName = true;
+                        }
+                        else
+                            dataPoint._isAutoName = false;
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(DataPoint_PropertyChanged);
@@ -2565,7 +2571,12 @@ namespace Visifire.Charts
         /// <summary>
         /// Internal color holds color from theme
         /// </summary>
-        internal Brush _internalColor;   
+        internal Brush _internalColor;
+
+        /// <summary>
+        /// Whether name for DataSeries is generated automatically
+        /// </summary>
+        internal Boolean _isAutoName = true;
 
 #if WPF
         /// <summary>

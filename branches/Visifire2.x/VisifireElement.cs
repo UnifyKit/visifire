@@ -77,7 +77,7 @@ namespace Visifire.Commons
                 return (String)GetValue(NameProperty);
             }
             set
-            {
+            {   
                 SetValue(NameProperty, value);
             }
         }
@@ -426,6 +426,9 @@ namespace Visifire.Commons
             if (visual == null)
                 return;
 
+            //if (senderElement != null)
+            //    visual.Tag = senderElement;
+
             if (obj._onMouseEnter != null)
                 visual.MouseEnter += delegate(object sender, MouseEventArgs e)
                 {
@@ -483,71 +486,25 @@ namespace Visifire.Commons
                     }
                 };
 
-            if (obj._onMouseMove != null)
+            if (plotArea != null)
+                eventHandler = plotArea.GetMouseMoveEventHandler();
+            else
+                eventHandler = obj._onMouseMove;
+
+            if (eventHandler != null)
                 visual.MouseMove += delegate(object sender, MouseEventArgs e)
-                {
-                    if (obj._onMouseMove != null)
-                        obj._onMouseMove(senderElement, e);
+                {   
+                    if (obj.GetType().Equals(typeof(PlotArea)))
+                    {
+                        (obj as PlotArea).FireMouseMoveEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseMove != null)
+                            obj._onMouseMove(senderElement, e);
+                    }
                 };
         }
-
-        /// <summary>
-        /// Attach events to a visual
-        /// </summary>
-        /// <param name="obj">Object with which event is attached</param>
-        /// <param name="senderElement">sender will be passed to the event-handler</param>
-        /// <param name="visual">visual object with which event will be attached</param>
-        //internal static void AttachEvents2Visual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
-        //{
-        //    if (visual == null)
-        //        return;
-
-        //    visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-        //    {
-        //        if (obj._onMouseEnter != null)
-        //            obj._onMouseEnter(senderElement, e);
-        //    };
-
-        //    visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-        //    {
-        //        if (obj._onMouseLeave != null)
-        //            obj._onMouseLeave(senderElement, e);
-        //    };
-
-        //    visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
-        //    {
-        //        if (obj.GetType().Equals(typeof(PlotArea)))
-        //        {
-        //            (obj as PlotArea).FireMouseLeftButtonDownEvent(e);
-        //        }
-        //        else
-        //        {
-        //            if (obj._onMouseLeftButtonDown != null)
-        //            {
-        //                obj._onMouseLeftButtonDown(senderElement, e);
-        //            }
-        //        }
-        //    };
-
-        //    visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
-        //    {
-        //        if (obj.GetType().Equals(typeof(PlotArea)))
-        //        {
-        //            (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
-        //        }
-        //        else
-        //        {
-        //            if (obj._onMouseLeftButtonUp != null)
-        //                obj._onMouseLeftButtonUp(senderElement, e);
-        //        }
-        //    };
-
-        //    visual.MouseMove += delegate(object sender, MouseEventArgs e)
-        //    {
-        //        if (obj._onMouseMove != null)
-        //            obj._onMouseMove(senderElement, e);
-        //    };
-        //}
 
         /// <summary>
         /// Attach MouseDownEvent event to a visual

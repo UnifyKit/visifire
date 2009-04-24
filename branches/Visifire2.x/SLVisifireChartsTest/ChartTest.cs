@@ -1534,9 +1534,14 @@ namespace SLVisifireChartsTest
         void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            try
+            {
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            }
+            catch
+            {}
         }
 
         #region Private Data

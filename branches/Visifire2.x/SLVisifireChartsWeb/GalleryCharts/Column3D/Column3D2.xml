@@ -1,8 +1,8 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+          Theme="Theme2" View3D="True" BorderBrush="Gray" Width="500" Height="300">
 
   <vc:Chart.PlotArea>
-    <vc:PlotArea BorderThickness="0.50" BorderColor="Gray" Color="#f0f0f0"/>
+    <vc:PlotArea BorderThickness="0.50" BorderColor="Gray" Background="#f0f0f0"/>
   </vc:Chart.PlotArea>
   <vc:Chart.Titles>
     <vc:Title Text="Visifire 3D Column Chart"/>

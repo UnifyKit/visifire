@@ -74,7 +74,6 @@ namespace Visifire.Charts
         public static DateTime XValueToDateTime(DateTime minDate, Double XValue, IntervalTypes intervalTypes)
         {
             DateTime returnDate = minDate;
-            TimeSpan timespan = new TimeSpan();
             
             switch (intervalTypes)
             {   

@@ -1,12 +1,12 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
+          Theme="Theme1" BorderBrush="Gray" Width="500" Height="300">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Pie Chart" Padding="6"/>
   </vc:Chart.Titles>
 
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Pie" StartAngle="60" ShowInLegend="False" Bevel="False" Cursor="Hand" LabelLineStyle="Dotted" LabelLineColor="Black">
+    <vc:DataSeries RenderAs="Pie" ShowInLegend="False" Bevel="False" Cursor="Hand" LabelLineStyle="Dotted" LabelLineColor="Black">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="Jan" YValue="5509"/>
         <vc:DataPoint AxisXLabel="Feb" YValue="7047"/>

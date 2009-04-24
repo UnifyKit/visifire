@@ -3,10 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
+        <vc:Chart Width="500" Height="300" Theme="Theme2" View3D="True" BorderBrush="Gray"
+                  ScrollingEnabled="False">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire 3D Area Chart" Padding="6"/>
+                <vc:Title Text="Visifire DateTime Axis Chart" Padding="6"/>
             </vc:Chart.Titles>
 
             <vc:Chart.PlotArea>
@@ -21,25 +22,29 @@
                 </vc:PlotArea>
             </vc:Chart.PlotArea>
 
+            <vc:Chart.AxesX>
+                <vc:Axis IntervalType="Years" Interval="1"/>
+            </vc:Chart.AxesX>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Area" Cursor="Hand">
+                <vc:DataSeries RenderAs="Area">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="2001" YValue="3009"/>
-                        <vc:DataPoint AxisXLabel="2002" YValue="4547"/>
-                        <vc:DataPoint AxisXLabel="2003" YValue="7047"/>
-                        <vc:DataPoint AxisXLabel="2004" YValue="6208"/>
-                        <vc:DataPoint AxisXLabel="2005" YValue="5222"/>
-                        <vc:DataPoint AxisXLabel="2006" YValue="7047"/>
+                        <vc:DataPoint XValue="1/2/2001" YValue="3009"/>
+                        <vc:DataPoint XValue="2/2/2002" YValue="4547"/>
+                        <vc:DataPoint XValue="8/2/2003" YValue="7047"/>
+                        <vc:DataPoint XValue="6/2/2004" YValue="6208"/>
+                        <vc:DataPoint XValue="2/2/2005" YValue="5222"/>
+                        <vc:DataPoint XValue="8/2/2006" YValue="7047"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
-                <vc:DataSeries RenderAs="Area" Cursor="Hand">
+                <vc:DataSeries RenderAs="Area">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="1042"/>
-                        <vc:DataPoint YValue="2344"/>
-                        <vc:DataPoint YValue="4047"/>
-                        <vc:DataPoint YValue="8208"/>
-                        <vc:DataPoint YValue="5222"/>
-                        <vc:DataPoint YValue="3047"/>
+                        <vc:DataPoint XValue="1/2/2001" YValue="1042"/>
+                        <vc:DataPoint XValue="2/2/2002" YValue="2844"/>
+                        <vc:DataPoint XValue="6/2/2003" YValue="4347"/>
+                        <vc:DataPoint XValue="8/2/2004" YValue="8208"/>
+                        <vc:DataPoint XValue="6/2/2005" YValue="5222"/>
+                        <vc:DataPoint XValue="8/2/2006" YValue="3047"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

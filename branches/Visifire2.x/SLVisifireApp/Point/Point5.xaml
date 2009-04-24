@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme2" AnimationEnabled="False" ColorSet="VisiAqua" ScrollingEnabled="False" BorderBrush="Gray">
+        <vc:Chart Theme="Theme2" ColorSet="VisiAqua" ScrollingEnabled="False" BorderBrush="Gray">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Point Chart"/>
