@@ -360,7 +360,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta8";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta9";
 
             return version;
         }

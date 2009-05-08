@@ -409,7 +409,7 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
 
-            _axisX.AxisLabels.TextWrap = TextWrapping.Wrap;
+            _axisX.AxisLabels.TextWrap = 0.5;
             _axisX.AxisLabels.Angle = 0;
             _axisX.Interval = 1;
             _axisX.AxisLabels.Rows = 1;
@@ -433,7 +433,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTest(chart,
-                () => Assert.AreEqual(TextWrapping.Wrap, _axisX.AxisLabels.TextWrap));
+                () => Assert.AreEqual(0.5, _axisX.AxisLabels.TextWrap, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

@@ -2,26 +2,42 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Window1"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     WindowState="Normal" Height="350" Width="600">
-   
-        <Grid x:Name="LayoutRoot" Width="500" Height="300">
-             <vc:Chart Theme="Theme1" Name="chart" Width="500" Height="300">
-            
+
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Name="chart" Theme="Theme1" Width="500" Height="300">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="AxisLabels TextWrapping"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesX>
+                <vc:Axis>
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels TextWrap="0.3"/>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+
             <vc:Chart.Series>
-                    <vc:DataSeries RenderAs="Column">
-                        <vc:DataSeries.DataPoints>
-                            <vc:DataPoint XValue="1/1/2009 1:1:20" YValue="10"/>
-                            <vc:DataPoint XValue="2/1/2009 2:2:20" YValue="20"/>
-                            <vc:DataPoint XValue="3/2/2009 2:3:28" YValue="20"/>
-                            <vc:DataPoint XValue="4/12/2009 1:18:10" YValue="10"/>
-                            <vc:DataPoint XValue="5/30/2009 6:10:12" YValue="10"/>
-                            <vc:DataPoint XValue="8/8/2009 20:12:28" YValue="20"/>
-                        </vc:DataSeries.DataPoints>
-                    </vc:DataSeries>
-                </vc:Chart.Series>
+                <vc:DataSeries RenderAs="Column">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 0" YValue="84"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 1" YValue="0"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 2" YValue="0"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 3" YValue="0"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 4" YValue="0"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 5" YValue="75"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 6" YValue="140"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 7" YValue="110"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 8" YValue="100"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 9" YValue="110"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 10" YValue="115"/>
+                        <vc:DataPoint AxisXLabel="Visifire DataPoint 11" YValue="90"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
         </vc:Chart>
-        </Grid>
+    </Grid>
 </Window>
