@@ -475,33 +475,57 @@ namespace Visifire.Charts
         /// Creates the major ticks and also positions them appropriately
         /// </summary>
         private void CreateAndPositionMajorTicks()
-        {
+        {   
             Double startOffset = Double.IsNaN(ParentAxis.StartOffset) ? 0 : ParentAxis.StartOffset;
             Double endOffset = Double.IsNaN(ParentAxis.EndOffset) ? 0 : ParentAxis.EndOffset;
 
             // Calculate interval
             Double interval = (Double)Interval;
 
-            Decimal index = (Decimal)Minimum;
+            Decimal index = 0;
             Decimal minval = (Decimal)Minimum;
             Decimal maxVal = (Decimal)Maximum;
-            Decimal gap = (Decimal)interval + (((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
-            Int32 count = 0;
+           // Decimal gap = (Decimal)interval + (((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
+            Decimal gap = (Decimal)interval;
+
             Double position;
 
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {
-                if (DataMinimum - interval < Minimum + ParentAxis.SkipOfset)
-                    index = (Decimal)DataMinimum;
-                else
-                    index = (Decimal)Minimum + ParentAxis.SkipOfset;
+                //if (DataMinimum - interval < Minimum + ParentAxis.SkipOfset)
+                //    index = (Decimal)DataMinimum;
+                //else
+                //    index = (Decimal)Minimum + ParentAxis.SkipOfset;
+
+                if (Double.IsNaN((Double)ParentAxis.AxisMinimumNumeric))
+                {
+                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
+                    {
+                        minval = (Decimal)ParentAxis.FirstLabelPosition;
+                    }
+                    else
+                    {
+                        if ((DataMinimum - Minimum) / interval >= 1)
+                            minval = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
+                        else
+                            minval = (Decimal)DataMinimum;
+                    }
+                }
+
+                //if (ParentAxis.SkipOfset > 0)
+                //{
+                //    if ((Double)ParentAxis.AxisMinimum < DataMinimum)
+                //        index = (Decimal)DataMinimum;
+                //}
             }
 
-            minval = index;
+            //minval = index;
             maxVal = maxVal + gap / 1000;
             if (minval != maxVal)
             {
-                for (; index <= maxVal; index = minval + (++count) * gap)
+                Decimal xValue;
+
+                for (xValue = minval; xValue <= maxVal; )
                 {
                     Line line = new Line();
 
@@ -512,7 +536,7 @@ namespace Visifire.Charts
                     switch (Placement)
                     {
                         case PlacementTypes.Top:
-                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)index);
+                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)xValue);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -524,7 +548,7 @@ namespace Visifire.Charts
                             break;
 
                         case PlacementTypes.Bottom:
-                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)index);
+                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)xValue);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -537,7 +561,7 @@ namespace Visifire.Charts
 
                         case PlacementTypes.Left:
                         case PlacementTypes.Right:
-                            position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, (Double)index);
+                            position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, (Double)xValue);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -551,7 +575,8 @@ namespace Visifire.Charts
                     }
 
                     Visual.Children.Add(line);
-
+                    index += (ParentAxis.SkipOfset +1);
+                    xValue = minval + index * gap;
                 }
             }
             switch (Placement)

@@ -106,16 +106,6 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                isPropertyChanged = true;
-                numberOfPropertiesAdded++;
-            });
-
-            EnqueueConditional(() => { return isPropertyChanged; });
-            isPropertyChanged = false;
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
                 _chart.CornerRadius = new CornerRadius(5);
                 isPropertyChanged = true;
                 numberOfPropertiesAdded++;
@@ -193,7 +183,7 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
                 {
-                    Assert.AreEqual(13, numberOfPropertiesAdded, "One or more property has not been applied.");
+                    Assert.AreEqual(12, numberOfPropertiesAdded, "One or more property has not been applied.");
                 });
 
             EnqueueSleep(_sleepTime);

@@ -246,7 +246,7 @@ namespace Visifire.Charts
 
             for (Int32 i = 0; i < pointIndexLimit; i++)
             {
-                Polygon sides = new Polygon();
+                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference } };
                 PointCollection points = new PointCollection();
                 Int32 index1 = i % areaParams.Points.Count;
                 Int32 index2 = (i + 1) % areaParams.Points.Count;
@@ -264,12 +264,12 @@ namespace Visifire.Charts
                 if (i == (areaParams.Points.Count - 2))
                 {
                     sides.Fill = sideBrush;
-                    sides.Name = "Side" + sides.GetHashCode().ToString();
+                    (sides.Tag as ElementData).VisualElementName = "Side";
                 }
                 else
                 {
                     sides.Fill = topBrush;
-                    sides.Name = "Top" + sides.GetHashCode().ToString();
+                    (sides.Tag as ElementData).VisualElementName = "Top";
                 }
 
                 sides.Stroke = areaParams.BorderColor;
@@ -458,7 +458,7 @@ namespace Visifire.Charts
             marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
             marker.TextBackground = dataPoint.LabelBackground;
             marker.MarkerFillColor = dataPoint.MarkerColor;
-            marker.Tag = dataPoint;
+            marker.Tag = new ElementData() { Element = dataPoint };
             return marker;
         }
 
@@ -1544,8 +1544,7 @@ namespace Visifire.Charts
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon() { Tag = areaParams.TagReference };
-            polygon.Name = "AreaBase"+ polygon.GetHashCode().ToString();
+            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
 
             faces.Parts.Add(polygon);
 
@@ -1591,7 +1590,7 @@ namespace Visifire.Charts
                     points.Add(newPt2);
                     points.Add(newPt1);
 
-                    Polygon bevel = new Polygon() { Tag = areaParams.TagReference };
+                    Polygon bevel = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "Bevel" } };
                     bevel.Points = points;
                     bevel.Fill = Graphics.GetBevelTopBrush(areaParams.Background);
 
@@ -1601,7 +1600,6 @@ namespace Visifire.Charts
                         bevel.Opacity = 0;
                     }
 
-                    bevel.Name = "Bevel" + bevel.GetHashCode().ToString();
                     faces.Parts.Add(bevel);
 
                     visual.Children.Add(bevel);
@@ -1639,7 +1637,7 @@ namespace Visifire.Charts
 
             for (Int32 i = 0; i < pointIndexLimit; i++)
             {
-                Polygon sides = new Polygon() { Tag = areaParams.TagReference };
+                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference }};
                 PointCollection points = new PointCollection();
                 Int32 index1 = i % areaParams.Points.Count;
                 Int32 index2 = (i + 1) % areaParams.Points.Count;
@@ -1657,12 +1655,12 @@ namespace Visifire.Charts
                 if (i == (areaParams.Points.Count - 2))
                 {
                     sides.Fill = sideBrush;
-                    sides.Name = "Side" + sides.GetHashCode().ToString();
+                    (sides.Tag as ElementData).VisualElementName = "Side";
                 }
                 else
                 {
                     sides.Fill = topBrush;
-                    sides.Name = "Top" + sides.GetHashCode().ToString();
+                    (sides.Tag as ElementData).VisualElementName = "Top";
                 }
 
                 sides.Stroke = areaParams.BorderColor;
@@ -1682,8 +1680,7 @@ namespace Visifire.Charts
 
             }
 
-            Polygon polygon = new Polygon() { Tag = areaParams.TagReference };
-            polygon.Name = "AreaBase" + polygon.GetHashCode().ToString();
+            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
 
             faces.Parts.Add(polygon);
             centroid = GetCentroid(areaParams.Points);
@@ -1733,8 +1730,8 @@ namespace Visifire.Charts
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon() { Tag = areaParams.TagReference };
-            polygon.Name = "AreaBase" + polygon.GetHashCode().ToString();
+            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
+
             faces.Parts.Add(polygon);
 
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.Background, "Linear", null) : areaParams.Background;
@@ -1774,15 +1771,13 @@ namespace Visifire.Charts
                     points.Add(newPt2);
                     points.Add(newPt1);
 
-                    Polygon bevel = new Polygon() { Tag = areaParams.TagReference };
+                    Polygon bevel = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "Bevel" } };
                     bevel.Points = points;
                     bevel.Fill = Graphics.GetBevelTopBrush(areaParams.Background);
 
-                    bevel.Name = "Bevel" + bevel.GetHashCode().ToString();
                     faces.Parts.Add(bevel);
                     visual.Children.Add(bevel);
                 }
-
             }
 
             return visual;
@@ -1796,8 +1791,8 @@ namespace Visifire.Charts
         /// <returns>Canvas</returns>
         internal static Canvas GetStacked3DAreaFrontFace(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
-            Polygon polygon = new Polygon() { Tag = areaParams.TagReference };
-            polygon.Name = "AreaBase" + polygon.GetHashCode().ToString();
+            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
+
             faces.Parts.Add(polygon);
             Point centroid = GetCentroid(areaParams.Points);
             Rect size = GetBounds(areaParams.Points);
@@ -1818,7 +1813,7 @@ namespace Visifire.Charts
             polygon.SetValue(Canvas.TopProperty, areaParams.Depth3D);
             polygon.SetValue(Canvas.LeftProperty, 0.0);
 
-            Canvas polygonSet = new Canvas() { Tag = areaParams.TagReference };
+            Canvas polygonSet = new Canvas() { Tag = new ElementData() { Element = areaParams.TagReference } };
             polygonSet.Width = size.Width + areaParams.Depth3D;
             polygonSet.Height = size.Height + areaParams.Depth3D;
             polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth3D);

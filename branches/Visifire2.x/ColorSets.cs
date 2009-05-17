@@ -27,7 +27,7 @@ namespace Visifire.Charts
     /// ColorSets is a collection of ColorSet
     /// </summary>
     public class ColorSets : List<ColorSet>
-    {
+    {   
         /// <summary>
         /// Returns a ColorSet by ColorSet id (name of a ColorSet)
         /// </summary>

@@ -1,4 +1,5 @@
-﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1" Width="500" Height="300">
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1" Width="500" Height="300"
+          ColorSet="Visifire2">
   
   <vc:Chart.Titles>
     <vc:Title Text="DateTime Axis Chart"/>
@@ -9,7 +10,7 @@
   </vc:Chart.AxesX>
   
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column" LabelEnabled="True">
+    <vc:DataSeries RenderAs="Column" LabelEnabled="True" ColorSet="VisiGray">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint XValue="1/30/2000 12:00:12" YValue="20"/>
         <vc:DataPoint XValue="2/15/2000 10:12:4" YValue="60"/>
@@ -20,3 +21,4 @@
     </vc:DataSeries>
   </vc:Chart.Series>
 </vc:Chart>
+  

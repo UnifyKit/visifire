@@ -44,10 +44,10 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(1, chart.AxesX[0].AxisMinimum);
-                Assert.AreEqual(100, chart.AxesX[0].AxisMaximum);
-                Assert.AreEqual(0, chart.AxesY[0].AxisMinimum);
-                Assert.AreEqual(200, chart.AxesY[0].AxisMaximum);
+                Assert.AreEqual(Convert.ToString(1), chart.AxesX[0].AxisMinimum);
+                Assert.AreEqual(Convert.ToString(100), chart.AxesX[0].AxisMaximum);
+                Assert.AreEqual(Convert.ToString(0), chart.AxesY[0].AxisMinimum);
+                Assert.AreEqual(Convert.ToString(200), chart.AxesY[0].AxisMaximum);
             }
 
             window.Dispatcher.InvokeShutdown();

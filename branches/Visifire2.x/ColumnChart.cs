@@ -38,6 +38,8 @@ using System.Windows.Media.Animation;
 using System.Collections.Generic;
 #endif
 
+using System.Windows.Shapes;
+
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -289,7 +291,7 @@ namespace Visifire.Charts
                 columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0)? LabelStyles.OutSide:(LabelStyles)columnParams.LabelStyle);
                 dataPoint.Marker.FontColor = columnParams.LabelFontColor;
 
-                dataPoint.Marker.Tag = dataPoint;
+                dataPoint.Marker.Tag = new ElementData() { Element = dataPoint };
                 dataPoint.Marker.CreateVisual();
 
                 dataPoint.Marker.AddToParent(markerCanvas, markerPosition.X, markerPosition.Y, new Point(0.5, 0.5));
@@ -308,17 +310,17 @@ namespace Visifire.Charts
         private static Double CalculateWidthOfEachColumn(ref Double left, Double widthPerColumn, Double width)
         {   
             Double finalWidth = widthPerColumn;
-            Double minPosValue = 0;
-            Double maxPosValue = width;
-            if (left < minPosValue)
-            {
-                finalWidth = left + widthPerColumn - minPosValue;
-                left = minPosValue;
-            }
-            else if (left + widthPerColumn > maxPosValue)
-            {
-                finalWidth = maxPosValue - left;
-            }
+            //Double minPosValue = 0;
+            //Double maxPosValue = width;
+            //if (left < minPosValue)
+            //{
+            //    finalWidth = left + widthPerColumn - minPosValue;
+            //    left = minPosValue;
+            //}
+            //else if (left + widthPerColumn > maxPosValue)
+            //{
+            //    finalWidth = maxPosValue - left;
+            //}
 
             return (finalWidth < 2.5) ? 2.5 : finalWidth;
         }
@@ -587,20 +589,30 @@ namespace Visifire.Charts
 
             Axis axisXwithMinInterval = dataSeriesList4Rendering[0].PlotGroup.AxisX;
 
-            minDiffValue = (minDiffValue < (Double)axisXwithMinInterval.InternalInterval) ? minDiffValue : (Double)axisXwithMinInterval.InternalInterval;
+            //minDiffValue = (minDiffValue < (Double)axisXwithMinInterval.InternalInterval) ? minDiffValue : (Double)axisXwithMinInterval.InternalInterval;
 
-            Double dataAxisDifference = Math.Abs((Double)axisXwithMinInterval.InternalAxisMinimum - (Double)axisXwithMinInterval.Minimum) * 2;
+            Double dataAxisDifference = width;
 
-            Double dataMinimumGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, dataAxisDifference + (Double)axisXwithMinInterval.InternalAxisMinimum);
-            Double minDiffGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
+            //Double dataMinimumGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, dataAxisDifference + (Double)axisXwithMinInterval.InternalAxisMinimum);
+            //Double minDiffGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
 
-            minDiffGap = (dataMinimumGap > 0 && minDiffGap > 0) ? Math.Min(minDiffGap, dataMinimumGap) : Math.Max(minDiffGap, dataMinimumGap);
+            //minDiffGap = (dataMinimumGap > 0 && minDiffGap > 0) ? Math.Min(minDiffGap, dataMinimumGap) : Math.Max(minDiffGap, dataMinimumGap);
 
-            Double maxColumnWidth = minDiffGap * (1 - COLUMN_GAP_RATIO);
+            Double maxColumnWidth = dataAxisDifference * (1 - COLUMN_GAP_RATIO);
 
             Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
 
-            Double widthPerColumn = maxColumnWidth / numberOfDivisions;
+            Double widthPerColumn;
+            if (minDiffValue == 0)
+            {
+                widthPerColumn = width * .5 / numberOfDivisions;
+            }
+            else
+            {
+                widthPerColumn = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
+                widthPerColumn *= (1 - COLUMN_GAP_RATIO);
+                widthPerColumn /= numberOfDivisions;
+            }
 
             Boolean plankDrawn = false;
 
@@ -639,6 +651,7 @@ namespace Visifire.Charts
                     Double columnHeight = Math.Abs(top - bottom);
 
                     Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
+                    //Double finalWidth = widthPerColumn;
 
                     if (finalWidth < 0)
                         continue;
@@ -827,10 +840,27 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
-                minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
+                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
-                Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
+
+                Double widthPerColumn;
+
+                widthPerColumn = maxColumnWidth / widthDivisionFactor;
+
+                if (minDiff == 0)
+                {
+                    widthPerColumn = width * .5 / widthDivisionFactor;
+                    maxColumnWidth = widthPerColumn * widthDivisionFactor;
+                }
+                else
+                {
+                    widthPerColumn = Graphics.ValueToPixelPosition(0, width, plotGroup.AxisX.InternalAxisMinimum, plotGroup.AxisX.InternalAxisMaximum, minDiff + plotGroup.AxisX.InternalAxisMinimum);
+                    widthPerColumn *= (1 - COLUMN_GAP_RATIO);
+                    maxColumnWidth = widthPerColumn;
+                    widthPerColumn /= widthDivisionFactor;
+                }
+                
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
 
@@ -1069,10 +1099,23 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
-                minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
+                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
                 Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
+
+                if (minDiff == 0)
+                {
+                    widthPerColumn = width * .5 / widthDivisionFactor;
+                    maxColumnWidth = widthPerColumn * widthDivisionFactor;
+                }
+                else
+                {
+                    widthPerColumn = Graphics.ValueToPixelPosition(0, width, plotGroup.AxisX.InternalAxisMinimum, plotGroup.AxisX.InternalAxisMaximum, minDiff + plotGroup.AxisX.InternalAxisMinimum);
+                    widthPerColumn *= (1 - COLUMN_GAP_RATIO);
+                    maxColumnWidth = widthPerColumn;
+                    widthPerColumn /= widthDivisionFactor;
+                }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
 
@@ -1289,13 +1332,15 @@ namespace Visifire.Charts
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 background, columnParams.XRadius, columnParams.YRadius);
 
-            (columnBase.Children[0] as FrameworkElement).Name = "ColumnBase" + columnBase.Children[0].GetHashCode().ToString();
+            ((columnBase.Children[0] as FrameworkElement).Tag as ElementData).VisualElementName = "ColumnBase";
+            
             faces.Parts.Add(columnBase.Children[0] as FrameworkElement);
-
+            faces.BorderElements.Add(columnBase.Children[0] as Path);
+            
             columnVisual.Children.Add(columnBase);
             
             if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
-            {
+            {   
                 Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(columnParams.TagReference, columnParams.Size.Width - columnParams.BorderThickness - columnParams.BorderThickness, columnParams.Size.Height - columnParams.BorderThickness - columnParams.BorderThickness, 6, 6,
                     Graphics.GetBevelTopBrush(columnParams.BackgroundBrush),
                     Graphics.GetBevelSideBrush((columnParams.Lighting ? -70 : 0), columnParams.BackgroundBrush),
@@ -1435,12 +1480,14 @@ namespace Visifire.Charts
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(front.Children[0] as FrameworkElement);
+            faces.BorderElements.Add(front.Children[0] as Path);
 
             Canvas top = ExtendedGraphics.Get2DRectangle(columnParams.TagReference, columnParams.Size.Width, columnParams.Depth,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(top.Children[0] as FrameworkElement);
+            faces.BorderElements.Add(top.Children[0] as Path);
 
             top.RenderTransformOrigin = new Point(0, 1);
             SkewTransform skewTransTop = new SkewTransform();
@@ -1452,6 +1499,7 @@ namespace Visifire.Charts
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(right.Children[0] as FrameworkElement);
+            faces.BorderElements.Add(right.Children[0] as Path);
 
             right.RenderTransformOrigin = new Point(0, 0);
             SkewTransform skewTransRight = new SkewTransform();

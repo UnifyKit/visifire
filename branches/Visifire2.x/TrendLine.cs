@@ -142,7 +142,7 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
             "Value",
-            typeof(Double),
+            typeof(Object),
             typeof(TrendLine),
             new PropertyMetadata(OnValuePropertyChanged));
 
@@ -318,15 +318,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the Value of the TrendLine
         /// </summary>
-        public Double Value
+        public Object Value
         {
-            get 
-            { 
-                return (Double)GetValue(ValueProperty); 
+            get
+            {
+                return (Object)GetValue(ValueProperty);
             }
-            set 
-            { 
-                SetValue(ValueProperty, value); 
+            set
+            {
+                SetValue(ValueProperty, value);
             }
         }
 
@@ -402,6 +402,24 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// Get or set the Value of the TrendLine
+        /// </summary>
+        internal DateTime InternalDateValue
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get or set the Value of the TrendLine
+        /// </summary>
+        internal Double InternalNumericValue
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Axis reference
@@ -516,8 +534,8 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            TrendLine source = d as TrendLine;
-            source.UpdateVisual("ShadowEnabled", e.NewValue);
+            TrendLine trendLine = d as TrendLine;
+            trendLine.UpdateVisual("ShadowEnabled", e.NewValue);
         }
 
         /// <summary>
@@ -527,8 +545,52 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("Value");
+            TrendLine trendLine = d as TrendLine;
+
+
+            // Double / Int32 value entered in Managed Code
+            if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
+            {
+                trendLine.InternalNumericValue = Convert.ToDouble(e.NewValue);
+            }
+            // DateTime value entered in Managed Code
+            else if ((e.NewValue.GetType().Equals(typeof(DateTime))))
+            {
+                trendLine.InternalDateValue = (DateTime)e.NewValue;
+            }
+            // Double / Int32 / DateTime entered in XAML
+            else if ((e.NewValue.GetType().Equals(typeof(String))))
+            {
+                DateTime dateTimeresult;
+                Double doubleResult;
+
+                if (String.IsNullOrEmpty(e.NewValue.ToString()))
+                {
+                    trendLine.InternalNumericValue = Double.NaN;
+                }
+                // Double entered in XAML
+                else if (Double.TryParse((string)e.NewValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out doubleResult))
+                {
+                    trendLine.InternalNumericValue = doubleResult;
+                }
+                // DateTime entered in XAML
+                else if (DateTime.TryParse((string)e.NewValue, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out dateTimeresult))
+                {
+                    trendLine.InternalDateValue = dateTimeresult;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Invalid Input for AxisMaximum");
+                    throw new Exception("Invalid Input for AxisMaximum");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Invalid Input for AxisMaximum");
+                throw new Exception("Invalid Input for AxisMaximum");
+            }
+
+            trendLine.FirePropertyChanged("Value");
         }
 
         /// <summary>
@@ -643,7 +705,7 @@ namespace Visifire.Charts
                                         width,
                                         (Double)ReferingAxis.InternalAxisMinimum,
                                         (Double)ReferingAxis.InternalAxisMaximum,
-                                        Value);
+                                        InternalNumericValue);
                     Line.X2 = Line.X1;
                     Visual.Height = height;
                     Visual.Width = shadowThickness;
@@ -655,7 +717,7 @@ namespace Visifire.Charts
                                         0,
                                         (Double)ReferingAxis.InternalAxisMinimum,
                                         (Double)ReferingAxis.InternalAxisMaximum,
-                                        Value);
+                                        InternalNumericValue);
                     Line.Y2 = Line.Y1;
                     Visual.Height = shadowThickness;
                     Visual.Width = width;

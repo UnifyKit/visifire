@@ -140,7 +140,7 @@ namespace Visifire.Charts
 
             dataPoint.Marker.Control = chart;
 
-            dataPoint.Marker.Tag = dataPoint;
+            dataPoint.Marker.Tag = new ElementData() { Element = dataPoint };
 
             dataPoint.Marker.CreateVisual();
 
@@ -158,19 +158,25 @@ namespace Visifire.Charts
         private static void ApplyDefaultInteractivityForMarker(DataPoint dataPoint)
         {
             if ((Boolean)dataPoint.MarkerEnabled)
-            {
+            {   
                 dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
                 {
-                    Shape shape = sender as Shape;
-                    shape.Stroke = new SolidColorBrush(Colors.Red);
-                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    if (!dataPoint.Selected)
+                    {
+                        Shape shape = sender as Shape;
+                        shape.Stroke = new SolidColorBrush(Colors.Red);
+                        shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    }
                 };
 
                 dataPoint.Marker.MarkerShape.MouseLeave += delegate(object sender, MouseEventArgs e)
                 {
-                    Shape shape = sender as Shape;
-                    shape.Stroke = dataPoint.Marker.BorderColor;
-                    shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    if (!dataPoint.Selected)
+                    {   
+                        Shape shape = sender as Shape;
+                        shape.Stroke = dataPoint.Marker.BorderColor;
+                        shape.StrokeThickness = dataPoint.Marker.BorderThickness;
+                    }
                 };
             }
             else
@@ -200,7 +206,7 @@ namespace Visifire.Charts
         private static Canvas GetLine2D(DataSeries tagReference, LineChartShapeParams lineParams, out Path line, out Path lineShadow)
         {
             Canvas visual = new Canvas();
-            line = new Path(){ Tag = tagReference };
+            line = new Path() { Tag = new ElementData() { Element = tagReference } };
 
             line.Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush(lineParams.LineColor, "Linear", new Double[] { 0.65, 0.55 }) : lineParams.LineColor;
             line.StrokeThickness = lineParams.LineThickness;
@@ -209,7 +215,7 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                lineShadow = new Path(){ Tag = tagReference };
+                lineShadow = new Path() { Tag = new ElementData() { Element = tagReference } };
                 lineShadow.Stroke = new SolidColorBrush(Colors.LightGray);
                 lineShadow.StrokeThickness = lineParams.LineThickness;
                 lineShadow.Opacity = 0.5;

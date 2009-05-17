@@ -26,21 +26,16 @@
         </Style>
     </Page.Resources>
     <Grid x:Name="LayoutRoot" Height="330" Width="500">
-        <vc:Chart Theme="Theme1" Style="{DynamicResource ChartStyle}">
-            <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart" Style="{StaticResource TitleStyle}"/>
-            </vc:Chart.Titles>
+        <vc:Chart Width="500" Height="300" Theme="Theme2">
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" Style="{StaticResource DataSeriesStyle}">
+                <vc:DataSeries RenderAs="Pie" SelectionEnabled="True">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="34"/>
-                        <vc:DataPoint YValue="67"/>
-                        <vc:DataPoint YValue="34"/>
-                        <vc:DataPoint YValue="32"/>
-                        <vc:DataPoint YValue="21"/>
-                        <vc:DataPoint YValue="23"/>
-                        <vc:DataPoint YValue="43"/>
-                        <vc:DataPoint YValue="25"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="20" Selected="true"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="20"/>
+                        <vc:DataPoint YValue="10"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

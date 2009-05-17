@@ -6,35 +6,17 @@
     WindowState="Normal" Height="350" Width="600">
 
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Name="chart" Theme="Theme1" Width="500" Height="300">
-
-            <vc:Chart.Titles>
-                <vc:Title Text="AxisLabels TextWrapping"/>
-            </vc:Chart.Titles>
-
-            <vc:Chart.AxesX>
-                <vc:Axis>
-                    <vc:Axis.AxisLabels>
-                        <vc:AxisLabels TextWrap="0.3"/>
-                    </vc:Axis.AxisLabels>
-                </vc:Axis>
-            </vc:Chart.AxesX>
+        
+        <vc:Chart Width="500" Height="300" Theme="Theme2">
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Pie" SelectionEnabled="True">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 0" YValue="84"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 1" YValue="0"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 2" YValue="0"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 3" YValue="0"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 4" YValue="0"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 5" YValue="75"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 6" YValue="140"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 7" YValue="110"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 8" YValue="100"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 9" YValue="110"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 10" YValue="115"/>
-                        <vc:DataPoint AxisXLabel="Visifire DataPoint 11" YValue="90"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="20" Selected="true"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="20"/>
+                        <vc:DataPoint YValue="10"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

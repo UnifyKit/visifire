@@ -254,6 +254,11 @@ namespace Visifire.Charts
             // get unique values and then sort it
             Array.Sort(distinctValues);
 
+            if (distinctValues.Length == 1)
+            {
+                return 0;
+            }
+
             for (Int32 i = 0; i < distinctValues.Length - 1; i++)
             {
                 // get the smallest difference between two successive elements

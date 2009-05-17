@@ -237,11 +237,15 @@ namespace Visifire.Charts
             // Create Axis incase if it doesnt exist
             CreateMissingAxes();
 
+            Axis axisX = GetAxisXFromChart(Chart, AxisTypes.Primary);
+
             // Generate XValues for DataTime axis
-            GenerateXValueForDataTimeAxis();
+            GenerateXValueForDataTimeAxis(axisX);
 
             // Identifies the various plot groups and populates the list
             PopulatePlotGroups();
+
+            SetTrendLineValues(axisX);
 
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             SeriesDrawingIndex = GenerateDrawingOrder();
@@ -280,7 +284,7 @@ namespace Visifire.Charts
                     }
 
                     try
-                    {
+                    {   
                         if (dp.XValueType == ChartValueTypes.Numeric)
                             throw new Exception();
 
@@ -377,13 +381,61 @@ namespace Visifire.Charts
             return isDateTimeAxis;
         }
 
+       /// <summary>
+       /// Set TrendLine values
+       /// </summary>
+       /// <param name="axisX">Axis</param>
+        private void SetTrendLineValues(Axis axisX)
+        {
+            if (axisX.IsDateTimeAxis)
+            {
+                foreach (TrendLine trendLine in Chart.TrendLines)
+                {
+                    if ((Boolean)trendLine.Enabled &&
+                        ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                        )
+                    )
+                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Reset DateTime for AxisMinimum and Axis AxisMaximum
+        /// </summary>
+        /// <param name="axis"></param>
+        private void ResetDateTime4AxisMinimumAndMaximum(Axis axis)
+        {
+            if (axis.AxisMinimum != null)
+            {
+                if (axis._axisMinimumValueType == ChartValueTypes.Numeric)
+                    throw new Exception("AxisMinimum should have a value of type Date/DateTime/Time");
+ 
+                if (axis.XValueType == ChartValueTypes.Date)
+                    axis.AxisMinimumDateTime = new DateTime(axis.AxisMinimumDateTime.Year, axis.AxisMinimumDateTime.Month, axis.AxisMinimumDateTime.Day);
+                else if (axis.XValueType == ChartValueTypes.Time)
+                    axis.AxisMinimumDateTime = DateTime.Parse("12/30/1899 " + axis.AxisMinimumDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            }
+
+            if (axis.AxisMaximum != null)
+            {
+                if (axis._axisMaximumValueType == ChartValueTypes.Numeric)
+                    throw new Exception("AxisMaximum should have a value of type Date/DateTime/Time");
+                
+                if (axis.XValueType == ChartValueTypes.Date)
+                    axis.AxisMaximumDateTime = new DateTime(axis.AxisMaximumDateTime.Year, axis.AxisMaximumDateTime.Month, axis.AxisMaximumDateTime.Day);
+                else if (axis.XValueType == ChartValueTypes.Time)
+                    axis.AxisMaximumDateTime = DateTime.Parse("12/30/1899 " + axis.AxisMaximumDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            }
+        }
+
         /// <summary>
         /// Generates XValues for DataTime axis
         /// </summary>
-        private void GenerateXValueForDataTimeAxis()
+        private void GenerateXValueForDataTimeAxis(Axis axisX)
         {
-            Axis axisX = GetAxisXFromChart(Chart, AxisTypes.Primary);
-
             if (axisX != null)
             {
                 axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTimes
@@ -391,178 +443,264 @@ namespace Visifire.Charts
 
                 if (axisX.IsDateTimeAxis)
                 {
-                    DateTime minDate = DateTime.Now, maxDate = DateTime.Now;    // Min and max date
+                    DateTime minDate, maxDate;    // Min and max date
                     TimeSpan minDateRange, maxDateRange;
 
                     List<DateTime> xValuesAsDateTimeList = GetListOfXValue(axisX);
+
+                    ResetDateTime4AxisMinimumAndMaximum(axisX);
 
                     if (xValuesAsDateTimeList.Count != 0)
                     {
                         DateTimeHelper.CalculateMinMaxDate(xValuesAsDateTimeList, out minDate, out maxDate, out minDateRange, out maxDateRange);
 
                         IntervalTypes autoIntervalType = axisX.InternalIntervalType;
-                        Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 4 : 8;
-                        axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval);
-
-                        if (minDate == maxDate)
+                        Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 8 : 8;
+                        if (minDate != maxDate)
+                        {
+                            axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval);
+                        }
+                        else
                         {
                             if (axisX.XValueType != ChartValueTypes.Time)
-                                minDate = minDate.AddDays(-1);
-                        }
-                           
-                        if (axisX.XValueType == ChartValueTypes.DateTime || axisX.XValueType == ChartValueTypes.Date)
-                        {
-                            Boolean isAcceptAutoIntervalType = false;
-
-                            if (axisX.XValueType == ChartValueTypes.Date && (
-                            axisX.IntervalType == IntervalTypes.Hours || axisX.IntervalType == IntervalTypes.Minutes
-                            || axisX.IntervalType == IntervalTypes.Seconds || axisX.IntervalType == IntervalTypes.Milliseconds
-                            || axisX.IntervalType == IntervalTypes.Auto))
-                                isAcceptAutoIntervalType = true;
-                            
-                            if (axisX.IntervalType == IntervalTypes.Auto)
                             {
-                                isAcceptAutoIntervalType = true;
-                            }
-
-                            if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
-                            {
-                                if (axisX.IntervalType == IntervalTypes.Years)
+                                if (axisX.AxisMinimum == null)
                                 {
-                                    if (autoIntervalType == IntervalTypes.Months || autoIntervalType == IntervalTypes.Weeks
-                                        || autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                        || autoIntervalType == IntervalTypes.Milliseconds
-                                        )
-                                        isAcceptAutoIntervalType = true;
+                                    minDate = minDate.AddDays(-1);
+                                    autoIntervalType = IntervalTypes.Days;
                                 }
-                                else if (axisX.IntervalType == IntervalTypes.Months)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days
-                                        || autoIntervalType == IntervalTypes.Hours || autoIntervalType == IntervalTypes.Minutes
-                                        || autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds
-                                        )
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Weeks)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                        || autoIntervalType == IntervalTypes.Milliseconds
-                                        )
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Days)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                        || autoIntervalType == IntervalTypes.Milliseconds
-                                        )
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Hours)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                        || autoIntervalType == IntervalTypes.Milliseconds
-                                        )
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Minutes)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds)
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Seconds)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Milliseconds)
-                                        isAcceptAutoIntervalType = true;
-                                }
-                                else if (axisX.IntervalType == IntervalTypes.Milliseconds)
-                                {
-                                    if (autoIntervalType == IntervalTypes.Milliseconds)
-                                        isAcceptAutoIntervalType = true;
-                                }
-
-                                axisX._isDateTimeAutoInterval = true;
-                            }
-
-                            if (axisX.InternalIntervalType != autoIntervalType)
-                            {
-                                axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
-                            }
-
-                            if (isAcceptAutoIntervalType)
-                                axisX.InternalIntervalType = autoIntervalType;
-
-                            DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
-
-                            if (newMinDate != minDate)
-                            {
-                                Chart.InternalSeries[0].IsNotificationEnable = false;
-                                Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                Chart.InternalSeries[0].IsNotificationEnable = true;
-
-                                minDate = newMinDate;
-                            }
-                        }
-
-                        if (axisX.XValueType == ChartValueTypes.Time)
-                        {
-                            if (axisX.IntervalType == IntervalTypes.Years || axisX.IntervalType == IntervalTypes.Months
-                            || axisX.IntervalType == IntervalTypes.Weeks || axisX.IntervalType == IntervalTypes.Days
-                            || axisX.IntervalType == IntervalTypes.Auto)
-                            {
-                                if (autoIntervalType == IntervalTypes.Years || autoIntervalType == IntervalTypes.Months
-                                || autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days)
-                                    axisX.InternalIntervalType = IntervalTypes.Hours;
                                 else
-                                    axisX.InternalIntervalType = autoIntervalType;
-                            }
-                            else
-                            {
-                                if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
                                 {
-                                    if ((axisX.InternalIntervalType == IntervalTypes.Hours && maxDateRange.Hours == 0)
-                                        || (axisX.InternalIntervalType == IntervalTypes.Minutes && maxDateRange.Minutes == 0)
-                                        || (axisX.InternalIntervalType == IntervalTypes.Seconds && maxDateRange.Seconds == 0))
+                                    TimeSpan minDateDifference = minDate.Subtract((DateTime)axisX.AxisMinimumDateTime);
+
+                                    if (minDateDifference.TotalDays <= 30)
                                     {
-                                        axisX.InternalIntervalType = autoIntervalType;
+                                        autoIntervalType = IntervalTypes.Days;
+                                        minDate = minDate.AddDays(-1);
+                                    }
+                                    else if ((minDateDifference.TotalDays / 30) < 12)
+                                    {
+                                        autoIntervalType = IntervalTypes.Months;
+                                        minDate = minDate.AddMonths(-1);
+                                    }
+                                    else if (minDateDifference.TotalDays / 365.242199 > 0)
+                                    {
+                                        autoIntervalType = IntervalTypes.Years;
+                                        minDate = minDate.AddYears(-1);
+                                    }
+                                    else if (minDateDifference.TotalHours > 0)
+                                    {
+                                        autoIntervalType = IntervalTypes.Hours;
+                                        minDate = minDate.AddHours(-1);
+                                    }
+                                    else if (minDateDifference.TotalMinutes > 0)
+                                    {
+                                        autoIntervalType = IntervalTypes.Minutes;
+                                        minDate = minDate.AddMinutes(-1);
+                                    }
+                                    else if (minDateDifference.TotalSeconds > 0)
+                                    {
+                                        autoIntervalType = IntervalTypes.Seconds;
+                                        minDate = minDate.AddSeconds(-1);
+                                    }
+                                    else if (minDateDifference.TotalMilliseconds > 0)
+                                    {
+                                        autoIntervalType = IntervalTypes.Milliseconds;
+                                        minDate = minDate.AddMilliseconds(-1);
                                     }
                                 }
                             }
 
-                            if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                            axisX.InternalInterval = 1;
+                            axisX._isDateTimeAutoInterval = true;
+
+                        }
+
+                        //if (minDate == maxDate)
+                        //{
+                        //    //if (axisX.XValueType != ChartValueTypes.Time)
+                        //    //    minDate = minDate.AddDays(-1);
+                        //    autoIntervalType = IntervalTypes.Days;
+                        //}
+
+                        if (axisX.XValueType == ChartValueTypes.DateTime || axisX.XValueType == ChartValueTypes.Date)
+                        {
+                            if (axisX.IntervalType == IntervalTypes.Auto || Double.IsNaN((Double)axisX.Interval))
                             {
-                                if (axisX.InternalIntervalType != autoIntervalType && minDate.TimeOfDay != maxDate.TimeOfDay)
-                                {
-                                    axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
-
-                                }
-                                else
-                                    axisX.InternalInterval = 1;
-
                                 axisX._isDateTimeAutoInterval = true;
+                                axisX.InternalIntervalType = autoIntervalType;
                             }
                             else
-                                axisX.InternalInterval = (Double)axisX.Interval;
+                            {
+                                Boolean isAcceptAutoIntervalType = false;
 
-                            if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                                if (axisX.XValueType == ChartValueTypes.Date && (
+                                axisX.IntervalType == IntervalTypes.Hours || axisX.IntervalType == IntervalTypes.Minutes
+                                || axisX.IntervalType == IntervalTypes.Seconds || axisX.IntervalType == IntervalTypes.Milliseconds
+                                || axisX.IntervalType == IntervalTypes.Auto))
+                                    isAcceptAutoIntervalType = true;
+
+                                if (axisX.IntervalType == IntervalTypes.Auto)
+                                {
+                                    isAcceptAutoIntervalType = true;
+                                }
+
+                                if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                                {
+                                    if (axisX.IntervalType == IntervalTypes.Years)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Months || autoIntervalType == IntervalTypes.Weeks
+                                            || autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                            || autoIntervalType == IntervalTypes.Milliseconds
+                                            )
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Months)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days
+                                            || autoIntervalType == IntervalTypes.Hours || autoIntervalType == IntervalTypes.Minutes
+                                            || autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds
+                                            )
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Weeks)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                            || autoIntervalType == IntervalTypes.Milliseconds
+                                            )
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Days)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                            || autoIntervalType == IntervalTypes.Milliseconds
+                                            )
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Hours)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                            || autoIntervalType == IntervalTypes.Milliseconds
+                                            )
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Minutes)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds)
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Seconds)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Milliseconds)
+                                            isAcceptAutoIntervalType = true;
+                                    }
+                                    else if (axisX.IntervalType == IntervalTypes.Milliseconds)
+                                    {
+                                        if (autoIntervalType == IntervalTypes.Milliseconds)
+                                            isAcceptAutoIntervalType = true;
+                                    }
+
+                                    axisX._isDateTimeAutoInterval = true;
+                                }
+
+                                if (axisX.InternalIntervalType != autoIntervalType)
+                                {
+                                    axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
+                                }
+
+                                if (isAcceptAutoIntervalType)
+                                    axisX.InternalIntervalType = autoIntervalType;
+                            }
+
+
+                            if (axisX.AxisMinimum == null)
                             {
                                 DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
 
-                                if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                if (newMinDate != minDate)
                                 {
-                                    Chart.InternalSeries[0].IsNotificationEnable = false;
-                                    Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                    Chart.InternalSeries[0].IsNotificationEnable = true;
+                                    // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    // Chart.InternalSeries[0].IsNotificationEnable = true;
 
                                     minDate = newMinDate;
                                 }
                             }
                         }
 
+                        if (axisX.XValueType == ChartValueTypes.Time)
+                        {
+                            if (axisX.IntervalType == IntervalTypes.Auto || Double.IsNaN((Double)axisX.Interval))
+                            {   
+                                axisX._isDateTimeAutoInterval = true;
+                                axisX.InternalIntervalType = autoIntervalType;
+                            }
+                            else
+                            {
+                                if (axisX.IntervalType == IntervalTypes.Years || axisX.IntervalType == IntervalTypes.Months
+                                || axisX.IntervalType == IntervalTypes.Weeks || axisX.IntervalType == IntervalTypes.Days
+                                || axisX.IntervalType == IntervalTypes.Auto)
+                                {
+                                    if (autoIntervalType == IntervalTypes.Years || autoIntervalType == IntervalTypes.Months
+                                    || autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days)
+                                        axisX.InternalIntervalType = IntervalTypes.Hours;
+                                    else
+                                        axisX.InternalIntervalType = autoIntervalType;
+                                }
+                                else
+                                {
+                                    if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                                    {
+                                        if ((axisX.InternalIntervalType == IntervalTypes.Hours && maxDateRange.Hours == 0)
+                                            || (axisX.InternalIntervalType == IntervalTypes.Minutes && maxDateRange.Minutes == 0)
+                                            || (axisX.InternalIntervalType == IntervalTypes.Seconds && maxDateRange.Seconds == 0))
+                                        {
+                                            axisX.InternalIntervalType = autoIntervalType;
+                                        }
+                                    }
+                                }
+
+                                if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
+                                {
+                                    if (axisX.InternalIntervalType != autoIntervalType && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                    {
+                                        axisX.InternalInterval = UpdateTimeIterval(autoIntervalType, axisX.InternalIntervalType, axisX.InternalInterval);
+
+                                    }
+                                    else
+                                        axisX.InternalInterval = 1;
+
+                                    axisX._isDateTimeAutoInterval = true;
+                                }
+                                else
+                                    axisX.InternalInterval = (Double)axisX.Interval;
+                            }
+
+                            if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                            {
+                                if (axisX.AxisMinimum == null)
+                                {
+                                    DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+
+                                    if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                    {
+                                        // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                        // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                        // Chart.InternalSeries[0].IsNotificationEnable = true;
+
+                                        minDate = newMinDate;
+                                    }
+                                }
+                            }
+                        }
+
                         axisX.MinDate = minDate;
                         axisX.MaxDate = maxDate;
+                        axisX.MinDateRange = minDateRange;
+                        axisX.MaxDateRange = maxDateRange;
 
                         if (Chart.InternalSeries.Count == 1 && Chart.InternalSeries[0].InternalDataPoints.Count == 1)
                         {

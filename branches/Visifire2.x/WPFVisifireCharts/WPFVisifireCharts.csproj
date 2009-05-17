@@ -133,11 +133,17 @@
     <Compile Include="..\DateTimeHelper.cs">
       <Link>DateTimeHelper.cs</Link>
     </Compile>
+    <Compile Include="..\ElementData.cs">
+      <Link>ElementData.cs</Link>
+    </Compile>
     <Compile Include="..\Enums.cs">
       <Link>Enums.cs</Link>
     </Compile>
     <Compile Include="..\Graphics.cs">
       <Link>Graphics.cs</Link>
+    </Compile>
+    <Compile Include="..\InteractivityHelper.cs">
+      <Link>InteractivityHelper.cs</Link>
     </Compile>
     <Compile Include="..\Legend.cs">
       <Link>Legend.cs</Link>

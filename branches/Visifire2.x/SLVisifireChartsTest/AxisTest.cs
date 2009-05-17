@@ -33,10 +33,10 @@ namespace SLVisifireChartsTest
             Chart chart = result as Chart;
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(0, chart.AxesX[0].AxisMinimum),
-                () => Assert.AreEqual(100, chart.AxesX[0].AxisMaximum),
-                () => Assert.AreEqual(0, chart.AxesY[0].AxisMinimum),
-                () => Assert.AreEqual(200, chart.AxesY[0].AxisMaximum));
+                () => Assert.AreEqual(Convert.ToString(0), chart.AxesX[0].AxisMinimum),
+                () => Assert.AreEqual(Convert.ToString(100), chart.AxesX[0].AxisMaximum),
+                () => Assert.AreEqual(Convert.ToString(0), chart.AxesY[0].AxisMinimum),
+                () => Assert.AreEqual(Convert.ToString(200), chart.AxesY[0].AxisMaximum));
 
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();

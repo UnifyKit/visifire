@@ -403,6 +403,11 @@ namespace Visifire.Commons
 
         #region Internal Methods
 
+        internal MouseButtonEventHandler GetMouseLeftButtonDownEvent()
+        {
+            return _onMouseLeftButtonDown;
+        }
+
         /// <summary>
         /// Attach events to a visual
         /// </summary>

@@ -659,7 +659,19 @@ namespace Visifire.Charts
             typeof(ChartValueTypes),
             typeof(DataSeries),
             new PropertyMetadata(OnXValueTypePropertyChanged));
-        
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.SelectionEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.SelectionEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty SelectionEnabledProperty = DependencyProperty.Register
+            ("SelectionEnabled",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(false, OnSelectionEnabledPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.ZIndex dependency property.
         /// </summary>
@@ -1598,7 +1610,7 @@ namespace Visifire.Charts
                     Chart chart = Chart as Chart;
 
                     switch (RenderAs)
-                    {
+                    {   
                         case RenderAs.StackedColumn100:
                         case RenderAs.StackedBar100:
                         case RenderAs.StackedArea100:
@@ -1684,6 +1696,20 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the SelectionEnabled property
+        /// </summary>
+        public Boolean SelectionEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(SelectionEnabledProperty);
+            }
+            set
+            {
+                SetValue(SelectionEnabledProperty, value);
+            }
+        }
 
         #endregion
 
@@ -1714,25 +1740,35 @@ namespace Visifire.Charts
 
                             foreach (FrameworkElement fe in Faces.Parts)
                             {
-                                if (fe.Name.StartsWith("AreaBase"))
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
-                                else if (fe.Name.StartsWith("Side"))
-                                    (fe as Shape).Fill = sideBrush;
-                                else if (fe.Name.StartsWith("Top"))
-                                    (fe as Shape).Fill = topBrush;
+                                ElementData ed = fe.Tag as ElementData;
+
+                                if (ed != null)
+                                {
+                                    if (ed.VisualElementName == "AreaBase")
+                                        (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
+                                    else if (ed.VisualElementName == "Side")
+                                        (fe as Shape).Fill = sideBrush;
+                                    else if (ed.VisualElementName =="Top")
+                                        (fe as Shape).Fill = topBrush;
+                                }
                             }
                         }
                         else
                         {   
                             foreach (FrameworkElement fe in Faces.Parts)
                             {
-                                if (fe.Name.StartsWith("AreaBase"))
+                                ElementData ed = fe.Tag as ElementData;
+
+                                if (ed != null)
                                 {
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
-                                }
-                                else if (fe.Name.StartsWith("Bevel"))
-                                {
-                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
+                                    if (ed.VisualElementName == "AreaBase")
+                                    {
+                                        (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
+                                    }
+                                    else if (ed.VisualElementName == "Bevel")
+                                    {
+                                        (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
+                                    }
                                 }
                             }
                         }
@@ -2405,12 +2441,67 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnXValueTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             DataSeries dataSeries = d as DataSeries;
             dataSeries.InternalXValueType = (ChartValueTypes) e.NewValue;
             dataSeries.FirePropertyChanged("XValueType");
         }
-        
+
+        /// <summary>
+        /// SelectionEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSelectionEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            DataSeries dataSeries = d as DataSeries;
+
+            if (!dataSeries._isSelectedEventAttached)
+            {
+                //dataSeries.IsNotificationEnable = false;
+                MouseButtonEventHandler event1 = dataSeries.GetMouseLeftButtonDownEvent();
+
+                if(event1 != null)
+                    dataSeries.IsNotificationEnable = false;
+
+                dataSeries._isSelectedEventAttached = true;
+                dataSeries.MouseLeftButtonDown += new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.IsNotificationEnable = true;
+            }
+            else
+            {
+                dataSeries.IsNotificationEnable = false;
+                dataSeries.MouseLeftButtonDown -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.IsNotificationEnable = true;
+                dataSeries._isSelectedEventAttached = false;
+            }
+
+            if (!dataSeries.SelectionEnabled)
+            {
+                foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                {
+                    //dp.IsNotificationEnable = false;
+                    dp.DeSelect(dp);
+                    //dp.IsNotificationEnable = true;
+                }
+            }
+
+            dataSeries.AttachOrDetachIntaractivity();
+
+            // dataSeries.FirePropertyChanged("SelectionEnabled");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        static void dataSeries_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DataPoint dp = sender as DataPoint;
+            dp.Selected = (dp.Parent != null && dp.Parent.SelectionEnabled) ? !dp.Selected : false;
+        }
+
         /// <summary>
         /// ZIndexProperty changed call back function
         /// </summary>
@@ -2457,7 +2548,7 @@ namespace Visifire.Charts
 
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
                         {
-                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + this.GetHashCode().ToString());
+                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
                             dataPoint._isAutoName = true;
                         }
                         else
@@ -2560,6 +2651,65 @@ namespace Visifire.Charts
             }
         }
 
+#if WPF
+
+        internal void DetachOpacityPropertyFromAnimation()
+        {
+            foreach (DataPoint dp in InternalDataPoints)
+            {
+                if (dp.Faces != null)
+                {
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut))
+                    {
+                        foreach (FrameworkElement fe in dp.Faces.VisualComponents)
+                        {
+                            InteractivityHelper.DetachOpacityPropertyFromAnimation(fe, Opacity * dp.Opacity);
+                        }
+                    }
+                }
+            }
+        }
+
+#endif
+
+        /// <summary>
+        /// Attach or detach DataPoint selection intaractivity
+        /// </summary>
+        internal void AttachOrDetachIntaractivity()
+        {   
+            foreach (DataPoint dp in InternalDataPoints)
+            {
+                if (dp.Faces != null)
+                {
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut))
+                    {
+                        foreach (FrameworkElement fe in dp.Faces.VisualComponents)
+                        {
+                            if (SelectionEnabled)
+                                InteractivityHelper.ApplyOnMouseOverOpacityInteractivity2Visuals(fe);
+                            else 
+                                InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(fe, Opacity * dp.Opacity);
+                        }
+                    }
+                    else
+                    {   
+                        if(SelectionEnabled)
+                            InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Faces.Visual);
+                        else
+                            InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Faces.Visual, Opacity * dp.Opacity);
+                    }
+                }
+
+                if (dp.Marker != null && dp.Marker.Visual != null)
+                {
+                    if (SelectionEnabled)
+                        InteractivityHelper.ApplyOnMouseOverOpacityInteractivity(dp.Marker.Visual);
+                    else if (!(Chart as Chart).ChartArea._isFirstTimeRender)
+                        InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Marker.Visual, Opacity * dp.Opacity);
+                }
+            }
+        }
+
         #endregion
 
         #region Internal Events
@@ -2567,6 +2717,11 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        /// <summary>
+        /// Whether event attached for DataPoint selection
+        /// </summary>
+        internal Boolean _isSelectedEventAttached = false;
 
         /// <summary>
         /// Internal color holds color from theme

@@ -599,7 +599,7 @@ namespace Visifire.Charts
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
             da.BeginTime = TimeSpan.FromSeconds(begin);
 #if WPF
-            target.SetValue(NameProperty, target.GetType().Name + target.GetHashCode().ToString());
+            target.SetValue(NameProperty, target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_'));
             Storyboard.SetTargetName(da, target.GetValue(NameProperty).ToString());
 
             Chart._rootElement.RegisterName((string)target.GetValue(NameProperty), target);

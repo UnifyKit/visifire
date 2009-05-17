@@ -188,9 +188,9 @@ namespace Visifire.Charts
 
             if (StyleDictionary == null)
                 LoadTheme("Theme1", false);
-#if SL
+
             LoadOrUpdateColorSets();
-#endif
+
             LoadToolTips();
 
             SetMarginOfElements();
@@ -347,7 +347,7 @@ namespace Visifire.Charts
             ("ColorSets",
             typeof(ColorSets),
             typeof(Chart),
-            null);
+            new PropertyMetadata(new ColorSets(), null));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.LightingEnabled dependency property.
@@ -415,6 +415,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
         /// </returns>
+        [Obsolete]
         public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
             ("MinimumGap",
             typeof(Nullable<Double>),
@@ -427,14 +428,12 @@ namespace Visifire.Charts
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
 #endif
+        [Obsolete]
         public Nullable<Double> MinimumGap
         {
             get
             {
-                if ((Nullable<Double>)GetValue(MinimumGapProperty) == null)
-                    return 30;
-                else
-                    return (Nullable<Double>)GetValue(MinimumGapProperty);
+                return (Nullable<Double>)GetValue(MinimumGapProperty);
             }
             set
             {
@@ -813,7 +812,10 @@ namespace Visifire.Charts
         /// </summary>
         private void Init()
         {
+            // Initialize colorSets
             //ColorSets = new ColorSets();
+
+            // Initialize tooltip
             ToolTips = new ToolTipCollection();
 
             // Initialize title list
@@ -857,9 +859,6 @@ namespace Visifire.Charts
 
             // Attach event handler on collection changed event with AxisY collection
             (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
-
-            // Initialize Internal ColorSet list
-            InternalColorSets = new ColorSets();
         }
 
         /// <summary>
@@ -1136,7 +1135,7 @@ namespace Visifire.Charts
 
                         if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
                         {
-                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + ds.GetHashCode().ToString());
+                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
                             ds._isAutoName = true;
                         }
                         else
@@ -1207,33 +1206,30 @@ namespace Visifire.Charts
                         if (EmbeddedColorSets == null)
                             System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
-                        if (InternalColorSets == null)
-                            InternalColorSets = new ColorSets();
+                        //if (InternalColorSets == null)
+                        //    InternalColorSets = new ColorSets();
 
-                        if (EmbeddedColorSets != null)
-                            InternalColorSets.AddRange(EmbeddedColorSets);
+                        //if (EmbeddedColorSets != null)
+                        //    InternalColorSets.AddRange(EmbeddedColorSets);
 
-                        if (ColorSets != null)
-                            InternalColorSets.AddRange(ColorSets);
-                        //foreach (ColorSet colorSet in ColorSets)
-                        //    InternalColorSets.Add(colorSet);
+                        //if (ColorSets != null)
+                        //    InternalColorSets.AddRange(ColorSets);
 
                         reader.Close();
                         s.Close();
                     }
                 }
             }
-            else
-            {
-                InternalColorSets.Clear();
+            //else
+            //{
+            //    InternalColorSets.Clear();
 
-                if (EmbeddedColorSets != null)
-                    InternalColorSets.AddRange(EmbeddedColorSets);
+            //    if (EmbeddedColorSets != null)
+            //        InternalColorSets.AddRange(EmbeddedColorSets);
 
-                if (ColorSets != null)
-                    InternalColorSets.AddRange(ColorSets);
-            }
-
+            //    if (ColorSets != null)
+            //        InternalColorSets.AddRange(ColorSets);
+            //}
         }
 
         /// <summary>
@@ -1373,7 +1369,7 @@ namespace Visifire.Charts
                 if (_rootElement != null)
                 {
                     // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
-                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(this, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
+                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                     ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.IsHitTestVisible = false;
@@ -1781,15 +1777,6 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
-        /// <summary>
-        /// Set of colors that will be used for the InternalDataPoints
-        /// </summary>
-        internal ColorSets InternalColorSets
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Collection of DataSeries
@@ -1859,6 +1846,21 @@ namespace Visifire.Charts
         #endregion
         
         #region Internal Methods
+
+        /// <summary>
+        /// Get ColorSet by ColorSet name
+        /// </summary>
+        /// <param name="id">Name of the ColorSet</param>
+        /// <returns></returns>
+        internal ColorSet GetColorSetByName(String id)
+        {
+            ColorSet colorSet = EmbeddedColorSets.GetColorSetByName(id);
+
+            if (ColorSets != null && colorSet == null)
+                colorSet = ColorSets.GetColorSetByName(id);
+            
+            return colorSet;
+        }
 
         /// <summary>
         /// Fire Rendered event
@@ -2034,11 +2036,8 @@ namespace Visifire.Charts
 
                 try
                 {
-#if WPF
-                    // WPF supports Dynamic Styling. So need to update ColorSets. 
-                    LoadOrUpdateColorSets();
-#endif
                     PrepareChartAreaForDrawing();
+
                     ChartArea.Draw(this);
                 }
                 catch (Exception e)

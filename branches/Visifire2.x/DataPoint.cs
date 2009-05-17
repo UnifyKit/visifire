@@ -190,6 +190,18 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.Selected dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.Selected dependency property.
+        /// </returns>
+        public static readonly DependencyProperty SelectedProperty = DependencyProperty.Register
+            ("Selected",
+            typeof(Boolean),
+            typeof(DataPoint),
+            new PropertyMetadata(OnSelectedChanged));
+        
+        /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.HrefTarget dependency property.
         /// </summary>
         /// <returns>
@@ -684,6 +696,24 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or set the Selected property of DataPoint
+        /// </summary>
+        public Boolean Selected
+        {
+            get
+            {
+                if (Parent != null)
+                    return ((Boolean)GetValue(SelectedProperty) & Parent.SelectionEnabled);
+                else
+                    return (Boolean)GetValue(SelectedProperty);
+            }
+            set
+            {
+                SetValue(SelectedProperty, value);
+            }
+        }
+
+        /// <summary>
         /// Get or set the Href property of DataPoint
         /// </summary>
         public String Href
@@ -742,7 +772,7 @@ namespace Visifire.Charts
                 {
                     base.Cursor = value;
 
-                    if (Faces != null || this.Parent.Faces != null || this.Marker != null)
+                    if (Faces != null || (this.Parent != null && this.Parent.Faces != null) || this.Marker != null)
                         SetCursor2DataPointVisualFaces();
                     else                  
                         FirePropertyChanged("Cursor");
@@ -1844,6 +1874,31 @@ namespace Visifire.Charts
         #region Private Methods
 
         /// <summary>
+        /// SelectedProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+
+            if (dataPoint.Parent == null)
+                return;
+
+            Boolean selected = (Boolean)e.NewValue & dataPoint.Parent.SelectionEnabled;
+
+            if (selected)
+            {
+                dataPoint.Select();
+                dataPoint.DeSelectOthers();
+            }
+            else
+                dataPoint.DeSelect(dataPoint);
+
+            // dataPoint.FirePropertyChanged("Selected");
+        }
+
+        /// <summary>
         /// HrefTargetProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2331,6 +2386,86 @@ namespace Visifire.Charts
             dataPoint.FirePropertyChanged("RadiusY");
         }
 
+        internal void DeSelectOthers()
+        {
+            if (Parent != null)
+            {
+                foreach (DataPoint dp in Parent.DataPoints)
+                {
+                    if (dp != this)
+                        dp.DeSelect(dp);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Select a DataPoint visually
+        /// </summary>
+        internal void Select()
+        {
+            if (Faces != null)
+            {
+                foreach (Shape shape in Faces.BorderElements)
+                {
+                    BorderStyles borderStyle = BorderStyles.Dashed;
+                    Double borderThickness = 1.5;
+
+                    if(Parent != null)
+                    {
+                        if ( (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut) && (Chart as Chart).View3D)
+                        {   
+                            borderStyle = BorderStyles.Dotted;
+                        }
+
+                        if ((Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Bar) && !(Chart as Chart).View3D)
+                        {
+                            borderThickness = 1.5;
+                            //borderStyle = BorderStyles.Dotted;
+                        }
+                    }
+                                        
+                    Brush borderColor = Visifire.Charts.Chart.CalculateDataPointLabelFontColor(Chart as Chart, this, null, LabelStyles.OutSide);
+
+                    InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);            
+                }
+            }
+            else if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            {
+                InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, new SolidColorBrush(Colors.Red), 1.2, 2.4, new SolidColorBrush(Colors.Orange));
+                Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
+            }
+        }
+
+        /// <summary>
+        /// Deselect a DataPoint visually
+        /// </summary>
+        internal void DeSelect(DataPoint dataPoint)
+        {
+            if (Faces != null)
+            {   
+                foreach (Shape shape in Faces.BorderElements)
+                {
+                    if(dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie ||dataPoint.Parent.RenderAs == RenderAs.Doughnut))
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, 0, BorderColor);
+                    else
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left,BorderColor);
+
+                    IsNotificationEnable = false;
+                    Selected = false;
+                    IsNotificationEnable = true;
+                }
+            }
+            else if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            {   
+                InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
+                Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                
+                IsNotificationEnable = false;
+                Selected = false;
+                IsNotificationEnable = true;
+            }
+        }
+
         /// <summary>
         /// Returns cursor type of the DataPoint
         /// </summary>
@@ -2719,6 +2854,7 @@ namespace Visifire.Charts
         /// Whether name for DataPoint is generated automatically
         /// </summary>
         internal Boolean _isAutoName = true;
+
 #if WPF
         /// <summary>
         /// Whether the default style is applied

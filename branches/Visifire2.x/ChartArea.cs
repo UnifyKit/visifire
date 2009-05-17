@@ -152,6 +152,36 @@ namespace Visifire.Charts
             RetainOldScrollOffsetOfScrollViewer();
 
             Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
+
+            AttachOrDetachIntaractivity(chart);          
+
+        }
+
+        private void SelectedDataPoints(Chart chart)
+        {
+            foreach (DataSeries ds in chart.InternalSeries)
+            {
+                if (ds.SelectionEnabled)
+                {
+                    foreach (DataPoint dp in ds.DataPoints)
+                    {
+                        if (dp.Selected)
+                        {
+                            dp.Select();
+                            dp.DeSelectOthers();
+                        }
+                        else
+                            dp.DeSelect(dp);
+                    }
+                }
+            }
+        }
+
+
+        public void AttachOrDetachIntaractivity(Chart chart)
+        {
+            foreach (DataSeries ds in chart.InternalSeries)
+                ds.AttachOrDetachIntaractivity();
         }
 
         #endregion
@@ -1103,7 +1133,7 @@ namespace Visifire.Charts
             {   
                 // singlePlotWidth helps to generate PlotArea width inside scrollviewer.
                 // Viewport can be divided into one or more than one plots. Default value is 30 pixels.
-                Double singlePlotWidth = 10;
+                // Double singlePlotWidth = 10;
 
                 /* The following codes are for maintaining Scale of Axis
                  * 
@@ -1116,14 +1146,14 @@ namespace Visifire.Charts
                     }
                 */
 
-                if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
-                    singlePlotWidth = (Double)Chart.MinimumGap;
+                //if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
+                //    singlePlotWidth = (Double)Chart.MinimumGap;
 
                 if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                 {   
                     if (Chart.InternalSeries.Count > 0)
                     {
-                        chartSize = CalculatePlotAreaAutoSize(singlePlotWidth);
+                        chartSize = CalculatePlotAreaAutoSize(chartSize);
                     }
                 }
 
@@ -1137,7 +1167,7 @@ namespace Visifire.Charts
 
                     if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                     {
-                        if (chartSize < newSize.Width)
+                        if (chartSize <= newSize.Width)
                             chartSize = newSize.Width;
                         else
                             Chart.IsScrollingActivated = true;
@@ -1148,7 +1178,7 @@ namespace Visifire.Charts
 
                     if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                     {
-                        if(chartSize < newSize.Height)
+                        if(chartSize <= newSize.Height)
                             chartSize = newSize.Height;
                         else
                             Chart.IsScrollingActivated = true;
@@ -1171,18 +1201,40 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="minGap">MinGap value between datapoints</param>
         /// <returns>Auto PlotArea size</returns>
-        private Double CalculatePlotAreaAutoSize(Double minGap)
+        private Double CalculatePlotAreaAutoSize(Double currentSize)
         {
             Double chartSize;
 
-            if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
-            {   
-                //TimeSpan dateRange = AxisX.MaxDate.Subtract(AxisX.MinDate);
-                Double maxNoOfDataPoint = ((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
-                chartSize = minGap * maxNoOfDataPoint;
+            if ((Chart as Chart).MinimumGap != null)
+            {
+                //if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
+                //{
+                //    //TimeSpan dateRange = AxisX.MaxDate.Subtract(AxisX.MinDate);
+                //    Double maxNoOfDataPoint = ((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                //    chartSize =(Double) (Chart as Chart).MinimumGap * maxNoOfDataPoint;
+                //}
+                //else
+                    chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
             }
             else
-                chartSize = minGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
+            {
+                Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
+                Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
+
+                Double maxDiff = maxXValue - minXValue;
+
+                Double magicNumber = currentSize * 34 / ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor));
+
+                if (maxDiff / minDiff > magicNumber)
+                {
+                    chartSize = (maxDiff / minDiff) * ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor)) / 34;
+                }
+                else
+                {
+                    chartSize = currentSize;
+                }
+            }
 
             return chartSize;
         }
@@ -1890,19 +1942,20 @@ namespace Visifire.Charts
                             {
                                 _isAnimationFired = true;
                                 Chart._rootElement.IsHitTestVisible = true;
+                                SelectedDataPoints(Chart);
                             };
 #if WPF
                         if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                         {
                             series.Storyboard.Completed += delegate(object sender, EventArgs e)
                             {
-                                
+                                series.DetachOpacityPropertyFromAnimation();
+
                                 foreach (DataPoint dataPoint in series.InternalDataPoints)
                                 {
                                     if ((Boolean)dataPoint.Exploded)
                                         dataPoint.InteractiveAnimation();
                                 }
-                                
                             };
                         }
                         
@@ -2000,6 +2053,8 @@ namespace Visifire.Charts
             }
         }
 
+      
+
         /// <summary>
         /// Set dataPoint colors from ColorSet
         /// </summary>
@@ -2011,14 +2066,14 @@ namespace Visifire.Charts
             // Load chart colorSet
             if (!String.IsNullOrEmpty(Chart.ColorSet))
             {
-                colorSet = Chart.InternalColorSets.GetColorSetByName(Chart.ColorSet);
+                colorSet = Chart.GetColorSetByName(Chart.ColorSet);
             }
 
             if (series.Count == 1)
-            {
+            {   
                 if (!String.IsNullOrEmpty(series[0].ColorSet))
                 {
-                    colorSet = Chart.InternalColorSets.GetColorSetByName(series[0].ColorSet);
+                    colorSet = Chart.GetColorSetByName(series[0].ColorSet);
 
                     if (colorSet == null)
                         throw new Exception("ColorSet named " + series[0].ColorSet + " is not found.");
@@ -2031,7 +2086,7 @@ namespace Visifire.Charts
                 Brush seriesColor = series[0].GetValue(DataSeries.ColorProperty) as Brush;
 
                 if (series[0].RenderAs == RenderAs.Area || series[0].RenderAs == RenderAs.Line || series[0].RenderAs == RenderAs.StackedArea || series[0].RenderAs == RenderAs.StackedArea100)
-                {
+                {   
                     if (seriesColor == null)
                         series[0]._internalColor = colorSet.GetNewColorFromColorSet();
                     else
@@ -2094,7 +2149,7 @@ namespace Visifire.Charts
 
                     if (!String.IsNullOrEmpty(ds.ColorSet))
                     {
-                        colorSet4MultiSeries = Chart.InternalColorSets.GetColorSetByName(ds.ColorSet);
+                        colorSet4MultiSeries = Chart.GetColorSetByName(ds.ColorSet);
 
                         if (colorSet4MultiSeries == null)
                             throw new Exception("ColorSet named " + ds.ColorSet + " is not found.");
@@ -3093,11 +3148,14 @@ namespace Visifire.Charts
             Animate();
 
             Chart._internalAnimationEnabled = false;
-            
+
+            if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
+                SelectedDataPoints(Chart);
+
             Chart.FireRenderedEvent();
 
             _isFirstTimeRender = false;
-            
+
             System.Diagnostics.Debug.WriteLine("Loaded() >");
         }
 

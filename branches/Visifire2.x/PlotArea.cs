@@ -738,8 +738,8 @@ namespace Visifire.Charts
         /// <returns>Border</returns>
         internal Border GetNewBorderElement()
         {
-            BorderElement = new Border() { Tag = this };
-            LightingBorder = new Border() { Tag = this };
+            BorderElement = new Border() { Tag = new ElementData() { Element = this } };
+            LightingBorder = new Border() { Tag = new ElementData() { Element = this } };
 
             BevelGrid = new Grid();
             BevelGrid.Children.Add(LightingBorder);

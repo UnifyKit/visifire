@@ -829,7 +829,7 @@ namespace Visifire.Charts
 
             if (Double.IsNaN(interval) || interval <= 0)
                 interval = ParentAxis.InternalInterval;
-            
+
             // Set the begining of the axis labels same as that of the Axis Minimum.
             Decimal index = (Decimal)Minimum;
 
@@ -843,33 +843,54 @@ namespace Visifire.Charts
 
             // if the axis labels belong to axis x
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
-            {   
+            {
                 // if the data minimum - interval is less than the actual minimum
-                if ((DataMinimum - interval) < Minimum)
-                    index = (Decimal)DataMinimum;
-                    
+
+                if (Double.IsNaN((Double)Parent.AxisMinimumNumeric))
+                {
+                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
+                    {
+                        index = (Decimal)ParentAxis.FirstLabelPosition;
+                    }
+                    else
+                    {
+                        if ((DataMinimum - Minimum) / interval >= 1)
+                            index = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
+                        else
+                            index = (Decimal)DataMinimum;
+                    }
+                }
+
+                //if (ParentAxis.SkipOfset > 0)
+                //{
+                //    if ((Double)Parent.AxisMinimum < DataMinimum)
+                //        index = (Decimal)DataMinimum;
+                //}
+
+
+
                 if (AllAxisLabels && AxisLabelContentDictionary.Count > 0)
-                {   
+                {
                     Dictionary<Double, String>.Enumerator enumerator = AxisLabelContentDictionary.GetEnumerator();
                     enumerator.MoveNext();
 
                     Int32 dictionaryIndex = 0;
-                    index = (Decimal)enumerator.Current.Key;
+                    //index = (Decimal)enumerator.Current.Key;
 
                     for (; dictionaryIndex < AxisLabelContentDictionary.Count - 1; dictionaryIndex++)
-                    {   
+                    {
                         enumerator.MoveNext();
-                        index = Math.Min(index, (Decimal)enumerator.Current.Key);
+                        //index = Math.Min(index, (Decimal)enumerator.Current.Key);
                     }
 
                     enumerator.Dispose();
-                }   
-                
+                }
+
                 minval = index;
 
                 if (minval != maxVal)
                 {
-                    if(!Double.IsNaN(TextWrap))
+                    if (!Double.IsNaN(TextWrap))
                         CalculatAvgWidthOfAChar();
 
                     for (; index <= maxVal; index = minval + (++count) * gap)
@@ -889,14 +910,14 @@ namespace Visifire.Charts
                         else
                         {
                             if (ParentAxis.XValueType == ChartValueTypes.Date)
-                            {   
+                            {
                                 DateTime dt = ParentAxis.MinDate;
                                 Decimal tempIndex = index;
 
                                 if (ParentAxis._isAllXValueZero)
                                     tempIndex--;
 
-                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
                                 //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
 
                                 //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
@@ -908,37 +929,37 @@ namespace Visifire.Charts
                             {
                                 DateTime dt = ParentAxis.MinDate;
                                 Decimal tempIndex = index;
-                                
+
                                 System.Diagnostics.Debug.WriteLine("Index=" + index.ToString());
                                 if (ParentAxis._isAllXValueZero)
                                     tempIndex--;
 
-                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
                                 labelContent = FormatDate(dt, ParentAxis);
                             }
                             else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
-                            {   
+                            {
                                 DateTime dt = ParentAxis.MinDate;
                                 Decimal tempIndex = index;
-                                
+
                                 if (ParentAxis._isAllXValueZero)
                                     tempIndex--;
 
-                                dt = DateTimeHelper.UpdateDate(dt, (Double)tempIndex, ParentAxis.InternalIntervalType);
+                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
 
-                                if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years 
+                                if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years
                                     || ParentAxis.IntervalType == IntervalTypes.Months || ParentAxis.InternalIntervalType == IntervalTypes.Months
                                     || ParentAxis.IntervalType == IntervalTypes.Weeks || ParentAxis.InternalIntervalType == IntervalTypes.Weeks
                                     || ParentAxis.IntervalType == IntervalTypes.Days || ParentAxis.InternalIntervalType == IntervalTypes.Days
                                     )
                                     dt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
-                             
+
                                 labelContent = FormatDate(dt, ParentAxis);
                             }
                             else
                                 labelContent = GetFormattedString((Double)index);
                         }
-                        
+
                         AxisLabel label = CreateLabel(labelContent);
 
                         AxisLabelList.Add(label);
@@ -946,14 +967,14 @@ namespace Visifire.Charts
                     }
                 }
                 else
-                {   
+                {
                     return false;
                 }
             }
             else
-            {   
+            {
                 if (minval != maxVal)
-                {   
+                {
                     AxisLabel label;
 
                     // Create and save the first label
@@ -980,7 +1001,7 @@ namespace Visifire.Charts
                     LabelValues.Add(Maximum);
                 }
                 else
-                {   
+                {
                     return false;
                 }
             }
@@ -1606,7 +1627,7 @@ namespace Visifire.Charts
 
                     Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
-                    if (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval))
+                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| ParentAxis.IntervalType == IntervalTypes.Auto ))
                         ParentAxis.SkipOfset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
                     else
                         ParentAxis.SkipOfset = 0;
@@ -1789,11 +1810,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-
-        /// <summary>
-        /// Max width of the label allowed to wrap
-        /// </summary>
-        private Double _maxLabelWidthAllowed4Wrap;
 
         /// <summary>
         /// Saved max row height
