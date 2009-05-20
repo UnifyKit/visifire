@@ -1245,7 +1245,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the axis skip offset
         /// </summary>
-        internal Int32 SkipOfset
+        internal Int32 SkipOffset
         {
             get;
             set;
@@ -1846,10 +1846,9 @@ namespace Visifire.Charts
             AxisManager.Calculate();
 
             // Set axis specific limits based on axis limits.
-
-            //if (AxisRepresentation == AxisRepresentations.AxisX && !(Boolean)StartFromZero)
-            //    if (!SetAxesXLimits())
-            //        return;
+            // if (AxisRepresentation == AxisRepresentations.AxisX && !(Boolean)StartFromZero)
+            //      if (!SetAxesXLimits())
+            //          return;
 
             if (AxisRepresentation == AxisRepresentations.AxisX)
                 if (!SetAxesXLimits())
@@ -2457,75 +2456,8 @@ namespace Visifire.Charts
         private bool SetAxisLimitForMinimumGap()
         {
             Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
-            // Double gap;
             Double minValue = minimumDifference;
 
-            //if (Double.IsNaN(minimumDifference) || minimumDifference <= 0)
-            //{
-            //    minValue = AxisManager.Interval;
-            //}
-            //else
-            //{
-            //    minValue = ((minimumDifference < AxisManager.Interval) ? minimumDifference : AxisManager.Interval);
-            //    minValue = minimumDifference;
-            //}
-
-            //Double dataAxisDifference = Math.Abs(AxisManager.AxisMinimumValue - Minimum) * 2;
-            //Double dataMinimumGap = 0;
-
-
-            //DataSeries ds = new DataSeries();
-
-            //if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            //{
-            //    dataMinimumGap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference + AxisManager.AxisMinimumValue);
-
-            //    if (PlotDetails.DrawingDivisionFactor != 0)
-            //        gap = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue + AxisManager.AxisMinimumValue) / PlotDetails.DrawingDivisionFactor;
-            //    else
-            //        gap = Math.Abs(dataMinimumGap) * (.1 / 2);
-            //}
-            //else
-            //{
-            //    dataMinimumGap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, dataAxisDifference + AxisManager.AxisMinimumValue);
-
-            //    if (PlotDetails.DrawingDivisionFactor != 0)
-            //        gap = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue + AxisManager.AxisMinimumValue) / PlotDetails.DrawingDivisionFactor;
-            //    else
-            //        gap = Math.Abs(dataMinimumGap) * (1.1 / 2);
-            //}
-
-            //if (PlotDetails.DrawingDivisionFactor != 0)
-            //    gap = Math.Min(gap, Math.Abs(Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, minValue + AxisManager.AxisMinimumValue))) * 1.1 * PlotDetails.DrawingDivisionFactor / 2;
-
-            //if (gap == 0)
-            //    if (dataAxisDifference != 0)
-            //        return false;
-
-            //if (AxisOrientation == Orientation.Horizontal)
-            //{
-            //    if (Double.IsNaN((Double)AxisMinimum))
-            //    {
-            //        Double value = Graphics.ValueToPixelPosition(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, Minimum);
-            //        AxisManager.AxisMinimumValue = Graphics.PixelPositionToValue(0, Width, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, value - gap);
-            //    }
-            //    else
-            //    {
-            //        AxisManager.AxisMinimumValue = (Double)AxisMinimum;
-            //    }
-            //}
-            //else
-            //{
-            //    if (Double.IsNaN((Double)AxisMinimum))
-            //    {
-            //        Double value = Graphics.ValueToPixelPosition(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, Minimum);
-            //        AxisManager.AxisMinimumValue = Graphics.PixelPositionToValue(0, Height, AxisManager.AxisMinimumValue, AxisManager.AxisMaximumValue, value - gap);
-            //    }
-            //    else
-            //    {
-            //        AxisManager.AxisMinimumValue = (Double)AxisMinimum;
-            //    }
-            //}
 
             if (minValue == 0)
                 minValue = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) * .8;
@@ -2549,20 +2481,7 @@ namespace Visifire.Charts
             {
                 if (PlotDetails.DrawingDivisionFactor != 0)
                 {
-                    //if (Double.IsNaN((Double)Interval))
-                    //    AxisManager.AxisMinimumValue = AxisManager.MinimumValue - (minValue) / 2 * 1.1;
-                    //else
-                    //{
-                    //    if (Interval.Value > AxisManager.MinimumValue - (minValue) / 2 * 1.1)
-                    //        AxisManager.AxisMinimumValue = AxisManager.MinimumValue - Interval.Value;
-                    //    else
-                    //    {
-
-                    //AxisManager.AxisMinimumValue = AxisManager.MinimumValue - Math.Ceiling((minValue / 2 * 1.1) / Interval.Value) * Interval.Value;
                     AxisManager.AxisMinimumValue = AxisManager.MinimumValue - (minValue / 2 * 1.1);
-
-                    //    }
-                    //}
                 }
                 else
                 {
@@ -2576,7 +2495,6 @@ namespace Visifire.Charts
 
                     startDate = DateTimeHelper.AlignDateTime(MinDate, InternalInterval, InternalIntervalType);
 
-                    //startDate = DateTimeHelper.UpdateDate(MinDate, -InternalInterval, InternalIntervalType);
                     start = DateTimeHelper.DateDiff(startDate, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
 
                     if (AxisManager.AxisMinimumValue > start)
@@ -2588,7 +2506,6 @@ namespace Visifire.Charts
                         if ((start - AxisManager.AxisMinimumValue) / InternalInterval >= 1)
                             start = (start - Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval) * InternalInterval);
 
-                        //start = DateTimeHelper.DateDiff( DateTimeHelper.AlignDateTime(DateTimeHelper.XValueToDateTime(MinDate, start, InternalIntervalType), InternalInterval, InternalIntervalType),MinDate,MinDateRange,MaxDateRange,InternalIntervalType,XValueType);
                     }
 
                     FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, start, InternalIntervalType);
@@ -2623,9 +2540,6 @@ namespace Visifire.Charts
             {
                 AxisManager.AxisMaximumValue = (Double)AxisMaximumNumeric;
             }
-
-            //if(minimumDifference != 0)
-            //AxisManager.Calculate();
 
             return true;
         }

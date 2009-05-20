@@ -673,6 +673,18 @@ namespace Visifire.Charts
             new PropertyMetadata(false, OnSelectionEnabledPropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.SelectionMode dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.SelectionMode dependency property.
+        /// </returns>
+        public static readonly DependencyProperty SelectionModeProperty = DependencyProperty.Register
+            ("SelectionMode",
+            typeof(SelectionModes),
+            typeof(DataSeries),
+            new PropertyMetadata(OnSelectionModePropertyChanged));
+        
+        /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.ZIndex dependency property.
         /// </summary>
         /// <returns>
@@ -1711,6 +1723,21 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the SelectionMode property
+        /// </summary>
+        public SelectionModes SelectionMode
+        {
+            get
+            {
+                return (SelectionModes)GetValue(SelectionModeProperty);
+            }
+            set
+            {
+                SetValue(SelectionModeProperty, value);
+            }
+        }
+
         #endregion
 
         #region Public Events
@@ -2452,26 +2479,38 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSelectionModePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+
+            if((SelectionModes)e.NewValue == SelectionModes.Single)
+                Visifire.Charts.Chart.SelectDataPoints(dataSeries.Chart as Chart);
+        }
+
+        /// <summary>
+        /// SelectionEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnSelectionEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             DataSeries dataSeries = d as DataSeries;
 
             if (!dataSeries._isSelectedEventAttached)
             {
-                //dataSeries.IsNotificationEnable = false;
                 MouseButtonEventHandler event1 = dataSeries.GetMouseLeftButtonDownEvent();
 
                 if(event1 != null)
                     dataSeries.IsNotificationEnable = false;
 
                 dataSeries._isSelectedEventAttached = true;
-                dataSeries.MouseLeftButtonDown += new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.MouseLeftButtonUp += new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
                 dataSeries.IsNotificationEnable = true;
             }
             else
             {
                 dataSeries.IsNotificationEnable = false;
-                dataSeries.MouseLeftButtonDown -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.MouseLeftButtonUp -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
                 dataSeries.IsNotificationEnable = true;
                 dataSeries._isSelectedEventAttached = false;
             }
@@ -2479,17 +2518,15 @@ namespace Visifire.Charts
             if (!dataSeries.SelectionEnabled)
             {
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
-                {
-                    //dp.IsNotificationEnable = false;
+                {   
                     dp.DeSelect(dp);
-                    //dp.IsNotificationEnable = true;
                 }
             }
 
             dataSeries.AttachOrDetachIntaractivity();
-
-            // dataSeries.FirePropertyChanged("SelectionEnabled");
         }
+
+
 
         /// <summary>
         /// 

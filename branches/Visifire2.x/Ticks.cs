@@ -575,7 +575,7 @@ namespace Visifire.Charts
                     }
 
                     Visual.Children.Add(line);
-                    index += (ParentAxis.SkipOfset +1);
+                    index += (ParentAxis.SkipOffset +1);
                     xValue = minval + index * gap;
                 }
             }

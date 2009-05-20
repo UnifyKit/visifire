@@ -1890,12 +1890,12 @@ namespace Visifire.Charts
             if (selected)
             {
                 dataPoint.Select();
-                dataPoint.DeSelectOthers();
+
+                if(dataPoint.Parent.SelectionMode == SelectionModes.Single)
+                    dataPoint.DeSelectOthers();
             }
             else
                 dataPoint.DeSelect(dataPoint);
-
-            // dataPoint.FirePropertyChanged("Selected");
         }
 
         /// <summary>
@@ -2059,7 +2059,6 @@ namespace Visifire.Charts
             if (dataPoint.Parent != null && dataPoint.Parent.Chart != null && (dataPoint.Parent.Chart as Chart).ChartArea != null && (dataPoint.Chart as Chart).ChartArea._isAnimationFired && (dataPoint.Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
             {
                 dataPoint.ExplodeOrUnexplodeAnimation();
-
             }
         }
 
@@ -2405,14 +2404,16 @@ namespace Visifire.Charts
         {
             if (Faces != null)
             {
+                UpdateExplodedPropertyForSelection(true);
+
                 foreach (Shape shape in Faces.BorderElements)
                 {
                     BorderStyles borderStyle = BorderStyles.Dashed;
                     Double borderThickness = 1.5;
 
                     if(Parent != null)
-                    {
-                        if ( (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut) && (Chart as Chart).View3D)
+                    {   
+                        if((Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut) && (Chart as Chart).View3D)
                         {   
                             borderStyle = BorderStyles.Dotted;
                         }
@@ -2420,7 +2421,6 @@ namespace Visifire.Charts
                         if ((Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Bar) && !(Chart as Chart).View3D)
                         {
                             borderThickness = 1.5;
-                            //borderStyle = BorderStyles.Dotted;
                         }
                     }
                                         
@@ -2442,9 +2442,11 @@ namespace Visifire.Charts
         internal void DeSelect(DataPoint dataPoint)
         {
             if (Faces != null)
-            {   
+            {
+                UpdateExplodedPropertyForSelection(false);
+
                 foreach (Shape shape in Faces.BorderElements)
-                {
+                {   
                     if(dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie ||dataPoint.Parent.RenderAs == RenderAs.Doughnut))
                         InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, 0, BorderColor);
                     else
@@ -2463,6 +2465,21 @@ namespace Visifire.Charts
                 IsNotificationEnable = false;
                 Selected = false;
                 IsNotificationEnable = true;
+            }
+        }
+
+        /// <summary>
+        /// Update exploded property for selection
+        /// </summary>
+        /// <param name="exploded">Exploded</param>
+        private void UpdateExplodedPropertyForSelection(Boolean exploded)
+        {   
+            if (Parent != null && Parent.Chart != null && (Parent.Chart as Chart).ChartArea != null && (Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+            {
+                if (Exploded != exploded)
+                {
+                    Exploded = exploded;
+                }
             }
         }
 
@@ -2670,12 +2687,12 @@ namespace Visifire.Charts
                     _interativityAnimationState = true;
 
                     if (this.UnExplodeAnimation != null)
-                    {
-#if WPF
+                    {   
+#if WPF                 
                         this.UnExplodeAnimation.Begin(Chart._rootElement, true);
-#else
+#else                   
                         this.UnExplodeAnimation.Begin();
-#endif
+#endif                  
                     }
                 }
             }

@@ -21,6 +21,15 @@
 namespace Visifire.Charts
 {
     /// <summary>
+    /// Modes of selection
+    /// </summary>
+    public enum SelectionModes
+    {
+        Single = 0,
+        Multiple = 1
+    }
+
+    /// <summary>
     /// Axis types of a series
     /// </summary>
     public enum ChartValueTypes

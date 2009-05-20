@@ -1848,6 +1848,35 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
+        /// Visually select the DataPoints which are selected
+        /// </summary>
+        /// <param name="chart"></param>
+        internal static void SelectDataPoints(Chart chart)
+        {
+            if (chart == null || chart.InternalSeries == null)
+                return;
+
+            foreach (DataSeries ds in chart.InternalSeries)
+            {
+                if (ds.SelectionEnabled)
+                {   
+                    foreach (DataPoint dp in ds.DataPoints)
+                    {
+                        if (dp.Selected)
+                        {
+                            dp.Select();
+
+                            if (ds.SelectionMode == SelectionModes.Single)
+                                dp.DeSelectOthers();
+                        }
+                        else
+                            dp.DeSelect(dp);
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
         /// Get ColorSet by ColorSet name
         /// </summary>
         /// <param name="id">Name of the ColorSet</param>

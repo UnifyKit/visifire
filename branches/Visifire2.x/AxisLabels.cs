@@ -1355,7 +1355,7 @@ namespace Visifire.Charts
             CalculateHorizontalDefaults();
 
             // Calculate the height of the labels and position them
-            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOfset + 1))
+            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
             {
                 AxisLabel label = AxisLabelList[i];
 
@@ -1591,7 +1591,7 @@ namespace Visifire.Charts
             Size textBlockSize;
 
             Int32 labelIndex = 0;
-            for (labelIndex = 0; labelIndex < AxisLabelList.Count ; labelIndex += (ParentAxis.SkipOfset + 1))
+            for (labelIndex = 0; labelIndex < AxisLabelList.Count ; labelIndex += (ParentAxis.SkipOffset + 1))
             {
                 AxisLabel label = AxisLabelList[labelIndex];
                 textBlock.Text = label.Text;
@@ -1628,9 +1628,9 @@ namespace Visifire.Charts
                     Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
                     if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| ParentAxis.IntervalType == IntervalTypes.Auto ))
-                        ParentAxis.SkipOfset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
+                        ParentAxis.SkipOffset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
                     else
-                        ParentAxis.SkipOfset = 0;
+                        ParentAxis.SkipOffset = 0;
                 }
                 else
                 {

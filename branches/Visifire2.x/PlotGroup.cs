@@ -254,7 +254,7 @@ namespace Visifire.Charts
             // get unique values and then sort it
             Array.Sort(distinctValues);
 
-            if (distinctValues.Length == 1)
+            if (distinctValues.Length <= 1 )
             {
                 return 0;
             }
@@ -265,7 +265,8 @@ namespace Visifire.Charts
                 minDiff = Math.Min(minDiff, Math.Abs(distinctValues[i] - distinctValues[i + 1]));
             }
 
-            // return the minimum difference
+            
+
             return minDiff;
         }
 

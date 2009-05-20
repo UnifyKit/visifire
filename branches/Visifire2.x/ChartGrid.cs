@@ -371,7 +371,7 @@ namespace Visifire.Charts
             Decimal maxVal = (Decimal)Maximum;  // largest value from where the grid must be drawn
 
             // gap between two intervals
-            Decimal gap = (Decimal)interval +( ((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0); 
+            Decimal gap = (Decimal)interval +( ((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOffset : 0); 
             
             Int32 count = 0;                    // counts the number of lines required for alternate colored bands
             Int32 countRectangles = 0;          // counts the number of color bands for animating them alternately in opposite direction

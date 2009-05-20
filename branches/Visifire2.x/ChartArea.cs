@@ -156,32 +156,23 @@ namespace Visifire.Charts
             AttachOrDetachIntaractivity(chart);          
 
         }
-
-        private void SelectedDataPoints(Chart chart)
-        {
-            foreach (DataSeries ds in chart.InternalSeries)
-            {
-                if (ds.SelectionEnabled)
-                {
-                    foreach (DataPoint dp in ds.DataPoints)
-                    {
-                        if (dp.Selected)
-                        {
-                            dp.Select();
-                            dp.DeSelectOthers();
-                        }
-                        else
-                            dp.DeSelect(dp);
-                    }
-                }
-            }
-        }
-
-
+        
+        /// <summary>
+        /// Attach or detach intaractivity for selection
+        /// </summary>
+        /// <param name="chart"></param>
         public void AttachOrDetachIntaractivity(Chart chart)
         {
             foreach (DataSeries ds in chart.InternalSeries)
-                ds.AttachOrDetachIntaractivity();
+            {
+                if (_isFirstTimeRender)
+                { 
+                    if(ds.SelectionEnabled)
+                        ds.AttachOrDetachIntaractivity();
+                }
+                else
+                    ds.AttachOrDetachIntaractivity();
+            }
         }
 
         #endregion
@@ -1218,22 +1209,30 @@ namespace Visifire.Charts
             }
             else
             {
-                Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
-                Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
-                Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
-
-                Double maxDiff = maxXValue - minXValue;
-
-                Double magicNumber = currentSize * 34 / ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor));
-
-                if (maxDiff / minDiff > magicNumber)
+                if (PlotDetails.ListOfAllDataPoints.Count > 0)
                 {
-                    chartSize = (maxDiff / minDiff) * ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor)) / 34;
+                    Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
+                    Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                    Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
+
+                    Double maxDiff = maxXValue - minXValue;
+
+                    Double magicNumber = currentSize * 34 / ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor));
+
+                    if (maxDiff / minDiff > magicNumber)
+                    {
+                        chartSize = (maxDiff / minDiff) * ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor)) / 34;
+                    }
+                    else
+                    {
+                        chartSize = currentSize;
+                    }
                 }
                 else
                 {
                     chartSize = currentSize;
                 }
+
             }
 
             return chartSize;
@@ -1942,7 +1941,7 @@ namespace Visifire.Charts
                             {
                                 _isAnimationFired = true;
                                 Chart._rootElement.IsHitTestVisible = true;
-                                SelectedDataPoints(Chart);
+                                Visifire.Charts.Chart.SelectDataPoints(Chart);
                             };
 #if WPF
                         if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
@@ -3150,7 +3149,7 @@ namespace Visifire.Charts
             Chart._internalAnimationEnabled = false;
 
             if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
-                SelectedDataPoints(Chart);
+                Visifire.Charts.Chart.SelectDataPoints(Chart);
 
             Chart.FireRenderedEvent();
 
