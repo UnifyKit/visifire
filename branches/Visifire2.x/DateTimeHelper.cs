@@ -225,7 +225,7 @@ namespace Visifire.Charts
         /// <param name="type">Current Interval type</param>
         /// <param name="maxInterval">Max Interval</param>
         /// <returns>Calculated auto interval</returns>
-        public static double CalculateAutoInterval(Double width, Double height, Orientation axisOrientation, DateTime minDateTime, DateTime maxDateTime, out IntervalTypes type, Double maxInterval)
+        public static double CalculateAutoInterval(Double width, Double height, Orientation axisOrientation, DateTime minDateTime, DateTime maxDateTime, out IntervalTypes type, Double maxInterval, ChartValueTypes xValueType)
         {   
             TimeSpan timeSpan = maxDateTime.Subtract(minDateTime);
 
@@ -239,123 +239,128 @@ namespace Visifire.Charts
             // TotalMinutes
             double totalMinutes = timeSpan.TotalMinutes;
 
-            // For Range less than 60 seconds interval is 5 sec
-            if (totalMinutes <= 1.0)
-            {   
-                // Milli Seconds
-                double milliSeconds = timeSpan.TotalMilliseconds;
-                if (milliSeconds <= 10)
+            if (xValueType != ChartValueTypes.Date)
+            {
+                // For Range less than 60 seconds interval is 5 sec
+                if (totalMinutes <= 1.0)
                 {
-                    type = IntervalTypes.Milliseconds;
-                    return 1;
+                    // Milli Seconds
+                    double milliSeconds = timeSpan.TotalMilliseconds;
+
+                    if (milliSeconds <= 10)
+                    {
+                        type = IntervalTypes.Milliseconds;
+                        return 1;
+                    }
+                    if (milliSeconds <= 50)
+                    {
+                        type = IntervalTypes.Milliseconds;
+                        return 4;
+                    }
+                    if (milliSeconds <= 200)
+                    {
+                        type = IntervalTypes.Milliseconds;
+                        return 20;
+                    }
+                    if (milliSeconds <= 500)
+                    {
+                        type = IntervalTypes.Milliseconds;
+                        return 50;
+                    }
+
+                    // Seconds
+                    double seconds = timeSpan.TotalSeconds;
+
+                    if (seconds <= 7)
+                    {
+                        type = IntervalTypes.Seconds;
+                        return 1;
+                    }
+                    else if (seconds <= 15)
+                    {
+                        type = IntervalTypes.Seconds;
+                        return 2;
+                    }
+                    else if (seconds <= 30)
+                    {
+                        type = IntervalTypes.Seconds;
+                        return 5;
+                    }
+                    else if (seconds <= 60)
+                    {
+                        type = IntervalTypes.Seconds;
+                        return 10;
+                    }
                 }
-                if (milliSeconds <= 50)
+                else if (totalMinutes <= 2.0)
                 {
-                    type = IntervalTypes.Milliseconds;
-                    return 4;
-                }
-                if (milliSeconds <= 200)
-                {
-                    type = IntervalTypes.Milliseconds;
+                    // Range less than 120 seconds interval is 10 sec
+                    type = IntervalTypes.Seconds;
                     return 20;
                 }
-                if (milliSeconds <= 500)
+                else if (totalMinutes <= 3.0)
                 {
-                    type = IntervalTypes.Milliseconds;
-                    return 50;
-                }
-
-                // Seconds
-                double seconds = timeSpan.TotalSeconds;
-
-                if (seconds <= 7)
-                {
+                    // Range less than 180 seconds interval is 30 sec
                     type = IntervalTypes.Seconds;
+                    return 30;
+                }
+                else if (totalMinutes <= 10)
+                {
+                    // Range less than 10 minutes interval is 1 min
+                    type = IntervalTypes.Minutes;
                     return 1;
                 }
-                else if (seconds <= 15)
+                else if (totalMinutes <= 20)
                 {
-                    type = IntervalTypes.Seconds;
+                    // Range less than 20 minutes interval is 1 min
+                    type = IntervalTypes.Minutes;
                     return 2;
                 }
-                else if (seconds <= 30)
+                else if (totalMinutes <= 60)
                 {
-                    type = IntervalTypes.Seconds;
+                    // Range less than 60 minutes interval is 5 min
+                    type = IntervalTypes.Minutes;
                     return 5;
                 }
-                else if (seconds <= 60)
+                else if (totalMinutes <= 120)
                 {
-                    type = IntervalTypes.Seconds;
+                    // Range less than 120 minutes interval is 10 min
+                    type = IntervalTypes.Minutes;
                     return 10;
                 }
+                else if (totalMinutes <= 180)
+                {
+                    // Range less than 180 minutes interval is 30 min
+                    type = IntervalTypes.Minutes;
+                    return 30;
+                }
+                else if (totalMinutes <= 60 * 12)
+                {
+                    // Range less than 12 hours interval is 1 hour
+                    type = IntervalTypes.Hours;
+                    return 1;
+                }
+                else if (totalMinutes <= 60 * 24)
+                {
+                    // Range less than 24 hours interval is 4 hour
+                    type = IntervalTypes.Hours;
+                    return 4;
+                }
+                else if (totalMinutes <= 60 * 24 * 2)
+                {
+                    // Range less than 2 days interval is 6 hour
+                    type = IntervalTypes.Hours;
+                    return 6;
+                }
+                else if (totalMinutes <= 60 * 24 * 3)
+                {
+                    // Range less than 3 days interval is 12 hour
+                    type = IntervalTypes.Hours;
+                    return 12;
+                }
             }
-            else if (totalMinutes <= 2.0)
-            {
-                // Range less than 120 seconds interval is 10 sec
-                type = IntervalTypes.Seconds;
-                return 20;
-            }
-            else if (totalMinutes <= 3.0)
-            {
-                // Range less than 180 seconds interval is 30 sec
-                type = IntervalTypes.Seconds;
-                return 30;
-            }
-            else if (totalMinutes <= 10)
-            {
-                // Range less than 10 minutes interval is 1 min
-                type = IntervalTypes.Minutes;
-                return 1;
-            }
-            else if (totalMinutes <= 20)
-            {
-                // Range less than 20 minutes interval is 1 min
-                type = IntervalTypes.Minutes;
-                return 2;
-            }
-            else if (totalMinutes <= 60)
-            {
-                // Range less than 60 minutes interval is 5 min
-                type = IntervalTypes.Minutes;
-                return 5;
-            }
-            else if (totalMinutes <= 120)
-            {
-                // Range less than 120 minutes interval is 10 min
-                type = IntervalTypes.Minutes;
-                return 10;
-            }
-            else if (totalMinutes <= 180)
-            {
-                // Range less than 180 minutes interval is 30 min
-                type = IntervalTypes.Minutes;
-                return 30;
-            }
-            else if (totalMinutes <= 60 * 12)
-            {
-                // Range less than 12 hours interval is 1 hour
-                type = IntervalTypes.Hours;
-                return 1;
-            }
-            else if (totalMinutes <= 60 * 24)
-            {
-                // Range less than 24 hours interval is 4 hour
-                type = IntervalTypes.Hours;
-                return 4;
-            }
-            else if (totalMinutes <= 60 * 24 * 2)
-            {
-                // Range less than 2 days interval is 6 hour
-                type = IntervalTypes.Hours;
-                return 6;
-            }
-            else if (totalMinutes <= 60 * 24 * 3)
-            {
-                // Range less than 3 days interval is 12 hour
-                type = IntervalTypes.Hours;
-                return 12;
-            }
-            else if (totalMinutes <= 60 * 24 * 10)
+            
+            if (totalMinutes <= 60 * 24 * 10)
             {
                 // Range less than 10 days interval is 1 day
                 type = IntervalTypes.Days;

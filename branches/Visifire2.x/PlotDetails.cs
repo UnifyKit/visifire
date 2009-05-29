@@ -458,7 +458,7 @@ namespace Visifire.Charts
                         Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 8 : 8;
                         if (minDate != maxDate)
                         {
-                            axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval);
+                            axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval, axisX.XValueType);
                         }
                         else
                         {
@@ -618,16 +618,16 @@ namespace Visifire.Charts
 
                             if (axisX.AxisMinimum == null)
                             {
-                                DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+                                //DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
 
-                                if (newMinDate != minDate)
-                                {
-                                    // Chart.InternalSeries[0].IsNotificationEnable = false;
-                                    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                    // Chart.InternalSeries[0].IsNotificationEnable = true;
+                                //if (newMinDate != minDate)
+                                //{
+                                //    // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                //    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                //    // Chart.InternalSeries[0].IsNotificationEnable = true;
 
-                                    minDate = newMinDate;
-                                }
+                                //    minDate = newMinDate;
+                                //}
                             }
                         }
 
@@ -683,16 +683,16 @@ namespace Visifire.Charts
                             {
                                 if (axisX.AxisMinimum == null)
                                 {
-                                    DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+                                    //DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
 
-                                    if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
-                                    {
-                                        // Chart.InternalSeries[0].IsNotificationEnable = false;
-                                        // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                        // Chart.InternalSeries[0].IsNotificationEnable = true;
+                                    //if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
+                                    //{
+                                    //    // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    //    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    //    // Chart.InternalSeries[0].IsNotificationEnable = true;
 
-                                        minDate = newMinDate;
-                                    }
+                                    //    minDate = newMinDate;
+                                    //}
                                 }
                             }
                         }

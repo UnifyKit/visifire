@@ -492,11 +492,6 @@ namespace Visifire.Charts
 
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {
-                //if (DataMinimum - interval < Minimum + ParentAxis.SkipOfset)
-                //    index = (Decimal)DataMinimum;
-                //else
-                //    index = (Decimal)Minimum + ParentAxis.SkipOfset;
-
                 if (Double.IsNaN((Double)ParentAxis.AxisMinimumNumeric))
                 {
                     if (ParentAxis.XValueType != ChartValueTypes.Numeric)
@@ -511,16 +506,10 @@ namespace Visifire.Charts
                             minval = (Decimal)DataMinimum;
                     }
                 }
-
-                //if (ParentAxis.SkipOfset > 0)
-                //{
-                //    if ((Double)ParentAxis.AxisMinimum < DataMinimum)
-                //        index = (Decimal)DataMinimum;
-                //}
             }
 
             //minval = index;
-            maxVal = maxVal + gap / 1000;
+            //maxVal = maxVal + gap / 1000;
             if (minval != maxVal)
             {
                 Decimal xValue;
@@ -574,9 +563,23 @@ namespace Visifire.Charts
 
                     }
 
+                    System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
+
                     Visual.Children.Add(line);
+
                     index += (ParentAxis.SkipOffset +1);
-                    xValue = minval + index * gap;
+
+                    if (ParentAxis.IsDateTimeAxis)
+                    {
+                        DateTime dt = DateTimeHelper.UpdateDate(ParentAxis.FirstLabelDate, (Double)(index * gap), ParentAxis.InternalIntervalType);
+                        Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, ParentAxis.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+
+                        xValue = minval + oneUnit;
+                    }
+                    else
+                    {
+                        xValue = minval + index * gap;
+                    }
                 }
             }
             switch (Placement)

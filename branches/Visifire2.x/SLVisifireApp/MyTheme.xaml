@@ -42,6 +42,12 @@
         <!--<Setter Property="MarkerBorderThickness" Value="1"/>-->
     </Style>
     
+    <Style x:Key="DataPoint" TargetType="vc:DataPoint">
+        <Setter Property="Color" Value="Red"/>
+        <Setter Property="LightingEnabled" Value="true"/>
+        <!--<Setter Property="MarkerBorderThickness" Value="1"/>-->
+    </Style>
+    
     <Style x:Key="PlotArea" TargetType="vc:PlotArea">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>

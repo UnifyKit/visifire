@@ -83,6 +83,9 @@ internal class InteractivityHelper
     /// <param name="element"></param>
     public static void ApplyOnMouseOverOpacityInteractivity(FrameworkElement element)
     {
+        if (element == null)
+            return;
+
         RemoveOnMouseOverOpacityInteractivity(element, Double.NaN);
         element.MouseEnter += new MouseEventHandler(element_MouseEnter);
         element.MouseLeave += new MouseEventHandler(element_MouseLeave);
@@ -94,6 +97,9 @@ internal class InteractivityHelper
     /// <param name="element"></param>
     public static void ApplyOnMouseOverOpacityInteractivity2Visuals(FrameworkElement element)
     {
+        if (element == null)
+            return;
+
         element.MouseEnter += new MouseEventHandler(MultipleElements_MouseEnter);
         element.MouseLeave += new MouseEventHandler(MultipleElements_MouseLeave);
     }
@@ -161,6 +167,9 @@ internal class InteractivityHelper
     /// <param name="resetOpacity"></param>
     public static void RemoveOnMouseOverOpacityInteractivity(FrameworkElement element, Double resetOpacity)
     {
+        if (element == null)
+            return;
+
         if (!Double.IsNaN(resetOpacity))
             element.Opacity = resetOpacity;
 

@@ -18,7 +18,7 @@ using System.Windows.Data;
 namespace SLVisifireApp
 {
     public partial class Page : UserControl
-    {   
+    {
         public Page()
         {
             InitializeComponent();

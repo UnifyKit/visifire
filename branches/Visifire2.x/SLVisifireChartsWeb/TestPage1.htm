@@ -82,23 +82,27 @@
                             chart.Titles[0].MouseLeftButtonUp = function(title) {
                                 alert(title.Text);
                             }
-                        }
+
+                            chart.Rendered = function(e) {
+                                alert("Rendered");
+                            };
+                        };
                         
                         /* 
                         On loaded event, array of charts can be received as event arguments.  
                         Events can be can attached to chart elements. And do require customization.
                         Default chart elements can be accessed here.
                         */
-                        vChart.loaded = function(args) {
-                            var chart = args[0];   // Chart Reference.
+//                        vChart.loaded = function(args) {
+//                            var chart = args[0];   // Chart Reference.
 
-                            // Create a LinearGradientBrush color brush
-                            var color = '<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >'
-				                + '	<GradientStop Color="Red"/>'
-				                + '	<GradientStop Color="White" Offset="0.567"/>'
-				                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
-				                + '</LinearGradientBrush>';
-                        };
+//                            // Create a LinearGradientBrush color brush
+//                            var color = '<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >'
+//				                + '	<GradientStop Color="Red"/>'
+//				                + '	<GradientStop Color="White" Offset="0.567"/>'
+//				                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
+//				                + '</LinearGradientBrush>';
+//                        };
 
                         // Render chart
                         vChart.render("VisifireChart0");

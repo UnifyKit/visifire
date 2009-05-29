@@ -2475,8 +2475,7 @@ namespace Visifire.Charts
                 AxisManager.AxisMaximumValue = AxisMaximumNumeric;
                 AxisManager.Calculate();
             }
-
-
+            
             if (Double.IsNaN((Double)AxisMinimumNumeric) && !(Boolean)StartFromZero)
             {
                 if (PlotDetails.DrawingDivisionFactor != 0)
@@ -2493,7 +2492,7 @@ namespace Visifire.Charts
                     DateTime startDate;
                     Double start;
 
-                    startDate = DateTimeHelper.AlignDateTime(MinDate, InternalInterval, InternalIntervalType);
+                    startDate = DateTimeHelper.AlignDateTime(MinDate, 1, InternalIntervalType);
 
                     start = DateTimeHelper.DateDiff(startDate, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
 
@@ -2503,14 +2502,21 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        if ((start - AxisManager.AxisMinimumValue) / InternalInterval >= 1)
-                            start = (start - Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval) * InternalInterval);
-
+                        Double temp = Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval);
+                        
+                        if (temp >= 1)
+                            start = (start - Math.Floor(temp) * InternalInterval);
                     }
 
-                    FirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, start, InternalIntervalType);
-                    FirstLabelDate = DateTimeHelper.AlignDateTime(FirstLabelDate, InternalInterval, InternalIntervalType);
+                    DateTime tempFirstLabelDate = DateTimeHelper.XValueToDateTime(MinDate, start, InternalIntervalType);
+                    FirstLabelDate = DateTimeHelper.AlignDateTime(tempFirstLabelDate, InternalInterval < 1 ? InternalInterval : 1, InternalIntervalType);
                     FirstLabelPosition = DateTimeHelper.DateDiff(FirstLabelDate, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+
+                    if (AxisManager.AxisMinimumValue > FirstLabelPosition)
+                    {
+                        FirstLabelDate = tempFirstLabelDate;
+                        FirstLabelPosition = DateTimeHelper.DateDiff(FirstLabelDate, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+                    }
                 }
             }
             else

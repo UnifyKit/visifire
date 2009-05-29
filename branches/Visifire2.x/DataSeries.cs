@@ -1091,7 +1091,7 @@ namespace Visifire.Charts
                 {
                     if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie)
                     {
-                        return "#Percentage";
+                        return "#Percentage%";
                     }
                     else
                     {
@@ -2721,7 +2721,7 @@ namespace Visifire.Charts
                     if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut))
                     {
                         foreach (FrameworkElement fe in dp.Faces.VisualComponents)
-                        {
+                        {   
                             if (SelectionEnabled)
                                 InteractivityHelper.ApplyOnMouseOverOpacityInteractivity2Visuals(fe);
                             else 
@@ -2735,6 +2735,9 @@ namespace Visifire.Charts
                         else
                             InteractivityHelper.RemoveOnMouseOverOpacityInteractivity(dp.Faces.Visual, Opacity * dp.Opacity);
                     }
+
+                    if ((Chart as Chart).ChartArea != null && !(Chart as Chart).ChartArea._isFirstTimeRender && !IsInDesignMode && (Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                        dp.ExplodeOrUnexplodeAnimation();
                 }
 
                 if (dp.Marker != null && dp.Marker.Visual != null)

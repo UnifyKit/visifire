@@ -2888,8 +2888,8 @@ namespace Visifire.Charts
                     SetAxisProperties(AxisY2, 0, PLANK_OFFSET);
                 }
                 else
-                {   
-                    SetAxisProperties(AxisX, 0, 0);
+                {
+                    SetAxisProperties(AxisX, PLANK_DEPTH, 0);
                     SetAxisProperties(AxisX2, PLANK_DEPTH, 0);
                     SetAxisProperties(AxisY, PLANK_OFFSET, 0);
                     SetAxisProperties(AxisY2, PLANK_OFFSET, 0);

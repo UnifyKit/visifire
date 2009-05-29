@@ -2429,8 +2429,11 @@ namespace Visifire.Charts
                     InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);            
                 }
             }
-            else if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            
+            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {
+                UpdateExplodedPropertyForSelection(true);
+
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, new SolidColorBrush(Colors.Red), 1.2, 2.4, new SolidColorBrush(Colors.Orange));
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
             }
@@ -2457,8 +2460,11 @@ namespace Visifire.Charts
                     IsNotificationEnable = true;
                 }
             }
-            else if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
-            {   
+            
+            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            {
+                UpdateExplodedPropertyForSelection(false);
+
                 InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
                 Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
                 
@@ -2474,7 +2480,7 @@ namespace Visifire.Charts
         /// <param name="exploded">Exploded</param>
         private void UpdateExplodedPropertyForSelection(Boolean exploded)
         {   
-            if (Parent != null && Parent.Chart != null && (Parent.Chart as Chart).ChartArea != null && (Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+            // if (Parent != null && Parent.Chart != null && (Parent.Chart as Chart).ChartArea != null && (Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
             {
                 if (Exploded != exploded)
                 {
@@ -2563,7 +2569,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Explode or unexplode animation for Pie and Doughnut
         /// </summary>
-        private void ExplodeOrUnexplodeAnimation()
+        internal void ExplodeOrUnexplodeAnimation()
         {
             if ((Boolean)Exploded)
             {
@@ -2572,6 +2578,7 @@ namespace Visifire.Charts
 
                 if (this.ExplodeAnimation != null)
                 {
+                    _isAlreadyExploded = true;
 #if WPF             
                     this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
@@ -2579,15 +2586,15 @@ namespace Visifire.Charts
 #endif
                 }
             }
-            else
-                if (!(Boolean)Exploded)
-                {
+            else if (_isAlreadyExploded == true)
+                {   
                     if (this.ExplodeAnimation != null)
                         this.ExplodeAnimation.Stop();
-
+                    
                     if (this.UnExplodeAnimation != null)
                     {
-#if WPF
+                        _isAlreadyExploded = false;
+#if WPF                 
                         this.UnExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                         this.UnExplodeAnimation.Begin();
@@ -2671,12 +2678,15 @@ namespace Visifire.Charts
                 {
                     _interativityAnimationState = true;
 
+                    System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
+
+                    Exploded = true;
+
                     if (this.ExplodeAnimation != null)
                     {
 #if WPF
                         this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
-
                         this.ExplodeAnimation.Begin();
 #endif
                     }
@@ -2686,13 +2696,17 @@ namespace Visifire.Charts
                 {
                     _interativityAnimationState = true;
 
+                    Exploded = false;
+
+                    System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
+
                     if (this.UnExplodeAnimation != null)
-                    {   
+                    {
 #if WPF                 
                         this.UnExplodeAnimation.Begin(Chart._rootElement, true);
-#else                   
+#else
                         this.UnExplodeAnimation.Begin();
-#endif                  
+#endif
                     }
                 }
             }
@@ -2871,6 +2885,8 @@ namespace Visifire.Charts
         /// Whether name for DataPoint is generated automatically
         /// </summary>
         internal Boolean _isAutoName = true;
+
+        private Boolean _isAlreadyExploded = false;
 
 #if WPF
         /// <summary>

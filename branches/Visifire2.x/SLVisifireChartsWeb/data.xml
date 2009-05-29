@@ -1,4 +1,4 @@
-﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1" Width="500" Height="300"
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1" Width="800" Height="600"
           ColorSet="Visifire2">
   
   <vc:Chart.Titles>
@@ -21,4 +21,3 @@
     </vc:DataSeries>
   </vc:Chart.Series>
 </vc:Chart>
-  

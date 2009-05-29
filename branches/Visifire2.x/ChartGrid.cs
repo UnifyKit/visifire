@@ -366,25 +366,44 @@ namespace Visifire.Charts
         private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
         {
             Double interval = (Double)Interval; // Interval  for the chart grid
-            Decimal index = (Decimal)Minimum;   // starting point for the loop that generates grids
-            Decimal minval = (Decimal)Minimum;  // smallest value from where the grid must be drawn
+            Decimal index =0;// = (Decimal)Minimum;   // starting point for the loop that generates grids
+            Decimal minVal = (Decimal)Minimum;  // smallest value from where the grid must be drawn
             Decimal maxVal = (Decimal)Maximum;  // largest value from where the grid must be drawn
 
             // gap between two intervals
-            Decimal gap = (Decimal)interval +( ((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOffset : 0); 
+            Decimal gap = (Decimal)interval;// +(((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOffset : 0); 
             
-            Int32 count = 0;                    // counts the number of lines required for alternate colored bands
+            //Int32 count = 0;                    // counts the number of lines required for alternate colored bands
             Int32 countRectangles = 0;          // counts the number of color bands for animating them alternately in opposite direction
             Double position = 0;                // value of the line position for the running loop cycle
             Double prevPosition = 0;            // value of the line position for the previous position
 
+            
             // if axisX and the first data point is in a gap between the prescribed interval, the index must dateTime from the 
             // datapoint rather than the axis minimum
-            if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
-                index = (Decimal)DataMinimum;
+            // if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
+            //    index = (Decimal)DataMinimum;
 
-            minval = index;
-            maxVal = maxVal + gap / 1000;
+            if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
+            {
+                if (Double.IsNaN((Double)ParentAxis.AxisMinimumNumeric))
+                {
+                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
+                    {
+                        minVal = (Decimal)ParentAxis.FirstLabelPosition;
+                    }
+                    else
+                    {
+                        if ((DataMinimum - Minimum) / interval >= 1)
+                            minVal = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
+                        else
+                            minVal = (Decimal)DataMinimum;
+                    }
+                }
+            }
+
+            //index = minval;
+            // maxVal = maxVal + gap / 1000;
 
 #if WPF
             if (Storyboard != null && Storyboard.GetValue(Storyboard.TargetProperty) != null)
@@ -397,11 +416,12 @@ namespace Visifire.Charts
             InterlacedRectangles = new List<Rectangle>();
             InterlacedLines = new List<Line>();
 
-            if (minval != maxVal)
+            if (minVal != maxVal)
             {
                 InterlacedRectangles = new List<Rectangle>();
+                Decimal xValue;
 
-                for (; index <= maxVal; index = minval + (++count) * gap)
+                for (xValue = minVal; xValue <= maxVal; )
                 {
                     Line line = new Line();
                     InterlacedLines.Add(line);
@@ -417,14 +437,14 @@ namespace Visifire.Charts
                         case PlacementTypes.Top:
                         case PlacementTypes.Bottom:
 
-                            position = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, (Double)index);
+                            position = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, (Double)xValue);
 
                             line.X1 = position;
                             line.X2 = position;
                             line.Y1 = 0;
                             line.Y2 = Height;
 
-                            if (count % 2 == 1)
+                            if (index % 2 == 1)
                             {
                                 Rectangle rectangle = new Rectangle();
 
@@ -463,7 +483,7 @@ namespace Visifire.Charts
                         case PlacementTypes.Left:
                         case PlacementTypes.Right:
 
-                            position = Graphics.ValueToPixelPosition(Height, 0, Minimum, Maximum, (Double)index);
+                            position = Graphics.ValueToPixelPosition(Height, 0, Minimum, Maximum, (Double)xValue);
 
                             if (position == 0)
                                 position += this.LineThickness;
@@ -473,7 +493,7 @@ namespace Visifire.Charts
                             line.Y1 = position;
                             line.Y2 = position;
 
-                            if (count % 2 == 1)
+                            if (index % 2 == 1)
                             {
                                 Rectangle rectangle = new Rectangle();
 
@@ -513,9 +533,24 @@ namespace Visifire.Charts
                     
                     Visual.Children.Add(line);
                     prevPosition = position;
+
+                    index += (ParentAxis.SkipOffset + 1);
+
+                    if (ParentAxis.IsDateTimeAxis)
+                    {
+                        DateTime dt = DateTimeHelper.UpdateDate(ParentAxis.FirstLabelDate, (Double)(index * gap), ParentAxis.InternalIntervalType);
+                        Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, ParentAxis.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+
+                        xValue = minVal + oneUnit;
+                    }
+                    else
+                    {
+                        xValue = minVal + index * gap;
+                    }
+
                 }
 
-                if (count % 2 == 1)
+                if (index % 2 == 1)
                 {
                     Rectangle rectangle = new Rectangle();
                     ScaleTransform scaleTransform = null;

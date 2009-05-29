@@ -5,22 +5,26 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot" Width="500" Height="300">
-        
-        <vc:Chart Name="MyChart"  Width="500" Height="300" View3D="True" Theme="Theme2">
+
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+Width="500" Height="300" Theme="Theme2" BorderBrush="Gray" View3D="false">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Multilingual Chart"/>
+            </vc:Chart.Titles>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Pie" SelectionMode="Multiple" SelectionEnabled="True">
+                <vc:DataSeries RenderAs="Column" SelectionEnabled="True">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="10" />
-                        <vc:DataPoint YValue="20" />
-                        <vc:DataPoint YValue="10"/>
-                        <vc:DataPoint YValue="20"/>
-                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="60"/>
+                        <vc:DataPoint AxisXLabel="Februar" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="Mars" YValue="68"/>
+                        <vc:DataPoint AxisXLabel="Abril" YValue="75"/>
+                        <vc:DataPoint AxisXLabel="Dürfen" YValue="90"/>
+                        <vc:DataPoint AxisXLabel="Giugno" YValue="50"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </UserControl>
-
-    

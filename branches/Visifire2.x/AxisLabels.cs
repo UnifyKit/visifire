@@ -843,7 +843,7 @@ namespace Visifire.Charts
 
             // if the axis labels belong to axis x
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
-            {
+            {   
                 // if the data minimum - interval is less than the actual minimum
 
                 if (Double.IsNaN((Double)Parent.AxisMinimumNumeric))
@@ -866,9 +866,7 @@ namespace Visifire.Charts
                 //    if ((Double)Parent.AxisMinimum < DataMinimum)
                 //        index = (Decimal)DataMinimum;
                 //}
-
-
-
+                
                 if (AllAxisLabels && AxisLabelContentDictionary.Count > 0)
                 {
                     Dictionary<Double, String>.Enumerator enumerator = AxisLabelContentDictionary.GetEnumerator();
@@ -893,77 +891,93 @@ namespace Visifire.Charts
                     if (!Double.IsNaN(TextWrap))
                         CalculatAvgWidthOfAChar();
 
-                    for (; index <= maxVal; index = minval + (++count) * gap)
+                    for (; index <= maxVal;)
                     {
-                        if ((AllAxisLabels) && (AxisLabelContentDictionary.Count > 0) && (index > (Decimal)DataMaximum))
-                            continue;
+                        // if (!((AllAxisLabels) && (AxisLabelContentDictionary.Count > 0) && (index > (Decimal)DataMaximum)))
+                        {   
+                            String labelContent = "";
 
-                        String labelContent = "";
-
-                        if (AxisLabelContentDictionary.ContainsKey((Double)index))
-                        {
-                            if (ParentAxis.AxisOrientation == Orientation.Vertical)
-                                labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], false);
+                            if (AxisLabelContentDictionary.ContainsKey((Double)index))
+                            {
+                                if (ParentAxis.AxisOrientation == Orientation.Vertical)
+                                    labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], false);
+                                else
+                                    labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], true);
+                            }
                             else
-                                labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], true);
+                            {
+                                if (ParentAxis.XValueType == ChartValueTypes.Date)
+                                {
+                                    DateTime dt = ParentAxis.MinDate;
+                                    Decimal tempIndex = index;
+
+                                    if (ParentAxis._isAllXValueZero)
+                                        tempIndex--;
+
+                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
+                                    //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
+
+                                    //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
+                                    //    dt = new DateTime(dt.Year, 1, 1, 0, 0, 0);
+
+                                    labelContent = FormatDate(dt, ParentAxis);
+                                }
+                                else if (ParentAxis.XValueType == ChartValueTypes.Time)
+                                {
+                                    DateTime dt = ParentAxis.MinDate;
+                                    Decimal tempIndex = index;
+
+                                    System.Diagnostics.Debug.WriteLine("Index=" + index.ToString());
+                                    if (ParentAxis._isAllXValueZero)
+                                        tempIndex--;
+
+                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
+                                    labelContent = FormatDate(dt, ParentAxis);
+                                }
+                                else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
+                                {
+                                    DateTime dt = ParentAxis.MinDate;
+                                    Decimal tempIndex = index;
+
+                                    if (ParentAxis._isAllXValueZero)
+                                        tempIndex--;
+
+                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
+
+                                    if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years
+                                        || ParentAxis.IntervalType == IntervalTypes.Months || ParentAxis.InternalIntervalType == IntervalTypes.Months
+                                        || ParentAxis.IntervalType == IntervalTypes.Weeks || ParentAxis.InternalIntervalType == IntervalTypes.Weeks
+                                        || ParentAxis.IntervalType == IntervalTypes.Days || ParentAxis.InternalIntervalType == IntervalTypes.Days
+                                        )
+                                        dt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
+
+                                    labelContent = FormatDate(dt, ParentAxis);
+                                }
+                                else
+                                    labelContent = GetFormattedString((Double)index);
+                            }
+
+                            AxisLabel label = CreateLabel(labelContent);
+
+                            AxisLabelList.Add(label);
+                            LabelValues.Add((Double)index);
+
+
+                        }
+
+                        if (ParentAxis.IsDateTimeAxis)
+                        {
+                            count++;
+
+                            DateTime dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)(count * gap), ParentAxis.InternalIntervalType);
+                            Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, Parent.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+
+                            index = minval + oneUnit;
                         }
                         else
-                        {
-                            if (ParentAxis.XValueType == ChartValueTypes.Date)
-                            {
-                                DateTime dt = ParentAxis.MinDate;
-                                Decimal tempIndex = index;
-
-                                if (ParentAxis._isAllXValueZero)
-                                    tempIndex--;
-
-                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-                                //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
-
-                                //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
-                                //    dt = new DateTime(dt.Year, 1, 1, 0, 0, 0);
-
-                                labelContent = FormatDate(dt, ParentAxis);
-                            }
-                            else if (ParentAxis.XValueType == ChartValueTypes.Time)
-                            {
-                                DateTime dt = ParentAxis.MinDate;
-                                Decimal tempIndex = index;
-
-                                System.Diagnostics.Debug.WriteLine("Index=" + index.ToString());
-                                if (ParentAxis._isAllXValueZero)
-                                    tempIndex--;
-
-                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-                                labelContent = FormatDate(dt, ParentAxis);
-                            }
-                            else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
-                            {
-                                DateTime dt = ParentAxis.MinDate;
-                                Decimal tempIndex = index;
-
-                                if (ParentAxis._isAllXValueZero)
-                                    tempIndex--;
-
-                                dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-
-                                if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years
-                                    || ParentAxis.IntervalType == IntervalTypes.Months || ParentAxis.InternalIntervalType == IntervalTypes.Months
-                                    || ParentAxis.IntervalType == IntervalTypes.Weeks || ParentAxis.InternalIntervalType == IntervalTypes.Weeks
-                                    || ParentAxis.IntervalType == IntervalTypes.Days || ParentAxis.InternalIntervalType == IntervalTypes.Days
-                                    )
-                                    dt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
-
-                                labelContent = FormatDate(dt, ParentAxis);
-                            }
-                            else
-                                labelContent = GetFormattedString((Double)index);
+                        {   
+                            index = minval + (++count) * gap;
                         }
-
-                        AxisLabel label = CreateLabel(labelContent);
-
-                        AxisLabelList.Add(label);
-                        LabelValues.Add((Double)index);
                     }
                 }
                 else
@@ -1627,7 +1641,7 @@ namespace Visifire.Charts
 
                     Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
-                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| ParentAxis.IntervalType == IntervalTypes.Auto ))
+                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
                         ParentAxis.SkipOffset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
                     else
                         ParentAxis.SkipOffset = 0;
