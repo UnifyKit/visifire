@@ -76,7 +76,7 @@ namespace Visifire.Charts
 #endif
 
             // Initialize DataPoints list
-            DataPoints = new ObservableCollection<DataPoint>();
+            DataPoints = new DataPointCollection();
 
             // Initialize InternalDataPoints list
             InternalDataPoints = new List<DataPoint>();
@@ -88,7 +88,31 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
-        
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.MinPointHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.MinPointHeight dependency property.
+        /// </returns>
+        public static readonly DependencyProperty MinPointHeightProperty = DependencyProperty.Register
+            ("MinPointHeight",
+            typeof(Double),
+            typeof(DataSeries),
+            new PropertyMetadata(Double.NaN, OnMinPointHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.Exploded dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.Exploded dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ExplodedProperty = DependencyProperty.Register
+            ("Exploded",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(OnExplodedPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.Enabled dependency property.
         /// </summary>
@@ -697,13 +721,36 @@ namespace Visifire.Charts
             new PropertyMetadata(OnZIndexPropertyChanged));
         
         /// <summary>
-        /// Get or set ZIndex property
-        /// (Will be used to decide which series comes in front and which one goes back)
+        /// Get or set the MinPointHeight property. 
+        /// Minimum height of a DataPoint having the minimum YValue in a DataSeries.
+        /// Currently MinPointHeight property is applicable for funnel chart only.
+        /// (Value is in percentage(%) of Height of PlotArea)
         /// </summary>
-        internal Int32 InternalZIndex
+        public Double MinPointHeight
         {
-            get;
-            set;
+            get
+            {
+                return (Double)GetValue(MinPointHeightProperty);
+            }
+            set
+            {   
+                SetValue(MinPointHeightProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Exploded property. This is used in Pie/Doughnut/Funnel charts.
+        /// </summary>
+        public Boolean Exploded
+        {
+            get
+            {
+                return (Boolean)GetValue(ExplodedProperty);
+            }
+            set
+            {
+                SetValue(ExplodedProperty, value);
+            }
         }
 
         /// <summary>
@@ -1037,7 +1084,7 @@ namespace Visifire.Charts
                 {
                     if ((Chart as Chart).Series.Count > 1)
                         return true;
-                    else if ((Chart as Chart).Series.Count == 1 && (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut))
+                    else if ((Chart as Chart).Series.Count == 1 && (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut || this.RenderAs == RenderAs.SectionFunnel || this.RenderAs == RenderAs.StreamLineFunnel))
                         return true;
                     else
                         return false;
@@ -1064,12 +1111,17 @@ namespace Visifire.Charts
             {
                 if (GetValue(LabelEnabledProperty) == null)
                 {
-                    if (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut)
+                    switch(RenderAs)
                     {
-                        return true;
+                        case RenderAs.Pie:
+                        case RenderAs.Doughnut:
+                        case RenderAs.SectionFunnel:
+                        case RenderAs.StreamLineFunnel:
+                            return true;
+                        
+                        default:
+                            return false;
                     }
-                    else
-                        return false;
                 }
                 else
                     return (Nullable<Boolean>)GetValue(LabelEnabledProperty);
@@ -1089,7 +1141,7 @@ namespace Visifire.Charts
             {
                 if (String.IsNullOrEmpty((String)GetValue(LabelTextProperty)))
                 {
-                    if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie)
+                    if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel)
                     {
                         return "#Percentage%";
                     }
@@ -1468,6 +1520,16 @@ namespace Visifire.Charts
 
         #endregion Marker Properties
 
+       /// <summary>
+       /// Get or set ZIndex property
+       /// (Will be used to decide which series comes in front and which one goes back)
+       /// </summary>
+       internal Int32 InternalZIndex
+       {
+           get;
+           set;
+       }
+
         /// <summary>
         /// Get or set the Internal Start angle property
         /// </summary>
@@ -1657,7 +1719,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Collection of DataPoints
         /// </summary>
-        public ObservableCollection<DataPoint> DataPoints
+        public DataPointCollection DataPoints
         {
             get;
             set;
@@ -1949,6 +2011,31 @@ namespace Visifire.Charts
         #endregion
         
         #region Private Methods
+
+        /// <summary>
+        /// MinPointHeightProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinPointHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((Double)e.NewValue < 0 || (Double)e.NewValue > 100)
+                throw new Exception("MinPointHeightProperty value is out of Range. MinPointHeight Property Value must be within the range of 0 to 100.");
+                
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("MinPointHeight");
+        }
+        
+        /// <summary>
+        /// ExplodedProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnExplodedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("Enabled");
+        }
 
         /// <summary>
         /// EnabledProperty changed call back function
@@ -2504,13 +2591,13 @@ namespace Visifire.Charts
                     dataSeries.IsNotificationEnable = false;
 
                 dataSeries._isSelectedEventAttached = true;
-                dataSeries.MouseLeftButtonUp += new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.MouseLeftButtonUp += new MouseButtonEventHandler(dataSeries_MouseLeftButtonUp);
                 dataSeries.IsNotificationEnable = true;
             }
             else
             {
                 dataSeries.IsNotificationEnable = false;
-                dataSeries.MouseLeftButtonUp -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonDown);
+                dataSeries.MouseLeftButtonUp -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonUp);
                 dataSeries.IsNotificationEnable = true;
                 dataSeries._isSelectedEventAttached = false;
             }
@@ -2519,7 +2606,7 @@ namespace Visifire.Charts
             {
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
                 {   
-                    dp.DeSelect(dp);
+                    dp.DeSelect(dp, false);
                 }
             }
 
@@ -2533,7 +2620,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        static void dataSeries_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        static void dataSeries_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             DataPoint dp = sender as DataPoint;
             dp.Selected = (dp.Parent != null && dp.Parent.SelectionEnabled) ? !dp.Selected : false;
@@ -2696,7 +2783,7 @@ namespace Visifire.Charts
             {
                 if (dp.Faces != null)
                 {
-                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut))
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel))
                     {
                         foreach (FrameworkElement fe in dp.Faces.VisualComponents)
                         {
@@ -2717,9 +2804,9 @@ namespace Visifire.Charts
             foreach (DataPoint dp in InternalDataPoints)
             {
                 if (dp.Faces != null)
-                {
-                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut))
-                    {
+                {   
+                    if ((Chart as Chart).View3D && (RenderAs == RenderAs.Pie || RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.SectionFunnel || RenderAs == RenderAs.StreamLineFunnel))
+                    {   
                         foreach (FrameworkElement fe in dp.Faces.VisualComponents)
                         {   
                             if (SelectionEnabled)

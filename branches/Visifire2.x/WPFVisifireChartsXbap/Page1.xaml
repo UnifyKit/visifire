@@ -4,39 +4,22 @@
     Title="Page1" Background="#FFD6D6D6" 
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
     >
-    <Page.Resources>
-        <Style x:Key="ChartStyle" TargetType="{x:Type vc:Chart}">
-            <Setter Property="Bevel" Value="True"/>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="Gray" Offset="0"/>
-                        <GradientStop Color="White" Offset=".5"/>
-                        <GradientStop Color="#FFB2ADAD" Offset="1"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="TitleStyle" TargetType="{x:Type vc:Title}">
-            <Setter Property="FontColor" Value="Red"/>
-            <Setter Property="FontSize" Value="18"/>
-        </Style>
-        <Style x:Key="DataSeriesStyle" TargetType="{x:Type vc:DataSeries}" >
-            <Setter Property="Bevel" Value="False"/>
-        </Style>
-    </Page.Resources>
-    <Grid x:Name="LayoutRoot" Height="330" Width="500">
-        
-        <vc:Chart Width="500" Height="300" Theme="Theme2">
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Addmission Process"/>
+            </vc:Chart.Titles>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" SelectionEnabled="False">
+                <vc:DataSeries RenderAs="StreamLineFunnel" ShowInLegend="False" LabelEnabled="True" LabelText="#AxisXLabel, #YValue"
+                               >
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="10"/>
-                        <vc:DataPoint YValue="20" Selected="true"/>
-                        <vc:DataPoint YValue="10"/>
-                        <vc:DataPoint YValue="20"/>
-                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint AxisXLabel="Students Applied Online" YValue="600"/>
+                        <vc:DataPoint AxisXLabel="Students Called for Test" YValue="420"/>
+                        <vc:DataPoint AxisXLabel="Attended Test" YValue="300"/>
+                        <vc:DataPoint AxisXLabel="Selected" YValue="200"/>
+                        <vc:DataPoint AxisXLabel="Joined" YValue="150"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

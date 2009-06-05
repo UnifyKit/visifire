@@ -73,15 +73,32 @@ namespace SLVisifireChartsTest
                 return true;
             }
 
-            // Do a field by field comparison if they're not the same reference
-            // 
-            SolidColorBrush firstSolidColorBrush = first as SolidColorBrush;
-            if (firstSolidColorBrush != null)
+            if (first.GetType().Name == "SolidColorBrush")
             {
-                SolidColorBrush secondSolidColorBrush = second as SolidColorBrush;
-                if (secondSolidColorBrush != null)
+                // Do a field by field comparison if they're not the same reference
+                SolidColorBrush firstSolidColorBrush = first as SolidColorBrush;
+                if (firstSolidColorBrush != null)
                 {
-                    return object.Equals(firstSolidColorBrush.Color, secondSolidColorBrush.Color);
+                    SolidColorBrush secondSolidColorBrush = second as SolidColorBrush;
+                    if (secondSolidColorBrush != null)
+                    {
+                        return object.Equals(firstSolidColorBrush.Color, secondSolidColorBrush.Color);
+                    }
+                }
+            }
+            else
+            {
+                // Do a field by field comparison if they're not the same reference
+                LinearGradientBrush firstLinearColorBrush = first as LinearGradientBrush;
+                if (firstLinearColorBrush != null)
+                {
+                    LinearGradientBrush secondLinearColorBrush = second as LinearGradientBrush;
+                    if (secondLinearColorBrush != null)
+                    {
+                        Boolean stop1 = object.Equals(firstLinearColorBrush.GradientStops[0].Color, secondLinearColorBrush.GradientStops[0].Color);
+                        Boolean stop2 = object.Equals(firstLinearColorBrush.GradientStops[1].Color, secondLinearColorBrush.GradientStops[1].Color);
+                        return object.Equals(stop1, stop2);
+                    }
                 }
             }
 
@@ -228,14 +245,12 @@ namespace SLVisifireChartsTest
         {
             DataSeries dataSeries = new DataSeries();
 
-            dataSeries.RenderAs = RenderAs.Column;
-
             Random rand = new Random();
 
             for (Int32 i = 0; i < 5; i++)
             {
                 DataPoint datapoint = new DataPoint();
-                datapoint.AxisXLabel = "a" + i;
+                datapoint.AxisXLabel = "abc" + i;
                 datapoint.YValue = rand.Next(0, 100);
                 datapoint.XValue = i + 1;
                 dataSeries.DataPoints.Add(datapoint);

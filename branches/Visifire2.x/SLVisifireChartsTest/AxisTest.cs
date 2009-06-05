@@ -1669,6 +1669,387 @@ namespace SLVisifireChartsTest
 
         #endregion
 
+        #region TestAxisMinimumWithBiggerValue
+        /// <summary>
+        /// Test AxisMinimum with bigger value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisMinimumWithBiggerValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.AxisMinimum = 1;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 0, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -1.2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -2.8, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -3.7, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -3.8, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -5, YValue = rand.Next(10, 100) });
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueCallback(() =>
+            {
+                Assert.Fail("AxisMinimum value should be less than the value of a DataPoint with greater value");
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestAxisMinimumAndMaximumValue
+        /// <summary>
+        /// Test DataPoints at AxisMinimum and AxisMaximum value over a plank
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisMinimumAndMaximumValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+            chart.View3D = true;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.AxisMinimum = 0;
+            axis.AxisMaximum = 6;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 0, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 3, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 4, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 5.99, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestTwoDataPoints
+        /// <summary>
+        /// Test two DataPoint with Axis labels
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestTwoDataPoints()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 0, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestAxisMinimumSmallerValue
+        /// <summary>
+        /// Test AxisMinimum with smaller value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisMinimumSmallerValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.AxisMinimum = -5;
+            axis.AxisLabels.Angle = -45;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                for (Int32 i = 0; i < 20; i++)
+                {
+                    dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+                }
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestAxisLabelsLeftAndRightAlignment
+        /// <summary>
+        /// Test AxisLabels left and right alignment by setting AxisMinimu and StartFromZero
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisLabelsLeftAndRightAlignment()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.Interval = 0.2;
+            axis.StartFromZero = true;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                for (Int32 i = 0; i < 5; i++)
+                    dataSeries.DataPoints.Add(new DataPoint() { XValue = i + 1, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestIntervalWithExtremeCase
+        /// <summary>
+        /// Test Interval with extreme case
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestIntervalWithExtremeCase()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.Interval = 3;
+            axis.StartFromZero = true;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -1.1, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -2.2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -3.1, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -4.2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -5.1, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -6.1, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestAxisShifting
+        /// <summary>
+        /// Test whether AxisX is shifting to the right
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisShifting()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.AxisMinimum = 1;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = -0.6, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 3, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 4, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 5, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 6, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 7, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 8, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 9, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 10, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestDecimalInterval4VerticalChart
+        /// <summary>
+        /// Test Interval in decimal in vertical chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDecimalInterval4VerticalChart()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.Interval = 0.2;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                for (Int32 i = 0; i < 10; i++)
+                    dataSeries.DataPoints.Add(new DataPoint() { XValue = i + 1, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestDecimalInterval4HorizontalChart
+        /// <summary>
+        /// Test Interval in decimal in Horizontal chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDecimalInterval4HorizontalChart()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.Interval = 0.2;
+            chart.AxesX.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Bar;
+                for (Int32 i = 0; i < 10; i++)
+                    dataSeries.DataPoints.Add(new DataPoint() { XValue = i + 1, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
         /// <summary>
         /// Gets a default instance of Axis to test.
         /// </summary>

@@ -468,6 +468,104 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region MultiSeriesWithNoDataPoints
+        /// <summary>
+        /// Testing second series with no DataPoints
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void MultiSeriesWithNoDataPointsChecking()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "450px");
+
+            Chart chart = new Chart();
+            chart.Width = 350;
+            chart.Height = 450;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            Random rand = new Random();
+
+            EnqueueConditional(() => { return _isLoaded; });
+
+            EnqueueCallback(() =>
+                {
+                    DataSeries dataSeries;
+                    for (Int32 ds = 0; ds < 2; ds++)
+                    {
+                        dataSeries = new DataSeries();
+                        if (ds == 0)
+                        {
+                            for (Int32 dp = 0; dp < 5; dp++)
+                            {
+                                DataPoint dataPoint = new DataPoint();
+                                dataPoint.XValue = dp + 1;
+                                dataPoint.YValue = rand.Next(0, 100);
+                                dataSeries.DataPoints.Add(dataPoint);
+                            }
+                        }
+
+                        chart.Series.Add(dataSeries);
+                    }
+                });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region LineSeriesWithNoDataPoints
+        /// <summary>
+        /// Testing second series (Line) with no DataPoints
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void LineSeriesWithNoDataPoints()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            Random rand = new Random();
+
+            EnqueueConditional(() => { return _isLoaded; });
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries;
+                for (Int32 ds = 0; ds < 2; ds++)
+                {
+                    dataSeries = new DataSeries();
+                    if (ds == 0)
+                    {
+                        for (Int32 dp = 0; dp < 5; dp++)
+                        {
+                            DataPoint dataPoint = new DataPoint();
+                            dataPoint.XValue = dp + 1;
+                            dataPoint.YValue = rand.Next(0, 100);
+                            dataSeries.DataPoints.Add(dataPoint);
+                        }
+                    }
+                    else
+                        dataSeries.RenderAs = RenderAs.Line;
+
+                    chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
         #region DataSeriesEventChecking
         /// <summary>
         /// Testing DataSeries Event

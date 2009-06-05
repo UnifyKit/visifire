@@ -350,6 +350,8 @@ namespace Visifire.Charts
                 case RenderAs.Line:
                 case RenderAs.Pie:
                 case RenderAs.Point:
+                case RenderAs.SectionFunnel:
+                case RenderAs.StreamLineFunnel:
                     MaximumY = (yValues.Count() > 0) ? (yValues).Max() : 0;
                     MinimumY = (yValues.Count() > 0) ? (yValues).Min() : 0;
                     break;

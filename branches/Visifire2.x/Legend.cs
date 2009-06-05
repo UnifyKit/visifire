@@ -1611,7 +1611,7 @@ namespace Visifire.Charts
 
             line.Margin = new Thickness(EntryMargin);
             line.Stroke = (marker.BorderColor);
-           
+            
             Double height = marker.TextBlockSize.Height > marker.MarkerSize.Height ? marker.TextBlockSize.Height : marker.MarkerSize.Height;
             lineMarker.Height = marker.MarkerActualSize.Height;
 
@@ -1627,6 +1627,7 @@ namespace Visifire.Charts
             line.StrokeDashArray = ApplyLineStyleForMarkerOfLegendEntry(line, marker.DataSeriesOfLegendMarker.LineStyle.ToString());
 
             lineMarker.Children.Add(line);
+            
             lineMarker.Children.Add(marker.Visual);
 
             if (!(VerticalAlignment == VerticalAlignment.Center && (HorizontalAlignment == HorizontalAlignment.Left || HorizontalAlignment == HorizontalAlignment.Right)))
@@ -1643,6 +1644,7 @@ namespace Visifire.Charts
 #endif      
 
             line.SetValue(Canvas.LeftProperty, (Double)(-marker.MarkerSize.Width / 2) - .4876);
+
             return lineMarker;
         }
 
@@ -1830,6 +1832,9 @@ namespace Visifire.Charts
                     marker.CreateVisual();                   
 
                     Canvas lineMarker = GetNewMarkerForLineChart(marker);
+
+                    //if (marker.DataSeriesOfLegendMarker.MarkerEnabled == false)
+                    //    marker.MarkerShape.Opacity = 0;
 
                     if ((currentWidth + lineMarker.Width) <= MaximumWidth)
                     {

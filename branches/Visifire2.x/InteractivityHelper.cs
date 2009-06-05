@@ -115,6 +115,8 @@ internal class InteractivityHelper
 
         RemoveOpacity(sender as FrameworkElement);
 
+        if (fe.Tag == null) return;
+
         DataPoint dp = (fe.Tag as ElementData).Element as DataPoint;
 
         foreach (FrameworkElement fe1 in dp.Faces.VisualComponents)
@@ -134,6 +136,8 @@ internal class InteractivityHelper
         FrameworkElement fe = sender as FrameworkElement;
 
         ApplyOpacity(sender as FrameworkElement);
+
+        if (fe.Tag == null) return;
 
         DataPoint dp = (fe.Tag as ElementData).Element as DataPoint;
 

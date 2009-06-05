@@ -67,6 +67,8 @@
     <Compile Include="Common.cs" />
     <Compile Include="DataPointTest.cs" />
     <Compile Include="DataSeriesTest.cs" />
+    <Compile Include="DateTimeAxisTest.cs" />
+    <Compile Include="FunnelChartTests.cs" />
     <Compile Include="LegendTest.cs" />
     <Compile Include="MajorTicksTest.cs" />
     <Compile Include="PerformanceTests.cs" />
@@ -77,6 +79,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="TitleTest.cs" />
+    <Compile Include="ToolTipTest.cs" />
     <Compile Include="TrendLineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ChartTest.cs" />

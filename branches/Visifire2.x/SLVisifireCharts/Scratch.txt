@@ -448,10 +448,8 @@ if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 dataPoint.IsNotificationEnable = true;
             }
         }
-        
-        
-        
-         // if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+ 
+        // if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
                             {   
                                 DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
 

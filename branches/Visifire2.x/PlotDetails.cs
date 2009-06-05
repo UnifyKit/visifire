@@ -237,6 +237,11 @@ namespace Visifire.Charts
             // Create Axis incase if it doesnt exist
             CreateMissingAxes();
 
+            Axis axisXSecondary = GetAxisXFromChart(Chart, AxisTypes.Secondary);
+
+            if (axisXSecondary != null)
+                throw new Exception("Note: Secondary AxisX is not yet supported in Visifire.");
+
             Axis axisX = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
             // Generate XValues for DataTime axis
@@ -443,7 +448,7 @@ namespace Visifire.Charts
 
                 if (axisX.IsDateTimeAxis)
                 {
-                    DateTime minDate, maxDate;    // Min and max date
+                    DateTime minDate, maxDate; // Min and max date
                     TimeSpan minDateRange, maxDateRange;
 
                     List<DateTime> xValuesAsDateTimeList = GetListOfXValue(axisX);
@@ -518,9 +523,9 @@ namespace Visifire.Charts
 
                         //if (minDate == maxDate)
                         //{
-                        //    //if (axisX.XValueType != ChartValueTypes.Time)
-                        //    //    minDate = minDate.AddDays(-1);
-                        //    autoIntervalType = IntervalTypes.Days;
+                        // //if (axisX.XValueType != ChartValueTypes.Time)
+                        // // minDate = minDate.AddDays(-1);
+                        // autoIntervalType = IntervalTypes.Days;
                         //}
 
                         if (axisX.XValueType == ChartValueTypes.DateTime || axisX.XValueType == ChartValueTypes.Date)
@@ -550,41 +555,41 @@ namespace Visifire.Charts
                                     if (axisX.IntervalType == IntervalTypes.Years)
                                     {
                                         if (autoIntervalType == IntervalTypes.Months || autoIntervalType == IntervalTypes.Weeks
-                                            || autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                            || autoIntervalType == IntervalTypes.Milliseconds
-                                            )
+                                        || autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
                                             isAcceptAutoIntervalType = true;
                                     }
                                     else if (axisX.IntervalType == IntervalTypes.Months)
                                     {
                                         if (autoIntervalType == IntervalTypes.Weeks || autoIntervalType == IntervalTypes.Days
-                                            || autoIntervalType == IntervalTypes.Hours || autoIntervalType == IntervalTypes.Minutes
-                                            || autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds
-                                            )
+                                        || autoIntervalType == IntervalTypes.Hours || autoIntervalType == IntervalTypes.Minutes
+                                        || autoIntervalType == IntervalTypes.Seconds || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
                                             isAcceptAutoIntervalType = true;
                                     }
                                     else if (axisX.IntervalType == IntervalTypes.Weeks)
                                     {
                                         if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                            || autoIntervalType == IntervalTypes.Milliseconds
-                                            )
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
                                             isAcceptAutoIntervalType = true;
                                     }
                                     else if (axisX.IntervalType == IntervalTypes.Days)
                                     {
                                         if (autoIntervalType == IntervalTypes.Days || autoIntervalType == IntervalTypes.Hours
-                                            || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                            || autoIntervalType == IntervalTypes.Milliseconds
-                                            )
+                                        || autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
                                             isAcceptAutoIntervalType = true;
                                     }
                                     else if (axisX.IntervalType == IntervalTypes.Hours)
                                     {
                                         if (autoIntervalType == IntervalTypes.Minutes || autoIntervalType == IntervalTypes.Seconds
-                                            || autoIntervalType == IntervalTypes.Milliseconds
-                                            )
+                                        || autoIntervalType == IntervalTypes.Milliseconds
+                                        )
                                             isAcceptAutoIntervalType = true;
                                     }
                                     else if (axisX.IntervalType == IntervalTypes.Minutes)
@@ -622,11 +627,11 @@ namespace Visifire.Charts
 
                                 //if (newMinDate != minDate)
                                 //{
-                                //    // Chart.InternalSeries[0].IsNotificationEnable = false;
-                                //    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                //    // Chart.InternalSeries[0].IsNotificationEnable = true;
+                                // // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                // // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                // // Chart.InternalSeries[0].IsNotificationEnable = true;
 
-                                //    minDate = newMinDate;
+                                // minDate = newMinDate;
                                 //}
                             }
                         }
@@ -634,7 +639,7 @@ namespace Visifire.Charts
                         if (axisX.XValueType == ChartValueTypes.Time)
                         {
                             if (axisX.IntervalType == IntervalTypes.Auto || Double.IsNaN((Double)axisX.Interval))
-                            {   
+                            {
                                 axisX._isDateTimeAutoInterval = true;
                                 axisX.InternalIntervalType = autoIntervalType;
                             }
@@ -655,8 +660,8 @@ namespace Visifire.Charts
                                     if (axisX.Interval == null || Double.IsNaN((Double)axisX.Interval))
                                     {
                                         if ((axisX.InternalIntervalType == IntervalTypes.Hours && maxDateRange.Hours == 0)
-                                            || (axisX.InternalIntervalType == IntervalTypes.Minutes && maxDateRange.Minutes == 0)
-                                            || (axisX.InternalIntervalType == IntervalTypes.Seconds && maxDateRange.Seconds == 0))
+                                        || (axisX.InternalIntervalType == IntervalTypes.Minutes && maxDateRange.Minutes == 0)
+                                        || (axisX.InternalIntervalType == IntervalTypes.Seconds && maxDateRange.Seconds == 0))
                                         {
                                             axisX.InternalIntervalType = autoIntervalType;
                                         }
@@ -687,11 +692,11 @@ namespace Visifire.Charts
 
                                     //if (newMinDate != minDate && minDate.TimeOfDay != maxDate.TimeOfDay)
                                     //{
-                                    //    // Chart.InternalSeries[0].IsNotificationEnable = false;
-                                    //    // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
-                                    //    // Chart.InternalSeries[0].IsNotificationEnable = true;
+                                    // // Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    // // Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    // // Chart.InternalSeries[0].IsNotificationEnable = true;
 
-                                    //    minDate = newMinDate;
+                                    // minDate = newMinDate;
                                     //}
                                 }
                             }
@@ -748,7 +753,7 @@ namespace Visifire.Charts
                 }
             }
         }
-        
+                
         /// <summary>
         /// Update interval in terms of time according to interval type
         /// </summary>
@@ -1112,7 +1117,7 @@ namespace Visifire.Charts
                     AddToPlotGroupsList(plotGroup.Key.RenderAs, axisX, axisY, plotGroup.ToList());
                 }
                 else
-                {
+                {   
                     // if the chart orientation do not match then assert.
                     Debug.Assert(false, "Invalid chart combination. See Documentation for Combination Charts.");
                     throw new Exception("Invalid chart combination");
@@ -1225,6 +1230,8 @@ namespace Visifire.Charts
 
                 case RenderAs.Pie:
                 case RenderAs.Doughnut:
+                case RenderAs.SectionFunnel:
+                case RenderAs.StreamLineFunnel:
                     chartOrientation = ChartOrientationType.NoAxis;
                     break;
 
@@ -1916,7 +1923,10 @@ namespace Visifire.Charts
         /// <returns>Double</returns>
         internal Double GetAbsoluteSumOfDataPoints(List<DataPoint> dataPoints)
         {
-            return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select Math.Abs(dataPoint.InternalYValue)).Sum();
+            if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.SectionFunnel || dataPoints[0].Parent.RenderAs == RenderAs.StreamLineFunnel))
+                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) && dataPoint.InternalYValue >=0 select Math.Abs(dataPoint.InternalYValue)).Sum();
+            else
+                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select Math.Abs(dataPoint.InternalYValue)).Sum();
         }
 
         /// <summary>

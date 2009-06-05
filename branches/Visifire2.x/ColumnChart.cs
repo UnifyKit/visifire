@@ -664,13 +664,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         columnFaces = Get3DColumn(columnParams);
-                        columnVisual = columnFaces.Visual;
+                        columnVisual = columnFaces.Visual as Panel;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
                         columnFaces = Get2DColumn(columnParams);
-                        columnVisual = columnFaces.Visual;
+                        columnVisual = columnFaces.Visual as Panel;
                     }
 
                     dataPoint.Faces = columnFaces;
@@ -736,13 +736,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         column = Get3DColumn(columnParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
                         column = Get2DColumn(columnParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                     }
 
                     dataPoint.Faces = column;
@@ -782,7 +782,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -919,13 +919,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                         }
 
                         dataPoint.Faces = column;
@@ -987,13 +987,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                         }
 
                         dataPoint.Faces = column;
@@ -1035,7 +1035,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1179,13 +1179,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                         }
 
                         dataPoint.Faces = column;
@@ -1248,13 +1248,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual;
+                            columnVisual = column.Visual as Panel;
                         }
 
                         dataPoint.Faces = column;
@@ -1296,7 +1296,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);

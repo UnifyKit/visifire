@@ -1245,6 +1245,76 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
+        #region TestToolTipSerialization
+
+        /// <summary>
+        /// Testing ToolTip Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestToolTipSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Visifire.Charts.ToolTip toolTip = new Visifire.Charts.ToolTip();
+            toolTip.FontColor = new SolidColorBrush(Colors.Aqua);
+            chart.ToolTips.Add(toolTip);
+
+            DataSeries ds = new DataSeries();
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(toolTip));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        #endregion
+
+        #region TestChartSerialization
+
+        /// <summary>
+        /// Testing Chart Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestChartSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(chart));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        #endregion
+
         /// <summary>
         /// Gets a default instance of Control (or a derived type) to test.
         /// </summary>

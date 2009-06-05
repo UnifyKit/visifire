@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
@@ -1868,6 +1869,47 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
+
+        #region TestLegendSerialization
+
+        /// <summary>
+        /// Testing Legend Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestLegendSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Legend legend = new Legend();
+            legend.Background = new SolidColorBrush(Colors.Aqua);
+            chart.Legends.Add(legend);
+
+            DataSeries ds = new DataSeries();
+            ds.ShowInLegend = true;
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(legend));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         /// <summary>

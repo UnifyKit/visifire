@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -335,6 +336,48 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
+
+        #region TestTicksSerialization
+
+        /// <summary>
+        /// Testing Ticks Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestTicksSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Axis axis = new Axis();
+            Ticks ticks = new Ticks();
+            ticks.LineColor = new SolidColorBrush(Colors.Blue);
+            axis.Ticks.Add(ticks);
+            chart.AxesX.Add(axis);
+
+            DataSeries ds = new DataSeries();
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(ticks));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         /// <summary>

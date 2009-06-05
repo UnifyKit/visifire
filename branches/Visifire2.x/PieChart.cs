@@ -3279,15 +3279,15 @@ namespace Visifire.Charts
         /// <param name="values">Target value collection</param>
         /// <param name="splines">List of KeySpline</param>
         /// <returns>DoubleAnimationUsingKeyFrames</returns>
-        private static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
-        {
+        internal static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DataSeries dataSeries, DataPoint dataPoint, DependencyObject target, String property, Double beginTime, DoubleCollection frameTime, DoubleCollection values, List<KeySpline> splines)
+        {   
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
 #if WPF
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_'));
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            CurrentDataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-            CurrentDataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            dataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            dataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif
@@ -3321,7 +3321,7 @@ namespace Visifire.Charts
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, opacity);
             DoubleCollection frames = Graphics.GenerateDoubleCollection(0, duration);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(frames.Count);
-            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
             storyboard.Children.Add(opacityAnimation);
             return storyboard;
         }
@@ -3369,7 +3369,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
             values = Graphics.GenerateDoubleCollection(0, yOffset);
             frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3379,7 +3379,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
             storyboard.Children.Add(sliceXAnimation);
             storyboard.Children.Add(sliceYAnimation);
@@ -3402,7 +3402,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(0, yOffset);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3412,7 +3412,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation);
                     storyboard.Children.Add(labelYAnimation);
@@ -3428,7 +3428,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3473,7 +3473,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
             values = Graphics.GenerateDoubleCollection(yOffset, 0);
             frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3483,7 +3483,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
             storyboard.Children.Add(sliceXAnimation);
             storyboard.Children.Add(sliceYAnimation);
@@ -3504,7 +3504,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(yOffset, 0);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3514,7 +3514,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation);
                     storyboard.Children.Add(labelYAnimation);
@@ -3530,7 +3530,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3584,7 +3584,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(0, yOffset);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3594,7 +3594,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -3620,7 +3620,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames sliceXAnimation1 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames sliceXAnimation1 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(0, yOffset);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3630,7 +3630,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames sliceYAnimation2 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames sliceYAnimation2 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(sliceXAnimation1);
                     storyboard.Children.Add(sliceYAnimation2);
@@ -3646,7 +3646,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3665,7 +3665,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(0, yOffset);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3675,7 +3675,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -3734,7 +3734,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(yOffset, 0);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3744,7 +3744,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -3768,7 +3768,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation1 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation1 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(yOffset, 0);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3778,7 +3778,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation2 = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation2 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation1);
                     storyboard.Children.Add(labelYAnimation2);
@@ -3794,7 +3794,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3813,7 +3813,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(yOffset, 0);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3823,7 +3823,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);

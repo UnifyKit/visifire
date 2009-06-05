@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
@@ -810,6 +811,47 @@ namespace WPFVisifireChartsTest
             });
         }
         #endregion Performance and Stress
+
+        #region TestTitleSerialization
+
+        /// <summary>
+        /// Testing Title Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestTitleSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Title title = new Title();
+            title.Background = new SolidColorBrush(Colors.Aqua);
+            chart.Titles.Add(title);
+
+            DataSeries ds = new DataSeries();
+            ds.ShowInLegend = true;
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(title));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        #endregion
 
         /// <summary>
         /// Instances that should be used across all Title tests.

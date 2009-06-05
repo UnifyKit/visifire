@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -2835,6 +2836,39 @@ namespace WPFVisifireChartsTest
                 window.Close();
             }
         }
+        #endregion
+
+        #region TestDataSeriesSerialization
+
+        /// <summary>
+        /// Testing DataSeries Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestDataSeriesSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries ds = new DataSeries();
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(ds));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         /// <summary>

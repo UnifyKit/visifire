@@ -1888,9 +1888,6 @@ namespace WPFVisifireChartsTest
 
             Axis axis = new Axis();
 
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
             Window window = new Window();
             window.Content = chart;
             window.Show();
@@ -1904,6 +1901,40 @@ namespace WPFVisifireChartsTest
                 chart.AxesY.Add(axis);
 
                 dataSeries.AxisYType = AxisTypes.Secondary;
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        #endregion
+
+        #region TestAxisSerialization
+
+        /// <summary>
+        /// Testing Axis Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestAxisSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Axis axis = new Axis();
+            axis.Interval = 0.5;
+            chart.AxesX.Add(axis);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(axis));
             }
 
             window.Dispatcher.InvokeShutdown();

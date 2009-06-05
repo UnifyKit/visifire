@@ -450,13 +450,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         column = Get3DBar(barParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
                     }
                     else
                     {
                         column = Get2DBar(barParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                     }
 
                     dataPoint.Faces = column;
@@ -524,13 +524,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         column = Get3DBar(barParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
                     }
                     else
                     {
                         column = Get2DBar(barParams);
-                        columnVisual = column.Visual;
+                        columnVisual = column.Visual as Panel;
                     }
 
                     dataPoint.Faces = column;
@@ -569,7 +569,7 @@ namespace Visifire.Charts
                 barParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
@@ -702,13 +702,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             bar = Get3DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                             barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
                             bar = Get2DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                         }
 
                         dataPoint.Faces = bar;
@@ -768,13 +768,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             bar = Get3DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                             barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
                             bar = Get2DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                         }
 
                         dataPoint.Faces = bar;
@@ -814,7 +814,7 @@ namespace Visifire.Charts
                 barParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
@@ -949,13 +949,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             bar = Get3DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                             barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
                             bar = Get2DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                         }
 
                         dataPoint.Faces = bar;
@@ -1017,13 +1017,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             bar = Get3DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                             barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
                         }
                         else
                         {
                             bar = Get2DBar(barParams);
-                            barVisual = bar.Visual;
+                            barVisual = bar.Visual as Panel;
                         }
 
                         dataPoint.Faces = bar;
@@ -1066,7 +1066,7 @@ namespace Visifire.Charts
                 barParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);

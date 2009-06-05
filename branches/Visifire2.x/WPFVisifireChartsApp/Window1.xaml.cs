@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Markup;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -17,6 +18,7 @@ using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Media.Animation;
 using System.IO;
+using System.Xml;
 
 namespace WPFVisifireChartsApp
 {

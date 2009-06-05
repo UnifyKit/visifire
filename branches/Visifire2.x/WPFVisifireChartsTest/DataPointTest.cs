@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
@@ -2534,6 +2535,42 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
+
+        #region TestDataPointSerialization
+
+        /// <summary>
+        /// Testing DataPoint Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestDataPointSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            DataSeries ds = new DataSeries();
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(dp));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         /// <summary>

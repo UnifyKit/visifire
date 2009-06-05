@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using Visifire.Charts;
 using Visifire.Commons;
+
 namespace SLVisifireChartsTest
 {
     /// <summary>

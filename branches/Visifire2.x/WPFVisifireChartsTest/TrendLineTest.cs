@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
 using Visifire.Commons;
@@ -621,6 +622,46 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
+        #endregion
+
+        #region TestTrendLineSerialization
+
+        /// <summary>
+        /// Testing TrendLine Serialization
+        /// </summary>
+        [TestMethod]
+        public void TestTrendLineSerialization()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TrendLine trendLine = new TrendLine();
+            trendLine.Value = 10;
+            chart.TrendLines.Add(trendLine);
+
+            DataSeries ds = new DataSeries();
+            DataPoint dp = new DataPoint();
+            dp.YValue = 20;
+            ds.DataPoints.Add(dp);
+            chart.Series.Add(ds);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                MessageBox.Show(XamlWriter.Save(trendLine));
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
         #endregion
 
         /// <summary>

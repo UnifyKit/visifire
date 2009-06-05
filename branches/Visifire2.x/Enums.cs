@@ -145,7 +145,9 @@ namespace Visifire.Charts
         StackedArea = 10,
         StackedArea100 = 11,
         Bubble = 12,
-        Point = 13
+        Point = 13,
+        StreamLineFunnel = 14,
+        SectionFunnel = 15
     }
 
     /// <summary>

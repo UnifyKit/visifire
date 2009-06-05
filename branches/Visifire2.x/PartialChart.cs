@@ -218,6 +218,18 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.UniqueColors dependency property.
+        /// </returns>
+        public static readonly DependencyProperty UniqueColorsProperty = DependencyProperty.Register
+            ("UniqueColors",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(true, OnUniqueColorsPropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.Chart.ScrollingEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -422,6 +434,25 @@ namespace Visifire.Charts
             typeof(Chart),
             new PropertyMetadata(OnMinimumGapPropertyChanged));
 
+        /// <summary>
+        /// Decides how the color will be applied to the DataPoints.
+        /// <example>If UniqueColors = True and if only one DataSeries is present in Chart then each DataPoint in that DataSeries takes one color from the ColorSet given to the chart.
+        /// If UniqueColors = True and if more than one DataSeries are present in Chart then each series takes one color from the ColorSet provided at the chart.
+        /// If UniqueColors = False then each DataSeries takes one color
+        /// </example>
+        /// </summary>
+        public Boolean UniqueColors
+        {
+            get
+            {
+                return (Boolean)GetValue(UniqueColorsProperty);
+            }
+            set
+            {
+                SetValue(UniqueColorsProperty, value);
+            }
+        }
+        
         /// <summary>
         /// Minimum gap between two DataPoint of same series in PlotArea
         /// </summary>
@@ -1535,6 +1566,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// UniqueColorsProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnUniqueColorsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
+
+        /// <summary>
         /// View3DProperty changed call back function
         /// </summary>
         /// <param name="d"></param>
@@ -1870,7 +1912,7 @@ namespace Visifire.Charts
                                 dp.DeSelectOthers();
                         }
                         else
-                            dp.DeSelect(dp);
+                            dp.DeSelect(dp, true);
                     }
                 }
             }
@@ -1880,7 +1922,7 @@ namespace Visifire.Charts
         /// Get ColorSet by ColorSet name
         /// </summary>
         /// <param name="id">Name of the ColorSet</param>
-        /// <returns></returns>
+        /// <returns>ColorSet</returns>
         internal ColorSet GetColorSetByName(String id)
         {
             ColorSet colorSet = EmbeddedColorSets.GetColorSetByName(id);

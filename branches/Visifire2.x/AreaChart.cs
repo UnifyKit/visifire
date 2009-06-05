@@ -700,7 +700,7 @@ namespace Visifire.Charts
                     columnParams.Depth = depth3d;
 
                     Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                    Panel zeroPlankVisual = zeroPlank.Visual;
+                    Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                     Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                     zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -921,7 +921,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1152,7 +1152,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual;
+                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);

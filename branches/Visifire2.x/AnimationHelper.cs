@@ -181,13 +181,15 @@ namespace Visifire.Commons
             return storyboard;
         }
 
+
+
         /// <summary>
         /// Returns list of KeySpline from point array
         /// </summary>
         /// <param name="values">List of points</param>
         /// <returns>List of KeySpline</returns>
         internal static List<KeySpline> GenerateKeySplineList(params Point[] values)
-        {
+        {   
             List<KeySpline> splines = new List<KeySpline>();
             for (Int32 i = 0; i < values.Length; i += 2)
                 splines.Add(GetKeySpline(values[i], values[i + 1]));

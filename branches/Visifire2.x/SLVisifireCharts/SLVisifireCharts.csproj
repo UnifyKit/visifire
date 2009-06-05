@@ -123,6 +123,9 @@
     <Compile Include="..\Enums.cs">
       <Link>Enums.cs</Link>
     </Compile>
+    <Compile Include="..\FunnelChart.cs">
+      <Link>FunnelChart.cs</Link>
+    </Compile>
     <Compile Include="..\Graphics.cs">
       <Link>Graphics.cs</Link>
     </Compile>

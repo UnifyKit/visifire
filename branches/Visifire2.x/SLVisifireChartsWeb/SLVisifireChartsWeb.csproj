@@ -148,7 +148,6 @@
     <Content Include="ClientBin\SLVisifireApp.xap" />
     <Content Include="data.xml" />
     <Content Include="Default.aspx" />
-    <Content Include="JsEventHandling.htm" />
     <Content Include="LiveUpdate.htm" />
     <Content Include="StylingAndAnimation.htm" />
     <Content Include="TestPage1.htm" />
@@ -184,7 +183,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>55584</DevelopmentServerPort>
+          <DevelopmentServerPort>60933</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
