@@ -256,7 +256,7 @@ namespace Visifire.Charts
 
             if (distinctValues.Length <= 1 )
             {
-                return 0;
+                return Double.PositiveInfinity;
             }
 
             for (Int32 i = 0; i < distinctValues.Length - 1; i++)

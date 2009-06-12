@@ -2459,8 +2459,10 @@ namespace Visifire.Charts
             Double minValue = minimumDifference;
 
 
-            if (minValue == 0)
+            if (Double.IsInfinity(minValue))
+            {
                 minValue = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) * .8;
+            }
 
             if (AxisMinimum != null && IsDateTimeAxis)
             {

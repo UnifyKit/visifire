@@ -217,6 +217,13 @@ namespace Visifire.Charts
 
         #region Public Properties
 
+        // Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DataPointWidthProperty =
+            DependencyProperty.Register("DataPointWidth",
+            typeof(Double),
+            typeof(Chart),
+            new PropertyMetadata(Double.NaN,OnDataPointWidthPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
         /// </summary>
@@ -452,7 +459,16 @@ namespace Visifire.Charts
                 SetValue(UniqueColorsProperty, value);
             }
         }
-        
+
+        /// <summary>
+        /// Width of a DataPoint
+        /// </summary>
+        public Double DataPointWidth
+        {
+            get { return (Double)GetValue(DataPointWidthProperty); }
+            set { SetValue(DataPointWidthProperty, value); }
+        }
+
         /// <summary>
         /// Minimum gap between two DataPoint of same series in PlotArea
         /// </summary>
@@ -891,6 +907,7 @@ namespace Visifire.Charts
             // Attach event handler on collection changed event with AxisY collection
             (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
         }
+
 
         /// <summary>
         /// OnMouseMoveLeave chart set ToolTip position. 
@@ -1552,6 +1569,17 @@ namespace Visifire.Charts
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
+        }
+
+        /// <summary>
+        /// DataPointWidthProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnDataPointWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
         }
 
         /// <summary>

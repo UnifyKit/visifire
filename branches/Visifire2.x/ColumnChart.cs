@@ -322,7 +322,8 @@ namespace Visifire.Charts
             //    finalWidth = maxPosValue - left;
             //}
 
-            return (finalWidth < 2.5) ? 2.5 : finalWidth;
+            return (finalWidth < 2) ? 2 : finalWidth;
+            //return finalWidth;
         }
 
         /// <summary>
@@ -587,6 +588,9 @@ namespace Visifire.Charts
 
             Double minDiffValue = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
+            if (Double.IsPositiveInfinity(minDiffValue))
+                minDiffValue = 0;
+
             Axis axisXwithMinInterval = dataSeriesList4Rendering[0].PlotGroup.AxisX;
 
             //minDiffValue = (minDiffValue < (Double)axisXwithMinInterval.InternalInterval) ? minDiffValue : (Double)axisXwithMinInterval.InternalInterval;
@@ -603,6 +607,7 @@ namespace Visifire.Charts
             Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
 
             Double widthPerColumn;
+            
             if (minDiffValue == 0)
             {
                 widthPerColumn = width * .5 / numberOfDivisions;
@@ -614,6 +619,12 @@ namespace Visifire.Charts
                 widthPerColumn /= numberOfDivisions;
             }
 
+            if (!Double.IsNaN(chart.DataPointWidth))
+            {
+                if(chart.DataPointWidth >= 0)
+                    widthPerColumn = chart.DataPointWidth / 100 * chart.PlotArea.Width;
+            }
+            
             Boolean plankDrawn = false;
 
             foreach (Double xValue in xValues)
@@ -840,6 +851,9 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
+                if (Double.IsPositiveInfinity(minDiff))
+                    minDiff = 0;
+
                 //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
@@ -860,7 +874,16 @@ namespace Visifire.Charts
                     maxColumnWidth = widthPerColumn;
                     widthPerColumn /= widthDivisionFactor;
                 }
-                
+
+                if (!Double.IsNaN(chart.DataPointWidth))
+                {
+                    if (chart.DataPointWidth >= 0)
+                    {
+                        widthPerColumn = maxColumnWidth = chart.DataPointWidth / 100 * chart.PlotArea.Width;
+
+                        maxColumnWidth *= widthDivisionFactor;
+                    }
+                }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
 
@@ -1099,6 +1122,9 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
+                if (Double.IsPositiveInfinity(minDiff))
+                    minDiff = 0;
+
                 //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
@@ -1115,6 +1141,15 @@ namespace Visifire.Charts
                     widthPerColumn *= (1 - COLUMN_GAP_RATIO);
                     maxColumnWidth = widthPerColumn;
                     widthPerColumn /= widthDivisionFactor;
+                }
+
+                if (!Double.IsNaN(chart.DataPointWidth))
+                {
+                    if (chart.DataPointWidth >= 0)
+                    {
+                        widthPerColumn = maxColumnWidth = chart.DataPointWidth / 100 * chart.PlotArea.Width;
+                        maxColumnWidth *= widthDivisionFactor;
+                    }
                 }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();

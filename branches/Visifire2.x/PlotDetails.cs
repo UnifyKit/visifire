@@ -1654,6 +1654,7 @@ namespace Visifire.Charts
         {
             return (from plotData in PlotGroups
                     where !Double.IsNaN(plotData.MinDifferenceX)
+                    
                     select plotData.MinDifferenceX).Min();
         }
 

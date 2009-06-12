@@ -310,6 +310,29 @@ namespace WPFVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the UniqueColors default property value.
+        /// </summary>
+        [TestMethod]
+        public void CheckUniqueColorsDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+                Assert.IsTrue(chart.UniqueColors);
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
         /// Check the AnimationEnabled default property value.
         /// </summary>
         [TestMethod]
@@ -692,6 +715,30 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
                 Assert.IsTrue(chart.View3D);
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+
+        /// <summary>
+        /// Check the UniqueColors new property value.
+        /// </summary>
+        [TestMethod]
+        public void CheckUniqueColorsNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+            chart.UniqueColors = false;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+                Assert.IsFalse(chart.UniqueColors);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -1313,6 +1360,109 @@ namespace WPFVisifireChartsTest
             window.Close();
         }
 
+        #endregion
+
+        #region TestChartWithoutWidthHeight
+        /// <summary>
+        /// Test Chart without setting Width and Height
+        /// </summary>
+        [TestMethod]
+        public void TestChartWithoutWidthHeight()
+        {
+            Chart chart = new Chart();
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(Double.NaN, chart.Height);
+                Assert.AreEqual(Double.NaN, chart.Width);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+        #endregion
+
+        #region TestChartWithoutHeight
+        /// <summary>
+        /// Test Chart without setting Height
+        /// </summary>
+        [TestMethod]
+        public void TestChartWithoutHeight()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(Double.NaN, chart.Height);
+                Assert.AreEqual(500, chart.Width);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+        #endregion
+
+        #region TestChartWithoutWidth
+        /// <summary>
+        /// Test Chart without setting Width
+        /// </summary>
+        [TestMethod]
+        public void TestChartWithoutWidth()
+        {
+            Chart chart = new Chart();
+            chart.Height = 300;
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                Assert.AreEqual(300, chart.Height);
+                Assert.AreEqual(Double.NaN, chart.Width);
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
+        #endregion
+
+        #region TestUniqueColors
+        /// <summary>
+        /// Test Unique Colors
+        /// </summary>
+        [TestMethod]
+        public void TestUniqueColors()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.UniqueColors = false;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            chart.Series[0].RenderAs = RenderAs.Column;
+
+            Window window = new Window();
+            window.Content = chart;
+            window.Show();
+            if (_isLoaded)
+            {
+                for (Int32 i = 0; i < 5; i++)
+                {
+                    if (i < 4)
+                        Common.AssertBrushesAreEqual(chart.Series[0].DataPoints[i].Color, chart.Series[0].DataPoints[i + 1].Color);
+                }
+            }
+
+            window.Dispatcher.InvokeShutdown();
+            window.Close();
+        }
         #endregion
 
         /// <summary>

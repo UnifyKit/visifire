@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.2.3 beta
+Visifire2.js v2.2.3 beta 2
     
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -103,12 +103,12 @@ if (!window.Visifire2) {
     Visifire2.prototype.setDataXml = function(pDataXml) {
         var slControl = this._getSlControl();
 
+        this.dataXml = pDataXml;
+
         if (slControl != null && this.dataXml != null)
             slControl.Content.wrapper.AddDataXML(pDataXml);
-
-        this.dataXml = pDataXml;
     }
-
+    
     /*  Set data Uri to chart control
         
         pDataUri  => Chart data uri as string
@@ -116,10 +116,10 @@ if (!window.Visifire2) {
     Visifire2.prototype.setDataUri = function(pDataUri) {
         var slControl = this._getSlControl();
 
+        this.dataUri = pDataUri;
+        
         if (slControl != null && this.dataUri != null)
             slControl.Content.wrapper.AddDataUri(pDataUri);
-
-        this.dataUri = pDataUri;
     }
     
     /*  Render the chart
@@ -137,7 +137,7 @@ if (!window.Visifire2) {
         else
             this._reRender(vSlControl);
     }
-
+    
     /*  Set size of the chart control
         
         pWidth   => Width of the chart
@@ -156,7 +156,7 @@ if (!window.Visifire2) {
             this.height = pHeight;
         }
     }
-
+    
     /*  Set LogLevel of the chart control
         
         level  => loglevel value used to generate a process log depending on logging level.
@@ -202,7 +202,7 @@ if (!window.Visifire2) {
         if (vThisObject.loaded != null)
             window["visifireChartLoaded" + vThisObject.index] = vThisObject.loaded;
     }
-    
+     
     /*  Returns current silverlight control reference 
     */
     Visifire2.prototype._getSlControl = function() {
@@ -228,7 +228,7 @@ if (!window.Visifire2) {
         vThisObject.targerElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
 
         vWidth = (vThisObject.width != null) ? vThisObject.width : (vThisObject.targerElement.offsetWidth != 0) ? vThisObject.targerElement.offsetWidth : 500;
-
+        
         vHeight = (vThisObject.height != null) ? vThisObject.height : (vThisObject.targerElement.offsetHeight != 0) ? vThisObject.targerElement.offsetHeight : 300;
 
         if (!vThisObject.id)
@@ -282,7 +282,7 @@ if (!window.Visifire2) {
 		        + '<br/>Please restart the browser after installation.'
 		        + '</a>'
 		        + '</object>';
-
+        
         this.targerElement.innerHTML = html;
     }
     

@@ -148,6 +148,9 @@
     <Compile Include="..\InteractivityHelper.cs">
       <Link>InteractivityHelper.cs</Link>
     </Compile>
+    <Compile Include="..\LabelPlacementHelper.cs">
+      <Link>LabelPlacementHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Legend.cs">
       <Link>Legend.cs</Link>
     </Compile>

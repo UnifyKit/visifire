@@ -320,12 +320,142 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
-        #region Private Data
+        #region TestMultipleGridsInAxis4VerticalCharts
+        /// <summary>
+        /// Test multiple Grids in an Axis for Vertical Charts
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultipleGridsInAxis4VerticalCharts()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
 
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            DataSeries dataSeries = new DataSeries();
+            for (Int32 i = 0; i < 6; i++)
+                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+            chart.Series.Add(dataSeries);
+
+            EnqueueCallback(() =>
+            {
+                Axis axis = new Axis();
+                ChartGrid grid = new ChartGrid();
+                grid.Interval = 1;
+                grid.LineColor = new SolidColorBrush(Colors.Red);
+                grid.LineThickness = 1;
+                axis.Grids.Add(grid);
+                grid = new ChartGrid();
+                grid.Interval = 0.5;
+                grid.LineColor = new SolidColorBrush(Colors.Green);
+                grid.LineThickness = 0.8;
+                axis.Grids.Add(grid);
+                chart.AxesX.Add(axis);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestMultipleGridsInAxis4HorizontalCharts
+        /// <summary>
+        /// Test multiple Grids in an Axis for Horizontal Charts
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultipleGridsInAxis4HorizontalCharts()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            for (Int32 i = 0; i < 6; i++)
+                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+            chart.Series.Add(dataSeries);
+
+            EnqueueCallback(() =>
+            {
+                Axis axis = new Axis();
+                ChartGrid grid = new ChartGrid();
+                grid.Interval = 1;
+                grid.LineColor = new SolidColorBrush(Colors.Red);
+                grid.LineThickness = 1;
+                axis.Grids.Add(grid);
+                grid = new ChartGrid();
+                grid.Interval = 0.5;
+                grid.LineColor = new SolidColorBrush(Colors.Green);
+                grid.LineThickness = 0.8;
+                axis.Grids.Add(grid);
+                chart.AxesX.Add(axis);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
+        }
+
+        #region Private Data
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement1;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
-        private const int _sleepTime = 1000;
+        private const int _sleepTime = 2000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
+
+        /// <summary>
+        /// axisX reference
+        /// </summary>
+        private Axis _axisX;
+
+        /// <summary>
+        /// AxisY reference
+        /// </summary>
+        private Axis _axisY;
 
         #endregion
     }

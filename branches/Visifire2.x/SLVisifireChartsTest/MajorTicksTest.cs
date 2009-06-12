@@ -275,11 +275,143 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region TestMultipleTicksInAxis4VerticalCharts
+        /// <summary>
+        /// Test multiple Ticks in an Axis for Vertical Charts
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultipleTicksInAxis4VerticalCharts()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            DataSeries dataSeries = new DataSeries();
+            for (Int32 i = 0; i < 6; i++)
+                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+            chart.Series.Add(dataSeries);
+
+            EnqueueCallback(() =>
+            {
+                Axis axis = new Axis();
+                Ticks tick = new Ticks();
+                tick.Interval = 1;
+                tick.LineColor = new SolidColorBrush(Colors.Red);
+                tick.LineThickness = 1;
+                axis.Ticks.Add(tick);
+                tick = new Ticks();
+                tick.Interval = 0.5;
+                tick.LineColor = new SolidColorBrush(Colors.Green);
+                tick.LineThickness = 0.8;
+                axis.Ticks.Add(tick);
+                chart.AxesX.Add(axis);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestMultipleTicksInAxis4HorizontalCharts
+        /// <summary>
+        /// Test multiple Ticks in an Axis for Horizontal Charts
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultipleTicksInAxis4HorizontalCharts()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            for (Int32 i = 0; i < 6; i++)
+                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+            chart.Series.Add(dataSeries);
+
+            EnqueueCallback(() =>
+            {
+                Axis axis = new Axis();
+                Ticks tick = new Ticks();
+                tick.Interval = 1;
+                tick.LineColor = new SolidColorBrush(Colors.Red);
+                tick.LineThickness = 1;
+                axis.Ticks.Add(tick);
+                tick = new Ticks();
+                tick.Interval = 0.5;
+                tick.LineColor = new SolidColorBrush(Colors.Green);
+                tick.LineThickness = 0.8;
+                axis.Ticks.Add(tick);
+                chart.AxesX.Add(axis);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        /// <summary>
+        /// Event handler for loaded event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _isLoaded = true;
+        }
+
         #region Private Data
         /// <summary>
-        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks.
+        /// Html element reference
         /// </summary>
-        private const int _sleepTime = 1000;
+        private System.Windows.Browser.HtmlElement _htmlElement1;
+
+        /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement2;
+        /// <summary>
+        /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
+        /// </summary>
+        private const int _sleepTime = 2000;
+
+        /// <summary>
+        /// Whether the chart is loaded
+        /// </summary>
+        private bool _isLoaded = false;
+
+        /// <summary>
+        /// axisX reference
+        /// </summary>
+        private Axis _axisX;
+
+        /// <summary>
+        /// AxisY reference
+        /// </summary>
+        private Axis _axisY;
+
         #endregion
     }
 }

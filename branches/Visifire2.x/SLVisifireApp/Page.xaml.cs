@@ -13,6 +13,7 @@ using Visifire.Charts;
 using Visifire.Commons;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text;
 using System.Windows.Data;
 
 namespace SLVisifireApp

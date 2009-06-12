@@ -4,16 +4,17 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
 >
-    <Grid x:Name="LayoutRoot" Width="400" Height="350">
+    <Grid x:Name="LayoutRoot" Width="688" Height="400">
 
-        <vc:Chart Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
+       <vc:Chart Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Addmission Process"/>
             </vc:Chart.Titles>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Line" ShowInLegend="False" LabelText="#AxisXLabel, #YValue">
+                <vc:DataSeries RenderAs="StreamLineFunnel" ShowInLegend="False" LabelEnabled="True" LabelText="#AxisXLabel, #YValue"
+                               >
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint AxisXLabel="Students Applied Online" YValue="600"/>
                         <vc:DataPoint AxisXLabel="Students Called for Test" YValue="420"/>

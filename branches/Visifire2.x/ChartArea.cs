@@ -1107,6 +1107,9 @@ namespace Visifire.Charts
         /// <param name="newSize">New Size of the plotarea layout</param>
         private void UpdateLayoutSettings(Size newSize)
         {
+            Chart.PlotArea.Height = newSize.Height;
+            Chart.PlotArea.Width = newSize.Width;
+ 
             Chart._drawingCanvas.Height = newSize.Height;
             Chart._drawingCanvas.Width = newSize.Width;
 

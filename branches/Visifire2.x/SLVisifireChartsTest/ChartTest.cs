@@ -282,7 +282,7 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
-        #region Empty Template
+        #region EmptyTemplate
         [TestMethod]
         public void EmptyTemplate()
         {
@@ -311,6 +311,26 @@ namespace SLVisifireChartsTest
 
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.View3D));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the UniqueColors default property value.
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckUniqueColorsDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.IsTrue(chart.UniqueColors));
 
             EnqueueTestComplete();
         }
@@ -686,6 +706,27 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => chart.View3D = true,
                 () => Assert.IsTrue(chart.View3D));
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check UniqueColors new property value
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CheckUniqueColorsNewPropertyValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+
+            CreateAsyncTask(chart,
+                () => chart.UniqueColors = false,
+                () => Assert.IsFalse(chart.UniqueColors));
 
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
@@ -1466,6 +1507,99 @@ namespace SLVisifireChartsTest
         }
 
         #endregion CheckChartTitles
+
+        #region TestChartWithoutWidthHeight
+        /// <summary>
+        /// Test Chart without setting Width and Height
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestChartWithoutWidthHeight()
+        {
+            Chart chart = new Chart();
+
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(Double.NaN, chart.Height),
+                () => Assert.AreEqual(Double.NaN, chart.Width));
+
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestChartWithoutHeight
+        /// <summary>
+        /// Test Chart without setting Height
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestChartWithoutHeight()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(Double.NaN, chart.Height),
+                () => Assert.AreEqual(500, chart.Width));
+
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestChartWithoutWidth
+        /// <summary>
+        /// Test Chart without setting Width
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestChartWithoutWidth()
+        {
+            Chart chart = new Chart();
+            chart.Height = 300;
+
+            EnqueueSleep(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(300, chart.Height),
+                () => Assert.AreEqual(Double.NaN, chart.Width));
+
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestUniqueColors
+        /// <summary>
+        /// Test Unique Colors
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestUniqueColors()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.UniqueColors = false;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            chart.Series[0].RenderAs = RenderAs.Column;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    for (Int32 i = 0; i < 5; i++)
+                    {
+                        if (i < 4)
+                            Common.AssertBrushesAreEqual(chart.Series[0].DataPoints[i].Color, chart.Series[0].DataPoints[i + 1].Color);
+                    }
+                });
+
+            EnqueueTestComplete();
+        }
+        #endregion
 
         /// <summary>
         /// Gets a chart

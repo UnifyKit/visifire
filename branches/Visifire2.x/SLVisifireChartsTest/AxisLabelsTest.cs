@@ -634,6 +634,82 @@ namespace SLVisifireChartsTest
 
         #endregion
 
+        #region TestAxisDecimalIntervalWithAxisXLabel
+        /// <summary>
+        /// Test Axis Interval in decimal if AxisXLabel is set in DataPoints
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisDecimalIntervalWithAxisXLabel()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            for (Int32 i = 0; i < 10; i++)
+                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
+            chart.Series.Add(dataSeries);
+
+            EnqueueCallback(() =>
+            {
+                Axis axis = new Axis();
+                axis.Interval = 0.1;
+                chart.AxesX.Add(axis);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
+        #region TestBiggerAxisLabels
+        /// <summary>
+        /// Test bigger AxisLabels
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestBiggerAxisLabels()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 300;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Column;
+                for (Int32 i = 0; i < 6; i++)
+                    dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire Chart Visifire Chart Visifire Chart", YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
         /// <summary>
         /// Event handler for click event of the Html element
         /// </summary>

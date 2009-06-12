@@ -1,11 +1,12 @@
-﻿<vc:Chart Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
+﻿<vc:Chart Width="400" Height="300" Theme="Theme1" BorderBrush="Gray" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+>
 
   <vc:Chart.Titles>
-    <vc:Title Text="Addmission Process"/>
+  <vc:Title Text="Addmission Process"/>
   </vc:Chart.Titles>
-
+    
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="StreamLineFunnel" ShowInLegend="False" LabelText="#AxisXLabel, #YValue">
+    <vc:DataSeries RenderAs="Column" ShowInLegend="False" LabelText="#AxisXLabel, #YValue">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="Students Applied Online" YValue="600"/>
         <vc:DataPoint AxisXLabel="Students Called for Test" YValue="420"/>

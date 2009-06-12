@@ -16,6 +16,8 @@ namespace Visifire.Charts
 {
     internal static class FunnelChart
     {
+        public static Grid _funnelChartGrid;
+
         /// <summary>
         /// Returns the visual object for funnel chart 
         /// </summary>
@@ -31,7 +33,9 @@ namespace Visifire.Charts
         {   
             if (seriesList.Count > 0)
             {
-                DataSeries funnelSeries;
+                DataSeries funnelSeries;            // DataSeries used for drawing funnel chart
+                List<DataPoint> funnelDataPoints;   // DataPoints considered for drawing funnel chart
+
                 // Select DataSeries for render
                 List<DataSeries> selectedDataSeriesList = (from ds in seriesList where (Boolean)ds.Enabled == true select ds).ToList();
 
@@ -43,16 +47,11 @@ namespace Visifire.Charts
                 List<DataPoint> tempDataPoints = (from dp in funnelSeries.DataPoints where dp.Enabled == true && dp.YValue >= 0 select dp).ToList();
 
                 // If number of DataPoints is equals to 0 then dont do any operation
-                if (tempDataPoints.Count == 0)
+                if (tempDataPoints.Count == 0 || (tempDataPoints.Count == 1 && tempDataPoints[0].YValue == 0))
                     return null;
-
-                if (tempDataPoints.Count == 1 && tempDataPoints[0].YValue == 0)
-                    return null;
-
-                List<DataPoint> funnelDataPoints;
-
+                
                 if (isStreamLine)
-                {
+                {   
                     if (tempDataPoints.Count <= 1)
                         throw new Exception("Invalid DataSet. StreamLineFunnel chart must have more than one DataPoint in a DataSeries.");
 
@@ -62,7 +61,7 @@ namespace Visifire.Charts
                     funnelDataPoints = tempDataPoints.ToList();
 
                 // Create funnel chart canvas
-                Grid funnelChartCanvas = new Grid() { Height = height, Width = width };
+                _funnelChartGrid = new Grid() { Height = height, Width = width };
 
                 #region Create layout for Funnel chart and labels 
                     
@@ -72,8 +71,8 @@ namespace Visifire.Charts
                 // Create canvas for funnel
                 Canvas funnelCanvas = new Canvas() { Height = height ,HorizontalAlignment= HorizontalAlignment.Left };
 
-                funnelChartCanvas.Children.Add(funnelCanvas);
-                funnelChartCanvas.Children.Add(labelCanvas);
+                _funnelChartGrid.Children.Add(funnelCanvas);
+                _funnelChartGrid.Children.Add(labelCanvas);
                 
                 #endregion
 
@@ -81,9 +80,9 @@ namespace Visifire.Charts
                     funnelSeries.Storyboard = new Storyboard();
 
                 // Creating labels for 
-                CreateLabelsAndSetFunnelCanvasSize(isStreamLine, funnelChartCanvas, labelCanvas, funnelCanvas, funnelDataPoints);
+                CreateLabelsAndSetFunnelCanvasSize(isStreamLine, _funnelChartGrid, labelCanvas, funnelCanvas, funnelDataPoints);
 
-                Double minPointHeight = funnelSeries.MinPointHeight;
+                Double minPointHeight = funnelSeries.MinPointHeight;   
                 Double yScale = 40;
                 Boolean isSameSlantAngle = true;
                 Double bottomRadius = 5;
@@ -92,9 +91,9 @@ namespace Visifire.Charts
                 funnelCanvas = CreateFunnelChart(funnelSeries, funnelDataPoints, isStreamLine, funnelCanvas, minPointHeight, chart.View3D, yScale, gapRatio, isSameSlantAngle, bottomRadius, animationEnabled);
                 
                 // here
-                //funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
+                // funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
 
-                return funnelChartCanvas;
+                return _funnelChartGrid;
             }
             
             return null;
@@ -117,7 +116,7 @@ namespace Visifire.Charts
             for ( ; index < funnelDataPoints.Count; index++)
             {   
                 // Create label for a funnel slice
-                funnelDataPoints[index].LabelVisual = CreateLabelForDataPoint(funnelDataPoints[index]);
+                funnelDataPoints[index].LabelVisual = CreateLabelForDataPoint(funnelDataPoints[index], isStreamLine, index);
 
                 // Calculate label size
                 Size labelSize = Graphics.CalculateVisualSize(funnelDataPoints[index].LabelVisual);
@@ -145,8 +144,8 @@ namespace Visifire.Charts
             }
 
             // if funnelcanvas height is less than total labels height reduce the funnel canvas height
-            if (funnelCanvas.Height < totalLabelsHeight)
-                funnelCanvas.Height -= totalLabelsHeight - funnelCanvas.Height;
+            //if (funnelCanvas.Height < totalLabelsHeight)
+            //    funnelCanvas.Height -= (totalLabelsHeight - funnelCanvas.Height);
 
             funnelCanvas.Width = funnelChartCanvas.Width - labelCanvas.Width;
             labelCanvas.SetValue(Canvas.LeftProperty, funnelCanvas.Width);
@@ -178,7 +177,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPoint">DataPoint</param>
         /// <returns>Border</returns>
-        private static Border CreateLabelForDataPoint(DataPoint dataPoint)
+        private static Border CreateLabelForDataPoint(DataPoint dataPoint, Boolean isStreamLine, Int32 sliceIndex)
         {   
             Title title = new Title()
             {   
@@ -186,7 +185,7 @@ namespace Visifire.Charts
                 Chart = dataPoint.Chart,
                 Text = dataPoint.TextParser(dataPoint.LabelText),
                 FontSize = (Double)dataPoint.LabelFontSize,
-                FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)dataPoint.LabelStyle),
+                FontColor = (isStreamLine && sliceIndex == 0) ? Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, null, LabelStyles.OutSide) : Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)dataPoint.LabelStyle),
                 FontFamily = dataPoint.LabelFontFamily,
                 FontStyle = (FontStyle)dataPoint.LabelFontStyle,
                 FontWeight = (FontWeight)dataPoint.LabelFontWeight,
@@ -244,9 +243,6 @@ namespace Visifire.Charts
 
                 Canvas sliceCanvas = GetFunnelSliceVisual(index, topRadius, is3D, funnelSlices[index], yScaleTop, yScaleBottom, fillColor, animationEnabled);
 
-                // if (dataSeries.Exploded)
-                //     funnelSlices[index].Top = funnelSlices[index].TopGap + ((index == 0) ? 0 : (funnelSlices[index - 1].Top + funnelSlices[index - 1].Height + ((funnelSlices[index - 1].BottomGap == 0) ? funnelSlices[index].TopGap : 0)));
-                // else
                 funnelSlices[index].Top = funnelSlices[index].TopGap + ((index == 0) ? 0 : (funnelSlices[index - 1].Top + funnelSlices[index - 1].Height + funnelSlices[index - 1].BottomGap));
 
                 sliceCanvas.SetValue(Canvas.TopProperty, funnelSlices[index].Top);
@@ -293,7 +289,59 @@ namespace Visifire.Charts
                 funnelCanvas.Height = totalFunnelActualHeight - _streamLineParentTitleSize.Height;
             }
 
+            ArrangeLabels(funnelSlices, Double.NaN, _funnelChartGrid.Height);
+
             return funnelCanvas;
+        }
+
+        /// <summary>
+        /// Arrange labels to overcome overlaps
+        /// </summary>
+        private static void ArrangeLabels(FunnelSliceParms[] funnelSlices, Double width, Double height)
+        {
+            if (funnelSlices == null || funnelSlices.Length < 0)
+                return;
+
+            FunnelSliceParms[] selectedfunnelSlices = (from fs in funnelSlices where fs.DataPoint.LabelStyle == LabelStyles.OutSide select fs).ToArray();
+            
+            Rect baseArea =  new Rect(0,0, width, height);
+            Rect[] labelInfo = new Rect[selectedfunnelSlices.Length];
+
+            for (Int32 index = 0; index < selectedfunnelSlices.Length; index++)
+            {
+                Double left = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+                Double top = (Double)selectedfunnelSlices[index].DataPoint.LabelVisual.GetValue(Canvas.TopProperty);
+
+                labelInfo[index] = new Rect
+                    (left,
+                    selectedfunnelSlices[index].Top + top,
+                    selectedfunnelSlices[index].DataPoint.LabelVisual.Width,
+                    selectedfunnelSlices[index].DataPoint.LabelVisual.Height);
+            }
+
+            Visifire.Commons.LabelPlacementHelper.VerticalLabelPlacement(baseArea, ref labelInfo);
+
+            for (Int32 index = 0; index < selectedfunnelSlices.Length; index++)
+            {
+                Double labelTop = labelInfo[index].Top - selectedfunnelSlices[index].Top;
+
+                selectedfunnelSlices[index].DataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelInfo[index].Left);
+                selectedfunnelSlices[index].DataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+
+                selectedfunnelSlices[index].LabelLineEndPoint = new Point(selectedfunnelSlices[index].LabelLineEndPoint.X, labelTop + selectedfunnelSlices[index].DataPoint.LabelVisual.Height /2);
+                UpdateLabelLineEndPoint(selectedfunnelSlices[index]);
+            }
+        }
+        
+        private static void UpdateLabelLineEndPoint(FunnelSliceParms funnelSlice)
+        {
+            Path labelLine = funnelSlice.DataPoint.LabelLine;
+
+            if (labelLine != null && labelLine.Data != null)
+            {
+                LineSegment ls = (((labelLine.Data as PathGeometry).Figures[0] as PathFigure).Segments[0] as LineSegment);
+                ls.Point = funnelSlice.LabelLineEndPoint;
+            }
         }
 
         /// <summary>
@@ -361,8 +409,6 @@ namespace Visifire.Charts
 
             if (funnelSlices[0].DataPoint.Parent.Exploded)
             {
-                // funnelSlices[0].ExplodedPoints = new List<Point>();
-
                 if (!funnelSlices[0].DataPoint.Chart.IsInDesignMode)
                 {
                     Int32 midIndex = sliceCount / 2;
@@ -373,16 +419,12 @@ namespace Visifire.Charts
                             break;
 
                         Double yPosition = funnelSlices[index].Top - (midIndex - index) * _singleGap;// -yScale / 2;
-
-                        //funnelSlices[0].ExplodedPoints.Add(new Point(0, yPosition));
                         dataSeries.Storyboard = CreateExplodingAnimation(dataSeries, funnelSlices[index].DataPoint, dataSeries.Storyboard, funnelSlices[index].DataPoint.Faces.Visual as Panel, yPosition, 1);
                     }
 
                     for (index = midIndex + 1; index < sliceCount; index++)
                     {
                         Double yPosition = funnelSlices[index].Top + (index - midIndex) * _singleGap;// -yScale / 2;
-
-                        //funnelSlices[0].ExplodedPoints.Add(new Point(0, yPosition));
                         dataSeries.Storyboard = CreateExplodingAnimation(dataSeries, funnelSlices[index].DataPoint, dataSeries.Storyboard, funnelSlices[index].DataPoint.Faces.Visual as Panel, yPosition, 1);
                     }
                 }
@@ -445,10 +487,6 @@ namespace Visifire.Charts
                             funnelSlices[index].DataPoint.ExplodeAnimation = CreateExplodingAnimation(dataSeries, funnelSlices[index].DataPoint, funnelSlices[index].DataPoint.ExplodeAnimation, funnelSlices[i].DataPoint.Faces.Visual as Panel, (funnelSlices[i].Top + _singleGap / 2),0);
                         }
                     }
-
-                    // Same and only one story board for unExploding all funnel slice
-                    //funnelSlices[index].DataPoint.UnExplodeAnimation = unExplodeStoryBoard;
-
                 }
             }
         }
@@ -1154,7 +1192,7 @@ namespace Visifire.Charts
                     
                     faces.VisualComponents.Add(funnelSlice.DataPoint.LabelVisual);
 
-                    //Label placement
+                    // Label placement
                     funnelSlice.DataPoint.LabelVisual.SetValue(Canvas.TopProperty, funnelSlice.LabelLineEndPoint.Y - funnelSlice.DataPoint.LabelVisual.Height / 2);
 
                     if (funnelSlice.DataPoint.LabelStyle == LabelStyles.OutSide)
@@ -1203,7 +1241,7 @@ namespace Visifire.Charts
             funnelSlice.RightMidPoint = Graphics.MidPointOfALine(topRightPoint, bottomRightPoint);
 
             if(funnelSlice.DataPoint.Parent.RenderAs == RenderAs.StreamLineFunnel)
-                funnelSlice.LabelLineEndPoint = new Point(2 * topRadius, bottomRightPoint.Y * .9);
+                funnelSlice.LabelLineEndPoint = new Point(2 * topRadius, (bottomRightPoint.Y - 1.5 * Chart.BEVEL_DEPTH) < 0 ? bottomRightPoint.Y * .9 : (bottomRightPoint.Y - 1.5 * Chart.BEVEL_DEPTH));
             else
                 funnelSlice.LabelLineEndPoint = new Point(2 * topRadius, funnelSlice.RightMidPoint.Y);
 

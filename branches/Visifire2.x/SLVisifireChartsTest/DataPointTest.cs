@@ -3600,6 +3600,2988 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region TestSingleDataPointWidth
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidth()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthIn3D
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthIn3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValue
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValue()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.Column;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValue
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValue()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.Column;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.Column;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth
+        /// <summary>
+        /// Test DataPoint width in multiseries Column chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Column;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthIn3D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D Column chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthIn3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Column;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScroll
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScroll()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Column;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidth
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidth()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Column;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInBar
+        /// <summary>
+        /// Test single DataPoint width in Bar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInBar3D
+        /// <summary>
+        /// Test single DataPoint width in 3D Bar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInBar3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValueInBar
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues in Bar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValueInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.Bar;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValueInBar
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues in Bar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValueInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.Bar;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.Bar;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInBar
+        /// <summary>
+        /// Test DataPoint width in multiseries Bar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Bar;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInBar3D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D Bar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInBar3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Bar;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScrollInBar
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll in Bar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScrollInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.Bar;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidthInBar
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidthInBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Bar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedColumn
+        /// <summary>
+        /// Test single DataPoint width in StackedColumn
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedColumn3D
+        /// <summary>
+        /// Test single DataPoint width in 3D StackedColumn
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedColumn3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValueInStackedColumn
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues in StackedColumn
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValueInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedColumn;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValueInStackedColumn
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues in StackedColumn
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValueInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedColumn;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.StackedColumn;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedColumn
+        /// <summary>
+        /// Test DataPoint width in multiseries StackedColumn chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedColumn3D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D StackedColumn chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedColumn3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScrollInStackedColumn
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll in StackedColumn chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScrollInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidthInStackedColumn
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidthInStackedColumn()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedColumn100
+        /// <summary>
+        /// Test single DataPoint width in StackedColumn100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedColumn1003D
+        /// <summary>
+        /// Test single DataPoint width in 3D StackedColumn100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedColumn1003D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValueInStackedColumn100
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues in StackedColumn100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValueInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedColumn100;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValueInStackedColumn100
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues in StackedColumn100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValueInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedColumn100;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.StackedColumn100;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedColumn100
+        /// <summary>
+        /// Test DataPoint width in multiseries StackedColumn100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn100;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedColumn1003D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D StackedColumn100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedColumn1003D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn100;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScrollInStackedColumn100
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll in StackedColumn100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScrollInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedColumn100;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidthInStackedColumn100
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidthInStackedColumn100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 400;
+            _chart.Height = 300;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedColumn100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedBar
+        /// <summary>
+        /// Test single DataPoint width in StackedBar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedBar3D
+        /// <summary>
+        /// Test single DataPoint width in 3D StackedBar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedBar3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValueInStackedBar
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues in StackedBar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValueInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedBar;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValueInStackedBar
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues in StackedBar
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValueInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedBar;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.StackedBar;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedBar
+        /// <summary>
+        /// Test DataPoint width in multiseries StackedBar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedBar3D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D StackedBar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedBar3D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScrollInStackedBar
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll in StackedBar chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScrollInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidthInStackedBar
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidthInStackedBar()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedBar100
+        /// <summary>
+        /// Test single DataPoint width in StackedBar100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestSingleDataPointWidthInStackedBar1003D
+        /// <summary>
+        /// Test single DataPoint width in 3D StackedBar100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointWidthInStackedBar1003D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = 10;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidth4DecimalXValueInStackedBar100
+        /// <summary>
+        /// Test DataPoint width with Decimal XValues in StackedBar100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidth4DecimalXValueInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedBar100;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = rand.NextDouble() + i;
+                    dataPoint.YValue = rand.Next(0, 100);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidth4DecimalXValueInStackedBar100
+        /// <summary>
+        /// Test multiseries DataPoint width with Decimal XValues in StackedBar100
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidth4DecimalXValueInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            List<Double> xList = new List<Double>();
+            List<Double> yList = new List<Double>();
+            Double y = 0;
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries1 = new DataSeries();
+                dataSeries1.RenderAs = RenderAs.StackedBar100;
+
+                for (Double i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = i + 1;
+                    xList.Add(i);
+                    dataPoint.YValue = (y = rand.Next(-100, 100));
+                    yList.Add(y);
+                    dataSeries1.DataPoints.Add(dataPoint);
+                }
+                _chart.Series.Add(dataSeries1);
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+
+                DataSeries dataSeries2 = new DataSeries();
+                dataSeries2.RenderAs = RenderAs.StackedBar100;
+
+                Double j = 0.5;
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.XValue = j;
+                    dataPoint.YValue = yList[i];
+                    dataSeries2.DataPoints.Add(dataPoint);
+                    j++;
+                }
+                _chart.Series.Add(dataSeries2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedBar100
+        /// <summary>
+        /// Test DataPoint width in multiseries StackedBar100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar100;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestMultiSeriesDataPointWidthInStackedBar1003D
+        /// <summary>
+        /// Test DataPoint width in multiseries 3D StackedBar100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesDataPointWidthInStackedBar1003D()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 2; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar100;
+
+                    for (Double j = 0; j < 10; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.XValue = j + 1;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestDataPointWidthWithScrollInStackedBar100
+        /// <summary>
+        /// Test DataPoint width in 3D Column chart with Scroll in StackedBar100 chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestDataPointWidthWithScrollInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+            _chart.View3D = true;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(_chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 i = 0; i < 1; i++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.StackedBar100;
+
+                    for (Double j = 0; j < 60; j++)
+                    {
+                        DataPoint dataPoint = new DataPoint();
+                        dataPoint.AxisXLabel = "abc" + j;
+                        dataPoint.YValue = rand.Next(0, 100);
+                        dataSeries.DataPoints.Add(dataPoint);
+                    }
+                    _chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Click here to check DataPoint Width at realtime.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
+                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
+                _htmlElement3.SetStyleAttribute("top", "560px");
+                _htmlElement3.SetProperty("value", " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
+                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement2_OnClick));
+            });
+        }
+        #endregion
+
+        #region TestNegativeDataPointWidthInStackedBar100
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeDataPointWidthInStackedBar100()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 300;
+            _chart.Height = 400;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StackedBar100;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 200 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 100 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 300 });
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _chart.DataPointWidth = -10;
+            });
+            EnqueueCallback(() =>
+            {
+                EnqueueTestComplete();
+            });
+        }
+        #endregion
+
         /// <summary>
         /// Create a DataSeries
         /// </summary>
@@ -3633,6 +6615,72 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HtmlElement2_OnClick(object sender, HtmlEventArgs e)
+        {
+            if (timer.IsEnabled)
+                timer.Stop();
+
+            EnqueueTestComplete();
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HtmlElement1_OnClick(object sender, HtmlEventArgs e)
+        {
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 1500);
+            timer.Start();
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            _chart.DataPointWidth = rand.Next(0, 200);
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void View3D_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            if (_chart.View3D)
+                _chart.View3D = false;
+            else
+                _chart.View3D = true;
+
+        }
+
+        /// <summary>
+        /// Event handler for click event of the Html element
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
+        {
+            EnqueueTestComplete();
+            try
+            {
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// Event handler for loaded event of the chart
         /// </summary>
         /// <param name="sender"></param>
@@ -3654,14 +6702,32 @@ namespace SLVisifireChartsTest
         private System.Windows.Browser.HtmlElement _htmlElement2;
 
         /// <summary>
+        /// Html element reference
+        /// </summary>
+        private System.Windows.Browser.HtmlElement _htmlElement3;
+
+        /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
         private const int _sleepTime = 1000;
 
         /// <summary>
+        /// Chart 
+        /// </summary>
+        private Chart _chart;
+
+        // Create a new instance of Random class
+        private Random rand = new Random();
+
+        /// <summary>
         /// Whether the chart is loaded
         /// </summary>
         private bool _isLoaded = false;
+
+        /// <summary>
+        /// Dispatch Timer
+        /// </summary>
+        private System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
 
         #endregion
     }

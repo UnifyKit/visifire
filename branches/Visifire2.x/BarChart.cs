@@ -167,7 +167,8 @@ namespace Visifire.Charts
             //    finalHeight = maxPosValue - top;
             //}
 
-            return (finalHeight < 2.5) ? 2.5 : finalHeight;
+            return (finalHeight < 2) ? 2 : finalHeight;
+            //return finalHeight;
         }
 
         /// <summary>
@@ -373,6 +374,8 @@ namespace Visifire.Charts
             labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
 
             Double minDiffValue = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
+            if (Double.IsPositiveInfinity(minDiffValue))
+                minDiffValue = 0;
 
             Axis AxesXwithMinInterval = dataSeriesList4Rendering[0].PlotGroup.AxisX;
 
@@ -391,6 +394,7 @@ namespace Visifire.Charts
             Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
 
             Double heightPerBar;
+
             if (minDiffValue == 0)
             {
                 heightPerBar = height * .5;
@@ -405,6 +409,11 @@ namespace Visifire.Charts
                 heightPerBar /= numberOfDivisions;
             }
 
+            if (!Double.IsNaN(chart.DataPointWidth))
+            {
+                if (chart.DataPointWidth >= 0)
+                    heightPerBar = chart.DataPointWidth / 100 * chart.PlotArea.Height;
+            }
 
             Boolean plankDrawn = false;
 
@@ -626,6 +635,9 @@ namespace Visifire.Charts
                 Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
 
+                if (Double.IsPositiveInfinity(minDiff))
+                    minDiff = 0;
+
                 //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxBarHeight = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - BAR_GAP_RATIO);
@@ -643,6 +655,15 @@ namespace Visifire.Charts
                     heightPerBar *= (1 - BAR_GAP_RATIO);
                     maxBarHeight = heightPerBar;
                     heightPerBar /= numberOfDivisions;
+                }
+
+                if (!Double.IsNaN(chart.DataPointWidth))
+                {
+                    if (chart.DataPointWidth >= 0)
+                    {
+                        heightPerBar = maxBarHeight = chart.DataPointWidth / 100 * chart.PlotArea.Height;
+                        maxBarHeight *= numberOfDivisions;
+                    }
                 }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
@@ -868,6 +889,9 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
 
+                if (Double.IsPositiveInfinity(minDiff))
+                    minDiff = 0;
+
                 //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxBarHeight = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - BAR_GAP_RATIO);
@@ -885,6 +909,15 @@ namespace Visifire.Charts
                     heightPerBar *= (1 - BAR_GAP_RATIO);
                     maxBarHeight = heightPerBar;
                     heightPerBar /= numberOfDivisions;
+                }
+
+                if (!Double.IsNaN(chart.DataPointWidth))
+                {
+                    if (chart.DataPointWidth >= 0)
+                    {
+                        heightPerBar = maxBarHeight = chart.DataPointWidth / 100 * chart.PlotArea.Height;
+                        maxBarHeight *= numberOfDivisions;
+                    }
                 }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
