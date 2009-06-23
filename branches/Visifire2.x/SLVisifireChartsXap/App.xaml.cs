@@ -345,7 +345,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 2";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 3";
 
             return version;
         }

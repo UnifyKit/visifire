@@ -763,10 +763,6 @@ namespace Visifire.Charts
             }
         }
 
-        public Double AxisMaximumNumeric = Double.NaN;
-
-        public DateTime AxisMaximumDateTime;
-
         /// <summary>
         /// Get or set the minimum value for the axis
         /// </summary>
@@ -784,10 +780,6 @@ namespace Visifire.Charts
                 SetValue(AxisMinimumProperty, value);
             }
         }
-
-        public Double AxisMinimumNumeric = Double.NaN;
-
-        public DateTime AxisMinimumDateTime;
 
         /// <summary>
         /// Include zero within the axis range
@@ -956,6 +948,26 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        /// <summary>
+        /// AxisMinimum Numeric value
+        /// </summary>
+        internal Double AxisMinimumNumeric = Double.NaN;
+
+        /// <summary>
+        /// AxisMinimum DateTime value
+        /// </summary>
+        internal DateTime AxisMinimumDateTime;
+
+        /// <summary>
+        /// AxisMaximum numeric value
+        /// </summary>
+        internal Double AxisMaximumNumeric = Double.NaN;
+
+        /// <summary>
+        /// AxisMaximum DateTime value
+        /// </summary>
+        internal DateTime AxisMaximumDateTime;
 
         /// <summary>
         /// Internal interval type used to handle auto interval type 

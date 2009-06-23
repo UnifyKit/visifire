@@ -47,6 +47,17 @@ namespace Visifire.Commons
         {
             Chart chart;    // Chart 
 
+            if (propertyName == "Top" || propertyName == "Canvas.Top")
+            {
+                sender.SetValue(Canvas.TopProperty, Double.Parse(value, CultureInfo.InvariantCulture));
+                return;
+            }
+            else if (propertyName == "Left" || propertyName == "Canvas.Left")
+            {
+                sender.SetValue(Canvas.LeftProperty, Double.Parse(value, CultureInfo.InvariantCulture));
+                return;
+            }
+
             System.Reflection.PropertyInfo[] propArray = sender.GetType().GetProperties();
 
             // Find properties using LINQ
@@ -74,6 +85,11 @@ namespace Visifire.Commons
                 // Set the value of the property of the sender object
                 if (property.PropertyType.Name == "Brush")
                     property.SetValue(sender, ((Brush)System.Windows.Markup.XamlReader.Load(value)), null);
+                else if (propertyName == "YValues")
+                {
+                    Visifire.Commons.Converters.DoubleArrayConverter dac = new Converters.DoubleArrayConverter();
+                    property.SetValue(sender, dac.ConvertFrom(null, CultureInfo.InvariantCulture, value), null);
+                }
                 else if (property.PropertyType.Equals(typeof(Cursor)))
                 {
                     Cursor cursor = null;

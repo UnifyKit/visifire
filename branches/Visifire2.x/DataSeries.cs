@@ -64,6 +64,7 @@ namespace Visifire.Charts
         {
             ToolTipText = "";
 
+
             // Apply default style from generic
 #if WPF
             if (!_defaultStyleKeyApplied)
@@ -100,6 +101,18 @@ namespace Visifire.Charts
             typeof(Double),
             typeof(DataSeries),
             new PropertyMetadata(Double.NaN, OnMinPointHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.MovingMarkerEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.MovingMarkerEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty MovingMarkerEnabledProperty = DependencyProperty.Register
+            ("MovingMarkerEnabled",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(false, OnMovingMarkerEnabledPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.Exploded dependency property.
@@ -172,6 +185,19 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(DataSeries),
             new PropertyMetadata(OnColorPropertyChanged));
+
+
+        public static readonly DependencyProperty PriceUpColorProperty = DependencyProperty.Register
+           ("PriceUpColor",
+           typeof(Brush),
+           typeof(DataSeries),
+           new PropertyMetadata(OnPriceUpColorPropertyChanged));
+
+        public static readonly DependencyProperty PriceDownColorProperty = DependencyProperty.Register
+           ("PriceDownColor",
+           typeof(Brush),
+           typeof(DataSeries),
+           new PropertyMetadata(OnPriceDownColorPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.LightingEnabled dependency property.
@@ -737,6 +763,22 @@ namespace Visifire.Charts
                 SetValue(MinPointHeightProperty, value);
             }
         }
+        
+        /// <summary>
+        /// Get or set the MovingMarkerEnabled property. 
+        /// Enables moving-marker over chart. Currently is applicable for Line chart only
+        /// </summary>
+        public Boolean MovingMarkerEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(MovingMarkerEnabledProperty);
+            }
+            set
+            {
+                SetValue(MovingMarkerEnabledProperty, value);
+            }
+        }
 
         /// <summary>
         /// Get or set the Exploded property. This is used in Pie/Doughnut/Funnel charts.
@@ -902,6 +944,42 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or set the Color property
+        /// </summary>
+        public Brush PriceUpColor
+        {
+            get
+            {
+                if (((Brush)GetValue(DataSeries.PriceUpColorProperty) == null))
+                    return new SolidColorBrush(new Color() { A = 255, R = 168, G = 212, B = 79 });
+                else
+                    return (Brush)GetValue(PriceUpColorProperty);
+            }
+            set
+            {
+                SetValue(PriceUpColorProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Color property
+        /// </summary>
+        public Brush PriceDownColor
+        {
+            get
+            {
+                if (((Brush)GetValue(DataSeries.PriceDownColorProperty) == null))
+                    return new SolidColorBrush(new Color(){A=255,R=255,G=0,B=0});
+                else
+                    return (Brush)GetValue(PriceDownColorProperty);
+            }
+            set
+            {
+                SetValue(PriceDownColorProperty, value);
+            }
+        }
+
+        /// <summary>
         /// Get or set the LightingEnabled property
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
@@ -1047,7 +1125,14 @@ namespace Visifire.Charts
             get
             {
                 if ((Nullable<Double>)GetValue(LineThicknessProperty) == null)
-                    return (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                {
+                    if (RenderAs == RenderAs.Line)
+                        return (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                    else if (RenderAs == RenderAs.Stock)
+                        return 2;
+                    else
+                        return (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 70000;
+                }
                 else
                     return (Nullable<Double>)GetValue(LineThicknessProperty);
             }
@@ -1144,6 +1229,10 @@ namespace Visifire.Charts
                     if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel)
                     {
                         return "#Percentage%";
+                    }
+                    else if(RenderAs == RenderAs.Stock || RenderAs == RenderAs.CandleStick)
+                    {
+                        return "#Close";
                     }
                     else
                     {
@@ -1561,7 +1650,7 @@ namespace Visifire.Charts
         }
 
         #region BorderProperties
-        
+
         /// <summary>
         /// Get or set the BorderThickness property
         /// </summary>
@@ -1569,7 +1658,14 @@ namespace Visifire.Charts
         {
             get
             {
-                return (Thickness)GetValue(BorderThicknessProperty);
+                Thickness retVal = (Thickness)GetValue(BorderThicknessProperty);
+
+                if (retVal == new Thickness(0) && RenderAs == RenderAs.Stock)
+                {
+                    return new Thickness(2);
+                }
+                else
+                    return (Thickness)GetValue(BorderThicknessProperty);
             }
             set
             {
@@ -1699,6 +1795,10 @@ namespace Visifire.Charts
                                 return "#XValue, #YValue(#Percentage%)";
                             else
                                 return "#AxisXLabel, #YValue(#Percentage%)";
+
+                        case RenderAs.Stock:
+                        case RenderAs.CandleStick:
+                                return "Open: #Open\nClose: #Close\nHigh:  #High\nLow:   #Low";
 
                         default:
                             if (chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
@@ -2025,7 +2125,18 @@ namespace Visifire.Charts
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged("MinPointHeight");
         }
-        
+
+        /// <summary>
+        /// ExplodedProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMovingMarkerEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("MovingMarkerEnabled");
+        }
+
         /// <summary>
         /// ExplodedProperty changed call back function
         /// </summary>
@@ -2104,6 +2215,32 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.UpdateVisual("Color", e.NewValue);
+        }
+
+        /// <summary>
+        /// ColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnPriceUpColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("PriceUpColor");
+            //DataSeries dataSeries = d as DataSeries;
+            //dataSeries.UpdateVisual("PriceUpColor", e.NewValue);
+        }
+
+        /// <summary>
+        /// ColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnPriceDownColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("PriceDownColor");
+            //DataSeries dataSeries = d as DataSeries;
+            //dataSeries.UpdateVisual("PriceDownColor", e.NewValue);
         }
 
         /// <summary>
@@ -2606,15 +2743,13 @@ namespace Visifire.Charts
             {
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
                 {   
-                    dp.DeSelect(dp, false);
+                    dp.DeSelect(dp, false, true);
                 }
             }
 
             dataSeries.AttachOrDetachIntaractivity();
         }
-
-
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -2722,6 +2857,21 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+       
+        /// <summary>
+        /// OnToolTipTextPropertyChanged call back virtual function
+        /// </summary>
+        /// <param name="newValue">New ToolTip value</param>
+        internal override void OnToolTipTextPropertyChanged(string newValue)
+        {
+            // base.OnToolTipTextPropertyChanged(newValue);
+
+            if (Chart != null)
+            {   
+                foreach (DataPoint dp in DataPoints)
+                    dp.OnToolTipTextPropertyChanged(newValue);
+            }
+        }
 
         /// <summary>
         /// Attach events to each and every visual face in Faces
@@ -2758,7 +2908,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        control._toolTip.Text = dataPoint.TextParser(dataPoint.ToolTipText);
+                        control._toolTip.Text = dataPoint.ParseToolTipText(dataPoint.ToolTipText);
 
                         if (control.ToolTipEnabled)
                             control._toolTip.Show();
@@ -2859,6 +3009,14 @@ namespace Visifire.Charts
         /// Whether name for DataSeries is generated automatically
         /// </summary>
         internal Boolean _isAutoName = true;
+
+        internal Ellipse _movingMarker;
+
+        /// <summary>
+        /// Nearest DataPoint form mouse pointer
+        /// Currently it is applicable for line chart interactivity only
+        /// </summary>
+        internal DataPoint _lastNearestDataPoint;
 
 #if WPF
         /// <summary>

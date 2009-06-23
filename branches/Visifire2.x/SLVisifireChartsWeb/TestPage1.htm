@@ -31,15 +31,15 @@
                            + '     <vc:Chart.Titles>'
                            + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
                            + '     </vc:Chart.Titles>'
-
+                            
                            + '     <vc:Chart.ToolTips>'
                            + '         <vc:ToolTip FontSize="8" Background="AliceBlue"/>'
                            + '     </vc:Chart.ToolTips>'
-
+                            
                            + '     <vc:Chart.AxesX>'
                            + '         <vc:Axis Title="Country"/>'
                            + '     </vc:Chart.AxesX>'
-
+                            
                            + '     <vc:Chart.AxesY>'
                            + '         <vc:Axis Title="Gold Medals Won"/>'
                            + '    </vc:Chart.AxesY>'
@@ -47,29 +47,29 @@
                            + '     <vc:Chart.PlotArea>'
                            + '         <vc:PlotArea Background="LightGray"/>'
                            + '     </vc:Chart.PlotArea>'
-
+                            
                            + '     <vc:Chart.Series>'
-                           + '         <vc:DataSeries RenderAs="Line" LabelEnabled="True">'
+                           + '         <vc:DataSeries RenderAs="CandleStick" LabelEnabled="True">'
                            + '             <vc:DataSeries.DataPoints>'
-                           + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
-                           + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
-                           + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
-                           + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
-                           + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                           + '                 <vc:DataPoint AxisXLabel="USA" YValues="35,23,90,10"/>'
+//                           + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+//                           + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+//                           + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+//                           + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
                            + '             </vc:DataSeries.DataPoints>'
                            + '         </vc:DataSeries>'
                            + '     </vc:Chart.Series>'
                            + ' </vc:Chart>';
 
                         // Set Chart XML
-                        //vChart.setDataXml(chartXml);
+                        vChart.setDataXml(chartXml);
                         
                         /* 
                         On preload event, array of charts can be received as event arguments.  
                         Events can be can attached to chart elements. And required customization can be done here.
                         Default Chart element references won’t be available on preload event.
                         */
-                        vChart.preLoad = function(args) {
+                       /* vChart.preLoad = function(args) {
 
                         if (args.length != 0) {
                                 var chart = args[0];   // Chart Reference.
@@ -91,7 +91,7 @@
                                 };
                             }
                         };
-
+*/
                         /* 
                         On loaded event, array of charts can be received as event arguments.  
                         Events can be can attached to chart elements. And do require customization.
@@ -103,19 +103,28 @@
                                 var chart = args[0];   // Chart Reference.
 
                                 // Create a LinearGradientBrush color brush
+                                /*
                                 var color = '<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >'
-		                        + '	<GradientStop Color="Red"/>'
-		                        + '	<GradientStop Color="White" Offset="0.567"/>'
-		                        + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
-		                        + '</LinearGradientBrush>';
+                                + '	<GradientStop Color="Red"/>'
+                                + '	<GradientStop Color="White" Offset="0.567"/>'
+                                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
+                                + '</LinearGradientBrush>';
+                                */
+                                
+                                chart.Series[0].MouseLeftButtonDown = function(e) {
+                                
+                                e.SetPropertyFromJs("YValues", "43,44,32,11");
+                                chart.SetPropertyFromJs("Canvas.Top", "43");
+                                }
                             }
                         };
+                        
 //                      
                         // Render chart
                         vChart.render("VisifireChart0");
                         
                         function timer() {
-
+                                
                             //vChart.setDataUri("data.xml");
 
                             // if (vChart.isDataLoaded)

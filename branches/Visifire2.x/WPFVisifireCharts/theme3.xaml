@@ -9,6 +9,8 @@
     <Style x:Key="DataSeries" TargetType="{x:Type vc:DataSeries}">
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LabelLineColor" Value="#9a9a9a"/>
+        <Setter Property="PriceUpColor" Value="#FFA8D44F"/>
+        <Setter Property="PriceDownColor" Value="#FFDD0000"/>
     </Style>
     <Style x:Key="MainTitle" TargetType="{x:Type vc:Title}" >
         <Setter Property="FontSize" Value="12"/>
@@ -57,7 +59,7 @@
         <Setter Property="LineThickness" Value="0.5"/>
     </Style>
     <Style x:Key="Legend" TargetType="{x:Type vc:Legend}">
-        <Setter Property="Background" Value="Red"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Padding" Value="4"/>
         <Setter Property="EntryMargin" Value="3"/>
         <Setter Property="LabelMargin" Value="6"/>

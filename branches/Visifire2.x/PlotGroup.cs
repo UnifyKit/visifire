@@ -324,8 +324,18 @@ namespace Visifire.Charts
 
             // Get a list of all XValues,YValues and ZValues from all InternalDataPoints from all the DataSeries in this Group
             var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct();
-            var yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct();
+            List<Double> yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
             var zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct();
+
+            List<Double> yValuesList = new List<double>();
+
+            foreach (DataPoint dp in dataPoints)
+            {
+                if (dp.YValues != null)
+                    yValuesList.AddRange(dp.YValues);
+            }
+
+            yValues.AddRange(yValuesList);
 
             // Calculate max value
             MaximumX = (xValues.Count() > 0) ? (xValues).Max() : 0;
@@ -350,6 +360,8 @@ namespace Visifire.Charts
                 case RenderAs.Line:
                 case RenderAs.Pie:
                 case RenderAs.Point:
+                case RenderAs.Stock:
+                case RenderAs.CandleStick:
                 case RenderAs.SectionFunnel:
                 case RenderAs.StreamLineFunnel:
                     MaximumY = (yValues.Count() > 0) ? (yValues).Max() : 0;

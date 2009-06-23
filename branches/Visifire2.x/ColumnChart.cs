@@ -604,7 +604,8 @@ namespace Visifire.Charts
 
             Double maxColumnWidth = dataAxisDifference * (1 - COLUMN_GAP_RATIO);
 
-            Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
+            //Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
+            Double numberOfDivisions = plotDetails.DrawingDivisionFactor;
 
             Double widthPerColumn;
             
@@ -632,7 +633,6 @@ namespace Visifire.Charts
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
                 columnParams.ShadowOffset = 5;
                 columnParams.Depth = depth3d;
-
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {

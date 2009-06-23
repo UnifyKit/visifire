@@ -1934,13 +1934,13 @@ namespace Visifire.Charts
                     {
                         if (dp.Selected)
                         {
-                            dp.Select();
+                            dp.Select(true);
 
                             if (ds.SelectionMode == SelectionModes.Single)
                                 dp.DeSelectOthers();
                         }
                         else
-                            dp.DeSelect(dp, true);
+                            dp.DeSelect(dp, true, true);
                     }
                 }
             }
@@ -2122,6 +2122,33 @@ namespace Visifire.Charts
         }
         
         /// <summary>
+        /// Render is a delegate to a method that takes no arguments and does not return a value, 
+        /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
+        /// </summary>
+        internal void InvokeRender()
+        {
+            if (_isTemplateApplied)
+            {
+                if (_renderLock)
+                    _renderLapsedCounter++;
+                else
+                {
+#if WPF             
+                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
+                    else
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
+#else
+                    if (IsInDesignMode)
+                        Render();
+                    else
+                        this.Dispatcher.BeginInvoke(Render);
+#endif
+                }
+            }
+        }
+        
+        /// <summary>
         /// Render redraws the chart
         /// </summary>
         internal void Render()
@@ -2146,33 +2173,6 @@ namespace Visifire.Charts
                         return;
                     else
                         throw new Exception(e.Message, e);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Render is a delegate to a method that takes no arguments and does not return a value, 
-        /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
-        /// </summary>
-        internal void InvokeRender()
-        {
-            if (_isTemplateApplied)
-            {
-                if (_renderLock)
-                    _renderLapsedCounter++;
-                else
-                {   
-#if WPF             
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    if (IsInDesignMode)
-                        Render();
-                    else
-                        this.Dispatcher.BeginInvoke(Render);
-#endif              
                 }
             }
         }

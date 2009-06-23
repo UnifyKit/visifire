@@ -391,7 +391,8 @@ namespace Visifire.Charts
                 minDiffGap = Math.Max(minDiffGap, dataMinimumGap);
 
             Double maxColumnHeight = minDiffGap * (1 - BAR_GAP_RATIO);
-            Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
+            //Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
+            Double numberOfDivisions = plotDetails.DrawingDivisionFactor;
 
             Double heightPerBar;
 

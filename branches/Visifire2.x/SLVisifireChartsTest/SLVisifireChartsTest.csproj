@@ -78,6 +78,7 @@
     <Compile Include="DataPointTest.cs" />
     <Compile Include="DataSeriesTest.cs" />
     <Compile Include="DateTimeAxisTest.cs" />
+    <Compile Include="FinancialChartsTest.cs" />
     <Compile Include="FunnelChartTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LegendTest.cs" />

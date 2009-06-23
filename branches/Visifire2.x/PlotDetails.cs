@@ -1168,8 +1168,20 @@ namespace Visifire.Charts
                 // Get the count of number of plot groups with RenderAs type as StackedColumn100
                 Int32 countOfStackedColumn100Groups = GetPlotGroupCountByRenderAs(RenderAs.StackedColumn100);
 
+                Int32 countOfStockChart = GetPlotGroupCountByRenderAs(RenderAs.Stock);
+                if (countOfStockChart > 1)
+                    countOfStockChart = 1;
+
+                Int32 countOfCandleStickCharts = GetPlotGroupCountByRenderAs(RenderAs.CandleStick);
+                if (countOfCandleStickCharts > 1)
+                    countOfCandleStickCharts = 1;
+
+                countOfStockChart = (countOfStockChart == 0) ? countOfCandleStickCharts : countOfStockChart;
+
                 // Set a count of siblings by selecting the maximum out of the 3 counts
                 DrawingDivisionFactor = Math.Max(countOfColumnCharts, Math.Max(countOfStackedColumnGroups, countOfStackedColumn100Groups));
+
+                DrawingDivisionFactor = Math.Max(DrawingDivisionFactor, countOfStockChart);
             }
             else if (ChartOrientation == ChartOrientationType.NoAxis)
             {
@@ -1214,6 +1226,8 @@ namespace Visifire.Charts
                 case RenderAs.Bubble:
                 case RenderAs.Column:
                 case RenderAs.Line:
+                case RenderAs.Stock:
+                case RenderAs.CandleStick:
                 case RenderAs.Point:
                 case RenderAs.StackedArea:
                 case RenderAs.StackedColumn:
@@ -1335,7 +1349,10 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar100, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Line, sortedSeriesIndexGroupedBySeries);
+
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Point, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Stock, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.CandleStick, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Bubble, sortedSeriesIndexGroupedBySeries);
 
             // Generate index for each chart type based on the AxisXType and AxisYType
@@ -1362,7 +1379,7 @@ namespace Visifire.Charts
             Boolean ignore = false;     // is used to indicate whether the series has any affect on index or not
 
             // This is a array of ignorable render as types while calculating drawing index
-            RenderAs[] ignorableCharts = { RenderAs.Line , RenderAs.Point, RenderAs.Bubble };
+            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.Point, RenderAs.Bubble, RenderAs.Stock, RenderAs.CandleStick };
 
             // repeat the loop until the seriesIndexList becomes empty
             while (seriesIndexList.Count > 0)
@@ -1873,23 +1890,23 @@ namespace Visifire.Charts
         {
             List<DataSeries> lists = new List<DataSeries>();
 
-            Boolean IsDataSeriesExist = false;
+            //Boolean IsDataSeriesExist = false;
             foreach (DataSeries ds in Chart.InternalSeries)
             {
                 if (ds.RenderAs == dataPoint.Parent.RenderAs && ds.Enabled == true)
                 {
-                    foreach (DataPoint dp in ds.InternalDataPoints)
-                    {
-                        if (dp.InternalXValue == dataPoint.InternalXValue)
-                        {
-                            IsDataSeriesExist = true;
-                            break;
-                        }
-                        else
-                            IsDataSeriesExist = false;
-                    }
+                    //foreach (DataPoint dp in ds.InternalDataPoints)
+                    //{
+                    //    if (dp.InternalXValue == dataPoint.InternalXValue)
+                    //    {
+                    //        IsDataSeriesExist = true;
+                    //        break;
+                    //    }
+                    //    else
+                    //        IsDataSeriesExist = false;
+                    //}
 
-                    if (IsDataSeriesExist)
+                    if (ds.InternalDataPoints.Count > 0)
                         lists.Add(ds);
                 }
             }

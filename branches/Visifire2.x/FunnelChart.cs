@@ -1248,6 +1248,10 @@ namespace Visifire.Charts
             if ((Boolean)funnelSlice.DataPoint.LabelLineEnabled && funnelSlice.DataPoint.LabelStyle == LabelStyles.OutSide)
             {
                 labelLineCanvas = new Canvas();
+
+                labelLineCanvas.Width = topRadius * 2;
+                labelLineCanvas.Height = funnelSlice.Height;
+
                 funnelSlice.DataPoint.LabelLine = null;
 
                 Path line = new Path()

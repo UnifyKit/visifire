@@ -259,6 +259,27 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
         }
 
+        public static void CreateDefaultDataSeries4FinancialCharts(Chart chart)
+        {
+            DataSeries dataSeries = new DataSeries();
+
+            Random rand = new Random();
+
+            for (Int32 i = 0; i < 6; i++)
+            {
+                Double open = rand.Next(50, 60);
+                Double close = open + rand.Next(-10, 10);
+                Double high = (open > close ? open : close) + 10;
+                Double low = (open < close ? open : close) - 5;
+
+                DataPoint dp = new DataPoint();
+                dp.YValues = new Double[] { open, close, high, low };
+                dataSeries.DataPoints.Add(dp);
+            }
+
+            chart.Series.Add(dataSeries);
+        }
+
         /// <summary>
         /// Create and add DataSeries to scrollable chart
         /// </summary>

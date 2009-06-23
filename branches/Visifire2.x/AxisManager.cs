@@ -49,7 +49,7 @@ namespace Visifire.Charts
         /// Function calculates the max value, min value, interval and number of intervals of the axis.
         /// </summary>
         public void Calculate()
-        {
+        {   
             Int32 loop = 0;                 // No of iteration.
             Int32 maxMagnitude;             // Magnitude of max data value.         
             Int32 minMagnitude;             // Magnitude of min data value.         
@@ -57,15 +57,14 @@ namespace Visifire.Charts
             Decimal nextInterval;           // Next calculated interval size from the old interval size.
             Decimal tempAxisMaximumValue;   // Calculated maximum value of the axis.
             Decimal tempAxisMinimumValue;   // Calculated minimum value of the axis.
-
-
-            // Handle values less than 10
-            if (this._max < 10 && this._min >= 0)
+            
+            // Handle values less than 10 and Greater than 2
+            if (_max > 2 && this._max < 10 && this._min >= 0)
                 this._maxNoOfInterval = (Int32)(_max + 1);
 
             // Only one value presents to calculate the range.
             if (this._max == this._min)
-            {
+            {   
                 CalculateSingle();  // Calculation for single value.
                 return;
             }

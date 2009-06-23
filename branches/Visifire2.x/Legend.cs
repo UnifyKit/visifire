@@ -1674,7 +1674,11 @@ namespace Visifire.Charts
 
                 ApplyFontPropertiesOfMarkerAsSymbol(markerAsSymbol);
 
-                if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line)
+                if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
+                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
+                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
+                    )
+
                 {
                     markerAsSymbol.BorderColor = markerAsSymbol.MarkerFillColor;
                     markerAsSymbol.MarkerFillColor = new SolidColorBrush(Colors.White);
@@ -1821,7 +1825,10 @@ namespace Visifire.Charts
                 marker.TextAlignmentX = AlignmentX.Right;
 
 
-                if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line)
+                if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
+                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
+                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
+                    )
                 {
                     marker.BorderColor = marker.MarkerFillColor;
                     marker.MarkerFillColor = new SolidColorBrush(Colors.White);

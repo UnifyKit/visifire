@@ -541,7 +541,7 @@ namespace Visifire.Commons
         /// <returns>Visual size</returns>
         internal static Size CalculateVisualSize(FrameworkElement visual)
         {
-            Size retVal = new Size(0,0);;
+            Size retVal = new Size(0,0);
 
             if (visual != null)
             {

@@ -44,6 +44,7 @@ using System.Windows.Shapes;
 
 using Visifire.Commons;
 using System.Windows.Data;
+using System.Collections.Generic;
 
 namespace Visifire.Charts
 {
@@ -65,6 +66,7 @@ namespace Visifire.Charts
             ToolTipText = String.Empty;
             InternalXValue = Double.NaN;
             XValueType = ChartValueTypes.Numeric;
+            //YValues = new DoubleCollection();
             
             // Apply default style from generic
 #if WPF
@@ -91,7 +93,36 @@ namespace Visifire.Charts
             valueFormatString = String.IsNullOrEmpty(Parent.XValueFormatString) ? valueFormatString : Parent.XValueFormatString;
             return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
         }
+
+        /// <summary>
+        /// TextParser is used to parse ToolTipText
+        /// </summary>
+        /// <param name="unParsed">String unParsed</param>
+        /// <returns>parsed as string</returns>
+        public override string ParseToolTipText(string unParsed)
+        {
+            return _parsedToolTipText;
+        }
+
+        /// <summary>
+        /// OnToolTipTextPropertyChanged call back virtual function
+        /// </summary>
+        /// <param name="newValue">New ToolTip value</param>
+        internal override void OnToolTipTextPropertyChanged(string newValue)
+        {
+            // base.OnToolTipTextPropertyChanged(newValue);
+
+            if (Chart != null && _parsedToolTipText != null)
+            {
+                _parsedToolTipText = TextParser(newValue);
+            }
+        }
         
+        /// <summary>
+        /// Already parsed content
+        /// </summary>
+        internal String _parsedToolTipText = null;
+
         /// <summary>
         /// TextParser is used to parse text
         /// </summary>
@@ -184,6 +215,92 @@ namespace Visifire.Charts
                 }
             }
 
+
+            if (_parent.RenderAs == RenderAs.Stock || _parent.RenderAs == RenderAs.CandleStick)
+            {
+                if (str.Contains("##High"))
+                    str = str.Replace("##High", "#High");
+                else
+                {
+                    if (String.IsNullOrEmpty(_parent.YValueFormatString))
+                    {
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 2)
+                            str = str.Replace("#High", Parent.PlotGroup.AxisY.GetFormattedString(YValues[2]));
+                        else
+                            str = str.Replace("#High", "");
+                    }
+                    else
+                    {
+                        if (YValues != null && YValues.Length > 2)
+                            str = str.Replace("#High", YValues[2].ToString(Parent.YValueFormatString));
+                        else
+                            str = str.Replace("#High", "");
+                    }
+                }
+
+
+                if (str.Contains("##Low"))
+                    str = str.Replace("##Low", "#Low");
+                else
+                {
+                    if (String.IsNullOrEmpty(_parent.YValueFormatString))
+                    {
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", Parent.PlotGroup.AxisY.GetFormattedString(YValues[3]));
+                        else
+                            str = str.Replace("#Low", "");
+                    }
+                    else
+                    {
+                        if (YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", YValues[3].ToString(Parent.YValueFormatString));
+                        else
+                            str = str.Replace("#Low", "");
+                    }
+                }
+
+                if (str.Contains("##Open"))
+                    str = str.Replace("##Open", "#Open");
+                else
+                {
+                    if (String.IsNullOrEmpty(_parent.YValueFormatString))
+                    {
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 0)
+                            str = str.Replace("#Open", Parent.PlotGroup.AxisY.GetFormattedString(YValues[0]));
+                        else
+                            str = str.Replace("#Open", "");
+                    }
+                    else
+                    {
+                        if (YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", YValues[0].ToString(Parent.YValueFormatString));
+                        else
+                            str = str.Replace("#Low", "");
+                    }
+                }
+
+
+                if (str.Contains("##Close"))
+                    str = str.Replace("##Close", "#Close");
+                else
+                {
+                    if (String.IsNullOrEmpty(_parent.YValueFormatString))
+                    {
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 1)
+                            str = str.Replace("#Close", Parent.PlotGroup.AxisY.GetFormattedString(YValues[1]));
+                        else
+                            str = str.Replace("#Close", "");
+                    }
+                    else
+                    {
+                        if (YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", YValues[1].ToString(Parent.YValueFormatString));
+                        else
+                            str = str.Replace("#Low", "");
+                    }
+                }
+            }
+
             return GetFormattedMultilineText(str);
         }
 
@@ -252,6 +369,18 @@ namespace Visifire.Charts
             typeof(Double),
             typeof(DataPoint),
             new PropertyMetadata(Double.NaN, OnYValuePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.YValues dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.YValues dependency property.
+        /// </returns>
+        public static readonly DependencyProperty YValuesProperty = DependencyProperty.Register
+           ("YValues",
+           typeof(Double[]),
+           typeof(DataPoint),
+           new PropertyMetadata(null, OnYValuesPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.XValue dependency property.
@@ -799,6 +928,19 @@ namespace Visifire.Charts
             }
         }
 
+        [System.ComponentModel.TypeConverter(typeof(Converters.DoubleArrayConverter))]
+        public Double[] YValues
+        {   
+            get
+            {   
+                return (Double[]) GetValue(YValuesProperty);
+            }
+            set
+            {   
+                SetValue(YValuesProperty, value);
+            }
+        }
+        
         /// <summary>
         /// Get the YValue that will be used for Internal purpose.
         /// </summary>
@@ -1538,7 +1680,7 @@ namespace Visifire.Charts
                                 return this.TextParser("#AxisXLabel");
                         }
                         else
-                        {
+                        {   
                             if(_isAutoName)
                             {
                                 String[] s = this.Name.Split('_');
@@ -1790,20 +1932,27 @@ namespace Visifire.Charts
                             case RenderAs.StreamLineFunnel:
                                 FunnelSliceParms funnelSliceParms = (FunnelSliceParms)this.VisualParams;
 
-                                //if (!(Parent.Chart as Chart).View3D)
-                                //{
-                                    foreach (Shape path in Faces.Parts)
-                                    {
-                                        FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
-                                    }
-                                //}
-                                //else
-                                //{
-
-                                //}
+                                foreach (Shape path in Faces.Parts)
+                                {
+                                    FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
+                                }
                                 break;
 
+                            case RenderAs.CandleStick:
+                                foreach (Shape path in Faces.Parts)
+                                {
+                                    CandleStick.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D);
+                                }
+                                
+                                break;
 
+                            case RenderAs.Stock:
+                                foreach (Shape path in Faces.Parts)
+                                {
+                                    StockChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled);
+                                }
+
+                                break;
                         }
                     }
 
@@ -1951,13 +2100,13 @@ namespace Visifire.Charts
 
             if (selected)
             {
-                dataPoint.Select();
+                dataPoint.Select(true);
 
                 if(dataPoint.Parent.SelectionMode == SelectionModes.Single ||  dataPoint.Parent.RenderAs == RenderAs.SectionFunnel || dataPoint.Parent.RenderAs == RenderAs.StreamLineFunnel)
                    dataPoint.DeSelectOthers();
             }
             else
-                dataPoint.DeSelect(dataPoint , true);
+                dataPoint.DeSelect(dataPoint , true, true);
         }
 
         /// <summary>
@@ -2004,6 +2153,12 @@ namespace Visifire.Charts
         {
             DataPoint dataPoint = d as DataPoint;
             dataPoint.FirePropertyChanged("YValue");
+        }
+
+        private static void OnYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.FirePropertyChanged("YValues");
         }
 
         /// <summary>
@@ -2469,7 +2624,7 @@ namespace Visifire.Charts
                 foreach (DataPoint dp in Parent.DataPoints)
                 {
                     if (dp != this)
-                        dp.DeSelect(dp, false);
+                        dp.DeSelect(dp, false, true);
                 }
             }
         }
@@ -2477,11 +2632,13 @@ namespace Visifire.Charts
         /// <summary>
         /// Select a DataPoint visually
         /// </summary>
-        internal void Select()
+        /// <param name="selfDeselect">Whether to allow any property change</param>
+        internal void Select(Boolean allowPropertyChange)
         {
             if (Faces != null)
             {
-                UpdateExplodedPropertyForSelection(true, true);
+                if(allowPropertyChange)
+                    UpdateExplodedPropertyForSelection(true, true);
 
                 foreach (Shape shape in Faces.BorderElements)
                 {   
@@ -2500,8 +2657,15 @@ namespace Visifire.Charts
                             borderThickness = 1.5;
                         }
                     }
-                                        
-                    Brush borderColor = Visifire.Charts.Chart.CalculateDataPointLabelFontColor(Chart as Chart, this, null, LabelStyles.OutSide);
+                    
+                    Brush borderColor;
+
+                    if (Parent.RenderAs == RenderAs.Stock)
+                    {
+                        borderColor = StockChart.ReCalculateAndApplyTheNewBrush(shape, Color, (Boolean)LightingEnabled);
+                    }
+                    else
+                        borderColor = Visifire.Charts.Chart.CalculateDataPointLabelFontColor(Chart as Chart, this, null, LabelStyles.OutSide);
 
                     InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);            
                 }
@@ -2509,10 +2673,20 @@ namespace Visifire.Charts
             
             if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {
-                UpdateExplodedPropertyForSelection(true, true);
+                if (allowPropertyChange)
+                    UpdateExplodedPropertyForSelection(true, true);
 
-                InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, new SolidColorBrush(Colors.Red), 1.2, 2.4, new SolidColorBrush(Colors.Orange));
+                if(InteractivityHelper.SELECTED_MARKER_BORDER_COLOR == null)
+                    InteractivityHelper.SELECTED_MARKER_BORDER_COLOR = new SolidColorBrush(Colors.Red);
+
+                if (InteractivityHelper.SELECTED_MARKER_FILL_COLOR == null)
+                    InteractivityHelper.SELECTED_MARKER_FILL_COLOR = new SolidColorBrush(Colors.Orange);
+
+                InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
+
+                if(Parent.RenderAs == RenderAs.Line)
+                    LineChart.SelectMovingMarker(this);
             }
         }
         /// <summary>
@@ -2520,35 +2694,53 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="selfDeselect">Whether the action taken by the selected or deselected DataPoint to update its own Exploded property</param>
-        internal void DeSelect(DataPoint dataPoint, Boolean selfDeSelect)
+        /// <param name="selfDeselect">Whether to allow any property change</param>
+        internal void DeSelect(DataPoint dataPoint, Boolean selfDeSelect, Boolean allowPropertyChange)
         {
             if (Faces != null)
             {
-                UpdateExplodedPropertyForSelection(false, selfDeSelect);
+                if (allowPropertyChange)
+                   UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
                 foreach (Shape shape in Faces.BorderElements)
-                {   
-                    if(dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie ||dataPoint.Parent.RenderAs == RenderAs.Doughnut))
+                {
+                    if (dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie || dataPoint.Parent.RenderAs == RenderAs.Doughnut))
                         InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, 0, BorderColor);
                     else
-                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left,BorderColor);
+                    {
+                        Brush borderColor;
 
-                    IsNotificationEnable = false;
-                    Selected = false;
-                    IsNotificationEnable = true;
+                        if (Parent.RenderAs == RenderAs.Stock)
+                            borderColor = StockChart.ReCalculateAndApplyTheNewBrush(shape, dataPoint.Color, (Boolean) dataPoint.LightingEnabled);
+                        else
+                            borderColor = BorderColor;
+
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left, borderColor);
+                    }
+                    
+                    if (allowPropertyChange)
+                    {   
+                        IsNotificationEnable = false;
+                        Selected = false;
+                        IsNotificationEnable = true;
+                    }
                 }
             }
             
             if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {
-                UpdateExplodedPropertyForSelection(false, selfDeSelect);
+                if (allowPropertyChange)
+                    UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
                 InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
                 Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
-                
-                IsNotificationEnable = false;
-                Selected = false;
-                IsNotificationEnable = true;
+
+                if (allowPropertyChange)
+                {
+                    IsNotificationEnable = false;
+                    Selected = false;
+                    IsNotificationEnable = true;
+                }
             }
         }
 
@@ -2995,7 +3187,7 @@ namespace Visifire.Charts
             }
             else if (Faces != null)
             {
-                if (Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
+                if (Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
                 {
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
@@ -3126,6 +3318,14 @@ namespace Visifire.Charts
         /// </summary>
         internal Boolean _isAutoName = true;
 
+        /// <summary>
+        /// Distance from mouse pointer used for line chart only
+        /// </summary>
+        internal Double _distance;
+
+        /// <summary>
+        /// Whether the DataPoint is already Exploded
+        /// </summary>
         private Boolean _isAlreadyExploded = false;
 
 #if WPF

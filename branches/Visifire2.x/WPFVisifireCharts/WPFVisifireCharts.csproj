@@ -103,6 +103,9 @@
     <Compile Include="..\BubbleChart.cs">
       <Link>BubbleChart.cs</Link>
     </Compile>
+    <Compile Include="..\CandleStickChart.cs">
+      <Link>CandleStickChart.cs</Link>
+    </Compile>
     <Compile Include="..\ChartArea.cs">
       <Link>ChartArea.cs</Link>
     </Compile>
@@ -186,6 +189,12 @@
     </Compile>
     <Compile Include="..\PointChart.cs">
       <Link>PointChart.cs</Link>
+    </Compile>
+    <Compile Include="..\RenderHelper.cs">
+      <Link>RenderHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\StockChart.cs">
+      <Link>StockChart.cs</Link>
     </Compile>
     <Compile Include="..\Ticks.cs">
       <Link>Ticks.cs</Link>

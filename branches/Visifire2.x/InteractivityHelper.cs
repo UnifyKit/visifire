@@ -16,6 +16,9 @@ internal class InteractivityHelper
         
 	}
 
+    public static Brush SELECTED_MARKER_BORDER_COLOR;
+    public static Brush SELECTED_MARKER_FILL_COLOR;
+    
     /// <summary>
     /// Apply border effect
     /// </summary>

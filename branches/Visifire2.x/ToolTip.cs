@@ -80,6 +80,9 @@ namespace Visifire.Charts
 
             _borderElement = GetTemplateChild("ToolTipBorder") as Border;
             _toolTipTextBlock = GetTemplateChild("ToolTipTextBlock") as TextBlock;
+
+            _toolTipTextBlock.LineHeight = (Int32)(_toolTipTextBlock.FontSize * 1.4); 
+
             this.Visibility = Visibility.Collapsed;
         }
 
@@ -177,7 +180,7 @@ namespace Visifire.Charts
         /// Get or set the Text property of ToolTip
         /// </summary>
         public String Text
-        {
+        {   
             get
             {
                 return (GetValue(TextProperty) == null) ? "" : (String)GetValue(TextProperty);

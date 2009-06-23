@@ -129,7 +129,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// TextParser is used to pars text
+        /// TextParser is used to parse text
         /// </summary>
         /// <param name="unParsed">String unParsed</param>
         /// <returns>parsed as string</returns>
@@ -138,6 +138,16 @@ namespace Visifire.Commons
             return unParsed;
         }
 
+        /// <summary>
+        /// TextParser is used to parse ToolTipText
+        /// </summary>
+        /// <param name="unParsed">String unParsed</param>
+        /// <returns>parsed as string</returns>
+        public virtual string ParseToolTipText(String unParsed)
+        {
+            return TextParser(unParsed);
+        }
+        
         #endregion
 
         #region Public Events
@@ -310,7 +320,7 @@ namespace Visifire.Commons
         /// <param name="e">MouseEventArgs</param>
         private void VisualObject_MouseLeave(object sender, MouseEventArgs e)
         {
-            String text = _element.TextParser(_element.ToolTipText);
+            String text = _element.ParseToolTipText(_element.ToolTipText);
             if (_control._toolTip.Text == text)
                 _control._toolTip.Hide();
         }
@@ -356,7 +366,7 @@ namespace Visifire.Commons
             }
             else
             {
-                String text = _element.TextParser(_element.ToolTipText);
+                String text = _element.ParseToolTipText(_element.ToolTipText);
 
                 if (!String.IsNullOrEmpty(text))
                 {

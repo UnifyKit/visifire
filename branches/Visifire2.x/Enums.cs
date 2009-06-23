@@ -147,7 +147,9 @@ namespace Visifire.Charts
         Bubble = 12,
         Point = 13,
         StreamLineFunnel = 14,
-        SectionFunnel = 15
+        SectionFunnel = 15,
+        Stock = 16,
+        CandleStick = 17
     }
 
     /// <summary>

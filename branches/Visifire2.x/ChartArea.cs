@@ -1822,78 +1822,10 @@ namespace Visifire.Charts
         /// <param name="seriesListForRendering">List of selected dataseries</param>
         /// <returns>Canvas with rendered dataSeries visual</returns>
         private Panel RenderSeriesFromList(List<DataSeries> dataSeriesList4Rendering)
-        {   
+        {
             Panel renderedCanvas = null;
 
-            switch (dataSeriesList4Rendering[0].RenderAs)
-            {   
-                case RenderAs.Column:
-                    renderedCanvas = ColumnChart.GetVisualObjectForColumnChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Bar:
-                    renderedCanvas = BarChart.GetVisualObjectForBarChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Line:
-                    renderedCanvas = LineChart.GetVisualObjectForLineChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Point:
-                    renderedCanvas = PointChart.GetVisualObjectForPointChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Bubble:
-                    renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Area:
-                    renderedCanvas = AreaChart.GetVisualObjectForAreaChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedColumn:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedColumn100:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedBar:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedBar100:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Pie:
-                    renderedCanvas = PieChart.GetVisualObjectForPieChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.Doughnut:
-                    renderedCanvas = PieChart.GetVisualObjectForDoughnutChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedArea:
-                    renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.StackedArea100:
-                    renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
-                    break;
-
-                case RenderAs.SectionFunnel:
-                    renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired), false);
-
-                    break;
-
-                case RenderAs.StreamLineFunnel:
-                    renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, (Chart._internalAnimationEnabled && !_isAnimationFired), true);
-                    break;
-            }
-
-            //renderedCanvas.Background = new SolidColorBrush(Colors.LightGray);
+            renderedCanvas = RenderHelper.GetVisualObject(dataSeriesList4Rendering[0].RenderAs, ChartVisualCanvas.Width, ChartVisualCanvas.Height, PlotDetails, dataSeriesList4Rendering, Chart, PLANK_DEPTH, (Chart._internalAnimationEnabled && !_isAnimationFired));
 
             ApplyOpacity();
 
@@ -2266,7 +2198,10 @@ namespace Visifire.Charts
                 Brush markerColor = dataPoint._internalColor;
 
                 Boolean markerBevel;
-                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
+                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point 
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Stock
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.CandleStick
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line)
                     markerBevel = false;
@@ -2288,7 +2223,7 @@ namespace Visifire.Charts
                         ""
                         );
 
-                if (dataPoint.Parent.RenderAs == RenderAs.Line && dataPoint.MarkerEnabled == false)
+                if ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.Stock || dataPoint.Parent.RenderAs == RenderAs.CandleStick) && dataPoint.MarkerEnabled == false)
                 {
                     dataPoint.LegendMarker.Opacity = 0;
                 }
@@ -2405,7 +2340,10 @@ namespace Visifire.Charts
 
                         Boolean markerBevel;
 
-                        if (dataSeries.RenderAs == RenderAs.Point || dataSeries.RenderAs == RenderAs.Bubble
+                        if (dataSeries.RenderAs == RenderAs.Point
+                            || dataSeries.RenderAs == RenderAs.Stock
+                            || dataSeries.RenderAs == RenderAs.CandleStick
+                            || dataSeries.RenderAs == RenderAs.Bubble
                             || dataSeries.RenderAs == RenderAs.Line)
                             markerBevel = false;
                         else
@@ -2430,7 +2368,7 @@ namespace Visifire.Charts
 
                         dataSeries.LegendMarker.DataSeriesOfLegendMarker = dataSeries;
 
-                        if (dataSeries.RenderAs == RenderAs.Line && dataSeries.MarkerEnabled == false)
+                        if ((dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.Stock || dataSeries.RenderAs == RenderAs.CandleStick) && dataSeries.MarkerEnabled == false)
                             dataSeries.LegendMarker.Opacity = 0;
 
                         legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
@@ -2943,8 +2881,14 @@ namespace Visifire.Charts
                     {
                         if (Chart.AnimationEnabled == false || (Chart.AnimationEnabled && !_isFirstTimeRender))
                         {
-                            if (dp.Faces.VisualComponents.Count != 0)
+                            if (ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
                             {
+                                dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
+                                if (dp.LabelVisual != null)
+                                    dp.LabelVisual.Opacity = ds.Opacity * dp.Opacity;
+                            }
+                            else if (dp.Faces.VisualComponents.Count != 0)
+                            {   
                                 foreach (FrameworkElement face in dp.Faces.VisualComponents)
                                 {
                                     face.Opacity = dp.Opacity * ds.Opacity;
@@ -2982,10 +2926,12 @@ namespace Visifire.Charts
 
                     #region Attach Tool Tips
 
+                        dp._parsedToolTipText = dp.TextParser(dp.ToolTipText);
+                        
                         if (dp.Faces != null)
                         {
                             if (((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.StreamLineFunnel))
-                                || ds.RenderAs == RenderAs.StreamLineFunnel || ds.RenderAs == RenderAs.SectionFunnel)
+                                || ds.RenderAs == RenderAs.StreamLineFunnel || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.Stock || ds.RenderAs == RenderAs.CandleStick)
                             {
                                 dp.AttachToolTip(Chart, dp, dp.Faces.VisualComponents);
                             }
@@ -3265,6 +3211,8 @@ namespace Visifire.Charts
                     return dataSeries.MarkerType;
 
                 case RenderAs.Line:
+                case RenderAs.Stock:
+                case RenderAs.CandleStick:
                     return dataSeries.MarkerType;
 
                 case RenderAs.Area:
