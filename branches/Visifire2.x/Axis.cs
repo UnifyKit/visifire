@@ -2422,10 +2422,10 @@ namespace Visifire.Charts
             {
                 if (size.Width > Width && Width != 0)
                 {
-                    if (AxisTitleElement.FontSize == 4)
+                    if (AxisTitleElement.FontSize == 0.2)
                         goto RETURN;
 
-                    AxisTitleElement.FontSize -= 1;
+                    AxisTitleElement.FontSize -= 0.2;
 
                     goto RECAL;
                 }
@@ -2434,10 +2434,10 @@ namespace Visifire.Charts
             {
                 if (size.Height > Height && Height != 0)
                 {
-                    if (AxisTitleElement.FontSize == 4)
+                    if (AxisTitleElement.FontSize == 0.2)
                         goto RETURN;
 
-                    AxisTitleElement.FontSize -= 1;
+                    AxisTitleElement.FontSize -= 0.2;
                     goto RECAL;
                 }
             }

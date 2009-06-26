@@ -13,7 +13,7 @@ using Visifire.Commons;
 namespace SLVisifireChartsTest
 {
     [TestClass]
-    public class FinancialChartsTest:SilverlightControlTest
+    public class FinancialChartsTest : SilverlightControlTest
     {
         #region CandleStickProperties
 
@@ -24,7 +24,7 @@ namespace SLVisifireChartsTest
         /// </summary>
         [TestMethod]
         [Asynchronous]
-        public void CandleStickDefaultValue()
+        public void CandleStickEnabledDefaultValue()
         {
             Chart chart = new Chart();
             chart.Width = 400;
@@ -38,6 +38,54 @@ namespace SLVisifireChartsTest
                 delegate
                 {
                     Assert.IsTrue((Boolean)chart.Series[0].Enabled);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default value of PriceUpColor
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickPriceUpColorDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Color.FromArgb((Byte)0xFF, (Byte)0xA8, (Byte)0xD4, (Byte)0x4F)), chart.Series[0].PriceUpColor);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the default value of PriceDownColor
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickPriceDownColorDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Color.FromArgb((Byte)0xFF, (Byte)0xDD, (Byte)0x00, (Byte)0x00)), chart.Series[0].PriceDownColor);
                 });
 
             EnqueueTestComplete();
@@ -190,6 +238,56 @@ namespace SLVisifireChartsTest
                 {
                     chart.View3D = true;
                     Assert.IsTrue(chart.View3D);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of PriceUpColor
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickPriceUpColorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    chart.Series[0].PriceUpColor = new SolidColorBrush(Colors.Blue);
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Blue), chart.Series[0].PriceUpColor);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of PriceDownColor
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickPriceDownColorNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    chart.Series[0].PriceDownColor = new SolidColorBrush(Colors.DarkGray);
+                    Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.DarkGray), chart.Series[0].PriceDownColor);
                 });
 
             EnqueueTestComplete();
@@ -557,7 +655,8 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                delegate{
+                delegate
+                {
                     chart.Series[0].Bevel = false;
                     Assert.IsFalse((Boolean)chart.Series[0].Bevel);
                 });
@@ -849,7 +948,7 @@ namespace SLVisifireChartsTest
         #endregion
 
         #region CheckStockNewPropertyValue
-       
+
         /// <summary>
         /// Check the new value of UniqueColors
         /// </summary>
@@ -1421,6 +1520,844 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #endregion
+
+        #region TestSingleDataPoint
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.CandleStick;
+            dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { 20, 28, 42, 10 } });
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(1, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestSingleDataPointStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.CandleStick;
+            dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { 20, 28, 42, 10 } });
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(1, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestNullDataPoint
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNullDataPointCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.CandleStick;
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(0, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNullDataPointStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Stock;
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(0, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestNegativeXValuesValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeXValuesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                for (Int32 i = 0; i < 12; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.XValue = -5 + i;
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeXValuesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                for (Int32 i = 0; i < 12; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.XValue = -5 + i;
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestSameXValuesValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestSameXValuesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                Double open = rand.Next(50, 60);
+                Double close = open + rand.Next(-10, 10);
+                Double high = (open > close ? open : close) + 10;
+                Double low = (open < close ? open : close) - 5;
+
+                DataPoint dp = new DataPoint();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestSameXValuesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                Double open = rand.Next(50, 60);
+                Double close = open + rand.Next(-10, 10);
+                Double high = (open > close ? open : close) + 10;
+                Double low = (open < close ? open : close) - 5;
+
+                DataPoint dp = new DataPoint();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { open, close, high, low } });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestDateTimeValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestDateTimeValuesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+                dataSeries.XValueType = ChartValueTypes.DateTime;
+
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 1, 1, 1, 2, 8), YValues = new Double[] { 10, 20, 40, 5 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 2, 1, 3, 9, 20), YValues = new Double[] { 20, 30, 35, 10 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 3, 1, 8, 22, 40), YValues = new Double[] { 22, 10, 28, 8 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 4, 1, 9, 7, 24), YValues = new Double[] { 5, 8, 12, 2 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 5, 1, 6, 8, 22), YValues = new Double[] { 18, 24, 38, 18 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 12, 1, 8, 20, 58), YValues = new Double[] { 30, 42, 48, 28 } });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestDateTimeValuesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+                dataSeries.XValueType = ChartValueTypes.DateTime;
+
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 1, 1, 1, 2, 8), YValues = new Double[] { 10, 20, 40, 5 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 2, 1, 3, 9, 20), YValues = new Double[] { 20, 30, 35, 10 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 3, 1, 8, 22, 40), YValues = new Double[] { 22, 10, 28, 8 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 4, 1, 9, 7, 24), YValues = new Double[] { 5, 8, 12, 2 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 5, 1, 6, 8, 22), YValues = new Double[] { 18, 24, 38, 18 } });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = new DateTime(2001, 12, 1, 8, 20, 58), YValues = new Double[] { 30, 42, 48, 28 } });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestLabelText
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestLabelTextInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+                dataSeries.LabelText = "Open: #Open, Close: #Close\nHigh: #High, Low: #Low";
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestLabelTextInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+                dataSeries.LabelText = "Open: #Open, Close: #Close\nHigh: #High, Low: #Low";
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+            });
+
+            EnqueueTestComplete();
+        }
+
+        #endregion
+
+        #region TestNegativeValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeValueInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(-50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestNegativeValueInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(-50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+
+        #endregion
+
+        #region TestLessYValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestLessYValuesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestLessYValuesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(-50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+
+        #endregion
+
+        #region TestMoreYValues
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestMoreYValuesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestMoreYValuesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    Double open = rand.Next(-50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low, low };
+                    dataSeries.DataPoints.Add(dp);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+
+        #endregion
+
+        #region Performance Tests
+        /// <summary>
+        /// Performance and Stress
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickStressTest()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            Int32 numberOfSeries = 0;
+            DataSeries dataSeries = null;
+
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            Random rand = new Random();
+
+            Int32 numberofDataPoint = 0;
+
+            Double totalDuration = 0;
+            DateTime start = DateTime.UtcNow;
+            String msg = Common.AssertAverageDuration(500, 1, delegate
+            {
+                dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.CandleStick;
+
+                for (Int32 i = 0; i < 2000; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                    numberofDataPoint++;
+                }
+                numberOfSeries++;
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueConditional(() => { return _isLoaded; });
+
+            EnqueueCallback(() =>
+            {
+                DateTime end = DateTime.UtcNow;
+                totalDuration = (end - start).TotalSeconds;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
+        }
+
+        /// <summary>
+        /// Performance and Stress
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        [Asynchronous]
+        public void StockStressTest()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            Int32 numberOfSeries = 0;
+            DataSeries dataSeries = null;
+
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            Random rand = new Random();
+
+            Int32 numberofDataPoint = 0;
+
+            Double totalDuration = 0;
+            DateTime start = DateTime.UtcNow;
+            String msg = Common.AssertAverageDuration(500, 1, delegate
+            {
+                dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Stock;
+
+                for (Int32 i = 0; i < 2000; i++)
+                {
+                    Double open = rand.Next(50, 60);
+                    Double close = open + rand.Next(-10, 10);
+                    Double high = (open > close ? open : close) + 10;
+                    Double low = (open < close ? open : close) - 5;
+
+                    DataPoint dp = new DataPoint();
+                    dp.YValues = new Double[] { open, close, high, low };
+                    dataSeries.DataPoints.Add(dp);
+                    numberofDataPoint++;
+                }
+                numberOfSeries++;
+                chart.Series.Add(dataSeries);
+            });
+            EnqueueConditional(() => { return _isLoaded; });
+
+            EnqueueCallback(() =>
+            {
+                DateTime end = DateTime.UtcNow;
+                totalDuration = (end - start).TotalSeconds;
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", dataSeries.RenderAs + " chart with " + numberOfSeries + " DataSeries having " + numberofDataPoint + " DataPoints. Total Chart Loading Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount);
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Total Calculation: " + msg + " Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueCallback(() =>
+            {
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
+            });
+        }
         #endregion
 
         /// <summary>

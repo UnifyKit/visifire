@@ -376,7 +376,7 @@ namespace Visifire.Charts
 
             _listOfDataSeries = new List<DataSeries>();
 
-            Boolean isMovingMarkerEnabled = true; // Whether moving marker is enabled for atleast one series
+            Boolean isMovingMarkerEnabled = false; // Whether moving marker is enabled for atleast one series
 
             foreach (DataSeries series in seriesList)
             {
@@ -413,7 +413,6 @@ namespace Visifire.Charts
                 series.VisualParams = lineParams;
 
                 Point variableStartPoint = new Point(), endPoint = new Point();
-                Nullable<Point> actualStartPoint = null;
                 Boolean IsStartPoint = true;
 
                 //Polyline polyline, PolylineShadow;
@@ -424,7 +423,6 @@ namespace Visifire.Charts
                 {
                     if (dataPoint.Enabled == false)
                         continue;
-
 
                     if (Double.IsNaN(dataPoint.InternalYValue))
                     {
@@ -446,9 +444,6 @@ namespace Visifire.Charts
                         if (IsStartPoint)
                         {
                             variableStartPoint = new Point(xPosition, yPosition);
-
-                            if (actualStartPoint == null)
-                                actualStartPoint = variableStartPoint;
                         }
                         else
                             endPoint = new Point(xPosition, yPosition);
@@ -518,26 +513,35 @@ namespace Visifire.Charts
                 }
                 
                 // Create Moving Marker
-                if (series.MovingMarkerEnabled && actualStartPoint != null)
+                if (series.MovingMarkerEnabled)
                 {
                     Double movingMarkerSize = (Double)series.MarkerSize * (Double)series.MarkerScale * MOVING_MARKER_SCALE;
-                    Ellipse movingMarker = new Ellipse() { IsHitTestVisible = false, Height = movingMarkerSize, Width = movingMarkerSize, Fill = lineParams.LineColor };
-                    movingMarker.SetValue(Canvas.LeftProperty, ((Point)actualStartPoint).X - movingMarker.Width  / 2);
-                    movingMarker.SetValue(Canvas.TopProperty, ((Point)actualStartPoint).Y - movingMarker.Width  / 2);
+                    
+                    if (movingMarkerSize < 6)
+                        movingMarkerSize = 6;
 
+                    Ellipse movingMarker = new Ellipse() { Visibility= Visibility.Collapsed, IsHitTestVisible = false, Height = movingMarkerSize, Width = movingMarkerSize, Fill = lineParams.LineColor };
+                    
                     labelCanvas.Children.Add(movingMarker);
                     series._movingMarker = movingMarker;
                 }
                 else
                     series._movingMarker = null;
 
-                isMovingMarkerEnabled = series.MovingMarkerEnabled && series.MovingMarkerEnabled;
+                isMovingMarkerEnabled = isMovingMarkerEnabled || series.MovingMarkerEnabled;
             }
 
+            // Detach attached events
             chart.ChartArea.PlotAreaCanvas.MouseMove -= PlotAreaCanvas_MouseMove;
+            chart.ChartArea.PlotAreaCanvas.MouseLeave -= PlotAreaCanvas_MouseLeave;
+            chart.ChartArea.PlotAreaCanvas.MouseEnter -= PlotAreaCanvas_MouseEnter;
 
             if (isMovingMarkerEnabled)
+            {   
                 chart.ChartArea.PlotAreaCanvas.MouseMove += new MouseEventHandler(PlotAreaCanvas_MouseMove);
+                chart.ChartArea.PlotAreaCanvas.MouseLeave += new MouseEventHandler(PlotAreaCanvas_MouseLeave);
+                chart.ChartArea.PlotAreaCanvas.MouseEnter += new MouseEventHandler(PlotAreaCanvas_MouseEnter);
+            }
 
             visual.Children.Add(labelCanvas);
 
@@ -556,14 +560,56 @@ namespace Visifire.Charts
             return visual;
         }
 
+        /// <summary>
+        /// MouseEnter event handler for MouseEnter event over PlotAreaCanvas
+        /// </summary>
+        /// <param name="sender">object</param>
+        /// <param name="e">MouseEventArgs</param>
+        static void PlotAreaCanvas_MouseEnter(object sender, MouseEventArgs e)
+        {
+            _isMouseEnteredInPlotArea = true;
+        }
+
+        /// <summary>
+        /// MouseLeave event handler for MouseLeave event over PlotAreaCanvas
+        /// </summary>
+        /// <param name="sender">object</param>
+        /// <param name="e">MouseEventArgs</param>
+        static void PlotAreaCanvas_MouseLeave(object sender, MouseEventArgs e)
+        {   
+            _isMouseEnteredInPlotArea = false;
+
+            // Disable Moving marker for PlotArea Canvas
+            foreach (DataSeries ds in _listOfDataSeries)
+            {
+                if (ds._movingMarker != null)
+                {
+                    ds._movingMarker.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// MouseMove event handler for MouseMove event over PlotAreaCanvas
+        /// </summary>
+        /// <param name="sender">object</param>
+        /// <param name="e">MouseEventArgs</param>
         static void PlotAreaCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             (sender as FrameworkElement).Dispatcher.BeginInvoke(new Action<object, MouseEventArgs>(MoveMovingMarker), sender, e);
         }
 
+        /// <summary>
+        /// Move the moving marker
+        /// </summary>
+        /// <param name="sender">object</param>
+        /// <param name="e">MouseEventArgs</param>
         internal static void MoveMovingMarker(object sender, MouseEventArgs e)
         {   
             Double xPosition = e.GetPosition(sender as Canvas).X;
+
+            if (!_isMouseEnteredInPlotArea)
+                return;
 
             foreach (DataSeries ds in _listOfDataSeries)
             {
@@ -572,6 +618,9 @@ namespace Visifire.Charts
 
                 if (ds._movingMarker != null)
                 {
+                    if (ds._movingMarker.Visibility == Visibility.Collapsed)
+                        ds._movingMarker.Visibility = Visibility.Visible;
+
                     DataPoint nearestDataPoint = null;
 
                     foreach (DataPoint dp in ds.DataPoints)
@@ -602,7 +651,13 @@ namespace Visifire.Charts
                     else
                     {
                         movingMarker.Fill = nearestDataPoint.Parent.Color;
-                        movingMarker.Height = ((Double)nearestDataPoint.Parent.MarkerSize * (Double)nearestDataPoint.Parent.MarkerScale * MOVING_MARKER_SCALE);
+                        
+                        Double movingMarkerSize =(Double)nearestDataPoint.Parent.MarkerSize * (Double)nearestDataPoint.Parent.MarkerScale * MOVING_MARKER_SCALE;
+                        
+                        if(movingMarkerSize < 6)
+                            movingMarkerSize = 6;
+
+                        movingMarker.Height = movingMarkerSize;
                         movingMarker.Width = movingMarker.Height;
                         movingMarker.StrokeThickness = 0;
 
@@ -610,29 +665,6 @@ namespace Visifire.Charts
                         movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint.Marker.Position.Y - movingMarker.Height / 2);
                      }
                 }
-                
-                // if (nearestDataPoint != null)
-                //{
-                //    if (ds._lastNearestDataPoint != null)
-                //    {
-                //        if (!(ds.SelectionEnabled && ds._lastNearestDataPoint.Selected))
-                //        {
-                //            ds._lastNearestDataPoint.DeSelect(ds._lastNearestDataPoint, false, false);
-
-                //            if (!ds.SelectionEnabled)
-                //                if (!(Boolean)ds._lastNearestDataPoint.MarkerEnabled)
-                //                    HideDataPointMarker(ds._lastNearestDataPoint);
-
-                //        }
-                //    }
-
-                //    ds._lastNearestDataPoint = nearestDataPoint;
-
-                //    if (!(ds.SelectionEnabled && ds._lastNearestDataPoint.Selected))
-                //    {
-                //        nearestDataPoint.Select(false);
-                //    }
-                //}
             }
         }
 
@@ -667,9 +699,11 @@ namespace Visifire.Charts
 
         #region Data
 
+        private static Boolean _isMouseEnteredInPlotArea = false;
+
         private static List<DataSeries> _listOfDataSeries;
 
-        private static Double MOVING_MARKER_SCALE = 1.5;
+        private static Double MOVING_MARKER_SCALE = 1.1;
 
         #endregion
     }

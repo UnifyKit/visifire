@@ -2050,6 +2050,48 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region TestAxisYShiftingIfChartHeightIsLess
+        /// <summary>
+        /// Test whether AxisY is shifting downwards if chart very height is less and axis title is set.
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestAxisYShiftingIfChartHeightIsLess()
+        {
+            Chart chart = new Chart();
+            chart.Width = 500;
+            chart.Height = 45;
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            Random rand = new Random();
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            Axis axis = new Axis();
+            axis.Title = "Visifire Chart Visifire Chart";
+            chart.AxesY.Add(axis);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 2, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 3, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 4, YValue = rand.Next(10, 100) });
+                dataSeries.DataPoints.Add(new DataPoint() { XValue = 5, YValue = rand.Next(10, 100) });
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueSleep(_sleepTime);
+            EnqueueTestComplete();
+        }
+        #endregion
+
         /// <summary>
         /// Gets a default instance of Axis to test.
         /// </summary>

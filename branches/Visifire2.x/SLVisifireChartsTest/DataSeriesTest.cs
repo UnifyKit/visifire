@@ -160,6 +160,123 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
+        #region TestingMovingMarkerInLine
+        /// <summary>
+        /// Testing Moving marker in Line chart
+        [TestMethod]
+        [Asynchronous]
+        public void TestingMovingMarkerInLine()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            Random rand = new Random();
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.Line;
+            dataSeries.MovingMarkerEnabled = true;
+
+            for (Int32 i = 0; i < 6; i++)
+            {
+                DataPoint dataPoint = new DataPoint();
+                dataPoint.YValue = rand.Next(100, 500);
+                dataSeries.DataPoints.Add(dataPoint);
+
+            }
+            _chart.Series.Add(dataSeries);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Move mouse on PlotArea.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+            });
+
+        }
+        #endregion
+
+        #region TestingMovingMarkerInLineOnSomeDataseries
+        /// <summary>
+        /// Testing Moving marker on few DataSeries in Line chart
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void TestingMovingMarkerInLineOnSomeDataseries()
+        {
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
+
+            _chart = new Chart();
+            _chart.Width = 500;
+            _chart.Height = 300;
+
+            _isLoaded = false;
+            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(_chart);
+
+            Random rand = new Random();
+
+            for (Int32 j = 0; j < 5; j++)
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.Line;
+                if (j < 4)
+                    dataSeries.MovingMarkerEnabled = true;
+
+                for (Int32 i = 0; i < 6; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.YValue = rand.Next(100, 500);
+                    dataSeries.DataPoints.Add(dataPoint);
+
+                }
+                _chart.Series.Add(dataSeries);
+            }
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Move mouse on PlotArea.");
+                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
+                _htmlElement2.SetStyleAttribute("top", "540px");
+                _htmlElement2.SetProperty("value", "Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
+            });
+
+            EnqueueCallback(() =>
+            {
+                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
+            });
+
+        }
+        #endregion
+
         #region TestingSelectionInPie
         /// <summary>
         /// Testing Selection in Pie Chart
@@ -1210,25 +1327,25 @@ namespace SLVisifireChartsTest
             EnqueueConditional(() => { return _isLoaded; });
 
             EnqueueCallback(() =>
+            {
+                DataSeries dataSeries;
+                for (Int32 ds = 0; ds < 2; ds++)
                 {
-                    DataSeries dataSeries;
-                    for (Int32 ds = 0; ds < 2; ds++)
+                    dataSeries = new DataSeries();
+                    if (ds == 0)
                     {
-                        dataSeries = new DataSeries();
-                        if (ds == 0)
+                        for (Int32 dp = 0; dp < 5; dp++)
                         {
-                            for (Int32 dp = 0; dp < 5; dp++)
-                            {
-                                DataPoint dataPoint = new DataPoint();
-                                dataPoint.XValue = dp + 1;
-                                dataPoint.YValue = rand.Next(0, 100);
-                                dataSeries.DataPoints.Add(dataPoint);
-                            }
+                            DataPoint dataPoint = new DataPoint();
+                            dataPoint.XValue = dp + 1;
+                            dataPoint.YValue = rand.Next(0, 100);
+                            dataSeries.DataPoints.Add(dataPoint);
                         }
-
-                        chart.Series.Add(dataSeries);
                     }
-                });
+
+                    chart.Series.Add(dataSeries);
+                }
+            });
 
             EnqueueSleep(_sleepTime);
             EnqueueTestComplete();
@@ -4983,7 +5100,7 @@ namespace SLVisifireChartsTest
         /// Whether the chart is loaded
         /// </summary>
         private bool _isLoaded = false;
-        
+
         #endregion
     }
 }
