@@ -307,7 +307,58 @@ namespace Visifire.Charts
                         StrokeThickness = (Double)dataPoint.BorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                     };
-                  
+
+                    #region Apply Shadow
+
+                    if (dataPoint.ShadowEnabled == true)
+                    {
+                        // Create High and Low Line
+                        Line highLowShadow = new Line()
+                        {   
+                            IsHitTestVisible = false,
+                            X1 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+                            X2 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+                            Y1 = 0 + CandleStick._shadowDepth,
+                            Y2 = dataPointVisual.Height + CandleStick._shadowDepth,
+                            Stroke = CandleStick._shadowColor,
+                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+                        };
+                        
+                        // Create Open Line
+                        Line openShadowLine = new Line()
+                        {   
+                            IsHitTestVisible = false,
+                            X1 = 0 + CandleStick._shadowDepth,
+                            X2 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+                            Y1 = openY + CandleStick._shadowDepth,
+                            Y2 = openY + CandleStick._shadowDepth,
+                            Stroke = CandleStick._shadowColor,
+                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+                        };
+
+                        // Create Close Line
+                        Line closeShadowLine = new Line()
+                        {   
+                            IsHitTestVisible = false,
+                            X1 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+                            X2 = dataPointVisual.Width + CandleStick._shadowDepth,
+                            Y1 = closeY + CandleStick._shadowDepth,
+                            Y2 = closeY + CandleStick._shadowDepth,
+                            Stroke = CandleStick._shadowColor,
+                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+                        };
+
+                        // Add shadows
+                        dataPointVisual.Children.Add(highLowShadow);
+                        dataPointVisual.Children.Add(openShadowLine);
+                        dataPointVisual.Children.Add(closeShadowLine);
+                    }
+
+                    #endregion
+
                     if (highLow.StrokeThickness > _dataPointWidth / 2)
                         highLow.StrokeThickness = _dataPointWidth / 2;
                     else if (highLow.StrokeThickness > _dataPointWidth)

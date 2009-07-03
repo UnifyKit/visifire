@@ -2241,11 +2241,78 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = new DataSeries();
             dataSeries.RenderAs = RenderAs.SectionFunnel;
             dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
             chart.Series.Add(dataSeries);
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(1, chart.Series[0].DataPoints.Count));
+                () => Assert.AreEqual(3, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestZeroYValueDataPointSection3D()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.SectionFunnel;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(3, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestZeroYValueDataPointStreamLine()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StreamLineFunnel;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(3, chart.Series[0].DataPoints.Count));
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestZeroYValueDataPointStreamLine3D()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+            chart.View3D = true;
+
+            DataSeries dataSeries = new DataSeries();
+            dataSeries.RenderAs = RenderAs.StreamLineFunnel;
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            dataSeries.DataPoints.Add(new DataPoint() { YValue = 0 });
+            chart.Series.Add(dataSeries);
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(3, chart.Series[0].DataPoints.Count));
             EnqueueTestComplete();
         }
 
@@ -2327,6 +2394,79 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
         }
 
+        [TestMethod]
+        [Asynchronous]
+        public void TestAllNegativeValuesInStreamLine()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.StreamLineFunnel;
+
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.AxisXLabel = "Visifire";
+                    dataPoint.YValue = rand.Next(-100, -10);
+                    dataSeries.DataPoints.Add(dataPoint);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestAllNegativeValuesInSection()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                DataSeries dataSeries = new DataSeries();
+                dataSeries.RenderAs = RenderAs.SectionFunnel;
+
+                for (Int32 i = 0; i < 10; i++)
+                {
+                    DataPoint dataPoint = new DataPoint();
+                    dataPoint.AxisXLabel = "Visifire";
+                    dataPoint.YValue = rand.Next(-100, -10);
+                    dataSeries.DataPoints.Add(dataPoint);
+                }
+
+                chart.Series.Add(dataSeries);
+            });
+
+            EnqueueTestComplete();
+        }
 
         #endregion
 

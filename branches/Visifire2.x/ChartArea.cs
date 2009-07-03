@@ -2006,6 +2006,11 @@ namespace Visifire.Charts
         {
             ColorSet colorSet = null;
 
+            if(_financialColorSet == null)
+                _financialColorSet = Chart.GetColorSetByName("CandleLight");
+
+            _financialColorSet.ResetIndex();
+
             // Load chart colorSet
             if (!String.IsNullOrEmpty(Chart.ColorSet))
             {
@@ -2014,74 +2019,86 @@ namespace Visifire.Charts
 
             if (series.Count == 1)
             {   
-                if (!String.IsNullOrEmpty(series[0].ColorSet))
-                {
-                    colorSet = Chart.GetColorSetByName(series[0].ColorSet);
-
-                    if (colorSet == null)
-                        throw new Exception("ColorSet named " + series[0].ColorSet + " is not found.");
-                }
-                else if (colorSet == null)
-                {
-                    throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
-                }
-
-                Brush seriesColor = series[0].GetValue(DataSeries.ColorProperty) as Brush;
-
-                if (!Chart.UniqueColors || series[0].RenderAs == RenderAs.Area || series[0].RenderAs == RenderAs.Line || series[0].RenderAs == RenderAs.StackedArea || series[0].RenderAs == RenderAs.StackedArea100)
+                if (series[0].RenderAs == RenderAs.CandleStick)
                 {   
-                    if (seriesColor == null)
-                        series[0]._internalColor = colorSet.GetNewColorFromColorSet();
-                    else
-                        series[0]._internalColor = seriesColor;
-
-                    colorSet.ResetIndex();
-
-                    foreach (DataPoint dp in series[0].DataPoints)
+                    if (series[0].PriceUpColor == null)
                     {
-                        dp.IsNotificationEnable = false;
-
-                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-
-                        if (dPColor == null)
-                            if(!Chart.UniqueColors)
-                                dp._internalColor = series[0]._internalColor;
-                            else if (seriesColor == null)
-                                dp._internalColor = colorSet.GetNewColorFromColorSet();
-                            else
-                                dp._internalColor = seriesColor;
-                        else
-                            dp._internalColor = dPColor;
-
-                        dp.IsNotificationEnable = true;
+                        series[0].IsNotificationEnable = false;
+                        series[0].PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
+                        series[0].IsNotificationEnable = true;
                     }
                 }
                 else
-                {   
-                    series[0]._internalColor = null;
-
-                    foreach (DataPoint dp in series[0].DataPoints)
+                {
+                    if (!String.IsNullOrEmpty(series[0].ColorSet))
                     {
-                        dp.IsNotificationEnable = false;
+                        colorSet = Chart.GetColorSetByName(series[0].ColorSet);
 
-                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+                        if (colorSet == null)
+                            throw new Exception("ColorSet named " + series[0].ColorSet + " is not found.");
+                    }
+                    else if (colorSet == null)
+                    {
+                        throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
+                    }
 
-                        if (dPColor == null)
-                        {
-                            if (seriesColor == null)
-                                dp._internalColor = colorSet.GetNewColorFromColorSet();
-                            else
-                                dp._internalColor = seriesColor;
-                        }
+                    Brush seriesColor = series[0].GetValue(DataSeries.ColorProperty) as Brush;
+
+                    if (!Chart.UniqueColors || series[0].RenderAs == RenderAs.Area || series[0].RenderAs == RenderAs.Line || series[0].RenderAs == RenderAs.StackedArea || series[0].RenderAs == RenderAs.StackedArea100)
+                    {   
+                        if (seriesColor == null)
+                            series[0]._internalColor = colorSet.GetNewColorFromColorSet();
                         else
-                            dp._internalColor = dPColor;
+                            series[0]._internalColor = seriesColor;
 
-                        dp.IsNotificationEnable = true;
+                        colorSet.ResetIndex();
+
+                        foreach (DataPoint dp in series[0].DataPoints)
+                        {
+                            dp.IsNotificationEnable = false;
+
+                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                            if (dPColor == null)
+                                if (!Chart.UniqueColors)
+                                    dp._internalColor = series[0]._internalColor;
+                                else if (seriesColor == null)
+                                    dp._internalColor = colorSet.GetNewColorFromColorSet();
+                                else
+                                    dp._internalColor = seriesColor;
+                            else
+                                dp._internalColor = dPColor;
+
+                            dp.IsNotificationEnable = true;
+                        }
+                    }
+                    else
+                    {   
+                        series[0]._internalColor = null;
+
+                        foreach (DataPoint dp in series[0].DataPoints)
+                        {
+                            dp.IsNotificationEnable = false;
+
+                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                            if (dPColor == null)
+                            {
+                                if (seriesColor == null)
+                                    dp._internalColor = colorSet.GetNewColorFromColorSet();
+                                else
+                                    dp._internalColor = seriesColor;
+                            }
+                            else
+                                dp._internalColor = dPColor;
+
+                            dp.IsNotificationEnable = true;
+                        }
                     }
                 }
             }
             else if (series.Count > 1)
-            {
+            {   
                 ColorSet colorSet4MultiSeries = null;
                 Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false; // Unique color for each DataPoint
                 Brush seriesColor = null;
@@ -2091,86 +2108,98 @@ namespace Visifire.Charts
 
                 foreach (DataSeries ds in series)
                 {
-                    colorSet4MultiSeries = colorSet;
-                    FLAG_UNIQUE_COLOR_4_EACH_DP = false;
-
-                    if (!String.IsNullOrEmpty(ds.ColorSet))
-                    {
-                        colorSet4MultiSeries = Chart.GetColorSetByName(ds.ColorSet);
-
-                        if (colorSet4MultiSeries == null)
-                            throw new Exception("ColorSet named " + ds.ColorSet + " is not found.");
-
-                        FLAG_UNIQUE_COLOR_4_EACH_DP = true;
-                    }
-                    else if (colorSet4MultiSeries == null)
-                    {
-                        throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
-                    }
-
-                    if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
-                    {
-                        seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-
-                        Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
-
-                        if (DataSeriesColor == null)
-                        {
-                            ds._internalColor = seriesColor;
-                        }
-                        else
-                            ds._internalColor = DataSeriesColor;
-
-                        foreach (DataPoint dp in ds.DataPoints)
-                        {
-                            dp.IsNotificationEnable = false;
-
-                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-
-                            if (dPColor != null)
-                                dp._internalColor = dPColor;
-
-                            dp.IsNotificationEnable = true;
+                    if (ds.RenderAs == RenderAs.CandleStick)
+                    {   
+                        if (ds.PriceUpColor == null)
+                        {   
+                            ds.IsNotificationEnable = false;
+                                ds.PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
+                            ds.IsNotificationEnable = true;
                         }
                     }
                     else
-                    {
-                        if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
+                    {   
+                        colorSet4MultiSeries = colorSet;
+                        FLAG_UNIQUE_COLOR_4_EACH_DP = false;
+
+                        if (!String.IsNullOrEmpty(ds.ColorSet))
+                        {
+                            colorSet4MultiSeries = Chart.GetColorSetByName(ds.ColorSet);
+
+                            if (colorSet4MultiSeries == null)
+                                throw new Exception("ColorSet named " + ds.ColorSet + " is not found.");
+
+                            FLAG_UNIQUE_COLOR_4_EACH_DP = true;
+                        }
+                        else if (colorSet4MultiSeries == null)
+                        {
+                            throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
+                        }
+
+                        if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
+                        {
                             seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
 
-                        foreach (DataPoint dp in ds.DataPoints)
-                        {
-                            dp.IsNotificationEnable = false;
-                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-                            if (dPColor == null)
-                            {
-                                // If unique color for each DataPoint
-                                if (FLAG_UNIQUE_COLOR_4_EACH_DP)
-                                {
-                                    dp._internalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-                                    ds._internalColor = null;
-                                }
-                                else
-                                {
-                                    Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
-                                    if (DataSeriesColor == null)
-                                        ds._internalColor = seriesColor;
-                                    else
-                                        ds._internalColor = DataSeriesColor;
+                            Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
 
-                                    dp.IsNotificationEnable = true;
-
-                                    break;
-                                }
+                            if (DataSeriesColor == null)
+                            {   
+                                ds._internalColor = seriesColor;
                             }
                             else
-                                dp._internalColor = dPColor;
+                                ds._internalColor = DataSeriesColor;
 
-                            dp.IsNotificationEnable = true;
+                            foreach (DataPoint dp in ds.DataPoints)
+                            {
+                                dp.IsNotificationEnable = false;
+
+                                Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                                if (dPColor != null)
+                                    dp._internalColor = dPColor;
+
+                                dp.IsNotificationEnable = true;
+                            }
                         }
-                    }
+                        else
+                        {
+                            if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
+                                seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
 
-                    ds.IsNotificationEnable = true;
+                            foreach (DataPoint dp in ds.DataPoints)
+                            {
+                                dp.IsNotificationEnable = false;
+                                Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+                                if (dPColor == null)
+                                {
+                                    // If unique color for each DataPoint
+                                    if (FLAG_UNIQUE_COLOR_4_EACH_DP)
+                                    {
+                                        dp._internalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+                                        ds._internalColor = null;
+                                    }
+                                    else
+                                    {
+                                        Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
+                                        if (DataSeriesColor == null)
+                                            ds._internalColor = seriesColor;
+                                        else
+                                            ds._internalColor = DataSeriesColor;
+
+                                        dp.IsNotificationEnable = true;
+
+                                        break;
+                                    }
+                                }
+                                else
+                                    dp._internalColor = dPColor;
+
+                                dp.IsNotificationEnable = true;
+                            }
+                        }
+
+                        ds.IsNotificationEnable = true;
+                    }
                 }
             }
 
@@ -2197,14 +2226,38 @@ namespace Visifire.Charts
 
                 Brush markerColor = dataPoint._internalColor;
 
+                if (dataPoint.Parent.RenderAs == RenderAs.CandleStick)
+                {
+                    markerColor = (Brush)dataPoint.GetValue(DataPoint.ColorProperty);
+
+                    if (markerColor == null)
+                    {
+                        if (dataPoint.YValues.Length >= 2)
+                        {
+                            Double openY = dataPoint.YValues[0];
+                            Double closeY = dataPoint.YValues[1];
+
+                            markerColor = (closeY > openY) ? dataPoint.Parent.PriceUpColor : dataPoint.Parent.PriceDownColor;
+                        }
+                    }
+                    else
+                        markerColor = dataPoint.Color;
+
+                }
+
                 Boolean markerBevel;
-                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point 
+                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Stock
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.CandleStick
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line)
+                {
                     markerBevel = false;
+
+                    if ((Boolean)dataPoint.LightingEnabled)
+                        markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", null);
+                }
                 else
                     markerBevel = Chart.View3D ? false : dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
 
@@ -2330,10 +2383,19 @@ namespace Visifire.Charts
                         else
                             legendText = ObservableObject.GetFormattedMultilineText(dataSeries.LegendText);
 
-                        Brush markerColor = dataSeries.Color;
+                        Brush markerColor;
+
+                        if (dataSeries.RenderAs == RenderAs.CandleStick)
+                        {
+                            markerColor = dataSeries.PriceUpColor;
+                        }
+                        else
+                        {   
+                            markerColor = dataSeries.Color;
+                        }
 
                         if (dataSeries.InternalDataPoints.Count > 0)
-                        {
+                        {   
                             DataPoint dataPoint = dataSeries.InternalDataPoints[0];
                             markerColor = markerColor ?? dataPoint.Color;
                         }
@@ -2345,7 +2407,12 @@ namespace Visifire.Charts
                             || dataSeries.RenderAs == RenderAs.CandleStick
                             || dataSeries.RenderAs == RenderAs.Bubble
                             || dataSeries.RenderAs == RenderAs.Line)
+                        {
                             markerBevel = false;
+
+                            if ((Boolean)dataSeries.LightingEnabled)
+                                markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", null);
+                        }
                         else
                             markerBevel = Chart.View3D ? false : dataSeries.Bevel ? dataSeries.Bevel : false;
 
@@ -3258,6 +3325,8 @@ namespace Visifire.Charts
         /// Whether it is the first time render of the chart
         /// </summary>
         internal bool _isFirstTimeRender = true;
+
+        internal ColorSet _financialColorSet = null;
 
         #region "Used for testing purpose only"
 

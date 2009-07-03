@@ -345,7 +345,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 4";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 5";
 
             return version;
         }
@@ -543,8 +543,8 @@ namespace SLVisifireChartsXap
                 if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
                     System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartLoadedFunctionName));
 
-                if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
-                    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _setVisifireChartsRefFunctionName));
+                // if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
+                //    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _setVisifireChartsRefFunctionName));
             }
             catch
             { }

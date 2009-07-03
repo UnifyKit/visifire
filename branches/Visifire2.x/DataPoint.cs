@@ -1941,7 +1941,7 @@ namespace Visifire.Charts
                             case RenderAs.CandleStick:
                                 foreach (Shape path in Faces.Parts)
                                 {
-                                    CandleStick.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D);
+                                    CandleStick.ReCalculateAndApplyTheNewBrush(this, path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D);
                                 }
                                 
                                 break;
@@ -3327,6 +3327,11 @@ namespace Visifire.Charts
         /// Whether the DataPoint is already Exploded
         /// </summary>
         private Boolean _isAlreadyExploded = false;
+
+        /// <summary>
+        /// Whether price is up for financial charts
+        /// </summary>
+        internal Boolean _isPriceUp;
 
 #if WPF
         /// <summary>

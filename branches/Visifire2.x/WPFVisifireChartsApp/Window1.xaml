@@ -6,45 +6,57 @@
     WindowState="Normal">
 
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="500" Height="300" Theme="Theme3" ScrollingEnabled="False">
+
+     <vc:Chart Name="MyChart" Width="500" Height="300" Theme="Theme1" ScrollingEnabled="False"
+                  >
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Stock Chart"/>
+                <vc:Title Text="Visifire CandleStick Chart"/>
             </vc:Chart.Titles>
 
+            <vc:Chart.AxesX>
+                <vc:Axis IntervalType="Days" Interval="5" ValueFormatString="MMM dd"/>
+            </vc:Chart.AxesX>
+
+            <vc:Chart.AxesY>
+                <vc:Axis Prefix="$"/>
+            </vc:Chart.AxesY>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="CandleStick">
+                <vc:DataSeries LegendText="Price" RenderAs="CandleStick" Color="#9cc54a"
+                               SelectionEnabled="true">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="Jan 1 2001" YValues="45,30,48,26"/>
-                        <vc:DataPoint XValue="Jan 2 2001" YValues="36,20,42,18"/>
-                        <vc:DataPoint XValue="Jan 3 2001" YValues="22,30,34,18"/>
-                        <vc:DataPoint XValue="Jan 4 2001" YValues="30,38,40,20"/>
-                        <vc:DataPoint XValue="Jan 5 2001" YValues="50,40,55,38"/>
-                        <vc:DataPoint XValue="Jan 6 2001" YValues="62,54,72,50"/>
-                        <vc:DataPoint XValue="Jan 7 2001" YValues="70,56,78,52"/>
-                        <vc:DataPoint XValue="Jan 8 2001" YValues="66,40,68,35"/>
-                        <vc:DataPoint XValue="Jan 9 2001" YValues="48,58,62,32"/>
-                        <vc:DataPoint XValue="Jan 10 2001" YValues="42,46,50,32"/>
-                        <vc:DataPoint XValue="Jan 11 2001" YValues="36,20,44,18"/>
-                        <vc:DataPoint XValue="Jan 12 2001" YValues="20,32,40,18"/>
-                        <vc:DataPoint XValue="Jan 13 2001" YValues="28,10,30,8"/>
-                        <vc:DataPoint XValue="Jan 14 2001" YValues="6,20,42,3"/>
-                        <vc:DataPoint XValue="Jan 15 2001" YValues="28,18,31,10"/>
-                        <vc:DataPoint XValue="Jan 16 2001" YValues="30,40,42,28"/>
-                        <vc:DataPoint XValue="Jan 17 2001" YValues="40,50,52,36"/>
-                        <vc:DataPoint XValue="Jan 18 2001" YValues="20,40,44,16"/>
-                        <vc:DataPoint XValue="Jan 19 2001" YValues="25,35,38,20"/>
-                        <vc:DataPoint XValue="Jan 20 2001" YValues="28,18,34,12"/>
-                        <vc:DataPoint XValue="Jan 21 2001" YValues="24,12,30,8"/>
-                        <vc:DataPoint XValue="Jan 22 2001" YValues="20,40,46,15"/>
-                        <vc:DataPoint XValue="Jan 23 2001" YValues="40,50,55,26"/>
-                        <vc:DataPoint XValue="Jan 24 2001" YValues="68,50,77,34"/>
-                        <vc:DataPoint XValue="Jan 25 2001" YValues="60,43,71,42"/>
-                        <vc:DataPoint XValue="Jan 26 2001" YValues="44,54,61,34"/>
-                        <vc:DataPoint XValue="Jan 27 2001" YValues="38,40,52,30"/>
-                        <vc:DataPoint XValue="Jan 28 2001" YValues="30,35,48,28"/>
-                        <vc:DataPoint XValue="Jan 29 2001" YValues="28,10,40,8"/>
-                        <vc:DataPoint XValue="Jan 30 2001" YValues="18,33,38,10"/>
+                        <vc:DataPoint XValue="Jan 1 2001" YValues="25,20,32,16" Selected="true"/>
+                        <vc:DataPoint XValue="Jan 2 2001" YValues="26,30,33,22"/>
+                        <vc:DataPoint XValue="Jan 3 2001" YValues="30,38,40,20"/>
+                        <vc:DataPoint XValue="Jan 4 2001" YValues="24,30,34,22"/>
+                        <vc:DataPoint XValue="Jan 5 2001" YValues="26,36,40,24"/>
+                        <vc:DataPoint XValue="Jan 6 2001" YValues="28,38,45,25"/>
+                        <vc:DataPoint XValue="Jan 7 2001" YValues="36,30,44,28"/>
+                        <vc:DataPoint XValue="Jan 8 2001" YValues="30,18,36,16"/>
+                        <vc:DataPoint XValue="Jan 9 2001" YValues="40,50,52,36"/>
+                        <vc:DataPoint XValue="Jan 10 2001" YValues="30,34,38,28"/>
+                        <vc:DataPoint XValue="Jan 11 2001" YValues="24,12,30,8"/>
+                        <vc:DataPoint XValue="Jan 12 2001" YValues="28,40,46,25"/>
+                        <vc:DataPoint XValue="Jan 13 2001" YValues="28,18,36,14"/>
+                        <vc:DataPoint XValue="Jan 14 2001" YValues="38,30,40,26"/>
+                        <vc:DataPoint XValue="Jan 15 2001" YValues="28,33,40,28"/>
+                        <vc:DataPoint XValue="Jan 16 2001" YValues="25,10,32,6"/>
+                        <vc:DataPoint XValue="Jan 17 2001" YValues="26,30,42,18"/>
+                        <vc:DataPoint XValue="Jan 18 2001" YValues="20,18,30,10"/>
+                        <vc:DataPoint XValue="Jan 19 2001" YValues="20,10,30,5"/>
+                        <vc:DataPoint XValue="Jan 20 2001" YValues="26,16,32,10"/>
+                        <vc:DataPoint XValue="Jan 21 2001" YValues="38,40,44,32"/>
+                        <vc:DataPoint XValue="Jan 22 2001" YValues="26,40,41,12"/>
+                        <vc:DataPoint XValue="Jan 23 2001" YValues="30,18,34,10"/>
+                        <vc:DataPoint XValue="Jan 24 2001" YValues="12,23,26,12"/>
+                        <vc:DataPoint XValue="Jan 25 2001" YValues="30,40,45,16"/>
+                        <vc:DataPoint XValue="Jan 26 2001" YValues="25,35,38,20"/>
+                        <vc:DataPoint XValue="Jan 27 2001" YValues="24,12,30,8"/>
+                        <vc:DataPoint XValue="Jan 28 2001" YValues="23,44,46,15"/>
+                        <vc:DataPoint XValue="Jan 29 2001" YValues="28,18,30,12"/>
+                        <vc:DataPoint XValue="Jan 30 2001" YValues="28,18,30,12"/>
+                        <vc:DataPoint XValue="Jan 31 2001" YValues="28,18,30,12"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

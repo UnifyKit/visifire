@@ -950,10 +950,10 @@ namespace Visifire.Charts
         {
             get
             {
-                if (((Brush)GetValue(DataSeries.PriceUpColorProperty) == null))
-                    return new SolidColorBrush(new Color() { A = 255, R = 168, G = 212, B = 79 });
-                else
-                    return (Brush)GetValue(PriceUpColorProperty);
+                //if (((Brush)GetValue(DataSeries.PriceUpColorProperty) == null))
+                //    return new SolidColorBrush(new Color() { A = 255, R = 168, G = 212, B = 79 });
+                //else
+                return (Brush)GetValue(PriceUpColorProperty);
             }
             set
             {
@@ -969,7 +969,7 @@ namespace Visifire.Charts
             get
             {
                 if (((Brush)GetValue(DataSeries.PriceDownColorProperty) == null))
-                    return new SolidColorBrush(new Color(){A=255,R=255,G=0,B=0});
+                    return Graphics.RED_BRUSH;
                 else
                     return (Brush)GetValue(PriceDownColorProperty);
             }
@@ -1547,8 +1547,7 @@ namespace Visifire.Charts
             {
                 if ((Nullable<Double>)GetValue(MarkerSizeProperty) == null)
                     if (this.RenderAs == RenderAs.Line)
-                        return (Nullable<Double>)(this.LineThickness + (this.LineThickness * 80 / 100));
-
+                        return (this.LineThickness * 1.8);
                     else
                         return 8;
                 else
@@ -1688,7 +1687,15 @@ namespace Visifire.Charts
         {
             get
             {
-                return (Brush)GetValue(BorderColorProperty);
+                if (GetValue(BorderColorProperty) == null)
+                {
+                    if (RenderAs == RenderAs.CandleStick)
+                        return (Brush)GetValue(BorderColorProperty);
+                    else
+                        return Graphics.BLACK_BRUSH;
+                }
+                else
+                    return (Brush)GetValue(BorderColorProperty);
             }
             set
             {

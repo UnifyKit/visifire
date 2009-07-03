@@ -167,6 +167,18 @@ namespace Visifire.Charts
             }
         }
 
+        private static Brush GetOpenCloseRectangleBorderbrush(DataPoint dataPoint, Brush dataPointColor)
+        {
+            return (dataPoint.BorderColor == null) ? ((dataPointColor == null) ? dataPoint.Parent.PriceUpColor : dataPointColor) : dataPoint.BorderColor;
+        }
+
+        private static Brush GetOpenCloseRectangleFillbrush(DataPoint dataPoint, Brush dataPointColor)
+        {
+            if (dataPoint._isPriceUp)
+                return (dataPointColor == null) ? dataPoint.Parent.PriceUpColor : dataPointColor;
+            else
+                return dataPoint.Parent.PriceDownColor;
+        }
         /// <summary>
         /// Get visual object for CandleStick chart
         /// </summary>
@@ -212,7 +224,9 @@ namespace Visifire.Charts
                 {
                     if (dataPoint.YValues == null || dataPoint.Enabled == false)
                         continue;
-                    
+
+                    Brush dataPointColor = (Brush)dataPoint.GetValue(DataPoint.ColorProperty);
+
                     // Initialize DataPoint faces
                     dataPoint.Faces = new Faces();
                     dataPoint.Faces.Parts = new List<FrameworkElement>();
@@ -225,6 +239,8 @@ namespace Visifire.Charts
                     closeY = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, closeY);
                     highY = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, highY);
                     lowY = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, lowY);
+
+                    dataPoint._isPriceUp = (openY > closeY) ? true : false;
 
                     // Create DataPoint Visual
                     Canvas dataPointVisual = new Canvas() 
@@ -250,32 +266,69 @@ namespace Visifire.Charts
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                     };
 
+                    if ((Boolean)dataPoint.ShadowEnabled)
+                    {
+                        Line highLowShadowLine = new Line()
+                        {
+                            IsHitTestVisible = false,
+                            X1 = dataPointVisual.Width / 2 + _shadowDepth,
+                            X2 = dataPointVisual.Width / 2 + _shadowDepth,
+                            Y1 = 0,
+                            Y2 = Math.Max(dataPointVisual.Height -_shadowDepth, 1),
+                            Stroke = _shadowColor,
+                            StrokeThickness = GetStrokeThickness(dataPoint),
+                            StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+                        };
+
+                        highLowShadowLine.SetValue(Canvas.TopProperty, _shadowDepth);
+                        dataPointVisual.Children.Add(highLowShadowLine);
+                    }
+
                     dataPoint.Faces.Parts.Add(highLowLine);
                     dataPoint.Faces.VisualComponents.Add(highLowLine);
-                    // dataPoint.Faces.BorderElements.Add(highLowLine);
                     dataPointVisual.Children.Add(highLowLine);
-
+                    
                     /* Create Open-Close Rectangle
                      * Math.Max is used to make sure that the rectangle is visible 
                      * even when the difference between high and low is 0 */
                     Rectangle openCloseRect = new Rectangle()
-                    { 
+                    {   
                         Width = _dataPointWidth, 
                         Height = Math.Max(Math.Abs(openY - closeY), 1),
-                        Stroke = dataPoint.BorderColor,
+                        Stroke = GetOpenCloseRectangleBorderbrush(dataPoint, dataPointColor),
                         StrokeThickness = dataPoint.BorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString()),
                         Tag = new ElementData() { Element = dataPoint, VisualElementName = "OcRect" }
                     };
 
                     openCloseRect.SetValue(Canvas.TopProperty, ((closeY > openY) ? openY : closeY) - ((Double)dataPointVisual.GetValue(Canvas.TopProperty)));
-                    
-                    Brush dataPointColor = (Brush)dataPoint.GetValue(DataPoint.ColorProperty);
+                    openCloseRect.SetValue(Canvas.LeftProperty, (Double)0);
 
                     // If Closing Value is higher than Opening value, then fill
-                    openCloseRect.Fill = (openY > closeY) ? 
-                        (dataPointColor ?? dataPoint.Parent.PriceUpColor) : 
-                        (dataPointColor ?? dataPoint.Parent.PriceDownColor);
+                    //openCloseRect.Fill = (openY > closeY) ? 
+                    //    (dataPointColor ?? dataPoint.Parent.PriceUpColor) : 
+                    //    (dataPointColor ?? dataPoint.Parent.PriceDownColor);
+
+                    openCloseRect.Fill = GetOpenCloseRectangleFillbrush(dataPoint, dataPointColor);
+
+                    if ((Boolean)dataPoint.ShadowEnabled)
+                    {
+                        Rectangle openCloseShadowRect = new Rectangle()
+                        {
+                            IsHitTestVisible = false,
+                            Fill = _shadowColor,
+                            Width = _dataPointWidth,
+                            Height = Math.Max(Math.Abs(openY - closeY), 1),
+                            Stroke = _shadowColor,
+                            StrokeThickness = dataPoint.BorderThickness.Left,
+                            StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+                        };
+                        
+                        openCloseShadowRect.SetValue(Canvas.TopProperty, (Double)openCloseRect.GetValue(Canvas.TopProperty) + _shadowDepth);
+                        openCloseShadowRect.SetValue(Canvas.LeftProperty, (Double)openCloseRect.GetValue(Canvas.LeftProperty) + _shadowDepth);
+                        openCloseShadowRect.SetValue(Canvas.ZIndexProperty, -4);
+                        dataPointVisual.Children.Add(openCloseShadowRect);
+                    }
 
                     dataPoint.Faces.Parts.Add(openCloseRect);
                     dataPoint.Faces.VisualComponents.Add(openCloseRect);
@@ -285,7 +338,7 @@ namespace Visifire.Charts
                     // Create Bevel
                     if (dataPoint.Parent.Bevel && _dataPointWidth > 8 && openCloseRect.Height > 6)
                     {
-                        Double reduceSize = dataPoint.BorderThickness.Left;
+                        Double reduceSize = openCloseRect.StrokeThickness;
 
                         if (dataPoint.Parent.SelectionEnabled && dataPoint.BorderThickness.Left == 0)
                             reduceSize = 1.5 + reduceSize;
@@ -311,11 +364,21 @@ namespace Visifire.Charts
                             dataPointVisual.Children.Add(bevelCanvas);
                         }
                     }
+                                        
+                    Brush highLowLineColor;
+
+                    if (dataPointColor == null)
+                        highLowLineColor = dataPoint.Parent.PriceUpColor;
+                    else
+                        highLowLineColor = dataPointColor;
 
                     if ((Boolean)dataPoint.LightingEnabled)
+                    {
                         openCloseRect.Fill = Graphics.GetLightingEnabledBrush(openCloseRect.Fill, "Linear", null);
-
-                    highLowLine.Stroke = openCloseRect.Fill;
+                        highLowLine.Stroke = Graphics.GetLightingEnabledBrush(highLowLineColor, "Linear", null);
+                    }
+                    else
+                        highLowLine.Stroke = highLowLineColor;
 
                     seriesCanvas.Children.Add(dataPointVisual);
                     dataPoint.Faces.Visual = dataPointVisual;
@@ -353,16 +416,31 @@ namespace Visifire.Charts
         /// <param name="newBrush">New Brush</param>
         /// <param name="isLightingEnabled">Whether lighting is enabled</param>
         /// <param name="is3D">Whether 3d effevt is enabled</param>
-        internal static void ReCalculateAndApplyTheNewBrush(Shape shape, Brush newBrush, Boolean isLightingEnabled, Boolean is3D)
+        internal static void ReCalculateAndApplyTheNewBrush(DataPoint dataPoint, Shape shape, Brush newBrush, Boolean isLightingEnabled, Boolean is3D)
         {
+            Brush oCRectfillColor = GetOpenCloseRectangleFillbrush(dataPoint, newBrush);
+
             switch ((shape.Tag as ElementData).VisualElementName)
             {
-                case "HlLine": shape.Stroke = isLightingEnabled ? Graphics.GetLightingEnabledBrush(newBrush, "Linear", null) : Graphics.GetBevelTopBrush(newBrush); break;
-                case "OcRect": shape.Fill = Graphics.GetLightingEnabledBrush(newBrush, "Linear", null); break;
-                case "TopBevel": shape.Fill = Graphics.GetBevelTopBrush(newBrush); break;
-                case "LeftBevel": shape.Fill = Graphics.GetBevelSideBrush((isLightingEnabled ? -70 : 0), newBrush); break;
-                case "RightBevel": shape.Fill = Graphics.GetBevelSideBrush((isLightingEnabled ? -110 : 180), newBrush); break;
-                case "BottomBevel": shape.Fill = Graphics.GetBevelSideBrush(90, newBrush); break;
+                case "HlLine": 
+                    shape.Stroke = isLightingEnabled ? Graphics.GetLightingEnabledBrush(newBrush, "Linear", null) : Graphics.GetBevelTopBrush(newBrush); 
+                    break;
+                case "OcRect":
+                    shape.Fill = isLightingEnabled ? Graphics.GetLightingEnabledBrush(oCRectfillColor, "Linear", null) : oCRectfillColor;
+                    shape.Stroke = GetOpenCloseRectangleBorderbrush(dataPoint, newBrush);
+                    break;
+                case "TopBevel":
+                    shape.Fill = Graphics.GetBevelTopBrush(oCRectfillColor); 
+                    break;
+                case "LeftBevel":
+                    shape.Fill = Graphics.GetBevelSideBrush((isLightingEnabled ? -70 : 0), oCRectfillColor); 
+                    break;
+                case "RightBevel":
+                    shape.Fill = Graphics.GetBevelSideBrush((isLightingEnabled ? -110 : 180), oCRectfillColor); 
+                    break;
+                case "BottomBevel":
+                    shape.Fill = Graphics.GetBevelSideBrush(90, oCRectfillColor); 
+                    break;
             }
         }
 
@@ -407,27 +485,6 @@ namespace Visifire.Charts
             }
         }
 
-        /*
-        
-        /// <summary>
-        /// Apply marker properties
-        /// </summary>
-        /// <param name="dataPoint">DataPoint</param>
-        /// <param name="markerSize">Marker size</param>
-        private static void ApplyMarkerProperties(DataPoint dataPoint)
-        {
-            dataPoint.Marker.FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0) ? LabelStyles.OutSide : (LabelStyles)dataPoint.LabelStyle);
-            dataPoint.Marker.FontFamily = dataPoint.LabelFontFamily;
-            dataPoint.Marker.FontSize = (Double)dataPoint.LabelFontSize;
-            dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
-            dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-            dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
-            dataPoint.MarkerColor = new SolidColorBrush(Colors.Transparent);
-            dataPoint.MarkerBorderColor = new SolidColorBrush(Colors.Transparent);
-        }
-        
-         */
-
         #endregion
 
         #region Internal Events And Delegates
@@ -438,8 +495,10 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Width of a DataPoint
-        /// </summary>
+        /// </summary>#cbcbcb
         private static Double _dataPointWidth;
+        internal static Brush _shadowColor = new SolidColorBrush(Color.FromArgb((Byte)0xff, (Byte)0xb0, (Byte)0xb0, (Byte)0xb0));
+        internal static Double _shadowDepth = 1.5;
 
         #endregion
     }

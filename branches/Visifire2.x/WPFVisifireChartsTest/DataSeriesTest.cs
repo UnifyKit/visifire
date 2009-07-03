@@ -2154,7 +2154,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.IsNull(dataSeries.BorderColor);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), dataSeries.BorderColor);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

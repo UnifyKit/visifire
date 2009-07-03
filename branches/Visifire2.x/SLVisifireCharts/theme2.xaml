@@ -10,7 +10,7 @@
     <Style x:Key="DataSeries" TargetType="vc:DataSeries">
         <Setter Property="Bevel" Value="false"/>
         <Setter Property="LightingEnabled" Value="true"/>
-        <Setter Property="PriceUpColor" Value="#FFA8D44F"/>
+        <!--<Setter Property="PriceUpColor" Value="#FFA8D44F"/>-->
         <Setter Property="PriceDownColor" Value="#FFDD0000"/>
      </Style>
     <Style x:Key="PlotArea" TargetType="vc:PlotArea">

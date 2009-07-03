@@ -2928,7 +2928,7 @@ namespace SLVisifireChartsTest
                 delegate
                 {
                     for (Int32 i = 0; i < 10; i++)
-                        Assert.IsNull(dataSeries.DataPoints[i].BorderColor);
+                        Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), dataSeries.DataPoints[i].BorderColor);
                 });
 
             EnqueueTestComplete();

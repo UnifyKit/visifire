@@ -15,7 +15,7 @@ using Visifire.Commons;
 namespace Visifire.Charts
 {
     internal static class FunnelChart
-    {
+    {   
         public static Grid _funnelChartGrid;
 
         /// <summary>
@@ -46,6 +46,9 @@ namespace Visifire.Charts
 
                 List<DataPoint> tempDataPoints = (from dp in funnelSeries.DataPoints where dp.Enabled == true && dp.YValue >= 0 select dp).ToList();
 
+                if ((from dp in tempDataPoints where dp.YValue == 0 select dp).Count() == tempDataPoints.Count)
+                    return null;
+
                 // If number of DataPoints is equals to 0 then dont do any operation
                 if (tempDataPoints.Count == 0 || (tempDataPoints.Count == 1 && tempDataPoints[0].YValue == 0))
                     return null;
@@ -53,8 +56,8 @@ namespace Visifire.Charts
                 if (isStreamLine)
                 {   
                     if (tempDataPoints.Count <= 1)
-                        throw new Exception("Invalid DataSet. StreamLineFunnel chart must have more than one DataPoint in a DataSeries.");
-
+                        throw new Exception("Invalid DataSet. StreamLineFunnel chart must have more than one DataPoint in a DataSeries with YValue > 0.");
+                    
                     funnelDataPoints = (from dp in tempDataPoints orderby dp.YValue descending select dp).ToList();
                 }
                 else
@@ -241,13 +244,18 @@ namespace Visifire.Charts
                 Double yScaleTop = yScale * (funnelSlices[index].TopRadius / topRadius);
                 Double yScaleBottom = yScale * (funnelSlices[index].BottomRadius / topRadius);
 
+                if (Double.IsNaN(yScaleTop))
+                    yScaleTop = 0.0000001;
+
+                if (Double.IsNaN(yScaleBottom))
+                    yScaleBottom = 0.0000001;
+
                 Canvas sliceCanvas = GetFunnelSliceVisual(index, topRadius, is3D, funnelSlices[index], yScaleTop, yScaleBottom, fillColor, animationEnabled);
 
                 funnelSlices[index].Top = funnelSlices[index].TopGap + ((index == 0) ? 0 : (funnelSlices[index - 1].Top + funnelSlices[index - 1].Height + funnelSlices[index - 1].BottomGap));
 
                 sliceCanvas.SetValue(Canvas.TopProperty, funnelSlices[index].Top);
                 sliceCanvas.SetValue(Canvas.ZIndexProperty, zIndex--);
-                              
 
                 sliceCanvas.Height = funnelSlices[index].Height;
                 sliceCanvas.Width = topRadius * 2;
@@ -687,6 +695,8 @@ namespace Visifire.Charts
                     if (index == iOValuePairs.Count() - 1 || (Boolean)funnelSlicesParms[slicesIndex].DataPoint.Exploded)
                         funnelSlicesParms[slicesIndex].BottomGap = singleGap;
                     */
+
+                    FixTopAndBottomRadiusForStreamLineFunnel(ref funnelSlicesParms[slicesIndex]);
                 }
 
                 // Enlarge Funnel Height-----------
@@ -722,6 +732,8 @@ namespace Visifire.Charts
                         if (index == iOValuePairs.Count() - 1 || (Boolean)funnelSlicesParms[slicesIndex].DataPoint.Exploded)
                             funnelSlicesParms[slicesIndex].BottomGap = singleGap;
                         */
+
+                        FixTopAndBottomRadiusForStreamLineFunnel(ref funnelSlicesParms[slicesIndex]);
                     }
                 }
 
@@ -791,6 +803,8 @@ namespace Visifire.Charts
                         // Calculate funnel angle
                         // funnelSlicesParms[slicesIndex].TopAngle = Math.PI / 2 - Math.Atan((funnelSlicesParms[slicesIndex].TopRadius - funnelSlicesParms[slicesIndex].BottomRadius) / funnelSlicesParms[slicesIndex].Height);
 
+                        FixTopAndBottomRadiusForStreamLineFunnel(ref funnelSlicesParms[slicesIndex]);
+
                         Double theta = Math.Atan((funnelSlicesParms[slicesIndex].TopRadius - funnelSlicesParms[slicesIndex].BottomRadius) / funnelSlicesParms[slicesIndex].Height);
                         funnelSlicesParms[slicesIndex].TopAngle = Math.PI / 2 - theta;
                         funnelSlicesParms[slicesIndex].BottomAngle = Math.PI / 2 + theta;
@@ -801,6 +815,21 @@ namespace Visifire.Charts
             #endregion
 
             return funnelSlicesParms;
+        }
+
+        public static void FixTopAndBottomRadiusForStreamLineFunnel(ref FunnelSliceParms funnelSlice)
+        {
+            if (Double.IsNaN(funnelSlice.TopRadius))
+            {
+                funnelSlice.TopRadius = 0.00000001;
+                funnelSlice.Height = 0;
+            }
+
+            if (Double.IsNaN(funnelSlice.BottomRadius))
+                funnelSlice.BottomRadius = 0.0000001;
+
+            if(Double.IsNaN(funnelSlice.Height))
+                funnelSlice.Height = 0.0000001;
         }
         
         /// <summary>

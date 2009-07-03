@@ -235,7 +235,7 @@
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="BorderColor" Value="Black"/>
+        <!--<Setter Property="BorderColor" Value="Black"/>-->
     </Style>
     
     <Style TargetType="{x:Type vc:Title}" >

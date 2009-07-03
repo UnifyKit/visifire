@@ -44,6 +44,30 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the default value of ShadowEnabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickShadowEnabledDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    Assert.IsFalse((Boolean)chart.Series[0].ShadowEnabled);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the default value of PriceUpColor
         /// </summary>
         [TestMethod]
@@ -238,6 +262,31 @@ namespace SLVisifireChartsTest
                 {
                     chart.View3D = true;
                     Assert.IsTrue(chart.View3D);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of ShadowEnabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void CandleStickShadowEnabledNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.CandleStick;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    chart.Series[0].ShadowEnabled = true;
+                    Assert.IsTrue((Boolean)chart.Series[0].ShadowEnabled);
                 });
 
             EnqueueTestComplete();
@@ -844,6 +893,30 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the default value of ShadowEnabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void StockShadowEnabledDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.Stock;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    Assert.IsFalse((Boolean)chart.Series[0].ShadowEnabled);
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the default value of LabelEnabled
         /// </summary>
         [TestMethod]
@@ -973,6 +1046,31 @@ namespace SLVisifireChartsTest
                         if (i < 4)
                             Common.AssertBrushesAreEqual(chart.Series[0].DataPoints[i].Color, chart.Series[0].DataPoints[i + 1].Color);
                     }
+                });
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the new value of ShadowEnabled
+        /// </summary>
+        [TestMethod]
+        [Asynchronous]
+        public void StockShadowEnabledNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Common.CreateDefaultDataSeries4FinancialCharts(chart);
+            chart.Series[0].RenderAs = RenderAs.Stock;
+
+            EnqueueSleep(_sleepTime);
+            CreateAsyncTask(chart,
+                delegate
+                {
+                    chart.Series[0].ShadowEnabled = true;
+                    Assert.IsTrue((Boolean)chart.Series[0].ShadowEnabled);
                 });
 
             EnqueueTestComplete();
@@ -2205,6 +2303,99 @@ namespace SLVisifireChartsTest
 
         #endregion
 
+        #region TestMultiSeries
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesInCandleStick()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 j = 0; j < 3; j++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.CandleStick;
+
+                    for (Int32 i = 0; i < 6; i++)
+                    {
+                        Double open = rand.Next(50, 60);
+                        Double close = open + rand.Next(-10, 10);
+                        Double high = (open > close ? open : close) + 10;
+                        Double low = (open < close ? open : close) - 5;
+
+                        DataPoint dp = new DataPoint();
+                        dp.YValues = new Double[] { open, close, high, low, low };
+                        dataSeries.DataPoints.Add(dp);
+                    }
+
+                    chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueTestComplete();
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void TestMultiSeriesInStock()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 350;
+
+            Random rand = new Random();
+
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
+            TestPanel.Children.Add(chart);
+
+            EnqueueConditional(() => { return _isLoaded; });
+            EnqueueSleep(_sleepTime);
+
+            EnqueueCallback(() =>
+            {
+                for (Int32 j = 0; j < 3; j++)
+                {
+                    DataSeries dataSeries = new DataSeries();
+                    dataSeries.RenderAs = RenderAs.CandleStick;
+
+                    for (Int32 i = 0; i < 6; i++)
+                    {
+                        Double open = rand.Next(50, 60);
+                        Double close = open + rand.Next(-10, 10);
+                        Double high = (open > close ? open : close) + 10;
+                        Double low = (open < close ? open : close) - 5;
+
+                        DataPoint dp = new DataPoint();
+                        dp.YValues = new Double[] { open, close, high, low, low };
+                        dataSeries.DataPoints.Add(dp);
+                    }
+
+                    chart.Series.Add(dataSeries);
+                }
+            });
+
+            EnqueueTestComplete();
+        }
+
+
+        #endregion
+
         #region Performance Tests
         /// <summary>
         /// Performance and Stress
@@ -2276,7 +2467,6 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
@@ -2352,7 +2542,6 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));

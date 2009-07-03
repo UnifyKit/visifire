@@ -1471,7 +1471,7 @@ namespace Visifire.Charts
 #if WPF             
                     ResourceDictionary resource = (ResourceDictionary)Application.LoadComponent(new Uri(@"" + themeName + ".xaml", UriKind.RelativeOrAbsolute));
                     StyleDictionary = resource;
-#else
+#else               
                     fooResourceName = themeName + ".xaml";
                     System.Windows.Resources.StreamResourceInfo srif = Application.GetResourceStream(new Uri(fooResourceName, UriKind.RelativeOrAbsolute));
 
@@ -1953,10 +1953,13 @@ namespace Visifire.Charts
         /// <returns>ColorSet</returns>
         internal ColorSet GetColorSetByName(String id)
         {
-            ColorSet colorSet = EmbeddedColorSets.GetColorSetByName(id);
+            ColorSet colorSet = null;
 
-            if (ColorSets != null && colorSet == null)
+            if (ColorSets != null && ColorSets.Count > 0)
                 colorSet = ColorSets.GetColorSetByName(id);
+            
+            if(colorSet == null)
+                colorSet = EmbeddedColorSets.GetColorSetByName(id);
             
             return colorSet;
         }

@@ -4254,7 +4254,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsNull(dataSeries.BorderColor));
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), dataSeries.BorderColor));
 
             EnqueueTestComplete();
         }

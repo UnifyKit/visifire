@@ -1,146 +1,77 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Visifire Test Page</title>
-        <script type="text/javascript" src="Visifire2.js"></script>
-    <style type="text/css">
-        #VisifireChart0
-        {
-            height: 450px;
-            width: 500px;
-        }
-    </style>
-    
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO8859-1" />
+
+    <script language="javascript" type="text/javascript">
+function showHideChart(theInput, theDivId)
+{
+    if (document.getElementById(theDivId).style.display == "none")
+    {
+        document.getElementById(theDivId).style.display = "block";
+        theInput.value = "Hide Chart";
+    }
+    else
+    {   
+        document.getElementById(theDivId).style.display = "none";
+        theInput.value = "Show Chart";
+    }
+}
+    </script>
+
 </head>
-    
-<body style="background-color:Gray;">
+<body bottommargin="0" rightmargin="0" marginheight="0" marginwidth="0" topmargin="0"
+    leftmargin="0">
+    <form name="FORM1" method="post">
+    <input type="button" value="Hide Chart" onclick="showHideChart(this, 'myChart');" />
+    <br />
 
-    <table style="width:100%;height:100%">
-        <tr>
-            <td style="text-align: center; vertical-align:middle">
-                <div id="VisifireChart0">
-                
-                    <script type="text/javascript">
+    <script language="javascript" src="Visifire2.js" type="text/javascript"> </script>
 
-                        // Create Visifire object
-                        var vChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
+    <div id="myChart" style="width: 500;">
+    </div>
 
-                        //vChart1.setLogLevel(0); // If you want to disable logging.
-                        
-                        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1" AnimationEnabled="true" Bevel="True" BorderThickness="2" BorderBrush="Black" View3D="False">'
-                           + '     <vc:Chart.Titles>'
-                           + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
-                           + '     </vc:Chart.Titles>'
-                            
-                           + '     <vc:Chart.ToolTips>'
-                           + '         <vc:ToolTip FontSize="8" Background="AliceBlue"/>'
-                           + '     </vc:Chart.ToolTips>'
-                            
-                           + '     <vc:Chart.AxesX>'
-                           + '         <vc:Axis Title="Country"/>'
-                           + '     </vc:Chart.AxesX>'
-                            
-                           + '     <vc:Chart.AxesY>'
-                           + '         <vc:Axis Title="Gold Medals Won"/>'
-                           + '    </vc:Chart.AxesY>'
+    <script language="javascript" type="text/javascript">
+            var chartXmlString = ''
+            +'<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" BorderThickness="0" Theme="Theme1" Watermark="True" View3D="True" AnimationEnabled="True" Background="#ffffff" >'
+            +'<vc:Chart.Titles>'
+            +'<vc:Title Text="Test Chart" />'
+            +'</vc:Chart.Titles>'
+            +'<vc:Chart.AxesX>'
+            +'<vc:Axis Title="Quarters">'
+            +'<vc:Axis.AxisLabels>'
+            +'<vc:AxisLabels />'
+            +'</vc:Axis.AxisLabels>'
+            +'</vc:Axis>'
+            +'</vc:Chart.AxesX>'
+            +'<vc:Chart.AxesY>'
+            +'<vc:Axis Title="Sales ($)" AxisType="Primary" StartFromZero="True">'
+            +'<vc:Axis.AxisLabels>'
+            +'<vc:AxisLabels />'
+            +'</vc:Axis.AxisLabels>'
+            +'</vc:Axis>'
+            +'</vc:Chart.AxesY>'
+            +'<vc:Chart.Legends>'
+            +'<vc:Legend Enabled="True" VerticalAlignment="Top" HorizontalAlignment="Center" />'
+            +'</vc:Chart.Legends>'
+            +'<vc:Chart.Series>'
+            +'<vc:DataSeries LegendText="" RenderAs="Area" ToolTipText="#AxisXLabel, #YValue" YValueFormatString="$#,0.##" SelectionEnabled="True" AxisYType="Primary" >'
+            +'<vc:DataSeries.DataPoints>'
+            +'<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
+            +'<vc:DataPoint AxisXLabel="Q2" YValue="60" />'
+            +'<vc:DataPoint AxisXLabel="Q3" YValue="80" />'
+            +'<vc:DataPoint AxisXLabel="Q4" YValue="70" />'
+            +'</vc:DataSeries.DataPoints>'
+            +'</vc:DataSeries>'
+            +'</vc:Chart.Series>'
+            +'</vc:Chart>';
 
-                           + '     <vc:Chart.PlotArea>'
-                           + '         <vc:PlotArea Background="LightGray"/>'
-                           + '     </vc:Chart.PlotArea>'
-                            
-                           + '     <vc:Chart.Series>'
-                           + '         <vc:DataSeries RenderAs="CandleStick" LabelEnabled="True">'
-                           + '             <vc:DataSeries.DataPoints>'
-                           + '                 <vc:DataPoint AxisXLabel="USA" YValues="35,23,90,10"/>'
-//                           + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
-//                           + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
-//                           + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
-//                           + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
-                           + '             </vc:DataSeries.DataPoints>'
-                           + '         </vc:DataSeries>'
-                           + '     </vc:Chart.Series>'
-                           + ' </vc:Chart>';
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 500, 300);
+            vChart.setDataXml(chartXmlString);
+            vChart.render("myChart");
 
-                        // Set Chart XML
-                        vChart.setDataXml(chartXml);
-                        
-                        /* 
-                        On preload event, array of charts can be received as event arguments.  
-                        Events can be can attached to chart elements. And required customization can be done here.
-                        Default Chart element references won’t be available on preload event.
-                        */
-                       /* vChart.preLoad = function(args) {
+    </script>
 
-                        if (args.length != 0) {
-                                var chart = args[0];   // Chart Reference.
-
-                                // Attach an event handler with 1st DataSeries of the 1st chart on MouseLeftButtonUp event.
-                                // DataPoint reference is received as event argument.
-                                chart.Series[0].MouseLeftButtonUp = function(dataPoint) {
-                                    alert("AxisXLabel =" + dataPoint.AxisXLabel + " YValue = " + dataPoint.YValue);
-                                };
-
-                                // Attach Events to a Title. Title reference is received as event argument.
-                                chart.Titles[0].MouseLeftButtonUp = function(title) {
-                                    //alert(title.Text);
-                                    timer();
-                                }
-
-                                chart.Rendered = function(e) {
-                                    // alert("Rendered");
-                                };
-                            }
-                        };
-*/
-                        /* 
-                        On loaded event, array of charts can be received as event arguments.  
-                        Events can be can attached to chart elements. And do require customization.
-                        Default chart elements can be accessed here.
-                        */
-                        vChart.loaded = function(args) {
-
-                            if (args.length != 0) {
-                                var chart = args[0];   // Chart Reference.
-
-                                // Create a LinearGradientBrush color brush
-                                /*
-                                var color = '<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >'
-                                + '	<GradientStop Color="Red"/>'
-                                + '	<GradientStop Color="White" Offset="0.567"/>'
-                                + '	<GradientStop Color="#dbdbdb" Offset="1"/>'
-                                + '</LinearGradientBrush>';
-                                */
-                                
-                                chart.Series[0].MouseLeftButtonDown = function(e) {
-                                
-                                e.SetPropertyFromJs("YValues", "43,44,32,11");
-                                chart.SetPropertyFromJs("Canvas.Top", "43");
-                                }
-                            }
-                        };
-                        
-//                      
-                        // Render chart
-                        vChart.render("VisifireChart0");
-                        
-                        function timer() {
-                                
-                            //vChart.setDataUri("data.xml");
-
-                            // if (vChart.isDataLoaded)
-                             vChart.setDataXml(chartXml);
-                            vChart.render("VisifireChart0");
-                            setTimeout(timer, 1000);
-                        };
-                        
-                    </script>
-                    
-                </div>
-                <input id="Button1" onclick="timer()" type="button" value="button" />
-            </td>
-        </tr>
-    </table>
-
+    </form>
 </body>
-
 </html>
