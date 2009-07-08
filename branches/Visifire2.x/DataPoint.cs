@@ -3049,7 +3049,16 @@ namespace Visifire.Charts
             if (LegendMarker != null && LegendMarker.Visual != null)
             {
                 LegendMarker.BorderColor = (Brush)colorValue;
-                LegendMarker.MarkerFillColor = (Brush)colorValue;
+                //LegendMarker.MarkerFillColor = (Brush)colorValue;
+
+                if (Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+                {
+                    if ((LegendMarker.Visual as Grid).Parent != null && (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
+                        (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)colorValue;
+                }
+                else
+                    LegendMarker.MarkerFillColor = (Brush)colorValue;
+
                 LegendMarker.UpdateMarker();
             }
         }

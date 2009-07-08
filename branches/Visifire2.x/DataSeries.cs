@@ -1983,14 +1983,25 @@ namespace Visifire.Charts
                             dp.UpdateVisual("Color", null);
                     }
                 }
-                else
+                else if (RenderAs != RenderAs.CandleStick) // CandleStick does not require Color update for DataSeries
+                {
                     foreach (DataPoint dp in InternalDataPoints)
                         dp.UpdateVisual("Color", null);
+                }
 
-                if (LegendMarker != null && LegendMarker.Visual != null)
+                if (LegendMarker != null && LegendMarker.Visual != null && RenderAs != RenderAs.CandleStick)
                 {
                     LegendMarker.BorderColor = (Brush)Color;
-                    LegendMarker.MarkerFillColor = (Brush)Color;
+                    //LegendMarker.MarkerFillColor = (Brush)Color;
+
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Stock)
+                    {
+                        if ((LegendMarker.Visual as Grid).Parent != null && (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
+                            (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)Color;
+                    }
+                    else
+                        LegendMarker.MarkerFillColor = (Brush)Color;
+
                     LegendMarker.UpdateMarker();
                 }
             }

@@ -3,59 +3,20 @@
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO8859-1" />
 
-    <script language="javascript" type="text/javascript">
-function showHideChart(theInput, theDivId)
-{
-    if (document.getElementById(theDivId).style.display == "none")
-    {
-        document.getElementById(theDivId).style.display = "block";
-        theInput.value = "Hide Chart";
-    }
-    else
-    {   
-        document.getElementById(theDivId).style.display = "none";
-        theInput.value = "Show Chart";
-    }
-}
-    </script>
+    <script type="text/javascript" src="./Visifire2.js"></script>
 
 </head>
-<body bottommargin="0" rightmargin="0" marginheight="0" marginwidth="0" topmargin="0"
-    leftmargin="0">
+<body>
     <form name="FORM1" method="post">
-    <input type="button" value="Hide Chart" onclick="showHideChart(this, 'myChart');" />
-    <br />
-
-    <script language="javascript" src="Visifire2.js" type="text/javascript"> </script>
 
     <div id="myChart" style="width: 500;">
     </div>
 
     <script language="javascript" type="text/javascript">
             var chartXmlString = ''
-            +'<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" BorderThickness="0" Theme="Theme1" Watermark="True" View3D="True" AnimationEnabled="True" Background="#ffffff" >'
-            +'<vc:Chart.Titles>'
-            +'<vc:Title Text="Test Chart" />'
-            +'</vc:Chart.Titles>'
-            +'<vc:Chart.AxesX>'
-            +'<vc:Axis Title="Quarters">'
-            +'<vc:Axis.AxisLabels>'
-            +'<vc:AxisLabels />'
-            +'</vc:Axis.AxisLabels>'
-            +'</vc:Axis>'
-            +'</vc:Chart.AxesX>'
-            +'<vc:Chart.AxesY>'
-            +'<vc:Axis Title="Sales ($)" AxisType="Primary" StartFromZero="True">'
-            +'<vc:Axis.AxisLabels>'
-            +'<vc:AxisLabels />'
-            +'</vc:Axis.AxisLabels>'
-            +'</vc:Axis>'
-            +'</vc:Chart.AxesY>'
-            +'<vc:Chart.Legends>'
-            +'<vc:Legend Enabled="True" VerticalAlignment="Top" HorizontalAlignment="Center" />'
-            +'</vc:Chart.Legends>'
+            +'<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" Theme="Theme1">'
             +'<vc:Chart.Series>'
-            +'<vc:DataSeries LegendText="" RenderAs="Area" ToolTipText="#AxisXLabel, #YValue" YValueFormatString="$#,0.##" SelectionEnabled="True" AxisYType="Primary" >'
+            +'<vc:DataSeries RenderAs="Column">'
             +'<vc:DataSeries.DataPoints>'
             +'<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
             +'<vc:DataPoint AxisXLabel="Q2" YValue="60" />'

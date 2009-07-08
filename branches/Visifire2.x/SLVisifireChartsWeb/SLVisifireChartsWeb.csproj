@@ -160,7 +160,6 @@
     <Content Include="ClientBin\SL.Visifire.Charts.xap" />
     <Content Include="ClientBin\SLVisifireApp.xap" />
     <Content Include="data.xml" />
-    <Content Include="Default.aspx" />
     <Content Include="LiveUpdate.htm" />
     <Content Include="StylingAndAnimation.htm" />
     <Content Include="TestCases\data2.xml" />
@@ -170,13 +169,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

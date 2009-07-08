@@ -1688,6 +1688,9 @@ namespace Visifire.Charts
 
                     Canvas lineMarker = GetNewMarkerForLineChart(markerAsSymbol);
 
+                    lineMarker.HorizontalAlignment = HorizontalAlignment.Left;
+                    lineMarker.VerticalAlignment = VerticalAlignment.Center;
+
                     if ((currentHeight + lineMarker.Height) <= MaximumHeight)
                     {
                         (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
@@ -1839,7 +1842,7 @@ namespace Visifire.Charts
                     marker.CreateVisual();                   
 
                     Canvas lineMarker = GetNewMarkerForLineChart(marker);
-
+                    
                     //if (marker.DataSeriesOfLegendMarker.MarkerEnabled == false)
                     //    marker.MarkerShape.Opacity = 0;
 
