@@ -132,9 +132,9 @@ namespace SLVisifireChartsXap
             {
                 _uriQueue.Enqueue(e.DataUri);
 
-                if(_webclient == null)
+                if (_webclient == null)
                     DownloadXML();
-                else if(!_webclient.IsBusy)
+                else if (!_webclient.IsBusy)
                     DownloadXML();
             }
         }
@@ -153,7 +153,7 @@ namespace SLVisifireChartsXap
         /// Handle display of single and multiple charts
         /// </summary>
         private void RenderEngine()
-        {   
+        {
             if (_firstChart)
             {
                 _chartCanv = CreateChart();
@@ -173,7 +173,7 @@ namespace SLVisifireChartsXap
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
 
                 _chartCanv.Loaded += delegate
-                {   
+                {
                     _oldCanvas.Opacity = 0;
                     _chartCanv.Opacity = 1;
                     RemoveOldChartCanvas();
@@ -345,7 +345,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim();
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
 
             return version;
         }
@@ -430,7 +430,7 @@ namespace SLVisifireChartsXap
                 chart.ControlId = _controlId;
             }
 
-            
+
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
             {
                 try
@@ -442,7 +442,7 @@ namespace SLVisifireChartsXap
                     throw new Exception("Error occurred while setting charts reference.", e);
                 }
             }
-            
+
             if (!String.IsNullOrEmpty(_onChartPreLoadedFunctionName))
             {
                 try
@@ -454,7 +454,7 @@ namespace SLVisifireChartsXap
                     throw new Exception("Error occurred while firing Chart preLoad event. JavaScript function attached with “preLoad” event contains errors.", e);
                 }
             }
-            
+
             chartCanvas.Loaded += new RoutedEventHandler(chartCanv_Loaded);
 
             _chartReady = false;
@@ -522,7 +522,7 @@ namespace SLVisifireChartsXap
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
         {
             _chartReady = true;
-            
+
             if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
             {
                 try
@@ -534,7 +534,7 @@ namespace SLVisifireChartsXap
                     throw new Exception("Error occurred while firing Chart Loaded event. JavaScript function attached with “Loaded” event contains errors.", e1);
                 }
             }
-            
+
             try
             {
                 if (!String.IsNullOrEmpty(_onChartPreLoadedFunctionName))
@@ -576,7 +576,7 @@ namespace SLVisifireChartsXap
 
             if (_xmlQueue.Count == 0)
                 _wrapper.IsDataLoaded = false;
-            
+
             return data;
         }
 
@@ -627,17 +627,17 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Lavel of logging 
         /// </summary>
-        private Int32 _logLevel = 0; 
+        private Int32 _logLevel = 0;
 
         /// <summary>
         /// Data xml 
         /// </summary>
-        private String _dataUri = null;  
+        private String _dataUri = null;
 
         /// <summary>
         /// Data xml file uri
         /// </summary>
-        private String _dataXml = null; 
+        private String _dataXml = null;
 
         /// <summary>
         /// Base address of uri
@@ -657,18 +657,18 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Chart canvas is used to draw new charts
         /// </summary>
-        private Canvas _chartCanv; 
-        
+        private Canvas _chartCanv;
+
         /// <summary>
         ///  Wrapper for chart as user control
         /// </summary>
         private Wrapper _wrapper = new Wrapper();
-        
+
         /// <summary>
         /// Queue for storing chart data xml
         /// </summary>
         private Queue<String> _xmlQueue = new Queue<string>();
-        
+
         /// <summary>
         /// Queue for storing xml file uri
         /// </summary>
@@ -678,7 +678,7 @@ namespace SLVisifireChartsXap
         /// If chart canvas is already rendered
         /// </summary>
         private Boolean _chartReady = false;
-        
+
         /// <summary>
         /// Is it the first chart need to draw
         /// </summary>
@@ -693,7 +693,7 @@ namespace SLVisifireChartsXap
         /// Function to be invoked to fire pre loaded event for chart
         /// </summary>
         private String _onChartPreLoadedFunctionName;
-        
+
         /// <summary>
         /// After loading the chart this function should be always fired to set the array of charts in Visifire2 class
         /// </summary>

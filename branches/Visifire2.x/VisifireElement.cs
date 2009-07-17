@@ -522,6 +522,131 @@ namespace Visifire.Commons
         }
 
         /// <summary>
+        /// Attach events to a Area visual
+        /// </summary>
+        /// <param name="obj">Object with which event is attached</param>
+        /// <param name="senderElement">sender will be passed to the event-handler</param>
+        /// <param name="visual">visual object with which event will be attached</param>
+        internal static void AttachEvents2AreaVisual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
+        {
+            if (visual == null)
+                return;
+
+            if (obj._onMouseEnter != null)
+                visual.MouseEnter += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseEnter != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseEnter != null)
+                                dp._onMouseEnter(dp, e);
+                        }
+                        else
+                            obj._onMouseEnter(dp, e);
+                    }
+                };
+
+            if (obj._onMouseLeave != null)
+                visual.MouseLeave += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseLeave != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseLeave != null)
+                                dp._onMouseLeave(dp, e);
+                        }
+                        else
+                            obj._onMouseLeave(dp, e);
+                    }
+                };
+
+            object eventHandler;
+
+            eventHandler = obj._onMouseLeftButtonDown;
+
+            if (eventHandler != null)
+                visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseLeftButtonDown != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        { 
+                            if((dp as VisifireElement)._onMouseLeftButtonDown != null)
+                               dp._onMouseLeftButtonDown(dp, e);
+                        }
+                        else
+                            obj._onMouseLeftButtonDown(dp, e);
+                    }
+                };
+
+            eventHandler = obj._onMouseLeftButtonUp;
+
+            if (eventHandler != null)
+                visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseLeftButtonUp != null)
+                    {
+                        DataPoint dp = null;
+                        if(obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseLeftButtonUp != null)
+                                dp._onMouseLeftButtonUp(dp, e);
+                        }
+                        else
+                            obj._onMouseLeftButtonUp(dp, e);
+                    }
+                };
+
+            eventHandler = obj._onMouseMove;
+
+            if (eventHandler != null)
+                visual.MouseMove += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseMove != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseMove != null)
+                                dp._onMouseMove(dp, e);
+                        }
+                        else
+                            obj._onMouseMove(dp, e);
+                    }
+                };
+        }
+
+        /// <summary>
         /// Attach MouseDownEvent event to a visual
         /// </summary>
         /// <param name="obj">obj with which event is attached</param>

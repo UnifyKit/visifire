@@ -1606,6 +1606,8 @@ namespace Visifire.Charts
                 }
             }
 
+            //faces.VisualComponents.Add(visual);
+
             return visual;
         }
 

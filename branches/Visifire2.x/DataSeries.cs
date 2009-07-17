@@ -2845,7 +2845,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="xValue">Double InternalXValue</param>
         /// <returns>DataPoint</returns>
-        private DataPoint GetNearestDataPoint(Double xValue)
+        internal DataPoint GetNearestDataPoint(Double xValue)
         {
             DataPoint dp = this.InternalDataPoints[0];
             Double diff = Math.Abs(dp.InternalXValue - xValue);
@@ -2900,6 +2900,39 @@ namespace Visifire.Charts
             {
                 dp.AttachEvent2DataPointVisualFaces(this);
             }
+        }
+
+
+        /// <summary>
+        /// Get DataPoint for MouseButton event
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        internal DataPoint GetNearestDataPointOnMouseButtonEvent(MouseButtonEventArgs e)
+        {
+            DataPoint dataPoint = null;
+
+            Point position = e.GetPosition(this.Faces.Visual);
+            Double xValue = Graphics.PixelPositionToValue(0, this.Faces.Visual.Width, (Double)(Chart as Chart).ChartArea.AxisX.AxisManager.AxisMinimumValue, (Double)(Chart as Chart).ChartArea.AxisX.AxisManager.AxisMaximumValue, position.X);
+            dataPoint = GetNearestDataPoint(xValue);
+
+            return dataPoint;
+        }
+
+        /// <summary>
+        /// Get DataPoint for Mouse event
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        internal DataPoint GetNearestDataPointOnMouseEvent(MouseEventArgs e)
+        {
+            DataPoint dataPoint = null;
+
+            Point position = e.GetPosition(this.Faces.Visual);
+            Double xValue = Graphics.PixelPositionToValue(0, this.Faces.Visual.Width, (Double)(Chart as Chart).ChartArea.AxisX.AxisManager.AxisMinimumValue, (Double)(Chart as Chart).ChartArea.AxisX.AxisManager.AxisMaximumValue, position.X);
+            dataPoint = GetNearestDataPoint(xValue);
+
+            return dataPoint;
         }
 
         /// <summary>

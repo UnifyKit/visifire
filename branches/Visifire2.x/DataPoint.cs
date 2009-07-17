@@ -3191,6 +3191,17 @@ namespace Visifire.Charts
             else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea 
                 || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line)
             {
+                if (Parent.RenderAs != RenderAs.Line)
+                {
+                    if (Parent.Faces != null)
+                    {   
+                        foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                        {
+                            AttachEvents2AreaVisual(Object, this, face);
+                        }
+                    }
+                }
+
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
             }

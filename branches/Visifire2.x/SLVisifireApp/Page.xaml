@@ -9,8 +9,12 @@ Width="Auto" Height="Auto"
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300"
                   Theme="Theme2" Name="MyChart">
           
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Chart"/>
+            </vc:Chart.Titles>
+            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Stock">
+                <vc:DataSeries RenderAs="CandleStick">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint XValue="1" YValues="10,20,30,5"/>
                         <vc:DataPoint XValue="2" YValues="20,22,28,18"/>
@@ -19,6 +23,7 @@ Width="Auto" Height="Auto"
                         <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
+               
             </vc:Chart.Series>
         </vc:Chart>
     </Grid>
