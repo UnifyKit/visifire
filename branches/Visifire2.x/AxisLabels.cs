@@ -1060,7 +1060,6 @@ namespace Visifire.Charts
         private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
         {
             String multiLineText = "";
-            text = text.Trim();
             
             if (!Double.IsNaN(TextWrap))
             {   

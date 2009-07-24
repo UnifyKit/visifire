@@ -20,12 +20,14 @@ namespace Visifire.Charts
         /// <param name="minValue">Minimum Value.</param>
         /// <param name="startFromZero">Makes sure that the zero is included in the axis range</param>
         /// <param name="allowLimitOverflow">Applies limits so that axis range doesn't cross it</param>
-        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride)
+        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, AxisRepresentations axisRepresentation)
         {
             if (maxValue < minValue)
                 throw (new ArgumentException("Invalid Argument:: Maximum Data value should be always greater than the minimum data value."));
             this._max = (Decimal)maxValue;
             this._min = (Decimal)minValue;
+
+            AxisRepresentation = axisRepresentation;
 
             if (startFromZero)
             {
@@ -59,9 +61,17 @@ namespace Visifire.Charts
             Decimal tempAxisMinimumValue;   // Calculated minimum value of the axis.
             
             // Handle values less than 10 and Greater than 2
-            if (_max > 2 && this._max < 10 && this._min >= 0)
-                this._maxNoOfInterval = (Int32)(_max + 1);
-
+            if (AxisRepresentation == AxisRepresentations.AxisX)
+            {
+                if (this._max < 10 && this._min >= 0)
+                    this._maxNoOfInterval = (Int32)(_max + 1);
+            }
+            else
+            {
+                if (_max > 2 && this._max < 10 && this._min >= 0)
+                    this._maxNoOfInterval = (Int32)(_max + 1);
+            }
+            
             // Only one value presents to calculate the range.
             if (this._max == this._min)
             {   
@@ -144,6 +154,12 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+
+        public AxisRepresentations AxisRepresentation
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Get or set the maximum number of intervals.

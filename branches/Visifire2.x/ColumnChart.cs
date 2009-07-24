@@ -795,6 +795,8 @@ namespace Visifire.Charts
                 Faces zeroPlank = Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
+                zeroPlankVisual.IsHitTestVisible = false;
+
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
                 zeroPlankVisual.SetValue(Canvas.TopProperty, top);
@@ -1059,6 +1061,8 @@ namespace Visifire.Charts
 
                 Faces zeroPlank = Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
+
+                zeroPlankVisual.IsHitTestVisible = false;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1332,6 +1336,8 @@ namespace Visifire.Charts
 
                 Faces zeroPlank = Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
+
+                zeroPlankVisual.IsHitTestVisible = false;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);

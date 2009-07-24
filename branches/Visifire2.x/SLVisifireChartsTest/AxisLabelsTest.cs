@@ -543,7 +543,6 @@ namespace SLVisifireChartsTest
             EnqueueCallback(() =>
             {
                 _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
                 _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
                 _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
                 _htmlElement2.SetStyleAttribute("top", "540px");

@@ -30,7 +30,6 @@ namespace WPFVisifireChartsApp
         public Window1()
         {
             InitializeComponent();
-
         }
     }
 }

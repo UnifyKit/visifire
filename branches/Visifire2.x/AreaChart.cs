@@ -702,6 +702,8 @@ namespace Visifire.Charts
                     Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                     Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
+                    zeroPlankVisual.IsHitTestVisible = false;
+
                     Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                     zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
                     zeroPlankVisual.SetValue(Canvas.TopProperty, top);
@@ -769,20 +771,31 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
+            foreach (DataSeries ds in seriesList)
+            {
+                ds.Faces = null;
+            }
+
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
+            List<Double> curYValues;
+            List<Double> nextYValues;
+
+            List<DataPoint> curDataPoints;
+            List<DataPoint> nextDataPoints;
+
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
 
-                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
-                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                curDataPoints = dataPointInStackedOrder[xValues[i]];
+                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 for (Int32 index = 0; index < curYValues.Count; index++)
                 {
@@ -923,6 +936,8 @@ namespace Visifire.Charts
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
+                zeroPlankVisual.IsHitTestVisible = false;
+
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
                 zeroPlankVisual.SetValue(Canvas.TopProperty, top);
@@ -985,23 +1000,34 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
+            foreach (DataSeries ds in seriesList)
+            {
+                ds.Faces = null;
+            }
+
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
+            List<Double> curYValues;
+            List<Double> nextYValues;
+
+            List<DataPoint> curDataPoints;
+            List<DataPoint> nextDataPoints;
+
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
                 Double curAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i]].AbsoluteYValueSum;
                 Double nextAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i + 1]].AbsoluteYValueSum;
 
-                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
+                curDataPoints = dataPointInStackedOrder[xValues[i]];
 
-                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 if (Double.IsNaN(curAbsoluteSum))
                     curAbsoluteSum = 1;
@@ -1153,6 +1179,8 @@ namespace Visifire.Charts
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
+
+                zeroPlankVisual.IsHitTestVisible = false;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);

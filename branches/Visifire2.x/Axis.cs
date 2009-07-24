@@ -1797,7 +1797,7 @@ namespace Visifire.Charts
             Boolean stackingOverride = PlotDetails.GetStacked100OverrideState();
 
             // Create and initialize the AxisManagers
-            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride);
+            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride, AxisRepresentation);
 
             // Set the include zero state
             AxisManager.IncludeZero = IncludeZero;
