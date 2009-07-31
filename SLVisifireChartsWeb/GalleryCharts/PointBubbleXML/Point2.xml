@@ -1,0 +1,80 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" AnimationEnabled="False">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="GDP Vs CPI Estimate"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis Interval="1">
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineThickness="0.25"/>
+      </vc:Axis.Grids>
+      <vc:Axis.AxisLabels>
+        <vc:AxisLabels Angle="-30" Rows="1"/>
+      </vc:Axis.AxisLabels>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Estimate" Suffix="%"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.TrendLines>
+    <vc:TrendLine Value="10" Orientation="Horizontal" LineColor="#cdd0fc" ToolTipText="Highest Growth"/>
+  </vc:Chart.TrendLines>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="GDP 2008" RenderAs="Point" MarkerType="Diamond" MarkerSize="8" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Australia" YValue="3.66"/>
+        <vc:DataPoint AxisXLabel="Brazil" YValue="4.42"/>
+        <vc:DataPoint AxisXLabel="Canada" YValue="2.02"/>
+        <vc:DataPoint AxisXLabel="China" YValue="10.63"/>
+        <vc:DataPoint AxisXLabel="France" YValue="2.8"/>
+        <vc:DataPoint AxisXLabel="Germany" YValue="2.00"/>
+        <vc:DataPoint AxisXLabel="HongKong" YValue="5.18"/>
+        <vc:DataPoint AxisXLabel="India" YValue="8.68"/>
+        <vc:DataPoint AxisXLabel="Italy" YValue="1.42"/>
+        <vc:DataPoint AxisXLabel="Malaysia" YValue="5.79"/>
+        <vc:DataPoint AxisXLabel="Mexico" YValue="3.53"/>
+        <vc:DataPoint AxisXLabel="Russia" YValue="7.00"/>
+        <vc:DataPoint AxisXLabel="Singapore" YValue="6.48"/>
+        <vc:DataPoint AxisXLabel="South Africa" YValue="4.52"/>
+        <vc:DataPoint AxisXLabel="South Korea" YValue="4.91"/>
+        <vc:DataPoint AxisXLabel="Spain" YValue="2.69"/>
+        <vc:DataPoint AxisXLabel="Sweden" YValue="2.81"/>
+        <vc:DataPoint AxisXLabel="Switzerland" YValue="2.01"/>
+        <vc:DataPoint AxisXLabel="Taiwan" YValue="4.63"/>
+        <vc:DataPoint AxisXLabel="USA" YValue="2.02"/>
+        <vc:DataPoint AxisXLabel="UK" YValue="2.1"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries LegendText="CPI 2008" RenderAs="Point" MarkerType="Diamond" MarkerSize="8" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="2.82"/>
+        <vc:DataPoint YValue="4.02"/>
+        <vc:DataPoint YValue="1.68"/>
+        <vc:DataPoint YValue="3.48"/>
+        <vc:DataPoint YValue="1.82"/>
+        <vc:DataPoint YValue="1.42"/>
+        <vc:DataPoint YValue="3.52"/>
+        <vc:DataPoint YValue="4.48"/>
+        <vc:DataPoint YValue="2.9"/>
+        <vc:DataPoint YValue="2.49"/>
+        <vc:DataPoint YValue="3.79"/>
+        <vc:DataPoint YValue="8.41"/>
+        <vc:DataPoint YValue="1.48"/>
+        <vc:DataPoint YValue="5.91"/>
+        <vc:DataPoint YValue="2.82"/>
+        <vc:DataPoint YValue="3.29"/>
+        <vc:DataPoint YValue="2.49"/>
+        <vc:DataPoint YValue="1.32"/>
+        <vc:DataPoint YValue="1.68"/>
+        <vc:DataPoint YValue="2.01"/>
+        <vc:DataPoint YValue="2.69"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
