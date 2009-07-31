@@ -111,6 +111,18 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(AxisLabels),
             new PropertyMetadata(OnEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.TextAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.TextAlignment dependency property.
+        /// </returns>
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
+            ("TextAlignment",
+            typeof(TextAlignment),
+            typeof(AxisLabels),
+            new PropertyMetadata(TextAlignment.Left, OnTextAlignmentPropertyChanged));
         
 #if WPF
         /// <summary>
@@ -311,6 +323,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(EnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the color for the text in axis labels 
+        /// </summary>
+        public TextAlignment TextAlignment
+        {
+            get
+            {
+                return (TextAlignment)GetValue(TextAlignmentProperty);
+            }
+            set
+            {
+                SetValue(TextAlignmentProperty, value);
             }
         }
 
@@ -702,6 +729,17 @@ namespace Visifire.Charts
         {
             AxisLabels axisLabels = d as AxisLabels;
             axisLabels.FirePropertyChanged("Enabled");
+        }
+
+        /// <summary>
+        /// Event handler attached with TextAlignment property changed event of axislabels element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.FirePropertyChanged("TextAlignment");
         }
 
 #if WPF
@@ -1343,6 +1381,7 @@ namespace Visifire.Charts
             label.FontFamily = FontFamily;
             label.FontStyle = FontStyle;
             label.FontWeight = FontWeight;
+            label.TextAlignment = TextAlignment;
             label.Angle = GetAngle();
         }
 

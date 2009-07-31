@@ -9,13 +9,6 @@
         <vc:DataPoint XValue="3" YValues="30,20,10,50"/>
         <vc:DataPoint XValue="4" YValues="20,40,50,10"/>
         <vc:DataPoint XValue="5" YValues="28,18,40,12"/>
-        <vc:DataPoint XValue="6" YValues="20,30,40,10"/>
-        <vc:DataPoint XValue="7" YValues="30,10,5,40"/>
-        <vc:DataPoint XValue="8" YValues="30,20,10,50"/>
-        <vc:DataPoint XValue="9" YValues="20,40,50,10"/>
-        <vc:DataPoint XValue="10" YValues="28,18,40,12"/>
-        <vc:DataPoint XValue="11" YValues="20,40,50,10"/>
-        <vc:DataPoint XValue="12" YValues="28,18,40,12"/>
       </vc:DataSeries.DataPoints>
     </vc:DataSeries>
   </vc:Chart.Series>

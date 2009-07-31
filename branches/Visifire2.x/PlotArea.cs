@@ -933,12 +933,25 @@ namespace Visifire.Charts
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
                 Double lenthInPixel =((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 else
                     eventArgs.XValue = xValue;
+
+            }
+
+            if (chart.ChartArea.AxisY != null)
+            {
+                Double yValue;
+                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lenthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
+
+                eventArgs.YValue = yValue;
             }
 
             return eventArgs;
@@ -959,9 +972,9 @@ namespace Visifire.Charts
                 Double xValue;
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lenthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
@@ -969,9 +982,20 @@ namespace Visifire.Charts
                     eventArgs.XValue = xValue;
             }
 
+            if (chart.ChartArea.AxisY != null)
+            {
+                Double yValue;
+                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+
+                eventArgs.YValue = yValue;
+            }
+
             return eventArgs;
         }
-
 
         /// <summary>
         /// Fire MouseLeftButtonDown event
