@@ -131,10 +131,7 @@ namespace SLVisifireChartsXap
             if (e.DataUri != null)
             {
                 _uriQueue.Enqueue(e.DataUri);
-
-                if (_webclient == null)
-                    DownloadXML();
-                else if (!_webclient.IsBusy)
+                if (_webclient != null && !_webclient.IsBusy)
                     DownloadXML();
             }
         }
@@ -154,34 +151,53 @@ namespace SLVisifireChartsXap
         /// </summary>
         private void RenderEngine()
         {
+            Canvas tempChartCanvas;
+
             if (_firstChart)
             {
                 _chartCanv = CreateChart();
 
-                //_wrapper.LayoutRoot.Children.Clear();
+                _wrapper.LayoutRoot.Children.Clear();
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
 
                 _firstChart = false;
             }
             else if (_xmlQueue.Count > 0 && _chartReady)
             {
-                Canvas _oldCanvas = _chartCanv;
                 _chartCanv = CreateChart();
-                _chartCanv.Opacity = 0;
 
-                // _wrapper.LayoutRoot.Children.Clear();
+                _wrapper.LayoutRoot.Children.Clear();
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
 
-                _chartCanv.Loaded += delegate
+                tempChartCanvas = (Canvas)XamlReader.Load(String.Format(@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
+
+                if (_wrapper.LayoutRoot.Children.Count > 2)
                 {
-                    _oldCanvas.Opacity = 0;
-                    _chartCanv.Opacity = 1;
-                    RemoveOldChartCanvas();
-                };
+                    for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
+                    {
+                        Canvas chartCanvas = _wrapper.LayoutRoot.Children[i] as Canvas;
+                        try
+                        {
+                            if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
+                            {
+                                _wrapper.LayoutRoot.Children.RemoveAt(i);
+                                chartCanvas.Loaded -= chartCanv_Loaded;
+                                tempChartCanvas.Children.Add(chartCanvas);
+
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine(e.Message);
+                        }
+                    }
+                }
+
+                tempChartCanvas.Children.Clear();
+                tempChartCanvas = null;
             }
 
-
-            // AddDialog(_wrapper);
+            AddDialog(_wrapper);
         }
 
         /// <summary>
@@ -345,7 +361,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim();
 
             return version;
         }
@@ -386,31 +402,25 @@ namespace SLVisifireChartsXap
         {
             Canvas chartCanvas;
 
-            try
-            {
-                String canvasXaml = "<Canvas VerticalAlignment=\"Top\" HorizontalAlignment=\"Left\" "
-                    + "xmlns=\"http://schemas.microsoft.com/client/2007\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:vc=\"clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts\" ";
+            String canvasXaml = "<Canvas VerticalAlignment=\"Top\" HorizontalAlignment=\"Left\" ";
 
-                if (!Double.IsNaN(_chartWidth))
-                    canvasXaml += " Width=\"" + _chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
+            canvasXaml += "xmlns=\"http://schemas.microsoft.com/client/2007\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:vc=\"clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts\" ";
 
-                if (!Double.IsNaN(_chartHeight))
-                    canvasXaml += " Height=\"" + _chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
+            if (!Double.IsNaN(_chartWidth))
+                canvasXaml += " Width=\"" + _chartWidth.ToString(CultureInfo.InvariantCulture) + "\"";
 
-                canvasXaml += " Tag=\"Chart\" >\n";
+            if (!Double.IsNaN(_chartHeight))
+                canvasXaml += " Height=\"" + _chartHeight.ToString(CultureInfo.InvariantCulture) + "\"";
 
-                _dataXml = Dequeue();
+            canvasXaml += " Tag=\"Chart\" >\n";
 
-                canvasXaml += _dataXml;
+            _dataXml = Dequeue();
 
-                canvasXaml += "</Canvas>";
+            canvasXaml += _dataXml;
 
-                chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
-            }
-            catch (Exception e1)
-            {
-                throw new Exception("Error: Invalid chart Data XML found..\n" + e1.Message);
-            }
+            canvasXaml += "</Canvas>";
+
+            chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
 
             if (_charts == null)
                 _charts = new List<UIElement>();
@@ -429,7 +439,6 @@ namespace SLVisifireChartsXap
                 chart.LogLevel = _logLevel;
                 chart.ControlId = _controlId;
             }
-
 
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
             {
@@ -484,36 +493,6 @@ namespace SLVisifireChartsXap
             }
         }
 
-        private void RemoveOldChartCanvas()
-        {
-            Canvas tempChartCanvas = new Canvas(); //(Canvas)XamlReader.Load(String.Format(@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
-
-            if (_wrapper.LayoutRoot.Children.Count > 2)
-            {
-                for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
-                {
-                    Canvas chartCanvas = _wrapper.LayoutRoot.Children[i] as Canvas;
-                    try
-                    {
-                        if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
-                        {
-                            _wrapper.LayoutRoot.Children.RemoveAt(i);
-                            chartCanvas.Loaded -= chartCanv_Loaded;
-                            chartCanvas.Loaded -= chartCanv_Loaded;
-                            tempChartCanvas.Children.Add(chartCanvas);
-                        }
-                    }
-                    catch (Exception e1)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e1.Message);
-                    }
-                }
-            }
-
-            tempChartCanvas.Children.Clear();
-            tempChartCanvas = null;
-        }
-
         /// <summary>
         /// Event handler attached with Loaded event of chart canvas
         /// </summary>
@@ -535,20 +514,6 @@ namespace SLVisifireChartsXap
                 }
             }
 
-            try
-            {
-                if (!String.IsNullOrEmpty(_onChartPreLoadedFunctionName))
-                    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartPreLoadedFunctionName));
-
-                if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
-                    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartLoadedFunctionName));
-
-                // if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
-                //    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _setVisifireChartsRefFunctionName));
-            }
-            catch
-            { }
-
         }
 
         /// <summary>
@@ -567,16 +532,9 @@ namespace SLVisifireChartsXap
         /// <returns></returns>
         private String Dequeue()
         {
-            String data = String.Empty;
-
-            if (_xmlQueue.Count > 0)
-                data = _xmlQueue.Dequeue();
-            else
-                Debug.WriteLine("_xmlQueue is empty. rendering Chart with empty Data!");
-
+            String data = _xmlQueue.Dequeue();
             if (_xmlQueue.Count == 0)
                 _wrapper.IsDataLoaded = false;
-
             return data;
         }
 
@@ -627,17 +585,17 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Lavel of logging 
         /// </summary>
-        private Int32 _logLevel = 0;
+        private Int32 _logLevel = 0; 
 
         /// <summary>
         /// Data xml 
         /// </summary>
-        private String _dataUri = null;
+        private String _dataUri = null;  
 
         /// <summary>
         /// Data xml file uri
         /// </summary>
-        private String _dataXml = null;
+        private String _dataXml = null; 
 
         /// <summary>
         /// Base address of uri
@@ -657,18 +615,18 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Chart canvas is used to draw new charts
         /// </summary>
-        private Canvas _chartCanv;
-
+        private Canvas _chartCanv; 
+        
         /// <summary>
         ///  Wrapper for chart as user control
         /// </summary>
         private Wrapper _wrapper = new Wrapper();
-
+        
         /// <summary>
         /// Queue for storing chart data xml
         /// </summary>
         private Queue<String> _xmlQueue = new Queue<string>();
-
+        
         /// <summary>
         /// Queue for storing xml file uri
         /// </summary>
@@ -678,7 +636,7 @@ namespace SLVisifireChartsXap
         /// If chart canvas is already rendered
         /// </summary>
         private Boolean _chartReady = false;
-
+        
         /// <summary>
         /// Is it the first chart need to draw
         /// </summary>
@@ -693,7 +651,7 @@ namespace SLVisifireChartsXap
         /// Function to be invoked to fire pre loaded event for chart
         /// </summary>
         private String _onChartPreLoadedFunctionName;
-
+        
         /// <summary>
         /// After loading the chart this function should be always fired to set the array of charts in Visifire2 class
         /// </summary>

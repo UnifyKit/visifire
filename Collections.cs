@@ -28,11 +28,6 @@ namespace Visifire.Charts
     public class DataSeriesCollection : ObservableCollection<DataSeries> { }
 
     /// <summary>
-    /// Collection of DataPoint
-    /// </summary>
-    public class DataPointCollection : ObservableCollection<DataPoint> { }
-
-    /// <summary>
     /// Collection of Axis
     /// </summary>
     public class AxisCollection : ObservableCollection<Axis> { }

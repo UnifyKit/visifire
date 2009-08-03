@@ -826,15 +826,6 @@ namespace Visifire.Charts
         #endregion
 
         /// <summary>
-        /// Canvas inside Title Visual
-        /// </summary>
-        private Canvas InnerCanvas
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Text element of the title to display text content
         /// </summary>
         private TextBlock TextElement
@@ -843,6 +834,15 @@ namespace Visifire.Charts
             set;
         }
 
+        /// <summary>
+        /// Canvas inside Title Visual
+        /// </summary>
+        private Canvas InnerCanvas
+        {
+            get;
+            set;
+        }
+        
         #endregion
 
         #region Private Methods
@@ -1100,11 +1100,8 @@ namespace Visifire.Charts
         private static Boolean ApplyProperties(Title title)
         {   
             if (title.Visual != null)
-            {
+            {   
                 // Set TextElement properties 
-#if WPF
-                title.Visual.FlowDirection = FlowDirection.LeftToRight;
-#endif          
                 title.TextElement.FontFamily = title.FontFamily;
                 title.TextElement.FontSize = title.FontSize;
                 title.TextElement.FontStyle = title.FontStyle;

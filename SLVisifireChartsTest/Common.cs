@@ -73,32 +73,15 @@ namespace SLVisifireChartsTest
                 return true;
             }
 
-            if (first.GetType().Name == "SolidColorBrush")
+            // Do a field by field comparison if they're not the same reference
+            // 
+            SolidColorBrush firstSolidColorBrush = first as SolidColorBrush;
+            if (firstSolidColorBrush != null)
             {
-                // Do a field by field comparison if they're not the same reference
-                SolidColorBrush firstSolidColorBrush = first as SolidColorBrush;
-                if (firstSolidColorBrush != null)
+                SolidColorBrush secondSolidColorBrush = second as SolidColorBrush;
+                if (secondSolidColorBrush != null)
                 {
-                    SolidColorBrush secondSolidColorBrush = second as SolidColorBrush;
-                    if (secondSolidColorBrush != null)
-                    {
-                        return object.Equals(firstSolidColorBrush.Color, secondSolidColorBrush.Color);
-                    }
-                }
-            }
-            else
-            {
-                // Do a field by field comparison if they're not the same reference
-                LinearGradientBrush firstLinearColorBrush = first as LinearGradientBrush;
-                if (firstLinearColorBrush != null)
-                {
-                    LinearGradientBrush secondLinearColorBrush = second as LinearGradientBrush;
-                    if (secondLinearColorBrush != null)
-                    {
-                        Boolean stop1 = object.Equals(firstLinearColorBrush.GradientStops[0].Color, secondLinearColorBrush.GradientStops[0].Color);
-                        Boolean stop2 = object.Equals(firstLinearColorBrush.GradientStops[1].Color, secondLinearColorBrush.GradientStops[1].Color);
-                        return object.Equals(stop1, stop2);
-                    }
+                    return object.Equals(firstSolidColorBrush.Color, secondSolidColorBrush.Color);
                 }
             }
 
@@ -245,36 +228,17 @@ namespace SLVisifireChartsTest
         {
             DataSeries dataSeries = new DataSeries();
 
+            dataSeries.RenderAs = RenderAs.Column;
+
             Random rand = new Random();
 
             for (Int32 i = 0; i < 5; i++)
             {
                 DataPoint datapoint = new DataPoint();
-                datapoint.AxisXLabel = "abc" + i;
+                datapoint.AxisXLabel = "a" + i;
                 datapoint.YValue = rand.Next(0, 100);
                 datapoint.XValue = i + 1;
                 dataSeries.DataPoints.Add(datapoint);
-            }
-
-            chart.Series.Add(dataSeries);
-        }
-
-        public static void CreateDefaultDataSeries4FinancialCharts(Chart chart)
-        {
-            DataSeries dataSeries = new DataSeries();
-
-            Random rand = new Random();
-
-            for (Int32 i = 0; i < 6; i++)
-            {
-                Double open = rand.Next(50, 60);
-                Double close = open + rand.Next(-10, 10);
-                Double high = (open > close ? open : close) + 10;
-                Double low = (open < close ? open : close) - 5;
-
-                DataPoint dp = new DataPoint();
-                dp.YValues = new Double[] { open, close, high, low };
-                dataSeries.DataPoints.Add(dp);
             }
 
             chart.Series.Add(dataSeries);
@@ -323,13 +287,11 @@ namespace SLVisifireChartsTest
         /// <returns></returns>
         public static System.Windows.Browser.HtmlElement GetDisplayMessageButton(System.Windows.Browser.HtmlElement htmlElement)
         {
-            htmlElement = System.Windows.Browser.HtmlPage.Document.CreateElement("input");
+            htmlElement = System.Windows.Browser.HtmlPage.Document.CreateElement("button");
             htmlElement.SetProperty("id", "inputText");
-            htmlElement.SetProperty("type", "button");
             htmlElement.SetStyleAttribute("border", "solid 1px black");
             htmlElement.SetStyleAttribute("position", "absolute");
             htmlElement.SetStyleAttribute("width", "900px");
-            htmlElement.SetStyleAttribute("height", "20px");
             htmlElement.SetStyleAttribute("top", "520px");
             htmlElement.SetStyleAttribute("left", "0px");
 

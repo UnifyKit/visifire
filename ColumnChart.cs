@@ -38,8 +38,6 @@ using System.Windows.Media.Animation;
 using System.Collections.Generic;
 #endif
 
-using System.Windows.Shapes;
-
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -81,12 +79,11 @@ namespace Visifire.Charts
         public FontWeight LabelFontWeight { get; set; }
         public Nullable<LabelStyles> LabelStyle { get; set; }
         public String LabelText { get; set; }
-        public FrameworkElement TagReference { get; set; }
     }
 
     /// <summary>
     ///  Visifire.Charts.SortedDataPoints class. 
-    ///  SortedDataPoints used to store InternalDataPoints with positive and negative values 
+    ///  SortedDataPoints used to store DataPoints with positive and negative values 
     /// </summary>
     public class SortDataPoints
     {
@@ -98,10 +95,10 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Sort InternalDataPoints
+        /// Sort DataPoints
         /// </summary>
-        /// <param name="positive">Positive InternalDataPoints</param>
-        /// <param name="">Negative InternalDataPoints</param>
+        /// <param name="positive">Positive DataPoints</param>
+        /// <param name="">Negative DataPoints</param>
         public SortDataPoints(List<DataPoint> positive, List<DataPoint> negative)
         {
             Positive = positive;
@@ -109,12 +106,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// List of InternalDataPoints with Positive values
+        /// List of DataPoints with Positive values
         /// </summary>
         public List<DataPoint> Positive { get; private set; }
 
         /// <summary>
-        /// List of InternalDataPoints with Negative values
+        /// List of DataPoints with Negative values
         /// </summary>
         public List<DataPoint> Negative { get; private set; }
     }
@@ -291,7 +288,6 @@ namespace Visifire.Charts
                 columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0)? LabelStyles.OutSide:(LabelStyles)columnParams.LabelStyle);
                 dataPoint.Marker.FontColor = columnParams.LabelFontColor;
 
-                dataPoint.Marker.Tag = new ElementData() { Element = dataPoint };
                 dataPoint.Marker.CreateVisual();
 
                 dataPoint.Marker.AddToParent(markerCanvas, markerPosition.X, markerPosition.Y, new Point(0.5, 0.5));
@@ -310,20 +306,18 @@ namespace Visifire.Charts
         private static Double CalculateWidthOfEachColumn(ref Double left, Double widthPerColumn, Double width)
         {   
             Double finalWidth = widthPerColumn;
-            //Double minPosValue = 0;
-            //Double maxPosValue = width;
-            //if (left < minPosValue)
-            //{
-            //    finalWidth = left + widthPerColumn - minPosValue;
-            //    left = minPosValue;
-            //}
-            //else if (left + widthPerColumn > maxPosValue)
-            //{
-            //    finalWidth = maxPosValue - left;
-            //}
-
-            return (finalWidth < 2) ? 2 : finalWidth;
-            //return finalWidth;
+            Double minPosValue = 0;
+            Double maxPosValue = width;
+            if (left < minPosValue)
+            {
+                finalWidth = left + widthPerColumn - minPosValue;
+                left = minPosValue;
+            }
+            else if (left + widthPerColumn > maxPosValue)
+            {
+                finalWidth = maxPosValue - left;
+            }
+            return finalWidth;
         }
 
         /// <summary>
@@ -484,8 +478,6 @@ namespace Visifire.Charts
             columnParams.LabelFontFamily = dataPoint.LabelFontFamily;
             columnParams.LabelFontStyle = (FontStyle)dataPoint.LabelFontStyle;
             columnParams.LabelFontWeight = (FontWeight)dataPoint.LabelFontWeight;
-
-            columnParams.TagReference = dataPoint;
         }
         
         /// <summary>
@@ -588,44 +580,23 @@ namespace Visifire.Charts
 
             Double minDiffValue = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
-            if (Double.IsPositiveInfinity(minDiffValue))
-                minDiffValue = 0;
-
             Axis axisXwithMinInterval = dataSeriesList4Rendering[0].PlotGroup.AxisX;
 
-            //minDiffValue = (minDiffValue < (Double)axisXwithMinInterval.InternalInterval) ? minDiffValue : (Double)axisXwithMinInterval.InternalInterval;
+            minDiffValue = (minDiffValue < (Double)axisXwithMinInterval.InternalInterval) ? minDiffValue : (Double)axisXwithMinInterval.InternalInterval;
 
-            Double dataAxisDifference = width;
+            Double dataAxisDifference = Math.Abs((Double)axisXwithMinInterval.InternalAxisMinimum - (Double)axisXwithMinInterval.Minimum) * 2;
 
-            //Double dataMinimumGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, dataAxisDifference + (Double)axisXwithMinInterval.InternalAxisMinimum);
-            //Double minDiffGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
+            Double dataMinimumGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, dataAxisDifference + (Double)axisXwithMinInterval.InternalAxisMinimum);
+            Double minDiffGap = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
 
-            //minDiffGap = (dataMinimumGap > 0 && minDiffGap > 0) ? Math.Min(minDiffGap, dataMinimumGap) : Math.Max(minDiffGap, dataMinimumGap);
+            minDiffGap = (dataMinimumGap > 0 && minDiffGap > 0) ? Math.Min(minDiffGap, dataMinimumGap) : Math.Max(minDiffGap, dataMinimumGap);
 
-            Double maxColumnWidth = dataAxisDifference * (1 - COLUMN_GAP_RATIO);
+            Double maxColumnWidth = minDiffGap * (1 - COLUMN_GAP_RATIO);
 
-            //Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
-            Double numberOfDivisions = plotDetails.DrawingDivisionFactor;
+            Double numberOfDivisions = plotDetails.GetMaxDivision(sortedDataPoints);
 
-            Double widthPerColumn;
-            
-            if (minDiffValue == 0)
-            {
-                widthPerColumn = width * .5 / numberOfDivisions;
-            }
-            else
-            {
-                widthPerColumn = Graphics.ValueToPixelPosition(0, width, (Double)axisXwithMinInterval.InternalAxisMinimum, (Double)axisXwithMinInterval.InternalAxisMaximum, minDiffValue + (Double)axisXwithMinInterval.InternalAxisMinimum);
-                widthPerColumn *= (1 - COLUMN_GAP_RATIO);
-                widthPerColumn /= numberOfDivisions;
-            }
+            Double widthPerColumn = maxColumnWidth / numberOfDivisions;
 
-            if (!Double.IsNaN(chart.DataPointWidth))
-            {
-                if(chart.DataPointWidth >= 0)
-                    widthPerColumn = chart.DataPointWidth / 100 * chart.PlotArea.Width;
-            }
-            
             Boolean plankDrawn = false;
 
             foreach (Double xValue in xValues)
@@ -633,6 +604,7 @@ namespace Visifire.Charts
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
                 columnParams.ShadowOffset = 5;
                 columnParams.Depth = depth3d;
+
 
                 foreach (DataPoint dataPoint in sortedDataPoints[xValue].Positive)
                 {
@@ -662,7 +634,6 @@ namespace Visifire.Charts
                     Double columnHeight = Math.Abs(top - bottom);
 
                     Double finalWidth = CalculateWidthOfEachColumn(ref left, widthPerColumn, width);
-                    //Double finalWidth = widthPerColumn;
 
                     if (finalWidth < 0)
                         continue;
@@ -675,13 +646,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         columnFaces = Get3DColumn(columnParams);
-                        columnVisual = columnFaces.Visual as Panel;
+                        columnVisual = columnFaces.Visual;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
                         columnFaces = Get2DColumn(columnParams);
-                        columnVisual = columnFaces.Visual as Panel;
+                        columnVisual = columnFaces.Visual;
                     }
 
                     dataPoint.Faces = columnFaces;
@@ -702,7 +673,7 @@ namespace Visifire.Charts
 
                         CurrentDataSeries = dataPoint.Parent;
 
-                        // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                        // Apply animation to the data points i.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
@@ -747,13 +718,13 @@ namespace Visifire.Charts
                     if (chart.View3D)
                     {
                         column = Get3DColumn(columnParams);
-                        columnVisual = column.Visual as Panel;
+                        columnVisual = column.Visual;
                         columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                     }
                     else
                     {
                         column = Get2DColumn(columnParams);
-                        columnVisual = column.Visual as Panel;
+                        columnVisual = column.Visual;
                     }
 
                     dataPoint.Faces = column;
@@ -774,7 +745,7 @@ namespace Visifire.Charts
 
                         CurrentDataSeries = dataPoint.Parent;
 
-                        // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                        // Apply animation to the data points i.e to the rectangles that form the columns
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
@@ -793,9 +764,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
+                Panel zeroPlankVisual = zeroPlank.Visual;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -853,39 +822,10 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
-                if (Double.IsPositiveInfinity(minDiff))
-                    minDiff = 0;
-
-                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
+                minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
-
-                Double widthPerColumn;
-
-                widthPerColumn = maxColumnWidth / widthDivisionFactor;
-
-                if (minDiff == 0)
-                {
-                    widthPerColumn = width * .5 / widthDivisionFactor;
-                    maxColumnWidth = widthPerColumn * widthDivisionFactor;
-                }
-                else
-                {
-                    widthPerColumn = Graphics.ValueToPixelPosition(0, width, plotGroup.AxisX.InternalAxisMinimum, plotGroup.AxisX.InternalAxisMaximum, minDiff + plotGroup.AxisX.InternalAxisMinimum);
-                    widthPerColumn *= (1 - COLUMN_GAP_RATIO);
-                    maxColumnWidth = widthPerColumn;
-                    widthPerColumn /= widthDivisionFactor;
-                }
-
-                if (!Double.IsNaN(chart.DataPointWidth))
-                {
-                    if (chart.DataPointWidth >= 0)
-                    {
-                        widthPerColumn = maxColumnWidth = chart.DataPointWidth / 100 * chart.PlotArea.Width;
-
-                        maxColumnWidth *= widthDivisionFactor;
-                    }
-                }
+                Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
 
@@ -944,13 +884,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                         }
 
                         dataPoint.Faces = column;
@@ -970,7 +910,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1012,13 +952,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                         }
 
                         dataPoint.Faces = column;
@@ -1038,7 +978,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1060,9 +1000,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
+                Panel zeroPlankVisual = zeroPlank.Visual;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1126,35 +1064,10 @@ namespace Visifire.Charts
 
                 Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100);
 
-                if (Double.IsPositiveInfinity(minDiff))
-                    minDiff = 0;
-
-                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
+                minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
 
                 Double maxColumnWidth = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - COLUMN_GAP_RATIO);
                 Double widthPerColumn = maxColumnWidth / widthDivisionFactor;
-
-                if (minDiff == 0)
-                {
-                    widthPerColumn = width * .5 / widthDivisionFactor;
-                    maxColumnWidth = widthPerColumn * widthDivisionFactor;
-                }
-                else
-                {
-                    widthPerColumn = Graphics.ValueToPixelPosition(0, width, plotGroup.AxisX.InternalAxisMinimum, plotGroup.AxisX.InternalAxisMaximum, minDiff + plotGroup.AxisX.InternalAxisMinimum);
-                    widthPerColumn *= (1 - COLUMN_GAP_RATIO);
-                    maxColumnWidth = widthPerColumn;
-                    widthPerColumn /= widthDivisionFactor;
-                }
-
-                if (!Double.IsNaN(chart.DataPointWidth))
-                {
-                    if (chart.DataPointWidth >= 0)
-                    {
-                        widthPerColumn = maxColumnWidth = chart.DataPointWidth / 100 * chart.PlotArea.Width;
-                        maxColumnWidth *= widthDivisionFactor;
-                    }
-                }
 
                 List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
 
@@ -1218,13 +1131,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveIndex++));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                         }
 
                         dataPoint.Faces = column;
@@ -1244,7 +1157,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1287,13 +1200,13 @@ namespace Visifire.Charts
                         if (chart.View3D)
                         {
                             column = Get3DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                             columnVisual.SetValue(Canvas.ZIndexProperty, GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), negativeIndex--));
                         }
                         else
                         {
                             column = Get2DColumn(columnParams);
-                            columnVisual = column.Visual as Panel;
+                            columnVisual = column.Visual;
                         }
 
                         dataPoint.Faces = column;
@@ -1313,7 +1226,7 @@ namespace Visifire.Charts
 
                             CurrentDataSeries = dataPoint.Parent;
 
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
+                            // Apply animation to the data points i.e to the rectangles that form the columns
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
@@ -1335,9 +1248,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
+                Panel zeroPlankVisual = zeroPlank.Visual;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1369,20 +1280,20 @@ namespace Visifire.Charts
 
             Brush background = (columnParams.Lighting ? Graphics.GetLightingEnabledBrush(columnParams.BackgroundBrush, "Linear", null) : columnParams.BackgroundBrush);
 
-            Canvas columnBase = ExtendedGraphics.Get2DRectangle(columnParams.TagReference, columnParams.Size.Width, columnParams.Size.Height,
+            Canvas columnBase = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Size.Height,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 background, columnParams.XRadius, columnParams.YRadius);
 
-            ((columnBase.Children[0] as FrameworkElement).Tag as ElementData).VisualElementName = "ColumnBase";
-            
+            (columnBase.Children[0] as FrameworkElement).Tag = "ColumnBase";
             faces.Parts.Add(columnBase.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(columnBase.Children[0] as Path);
-            
+
             columnVisual.Children.Add(columnBase);
-            
+
+
+
             if (columnParams.Size.Height > 7 && columnParams.Size.Width > 14 && columnParams.Bevel)
-            {   
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(columnParams.TagReference, columnParams.Size.Width - columnParams.BorderThickness - columnParams.BorderThickness, columnParams.Size.Height - columnParams.BorderThickness - columnParams.BorderThickness, 6, 6,
+            {
+                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(columnParams.Size.Width - columnParams.BorderThickness - columnParams.BorderThickness, columnParams.Size.Height - columnParams.BorderThickness - columnParams.BorderThickness, 6, 6,
                     Graphics.GetBevelTopBrush(columnParams.BackgroundBrush),
                     Graphics.GetBevelSideBrush((columnParams.Lighting ? -70 : 0), columnParams.BackgroundBrush),
                     Graphics.GetBevelSideBrush((columnParams.Lighting ? -110 : 180), columnParams.BackgroundBrush),
@@ -1405,7 +1316,7 @@ namespace Visifire.Charts
 
             if (!columnParams.Lighting && columnParams.Bevel)
             {
-                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(columnParams.TagReference, columnParams.Size.Width, columnParams.Size.Height,
+                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(columnParams.Size.Width, columnParams.Size.Height,
                     Graphics.GetLeftGradianceBrush(63),
                     Graphics.GetRightGradianceBrush(63),
                     Orientation.Vertical);
@@ -1466,7 +1377,7 @@ namespace Visifire.Charts
                     }
                 }
 
-                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(columnParams.TagReference ,columnParams.Size.Width, shadowHeight, xRadius, yRadius, columnParams.IsStacked ? 3 : 5);
+                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(columnParams.Size.Width, shadowHeight, xRadius, yRadius, columnParams.IsStacked ? 3 : 5);
                 shadowGrid.SetValue(Canvas.TopProperty, shadowVerticalOffset);
                 shadowGrid.SetValue(Canvas.LeftProperty, columnParams.ShadowOffset);
                 shadowGrid.Opacity = 0.7;
@@ -1516,31 +1427,28 @@ namespace Visifire.Charts
             if (rightBrush == null)
                 rightBrush = columnParams.Lighting ? Graphics.GetRightFaceBrush(columnParams.BackgroundBrush) : columnParams.BackgroundBrush;
 
-            Canvas front = ExtendedGraphics.Get2DRectangle(columnParams.TagReference, columnParams.Size.Width, columnParams.Size.Height,
+            Canvas front = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Size.Height,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(front.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(front.Children[0] as Path);
 
-            Canvas top = ExtendedGraphics.Get2DRectangle(columnParams.TagReference, columnParams.Size.Width, columnParams.Depth,
+            Canvas top = ExtendedGraphics.Get2DRectangle(columnParams.Size.Width, columnParams.Depth,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(top.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(top.Children[0] as Path);
 
             top.RenderTransformOrigin = new Point(0, 1);
             SkewTransform skewTransTop = new SkewTransform();
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Canvas right = ExtendedGraphics.Get2DRectangle(columnParams.TagReference, columnParams.Depth, columnParams.Size.Height,
+            Canvas right = ExtendedGraphics.Get2DRectangle(columnParams.Depth, columnParams.Size.Height,
                 columnParams.BorderThickness, columnParams.BorderStyle, columnParams.BorderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
             faces.Parts.Add(right.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(right.Children[0] as Path);
 
             right.RenderTransformOrigin = new Point(0, 0);
             SkewTransform skewTransRight = new SkewTransform();

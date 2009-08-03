@@ -8,7 +8,6 @@ using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Xml;
 using System.Globalization;
-using System.Linq;
 
 
 #else
@@ -40,16 +39,6 @@ namespace Visifire.Charts
         public Faces()
         {
             VisualComponents = new List<FrameworkElement>();
-            BorderElements = new List<Shape>();
-        }
-
-        /// <summary>
-        /// Contains references to individual components of the border elements in the visual
-        /// </summary>
-        public List<Shape> BorderElements
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -73,7 +62,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Visual of faces
         /// </summary>
-        public FrameworkElement Visual
+        public Panel Visual
         {
             get;
             set;
@@ -266,11 +255,11 @@ namespace Visifire.Charts
         /// <param name="xRadius">XRadius as CornerRadius</param>
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
+        public static Canvas Get2DRectangle(Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
         {
             Canvas canvas = new Canvas();
 
-            Path rectangle = new Path() { Tag = new ElementData() { Element = tagReference } };
+            Path rectangle = new Path();
 
             canvas.Width = width;
             canvas.Height = height;
@@ -313,47 +302,51 @@ namespace Visifire.Charts
         /// <param name="rightBrush">RightBrush</param>
         /// <param name="bottomBrush">BottomBrush</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangleBevel(FrameworkElement tagReference, Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
+        public static Canvas Get2DRectangleBevel(Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
         {
             Canvas canvas = new Canvas();
 
             canvas.Width = width;
             canvas.Height = height;
 
-            Polygon topBevel = new Polygon() { Tag = new ElementData() { Element = tagReference, VisualElementName = "TopBevel" } };
+            Polygon topBevel = new Polygon();
             topBevel.Points = new PointCollection();
             topBevel.Points.Add(new Point(0, 0));
             topBevel.Points.Add(new Point(width, 0));
             topBevel.Points.Add(new Point(width - bevelX , bevelY));
             topBevel.Points.Add(new Point(bevelX, bevelY));
             topBevel.Fill = topBrush;
+            topBevel.Tag = "TopBevel";
             canvas.Children.Add(topBevel);
 
-            Polygon leftBevel = new Polygon() { Tag = new ElementData() { Element = tagReference, VisualElementName = "LeftBevel" } };
+            Polygon leftBevel = new Polygon();
             leftBevel.Points = new PointCollection();
             leftBevel.Points.Add(new Point(0, 0));
             leftBevel.Points.Add(new Point(bevelX, bevelY));
             leftBevel.Points.Add(new Point(bevelX, height - bevelY));
             leftBevel.Points.Add(new Point(0, height));
             leftBevel.Fill = leftBrush;
+            leftBevel.Tag = "LeftBevel";
             canvas.Children.Add(leftBevel);
 
-            Polygon rightBevel = new Polygon() { Tag = new ElementData() { Element = tagReference, VisualElementName="RightBevel" } };
+            Polygon rightBevel = new Polygon();
             rightBevel.Points = new PointCollection();
             rightBevel.Points.Add(new Point(width, 0));
             rightBevel.Points.Add(new Point(width, height));
             rightBevel.Points.Add(new Point(width - bevelX, height - bevelY));
             rightBevel.Points.Add(new Point(width - bevelX, bevelY));
             rightBevel.Fill = rightBrush;
+            rightBevel.Tag = "RightBevel";
             canvas.Children.Add(rightBevel);
 
-            Polygon bottomBevel = new Polygon() { Tag = new ElementData() { Element = tagReference, VisualElementName = "BottomBevel" } };
+            Polygon bottomBevel = new Polygon();
             bottomBevel.Points = new PointCollection();
             bottomBevel.Points.Add(new Point(0, height));
             bottomBevel.Points.Add(new Point(bevelX,height - bevelY));
             bottomBevel.Points.Add(new Point(width - bevelX, height - bevelY));
             bottomBevel.Points.Add(new Point(width, height));
             bottomBevel.Fill = bottomBrush;
+            bottomBevel.Tag = "BottomBevel";
             canvas.Children.Add(bottomBevel);
 
             return canvas;
@@ -368,7 +361,7 @@ namespace Visifire.Charts
         /// <param name="brush2">Brush2</param>
         /// <param name="orientation">Orientation</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangleGradiance(FrameworkElement tagReference, Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
+        public static Canvas Get2DRectangleGradiance(Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
         {
             Canvas canvas = new Canvas();
 
@@ -377,74 +370,46 @@ namespace Visifire.Charts
 
             if (orientation == Orientation.Vertical)
             {
-                Rectangle rectLeft = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceLeft" } };
+                Rectangle rectLeft = new Rectangle();
                 rectLeft.Width = width / 2 ;
                 rectLeft.Height = height;
                 rectLeft.SetValue(Canvas.TopProperty, (Double)0);
                 rectLeft.SetValue(Canvas.LeftProperty, (Double)0);
                 rectLeft.Fill = brush1;
+                rectLeft.Tag = "GradianceLeft";
                 canvas.Children.Add(rectLeft);
 
-                Rectangle rectRight = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName="GradianceRight" } };
+                Rectangle rectRight = new Rectangle();
                 rectRight.Width = width / 2;
                 rectRight.Height = height;
                 rectRight.SetValue(Canvas.TopProperty, (Double)0);
                 rectRight.SetValue(Canvas.LeftProperty, (Double)width / 2);
                 rectRight.Fill = brush2;
+                rectLeft.Tag = "GradianceRight";
                 canvas.Children.Add(rectRight);
             }
             else
-            {
-                Rectangle rectTop = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceTop" } };
+            {   
+                Rectangle rectTop = new Rectangle();
                 rectTop.Width = width;
                 rectTop.Height = height / 2;
                 rectTop.SetValue(Canvas.TopProperty, (Double)0);
                 rectTop.SetValue(Canvas.LeftProperty, (Double)0);
                 rectTop.Fill = brush1;
+                rectTop.Tag = "GradianceTop";
                 canvas.Children.Add(rectTop);
 
-                Rectangle rectBottom = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceBottom" } };
+                Rectangle rectBottom = new Rectangle();
                 rectBottom.Width = width;
                 rectBottom.Height = height / 2;
                 rectBottom.SetValue(Canvas.TopProperty, (Double)height / 2);
                 rectBottom.SetValue(Canvas.LeftProperty, (Double)0);
                 rectBottom.Fill = brush2;
+                rectBottom.Tag = "GradianceBottom";
                 canvas.Children.Add(rectBottom);
             }
 
             return canvas;
-        }
-
-
-        /// <summary>
-        /// Creates Path From Points
-        /// </summary>
-        /// <param name="fillColor"></param>
-        /// <param name="points"></param>
-        /// <returns></returns>
-        public static Path GetPathFromPoints(Brush fillColor, params Point[] points)
-        {
-            Path path = new Path();
-            PathGeometry pathGeo = new PathGeometry();
-            PathFigure pathFigure = new PathFigure();
-            LineSegment lineSegment;
-
-            pathFigure.StartPoint = points[0];
-
-            foreach (Point point in points)
-            {
-                lineSegment = new LineSegment() { Point = point };
-                pathFigure.Segments.Add(lineSegment);
-            }
-
-            lineSegment = new LineSegment() { Point = points[0] };
-            pathFigure.Segments.Add(lineSegment);
-
-            pathGeo.Figures.Add(pathFigure);
-            path.Data = pathGeo;
-            path.Fill = fillColor;
-
-            return path;
         }
 
         /// <summary>
@@ -456,7 +421,7 @@ namespace Visifire.Charts
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <param name="minCurvature">MinCurvature as Double</param>
         /// <returns>Grid</returns>
-        public static Grid Get2DRectangleShadow(FrameworkElement tagReference, Double width, Double height, CornerRadius xRadius, CornerRadius yRadius, Double minCurvature)
+        public static Grid Get2DRectangleShadow(Double width, Double height, CornerRadius xRadius, CornerRadius yRadius, Double minCurvature)
         {
             CornerRadius tempXRadius = new CornerRadius(Math.Max(xRadius.TopLeft, minCurvature), Math.Max(xRadius.TopRight, minCurvature), Math.Max(xRadius.BottomRight, minCurvature), Math.Max(xRadius.BottomLeft, minCurvature));
             CornerRadius tempYRadius = new CornerRadius(Math.Max(yRadius.TopLeft, minCurvature), Math.Max(yRadius.TopRight, minCurvature), Math.Max(yRadius.BottomRight, minCurvature), Math.Max(yRadius.BottomLeft, minCurvature));
@@ -474,15 +439,15 @@ namespace Visifire.Charts
                 visual.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0, GridUnitType.Auto) });
             }
 
-            Rectangle topLeft = new Rectangle() { Width = radiusX.TopLeft, Height = radiusY.TopLeft,Fill = GetCornerShadowGradientBrush(Corners.TopLeft), Tag = (tagReference != null) ? new ElementData() { Element = tagReference }: null};
-            Rectangle topRight = new Rectangle() { Width = radiusX.TopRight, Height = radiusY.TopRight, Fill = GetCornerShadowGradientBrush(Corners.TopRight), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle bottomLeft = new Rectangle() { Width = radiusX.BottomLeft, Height = radiusY.BottomLeft, Fill = GetCornerShadowGradientBrush(Corners.BottomLeft), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle bottomRight = new Rectangle() { Width = radiusX.BottomRight, Height = radiusY.BottomRight, Fill = GetCornerShadowGradientBrush(Corners.BottomRight), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle center = new Rectangle() { Width = width - radiusX.TopLeft - radiusX.TopRight, Height = height - radiusY.TopLeft - radiusY.BottomLeft, Fill = new SolidColorBrush(Color.FromArgb((Byte)191, (Byte)0, (Byte)0, (Byte)0)), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle top = new Rectangle() { Width = width - radiusX.TopLeft - radiusX.TopRight, Height = Math.Max(radiusY.TopLeft, radiusY.TopRight), Fill = GetSideShadowGradientBrush(Directions.Top), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle right = new Rectangle() { Width = Math.Max(radiusX.TopRight, radiusX.BottomRight), Height = height - radiusY.TopRight - radiusY.BottomRight, Fill = GetSideShadowGradientBrush(Directions.Right), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle left = new Rectangle() { Width = Math.Max(radiusX.TopLeft, radiusX.BottomLeft), Height = height - radiusY.TopLeft - radiusY.BottomLeft, Fill = GetSideShadowGradientBrush(Directions.Left), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
-            Rectangle bottom = new Rectangle() { Width = width - radiusX.BottomLeft - radiusX.BottomRight, Height = Math.Max(radiusY.BottomLeft, radiusY.BottomRight), Fill = GetSideShadowGradientBrush(Directions.Bottom), Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null };
+            Rectangle topLeft = new Rectangle() { Width = radiusX.TopLeft, Height = radiusY.TopLeft,Fill = GetCornerShadowGradientBrush(Corners.TopLeft) };
+            Rectangle topRight = new Rectangle() { Width = radiusX.TopRight, Height = radiusY.TopRight, Fill = GetCornerShadowGradientBrush(Corners.TopRight) };
+            Rectangle bottomLeft = new Rectangle() { Width = radiusX.BottomLeft, Height = radiusY.BottomLeft, Fill = GetCornerShadowGradientBrush(Corners.BottomLeft) };
+            Rectangle bottomRight = new Rectangle() { Width = radiusX.BottomRight, Height = radiusY.BottomRight, Fill = GetCornerShadowGradientBrush(Corners.BottomRight) };
+            Rectangle center = new Rectangle() { Width = width - radiusX.TopLeft - radiusX.TopRight, Height = height - radiusY.TopLeft - radiusY.BottomLeft, Fill = new SolidColorBrush(Color.FromArgb((Byte)191, (Byte)0, (Byte)0, (Byte)0)) };
+            Rectangle top = new Rectangle() { Width = width - radiusX.TopLeft - radiusX.TopRight, Height = Math.Max(radiusY.TopLeft, radiusY.TopRight), Fill = GetSideShadowGradientBrush(Directions.Top) };
+            Rectangle right = new Rectangle() { Width = Math.Max(radiusX.TopRight, radiusX.BottomRight), Height = height - radiusY.TopRight - radiusY.BottomRight, Fill = GetSideShadowGradientBrush(Directions.Right) };
+            Rectangle left = new Rectangle() { Width = Math.Max(radiusX.TopLeft, radiusX.BottomLeft), Height = height - radiusY.TopLeft - radiusY.BottomLeft, Fill = GetSideShadowGradientBrush(Directions.Left) };
+            Rectangle bottom = new Rectangle() { Width = width - radiusX.BottomLeft - radiusX.BottomRight, Height = Math.Max(radiusY.BottomLeft, radiusY.BottomRight), Fill = GetSideShadowGradientBrush(Directions.Bottom) };
 
             topLeft.SetValue(Grid.RowProperty, (Int32)0); topLeft.SetValue(Grid.ColumnProperty, (Int32)0);
             top.SetValue(Grid.RowProperty, (Int32)0); top.SetValue(Grid.ColumnProperty, (Int32)1);
@@ -529,11 +494,6 @@ namespace Visifire.Commons
 
         #region Static Methods
 
-        internal static Point MidPointOfALine(Point point1, Point point2)
-        {
-            return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
-        }
-
         /// <summary>
         /// Calculates visual size
         /// </summary>
@@ -541,7 +501,7 @@ namespace Visifire.Commons
         /// <returns>Visual size</returns>
         internal static Size CalculateVisualSize(FrameworkElement visual)
         {
-            Size retVal = new Size(0,0);
+            Size retVal = new Size(0,0);;
 
             if (visual != null)
             {
@@ -637,48 +597,43 @@ namespace Visifire.Commons
         /// <returns>Brush</returns>
         internal static Brush GetTopFaceBrush(Brush brush)
         {
-            if (brush != null)
+            if (typeof(SolidColorBrush).Equals(brush.GetType()))
             {
-                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                SolidColorBrush solidBrush = brush as SolidColorBrush;
+
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
+
+                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
+                stops.Add(0);
+
+                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
+                stops.Add(1);
+
+                return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+            }
+            else if (brush is GradientBrush)
+            {
+                GradientBrush gradBrush = brush as GradientBrush;
+
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
+
+                foreach (GradientStop gradStop in gradBrush.GradientStops)
                 {
-                    SolidColorBrush solidBrush = brush as SolidColorBrush;
-
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
-
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
-                    stops.Add(0);
-
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
-                    stops.Add(1);
-
-                    return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                    colors.Add(Graphics.GetLighterColor(gradStop.Color, 0.85));
+                    stops.Add(gradStop.Offset);
                 }
-                else if (brush is GradientBrush)
-                {
-                    GradientBrush gradBrush = brush as GradientBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
-
-                    foreach (GradientStop gradStop in gradBrush.GradientStops)
-                    {
-                        colors.Add(Graphics.GetLighterColor(gradStop.Color, 0.85));
-                        stops.Add(gradStop.Offset);
-                    }
-
-                    if (brush is LinearGradientBrush)
-                        return Graphics.CreateLinearGradientBrush(-45, new Point(-0.5, 1.5), new Point(0.5, 0), colors, stops);
-                    else
-                        return Graphics.CreateRadialGradientBrush(colors, stops);
-                }
+                if (brush is LinearGradientBrush)
+                    return Graphics.CreateLinearGradientBrush(-45, new Point(-0.5, 1.5), new Point(0.5, 0), colors, stops);
                 else
-                {
-                    return brush;
-                }
+                    return Graphics.CreateRadialGradientBrush(colors, stops);
             }
             else
-                return null;
+            {
+                return brush;
+            }
         }
 
         /// <summary>
@@ -740,30 +695,25 @@ namespace Visifire.Commons
         /// <returns>Brush</returns>
         internal static Brush GetFrontFaceBrush(Brush brush)
         {
-            if (brush != null)
+            if (typeof(SolidColorBrush).Equals(brush.GetType()))
             {
-                if (typeof(SolidColorBrush).Equals(brush.GetType()))
-                {
-                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+                SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                List<Color> colors = new List<Color>();
+                List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                    stops.Add(0);
+                colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
+                stops.Add(0);
 
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                    stops.Add(1);
+                colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
+                stops.Add(1);
 
-                    return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
-                }
-                else
-                {
-                    return brush;
-                }
+                return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
             }
             else
-                return null;
+            {
+                return brush;
+            }
         }
 
         /// <summary>
@@ -876,7 +826,7 @@ namespace Visifire.Commons
         /// Creates and returns a linear gradient brush
         /// </summary>
         /// <param name="angle">Angle</param>
-        /// <param name="dateTime">Start point</param>
+        /// <param name="start">Start point</param>
         /// <param name="end">End point</param>
         /// <param name="colors">List of color</param>
         /// <param name="stops">List of Double</param>
@@ -1101,13 +1051,11 @@ namespace Visifire.Commons
             Brush brush = null;
             if (intensity < 0.6)
             {
-                //brush = ParseSolidColor("#EFEFEF");
-                brush = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+                brush = ParseSolidColor("#EFEFEF");
             }
             else
             {
-                //brush = ParseSolidColor("#000000");
-                brush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                brush = ParseSolidColor("#000000");
             }
             return brush;
         }
@@ -1267,9 +1215,6 @@ namespace Visifire.Commons
         #endregion
 
         #region Constants
-
-        public static Brush BLACK_BRUSH = new SolidColorBrush(Colors.Black);
-        public static Brush RED_BRUSH = new SolidColorBrush(Colors.Red);
 
         /// <summary>
         /// Array of font sizes

@@ -193,7 +193,7 @@ namespace Visifire.Charts
 
                 PlotGroup plotGroup = series.PlotGroup;
 
-                var dataPointsList = (from dataPoint in series.InternalDataPoints where !Double.IsNaN(dataPoint.ZValue) && dataPoint.Enabled == true select dataPoint.ZValue);
+                var dataPointsList = (from dataPoint in series.DataPoints where !Double.IsNaN(dataPoint.ZValue) && dataPoint.Enabled == true select dataPoint.ZValue);
 
                 Double minValue = 0;
                 Double maxValue = 1;
@@ -204,17 +204,17 @@ namespace Visifire.Charts
                     maxValue = dataPointsList.Max();
                 }
 
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+                foreach (DataPoint dataPoint in series.DataPoints)
                 {
                     if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
                     {
                         continue;
                     }
-                    
+
                     Faces bubbleFaces = new Faces();
                     bubbleFaces.Parts = new List<FrameworkElement>();
 
-                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
                     Brush markerColor = dataPoint.Color;
@@ -233,7 +233,6 @@ namespace Visifire.Charts
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     if (dataPoint.BorderColor != null)
                         marker.BorderColor = dataPoint.BorderColor;
-                    
                     marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
 
                     marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
@@ -244,7 +243,7 @@ namespace Visifire.Charts
 
                     marker.TextAlignmentX = AlignmentX.Center;
                     marker.TextAlignmentY = AlignmentY.Center;
-                    marker.Tag = new ElementData() { Element = dataPoint };
+
                     marker.CreateVisual();
 
                     Double gap = (markerScale * (Double)dataPoint.MarkerScale * (Double)dataPoint.MarkerSize) / 2;
@@ -278,9 +277,8 @@ namespace Visifire.Charts
                     }
 
                     bubbleFaces.Parts.Add(marker.MarkerShape);
-                    bubbleFaces.VisualComponents.Add(marker.Visual);
-                    bubbleFaces.BorderElements.Add(marker.MarkerShape);
 
+                    bubbleFaces.VisualComponents.Add(marker.Visual);
                     bubbleFaces.Visual = marker.Visual;
                     dataPoint.Faces = bubbleFaces;
                 }

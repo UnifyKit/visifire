@@ -69,7 +69,6 @@ namespace Visifire.Charts
             DefaultStyleKey = typeof(AxisLabels);
 #endif
 
-            WidthOfACharacter = Double.NaN;
         }
 
         #endregion
@@ -111,18 +110,6 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(AxisLabels),
             new PropertyMetadata(OnEnabledPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.AxisLabels.TextAlignment dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.AxisLabels.TextAlignment dependency property.
-        /// </returns>
-        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
-            ("TextAlignment",
-            typeof(TextAlignment),
-            typeof(AxisLabels),
-            new PropertyMetadata(TextAlignment.Left, OnTextAlignmentPropertyChanged));
         
 #if WPF
         /// <summary>
@@ -209,9 +196,9 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty TextWrapProperty = DependencyProperty.Register
             ("TextWrap",
-            typeof(Double),
+            typeof(TextWrapping),
             typeof(AxisLabels),
-            new PropertyMetadata(Double.NaN, OnTextWrapPropertyChanged));
+            new PropertyMetadata(OnTextWrapPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.AxisLabels.Rows dependency property.
@@ -323,21 +310,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(EnabledProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Get or set the color for the text in axis labels 
-        /// </summary>
-        public TextAlignment TextAlignment
-        {
-            get
-            {
-                return (TextAlignment)GetValue(TextAlignmentProperty);
-            }
-            set
-            {
-                SetValue(TextAlignmentProperty, value);
             }
         }
 
@@ -514,15 +486,6 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Average width of a character after applying 
-        /// </summary>
-        internal Double WidthOfACharacter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Visual element for axis labels
         /// </summary>
         internal Canvas Visual
@@ -532,16 +495,16 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the maximum width of the labels relative to chart size. Value range is 0 - 1.
+        /// Get or set the maximum width of the labels relative to chart size
         /// </summary>
-        public Double TextWrap
+        internal TextWrapping TextWrap
         {
             get
             {
-                return (Double)GetValue(TextWrapProperty);
+                return (TextWrapping)GetValue(TextWrapProperty);
             }
             set
-            {   
+            {
                 SetValue(TextWrapProperty, value);
             }
         }
@@ -554,7 +517,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         /// <summary>
         /// Actual maximum value of the axis
         /// </summary>
@@ -731,17 +694,6 @@ namespace Visifire.Charts
             axisLabels.FirePropertyChanged("Enabled");
         }
 
-        /// <summary>
-        /// Event handler attached with TextAlignment property changed event of axislabels element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("TextAlignment");
-        }
-
 #if WPF
 
         /// <summary>
@@ -808,10 +760,6 @@ namespace Visifire.Charts
         private static void OnTextWrapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-
-            if((Double)e.NewValue < 0 || (Double)e.NewValue > 1)
-                throw new Exception("Wrong property value. Range of TextWrapProperty varies from 0 to 1.");
-
             axisLabels.FirePropertyChanged("TextWrap");
         }
 
@@ -867,7 +815,7 @@ namespace Visifire.Charts
 
             if (Double.IsNaN(interval) || interval <= 0)
                 interval = ParentAxis.InternalInterval;
-
+            
             // Set the begining of the axis labels same as that of the Axis Minimum.
             Decimal index = (Decimal)Minimum;
 
@@ -883,150 +831,62 @@ namespace Visifire.Charts
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {   
                 // if the data minimum - interval is less than the actual minimum
-
-                if (Double.IsNaN((Double)Parent.AxisMinimumNumeric))
-                {
-                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
-                    {
-                        index = (Decimal)ParentAxis.FirstLabelPosition;
-                    }
-                    else
-                    {
-                        if ((DataMinimum - Minimum) / interval >= 1)
-                            index = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
-                        else
-                            index = (Decimal)DataMinimum;
-                    }
-                }
-
-                //if (ParentAxis.SkipOfset > 0)
-                //{
-                //    if ((Double)Parent.AxisMinimum < DataMinimum)
-                //        index = (Decimal)DataMinimum;
-                //}
-                
+                if ((DataMinimum - interval) < Minimum)
+                    index = (Decimal)DataMinimum;
+                    
                 if (AllAxisLabels && AxisLabelContentDictionary.Count > 0)
-                {
+                {   
                     Dictionary<Double, String>.Enumerator enumerator = AxisLabelContentDictionary.GetEnumerator();
                     enumerator.MoveNext();
 
                     Int32 dictionaryIndex = 0;
-                    //index = (Decimal)enumerator.Current.Key;
+                    index = (Decimal)enumerator.Current.Key;
 
                     for (; dictionaryIndex < AxisLabelContentDictionary.Count - 1; dictionaryIndex++)
-                    {
+                    {   
                         enumerator.MoveNext();
-                        //index = Math.Min(index, (Decimal)enumerator.Current.Key);
+                        index = Math.Min(index, (Decimal)enumerator.Current.Key);
                     }
 
                     enumerator.Dispose();
-                }
-
+                }   
+                
                 minval = index;
 
                 if (minval != maxVal)
-                {
-                    if (!Double.IsNaN(TextWrap))
-                        CalculatAvgWidthOfAChar();
-
-                    for (; index <= maxVal;)
+                {   
+                    for (; index <= maxVal; index = minval + (++count) * gap)
                     {
-                        // if (!((AllAxisLabels) && (AxisLabelContentDictionary.Count > 0) && (index > (Decimal)DataMaximum)))
-                        {   
-                            String labelContent = "";
+                        if ((AllAxisLabels) && (AxisLabelContentDictionary.Count > 0) && (index > (Decimal)DataMaximum))
+                            continue;
 
-                            if (AxisLabelContentDictionary.ContainsKey((Double)index))
-                            {
-                                if (ParentAxis.AxisOrientation == Orientation.Vertical)
-                                    labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], false);
-                                else
-                                    labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], true);
-                            }
-                            else
-                            {
-                                if (ParentAxis.XValueType == ChartValueTypes.Date)
-                                {
-                                    DateTime dt = ParentAxis.MinDate;
-                                    Decimal tempIndex = index;
+                        String labelContent = "";
 
-                                    if (ParentAxis._isAllXValueZero)
-                                        tempIndex--;
-
-                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-                                    //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
-
-                                    //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
-                                    //    dt = new DateTime(dt.Year, 1, 1, 0, 0, 0);
-
-                                    labelContent = FormatDate(dt, ParentAxis);
-                                }
-                                else if (ParentAxis.XValueType == ChartValueTypes.Time)
-                                {
-                                    DateTime dt = ParentAxis.MinDate;
-                                    Decimal tempIndex = index;
-
-                                    System.Diagnostics.Debug.WriteLine("Index=" + index.ToString());
-                                    if (ParentAxis._isAllXValueZero)
-                                        tempIndex--;
-
-                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-                                    labelContent = FormatDate(dt, ParentAxis);
-                                }
-                                else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
-                                {
-                                    DateTime dt = ParentAxis.MinDate;
-                                    Decimal tempIndex = index;
-
-                                    if (ParentAxis._isAllXValueZero)
-                                        tempIndex--;
-
-                                    dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-
-                                    if (ParentAxis.IntervalType == IntervalTypes.Years || ParentAxis.InternalIntervalType == IntervalTypes.Years
-                                        || ParentAxis.IntervalType == IntervalTypes.Months || ParentAxis.InternalIntervalType == IntervalTypes.Months
-                                        || ParentAxis.IntervalType == IntervalTypes.Weeks || ParentAxis.InternalIntervalType == IntervalTypes.Weeks
-                                        || ParentAxis.IntervalType == IntervalTypes.Days || ParentAxis.InternalIntervalType == IntervalTypes.Days
-                                        )
-                                        dt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
-
-                                    labelContent = FormatDate(dt, ParentAxis);
-                                }
-                                else
-                                    labelContent = GetFormattedString((Double)index);
-                            }
-
-                            AxisLabel label = CreateLabel(labelContent);
-
-                            AxisLabelList.Add(label);
-                            LabelValues.Add((Double)index);
-
-
-                        }
-
-                        if (ParentAxis.IsDateTimeAxis)
+                        if (AxisLabelContentDictionary.ContainsKey((Double)index))
                         {
-                            count++;
-
-                            DateTime dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)(count * gap), ParentAxis.InternalIntervalType);
-                            Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, Parent.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
-
-                            index = minval + oneUnit;
+                            if (ParentAxis.AxisOrientation == Orientation.Vertical)
+                                labelContent = GetFormattedMultilineText(AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index]));
+                            else
+                                labelContent = GetFormattedMultilineText(AxisLabelContentDictionary[(Double)index]);
                         }
                         else
-                        {   
-                            index = minval + (++count) * gap;
-                        }
+                            labelContent = GetFormattedString((Double)index);
+                        
+                        AxisLabel label = CreateLabel(labelContent);
+
+                        AxisLabelList.Add(label);
+                        LabelValues.Add((Double)index);
                     }
                 }
                 else
-                {
+                {   
                     return false;
                 }
             }
             else
-            {
+            {   
                 if (minval != maxVal)
-                {
+                {   
                     AxisLabel label;
 
                     // Create and save the first label
@@ -1062,86 +922,31 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Calculate average width of a character
-        /// </summary>
-        /// <returns></returns>
-        private void CalculatAvgWidthOfAChar()
-        {
-            AxisLabel label = new AxisLabel();
-            label.Text ="ABCDabcd01";
-            ApplyAxisLabelFontProperties(label);
-            label.CreateVisualObject(false);
-            WidthOfACharacter = label.ActualTextWidth / 10;
-        }
-        
-        /// <summary>
-        /// Set DateTime in AxisXLabel
-        /// </summary>
-        /// <param name="dataPoint">DataPoint</param>
-        /// <param name="axis">Axis</param>
-        /// <param name="label">Axis labels</param>
-        private String FormatDate(DateTime dt, Axis axis)
-        {
-            String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
-            valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
-
-            return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
-        }
-
-
-
-        /// <summary>
         /// Auto formats the AxisLabel text if bigger for Vertical charts
         /// </summary>
         /// <param name="text">Text as String</param>
         /// <returns>Formatted text as String</returns>
-        private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
+        private String AutoFormatMultilineText(String text)
         {
             String multiLineText = "";
-            
-            if (!Double.IsNaN(TextWrap))
-            {   
-                AxisLabel label = CreateLabel(text);
-                ApplyAxisLabelFontProperties(label);
-                label.CreateVisualObject(false);
-
-                Double MaxLabelWidth = (ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Chart.ActualHeight : Chart.ActualWidth;
-                MaxLabelWidth *= TextWrap;
-
-                Int32 wrapAt = (Int32)(MaxLabelWidth / WidthOfACharacter);
-
-                if ((ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical && label.ActualHeight > MaxLabelWidth)
-                    || (label.ActualWidth > MaxLabelWidth))
-
-                {   
-                    Int32 charCount = 0;
-                    foreach (Char c in text)
-                    {
-                        if (c != ' ')
-                        {
-                            charCount++;
-                            multiLineText += c;
-                        }
-                        else if (charCount >= wrapAt)
-                        {
-                            multiLineText += "\n";
-                            charCount = 0;
-
-                            if (autoIncrementWrapAt)
-                                wrapAt += 2;
-                        }
-                        else
-                            multiLineText += c;
-                    }
+            Int32 charCount = 0;
+            foreach (Char c in text)
+            {
+                if (c != ' ')
+                {
+                    charCount++;
+                    multiLineText += c;
+                }
+                else if (charCount >= 15)
+                {
+                    multiLineText += "\n";
+                    charCount = 0;
                 }
                 else
-                    multiLineText = text;
+                    multiLineText += c;
             }
-            else
-                multiLineText = text;
 
             multiLineText = GetFormattedMultilineText(multiLineText);
-
             return multiLineText;
         }
 
@@ -1200,7 +1005,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(true);
+                label.CreateVisualObject();
 
                 // get the max height of the labels
                 height = Math.Max(Math.Max(height, label.ActualHeight), _maxRowHeight);
@@ -1225,7 +1030,7 @@ namespace Visifire.Charts
                 label.Position = new Point(position, height * (Int32)Rows - top - ((i % (Int32)Rows) * _maxRowHeight) + Padding.Top);
 
                 // Create the visual element again
-                label.CreateVisualObject(true);
+                label.CreateVisualObject();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1272,7 +1077,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(true); 
+                label.CreateVisualObject();
 
                 // get the max width of the labels
                 width = Math.Max(width, label.ActualWidth);
@@ -1296,7 +1101,7 @@ namespace Visifire.Charts
                 label.Position = new Point(width - left + Padding.Left, position);
 
                 // Create the visual element again
-                label.CreateVisualObject(true);
+                label.CreateVisualObject();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1353,7 +1158,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, position);
 
                 // Create the visual element again
-                label.CreateVisualObject(true);
+                label.CreateVisualObject();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1381,7 +1186,6 @@ namespace Visifire.Charts
             label.FontFamily = FontFamily;
             label.FontStyle = FontStyle;
             label.FontWeight = FontWeight;
-            label.TextAlignment = TextAlignment;
             label.Angle = GetAngle();
         }
 
@@ -1407,7 +1211,7 @@ namespace Visifire.Charts
             CalculateHorizontalDefaults();
 
             // Calculate the height of the labels and position them
-            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
+            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOfset + 1))
             {
                 AxisLabel label = AxisLabelList[i];
 
@@ -1419,7 +1223,6 @@ namespace Visifire.Charts
 
                 //Calculate vertical Position
                 Double top = 0;
-
                 if (GetAngle() != 0)
                 {
                     top = Math.Abs((label.ActualTextHeight / 2) * Math.Sin(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
@@ -1429,7 +1232,7 @@ namespace Visifire.Charts
                 label.Position = new Point(position, top + ((i % (Int32)Rows) * _maxRowHeight));
 
                 // Create the visual element again
-                label.CreateVisualObject(true);
+                label.CreateVisualObject();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1643,7 +1446,7 @@ namespace Visifire.Charts
             Size textBlockSize;
 
             Int32 labelIndex = 0;
-            for (labelIndex = 0; labelIndex < AxisLabelList.Count ; labelIndex += (ParentAxis.SkipOffset + 1))
+            for (labelIndex = 0; labelIndex < AxisLabelList.Count ; labelIndex += (ParentAxis.SkipOfset + 1))
             {
                 AxisLabel label = AxisLabelList[labelIndex];
                 textBlock.Text = label.Text;
@@ -1676,13 +1479,12 @@ namespace Visifire.Charts
                 if (rows > 2 && Double.IsNaN((Double)Angle))
                 {
                     Rows = 1;
+                    Angle = -45;
 
-                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
-
-                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
-                        ParentAxis.SkipOffset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
+                    if (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval))
+                        ParentAxis.SkipOfset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
                     else
-                        ParentAxis.SkipOffset = 0;
+                        ParentAxis.SkipOfset = 0;
                 }
                 else
                 {
@@ -1695,7 +1497,7 @@ namespace Visifire.Charts
 
                 if (rows > 2 && Double.IsNaN((Double)Angle))
                 {
-                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
+                    Angle = -45;
                 }
             }
 
@@ -1723,16 +1525,15 @@ namespace Visifire.Charts
             textBlock = SetFontProperties(textBlock);
             textBlock.Text = "ABCD";
 
-            Size textBlockSize = Graphics.CalculateVisualSize(textBlock);
-
+#if WPF
+            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+#endif
+                        
             while(overlap)
             {   
                 pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + skipOffset + Minimum);
-#if WPF
-                if (pixelInterval >= textBlockSize.Height)
-#else
+
                 if (pixelInterval >= textBlock.ActualHeight)
-#endif
                 {
                     overlap = false;
                 }
@@ -1862,7 +1663,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-
+        
         /// <summary>
         /// Saved max row height
         /// </summary>

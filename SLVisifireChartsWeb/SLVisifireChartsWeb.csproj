@@ -52,6 +52,7 @@
     <Reference Include="System.Web.Extensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web.Silverlight, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -64,19 +65,6 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestCases\RealTimeRenderFirstDataXml.htm" />
-    <Content Include="TestCases\MultipleChartsInDivs.htm" />
-    <Content Include="TestCases\RealTimeRenderChartUsingDataXml.htm" />
-    <Content Include="TestCases\RealTimeRenderChart.htm" />
-    <Content Include="TestCases\MultipleChartsInTables.htm" />
-    <Content Include="TestCases\OnClickRenderChartUsingDataXml.htm" />
-    <Content Include="TestCases\data3.xml" />
-    <Content Include="TestCases\OnClickRenderNewChart.htm" />
-    <Content Include="TestCases\OnClickRenderChart.htm" />
-    <Content Include="TestCases\MultipleCharts.htm" />
-    <Content Include="TestCases\SingleChart.htm" />
-    <Content Include="TestPage1.htm" />
-    <Content Include="TestCases\TestCase.htm" />
     <Content Include="GalleryCharts\Area\Area2D1.xml" />
     <Content Include="GalleryCharts\Area\Area2D2.xml" />
     <Content Include="GalleryCharts\Area\Area2D3.xml" />
@@ -159,15 +147,24 @@
     <Content Include="ClientBin\SL.Visifire.Charts.xap" />
     <Content Include="ClientBin\SLVisifireApp.xap" />
     <Content Include="data.xml" />
+    <Content Include="Default.aspx" />
+    <Content Include="JsEventHandling.htm" />
     <Content Include="LiveUpdate.htm" />
     <Content Include="StylingAndAnimation.htm" />
-    <Content Include="TestCases\data2.xml" />
-    <Content Include="TestCases\data1.xml" />
+    <Content Include="TestPage1.htm" />
     <Content Include="Visifire.htm" />
     <Content Include="Visifire2.js" />
+    <Content Include="VisifireRealtime.htm" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -188,7 +185,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59004</DevelopmentServerPort>
+          <DevelopmentServerPort>59048</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

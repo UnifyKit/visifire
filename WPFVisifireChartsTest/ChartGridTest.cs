@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Visifire.Charts;
@@ -410,48 +409,6 @@ namespace WPFVisifireChartsTest
             {
                 grid.InterlacedColor = new SolidColorBrush(Colors.Gray);
                 Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), grid.InterlacedColor);
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        #endregion
-
-        #region TestChartGridSerialization
-
-        /// <summary>
-        /// Testing ChartGrid Serialization
-        /// </summary>
-        [TestMethod]
-        public void TestChartGridSerialization()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Axis axis = new Axis();
-            ChartGrid grid = new ChartGrid();
-            grid.Enabled = true;
-            axis.Grids.Add(grid);
-            chart.AxesX.Add(axis);
-
-            DataSeries ds = new DataSeries();
-            DataPoint dp = new DataPoint();
-            dp.YValue = 20;
-            ds.DataPoints.Add(dp);
-            chart.Series.Add(ds);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                MessageBox.Show(XamlWriter.Save(grid));
             }
 
             window.Dispatcher.InvokeShutdown();

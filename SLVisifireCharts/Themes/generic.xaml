@@ -188,7 +188,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Setter Property="Padding" Value="0"/>
         <Setter Property="AnimationEnabled" Value="true"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -203,8 +203,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderColor" Value="Black"/>
     </Style>
-    
+
     <Style TargetType="vc:ToolTip">
         <Setter Property="IsHitTestVisible" Value="False"/>
         <Setter Property="Visibility" Value="Collapsed"/>
@@ -227,7 +228,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="vc:ToolTip" >
-                    <Border  Name="ToolTipBorder" Opacity="{TemplateBinding Opacity}" IsHitTestVisible="false"  Visibility="{TemplateBinding Visibility}" CornerRadius="{TemplateBinding CornerRadius}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"  Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                    <Border  Name="ToolTipBorder" IsHitTestVisible="false" Visibility="{TemplateBinding Visibility}" CornerRadius="{TemplateBinding CornerRadius}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"  Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
                         <Border.Child>
                             <TextBlock Name="ToolTipTextBlock" LineHeight="{TemplateBinding FontSize}" LineStackingStrategy="BlockLineHeight" TextWrapping="Wrap" Text="{TemplateBinding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding FontColor}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"/>
                         </Border.Child>

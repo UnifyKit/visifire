@@ -475,46 +475,33 @@ namespace Visifire.Charts
         /// Creates the major ticks and also positions them appropriately
         /// </summary>
         private void CreateAndPositionMajorTicks()
-        {   
+        {
             Double startOffset = Double.IsNaN(ParentAxis.StartOffset) ? 0 : ParentAxis.StartOffset;
             Double endOffset = Double.IsNaN(ParentAxis.EndOffset) ? 0 : ParentAxis.EndOffset;
 
             // Calculate interval
             Double interval = (Double)Interval;
 
-            Decimal index = 0;
+            Decimal index = (Decimal)Minimum;
             Decimal minval = (Decimal)Minimum;
             Decimal maxVal = (Decimal)Maximum;
-           // Decimal gap = (Decimal)interval + (((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
-            Decimal gap = (Decimal)interval;
-
+            Decimal gap = (Decimal)interval + (((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOfset : 0);
+            Int32 count = 0;
             Double position;
 
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {
-                if (Double.IsNaN((Double)ParentAxis.AxisMinimumNumeric))
-                {
-                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
-                    {
-                        minval = (Decimal)ParentAxis.FirstLabelPosition;
-                    }
-                    else
-                    {
-                        if ((DataMinimum - Minimum) / interval >= 1)
-                            minval = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
-                        else
-                            minval = (Decimal)DataMinimum;
-                    }
-                }
+                if (DataMinimum - interval < Minimum + ParentAxis.SkipOfset)
+                    index = (Decimal)DataMinimum;
+                else
+                    index = (Decimal)Minimum + ParentAxis.SkipOfset;
             }
 
-            //minval = index;
-            //maxVal = maxVal + gap / 1000;
+            minval = index;
+            maxVal = maxVal + gap / 1000;
             if (minval != maxVal)
             {
-                Decimal xValue;
-
-                for (xValue = minval; xValue <= maxVal; )
+                for (; index <= maxVal; index = minval + (++count) * gap)
                 {
                     Line line = new Line();
 
@@ -525,7 +512,7 @@ namespace Visifire.Charts
                     switch (Placement)
                     {
                         case PlacementTypes.Top:
-                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)xValue);
+                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)index);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -537,7 +524,7 @@ namespace Visifire.Charts
                             break;
 
                         case PlacementTypes.Bottom:
-                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)xValue);
+                            position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, (Double)index);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -550,7 +537,7 @@ namespace Visifire.Charts
 
                         case PlacementTypes.Left:
                         case PlacementTypes.Right:
-                            position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, (Double)xValue);
+                            position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, (Double)index);
 
                             if (Double.IsNaN(position))
                                 return;
@@ -563,23 +550,8 @@ namespace Visifire.Charts
 
                     }
 
-                    System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
-
                     Visual.Children.Add(line);
 
-                    index += (ParentAxis.SkipOffset +1);
-
-                    if (ParentAxis.IsDateTimeAxis)
-                    {
-                        DateTime dt = DateTimeHelper.UpdateDate(ParentAxis.FirstLabelDate, (Double)(index * gap), ParentAxis.InternalIntervalType);
-                        Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, ParentAxis.FirstLabelDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
-
-                        xValue = minval + oneUnit;
-                    }
-                    else
-                    {
-                        xValue = minval + index * gap;
-                    }
                 }
             }
             switch (Placement)

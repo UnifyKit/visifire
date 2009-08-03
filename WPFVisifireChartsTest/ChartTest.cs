@@ -182,6 +182,8 @@ namespace WPFVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
+            chart.Titles = new TitleCollection();
+
             Title title = new Title();
             title.Text = "Title1";
             title.VerticalAlignment = VerticalAlignment.Top;
@@ -304,29 +306,6 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
                 Assert.IsFalse(chart.View3D);
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        /// <summary>
-        /// Check the UniqueColors default property value.
-        /// </summary>
-        [TestMethod]
-        public void CheckUniqueColorsDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-                Assert.IsTrue(chart.UniqueColors);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -660,7 +639,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (_isLoaded)
-                Assert.IsNotNull(chart.ToolTipText);
+                Assert.IsNull(chart.ToolTipText);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -715,30 +694,6 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
                 Assert.IsTrue(chart.View3D);
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        /// <summary>
-        /// Check the UniqueColors new property value.
-        /// </summary>
-        [TestMethod]
-        public void CheckUniqueColorsNewValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-            chart.UniqueColors = false;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-                Assert.IsFalse(chart.UniqueColors);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -1289,179 +1244,6 @@ namespace WPFVisifireChartsTest
                 chart.Series.Add((DataSeries)XamlReader.Load(new XmlTextReader(new StringReader(Resource.DataSeries_BigXaml))));
 
             });
-        }
-        #endregion
-
-        #region TestToolTipSerialization
-
-        /// <summary>
-        /// Testing ToolTip Serialization
-        /// </summary>
-        [TestMethod]
-        public void TestToolTipSerialization()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Visifire.Charts.ToolTip toolTip = new Visifire.Charts.ToolTip();
-            toolTip.FontColor = new SolidColorBrush(Colors.Aqua);
-            chart.ToolTips.Add(toolTip);
-
-            DataSeries ds = new DataSeries();
-            DataPoint dp = new DataPoint();
-            dp.YValue = 20;
-            ds.DataPoints.Add(dp);
-            chart.Series.Add(ds);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                MessageBox.Show(XamlWriter.Save(toolTip));
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        #endregion
-
-        #region TestChartSerialization
-
-        /// <summary>
-        /// Testing Chart Serialization
-        /// </summary>
-        [TestMethod]
-        public void TestChartSerialization()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                MessageBox.Show(XamlWriter.Save(chart));
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        #endregion
-
-        #region TestChartWithoutWidthHeight
-        /// <summary>
-        /// Test Chart without setting Width and Height
-        /// </summary>
-        [TestMethod]
-        public void TestChartWithoutWidthHeight()
-        {
-            Chart chart = new Chart();
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                Assert.AreEqual(Double.NaN, chart.Height);
-                Assert.AreEqual(Double.NaN, chart.Width);
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-        #endregion
-
-        #region TestChartWithoutHeight
-        /// <summary>
-        /// Test Chart without setting Height
-        /// </summary>
-        [TestMethod]
-        public void TestChartWithoutHeight()
-        {
-            Chart chart = new Chart();
-            chart.Width = 500;
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                Assert.AreEqual(Double.NaN, chart.Height);
-                Assert.AreEqual(500, chart.Width);
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-        #endregion
-
-        #region TestChartWithoutWidth
-        /// <summary>
-        /// Test Chart without setting Width
-        /// </summary>
-        [TestMethod]
-        public void TestChartWithoutWidth()
-        {
-            Chart chart = new Chart();
-            chart.Height = 300;
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                Assert.AreEqual(300, chart.Height);
-                Assert.AreEqual(Double.NaN, chart.Width);
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-        #endregion
-
-        #region TestUniqueColors
-        /// <summary>
-        /// Test Unique Colors
-        /// </summary>
-        [TestMethod]
-        public void TestUniqueColors()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 350;
-            chart.UniqueColors = false;
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            chart.Series[0].RenderAs = RenderAs.Column;
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                for (Int32 i = 0; i < 5; i++)
-                {
-                    if (i < 4)
-                        Common.AssertBrushesAreEqual(chart.Series[0].DataPoints[i].Color, chart.Series[0].DataPoints[i + 1].Color);
-                }
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
         }
         #endregion
 

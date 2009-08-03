@@ -183,8 +183,6 @@
                         <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
-                        <Canvas x:Name="ControlsHolder" Height="0" Width="0" >
-                        </Canvas>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -235,7 +233,7 @@
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <!--<Setter Property="BorderColor" Value="Black"/>-->
+        <Setter Property="BorderColor" Value="Black"/>
     </Style>
     
     <Style TargetType="{x:Type vc:Title}" >

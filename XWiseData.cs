@@ -37,8 +37,8 @@ namespace Visifire.Charts
 {
     
     /// <summary>
-    /// X wise groupping of InternalDataPoints
-    /// (InternalDataPoints are grouped into positive and negative collection)
+    /// X wise groupping of DataPoints
+    /// (DataPoints are grouped into positive and negative collection)
     /// </summary>
     internal class XWiseStackedData
     {
@@ -63,7 +63,7 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
-        /// Collection of InternalDataPoints with positive YValues
+        /// Collection of DataPoints with positive YValues
         /// </summary>
         public ObservableCollection<DataPoint> Positive
         {
@@ -72,7 +72,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Collection of InternalDataPoints with negative YValues
+        /// Collection of DataPoints with negative YValues
         /// </summary>
         public ObservableCollection<DataPoint> Negative
         {
@@ -140,7 +140,7 @@ namespace Visifire.Charts
         #region Private Methods
         
         /// <summary>
-        /// Event handler manages the addition and removal of InternalDataPoints from positive collection of InternalDataPoints 
+        /// Event handler manages the addition and removal of DataPoints from positive collection of DataPoints 
         /// </summary>
         private void Positive_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -148,7 +148,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Event handler manages the addition and removal of InternalDataPoints from negative collection of InternalDataPoints 
+        /// Event handler manages the addition and removal of DataPoints from negative collection of DataPoints 
         /// </summary>
         private void Negative_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

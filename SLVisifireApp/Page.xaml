@@ -1,24 +1,39 @@
-﻿<UserControl xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" x:Class="SLVisifireApp.Page"
+﻿<UserControl x:Class="SLVisifireApp.Page"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
 >
-    <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="500" Height="300" Theme="Theme2" Name="MyChart">
+    <Grid x:Name="LayoutRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+Width="500" Height="300" Theme="Theme1" BorderThickness="0.5" BorderBrush="Gray">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"/>
+                <vc:Title Text="Athens 2004 Olympics" FontFamily="Arial" FontSize="14"/>
             </vc:Chart.Titles>
-            
+
+            <vc:Chart.AxesX>
+                <vc:Axis Title="Country">
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels Interval="1"/>
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Gold Medals Won"/>
+            </vc:Chart.AxesY>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="CandleStick">
+                <vc:DataSeries RenderAs="Column" LabelEnabled="True" >
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1" YValues="10,20,30,5"/>
-                        <vc:DataPoint XValue="2" YValues="20,22,28,18"/>
-                        <vc:DataPoint XValue="3" YValues="20,10,22,8"/>
-                        <vc:DataPoint XValue="4" YValues="20,30,32,8"/>
-                        <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
+                        <vc:DataPoint AxisXLabel="USA" YValue="35"/>
+                        <vc:DataPoint AxisXLabel="China" YValue="32"/>
+                        <vc:DataPoint AxisXLabel="Russia" YValue="27"/>
+                        <vc:DataPoint AxisXLabel="Australia" YValue="17"/>
+                        <vc:DataPoint AxisXLabel="Japan" YValue="16"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

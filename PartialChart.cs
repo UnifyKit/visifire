@@ -148,7 +148,7 @@ namespace Visifire.Charts
             _centerDockInsidePlotAreaPanel = GetTemplateChild(CenterDockInsidePlotAreaPanelName) as StackPanel;
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
-            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;  
+            _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;    
         }
 
         /// <summary>
@@ -187,9 +187,9 @@ namespace Visifire.Charts
             LoadWatermark();
 
             if (StyleDictionary == null)
-                LoadTheme("Theme1", false);
+                LoadTheme("Theme1");
 
-            LoadOrUpdateColorSets();
+            LoadColorSets();
 
             LoadToolTips();
 
@@ -207,34 +207,23 @@ namespace Visifire.Charts
                 _rootElement.IsHitTestVisible = false;
 
             _isTemplateApplied = true;
-
-#if WPF
-            NameScope.SetNameScope(this._rootElement, new NameScope());
-#endif
         }
 
         #endregion
 
         #region Public Properties
 
-        // Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty DataPointWidthProperty =
-            DependencyProperty.Register("DataPointWidth",
-            typeof(Double),
-            typeof(Chart),
-            new PropertyMetadata(Double.NaN,OnDataPointWidthPropertyChanged));
-
         /// <summary>
-        /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
+        /// Identifies the Visifire.Charts.Chart.MinScrollingGap dependency property.
         /// </summary>
         /// <returns>
-        /// The identifier for the Visifire.Charts.Chart.UniqueColors dependency property.
+        /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
         /// </returns>
-        public static readonly DependencyProperty UniqueColorsProperty = DependencyProperty.Register
-            ("UniqueColors",
-            typeof(Boolean),
+        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
+            ("MinimumGap",
+            typeof(Nullable<Double>),
             typeof(Chart),
-            new PropertyMetadata(true, OnUniqueColorsPropertyChanged));
+            new PropertyMetadata(OnMinimumGapPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.ScrollingEnabled dependency property.
@@ -366,7 +355,7 @@ namespace Visifire.Charts
             ("ColorSets",
             typeof(ColorSets),
             typeof(Chart),
-            new PropertyMetadata(new ColorSets(), null));
+            null);
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.LightingEnabled dependency property.
@@ -414,7 +403,7 @@ namespace Visifire.Charts
             ("Watermark",
             typeof(Boolean),
             typeof(Chart),
-            new PropertyMetadata(true, OnWatermarkPropertyChanged));
+            new PropertyMetadata(OnWatermarkPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.PlotArea dependency property.
@@ -429,61 +418,22 @@ namespace Visifire.Charts
         new PropertyMetadata(OnPlotAreaPropertyChanged));
 
         /// <summary>
-        /// Identifies the Visifire.Charts.Chart.MinScrollingGap dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Chart.MinScrollingGap dependency property.
-        /// </returns>
-        [Obsolete]
-        public static readonly DependencyProperty MinimumGapProperty = DependencyProperty.Register
-            ("MinimumGap",
-            typeof(Nullable<Double>),
-            typeof(Chart),
-            new PropertyMetadata(OnMinimumGapPropertyChanged));
-
-        /// <summary>
-        /// Decides how the color will be applied to the DataPoints.
-        /// <example>If UniqueColors = True and if only one DataSeries is present in Chart then each DataPoint in that DataSeries takes one color from the ColorSet given to the chart.
-        /// If UniqueColors = True and if more than one DataSeries are present in Chart then each series takes one color from the ColorSet provided at the chart.
-        /// If UniqueColors = False then each DataSeries takes one color
-        /// </example>
-        /// </summary>
-        public Boolean UniqueColors
-        {
-            get
-            {
-                return (Boolean)GetValue(UniqueColorsProperty);
-            }
-            set
-            {
-                SetValue(UniqueColorsProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Width of a DataPoint
-        /// </summary>
-        public Double DataPointWidth
-        {
-            get { return (Double)GetValue(DataPointWidthProperty); }
-            set { SetValue(DataPointWidthProperty, value); }
-        }
-
-        /// <summary>
         /// Minimum gap between two DataPoint of same series in PlotArea
         /// </summary>
-#if SL
+#if SL  
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
-#endif
-        [Obsolete]
+#endif  
         public Nullable<Double> MinimumGap
-        {
+        {   
             get
-            {
-                return (Nullable<Double>)GetValue(MinimumGapProperty);
+            {   
+                if ((Nullable<Double>)GetValue(MinimumGapProperty) == null)
+                    return 30;
+                else
+                    return (Nullable<Double>)GetValue(MinimumGapProperty);
             }
             set
-            {
+            {   
                 SetValue(MinimumGapProperty, value);
             }
         }
@@ -648,7 +598,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set of colors that will be used for the InternalDataPoints
+        /// Set of colors that will be used for the DataPoints
         /// </summary>
         public String ColorSet
         {
@@ -663,7 +613,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Set of colors that will be used for the InternalDataPoints
+        /// Set of colors that will be used for the DataPoints
         /// </summary>
         public ColorSets ColorSets
         {
@@ -827,21 +777,6 @@ namespace Visifire.Charts
 
         #region Public Events
 
-        /// <summary>
-        /// Event handler for the Rendered event 
-        /// </summary>
-        public event EventHandler Rendered
-        {
-            remove
-            {
-                _rendered -= value;
-            }
-            add
-            {
-                _rendered += value;
-            }
-        }
-
         #endregion
 
         #region Protected Methods
@@ -859,10 +794,12 @@ namespace Visifire.Charts
         /// </summary>
         private void Init()
         {
-            // Initialize colorSets
-            //ColorSets = new ColorSets();
+#if WPF
+            NameScope.SetNameScope(this, new NameScope());
+#endif
+            Watermark = true;
 
-            // Initialize tooltip
+            //ColorSets = new ColorSets();
             ToolTips = new ToolTipCollection();
 
             // Initialize title list
@@ -901,13 +838,15 @@ namespace Visifire.Charts
             // Attach event handler on collection changed event with DataSeries collection
             Series.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Series_CollectionChanged);
 
-            // Attach event handler on collection changed event with axisX collection
+            // Attach event handler on collection changed event with AxisX collection
             (AxesX as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesX_CollectionChanged);
 
             // Attach event handler on collection changed event with AxisY collection
             (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
-        }
 
+            // Initialize Internal ColorSet list
+            InternalColorSets = new ColorSets();
+        }
 
         /// <summary>
         /// OnMouseMoveLeave chart set ToolTip position. 
@@ -1181,14 +1120,7 @@ namespace Visifire.Charts
                         if (!String.IsNullOrEmpty(this.Theme))
                             ds.ApplyStyleFromTheme(this, "DataSeries");
 
-                        if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
-                        {
-                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
-                            ds._isAutoName = true;
-                        }
-                        else
-                            ds._isAutoName = false;
-
+                        ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds));
                         ds.PropertyChanged -= Element_PropertyChanged;
                         ds.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
                     }
@@ -1213,7 +1145,7 @@ namespace Visifire.Charts
         /// </summary>
         private void LoadWatermark()
         {
-            if (WaterMarkElement == null)
+            if (Watermark)
             {
                 WaterMarkElement = new TextBlock();
                 WaterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
@@ -1225,61 +1157,49 @@ namespace Visifire.Charts
                 WaterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
                 WaterMarkElement.FontSize = 9;
                 AttachHref(this, WaterMarkElement, "http://www.visifire.com", HrefTargets._blank);
-                WaterMarkElement.Visibility = (Watermark) ? Visibility.Visible : Visibility.Collapsed;
                 _rootElement.Children.Add(WaterMarkElement);
             }
         }
 
         /// <summary>
-        /// Load or Update color sets from chart resource
+        /// Load color sets from chart resource
         /// </summary>
-        private void LoadOrUpdateColorSets()
+        private void LoadColorSets()
         {
-            if (EmbeddedColorSets == null)
+            string resourceName = "Visifire.Charts.ColorSets.xaml"; // Resource location for embedded color sets
+            ColorSets embeddedColorSets;                            // Embedded color sets
+
+            using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(resourceName))
             {
-                string resourceName = "Visifire.Charts.ColorSets.xaml"; // Resource location for embedded color sets
-
-                using (System.IO.Stream s = typeof(Chart).Assembly.GetManifestResourceStream(resourceName))
+                if (s != null)
                 {
-                    if (s != null)
-                    {
-                        System.IO.StreamReader reader = new System.IO.StreamReader(s);
+                    System.IO.StreamReader reader = new System.IO.StreamReader(s);
 
-                        String xaml = reader.ReadToEnd();
+                    String xaml = reader.ReadToEnd();
 #if WPF
-                        EmbeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
+                    embeddedColorSets = XamlReader.Load(new XmlTextReader(new StringReader(xaml))) as ColorSets;
 #else
-                        EmbeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
+                    embeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
 #endif
-                        if (EmbeddedColorSets == null)
-                            System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
+                    if (embeddedColorSets == null)
+                        System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
-                        //if (InternalColorSets == null)
-                        //    InternalColorSets = new ColorSets();
+                    if (InternalColorSets == null)
+                        InternalColorSets = new ColorSets();
 
-                        //if (EmbeddedColorSets != null)
-                        //    InternalColorSets.AddRange(EmbeddedColorSets);
+                    if (embeddedColorSets != null)
+                        InternalColorSets.AddRange(embeddedColorSets);
 
-                        //if (ColorSets != null)
-                        //    InternalColorSets.AddRange(ColorSets);
+                    if (ColorSets != null)
+                        foreach (ColorSet colorSet in ColorSets)
+                            InternalColorSets.Add(colorSet);
 
-                        reader.Close();
-                        s.Close();
-                    }
+                    reader.Close();
+                    s.Close();
                 }
             }
-            //else
-            //{
-            //    InternalColorSets.Clear();
-
-            //    if (EmbeddedColorSets != null)
-            //        InternalColorSets.AddRange(EmbeddedColorSets);
-
-            //    if (ColorSets != null)
-            //        InternalColorSets.AddRange(ColorSets);
-            //}
         }
-
+        
         /// <summary>
         /// Some property needs to bind with the existing property in control before first time render. 
         /// And binding should be done only once. 
@@ -1304,14 +1224,8 @@ namespace Visifire.Charts
         {
             // Create new ChartArea
             if (ChartArea == null)
-            {
                 ChartArea = new ChartArea(this as Chart);
-            }
-
-#if WPF
-            NameScope.SetNameScope(this._rootElement, new NameScope());
-#endif
-
+            
             ApplyChartBevel();
 
             ApplyChartShadow(this.ActualWidth, this.ActualHeight);
@@ -1347,7 +1261,7 @@ namespace Visifire.Charts
                 Brush rightBrush = Graphics.GetBevelSideBrush(170, this.Background);
                 Brush bottomBrush = Graphics.GetBevelSideBrush(180, this.Background);
 
-                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(null,
+                BevelVisual = ExtendedGraphics.Get2DRectangleBevel(
                     _chartBorder.ActualWidth - _chartBorder.BorderThickness.Left - _chartBorder.BorderThickness.Right - _chartAreaMargin.Right - _chartAreaMargin.Left,
                     _chartBorder.ActualHeight - _chartBorder.BorderThickness.Top - _chartBorder.BorderThickness.Bottom - _chartAreaMargin.Top - _chartAreaMargin.Bottom,
                 BEVEL_DEPTH, BEVEL_DEPTH, topBrush, leftBrush, rightBrush, bottomBrush);
@@ -1417,7 +1331,7 @@ namespace Visifire.Charts
                 if (_rootElement != null)
                 {
                     // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
-                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
+                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                     ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
                     ChartShadowLayer.IsHitTestVisible = false;
@@ -1455,7 +1369,7 @@ namespace Visifire.Charts
         /// Load theme from resource file and select specific theme using theme name
         /// </summary>
         /// <param name="themeName">String themeName</param>
-        private void LoadTheme(String themeName, Boolean isThemePropertyChanged)
+        private void LoadTheme(String themeName)
         {
             if (String.IsNullOrEmpty(themeName))
                 return;
@@ -1471,7 +1385,7 @@ namespace Visifire.Charts
 #if WPF             
                     ResourceDictionary resource = (ResourceDictionary)Application.LoadComponent(new Uri(@"" + themeName + ".xaml", UriKind.RelativeOrAbsolute));
                     StyleDictionary = resource;
-#else               
+#else
                     fooResourceName = themeName + ".xaml";
                     System.Windows.Resources.StreamResourceInfo srif = Application.GetResourceStream(new Uri(fooResourceName, UriKind.RelativeOrAbsolute));
 
@@ -1507,7 +1421,6 @@ namespace Visifire.Charts
 
             if (StyleDictionary != null)
             {
-#if SL
                 if (Style == null)
                 {
                     Style myStyle = StyleDictionary["Chart"] as Style;
@@ -1515,20 +1428,6 @@ namespace Visifire.Charts
                     if (myStyle != null)
                         Style = myStyle;
                 }
-#else
-                Style myStyle = StyleDictionary["Chart"] as Style;
-
-                _isThemeChanged = isThemePropertyChanged;
-
-                if (myStyle != null)
-                {
-                    if (isThemePropertyChanged)
-                        Style = myStyle;
-                    else if(Style == null)
-                        Style = myStyle;
-                }
-
-#endif
             }
             else
             {
@@ -1562,7 +1461,7 @@ namespace Visifire.Charts
         /// Attach events and tooltip to chart
         /// </summary>
         private void AttachToolTipAndEvents()
-        {   
+        {
             if (!String.IsNullOrEmpty(ToolTipText))
                 AttachToolTip(this, this, this);
 
@@ -1572,11 +1471,11 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// DataPointWidthProperty changed call back function
+        /// MinScrollingGapProperty changed call back function
         /// </summary>
         /// <param name="d">Chart</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnDataPointWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
             c.InvokeRender();
@@ -1588,17 +1487,6 @@ namespace Visifire.Charts
         /// <param name="d">Chart</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnScrollingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.InvokeRender();
-        }
-
-        /// <summary>
-        /// UniqueColorsProperty changed call back function
-        /// </summary>
-        /// <param name="d">Chart</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnUniqueColorsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
             c.InvokeRender();
@@ -1645,7 +1533,7 @@ namespace Visifire.Charts
         private static void OnThemePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
-            c.LoadTheme((String)e.NewValue, (e.OldValue == null)?false:true);
+            c.LoadTheme((String)e.NewValue);
             c.InvokeRender();
         }
 
@@ -1781,30 +1669,9 @@ namespace Visifire.Charts
             chart.InvokeRender();
         }
 
-        /// <summary>
-        /// MinScrollingGapProperty changed call back function
-        /// </summary>
-        /// <param name="d">Chart</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMinimumGapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Chart c = d as Chart;
-            c.InvokeRender();
-        }
-
         #endregion
 
         #region Private Properties
-
-
-        /// <summary>
-        /// Embedded color sets
-        /// </summary>
-        private ColorSets EmbeddedColorSets
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Chart shadow layer is created and added to ShadowGrid, present in template
@@ -1840,10 +1707,10 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// If scroll is activated by any cause then IsScrollingActivated should be set to true. 
+        /// Set of colors that will be used for the DataPoints
         /// </summary>
-        internal Boolean IsScrollingActivated
-        {   
+        internal ColorSets InternalColorSets
+        {
             get;
             set;
         }
@@ -1918,62 +1785,6 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Visually select the DataPoints which are selected
-        /// </summary>
-        /// <param name="chart"></param>
-        internal static void SelectDataPoints(Chart chart)
-        {
-            if (chart == null || chart.InternalSeries == null)
-                return;
-
-            foreach (DataSeries ds in chart.InternalSeries)
-            {
-                if (ds.SelectionEnabled)
-                {   
-                    foreach (DataPoint dp in ds.DataPoints)
-                    {
-                        if (dp.Selected)
-                        {
-                            dp.Select(true);
-
-                            if (ds.SelectionMode == SelectionModes.Single)
-                                dp.DeSelectOthers();
-                        }
-                        else
-                            dp.DeSelect(dp, true, true);
-                    }
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Get ColorSet by ColorSet name
-        /// </summary>
-        /// <param name="id">Name of the ColorSet</param>
-        /// <returns>ColorSet</returns>
-        internal ColorSet GetColorSetByName(String id)
-        {
-            ColorSet colorSet = null;
-
-            if (ColorSets != null && ColorSets.Count > 0)
-                colorSet = ColorSets.GetColorSetByName(id);
-            
-            if(colorSet == null)
-                colorSet = EmbeddedColorSets.GetColorSetByName(id);
-            
-            return colorSet;
-        }
-
-        /// <summary>
-        /// Fire Rendered event
-        /// </summary>
-        internal void FireRenderedEvent()
-        {
-            if (_rendered != null)
-                _rendered(this, null);
-        }
-
-        /// <summary>
         /// Check if exception occurred due to negative size error
         /// </summary>
         /// <param name="e">ArgumentException</param>
@@ -2008,7 +1819,7 @@ namespace Visifire.Charts
         /// <summary>
         /// On ToolTipText PropertyChanged event, this function is invoked
         /// </summary>
-        /// <param name="NewValue">New text value</param>
+        /// <param name="NewValue"></param>
         internal override void OnToolTipTextPropertyChanged(string newValue)
         {
             base.OnToolTipTextPropertyChanged(newValue);
@@ -2125,33 +1936,6 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Render is a delegate to a method that takes no arguments and does not return a value, 
-        /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
-        /// </summary>
-        internal void InvokeRender()
-        {
-            if (_isTemplateApplied)
-            {
-                if (_renderLock)
-                    _renderLapsedCounter++;
-                else
-                {
-#if WPF             
-                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
-                    else
-                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
-#else
-                    if (IsInDesignMode)
-                        Render();
-                    else
-                        this.Dispatcher.BeginInvoke(Render);
-#endif
-                }
-            }
-        }
-        
-        /// <summary>
         /// Render redraws the chart
         /// </summary>
         internal void Render()
@@ -2166,7 +1950,6 @@ namespace Visifire.Charts
                 try
                 {
                     PrepareChartAreaForDrawing();
-
                     ChartArea.Draw(this);
                 }
                 catch (Exception e)
@@ -2176,6 +1959,33 @@ namespace Visifire.Charts
                         return;
                     else
                         throw new Exception(e.Message, e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Render is a delegate to a method that takes no arguments and does not return a value, 
+        /// which is pushed onto the System.Windows.Threading.Dispatcher event queue.
+        /// </summary>
+        internal void InvokeRender()
+        {
+            if (_isTemplateApplied)
+            {
+                if (_renderLock)
+                    _renderLapsedCounter++;
+                else
+                {   
+#if WPF             
+                    if (Application.Current != null && Application.Current.Dispatcher.Thread != Thread.CurrentThread)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new RenderDelegate(Render));
+                    else
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
+#else
+                    if (IsInDesignMode)
+                        Render();
+                    else
+                        this.Dispatcher.BeginInvoke(Render);
+#endif              
                 }
             }
         }
@@ -2296,9 +2106,6 @@ namespace Visifire.Charts
 
         #region Data
 
-        
-        private EventHandler _rendered;
-
         /// <summary>
         /// Whether shadow effect of chart is applied or not
         /// </summary>
@@ -2333,14 +2140,7 @@ namespace Visifire.Charts
         /// Is used to handle inactive animation after first time render
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
-
-#if WPF
-        /// <summary>
-        /// Whether Theme is changed by the user
-        /// </summary>
-        internal Boolean _isThemeChanged = false;
-#endif
-
+       
         #endregion
     }
 }

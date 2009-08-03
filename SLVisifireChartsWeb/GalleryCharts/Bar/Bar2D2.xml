@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" BorderBrush="Gray" Padding="6" Width="450" Height="475">
+          Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray" Padding="6">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Bar Chart"/>

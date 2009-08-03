@@ -43,15 +43,10 @@ namespace Visifire.Commons
             : base()
         {
             // Attach event handler with EventChanged event of VisfiireElement
-            // But do not attach the event for PlotArea beacuse PlotArea has overridden EventChanged as internal event
-            if (!this.GetType().Equals(typeof(PlotArea)))
-            {
-                // Attach event handler with EventChanged event of VisfiireElement
-                EventChanged += delegate
-                {
-                    FirePropertyChanged("MouseEvent");
-                };
-            }
+            this.EventChanged += delegate
+            {   
+                FirePropertyChanged("MouseEvent");
+            };
 
             IsNotificationEnable = true;
         }
@@ -69,31 +64,15 @@ namespace Visifire.Commons
             IsNotificationEnable = false;
 
             Chart chart = control as Chart;
-            if (chart.StyleDictionary != null)
-            {
-#if SL
-                if (Style == null)
-                {   
+
+            if (Style == null)
+                if (chart.StyleDictionary != null)
+                {
                     Style myStyle = chart.StyleDictionary[keyName] as Style;
-                    
+
                     if (myStyle != null)
                         Style = myStyle;
                 }
-#else
-
-                Style myStyle = chart.StyleDictionary[keyName] as Style;
-
-                System.Diagnostics.Debug.WriteLine(keyName);
-                if (myStyle != null)
-                {
-                    if((Chart as Chart)._isThemeChanged)
-                        Style = myStyle;
-                    else if(Style == null)
-                         Style = myStyle;
-                }
-
-#endif
-            }
 
             IsNotificationEnable = oldIsNotificationEnable;
         }

@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" View3D="True" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme1" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire 3D Column Chart" Padding="3"/>

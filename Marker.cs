@@ -48,8 +48,8 @@ namespace Visifire.Commons
     /// <summary>
     /// Visifire.Commons.Marker class
     /// </summary>
-    public class Marker : IComparable
-    {
+    public class Marker: IComparable
+    {   
         #region Public Methods
 
         /// <summary>
@@ -68,8 +68,6 @@ namespace Visifire.Commons
             BorderThickness = 1;
             TextBackground = new SolidColorBrush(Colors.Transparent);
             Bevel = markerBevel;
-
-            Opacity = 1;
         }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace Visifire.Commons
         {
 
         }
-
+        
         /// <summary>
         /// Compare two Markers
         /// </summary>
@@ -106,7 +104,7 @@ namespace Visifire.Commons
             Double visualWidth;
 #if WPF
 
-            Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            Visual.Measure(new Size(Double.MaxValue,Double.MaxValue));
             visualHeight = Visual.DesiredSize.Height;
             visualWidth = Visual.DesiredSize.Width;
 #else
@@ -158,12 +156,6 @@ namespace Visifire.Commons
             MarkerShape = GetShape();
             MarkerShadow = GetShape();
 
-            if (MarkerShape != null)
-                MarkerShape.Tag = Tag;
-
-            if (MarkerShadow != null)
-                MarkerShadow.Tag = Tag;
-
             // Set shadow properties
             MarkerShadow.Fill = GetMarkerShadowColor();
             TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
@@ -195,7 +187,7 @@ namespace Visifire.Commons
                 Visual.ColumnDefinitions.Add(new ColumnDefinition());
 
                 // Create TextBlock for Label of the Marker
-                TextBlock = new TextBlock() { Tag = this.Tag };
+                TextBlock = new TextBlock();
 
                 // Apply TextBlock Properties 
                 ApplyTextBlockProperties();
@@ -218,8 +210,6 @@ namespace Visifire.Commons
 
                 Visual.Margin = new Thickness(Margin, Margin, Margin, Margin);
             }
-
-            MarkerShape.Opacity = Opacity;
 
             MarkerActualSize = Graphics.CalculateVisualSize(Visual);
         }
@@ -248,15 +238,6 @@ namespace Visifire.Commons
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        /// Tag property
-        /// </summary>
-        public Object Tag
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Get or set the Marker Visual
@@ -310,7 +291,7 @@ namespace Visifire.Commons
             get;
             set;
         }
-
+        
         /// <summary>
         /// Get or set the Actual Size of Marker
         /// </summary>
@@ -363,12 +344,6 @@ namespace Visifire.Commons
         /// Get or set the Shape type of a Marker
         /// </summary>
         public MarkerTypes MarkerType
-        {
-            get;
-            set;
-        }
-
-        public Double Opacity
         {
             get;
             set;
@@ -645,15 +620,6 @@ namespace Visifire.Commons
             set;
         }
 
-        /// <summary>
-        /// DataSeries used in Legend for line chart
-        /// </summary>
-        internal DataSeries DataSeriesOfLegendMarker
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Properties
@@ -702,9 +668,6 @@ namespace Visifire.Commons
             if (TextBlock != null)
             {
                 // Set TextElement properties 
-#if WPF
-                TextBlock.FlowDirection = FlowDirection.LeftToRight;
-#endif
                 TextBlock.FontFamily = FontFamily;
                 TextBlock.FontSize = FontSize;
                 TextBlock.FontStyle = FontStyle;
@@ -725,6 +688,7 @@ namespace Visifire.Commons
 
             switch (MarkerType)
             {
+
                 case MarkerTypes.Circle:
 
                     Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
@@ -742,14 +706,17 @@ namespace Visifire.Commons
 
                 case MarkerTypes.Diamond:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""11"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" Data=""M97.374908,52.791668 L94.541656,57.041668 L97.386475,61.010586 L100.59509,57.010422 z"" StrokeThickness=""0.8""/>");
+
                     break;
 
                 case MarkerTypes.Square:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""8"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" StrokeThickness=""0.8"" Data=""M160,40.166725 L160.00034,47.611012 L168.00789,47.611374 L168.00787,40.16637 z""/>");
+
                     break;
 
                 case MarkerTypes.Triangle:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""8"" Margin=""0,0,0,0"" Width=""8"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" StrokeThickness=""0.8"" Data=""M163.89264,40.166725 L160.00034,46.921658 L168.00789,46.922005 z""/>");
+
                     break;
 
                 case MarkerTypes.Line:
@@ -796,7 +763,7 @@ namespace Visifire.Commons
                     color = (topBrush as LinearGradientBrush).GradientStops[2].Color.ToString();
 
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Stretch=""Fill"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" >
-                    <Path.Stroke>
+    		        <Path.Stroke>
     			        <RadialGradientBrush>
         			       <GradientStop Color=""{0}"" Offset=""0""/>
                          
@@ -830,7 +797,7 @@ namespace Visifire.Commons
                     Double height = MarkerSize.Height * ScaleFactor;
                     Double width = MarkerSize.Width * ScaleFactor;
 
-                    Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(this.Tag as FrameworkElement, width, height,
+                    Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(width, height,
                     3, 3,
                     topBrush,
                     Graphics.GetBevelSideBrush(0, MarkerFillColor),
@@ -1093,7 +1060,7 @@ namespace Visifire.Commons
                 _markerShapePosition.Y += Math.Abs((TextBlockSize.Height - MarkerShape.Height) / 2);
 
         }
-
+        
         /// <summary>
         /// Get shadow color of the Marker shape
         /// </summary>
@@ -1101,24 +1068,15 @@ namespace Visifire.Commons
         private Brush GetMarkerShadowColor()
         {
 
-//            String xaml = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""0.497000008821487,1.00100004673004"" StartPoint=""0.503000020980835,-0.00100000004749745"">
-//    				<GradientStop Color=""#B46C6C6C"" Offset=""1""/>
-//    				<GradientStop Color=""#00FFFFFF"" Offset=""0""/>
-//    			</LinearGradientBrush>");
-
-            LinearGradientBrush brush = new LinearGradientBrush();
-            brush.StartPoint = new Point(0.497000008821487, 1.00100004673004);
-            brush.EndPoint = new Point(0.503000020980835, -0.00100000004749745);
-
-            brush.GradientStops.Add(new GradientStop() { Color = Color.FromArgb(180, 108, 108, 108), Offset = 1 });
-            brush.GradientStops.Add(new GradientStop() { Color = Color.FromArgb(00, 255, 255, 255), Offset = 1 });
-
-            return brush;
+            String xaml = String.Format(@"<LinearGradientBrush xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" EndPoint=""0.497000008821487,1.00100004673004"" StartPoint=""0.503000020980835,-0.00100000004749745"">
+    				<GradientStop Color=""#B46C6C6C"" Offset=""1""/>
+    				<GradientStop Color=""#00FFFFFF"" Offset=""0""/>
+    			</LinearGradientBrush>");
 
 #if WPF
-            //return (Brush)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
+            return (Brush)XamlReader.Load(new XmlTextReader(new StringReader(xaml)));
 #else
-            //return System.Windows.Markup.XamlReader.Load(xaml) as Brush;
+            return System.Windows.Markup.XamlReader.Load(xaml) as Brush;
 #endif
         }
 
@@ -1137,12 +1095,12 @@ namespace Visifire.Commons
         /// <summary>
         /// The identifier for property FontSize
         /// </summary>
-        private Double _fontSize;
-
+        private Double _fontSize;   
+        
         /// <summary>
         /// The identifier for property FontFamily
         /// </summary>
-        private FontFamily _fontFamily;
+        private FontFamily _fontFamily;             
 
         /// <summary>
         /// The identifier for property FontStyle
@@ -1163,7 +1121,7 @@ namespace Visifire.Commons
         /// The identifier for property BorderThickness
         /// </summary>
         private Double _borderThickness;
-
+        
         /// <summary>
         /// The identifier for property BorderColor
         /// </summary>
@@ -1178,22 +1136,22 @@ namespace Visifire.Commons
         /// VerticalAlignment of Marker label
         /// </summary>
         private AlignmentY _textAlignmentY;
-
+        
         /// <summary>
         /// The identifier for property Text
         /// </summary>
-        private String _text;
+        private String _text; 
 
         /// <summary>
         /// The identifier for ScaleFactor property 
         /// </summary>
         private Double _scaleFactor = 1;
-
+        
         /// <summary>
         /// Actual position of the Marker shape inside Marker grid
         /// </summary>
         private Point _markerShapePosition;
-
+        
         #endregion
     }
 }

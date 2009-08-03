@@ -69,6 +69,10 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <ProjectReference Include="..\WPFVisifireCharts\WPFVisifireCharts.csproj">
+      <Project>{CF8E563B-5C37-47C3-8431-056EE13E6A00}</Project>
+      <Name>WPFVisifireCharts</Name>
+    </ProjectReference>
     <BlendEmbeddedFont Include="Fonts\segoeui.ttf">
       <IsSystemFont>True</IsSystemFont>
     </BlendEmbeddedFont>
@@ -124,12 +128,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WPFVisifireCharts\WPFVisifireCharts.csproj">
-      <Project>{CF8E563B-5C37-47C3-8431-056EE13E6A00}</Project>
-      <Name>WPFVisifireCharts</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

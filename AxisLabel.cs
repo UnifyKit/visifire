@@ -232,15 +232,6 @@ namespace Visifire.Charts
         #region Font Properties
 
         /// <summary>
-        /// TextAlignment of the axis labels
-        /// </summary>
-        internal TextAlignment TextAlignment
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Font size of the axis labels
         /// </summary>
         internal Double FontSize
@@ -297,7 +288,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Visual text element for the label
         /// </summary>
-        internal TextBlock TextElement
+        private TextBlock TextElement
         {
             get;
             set;
@@ -321,6 +312,16 @@ namespace Visifire.Charts
         /// </summary>
         private void SetPosition()
         {
+            // Get the visual size of the text block
+#if WPF
+            TextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            ActualTextHeight = TextElement.DesiredSize.Height;
+            ActualTextWidth = TextElement.DesiredSize.Width;
+#else
+            ActualTextHeight = TextElement.ActualHeight;
+            ActualTextWidth = TextElement.ActualWidth;
+#endif
+
             // Depending on the placement type call the method for positioning of he labels
             switch (Placement)
             {
@@ -341,6 +342,9 @@ namespace Visifire.Charts
                     SetPositionRight(Position);
                     break;
             }
+
+            // calculate the actual size of the AxisLabel element
+            CalculateSize(GetRadians(Angle));
         }
 
         /// <summary>
@@ -565,22 +569,6 @@ namespace Visifire.Charts
             ActualWidth = Math.Max(Math.Abs(width1), Math.Abs(width2));
         }
 
-        /// <summary>
-        /// Calculate the visual size of the text block
-        /// </summary>
-        private void CalculateTextElementSize()
-        {
-            // Get the visual size of the text block
-#if WPF
-            TextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            ActualTextHeight = TextElement.DesiredSize.Height;
-            ActualTextWidth = TextElement.DesiredSize.Width;
-#else
-            ActualTextHeight = TextElement.ActualHeight;
-            ActualTextWidth = TextElement.ActualWidth;
-#endif
-        }
-        
         #endregion
 
         #region Internal Methods
@@ -597,13 +585,12 @@ namespace Visifire.Charts
             TextElement.FontFamily = FontFamily;
             TextElement.FontStyle = FontStyle;
             TextElement.FontWeight = FontWeight;
-            TextElement.TextAlignment = TextAlignment;
         }
 
         /// <summary>
         /// Create visual for AxisLabel
         /// </summary>
-        internal void CreateVisualObject(Boolean positioningAllowed)
+        internal void CreateVisualObject()
         {
             Visual = new Canvas();
             TextElement = new TextBlock();
@@ -613,15 +600,9 @@ namespace Visifire.Charts
 
             ApplyProperties(this);
 
-            CalculateTextElementSize();
-            
-           // if(positioningAllowed)
-                SetPosition();
+            SetPosition();
 
-            // calculate the actual size of the AxisLabel element
-            CalculateSize(GetRadians(Angle));
         }
-
         #endregion
 
         #region Internal Events

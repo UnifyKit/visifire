@@ -45,7 +45,7 @@ namespace Visifire.Charts
         /// Initializes a new instance of the Visifire.Charts.PlotGroup class.
         /// </summary>
         /// <param name="renderAs">RenderAs</param>
-        /// <param name="axisX">axisX</param>
+        /// <param name="axisX">AxisX</param>
         /// <param name="axisY">AxisY</param>
         public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY)
         {
@@ -141,7 +141,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Stores the maximum InternalXValue for the group
+        /// Stores the maximum XValue for the group
         /// </summary>
         internal Double MaximumX
         {
@@ -168,7 +168,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Stores the minimum InternalXValue for the group
+        /// Stores the minimum XValue for the group
         /// </summary>
         internal Double MinimumX
         {
@@ -206,7 +206,6 @@ namespace Visifire.Charts
             private set;
 #endif
         }
-
         #endregion
 
         #region Private Delegates
@@ -254,19 +253,13 @@ namespace Visifire.Charts
             // get unique values and then sort it
             Array.Sort(distinctValues);
 
-            if (distinctValues.Length <= 1 )
-            {
-                return Double.PositiveInfinity;
-            }
-
             for (Int32 i = 0; i < distinctValues.Length - 1; i++)
             {
                 // get the smallest difference between two successive elements
                 minDiff = Math.Min(minDiff, Math.Abs(distinctValues[i] - distinctValues[i + 1]));
             }
 
-            
-
+            // return the minimu difference
             return minDiff;
         }
 
@@ -279,19 +272,19 @@ namespace Visifire.Charts
         /// </summary>
         internal void Update()
         {
-            // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
+            // List to store a concatinated set of DataPoints from all DataSeries in this group
             List<DataPoint> dataPoints = new List<DataPoint>();
 
-            // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
+            // Populates the list with DataPoints with all availabel DataPoints from all DataSeries
             // Also set the plotGropu reference to the current plot group
             foreach (DataSeries dataSeries in DataSeriesList)
             {
                 // check if data series is enabled
                 // if (dataSeries.Enabled == true)
                 {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
+                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.DataPoints select datapoint).ToList();
 
-                    // Concatinate the lists of InternalDataPoints
+                    // Concatinate the lists of DataPoints
                     dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
 
                     // set the plot group reference
@@ -306,36 +299,26 @@ namespace Visifire.Charts
             // all the datapoints from all DataSeries from this group
             foreach (DataPoint dataPoint in dataPoints)
             {
-                if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
+                if (XWiseStackedDataList.ContainsKey(dataPoint.XValue))
                 {   
                     // gets the existing  node
-                    xWiseData = XWiseStackedDataList[dataPoint.InternalXValue];
+                    xWiseData = XWiseStackedDataList[dataPoint.XValue];
                 }
                 else
-                {   
+                {
                     // Creates a new node
                     xWiseData = new XWiseStackedData();
-                    XWiseStackedDataList.Add(dataPoint.InternalXValue, xWiseData);
+                    XWiseStackedDataList.Add(dataPoint.XValue, xWiseData);
                 }
 
                 // add the datapoint to a node
                 AddXWiseStackedDataEntry(ref xWiseData, dataPoint);
             }
 
-            // Get a list of all XValues,YValues and ZValues from all InternalDataPoints from all the DataSeries in this Group
-            var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct();
-            List<Double> yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+            // Get a list of all XValues,YValues and ZValues from all DataPoints from all the DataSeries in this Group
+            var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.XValue) select dataPoint.XValue).Distinct();
+            var yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct();
             var zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct();
-
-            List<Double> yValuesList = new List<double>();
-
-            foreach (DataPoint dp in dataPoints)
-            {
-                if (dp.YValues != null)
-                    yValuesList.AddRange(dp.YValues);
-            }
-
-            yValues.AddRange(yValuesList);
 
             // Calculate max value
             MaximumX = (xValues.Count() > 0) ? (xValues).Max() : 0;
@@ -360,10 +343,6 @@ namespace Visifire.Charts
                 case RenderAs.Line:
                 case RenderAs.Pie:
                 case RenderAs.Point:
-                case RenderAs.Stock:
-                case RenderAs.CandleStick:
-                case RenderAs.SectionFunnel:
-                case RenderAs.StreamLineFunnel:
                     MaximumY = (yValues.Count() > 0) ? (yValues).Max() : 0;
                     MinimumY = (yValues.Count() > 0) ? (yValues).Min() : 0;
                     break;

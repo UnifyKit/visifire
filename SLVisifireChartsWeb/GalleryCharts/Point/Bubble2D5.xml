@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" ColorSet="VisiGray" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme1" AnimationEnabled="False" ColorSet="VisiGray" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Largest Cities in the World"/>

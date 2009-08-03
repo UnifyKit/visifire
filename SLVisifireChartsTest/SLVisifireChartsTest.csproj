@@ -77,9 +77,6 @@
     <Compile Include="Common.cs" />
     <Compile Include="DataPointTest.cs" />
     <Compile Include="DataSeriesTest.cs" />
-    <Compile Include="DateTimeAxisTest.cs" />
-    <Compile Include="FinancialChartsTest.cs" />
-    <Compile Include="FunnelChartTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LegendTest.cs" />
     <Compile Include="LiveReference.cs" />
@@ -94,7 +91,6 @@
     </Compile>
     <Compile Include="SilverlightControlTest.cs" />
     <Compile Include="TitleTest.cs" />
-    <Compile Include="ToolTipText.cs" />
     <Compile Include="TrendLineTest.cs" />
   </ItemGroup>
   <ItemGroup>

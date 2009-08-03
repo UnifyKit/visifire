@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.ComponentModel;
-using System.Windows.Shapes;
 
 #else
 
@@ -17,7 +16,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections.Generic;
-using System.Windows.Shapes;
 
 #endif
 
@@ -81,18 +79,6 @@ namespace Visifire.Charts
             typeof(String),
             typeof(Legend),
             new PropertyMetadata(OnHrefChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.Reversed dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.Reversed dependency property.
-        /// </returns>
-        public static readonly DependencyProperty ReversedProperty = DependencyProperty.Register
-            ("Reversed",
-            typeof(Boolean),
-            typeof(Legend),
-            new PropertyMetadata(OnReversedChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.LabelMargin dependency property.
@@ -317,7 +303,7 @@ namespace Visifire.Charts
             ("CornerRadius",
             typeof(CornerRadius),
             typeof(Legend),
-            new PropertyMetadata(new CornerRadius(1), OnCornerRadiusPropertyChanged));
+            new PropertyMetadata(OnCornerRadiusPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.Title dependency property.
@@ -377,7 +363,7 @@ namespace Visifire.Charts
             ("TitleFontFamily",
             typeof(FontFamily),
             typeof(Legend),
-            new PropertyMetadata(new FontFamily("Arial"), OnTitleFontFamilyPropertyChanged));
+            new PropertyMetadata(OnTitleFontFamilyPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.TitleFontSize dependency property.
@@ -454,21 +440,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(HrefProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Get or set the Href porperty
-        /// </summary>
-        public Boolean Reversed
-        {
-            get
-            {
-                return (Boolean)GetValue(ReversedProperty);
-            }
-            set
-            {
-                SetValue(ReversedProperty, value);
             }
         }
 
@@ -1140,17 +1111,6 @@ namespace Visifire.Charts
             Legend c = d as Legend;
             c.FirePropertyChanged("Href");
         }
-
-        /// <summary>
-        /// Event handler attached with Reversed property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnReversedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend c = d as Legend;
-            c.FirePropertyChanged("Reversed");
-        }
         
         /// <summary>
         /// Event handler attached with LabelMargin property changed event of Legend element
@@ -1504,7 +1464,7 @@ namespace Visifire.Charts
                 title.FontWeight = TitleFontWeight;
 
             if (!String.IsNullOrEmpty(Title))
-                title.Text = GetFormattedMultilineText(Title);
+                title.Text = Title;
 
             title.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), TitleFontColor, this.DockInsidePlotArea);
         }
@@ -1608,83 +1568,7 @@ namespace Visifire.Charts
 
             return entrySize;
         }
-        
-        /// <summary>
-        /// Apply LineStyle to line symbol of a legend entry in Legend
-        /// </summary>
-        /// <param name="line"></param>
-        /// <param name="lineStyle"></param>
-        private DoubleCollection ApplyLineStyleForMarkerOfLegendEntry(Line line, String lineStyle)
-        {
-            DoubleCollection retVal = null;
 
-            switch (lineStyle)
-            {
-                case "Solid":
-                    line.StrokeThickness = 3;
-                    retVal = null;
-                    break;
-                case "Dashed":
-                    line.StrokeThickness = 3;
-                    retVal = new DoubleCollection() { .2, .4, .2, .12 };
-                    break;
-                case "Dotted":
-                    line.StrokeThickness = 3;
-                    retVal = new DoubleCollection() { .5, .5, .5, .5 };
-                    break;
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Customize the marker for legend in Line chart
-        /// </summary>
-        /// <param name="marker"></param>
-        /// <returns></returns>
-        private Canvas GetNewMarkerForLineChart(Marker marker)
-        {
-            Canvas lineMarker = new Canvas();
-            Line line = new Line();
-
-            line.Margin = new Thickness(EntryMargin);
-            line.Stroke = (marker.BorderColor);
-            
-            Double height = marker.TextBlockSize.Height > marker.MarkerSize.Height ? marker.TextBlockSize.Height : marker.MarkerSize.Height;
-            lineMarker.Height = marker.MarkerActualSize.Height;
-
-            line.X1 = 0;
-            line.X2 = ENTRY_SYMBOL_LINE_WIDTH;
-            line.Y1 = 0;
-            line.Y2 = 0;
-            line.Width = ENTRY_SYMBOL_LINE_WIDTH;
-
-            lineMarker.Width = marker.MarkerActualSize.Width + ENTRY_SYMBOL_LINE_WIDTH / 2;
-
-
-            line.StrokeDashArray = ApplyLineStyleForMarkerOfLegendEntry(line, marker.DataSeriesOfLegendMarker.LineStyle.ToString());
-
-            lineMarker.Children.Add(line);
-            
-            lineMarker.Children.Add(marker.Visual);
-
-            if (!(VerticalAlignment == VerticalAlignment.Center && (HorizontalAlignment == HorizontalAlignment.Left || HorizontalAlignment == HorizontalAlignment.Right)))
-            {
-                line.Margin = new Thickness(ENTRY_SYMBOL_LINE_WIDTH / 2, marker.Visual.Margin.Top, marker.Visual.Margin.Right, marker.Visual.Margin.Bottom);
-                marker.Visual.Margin = new Thickness(ENTRY_SYMBOL_LINE_WIDTH / 2, marker.Visual.Margin.Top, marker.Visual.Margin.Right, marker.Visual.Margin.Bottom);
-            }
-
-#if WPF
-            line.SetValue(Canvas.TopProperty, height/2 );
-#else
-            line.Height = 8;
-            line.SetValue(Canvas.TopProperty, (height / 2) + .4876);
-#endif      
-
-            line.SetValue(Canvas.LeftProperty, (Double)(-marker.MarkerSize.Width / 2) - .4876);
-
-            return lineMarker;
-        }
 
         /// <summary>
         /// Draw vertical flow layout for legend
@@ -1712,55 +1596,23 @@ namespace Visifire.Charts
 
                 ApplyFontPropertiesOfMarkerAsSymbol(markerAsSymbol);
 
-                if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
-                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
-                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
-                    )
+                markerAsSymbol.CreateVisual();
 
+
+                markerAsSymbol.Visual.HorizontalAlignment = HorizontalAlignment.Left;
+
+                if ((currentHeight + markerAsSymbol.MarkerActualSize.Height) <= MaximumHeight)
                 {
-                    markerAsSymbol.BorderColor = markerAsSymbol.MarkerFillColor;
-                    markerAsSymbol.MarkerFillColor = new SolidColorBrush(Colors.White);
-                    markerAsSymbol.BorderThickness = 0.7;
-
-                    markerAsSymbol.CreateVisual();
-
-                    Canvas lineMarker = GetNewMarkerForLineChart(markerAsSymbol);
-
-                    lineMarker.HorizontalAlignment = HorizontalAlignment.Left;
-                    lineMarker.VerticalAlignment = VerticalAlignment.Center;
-
-                    if ((currentHeight + lineMarker.Height) <= MaximumHeight)
-                    {
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
-                        currentHeight += lineMarker.Height;
-                    }
-                    else
-                    {
-                        legendPanel.Children.Add(StackPanelColumn());
-                        currentPanelIndex++;
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
-                        currentHeight = markerAsSymbol.MarkerActualSize.Height;
-                    }
+                    (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(markerAsSymbol.Visual);
+                    currentHeight += markerAsSymbol.MarkerActualSize.Height;
                 }
                 else
                 {
-                    markerAsSymbol.CreateVisual();
-
-                    if ((currentHeight + markerAsSymbol.MarkerActualSize.Height) <= MaximumHeight)
-                    {
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(markerAsSymbol.Visual);
-                        currentHeight += markerAsSymbol.MarkerActualSize.Height;
-                    }
-                    else
-                    {
-                        legendPanel.Children.Add(StackPanelColumn());
-                        currentPanelIndex++;
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(markerAsSymbol.Visual);
-                        currentHeight = markerAsSymbol.MarkerActualSize.Height;
-                    }
+                    legendPanel.Children.Add(StackPanelColumn());
+                    currentPanelIndex++;
+                    (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(markerAsSymbol.Visual);
+                    currentHeight = markerAsSymbol.MarkerActualSize.Height;
                 }
-
-                markerAsSymbol.Visual.HorizontalAlignment = HorizontalAlignment.Left;
 
                 legendPanel.Height = (legendPanel.Height < currentHeight) ? currentHeight : legendPanel.Height;
             }
@@ -1865,57 +1717,20 @@ namespace Visifire.Charts
                 marker.TextAlignmentY = AlignmentY.Center;
                 marker.TextAlignmentX = AlignmentX.Right;
 
+                marker.CreateVisual();
 
-                if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
-                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
-                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
-                    )
+                if ((currentWidth + marker.MarkerActualSize.Width) <= MaximumWidth)
                 {
-                    marker.BorderColor = marker.MarkerFillColor;
-                    marker.MarkerFillColor = new SolidColorBrush(Colors.White);
-                    marker.BorderThickness = 0.7;
-
-                    marker.LabelMargin += ENTRY_SYMBOL_LINE_WIDTH /2;
-
-                    marker.CreateVisual();                   
-
-                    Canvas lineMarker = GetNewMarkerForLineChart(marker);
-                    
-                    //if (marker.DataSeriesOfLegendMarker.MarkerEnabled == false)
-                    //    marker.MarkerShape.Opacity = 0;
-
-                    if ((currentWidth + lineMarker.Width) <= MaximumWidth)
-                    {
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
-                        currentWidth += lineMarker.Width;
-                    }
-                    else
-                    {
-                        legendPanel.Children.Add(StackPanelRow());
-                        currentPanelIndex++;
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
-                        currentWidth = marker.MarkerActualSize.Width;
-                    }
+                    (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(marker.Visual);
+                    currentWidth += marker.MarkerActualSize.Width;
                 }
                 else
                 {
-                    marker.CreateVisual();
-
-                    if ((currentWidth + marker.MarkerActualSize.Width) <= MaximumWidth)
-                    {
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(marker.Visual);
-                        currentWidth += marker.MarkerActualSize.Width;
-                    }
-                    else
-                    {
-                        legendPanel.Children.Add(StackPanelRow());
-                        currentPanelIndex++;
-                        (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(marker.Visual);
-                        currentWidth = marker.MarkerActualSize.Width;
-                    }
+                    legendPanel.Children.Add(StackPanelRow());
+                    currentPanelIndex++;
+                    (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(marker.Visual);
+                    currentWidth = marker.MarkerActualSize.Width;
                 }
-
-                marker.Visual.HorizontalAlignment = HorizontalAlignment.Center;
             }
 
             legendPanel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -2096,15 +1911,12 @@ namespace Visifire.Charts
 
         #region Data
 
-        private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
-
 #if WPF
 
         /// <summary>
         /// Whether the default style is applied
         /// </summary>
-        private static Boolean _defaultStyleKeyApplied;         
- 
+        private static Boolean _defaultStyleKeyApplied;          
 #endif
 
         #endregion

@@ -179,15 +179,6 @@ namespace SLVisifireChartsTest {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;vc:DataSeries xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;  xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; xmlns:vc=&quot;clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts&quot; XValueType=&quot;DateTime&quot;&gt;&lt;vc:DataSeries.DataPoints&gt;&lt;vc:DataPoint XValue=&quot;1/1/2001&quot; YValue=&quot;10&quot;/&gt;&lt;vc:DataPoint XValue=&quot;2/1/2001&quot; YValue=&quot;20&quot;/&gt;&lt;vc:DataPoint XValue=&quot;3/1/2001&quot; YValue=&quot;15&quot;/&gt;&lt;vc:DataPoint XValue=&quot;4/1/2001&quot; YValue=&quot;30&quot;/&gt;&lt;vc:DataPoint XValue=&quot;5/1/2001&quot; YValue=&quot;20&quot;/&gt;&lt;vc:DataPoint XValue=&quot;8/1/2001&quot; YV [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string DateTimeXaml {
-            get {
-                return ResourceManager.GetString("DateTimeXaml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Chart Title.
         /// </summary>
         internal static string Title_ShortText {

@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Theme="Theme2" ColorSet="Picasso" View3D="True" BorderBrush="Gray" CornerRadius="5">
+        <vc:Chart Theme="Theme2" AnimationEnabled="False" ColorSet="Picasso" View3D="True" BorderBrush="Gray" CornerRadius="5">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Age-Wise Distribution of Google and Yahoo Users" FontSize="12"/>

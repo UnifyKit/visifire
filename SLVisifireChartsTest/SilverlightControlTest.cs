@@ -21,12 +21,11 @@ namespace SLVisifireChartsTest
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTest. 
         /// </summary>
-        public static int VisualDelayInMilliseconds = 100;
+        public static int VisualDelayInMilliseconds = 1000;
         protected const int NumberOfInstancesForStressScenarios = 200;
 
         protected void CreateAsyncTask(FrameworkElement element, params Action[] actions)
         {
-
             Assert.IsNotNull(element);
             actions = actions ?? new Action[] { };
 

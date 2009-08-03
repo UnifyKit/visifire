@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Doughnut Chart"/>
@@ -10,7 +10,7 @@
   </vc:Chart.Legends>
 
   <vc:Chart.Series>
-    <vc:DataSeries LegendText="2005" RenderAs="Doughnut" Cursor="Hand" Legend="Legend1" LabelLineStyle="Dashed" LabelLineColor="Black">
+    <vc:DataSeries LegendText="2005" StartAngle="80" RenderAs="Doughnut" Cursor="Hand" Legend="Legend1" LabelLineStyle="Dashed" LabelLineColor="Black">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint AxisXLabel="Jan" YValue="550"/>
         <vc:DataPoint AxisXLabel="Feb" YValue="704"/>

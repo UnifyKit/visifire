@@ -44,10 +44,10 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(Convert.ToString(1), chart.AxesX[0].AxisMinimum);
-                Assert.AreEqual(Convert.ToString(100), chart.AxesX[0].AxisMaximum);
-                Assert.AreEqual(Convert.ToString(0), chart.AxesY[0].AxisMinimum);
-                Assert.AreEqual(Convert.ToString(200), chart.AxesY[0].AxisMaximum);
+                Assert.AreEqual(1, chart.AxesX[0].AxisMinimum);
+                Assert.AreEqual(100, chart.AxesX[0].AxisMaximum);
+                Assert.AreEqual(0, chart.AxesY[0].AxisMinimum);
+                Assert.AreEqual(200, chart.AxesY[0].AxisMaximum);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -118,35 +118,6 @@ namespace WPFVisifireChartsTest
             window.Dispatcher.InvokeShutdown();
             window.Close();
         }
-
-        ///// <summary>
-        ///// Check the default value of Scale.
-        ///// </summary> 
-        //[TestMethod]
-        //[Description("Check the default value of Scale.")]
-        //[Owner("[....]")]
-        //public void ScaleDefaultValue()
-        //{
-        //    Chart chart = new Chart();
-        //    chart.Width = 400;
-        //    chart.Height = 300;
-
-        //    Common.CreateAndAddDefaultDataSeries(chart);
-
-        //    _isLoaded = false;
-        //    chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-        //    Window window = new Window();
-        //    window.Content = chart;
-        //    window.Show();
-        //    if (_isLoaded)
-        //    {
-        //        Assert.AreEqual(Double.NaN, chart.AxesX[0].Scale);
-        //    }
-
-        //    window.Dispatcher.InvokeShutdown();
-        //    window.Close();
-        //}
 
         /// <summary>
         /// Check the default value of Href.
@@ -832,40 +803,6 @@ namespace WPFVisifireChartsTest
 
         }
 
-        ///// <summary>
-        ///// Check the new value of Scale.
-        ///// </summary> 
-        //[TestMethod]
-        //[Description("Check the new value of Scale.")]
-        //[Owner("[....]")]
-        //public void ScaleNewValue()
-        //{
-        //    Chart chart = new Chart();
-        //    chart.Width = 400;
-        //    chart.Height = 300;
-
-        //    _axisX = new Axis();
-        //    chart.AxesX.Add(_axisX);
-
-        //    Common.CreateAndAddDefaultDataSeries(chart);
-
-        //    _isLoaded = false;
-        //    chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-        //    Window window = new Window();
-        //    window.Content = chart;
-        //    window.Show();
-        //    if (_isLoaded)
-        //    {
-        //        _axisX.Scale = 3;
-        //        Assert.AreEqual(3, _axisX.Scale, Common.HighPrecisionDelta);
-        //    }
-
-
-        //    window.Dispatcher.InvokeShutdown();
-        //    window.Close();
-        //}
-
         /// <summary>
         /// Check the new value of Padding.
         /// </summary> 
@@ -959,7 +896,7 @@ namespace WPFVisifireChartsTest
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
-            Common.CreateAndAddDefaultDataSeriesForScrolling(chart);
+            Common.CreateAndAddDefaultDataSeries(chart);
 
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -994,7 +931,7 @@ namespace WPFVisifireChartsTest
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
-            Common.CreateAndAddDefaultDataSeriesForScrolling(chart);
+            Common.CreateAndAddDefaultDataSeries(chart);
             chart.Series[0].RenderAs = RenderAs.Bar;
 
             _isLoaded = false;
@@ -1888,6 +1825,9 @@ namespace WPFVisifireChartsTest
 
             Axis axis = new Axis();
 
+            _isLoaded = false;
+            chart.Loaded += new RoutedEventHandler(chart_Loaded);
+
             Window window = new Window();
             window.Content = chart;
             window.Show();
@@ -1901,40 +1841,6 @@ namespace WPFVisifireChartsTest
                 chart.AxesY.Add(axis);
 
                 dataSeries.AxisYType = AxisTypes.Secondary;
-            }
-
-            window.Dispatcher.InvokeShutdown();
-            window.Close();
-        }
-
-        #endregion
-
-        #region TestAxisSerialization
-
-        /// <summary>
-        /// Testing Axis Serialization
-        /// </summary>
-        [TestMethod]
-        public void TestAxisSerialization()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _isLoaded = false;
-
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Axis axis = new Axis();
-            axis.Interval = 0.5;
-            chart.AxesX.Add(axis);
-
-            Window window = new Window();
-            window.Content = chart;
-            window.Show();
-            if (_isLoaded)
-            {
-                MessageBox.Show(XamlWriter.Save(axis));
             }
 
             window.Dispatcher.InvokeShutdown();

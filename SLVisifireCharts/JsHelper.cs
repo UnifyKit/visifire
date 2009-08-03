@@ -47,17 +47,6 @@ namespace Visifire.Commons
         {
             Chart chart;    // Chart 
 
-            if (propertyName == "Top" || propertyName == "Canvas.Top")
-            {
-                sender.SetValue(Canvas.TopProperty, Double.Parse(value, CultureInfo.InvariantCulture));
-                return;
-            }
-            else if (propertyName == "Left" || propertyName == "Canvas.Left")
-            {
-                sender.SetValue(Canvas.LeftProperty, Double.Parse(value, CultureInfo.InvariantCulture));
-                return;
-            }
-
             System.Reflection.PropertyInfo[] propArray = sender.GetType().GetProperties();
 
             // Find properties using LINQ
@@ -85,11 +74,6 @@ namespace Visifire.Commons
                 // Set the value of the property of the sender object
                 if (property.PropertyType.Name == "Brush")
                     property.SetValue(sender, ((Brush)System.Windows.Markup.XamlReader.Load(value)), null);
-                else if (propertyName == "YValues")
-                {
-                    Visifire.Commons.Converters.DoubleArrayConverter dac = new Converters.DoubleArrayConverter();
-                    property.SetValue(sender, dac.ConvertFrom(null, CultureInfo.InvariantCulture, value), null);
-                }
                 else if (property.PropertyType.Equals(typeof(Cursor)))
                 {
                     Cursor cursor = null;
@@ -163,7 +147,7 @@ namespace Visifire.Commons
                     property.SetValue(sender, new Nullable<Boolean>(Convert.ToBoolean(value, CultureInfo.InvariantCulture)), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<Double>)))
                     property.SetValue(sender, new Nullable<Double>(Convert.ToDouble(value, CultureInfo.InvariantCulture)), null);
-                else if (property.PropertyType.BaseType != null && property.PropertyType.BaseType.Equals(typeof(Enum)))
+                else if (property.PropertyType.BaseType.Equals(typeof(Enum)))
                     property.SetValue(sender, Enum.Parse(property.PropertyType, value, true), null);
                 else if (property.PropertyType.Equals(typeof(Nullable<Thickness>)))
                     property.SetValue(sender, new Nullable<Thickness>(new Thickness(Convert.ToDouble(value, CultureInfo.InvariantCulture))), null);

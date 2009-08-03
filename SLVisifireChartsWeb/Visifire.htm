@@ -1,23 +1,28 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Untitled Page</title>
 
     <script type="text/javascript" src="./Visifire2.js"></script>
 
-    
+    <style type="text/css">
+       
+    </style>
 </head>
 <body>
     <div id="Div1">
 
         <script type="text/javascript">
-            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300);
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 400);
             vChart.setDataUri('data.xml');
 
-            var brush1 = '<SolidColorBrush xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Color="Red"/>';
+            vChart.loaded = function(args) {
+                var chart = args[0];
+                var brush = '<SolidColorBrush xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Color="#FF066600"/>'
 
-            vChart.preLoad = function(args) {
-                var chart = args[0];   // Chart Reference.
+                chart.MouseLeftButtonUp = function(e) {
+                    alert(e.ControlId);
+                }
             };
 
             vChart.render("Div1");
@@ -26,4 +31,3 @@
     </div>
 </body>
 </html>
-

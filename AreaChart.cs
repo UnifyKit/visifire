@@ -169,15 +169,6 @@ namespace Visifire.Charts
             set;
         }
 
-        /// <summary>
-        /// Tag reference for visual object
-        /// </summary>
-        public FrameworkElement TagReference
-        {
-            get;
-            set;
-        }
-
     }
 
     /// <summary>
@@ -246,7 +237,7 @@ namespace Visifire.Charts
 
             for (Int32 i = 0; i < pointIndexLimit; i++)
             {
-                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference } };
+                Polygon sides = new Polygon();
                 PointCollection points = new PointCollection();
                 Int32 index1 = i % areaParams.Points.Count;
                 Int32 index2 = (i + 1) % areaParams.Points.Count;
@@ -264,12 +255,12 @@ namespace Visifire.Charts
                 if (i == (areaParams.Points.Count - 2))
                 {
                     sides.Fill = sideBrush;
-                    (sides.Tag as ElementData).VisualElementName = "Side";
+                    sides.Tag = "Side";
                 }
                 else
                 {
                     sides.Fill = topBrush;
-                    (sides.Tag as ElementData).VisualElementName = "Top";
+                    sides.Tag = "Top";
                 }
 
                 sides.Stroke = areaParams.BorderColor;
@@ -427,7 +418,7 @@ namespace Visifire.Charts
             areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
             areaParams.BorderThickness = series.BorderThickness.Left;
             areaParams.Depth3D = depth3d;
-            areaParams.TagReference = series;
+
             return areaParams;
         }
 
@@ -458,7 +449,7 @@ namespace Visifire.Charts
             marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
             marker.TextBackground = dataPoint.LabelBackground;
             marker.MarkerFillColor = dataPoint.MarkerColor;
-            marker.Tag = new ElementData() { Element = dataPoint };
+
             return marker;
         }
 
@@ -568,7 +559,7 @@ namespace Visifire.Charts
 
                 PointCollection points = new PointCollection();
 
-                List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+                List<DataPoint> enabledDataPoints = (from datapoint in series.DataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                 if (enabledDataPoints.Count <= 0)
                     continue;
@@ -580,7 +571,7 @@ namespace Visifire.Charts
                 DataPoint currentDataPoint = enabledDataPoints[0];
                 DataPoint nextDataPoint;
 
-                Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
+                Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.XValue);
                 Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -592,7 +583,7 @@ namespace Visifire.Charts
 
                     if (Double.IsNaN(currentDataPoint.InternalYValue)) continue;
 
-                    xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
+                    xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.XValue);
                     yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, currentDataPoint.InternalYValue);
 
                     points.Add(new Point(xPosition, yPosition));
@@ -614,7 +605,7 @@ namespace Visifire.Charts
                     }
                     if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
                     {
-                        Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.InternalXValue);
+                        Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.XValue);
                         Double yNextPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextDataPoint.InternalYValue);
 
                         Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
@@ -647,7 +638,7 @@ namespace Visifire.Charts
 
                 DataPoint lastDataPoint = enabledDataPoints[enabledDataPoints.Count - 1];
 
-                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.InternalXValue);
+                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
                 yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, lastDataPoint.InternalYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -668,7 +659,7 @@ namespace Visifire.Charts
                     }
                 }
 
-                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.InternalXValue);
+                xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, lastDataPoint.XValue);
                 yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
                 points.Add(new Point(xPosition, yPosition));
@@ -700,9 +691,7 @@ namespace Visifire.Charts
                     columnParams.Depth = depth3d;
 
                     Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                    Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                    zeroPlankVisual.IsHitTestVisible = false;
+                    Panel zeroPlankVisual = zeroPlank.Visual;
 
                     Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                     zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -771,31 +760,20 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-            foreach (DataSeries ds in seriesList)
-            {
-                ds.Faces = null;
-            }
-
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
-            List<Double> curYValues;
-            List<Double> nextYValues;
-
-            List<DataPoint> curDataPoints;
-            List<DataPoint> nextDataPoints;
-
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
 
-                curDataPoints = dataPointInStackedOrder[xValues[i]];
-                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
+                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 for (Int32 index = 0; index < curYValues.Count; index++)
                 {
@@ -876,7 +854,7 @@ namespace Visifire.Charts
                             faces.Parts = new List<FrameworkElement>();
 
                         if (chart.View3D)
-                        {   
+                        {
                             Point centroid = GetCentroid(points);
                             areaParams.IsPositive = centroid.Y < limitingYPosition;
                             Canvas frontface = GetStacked3DAreaFrontFace(ref faces, areaParams);
@@ -934,9 +912,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
+                Panel zeroPlankVisual = zeroPlank.Visual;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1000,34 +976,23 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-            foreach (DataSeries ds in seriesList)
-            {
-                ds.Faces = null;
-            }
-
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
-            List<Double> curYValues;
-            List<Double> nextYValues;
-
-            List<DataPoint> curDataPoints;
-            List<DataPoint> nextDataPoints;
-
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
                 Double curAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i]].AbsoluteYValueSum;
                 Double nextAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i + 1]].AbsoluteYValueSum;
 
-                curDataPoints = dataPointInStackedOrder[xValues[i]];
+                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
 
-                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 if (Double.IsNaN(curAbsoluteSum))
                     curAbsoluteSum = 1;
@@ -1178,9 +1143,7 @@ namespace Visifire.Charts
                 columnParams.Depth = depth3d;
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
+                Panel zeroPlankVisual = zeroPlank.Visual;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1519,7 +1482,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get intersection point between two lines
         /// </summary>
-        /// <param name="Line1Start">Line 1 dateTime position</param>
+        /// <param name="Line1Start">Line 1 start position</param>
         /// <param name="Line1End">Line 1 end position</param>
         /// <param name="Line2Start">Line 2 stsrt position</param>
         /// <param name="Line2End">Line 2 end position</param>
@@ -1572,7 +1535,7 @@ namespace Visifire.Charts
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
 
             faces.Parts.Add(polygon);
 
@@ -1618,7 +1581,7 @@ namespace Visifire.Charts
                     points.Add(newPt2);
                     points.Add(newPt1);
 
-                    Polygon bevel = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "Bevel" } };
+                    Polygon bevel = new Polygon();
                     bevel.Points = points;
                     bevel.Fill = Graphics.GetBevelTopBrush(areaParams.Background);
 
@@ -1628,13 +1591,12 @@ namespace Visifire.Charts
                         bevel.Opacity = 0;
                     }
 
+                    bevel.Tag = "Bevel";
                     faces.Parts.Add(bevel);
 
                     visual.Children.Add(bevel);
                 }
             }
-
-            //faces.VisualComponents.Add(visual);
 
             return visual;
         }
@@ -1667,7 +1629,7 @@ namespace Visifire.Charts
 
             for (Int32 i = 0; i < pointIndexLimit; i++)
             {
-                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference }};
+                Polygon sides = new Polygon();
                 PointCollection points = new PointCollection();
                 Int32 index1 = i % areaParams.Points.Count;
                 Int32 index2 = (i + 1) % areaParams.Points.Count;
@@ -1685,12 +1647,12 @@ namespace Visifire.Charts
                 if (i == (areaParams.Points.Count - 2))
                 {
                     sides.Fill = sideBrush;
-                    (sides.Tag as ElementData).VisualElementName = "Side";
+                    sides.Tag = "Side";
                 }
                 else
                 {
                     sides.Fill = topBrush;
-                    (sides.Tag as ElementData).VisualElementName = "Top";
+                    sides.Tag = "Top";
                 }
 
                 sides.Stroke = areaParams.BorderColor;
@@ -1710,8 +1672,7 @@ namespace Visifire.Charts
 
             }
 
-            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
-
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
             faces.Parts.Add(polygon);
             centroid = GetCentroid(areaParams.Points);
 
@@ -1760,7 +1721,7 @@ namespace Visifire.Charts
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
-            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
 
             faces.Parts.Add(polygon);
 
@@ -1801,13 +1762,15 @@ namespace Visifire.Charts
                     points.Add(newPt2);
                     points.Add(newPt1);
 
-                    Polygon bevel = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "Bevel" } };
+                    Polygon bevel = new Polygon();
                     bevel.Points = points;
                     bevel.Fill = Graphics.GetBevelTopBrush(areaParams.Background);
 
+                    bevel.Tag = "Bevel";
                     faces.Parts.Add(bevel);
                     visual.Children.Add(bevel);
                 }
+
             }
 
             return visual;
@@ -1821,8 +1784,7 @@ namespace Visifire.Charts
         /// <returns>Canvas</returns>
         internal static Canvas GetStacked3DAreaFrontFace(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
-            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
-
+            Polygon polygon = new Polygon() { Tag = "AreaBase" };
             faces.Parts.Add(polygon);
             Point centroid = GetCentroid(areaParams.Points);
             Rect size = GetBounds(areaParams.Points);
@@ -1843,7 +1805,7 @@ namespace Visifire.Charts
             polygon.SetValue(Canvas.TopProperty, areaParams.Depth3D);
             polygon.SetValue(Canvas.LeftProperty, 0.0);
 
-            Canvas polygonSet = new Canvas() { Tag = new ElementData() { Element = areaParams.TagReference } };
+            Canvas polygonSet = new Canvas();
             polygonSet.Width = size.Width + areaParams.Depth3D;
             polygonSet.Height = size.Height + areaParams.Depth3D;
             polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth3D);

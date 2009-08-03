@@ -3,41 +3,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart Width="500" Height="300" Theme="Theme1" View3D="True" BorderBrush="Gray"
-                  ScrollingEnabled="False">
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire DateTime Axis Chart"/>
+                <vc:Title Text="Visifire Multiseries 3D Column Chart"/>
             </vc:Chart.Titles>
 
-            <vc:Chart.AxesX>
-                <vc:Axis IntervalType="Days" Interval="20"/>
-            </vc:Chart.AxesX>
-
             <vc:Chart.Legends>
-                <vc:Legend Enabled="False"/>
+                <vc:Legend x:Name="Legend1" FontSize="10" Title="Legend" TitleBackground="Transparent" TitleAlignmentX="Center"/>
             </vc:Chart.Legends>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column" XValueType="DateTime">
+                <vc:DataSeries LegendText="2005" RenderAs="Column" Cursor="Hand" Legend="Legend1">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1/2/2008" YValue="220"/>
-                        <vc:DataPoint XValue="2/4/2008" YValue="450"/>
-                        <vc:DataPoint XValue="3/2/2008" YValue="550"/>
-                        <vc:DataPoint XValue="4/11/2008" YValue="650"/>
-                        <vc:DataPoint XValue="5/1/2008" YValue="620"/>
-                        <vc:DataPoint XValue="6/10/2008" YValue="446"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="220"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="450"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="550"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="650"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="620"/>
+                        <vc:DataPoint AxisXLabel="June" YValue="446"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
 
-                <vc:DataSeries RenderAs="Column" XValueType="DateTime">
+                <vc:DataSeries LegendText="2006" RenderAs="Column" Cursor="Hand" Legend="Legend1">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1/2/2008" YValue="330"/>
-                        <vc:DataPoint XValue="2/4/2008" YValue="400"/>
-                        <vc:DataPoint XValue="3/2/2008" YValue="653"/>
-                        <vc:DataPoint XValue="4/11/2008" YValue="756"/>
-                        <vc:DataPoint XValue="5/1/2008" YValue="545"/>
-                        <vc:DataPoint XValue="6/10/2008" YValue="334"/>
+                        <vc:DataPoint YValue="330"/>
+                        <vc:DataPoint YValue="400"/>
+                        <vc:DataPoint YValue="653"/>
+                        <vc:DataPoint YValue="756"/>
+                        <vc:DataPoint YValue="545"/>
+                        <vc:DataPoint YValue="334"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

@@ -33,11 +33,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Browser;
+
 #endif
 
 using Visifire.Commons;
-using System.ComponentModel;
 
 
 namespace Visifire.Charts
@@ -71,12 +70,6 @@ namespace Visifire.Charts
 #else
             DefaultStyleKey = typeof(PlotArea);
 #endif
-
-            // Attach event handler with EventChanged event of VisfiireElement
-            EventChanged += delegate
-            {
-                FirePropertyChanged("MouseEvent");
-            };
         }
 
         #endregion
@@ -276,11 +269,7 @@ namespace Visifire.Charts
                 if (base.Cursor != value)
                 {
                     base.Cursor = value;
-                    
-                    if(Visual != null)
-                        Visual.Cursor = (Cursor == null) ? Cursors.Arrow : Cursor;
-                    else
-                        FirePropertyChanged("Cursor");
+                    FirePropertyChanged("Cursor");
                 }
             }
         }
@@ -431,79 +420,6 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Events And Delegates
-        
-        /// <summary>
-        /// Event handler for the MouseLeftButtonDown event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonDown
-        {
-            remove
-            {
-                _onMouseLeftButtonDown -= value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-            add
-            {
-                _onMouseLeftButtonDown += value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-        }
-
-        /// <summary>
-        /// Event handler for the MouseLeftButtonUp event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonUp
-        {
-            remove
-            {
-                _onMouseLeftButtonUp -= value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-            add
-            {
-                _onMouseLeftButtonUp += value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-        }
-
-
-        /// <summary>
-        /// Event handler for the MouseMove event 
-        /// </summary>
-#if SL
-        [ScriptableMember]
-#endif
-        public new event EventHandler<PlotAreaMouseEventArgs> MouseMove
-        {
-            remove
-            {
-                _onMouseMove -= value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-            add
-            {
-                _onMouseMove += value;
-
-                if (EventChanged != null)
-                    EventChanged(this, null);
-            }
-        }
 
         #endregion
 
@@ -738,8 +654,8 @@ namespace Visifire.Charts
         /// <returns>Border</returns>
         internal Border GetNewBorderElement()
         {
-            BorderElement = new Border() { Tag = new ElementData() { Element = this } };
-            LightingBorder = new Border() { Tag = new ElementData() { Element = this } };
+            BorderElement = new Border();
+            LightingBorder = new Border();
 
             BevelGrid = new Grid();
             BevelGrid.Children.Add(LightingBorder);
@@ -802,7 +718,7 @@ namespace Visifire.Charts
             {
                 Chart chart = Chart as Chart;
 
-                _bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(this, BorderElement.Width - BorderThickness.Left - BorderThickness.Right// - plankDepth
+                _bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(BorderElement.Width - BorderThickness.Left - BorderThickness.Right// - plankDepth
                 , BorderElement.Height - BorderThickness.Top - BorderThickness.Bottom //+ ((chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? 0 : (-plankDepth - plankThickness))
                 , Charts.Chart.BEVEL_DEPTH, Charts.Chart.BEVEL_DEPTH
                 , Graphics.GetBevelTopBrush(BorderElement.Background)
@@ -858,7 +774,7 @@ namespace Visifire.Charts
             {
                 if (chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                 {
-                    ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, BorderElement.Width + Visifire.Charts.Chart.SHADOW_DEPTH
+                    ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(BorderElement.Width + Visifire.Charts.Chart.SHADOW_DEPTH
                     , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
                     , CornerRadius
                     , CornerRadius, 6);
@@ -871,7 +787,7 @@ namespace Visifire.Charts
                     {
                         if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                         {
-                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
+                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
                             , plotAreaViewPortSize.Height - plankDepth + Visifire.Charts.Chart.SHADOW_DEPTH
                             , CornerRadius
                             , CornerRadius, 6);
@@ -879,7 +795,7 @@ namespace Visifire.Charts
 
                             ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
 
-                            InnerShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
+                            InnerShadowGrid = ExtendedGraphics.Get2DRectangleShadow(plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
                            , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
                            , CornerRadius
                            , CornerRadius, 6);
@@ -889,7 +805,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth
+                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth
                                                    , plotAreaViewPortSize.Height + Visifire.Charts.Chart.SHADOW_DEPTH - plankOffset
                                                    , CornerRadius
                                                    , CornerRadius, 6);
@@ -899,7 +815,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Charts.Chart.SHADOW_DEPTH
+                        ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(plotAreaViewPortSize.Width + Charts.Chart.SHADOW_DEPTH
                             , plotAreaViewPortSize.Height - plankOffset + Visifire.Charts.Chart.SHADOW_DEPTH, CornerRadius
                             , CornerRadius
                             , 6);
@@ -907,7 +823,8 @@ namespace Visifire.Charts
                         clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
                     }
                 }
-                
+
+
                 ShadowGrid.Clip = GetShadowClip(clipSize);
 
                 ShadowGrid.IsHitTestVisible = false;
@@ -915,172 +832,13 @@ namespace Visifire.Charts
                 ShadowGrid.UpdateLayout();
             }
         }
-
-        /// <summary>
-        /// Creates PlotAreaMouseButtonEventArgs
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        /// <returns>PlotAreaMouseButtonEventArgs</returns>
-        internal PlotAreaMouseButtonEventArgs CreatePlotAreaMouseButtonEventArgs(MouseButtonEventArgs e)
-        {
-            Chart chart = Chart as Chart;
-            PlotAreaMouseButtonEventArgs eventArgs = new PlotAreaMouseButtonEventArgs(e);
-
-            if (chart.ChartArea.AxisX != null)
-            {   
-                Double xValue;
-                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lenthInPixel =((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
-
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
-
-                if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
-                else
-                    eventArgs.XValue = xValue;
-
-            }
-
-            if (chart.ChartArea.AxisY != null)
-            {
-                Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lenthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
-
-                eventArgs.YValue = yValue;
-            }
-
-            return eventArgs;
-        }
-
-        /// <summary>
-        /// Creates PlotAreaMouseEventArgs
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        /// <returns>PlotAreaMouseButtonEventArgs</returns>
-        internal PlotAreaMouseEventArgs CreatePlotAreaMouseEventArgs(MouseEventArgs e)
-        {
-            Chart chart = Chart as Chart;
-            PlotAreaMouseEventArgs eventArgs = new PlotAreaMouseEventArgs(e);
-
-            if (chart.ChartArea.AxisX != null)
-            {
-                Double xValue;
-                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
-
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                if (chart.ChartArea.AxisX.IsDateTimeAxis)
-                    eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
-                else
-                    eventArgs.XValue = xValue;
-            }
-
-            if (chart.ChartArea.AxisY != null)
-            {
-                Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                eventArgs.YValue = yValue;
-            }
-
-            return eventArgs;
-        }
-
-        /// <summary>
-        /// Fire MouseLeftButtonDown event
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseLeftButtonDownEvent(MouseButtonEventArgs e)
-        {   
-            if(_onMouseLeftButtonDown != null)
-                _onMouseLeftButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
-        }
-
-        /// <summary>
-        /// Fire MouseLeftButtonDown event
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseLeftButtonUpEvent(MouseButtonEventArgs e)
-        {
-            if (_onMouseLeftButtonUp != null)
-                _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
-        }
-
-        /// <summary>
-        /// Fire MouseLeftButtonDown event
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseMoveEvent(MouseEventArgs e)
-        {
-            if (_onMouseMove != null)
-                _onMouseMove(this, CreatePlotAreaMouseEventArgs(e));
-        }
-
-        /// <summary>
-        /// Get MouseLeftButtonDown EventHandler
-        /// </summary>
-        /// <returns></returns>
-        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonDownEventHandler()
-        {
-            return _onMouseLeftButtonDown;
-        }
-
-        /// <summary>
-        /// Get MouseLeftButtonUp EventHandler
-        /// </summary>
-        /// <returns></returns>
-        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonUpEventHandler()
-        {
-            return _onMouseLeftButtonUp;
-        }
-
-        /// <summary>
-        /// Get MouseLeftButtonUp EventHandler
-        /// </summary>
-        /// <returns></returns>
-        internal EventHandler<PlotAreaMouseEventArgs> GetMouseMoveEventHandler()
-        {
-            return _onMouseMove;
-        }
-
         #endregion
 
         #region Internal Events And Delegates
 
-        /// <summary>
-        /// EventChanged event is fired if any event is attached
-        /// </summary>
-        internal new event EventHandler EventChanged;
-
         #endregion
 
         #region Data
-
-        /// <summary>
-        /// Handler for MouseLeftButtonDown event
-        /// </summary>
-        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseLeftButtonDown;
-
-        /// <summary>
-        /// Handler for MouseLeftButtonUp event
-        /// </summary>
-        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseLeftButtonUp;
-
-        /// <summary>
-        /// Handler for MouseMove event
-        /// </summary>
-        private event EventHandler<PlotAreaMouseEventArgs> _onMouseMove;
 
         /// <summary>
         /// Canvas for bevel

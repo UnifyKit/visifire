@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" View3D="True" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Percent Change from Dec-06 to Dec-07"/>
@@ -15,13 +15,13 @@
 
   <vc:Chart.PlotArea>
     <vc:PlotArea>
-      <vc:PlotArea.Background>
+      <vc:PlotArea.Color>
         <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
           <GradientStop Color="#e7e7e7" Offset="0.1"/>
           <GradientStop Color="#eaeaea" Offset="0.4"/>
           <GradientStop Color="#f8f8f8" Offset="1"/>
         </LinearGradientBrush>
-      </vc:PlotArea.Background>
+      </vc:PlotArea.Color>
     </vc:PlotArea>
   </vc:Chart.PlotArea>
 

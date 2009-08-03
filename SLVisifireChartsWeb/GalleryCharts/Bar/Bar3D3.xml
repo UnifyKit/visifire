@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" View3D="True" BorderBrush="Gray" Padding="8" CornerRadius="5" Width="450" Height="475">
+          Theme="Theme2" AnimationEnabled="False" View3D="True" BorderBrush="Gray" Padding="8" CornerRadius="5">
 
   <vc:Chart.PlotArea>
     <vc:PlotArea Background="#f1f1f1"/>

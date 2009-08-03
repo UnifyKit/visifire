@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" View3D="True" Padding="5" Width="450" Height="475">
+          Theme="Theme3" AnimationEnabled="False" View3D="True" Padding="5">
 
   <vc:Chart.Titles>
     <vc:Title Text="Total Population in Less Developed Countries" HorizontalAlignment="Left" />

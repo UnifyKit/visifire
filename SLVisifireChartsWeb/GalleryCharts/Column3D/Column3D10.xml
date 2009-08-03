@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" View3D="True" Width="500" Height="300">
+          Theme="Theme3" AnimationEnabled="False" View3D="True">
   <vc:Chart.Background>
     <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1" >
       <GradientStop Color="#000000" Offset="0"/>
@@ -13,7 +13,7 @@
   </vc:Chart.Titles>
 
   <vc:Chart.Legends>
-    <vc:Legend Name="Legend1" FontColor="White"/>
+    <vc:Legend x:Name="Legend1" FontColor="White"/>
   </vc:Chart.Legends>
 
   <vc:Chart.Series>

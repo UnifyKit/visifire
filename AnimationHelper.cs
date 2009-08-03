@@ -25,7 +25,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
-using Visifire.Charts;
 
 namespace Visifire.Commons
 {
@@ -106,15 +105,15 @@ namespace Visifire.Commons
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
 
 #if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_'));
+            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + target.GetHashCode().ToString());
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            (parentObj as DataSeries).Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            parentObj.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif
             Storyboard.SetTargetProperty(da, new PropertyPath(property));
-            
+
             da.BeginTime = TimeSpan.FromSeconds(beginTime);
 
             for (Int32 index = 0; index < splines.Count; index++)
@@ -181,15 +180,13 @@ namespace Visifire.Commons
             return storyboard;
         }
 
-
-
         /// <summary>
         /// Returns list of KeySpline from point array
         /// </summary>
         /// <param name="values">List of points</param>
         /// <returns>List of KeySpline</returns>
         internal static List<KeySpline> GenerateKeySplineList(params Point[] values)
-        {   
+        {
             List<KeySpline> splines = new List<KeySpline>();
             for (Int32 i = 0; i < values.Length; i += 2)
                 splines.Add(GetKeySpline(values[i], values[i + 1]));

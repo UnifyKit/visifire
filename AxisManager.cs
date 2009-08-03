@@ -20,14 +20,12 @@ namespace Visifire.Charts
         /// <param name="minValue">Minimum Value.</param>
         /// <param name="startFromZero">Makes sure that the zero is included in the axis range</param>
         /// <param name="allowLimitOverflow">Applies limits so that axis range doesn't cross it</param>
-        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, AxisRepresentations axisRepresentation)
+        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride)
         {
             if (maxValue < minValue)
                 throw (new ArgumentException("Invalid Argument:: Maximum Data value should be always greater than the minimum data value."));
             this._max = (Decimal)maxValue;
             this._min = (Decimal)minValue;
-
-            AxisRepresentation = axisRepresentation;
 
             if (startFromZero)
             {
@@ -51,30 +49,23 @@ namespace Visifire.Charts
         /// Function calculates the max value, min value, interval and number of intervals of the axis.
         /// </summary>
         public void Calculate()
-        {   
-            Int32 loop = 0;                 // No of iteration.
+        {
+            Int16 loop = 0;                 // No of iteration.
             Int32 maxMagnitude;             // Magnitude of max data value.         
             Int32 minMagnitude;             // Magnitude of min data value.         
             Int32 magnitude;                // Magnitude of max/min data value.
             Decimal nextInterval;           // Next calculated interval size from the old interval size.
             Decimal tempAxisMaximumValue;   // Calculated maximum value of the axis.
             Decimal tempAxisMinimumValue;   // Calculated minimum value of the axis.
-            
-            // Handle values less than 10 and Greater than 2
-            if (AxisRepresentation == AxisRepresentations.AxisX)
-            {
-                if (this._max < 10 && this._min >= 0)
-                    this._maxNoOfInterval = (Int32)(_max + 1);
-            }
-            else
-            {
-                if (_max > 2 && this._max < 10 && this._min >= 0)
-                    this._maxNoOfInterval = (Int32)(_max + 1);
-            }
-            
+
+
+            // Handle values less than 10
+            if (this._max < 10 && this._min >= 0)
+                this._maxNoOfInterval = (Int16)(_max + 1);
+
             // Only one value presents to calculate the range.
             if (this._max == this._min)
-            {   
+            {
                 CalculateSingle();  // Calculation for single value.
                 return;
             }
@@ -119,7 +110,7 @@ namespace Visifire.Charts
             // which helps to calculate the new maximum and minimum value for axis.
             while (++loop < 100)
             {
-                Int32 nextNoOfInterval;   // Number of interval increased in iterative way.     
+                Int16 nextNoOfInterval;   // Number of interval increased in iterative way.     
 
                 // Try to minimize the Interval Value if possible.
                 if (!this._overrideInterval)
@@ -138,7 +129,7 @@ namespace Visifire.Charts
                     tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
 
                 // Calculate the number of interval.
-                nextNoOfInterval = (Int32)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
+                nextNoOfInterval = (Int16)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
 
                 // Number of interval cannot exceed the user expected no of interval.
                 if (nextNoOfInterval > this._maxNoOfInterval)
@@ -149,22 +140,17 @@ namespace Visifire.Charts
                 this._interval = nextInterval;
 
             }
+
         }
 
         #endregion
 
         #region Public Properties
 
-        public AxisRepresentations AxisRepresentation
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Get or set the maximum number of intervals.
         /// </summary>
-        public Int32 MaximumNoOfInterval
+        public Int16 MaximumNoOfInterval
         {
             set
             {
@@ -284,9 +270,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Returns the number of Intervals in the calculated range.
         /// </summary>
-        private Int32 GetNoOfIntervals()
+        private Int16 GetNoOfIntervals()
         {
-            return (Int32)((this._axisMaximumValue - this._axisMinimumValue) / this._interval);
+            return (Int16)((this._axisMaximumValue - this._axisMinimumValue) / this._interval);
         }
 
         /// <summary>
@@ -313,9 +299,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-        private Int32 IndexOfDecimalPoint(Decimal number)
+        private Int16 IndexOfDecimalPoint(Decimal number)
         {
-            Int32 count = 0;                  // local variable as counter.
+            Int16 count = 0;                  // local variable as counter.
             
             // While number is not an integer.
             while ((Int64)(number) != number)
@@ -348,9 +334,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-        private Int32 NoOfZeroAtEndInInt(Int64 number)
+        private Int16 NoOfZeroAtEndInInt(Int64 number)
         {
-            Int32 count = 0;            // Keep track the no of zeros.
+            Int16 count = 0;            // Keep track the no of zeros.
 
             while ((number % 10) == 0)
             {
@@ -372,7 +358,7 @@ namespace Visifire.Charts
         {
             if (mantissaOrExponent == MantissaOrExponent.Exponent)
             {
-                Int32 exponent;
+                Int16 exponent;
                 exponent = NoOfZeroAtEndInInt(RemoveDecimalPoint(number));
                 exponent -= IndexOfDecimalPoint(number);
                 return (Int64)exponent;
@@ -471,7 +457,7 @@ namespace Visifire.Charts
         /// </summary>
         private void CalculateSingle()
         {
-            Int32 loop = 0;        // No of iteration.
+            Int16 loop = 0;        // No of iteration.
             Int64 magnitude;       // Magnitude of max/min value.
             Decimal nextInterval;  // Next Calculated interval from the old interval.
 
@@ -508,7 +494,7 @@ namespace Visifire.Charts
             // Next intervals will be calculated inside loop in iterative way. 
             while (loop++ < 100)
             {
-                Int32 nextNoOfInterval;                        // Number of interval.
+                Int16 nextNoOfInterval;                        // Number of interval.
 
                 // Try to minimize the Interval Value if possible.
                 if (!this._overrideInterval)
@@ -519,7 +505,7 @@ namespace Visifire.Charts
                     break;
 
                 // Calculate number of interval.
-                nextNoOfInterval = (Int32)((this._axisMaximumValue - this._axisMinimumValue) / nextInterval);
+                nextNoOfInterval = (Int16)((this._axisMaximumValue - this._axisMinimumValue) / nextInterval);
 
                 // Number of interval cannot exceed the user expected no of interval.
                 if (nextNoOfInterval > _maxNoOfInterval)
@@ -537,7 +523,7 @@ namespace Visifire.Charts
         // Input parameters.
         private Decimal _min;                      // Min data value.
         private Decimal _max;                      // Max data value.
-        private Int32 _maxNoOfInterval = 10;       // Maximum number of intervals.
+        private Int16 _maxNoOfInterval = 10;       // Maximum number of intervals.
 
         // Values calculated by this class.
         private Decimal _interval;                 // The interval size.

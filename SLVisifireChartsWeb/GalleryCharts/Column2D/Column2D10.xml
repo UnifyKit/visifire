@@ -1,5 +1,5 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme3" Padding="8" Width="500" Height="300">
+          Theme="Theme3" AnimationEnabled="False" Padding="8">
 
   <vc:Chart.Titles>
     <vc:Title Text="US Domestic Car Sales"/>

@@ -42,28 +42,6 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the default value of TextAlignment. 
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the default value of TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Left, chart.AxesX[0].AxisLabels.TextAlignment));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
         /// Check the default value of Interval. 
         /// </summary> 
         [TestMethod]
@@ -162,38 +140,6 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(-30, _axisX.AxisLabels.Angle),
                 () => Assert.AreEqual(30, _axisY.AxisLabels.Angle));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
-        /// Check the New value for TextAlignment.
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the new value for TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentNewValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _axisX = new Axis();
-            _axisY = new Axis();
-
-            _axisX.AxisLabels.TextAlignment = TextAlignment.Center;
-            _axisY.AxisLabels.TextAlignment = TextAlignment.Center;
-
-            chart.AxesX.Add(_axisX);
-            chart.AxesY.Add(_axisY);
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Center, _axisX.AxisLabels.TextAlignment),
-                () => Assert.AreEqual(TextAlignment.Center, _axisY.AxisLabels.TextAlignment));
 
             EnqueueTestComplete();
         }
@@ -463,13 +409,14 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
 
-            _axisX.AxisLabels.TextWrap = 0.5;
+            _axisX.AxisLabels.TextWrap = TextWrapping.Wrap;
             _axisX.AxisLabels.Angle = 0;
             _axisX.Interval = 1;
             _axisX.AxisLabels.Rows = 1;
             chart.AxesX.Add(_axisX);
 
             DataSeries dataSeries = new DataSeries();
+            DataPoint dataPoint = new DataPoint();
 
             dataSeries.RenderAs = RenderAs.Column;
 
@@ -479,7 +426,7 @@ namespace SLVisifireChartsTest
             {
                 DataPoint datapoint = new DataPoint();
                 datapoint.AxisXLabel = "VisifireSilverlight" + i;
-                datapoint.YValue = rand.Next(0, 100);
+                dataPoint.YValue = rand.Next(0, 100);
                 datapoint.XValue = i + 1;
                 dataSeries.DataPoints.Add(datapoint);
             }
@@ -487,7 +434,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             CreateAsyncTest(chart,
-                () => Assert.AreEqual(0.5, _axisX.AxisLabels.TextWrap, Common.HighPrecisionDelta));
+                () => Assert.AreEqual(TextWrapping.Wrap, _axisX.AxisLabels.TextWrap));
 
             EnqueueTestComplete();
         }
@@ -597,6 +544,7 @@ namespace SLVisifireChartsTest
             EnqueueCallback(() =>
             {
                 _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
                 _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
                 _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
                 _htmlElement2.SetStyleAttribute("top", "540px");
@@ -687,82 +635,6 @@ namespace SLVisifireChartsTest
 
         #endregion
 
-        #region TestAxisDecimalIntervalWithAxisXLabel
-        /// <summary>
-        /// Test Axis Interval in decimal if AxisXLabel is set in DataPoints
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestAxisDecimalIntervalWithAxisXLabel()
-        {
-            Chart chart = new Chart();
-            chart.Width = 500;
-            chart.Height = 300;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Random rand = new Random();
-
-            TestPanel.Children.Add(chart);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            DataSeries dataSeries = new DataSeries();
-            dataSeries.RenderAs = RenderAs.Column;
-            for (Int32 i = 0; i < 10; i++)
-                dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire", YValue = rand.Next(10, 100) });
-            chart.Series.Add(dataSeries);
-
-            EnqueueCallback(() =>
-            {
-                Axis axis = new Axis();
-                axis.Interval = 0.1;
-                chart.AxesX.Add(axis);
-            });
-
-            EnqueueSleep(_sleepTime);
-            EnqueueTestComplete();
-        }
-        #endregion
-
-        #region TestBiggerAxisLabels
-        /// <summary>
-        /// Test bigger AxisLabels
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestBiggerAxisLabels()
-        {
-            Chart chart = new Chart();
-            chart.Width = 500;
-            chart.Height = 300;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Random rand = new Random();
-
-            TestPanel.Children.Add(chart);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Column;
-                for (Int32 i = 0; i < 6; i++)
-                    dataSeries.DataPoints.Add(new DataPoint() { AxisXLabel = "Visifire Chart Visifire Chart Visifire Chart", YValue = rand.Next(10, 100) });
-                chart.Series.Add(dataSeries);
-            });
-
-            EnqueueSleep(_sleepTime);
-            EnqueueTestComplete();
-        }
-        #endregion
-
         /// <summary>
         /// Event handler for click event of the Html element
         /// </summary>
@@ -805,7 +677,7 @@ namespace SLVisifireChartsTest
         private bool _isLoaded = false;
 
         /// <summary>
-        /// axisX reference
+        /// AxisX reference
         /// </summary>
         private Axis _axisX;
 

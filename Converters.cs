@@ -24,7 +24,6 @@ using System.ComponentModel;
 using Visifire.Charts;
 using System.Globalization;
 using System.Reflection;
-using System.Collections.Generic;
 
 namespace Visifire.Commons
 {
@@ -49,40 +48,6 @@ namespace Visifire.Commons
                     return Double.NaN;
                 else
                     return Double.Parse((String)value, System.Globalization.CultureInfo.InvariantCulture);
-            }
-        }
-
-        /// <summary>
-        /// Double array converter
-        /// </summary>
-        public class DoubleArrayConverter : TypeConverter
-        {
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            {
-                return true;
-            }
-                        
-            public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-            {
-                Double[] result;
-
-                if ((String)value == String.Empty)
-                    result = new Double[4] {0, 0, 0, 0};
-                else
-                {
-                    String[] split = value.ToString().Split(',');
-
-                    result = new Double[4];
-
-                    int i = 0;
-
-                    foreach (String str in split)
-                    {
-                        result[i++] = Double.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                }
-
-                return result;
             }
         }
 

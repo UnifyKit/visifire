@@ -1,12 +1,12 @@
 ﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme2" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme2" AnimationEnabled="False" BorderBrush="Gray">
 
   <vc:Chart.Titles>
     <vc:Title Text="Currency Exchange Rate Pairs"/>
   </vc:Chart.Titles>
 
   <vc:Chart.Legends>
-    <vc:Legend Name="Legend1" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="10"/>
+    <vc:Legend x:Name="Legend1" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="10"/>
   </vc:Chart.Legends>
 
   <vc:Chart.Series>

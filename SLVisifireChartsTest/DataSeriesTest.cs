@@ -160,841 +160,6 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
-        #region TestingMovingMarkerInLine
-        /// <summary>
-        /// Testing Moving marker in Line chart
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMovingMarkerInLine()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            DataSeries dataSeries = new DataSeries();
-            dataSeries.RenderAs = RenderAs.Line;
-            dataSeries.MovingMarkerEnabled = true;
-
-            for (Int32 i = 0; i < 6; i++)
-            {
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.YValue = rand.Next(100, 500);
-                dataSeries.DataPoints.Add(dataPoint);
-
-            }
-            _chart.Series.Add(dataSeries);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Move mouse on PlotArea.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMovingMarkerInLineOnSomeDataseries
-        /// <summary>
-        /// Testing Moving marker on few DataSeries in Line chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMovingMarkerInLineOnSomeDataseries()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 5; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Line;
-                if (j < 4)
-                    dataSeries.MovingMarkerEnabled = true;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Move mouse on PlotArea.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingSelectionInPie
-        /// <summary>
-        /// Testing Selection in Pie Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingSelectionInPie()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            DataSeries dataSeries = new DataSeries();
-            dataSeries.RenderAs = RenderAs.Pie;
-            dataSeries.SelectionEnabled = true;
-
-            for (Int32 i = 0; i < 6; i++)
-            {
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.YValue = rand.Next(100, 500);
-                if (i == 0)
-                    dataPoint.Selected = true;
-                dataSeries.DataPoints.Add(dataPoint);
-
-            }
-            _chart.Series.Add(dataSeries);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on a DataPoint to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMultipleSelectionInPie
-        /// <summary>
-        /// Testing multiple Selection in Pie Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMultipleSelectionInPie()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            DataSeries dataSeries = new DataSeries();
-            dataSeries.RenderAs = RenderAs.Pie;
-            dataSeries.SelectionEnabled = true;
-            dataSeries.SelectionMode = SelectionModes.Multiple;
-
-            for (Int32 i = 0; i < 6; i++)
-            {
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.YValue = rand.Next(100, 500);
-                if (i == 0)
-                    dataPoint.Selected = true;
-                dataSeries.DataPoints.Add(dataPoint);
-
-            }
-            _chart.Series.Add(dataSeries);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on DataPoints to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-
-        }
-        #endregion
-
-        #region TestingSelectionInColumn
-        /// <summary>
-        /// Testing Selection in Column Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingSelectionInColumn()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.SelectionEnabled = true;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on a DataPoint to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMultipleSelectionInColumn
-        /// <summary>
-        /// Testing multiple Selection in Column Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMultipleSelectionInColumn()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.SelectionEnabled = true;
-                dataSeries.SelectionMode = SelectionModes.Multiple;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on DataPoints to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingSelectionInBar
-        /// <summary>
-        /// Testing Selection in Bar Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingSelectionInBar()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Bar;
-                dataSeries.SelectionEnabled = true;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on a DataPoint to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMultipleSelectionInBar
-        /// <summary>
-        /// Testing multiple Selection in Bar Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMultipleSelectionInBar()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Bar;
-                dataSeries.SelectionEnabled = true;
-                dataSeries.SelectionMode = SelectionModes.Multiple;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on DataPoints to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingSelectionInLine
-        /// <summary>
-        /// Testing Selection in Line Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingSelectionInLine()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Line;
-                dataSeries.SelectionEnabled = true;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on a DataPoint to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMultipleSelectionInLine
-        /// <summary>
-        /// Testing multiple Selection in Line Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMultipleSelectionInLine()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Line;
-                dataSeries.SelectionEnabled = true;
-                dataSeries.SelectionMode = SelectionModes.Multiple;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on DataPoints to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingSelectionInArea
-        /// <summary>
-        /// Testing Selection in Area Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingSelectionInArea()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Area;
-                dataSeries.MarkerEnabled = true;
-                dataSeries.SelectionEnabled = true;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on a DataPoint to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
-        #region TestingMultipleSelectionInArea
-        /// <summary>
-        /// Testing multiple Selection in Line Chart
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestingMultipleSelectionInArea()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "400px");
-
-            _chart = new Chart();
-            _chart.Width = 500;
-            _chart.Height = 300;
-            _chart.View3D = true;
-
-            _isLoaded = false;
-            _chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(_chart);
-
-            Random rand = new Random();
-
-            for (Int32 j = 0; j < 2; j++)
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.RenderAs = RenderAs.Area;
-                dataSeries.MarkerEnabled = true;
-                dataSeries.SelectionEnabled = true;
-                dataSeries.SelectionMode = SelectionModes.Multiple;
-
-                for (Int32 i = 0; i < 6; i++)
-                {
-                    DataPoint dataPoint = new DataPoint();
-                    dataPoint.YValue = rand.Next(100, 500);
-                    if (i == 0)
-                        dataPoint.Selected = true;
-                    dataSeries.DataPoints.Add(dataPoint);
-
-                }
-                _chart.Series.Add(dataSeries);
-            }
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
-                _htmlElement1.SetProperty("value", "Click on DataPoints to select.");
-                _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
-                _htmlElement2.SetStyleAttribute("top", "540px");
-                _htmlElement2.SetProperty("value", "Switch 2D/3D.");
-                _htmlElement3 = Common.GetDisplayMessageButton(_htmlElement3);
-                _htmlElement3.SetStyleAttribute("top", "560px");
-                _htmlElement3.SetProperty("value", "Click here to exit.");
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.View3D_OnClick));
-            });
-
-            EnqueueCallback(() =>
-            {
-                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.Exit_OnClick));
-            });
-
-        }
-        #endregion
-
         #region BrokenLineChart
         /// <summary>
         /// Testing broken line chart
@@ -1087,14 +252,10 @@ namespace SLVisifireChartsTest
 
             EnqueueCallback(() =>
             {
-                try
-                {
-                    _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                    _htmlElement1.SetStyleAttribute("width", "900px");
-                    _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
-                    System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
-                }
-                catch { }
+                _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
+                _htmlElement1.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
+                System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement1);
             });
 
             EnqueueCallback(() =>
@@ -1300,104 +461,6 @@ namespace SLVisifireChartsTest
             {
                 _htmlElement2.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement_OnClick));
             });
-        }
-        #endregion
-
-        #region MultiSeriesWithNoDataPoints
-        /// <summary>
-        /// Testing second series with no DataPoints
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void MultiSeriesWithNoDataPointsChecking()
-        {
-            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "450px");
-
-            Chart chart = new Chart();
-            chart.Width = 350;
-            chart.Height = 450;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(chart);
-
-            Random rand = new Random();
-
-            EnqueueConditional(() => { return _isLoaded; });
-
-            EnqueueCallback(() =>
-            {
-                DataSeries dataSeries;
-                for (Int32 ds = 0; ds < 2; ds++)
-                {
-                    dataSeries = new DataSeries();
-                    if (ds == 0)
-                    {
-                        for (Int32 dp = 0; dp < 5; dp++)
-                        {
-                            DataPoint dataPoint = new DataPoint();
-                            dataPoint.XValue = dp + 1;
-                            dataPoint.YValue = rand.Next(0, 100);
-                            dataSeries.DataPoints.Add(dataPoint);
-                        }
-                    }
-
-                    chart.Series.Add(dataSeries);
-                }
-            });
-
-            EnqueueSleep(_sleepTime);
-            EnqueueTestComplete();
-        }
-        #endregion
-
-        #region LineSeriesWithNoDataPoints
-        /// <summary>
-        /// Testing second series (Line) with no DataPoints
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void LineSeriesWithNoDataPoints()
-        {
-            Chart chart = new Chart();
-            chart.Width = 500;
-            chart.Height = 300;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            TestPanel.Children.Add(chart);
-
-            Random rand = new Random();
-
-            EnqueueConditional(() => { return _isLoaded; });
-
-            EnqueueCallback(() =>
-            {
-                DataSeries dataSeries;
-                for (Int32 ds = 0; ds < 2; ds++)
-                {
-                    dataSeries = new DataSeries();
-                    if (ds == 0)
-                    {
-                        for (Int32 dp = 0; dp < 5; dp++)
-                        {
-                            DataPoint dataPoint = new DataPoint();
-                            dataPoint.XValue = dp + 1;
-                            dataPoint.YValue = rand.Next(0, 100);
-                            dataSeries.DataPoints.Add(dataPoint);
-                        }
-                    }
-                    else
-                        dataSeries.RenderAs = RenderAs.Line;
-
-                    chart.Series.Add(dataSeries);
-                }
-            });
-
-            EnqueueSleep(_sleepTime);
-            EnqueueTestComplete();
         }
         #endregion
 
@@ -3299,6 +2362,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -3309,7 +2373,7 @@ namespace SLVisifireChartsTest
                 () => dataSeries.Href = "http://www.visifire.com",
                 () => dataSeries.HrefTarget = HrefTargets._blank,
                 () => Assert.AreEqual("http://www.visifire.com", dataSeries.Href),
-                () => Assert.AreEqual(HrefTargets._blank, dataSeries.HrefTarget));
+            () => Assert.AreEqual(HrefTargets._blank, dataSeries.HrefTarget));
 
             EnqueueTestComplete();
         }
@@ -3324,6 +2388,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
+
 
             DataSeries dataSeries = CreateDataSeries();
 
@@ -3547,6 +2612,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.LabelEnabled = true;
 
@@ -3571,6 +2637,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -3579,7 +2646,7 @@ namespace SLVisifireChartsTest
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.LabelLineEnabled = false,
-                () => Assert.IsFalse((Boolean)dataSeries.LabelLineEnabled));
+                () => Assert.AreEqual(false, dataSeries.LabelLineEnabled));
 
             EnqueueTestComplete();
         }
@@ -3594,6 +2661,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -3619,6 +2687,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
 
@@ -3642,6 +2711,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Pie;
@@ -3667,6 +2737,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Column;
             chart.Series.Add(dataSeries);
@@ -3689,6 +2760,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -3714,6 +2786,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
 
@@ -3738,6 +2811,7 @@ namespace SLVisifireChartsTest
             chart.Width = 600;
             chart.Height = 300;
 
+
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
 
@@ -3761,6 +2835,7 @@ namespace SLVisifireChartsTest
             Chart chart = new Chart();
             chart.Width = 600;
             chart.Height = 300;
+
 
             DataSeries dataSeries = CreateDataSeries();
             dataSeries.RenderAs = RenderAs.Line;
@@ -3834,7 +2909,6 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.Bevel = false;
 
             chart.Series.Add(dataSeries);
 
@@ -4254,7 +3328,7 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), dataSeries.BorderColor));
+                () => Assert.IsNull(dataSeries.BorderColor));
 
             EnqueueTestComplete();
         }
@@ -4996,14 +4070,10 @@ namespace SLVisifireChartsTest
         private void HtmlElement_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
-            try
-            {
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
-                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-            }
-            catch { }
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
         /// <summary>
@@ -5044,14 +4114,10 @@ namespace SLVisifireChartsTest
         private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
-            try
-            {
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
-                System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
-            }
-            catch { }
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+            System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
         /// <summary>
@@ -5100,7 +4166,7 @@ namespace SLVisifireChartsTest
         /// Whether the chart is loaded
         /// </summary>
         private bool _isLoaded = false;
-
+        
         #endregion
     }
 }

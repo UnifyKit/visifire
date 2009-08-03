@@ -169,14 +169,14 @@ namespace Visifire.Charts
 
                 PlotGroup plotGroup = series.PlotGroup;
 
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+                foreach (DataPoint dataPoint in series.DataPoints)
                 {
                     if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
                     {
                         continue;
                     }
 
-                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.XValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
 
@@ -189,8 +189,6 @@ namespace Visifire.Charts
                     String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
 
-                    marker.Tag = new ElementData() { Element = dataPoint };
-                    
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     if (marker.MarkerType != MarkerTypes.Cross)
@@ -232,8 +230,6 @@ namespace Visifire.Charts
                     Faces point = new Faces();
                     point.VisualComponents.Add(marker.Visual);
                     point.Visual = marker.Visual;
-
-                    point.BorderElements.Add(marker.MarkerShape);
 
                     dataPoint.Marker = marker;
                     dataPoint.Faces = point;

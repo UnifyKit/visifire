@@ -4,7 +4,7 @@
     Width="500" Height="300" >
     <Grid x:Name="LayoutRoot" Background="White">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                   Theme="Theme1" BorderBrush="Gray">
+                   Theme="Theme1" AnimationEnabled="False" BorderBrush="Gray">
     
             <vc:Chart.Titles>
                 <vc:Title Text="Largest Oil Producers"/>

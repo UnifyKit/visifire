@@ -4,44 +4,6 @@
   xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
   >
 
-     <vc:ColorSet Id="Visifire1">
-        <vc:ColorSet.Brushes>
-            <SolidColorBrush Color="#4386d8"></SolidColorBrush>
-            <SolidColorBrush Color="#ff9a2e"></SolidColorBrush>
-            <SolidColorBrush Color="#db443f"></SolidColorBrush>
-            <SolidColorBrush Color="#a8d44f"></SolidColorBrush>
-            <SolidColorBrush Color="#8560b3"></SolidColorBrush>
-            <SolidColorBrush Color="#3cbfe3"></SolidColorBrush>
-            <SolidColorBrush Color="#AFD8F8"></SolidColorBrush>
-            <SolidColorBrush Color="#008E8E"></SolidColorBrush>
-            <SolidColorBrush Color="#8BBA00"></SolidColorBrush>
-            <SolidColorBrush Color="#FABD0F"></SolidColorBrush>
-            <SolidColorBrush Color="#FA6E46"></SolidColorBrush>
-            <SolidColorBrush Color="#9D080D"></SolidColorBrush>
-            <SolidColorBrush Color="#A186BE"></SolidColorBrush>
-            <SolidColorBrush Color="#CC6600"></SolidColorBrush>
-            <SolidColorBrush Color="#FDC689"></SolidColorBrush>
-        </vc:ColorSet.Brushes>
-    </vc:ColorSet>
-    
-    <vc:ColorSet Id="CandleLight">
-        <vc:ColorSet.Brushes>
-            <SolidColorBrush Color="#a8d44f"></SolidColorBrush>
-            <SolidColorBrush Color="#4386d8"></SolidColorBrush>
-            <SolidColorBrush Color="#ff9a2e"></SolidColorBrush>
-            <SolidColorBrush Color="#8560b3"></SolidColorBrush>
-            <SolidColorBrush Color="#3cbfe3"></SolidColorBrush>
-            <SolidColorBrush Color="#AFD8F8"></SolidColorBrush>
-            <SolidColorBrush Color="#008E8E"></SolidColorBrush>
-            <SolidColorBrush Color="#FABD0F"></SolidColorBrush>
-            <SolidColorBrush Color="#FA6E46"></SolidColorBrush>
-            <SolidColorBrush Color="#A186BE"></SolidColorBrush>
-            <SolidColorBrush Color="#cc6600"></SolidColorBrush>
-            <SolidColorBrush Color="#ff7e00"></SolidColorBrush>
-            <SolidColorBrush Color="#2dd277"></SolidColorBrush>
-        </vc:ColorSet.Brushes>
-    </vc:ColorSet>
-        
     <vc:ColorSet Id="DarkShades" >
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#b0aeaf"></SolidColorBrush>
@@ -97,7 +59,7 @@
             <SolidColorBrush Color="#e3e3d1"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="Picasso">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#312c20"></SolidColorBrush>
@@ -107,7 +69,7 @@
             <SolidColorBrush Color="#e2cb92"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="DullShades">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#f79646"></SolidColorBrush>
@@ -118,7 +80,29 @@
             <SolidColorBrush Color="#4bacc6"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-     
+
+
+    <vc:ColorSet Id="Visifire1">
+        <vc:ColorSet.Brushes>
+            <SolidColorBrush Color="#4386d8"></SolidColorBrush>
+            <SolidColorBrush Color="#ff9a2e"></SolidColorBrush>
+            <SolidColorBrush Color="#db443f"></SolidColorBrush>
+            <SolidColorBrush Color="#a8d44f"></SolidColorBrush>
+            <SolidColorBrush Color="#8560b3"></SolidColorBrush>
+            <SolidColorBrush Color="#3cbfe3"></SolidColorBrush>
+            <SolidColorBrush Color="#AFD8F8"></SolidColorBrush>
+            <SolidColorBrush Color="#008E8E"></SolidColorBrush>
+            <SolidColorBrush Color="#8BBA00"></SolidColorBrush>
+            <SolidColorBrush Color="#FABD0F"></SolidColorBrush>
+            <SolidColorBrush Color="#FA6E46"></SolidColorBrush>
+            <SolidColorBrush Color="#9D080D"></SolidColorBrush>
+            <SolidColorBrush Color="#A186BE"></SolidColorBrush>
+            <SolidColorBrush Color="#CC6600"></SolidColorBrush>
+            <SolidColorBrush Color="#FDC689"></SolidColorBrush>
+        </vc:ColorSet.Brushes>
+    </vc:ColorSet>
+
+
     <vc:ColorSet Id="VisiBlue">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#3264a0"></SolidColorBrush>
@@ -128,7 +112,7 @@
             <SolidColorBrush Color="#becdec"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiRed">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#a33330"></SolidColorBrush>
@@ -138,7 +122,7 @@
             <SolidColorBrush Color="#eebebd"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiGreen">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#7e9e3b"></SolidColorBrush>
@@ -148,7 +132,7 @@
             <SolidColorBrush Color="#daeac0"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiViolet">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#644886"></SolidColorBrush>
@@ -158,7 +142,7 @@
             <SolidColorBrush Color="#cfc5df"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiAqua">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#2e8faa"></SolidColorBrush>
@@ -168,7 +152,7 @@
             <SolidColorBrush Color="#bce2f1"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiOrange">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#d67423"></SolidColorBrush>
@@ -178,7 +162,7 @@
             <SolidColorBrush Color="#ffd4b6"></SolidColorBrush>
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
-    
+
     <vc:ColorSet Id="VisiGray">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#545454"></SolidColorBrush>

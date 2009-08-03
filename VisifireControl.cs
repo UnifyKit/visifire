@@ -40,39 +40,23 @@ namespace Visifire.Commons
         public static String GetAbsolutePath(String path)
         {
 #if SL      
-            String address, queryString;
             String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
-                        
-            Int32 index = path.IndexOf('?');
-            
-            if (index == -1)
-            {
-                address = path;
-                queryString = "";
-            }
-            else
-            {
-                address = path.Substring(0, index);
-                queryString = path.Substring(index);
-            }
-
-            Uri ur = new Uri(address, UriKind.RelativeOrAbsolute);
-
+            Uri ur = new Uri(path, UriKind.RelativeOrAbsolute);
             if (ur.IsAbsoluteUri)
             {
-                return ur.AbsoluteUri + queryString;
+                return ur.AbsoluteUri;
             }
             else if (path.StartsWith("/"))
             {
                 UriBuilder baseUri = new UriBuilder(BaseUri);
-                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, address, queryString);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, path);
                 return newUri.ToString();
             }
             else
             {
                 UriBuilder baseUri = new UriBuilder(BaseUri);
                 String sourcePath = baseUri.Path.Substring(0, baseUri.Path.LastIndexOf('/') + 1);
-                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + address, queryString);
+                UriBuilder newUri = new UriBuilder(baseUri.Scheme, baseUri.Host, baseUri.Port, sourcePath + path);
                 return newUri.ToString();
             }
 #else       

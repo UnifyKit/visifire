@@ -1548,58 +1548,6 @@ namespace SLVisifireChartsTest
         }
         #endregion
 
-        #region TestMultipleLegends
-        /// <summary>
-        /// Test multiple Legends
-        /// </summary>
-        [TestMethod]
-        [Asynchronous]
-        public void TestMultipleLegends()
-        {
-            Chart chart = new Chart();
-            chart.Width = 500;
-            chart.Height = 300;
-
-            _isLoaded = false;
-            chart.Loaded += new RoutedEventHandler(chart_Loaded);
-
-            Random rand = new Random();
-
-            TestPanel.Children.Add(chart);
-
-            EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
-
-            Legend legend1 = new Legend();
-            legend1.Name = "Legend1";
-            legend1.Background = new SolidColorBrush(Colors.Red);
-            chart.Legends.Add(legend1);
-            Legend legend2 = new Legend();
-            legend2.Name = "Legend2";
-            legend1.Background = new SolidColorBrush(Colors.Green);
-            chart.Legends.Add(legend2);
-         
-            EnqueueCallback(() =>
-            {
-                DataSeries dataSeries = new DataSeries();
-                dataSeries.Legend = "Legend1";
-                for (Int32 i = 0; i < 6; i++)
-                    dataSeries.DataPoints.Add(new DataPoint() { XValue = i + 1, YValue = rand.Next(10, 100) });
-                chart.Series.Add(dataSeries);
-
-                dataSeries = new DataSeries();
-                dataSeries.Legend = "Legend2";
-                for (Int32 i = 0; i < 6; i++)
-                    dataSeries.DataPoints.Add(new DataPoint() { XValue = i + 1, YValue = rand.Next(10, 100) });
-                chart.Series.Add(dataSeries);
-
-            });
-
-            EnqueueSleep(_sleepTime);
-            EnqueueTestComplete();
-        }
-        #endregion
-
         /// <summary>
         /// Create DataSeries
         /// </summary>
@@ -1665,31 +1613,17 @@ namespace SLVisifireChartsTest
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
-        /// <summary>
-        /// Event handler for loaded event of the chart
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            _isLoaded = true;
-        }
-
         #region Private Data
-        /// <summary>
-        /// Html element reference
-        /// </summary>
-        private System.Windows.Browser.HtmlElement _htmlElement;
 
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
-        private const int _sleepTime = 2000;
+        private const int _sleepTime = 1000;
 
         /// <summary>
-        /// Whether the chart is loaded
+        /// Html element reference
         /// </summary>
-        private bool _isLoaded = false;
+        private System.Windows.Browser.HtmlElement _htmlElement;
 
         #endregion
     }

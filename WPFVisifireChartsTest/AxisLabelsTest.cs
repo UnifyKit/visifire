@@ -619,8 +619,8 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                _axisX.AxisLabels.TextWrap = 0.5;
-                Assert.AreEqual(0.5, _axisX.AxisLabels.TextWrap);
+                _axisX.AxisLabels.TextWrap = TextWrapping.Wrap;
+                Assert.AreEqual(TextWrapping.Wrap, _axisX.AxisLabels.TextWrap);
             }
 
             window.Dispatcher.InvokeShutdown();

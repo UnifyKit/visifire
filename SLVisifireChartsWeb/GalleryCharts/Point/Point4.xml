@@ -1,11 +1,11 @@
 <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-          Theme="Theme1" ScrollingEnabled="True" BorderBrush="Gray" Width="500" Height="300">
+          Theme="Theme1" AnimationEnabled="False" ScrollingEnabled="True" BorderBrush="Gray">
   <vc:Chart.Titles>
     <vc:Title Text="Visifire Point Chart"/>
   </vc:Chart.Titles>
 
   <vc:Chart.PlotArea>
-    <vc:PlotArea Background="White"/>
+    <vc:PlotArea Color="White"/>
   </vc:Chart.PlotArea>
 
   <vc:Chart.AxesX>

@@ -8,7 +8,7 @@
                 <Setter Property="FontColor" Value="Red"></Setter>
             </Style>
         </Grid.Resources>
-        <vc:Chart Theme="Theme1" BorderThickness="2" Background="Aqua"
+        <vc:Chart Theme="Theme1" AnimationEnabled="False" BorderThickness="2" Background="Aqua"
                   Bevel="True" BorderBrush="Black" View3D="False">
             <vc:Chart.Titles>
                 <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>
@@ -16,7 +16,7 @@
             <vc:Chart.AxesX>
                 <vc:Axis Title="Country">
                     <vc:Axis.AxisLabels>
-                        <vc:AxisLabels />
+                        <vc:AxisLabels Interval="1"/>
                     </vc:Axis.AxisLabels>
                 </vc:Axis>
             </vc:Chart.AxesX>

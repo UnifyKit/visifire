@@ -224,14 +224,14 @@ namespace SLVisifireChartsTest
 
             EnqueueSleep(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsNotNull(chart.PlotArea.ToolTipText));
+                () => Assert.IsNull(chart.PlotArea.ToolTipText));
 
             EnqueueTestComplete();
         }
         #endregion
 
         #region CheckPlotAreaNewPropertyValue
-
+        
         /// <summary>
         /// Check the new value of Bevel. 
         /// </summary> 
