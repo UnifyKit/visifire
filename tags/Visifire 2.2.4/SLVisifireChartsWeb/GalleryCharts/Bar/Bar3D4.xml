@@ -1,0 +1,43 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" View3D="True" BorderBrush="Gray" CornerRadius="5" Width="450" Height="475">
+
+  <vc:Chart.PlotArea>
+    <vc:PlotArea Background="#f1f1f1"/>
+  </vc:Chart.PlotArea>
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire 3D Bar Chart"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis LineThickness="0">
+      <vc:Axis.Ticks>
+        <vc:Ticks Enabled="False"/>
+      </vc:Axis.Ticks>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis>
+      <vc:Axis.Grids>
+        <vc:ChartGrid InterlacedColor="White"/>
+      </vc:Axis.Grids>
+      <vc:Axis.Ticks>
+        <vc:Ticks LineStyle="Dashed" LineColor="Black"/>
+      </vc:Axis.Ticks>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bar" Cursor="Hand" LabelEnabled="True" LabelFontSize="10" LabelFontWeight="Bold">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="150"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="200"/>
+        <vc:DataPoint AxisXLabel="May" YValue="250"/>
+        <vc:DataPoint AxisXLabel="Jul" YValue="300"/>
+        <vc:DataPoint AxisXLabel="Aug" YValue="350"/>
+        <vc:DataPoint AxisXLabel="Oct" YValue="390"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

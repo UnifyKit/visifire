@@ -1,0 +1,557 @@
+﻿/// <summary>
+/// Identifies the Visifire.Charts.Axis.Scale dependency property.
+/// </summary>
+/// <returns>
+/// The identifier for the Visifire.Charts.Axis.Scale dependency property.
+/// </returns>
+public static DependencyProperty ScaleProperty = DependencyProperty.Register
+    ("Scale",
+    typeof(Double),
+    typeof(Axis),
+    new PropertyMetadata(Double.NaN, OnScalePropertyChanged));
+            
+/// <summary>
+/// Get or set the axis Scale property of the axis.
+/// Currently Scale property is applicable only for AxisX.
+/// </summary>
+public Double Scale
+{
+	get
+	{
+		return (Double)GetValue(ScaleProperty);
+	}
+	set
+	{
+		SetValue(ScaleProperty, value);
+	}
+}
+
+/// <summary>
+/// Event handler manages Scale property change event of axis
+/// </summary>
+/// <param name="d">DependencyObject</param>
+/// <param name="e">DependencyPropertyChangedEventArgs</param>
+private static void OnScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+{
+	Axis axis = d as Axis;
+	axis.FirePropertyChanged("Scale");
+}
+
+
+        /// <summary>
+        /// Whether the render call is allowed by chart itself during render process.
+        /// During render process, elements properties and chart elements collections are changed. This should not cause render call. 
+        /// So this variable is used to protect PropertyChanged event fire during render process.
+        /// </summary>
+        internal Boolean _isInvokeRenderAllowed = true;
+
+
+All Vertical Axis With Scroll
++ Horizontal With Scroll + Non Scroll
+
+if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
+                UpdateLayoutSettings(NewSize);
+                Double totalHeightReduced = DrawAxesX(NewSize);
+                NewSize.Height -= totalHeightReduced;
+
+                Double totalWidthReduced = DrawAxesY(NewSize);
+                NewSize.Width -= totalWidthReduced;
+                NewSize.Height -= _totalScrollBarsHeight;
+
+                NewSize = SetChartAreaCenterGridMargin(NewSize, Chart.PlotDetails.ChartOrientation);
+                NewSize = SetChartAreaCenterGridMargin(NewSize, Chart.PlotDetails.ChartOrientation);
+
+                UpdateLayoutSettings(NewSize);
+
+                DrawAxesX(NewSize);
+                DrawAxesY(NewSize);
+
+            }
+
+            #region Horizontal Render
+
+            else if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
+                UpdateLayoutSettings(NewSize);
+                Double totalHeightReduced = DrawAxesX(NewSize);
+                NewSize.Height -= totalHeightReduced;
+
+                Double totalWidthReduced = DrawAxesY(NewSize);//totalWidthReduced
+                NewSize.Width -= totalWidthReduced;
+                NewSize.Width -= 2 * _totalScrollBarsWidth;
+
+                //NewSize.Height -= 7;
+
+                NewSize = SetChartAreaCenterGridMargin(NewSize, ChartOrientationType.Vertical);
+
+                UpdateLayoutSettings(NewSize);
+                DrawAxesY(NewSize);
+                DrawAxesX(NewSize);
+            }
+
+            #endregion Horizontal Render
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            //-------------------
+            
+            
+                                <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0"
+                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                          >
+
+                        <Grid x:Name="ShadowGrid" Margin="0,0,0,0" Canvas.ZIndex="0" ></Grid>
+
+                        <Border x:Name="ChartBorder" Padding="{TemplateBinding Padding}" Margin="0,0,0,0" Canvas.ZIndex="1" 
+                                       Background="{TemplateBinding Background}"
+                                       Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
+                                       BorderThickness="{TemplateBinding BorderThickness}" 
+                                       CornerRadius="{TemplateBinding CornerRadius}"
+                                       BorderBrush="{TemplateBinding BorderBrush}">
+
+                            <Grid x:Name="ChartAreaGrid" Background="Green" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Rectangle x:Name="ChartLightingBorder" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Visibility="Collapsed" Margin="0,0,0,0" Canvas.ZIndex="2" StrokeThickness="{TemplateBinding BorderThickness}" >
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#A0FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+
+                                <StackPanel x:Name="TopOuterPanel" Background="AliceBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Canvas.ZIndex="4">
+                                    <StackPanel  x:Name="TopOuterTitlePanel" HorizontalAlignment="Stretch" ></StackPanel>
+                                    <StackPanel x:Name="TopOuterLegendPanel" HorizontalAlignment="Stretch" ></StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Name="BottomOuterPanel" Background="Green" Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Canvas.ZIndex="4">
+                                    <StackPanel x:Name="BottomOuterLegendPanel" ></StackPanel>
+                                    <StackPanel x:Name="BottomOuterTitlePanel" ></StackPanel>
+                                </StackPanel>
+
+                                <StackPanel x:Name="LeftOuterPanel" Background="Aqua" Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Stretch" Canvas.ZIndex="4">
+                                    <StackPanel x:Name="LeftOuterTitlePanel" Orientation="Horizontal" ></StackPanel>
+                                    <StackPanel x:Name="LeftOuterLegendPanel" Orientation="Horizontal" ></StackPanel>
+                                </StackPanel>
+
+                                <StackPanel x:Name="RightOuterPanel" Grid.Row="1" Background="Aquamarine" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Stretch" Canvas.ZIndex="4">
+                                    <StackPanel x:Name="RightOuterLegendPanel" Orientation="Horizontal" ></StackPanel>
+                                    <StackPanel x:Name="RightOuterTitlePanel" Orientation="Horizontal" ></StackPanel>
+                                </StackPanel>
+
+                                <!-- Margin="{TemplateBinding Padding}"  -->
+                                <Grid x:Name="CenterOuterGrid" Background="Yellow" Margin="0" Grid.Row="1" Grid.Column="1" Canvas.ZIndex="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid x:Name="TopOffsetGrid" Background="Red" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"/>
+                                    <Grid x:Name="BottomOffsetGrid" Background="Red" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"/>
+                                    <Grid x:Name="LeftOffsetGrid"  Background="Red" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Stretch"/>
+                                    <Grid x:Name="RightOffsetGrid" Background="Red" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" VerticalAlignment="Stretch"/>
+
+                                    <Grid x:Name="CenterGrid" Background="Red" Grid.Row="1" Margin="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid x:Name="TopAxisGrid" Background="Beige" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="TopAxisContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <StackPanel x:Name="TopAxisPanel"></StackPanel>
+                                                <ScrollBar x:Name="TopAxisScrollBar" Orientation="Horizontal" Visibility="Collapsed"></ScrollBar>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid x:Name="LeftAxisGrid" Grid.Row="1" Background="Bisque" Grid.RowSpan="2"  Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="LeftAxisContainer" Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <StackPanel x:Name="LeftAxisPanel"></StackPanel>
+                                                <ScrollBar x:Name="LeftAxisScrollBar" Height="1" VerticalAlignment="Top" Orientation="Vertical" Visibility="Collapsed"></ScrollBar>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid x:Name="RightAxisGrid" Grid.Row="1" Background="BurlyWood"  Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="RightAxisContainer" Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollBar x:Name="RightAxisScrollBar" VerticalAlignment="Top" Height="0" Orientation="Vertical" Visibility="Collapsed" ></ScrollBar>
+                                                <StackPanel x:Name="RightAxisPanel" ></StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid x:Name="BottomAxisGrid" Grid.Row="2" Background="Blue" Grid.Column="1"  HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                                            <StackPanel x:Name="BottomAxisContainer" Orientation="Vertical"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollBar  x:Name="BottomAxisScrollBar" Height="0" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
+                                                <StackPanel x:Name="BottomAxisPanel" ></StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid x:Name="CenterInnerGrid" Background="Bisque" Margin="0" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                                            <Canvas x:Name="PlotAreaShadowCanvas" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
+                                            <!-- Margin="0,0,4,4" -->
+                                            <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,4,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <ScrollViewer BorderThickness="0" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Padding="0">
+                                                    <Canvas x:Name="PlotCanvas">
+
+                                                        <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
+
+                                                        <!--<Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
+
+                                                    </Canvas>
+                                                </ScrollViewer>
+                                            </Grid>
+
+                                            <Grid x:Name="InnerGrid"  Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <StackPanel Name="TopInnerPanel" Grid.Row="0" Grid.ColumnSpan="3">
+                                                    <StackPanel x:Name="TopInnerTitlePanel" ></StackPanel>
+                                                    <StackPanel x:Name="TopInnerLegendPanel" ></StackPanel>
+                                                </StackPanel>
+
+                                                <StackPanel Name="BottomInnerPanel" Grid.Row="2" Grid.ColumnSpan="3">
+                                                    <StackPanel x:Name="BottomInnerLegendPanel" ></StackPanel>
+                                                    <StackPanel x:Name="BottomInnerTitlePanel" ></StackPanel>
+                                                </StackPanel>
+
+                                                <StackPanel x:Name="LeftInnerPanel" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
+                                                    <StackPanel x:Name="LeftInnerTitlePanel" Orientation="Horizontal" ></StackPanel>
+                                                    <StackPanel x:Name="LeftInnerLegendPanel"  Orientation="Horizontal" ></StackPanel>
+                                                </StackPanel>
+
+                                                <StackPanel x:Name="RightInnerPanel" Grid.Column="2"  Grid.Row="1" Orientation="Horizontal" >
+                                                    <StackPanel x:Name="RightInnerLegendPanel" Orientation="Horizontal" ></StackPanel>
+                                                    <StackPanel x:Name="RightInnerTitlePanel" Orientation="Horizontal" ></StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Grid>
+
+                                    </Grid>
+                                </Grid>
+
+                            </Grid>
+                        </Border>
+                        <Canvas x:Name="BevelCanvas" Canvas.ZIndex="2" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Canvas>
+                        <StackPanel x:Name="CenterDockInsidePlotAreaPanel" Canvas.ZIndex="3" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
+                        <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
+                        <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                        </Canvas>
+                    </Grid>
+                    
+                    
+                    
+                    
+                    
+ //PIE Label Placing inside Pie
+                 if (DataPointRef.LabelStyle == LabelStyles.Inside)
+                {
+                    Double x = (topArcStart.X > topArcStop.X) ? topArcStop.X + (topArcStart.X - topArcStop.X) / 2 : topArcStart.X + (topArcStop.X - topArcStart.X) / 2;
+                    Double y = (topArcStart.Y > topArcStop.Y) ? topArcStop.Y + (topArcStart.Y - topArcStop.Y) / 2 : topArcStart.Y + (topArcStop.Y - topArcStart.Y) / 2;             
+
+                    Double a = 2 * (pieParams.OuterRadius / 3);
+                    Double b = 2 * (pieParams.OuterRadius / 3) * pieParams.YAxisScaling;
+
+                    x = center.X + a * Math.Cos(pieParams.MeanAngle);
+                    y = center.Y + b * Math.Sin(pieParams.MeanAngle) + yOffset;
+
+                    DataPointRef.LabelVisual.SetValue(Canvas.LeftProperty, x);
+                    DataPointRef.LabelVisual.SetValue(Canvas.TopProperty, y - DataPointRef.LabelVisual.DesiredSize.Height);
+
+                    Ellipse e = new Ellipse() { Height = 3, Width = 3, Fill = new SolidColorBrush(Colors.Yellow) };
+                    e.SetValue(Canvas.ZIndexProperty,(Int32) 100000);
+                    e.SetValue(Canvas.LeftProperty, x);
+                    e.SetValue(Canvas.TopProperty, y);
+                    pieFaces.Add(e);
+                }
+                
+                
+                
+                
+                
+                
+                
+                -------------------------
+                
+                
+                 PostionData[] dataForSorting = rightPositionData.Values.ToArray();
+            Array.Sort(dataForSorting, PostionData.CompareYPosition);
+            rightPositionData.Clear();
+            for (int i = 0; i < dataForSorting.Length; i++)
+                rightPositionData.Add(i, dataForSorting[i]);
+
+            if (is3D)
+            {
+                minimumY = centerY - vOuterEllipseRadius;
+                maximumY = centerY + vOuterEllipseRadius;
+
+            }
+            else
+            {
+                minimumY = gapRight / 2;
+                maximumY = visualCanvasSize.Height - gapRight / 2;
+            }
+            maxGapBetweenLabels = ((maximumY - minimumY) - (gapRight * rightPositionData.Count)) / rightPositionData.Count;
+            PositionLabels(minimumY, maximumY, 1, maxGapBetweenLabels, rightIndex, rightPositionData, true);
+
+            oldLabel = null; 
+
+            for (Int32 i = 0; i < rightIndex; i++)
+            {
+                rightPositionData.TryGetValue(i, out tempData);
+
+                centerX = visualCanvasSize.Width / 2;
+                centerY = visualCanvasSize.Height / 2;
+
+                extent = Math.Max(centerY - minimumY, maximumY - centerY);
+
+                if (is3D)
+                {
+                    tempData.xPosition = centerX + Math.Sqrt((1 - Math.Pow((tempData.yPosition - centerY) / extent, 2)) * Math.Pow(hOuterEllipseRadius, 2)) + 10;
+                }
+                else
+                    tempData.xPosition = centerX + hOuterEllipseRadius * Math.Cos(Math.Asin(Math.Abs(tempData.yPosition - centerY) / hOuterEllipseRadius)) ;
+
+                if (tempData.xPosition + labels[dataPoints[tempData.Index]].DesiredSize.Width > visualCanvasSize.Width)
+                    tempData.xPosition = visualCanvasSize.Width - labels[dataPoints[tempData.Index]].DesiredSize.Width;
+                if (tempData.yPosition + labels[dataPoints[tempData.Index]].DesiredSize.Height > visualCanvasSize.Height)
+                    tempData.yPosition = visualCanvasSize.Height - labels[dataPoints[tempData.Index]].DesiredSize.Height;
+                if (tempData.yPosition < labels[dataPoints[tempData.Index]].DesiredSize.Height / 2)
+                    tempData.yPosition = labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                if ((bool)dataPoints[tempData.Index].LabelEnabled)
+                {
+                    Double labelTop = tempData.yPosition -labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+                    Double labelLeft = tempData.xPosition;
+
+                   // if (tempData.MeanAngle >= 3.5 * Math.PI / 2 && tempData.MeanAngle <= 4.5 * Math.PI / 2)
+                    //if (oldLabel != null)
+                    //{
+                    //    Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                    //    Double overlapOffset = 0;
+
+                    //    if (labelTop < oldTop + oldLabel.DesiredSize.Height)
+                    //    {
+                    //        overlapOffset = oldTop + oldLabel.DesiredSize.Height - labelTop;
+                    //        labelTop += overlapOffset / 2;
+                    //        oldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset / 2);
+
+                    //        for (int j = i - 2; j > 0; j--)
+                    //        {
+                    //            PostionData pData;
+                    //            rightPositionData.TryGetValue(j, out pData);
+                    //            Grid oldOldLabel = labels[dataPoints[pData.Index]];
+                    //            System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                    //            System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                    //            oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                    //            Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                    //            if (top < oldTop + oldOldLabel.DesiredSize.Height)
+                    //            {
+                    //                overlapOffset = oldTop + oldOldLabel.DesiredSize.Height - top;
+
+                    //                oldOldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset);
+                    //            }
+
+                    //            oldLabel = oldOldLabel;
+
+                    //        }
+                    //    }
+                    //}
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, labelLeft);
+
+                }
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual;
+                oldLabel.ShowGridLines = true;
+                //if (i == 1)
+                //    break;
+            }
+
+
+
+ /// <summary>
+        /// Set DateTime in AxisXLabel
+        /// </summary>
+        /// <param name="dataPoint">DataPoint</param>
+        /// <param name="axis">Axis</param>
+        /// <param name="label">Axis labels</param>
+        private void SetDateTimeInAxisXLabel(DataPoint dataPoint, Axis axis, IntervalTypes intervalType)
+        {
+            if (String.IsNullOrEmpty(dataPoint.AxisXLabel))
+            {
+                String valueFormatString = axis.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : axis.XValueType == ChartValueTypes.Time ?  "h:mm:ss tt" :  "M/d/yyyy h:mm:ss tt";
+                valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : axis.ValueFormatString;
+                dataPoint.IsNotificationEnable = false;
+
+                DateTime dt = AlignIntervalStart(dataPoint.InternalXValueAsDateTime, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
+
+                if (intervalType == IntervalTypes.Years)
+                    dataPoint.AxisXLabel = (new DateTime(dataPoint.InternalXValueAsDateTime.Year, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+                else if (intervalType == IntervalTypes.Months)
+                    dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+                else
+                    dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+
+                System.Diagnostics.Debug.WriteLine("XValue =" + dataPoint.AxisXLabel.ToString());
+                dataPoint.IsNotificationEnable = true;
+            }
+        }
+ 
+        // if (axisX.InternalIntervalType == IntervalTypes.Hours || axisX.InternalIntervalType == IntervalTypes.Minutes || axisX.InternalIntervalType == IntervalTypes.Seconds || axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                            {   
+                                DateTime newMinDate = DateTimeHelper.AlignDateTime(minDate, axisX.InternalInterval, axisX.InternalIntervalType);
+
+                                if (newMinDate != minDate)
+                                {
+                                    Chart.InternalSeries[0].IsNotificationEnable = false;
+                                    Chart.InternalSeries[0].InternalDataPoints.Add(new DataPoint() { XValueType = ChartValueTypes.DateTime, InternalXValueAsDateTime = newMinDate, Enabled = false, Parent = Chart.InternalSeries[0] });
+                                    Chart.InternalSeries[0].IsNotificationEnable = true;
+
+                                    minDate = newMinDate;
+                                }
+                                
+                                
+                                
+                                
+                                
+                                
+		 // if (axisX.XValueType == ChartValueTypes.DateTime)
+         //               {
+         //                   if ((axisX.Interval == null || Double.IsNaN((Double)axisX.Interval)) &&
+         //                       (axisX.IntervalType == IntervalTypes.Years
+         //                       || axisX.IntervalType == IntervalTypes.Months
+         //                       || axisX.IntervalType == IntervalTypes.Weeks
+         //                       || axisX.IntervalType == IntervalTypes.Days
+         //                       || axisX.IntervalType == IntervalTypes.Auto
+         //                       )
+         //                   )
+         //                   {
+         //                       if (minDateRange.Days != 0)
+         //                           axisX.InternalIntervalType = intervalType;
+         //                       else
+         //                           axisX.InternalIntervalType = DateTimeHelper.GetAutoIntervalType(minDateRange, maxDateRange, axisX.IntervalType);
+         //                   }
+         //                   else
+         //                   {
+         //                       if (axisX.IntervalType == IntervalTypes.Auto)
+         //                           axisX.InternalIntervalType = intervalType;
+         //                       else
+         //                           axisX.InternalIntervalType = axisX.IntervalType;
+         //                   }
+         //               }
+        ///// <summary>
+        ///// Set DateTime in AxisXLabel
+        ///// </summary>
+        ///// <param name="dataPoint">DataPoint</param>
+        ///// <param name="axis">Axis</param>
+        ///// <param name="label">Axis labels</param>
+        //private void SetDateTimeInAxisXLabel(DataPoint dataPoint, Axis axis, IntervalTypes intervalType)
+        //{
+        //    if (String.IsNullOrEmpty(dataPoint.AxisXLabel))
+        //    {
+        //        String valueFormatString = (String.IsNullOrEmpty((String)axis.GetValue(Axis.ValueFormatStringProperty))) ? "M/d/yyyy h:mm:ss tt" : axis.ValueFormatString;
+        //        dataPoint.IsNotificationEnable = false;
+
+        //        if (intervalType == IntervalTypes.Years)
+        //            dataPoint.AxisXLabel = (new DateTime(dataPoint.InternalXValueAsDateTime.Year, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+        //        else if (intervalType == IntervalTypes.Months)
+        //            dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+        //        else
+        //            dataPoint.AxisXLabel = ((DateTime)dataPoint.InternalXValueAsDateTime).ToString(valueFormatString, System.Globalization.CultureInfo.InvariantCulture);
+
+        //        System.Diagnostics.Debug.WriteLine("XValue =" + dataPoint.AxisXLabel.ToString());
+        //        dataPoint.IsNotificationEnable = true;
+        //    }
+        //}
+        
+        
+//if (intervalType == IntervalTypes.Hours)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = axisX.InternalInterval * 60;
+//    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = axisX.InternalInterval * 60 * 60;
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = axisX.InternalInterval * 60 * 60 * 1000;
+//}
+//else if (intervalType == IntervalTypes.Minutes)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60);
+//    if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 60);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 60 * 1000);
+//}
+//else if (intervalType == IntervalTypes.Seconds)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 3600);
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval * 1000);
+//}
+//else if (intervalType == IntervalTypes.Milliseconds)
+//{
+//    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 3600000);
+//    if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 60000);
+//    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+//        axisX.InternalInterval = Math.Ceiling(axisX.InternalInterval / 1000);
+//}
+                                    
+                                    
