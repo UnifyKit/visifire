@@ -1867,7 +1867,7 @@ namespace Visifire.Charts
             if (Chart._internalAnimationEnabled && !Chart.IsInDesignMode)
             {
                 try
-                {   
+                {
                     if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                     {
                         AnimateChartGrid(AxisX);
@@ -1876,13 +1876,12 @@ namespace Visifire.Charts
                     }
 
                     Boolean isAnyActiveStoryboard = false;
-
+                    
                     foreach (DataSeries series in Chart.InternalSeries)
                     {
                         if (series.Storyboard != null)
                         {
-                            if (series.InternalDataPoints.Count >= 1)
-                                isAnyActiveStoryboard = true;
+                            isAnyActiveStoryboard = true;
 
                             series.Storyboard.Completed += delegate
                             {
@@ -1891,21 +1890,21 @@ namespace Visifire.Charts
                                 Visifire.Charts.Chart.SelectDataPoints(Chart);
                             };
 #if WPF
-                            if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                        if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                        {
+                            series.Storyboard.Completed += delegate(object sender, EventArgs e)
                             {
-                                series.Storyboard.Completed += delegate(object sender, EventArgs e)
+                                series.DetachOpacityPropertyFromAnimation();
+
+                                foreach (DataPoint dataPoint in series.InternalDataPoints)
                                 {
-                                    series.DetachOpacityPropertyFromAnimation();
-
-                                    foreach (DataPoint dataPoint in series.InternalDataPoints)
-                                    {
-                                        if ((Boolean)dataPoint.Exploded)
-                                            dataPoint.InteractiveAnimation(true);
-                                    }
-                                };
-                            }
-
-                            series.Storyboard.Begin(Chart._rootElement, true);
+                                    if ((Boolean)dataPoint.Exploded)
+                                        dataPoint.InteractiveAnimation(true);
+                                }
+                            };
+                        }
+                        
+                        series.Storyboard.Begin(Chart._rootElement, true);
 #else
                             if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                             {
@@ -1926,20 +1925,17 @@ namespace Visifire.Charts
 #endif
                         }
 
-
+                        
                     }
 
                     if (!isAnyActiveStoryboard)
-                    {
                         Chart._rootElement.IsHitTestVisible = true;
-                        _isAnimationFired = true;
-                    }
+
                 }
                 catch (Exception e)
                 {
                     System.Diagnostics.Debug.WriteLine("Animation Error. " + e.Message);
                 }
-
             }
         }
 
@@ -2290,9 +2286,6 @@ namespace Visifire.Charts
 
                 legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataPoint.LegendMarker));
             }
-
-            if (legend != null && legend.Reversed)
-                legend.Entries.Reverse();
         }
 
         /// <summary>
@@ -2447,9 +2440,6 @@ namespace Visifire.Charts
 
                         legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
                     }
-
-                    if (legend != null && legend.Reversed)
-                        legend.Entries.Reverse();
                 }
             }
 

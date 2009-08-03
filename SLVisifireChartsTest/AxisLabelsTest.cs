@@ -42,28 +42,6 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
-        /// Check the default value of TextAlignment. 
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the default value of TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Left, chart.AxesX[0].AxisLabels.TextAlignment));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
         /// Check the default value of Interval. 
         /// </summary> 
         [TestMethod]
@@ -162,38 +140,6 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(-30, _axisX.AxisLabels.Angle),
                 () => Assert.AreEqual(30, _axisY.AxisLabels.Angle));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
-        /// Check the New value for TextAlignment.
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the new value for TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentNewValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _axisX = new Axis();
-            _axisY = new Axis();
-
-            _axisX.AxisLabels.TextAlignment = TextAlignment.Center;
-            _axisY.AxisLabels.TextAlignment = TextAlignment.Center;
-
-            chart.AxesX.Add(_axisX);
-            chart.AxesY.Add(_axisY);
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Center, _axisX.AxisLabels.TextAlignment),
-                () => Assert.AreEqual(TextAlignment.Center, _axisY.AxisLabels.TextAlignment));
 
             EnqueueTestComplete();
         }

@@ -83,18 +83,6 @@ namespace Visifire.Charts
             new PropertyMetadata(OnHrefChanged));
 
         /// <summary>
-        /// Identifies the Visifire.Charts.Legend.Reversed dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.Reversed dependency property.
-        /// </returns>
-        public static readonly DependencyProperty ReversedProperty = DependencyProperty.Register
-            ("Reversed",
-            typeof(Boolean),
-            typeof(Legend),
-            new PropertyMetadata(OnReversedChanged));
-
-        /// <summary>
         /// Identifies the Visifire.Charts.Legend.LabelMargin dependency property.
         /// </summary>
         /// <returns>
@@ -454,21 +442,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(HrefProperty, value);
-            }
-        }
-
-        /// <summary>
-        /// Get or set the Href porperty
-        /// </summary>
-        public Boolean Reversed
-        {
-            get
-            {
-                return (Boolean)GetValue(ReversedProperty);
-            }
-            set
-            {
-                SetValue(ReversedProperty, value);
             }
         }
 
@@ -1139,17 +1112,6 @@ namespace Visifire.Charts
         {
             Legend c = d as Legend;
             c.FirePropertyChanged("Href");
-        }
-
-        /// <summary>
-        /// Event handler attached with Reversed property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnReversedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend c = d as Legend;
-            c.FirePropertyChanged("Reversed");
         }
         
         /// <summary>

@@ -5,12 +5,13 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
 >
     <Grid x:Name="LayoutRoot">
+
         <vc:Chart Width="500" Height="300" Theme="Theme2" Name="MyChart">
 
             <vc:Chart.Titles>
                 <vc:Title Text="Visifire Chart"/>
             </vc:Chart.Titles>
-            
+
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="CandleStick">
                     <vc:DataSeries.DataPoints>
@@ -21,6 +22,7 @@ Width="Auto" Height="Auto"
                         <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
+
             </vc:Chart.Series>
         </vc:Chart>
     </Grid>

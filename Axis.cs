@@ -2812,20 +2812,9 @@ namespace Visifire.Charts
         /// <param name="maxWidth">Pixel width of the scale</param>
         /// <param name="position">Pixel position</param>
         /// <returns>Double</returns>
-        internal Double PixelPositionToXValue(Double maxWidth, Double pixelPosition)
+        internal Double PixelPositionToValue(Double maxWidth, Double pixelPosition)
         {
             return Graphics.PixelPositionToValue(0, maxWidth, InternalAxisMinimum, InternalAxisMaximum, pixelPosition);
-        }
-
-        /// <summary>
-        /// Converts pixel position to value
-        /// </summary>
-        /// <param name="maxWidth">Pixel width of the scale</param>
-        /// <param name="position">Pixel position</param>
-        /// <returns>Double</returns>
-        internal Double PixelPositionToYValue(Double maxHeight, Double pixelPosition)
-        {
-            return Graphics.PixelPositionToValue(maxHeight, 0, InternalAxisMinimum, InternalAxisMaximum, pixelPosition);
         }
 
         /// <summary>
