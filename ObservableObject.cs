@@ -28,6 +28,7 @@ using System.ComponentModel;
 using Visifire.Charts;
 using System.Linq;
 using System.Globalization;
+using Visifire.Commons;
 
 namespace Visifire.Commons
 {   
@@ -49,7 +50,7 @@ namespace Visifire.Commons
                 // Attach event handler with EventChanged event of VisfiireElement
                 EventChanged += delegate
                 {
-                    FirePropertyChanged("MouseEvent");
+                    FirePropertyChanged(VcProperties.MouseEvent);
                 };
             }
 
@@ -152,7 +153,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal virtual void UpdateVisual(String propertyName, object value)
+        internal virtual void UpdateVisual(VcProperties propertyName, object value)
         {
 
         }
@@ -165,7 +166,7 @@ namespace Visifire.Commons
         /// <param name="oldValue">Old property value</param>
         /// <param name="newValue">New property value</param>
         /// <returns></returns>
-        protected bool CheckPropertyChanged<T>(string propertyName, ref T oldValue, ref T newValue)
+        protected bool CheckPropertyChanged<T>(VcProperties propertyName, ref T oldValue, ref T newValue)
         {
             if (oldValue == null && newValue == null)
             {
@@ -188,8 +189,8 @@ namespace Visifire.Commons
         /// Fire property change event
         /// </summary>
         /// <param name="propertyName">Property Name</param>
-        internal void FirePropertyChanged(string propertyName)
-        {
+        internal void FirePropertyChanged(VcProperties propertyName)
+        {   
             _isPropertyChangedFired = false; // Used for testing
 
             if (this.PropertyChanged != null && this.IsNotificationEnable)
@@ -197,7 +198,7 @@ namespace Visifire.Commons
 #if SL          
                 if (IsInDesignMode)
                 {
-                    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
                 }
                 else if (Chart != null && (Chart as Chart)._isTemplateApplied)
                 {   
@@ -208,7 +209,7 @@ namespace Visifire.Commons
                             if (currentDispatcher.CheckAccess())
                                 (Chart as Chart).InvokeRender();
                             else
-                                currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
+                                currentDispatcher.BeginInvoke(new Action<VcProperties>(FirePropertyChanged), propertyName);
                     }
                     else // if we did not get the Dispatcher throw an exception
                     {
@@ -217,9 +218,10 @@ namespace Visifire.Commons
 
                     _isPropertyChangedFired = true;   // Used for testing
                 }
+                
 #else
                 if (Chart != null)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties),propertyName)));
 #endif
             }
         }
@@ -291,6 +293,22 @@ namespace Visifire.Commons
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Validates PartialUpdate
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <returns>true - Get entry for PartialUpdate
+        /// false - Get entry for PartialUpdate</returns>
+        internal virtual Boolean ValidatePartialUpdate()
+        {
+            Chart chart = Chart as Chart;
+
+            if (chart == null || chart.ChartArea == null || chart.ChartArea._isFirstTimeRender)
+                return false;
+            else
+                return true;
+        }
 
         /// <summary>
         /// Formats newline character

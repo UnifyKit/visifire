@@ -39,6 +39,7 @@ using System.Windows.Media;
 using Visifire.Commons;
 using System.Windows.Data;
 #endif
+using Visifire.Charts;
 
 namespace Visifire.Charts
 {
@@ -388,7 +389,7 @@ namespace Visifire.Charts
                 if (Opacity != value)
                 {
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -410,7 +411,7 @@ namespace Visifire.Charts
                 if (base.Cursor != value)
                 {
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -436,7 +437,7 @@ namespace Visifire.Charts
                 if (FontFamily != value)
                 {
                     SetValue(FontFamilyProperty, value);
-                    FirePropertyChanged("FontFamily");
+                    FirePropertyChanged(VcProperties.FontFamily);
                 }
 #else           
                 SetValue(FontFamilyProperty, value);
@@ -460,7 +461,7 @@ namespace Visifire.Charts
                 if (FontSize != value)
                 {
                     SetValue(FontSizeProperty, value);
-                    FirePropertyChanged("FontSize");
+                    FirePropertyChanged(VcProperties.FontSize);
                 }
 #else
                 SetValue(FontSizeProperty, value);
@@ -501,7 +502,7 @@ namespace Visifire.Charts
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
-                    UpdateVisual("FontStyle", value);
+                    UpdateVisual(VcProperties.FontStyle, value);
                 }
 #else
                 SetValue(FontStyleProperty, value);
@@ -527,7 +528,7 @@ namespace Visifire.Charts
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
-                    UpdateVisual("FontWeight", value);
+                    UpdateVisual(VcProperties.FontWeight, value);
                 }
 #else
                 SetValue(FontWeightProperty, value);
@@ -584,7 +585,7 @@ namespace Visifire.Charts
                 if (BorderThickness != value)
                 {
                     SetValue(BorderThicknessProperty, value);
-                    FirePropertyChanged("BorderThickness");
+                    FirePropertyChanged(VcProperties.BorderThickness);
                 }
 #else           
                 SetValue(BorderThicknessProperty, value);
@@ -629,7 +630,7 @@ namespace Visifire.Charts
                 if(Background != value)
                 {
                     SetValue(BackgroundProperty, value);
-                    FirePropertyChanged("Background");
+                    FirePropertyChanged(VcProperties.Background);
                 }
 #else
                 SetValue(BackgroundProperty, value);
@@ -654,7 +655,7 @@ namespace Visifire.Charts
                 if (HorizontalAlignment != value)
                 {
                     SetValue(HorizontalAlignmentProperty, value);
-                    FirePropertyChanged("HorizontalAlignment");
+                    FirePropertyChanged(VcProperties.HorizontalAlignment);
                 }
 #else
                 SetValue(HorizontalAlignmentProperty, value);
@@ -678,7 +679,7 @@ namespace Visifire.Charts
                 if (VerticalAlignment != value)
                 {
                     SetValue(VerticalAlignmentProperty, value);
-                    FirePropertyChanged("VerticalAlignment");
+                    FirePropertyChanged(VcProperties.VerticalAlignment);
                 }
 #else
                  SetValue(VerticalAlignmentProperty, value);
@@ -703,7 +704,7 @@ namespace Visifire.Charts
                 if (Margin != value)
                 {
                     SetValue(MarginProperty, value);
-                    FirePropertyChanged("Margin");
+                    FirePropertyChanged(VcProperties.Margin);
                 }
 #else
                 SetValue(MarginProperty, value);
@@ -726,7 +727,7 @@ namespace Visifire.Charts
                 if (Margin != value)
                 {
                     SetValue(PaddingProperty, value);
-                    FirePropertyChanged("Padding");
+                    FirePropertyChanged(VcProperties.Padding);
                 }
 #else
                 SetValue(PaddingProperty, value);
@@ -855,7 +856,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Enabled");
+            title.FirePropertyChanged(VcProperties.Enabled);
         }
 
         /// <summary>
@@ -866,7 +867,7 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("HrefTarget");
+            title.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -877,7 +878,7 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Href");
+            title.FirePropertyChanged(VcProperties.Href);
         }
 
 #if WPF
@@ -889,7 +890,7 @@ namespace Visifire.Charts
         private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("FontFamily");
+            title.FirePropertyChanged(VcProperties.FontFamily);
         }
 
         /// <summary>
@@ -900,7 +901,7 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("FontSize");
+            title.FirePropertyChanged(VcProperties.FontSize);
         }
 
         /// <summary>
@@ -911,7 +912,7 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Opacity");
+            title.FirePropertyChanged(VcProperties.Opacity);
         }
 #endif
         /// <summary>
@@ -922,7 +923,7 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.UpdateVisual("FontColor", e.NewValue);
+            title.UpdateVisual(VcProperties.FontColor, e.NewValue);
         }
 
 #if WPF
@@ -934,7 +935,7 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.UpdateVisual("FontStyle",  e.NewValue);
+            title.UpdateVisual(VcProperties.FontStyle,  e.NewValue);
         }
 
         /// <summary>
@@ -945,8 +946,9 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.UpdateVisual("FontWeight", e.NewValue);
+            title.UpdateVisual(VcProperties.FontWeight, e.NewValue);
         }
+
 #endif
 
         /// <summary>
@@ -957,7 +959,7 @@ namespace Visifire.Charts
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             Title title = d as Title;
-            title.FirePropertyChanged("Text");
+            title.FirePropertyChanged(VcProperties.Text);
         }
         
         /// <summary>
@@ -968,7 +970,7 @@ namespace Visifire.Charts
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             Title title = d as Title;
-            title.FirePropertyChanged("BorderColor");
+            title.FirePropertyChanged(VcProperties.BorderColor);
         }
 
 #if WPF
@@ -980,7 +982,7 @@ namespace Visifire.Charts
         private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("BorderThickness");
+            title.FirePropertyChanged(VcProperties.BorderThickness);
         }
 #endif
 
@@ -992,7 +994,7 @@ namespace Visifire.Charts
         private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("CornerRadius");
+            title.FirePropertyChanged(VcProperties.CornerRadius);
         }
 
 #if WPF
@@ -1004,7 +1006,7 @@ namespace Visifire.Charts
         private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Background");
+            title.FirePropertyChanged(VcProperties.Background);
         }
 
         /// <summary>
@@ -1015,7 +1017,7 @@ namespace Visifire.Charts
         private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("HorizontalAlignment");
+            title.FirePropertyChanged(VcProperties.HorizontalAlignment);
         }
 
         /// <summary>
@@ -1026,7 +1028,7 @@ namespace Visifire.Charts
         private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("VerticalAlignment");
+            title.FirePropertyChanged(VcProperties.VerticalAlignment);
         }
 
         /// <summary>
@@ -1037,7 +1039,7 @@ namespace Visifire.Charts
         private static void OnMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Margin");
+            title.FirePropertyChanged(VcProperties.Margin);
         }
 
         /// <summary>
@@ -1048,7 +1050,7 @@ namespace Visifire.Charts
         private static void OnPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Padding");
+            title.FirePropertyChanged(VcProperties.Padding);
         }
 #endif
         
@@ -1060,7 +1062,7 @@ namespace Visifire.Charts
         private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("TextAlignment");
+            title.FirePropertyChanged(VcProperties.TextAlignment);
         }
         
         /// <summary>
@@ -1071,7 +1073,7 @@ namespace Visifire.Charts
         private static void OnDockInsidePlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("DockInsidePlotArea");
+            title.FirePropertyChanged(VcProperties.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -1148,7 +1150,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(String propertyName, Object value)
+        internal override void UpdateVisual(VcProperties propertyName, Object value)
         {   
             if (!ApplyProperties(this))
                 this.FirePropertyChanged(propertyName);

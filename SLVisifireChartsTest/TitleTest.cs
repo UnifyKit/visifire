@@ -48,7 +48,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             title.PropertyChanged += (object sender, System.ComponentModel.PropertyChangedEventArgs e)
                 =>
@@ -101,7 +101,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Verdana"), chart.Titles[0].FontFamily));
@@ -127,7 +127,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(12, (Double)chart.Titles[0].FontSize, Common.HighPrecisionDelta));
@@ -153,7 +153,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Titles[0].FontColor));
@@ -179,7 +179,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Normal, chart.Titles[0].FontStyle));
@@ -205,7 +205,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, chart.Titles[0].FontWeight));
@@ -231,7 +231,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(HorizontalAlignment.Center, chart.Titles[0].HorizontalAlignment));
@@ -257,7 +257,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(VerticalAlignment.Top, chart.Titles[0].VerticalAlignment));
@@ -283,7 +283,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.Titles[0].Padding));
@@ -309,7 +309,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.Titles[0].Margin));
@@ -335,7 +335,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(false, chart.Titles[0].DockInsidePlotArea));
 
@@ -360,7 +360,7 @@ namespace SLVisifireChartsTest
             Title title = new Title();
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual("", chart.Titles[0].Text));
 
@@ -385,7 +385,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new CornerRadius(0, 0, 0, 0), chart.Titles[0].CornerRadius));
@@ -413,7 +413,7 @@ namespace SLVisifireChartsTest
             title.Background = new SolidColorBrush(Colors.LightGray);
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(TextAlignment.Center, chart.Titles[0].TextAlignment));
@@ -443,7 +443,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => chart.Titles[0].Enabled = false,
@@ -471,7 +471,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 delegate
@@ -549,7 +549,7 @@ namespace SLVisifireChartsTest
             Title title = TitleToTest;
             chart.Titles.Add(title);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => chart.Titles[0].Href = "http://www.visifire.com",
@@ -580,7 +580,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -625,7 +625,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -647,7 +647,7 @@ namespace SLVisifireChartsTest
                         title.VerticalAlignment = VerticalAlignment.Stretch;
                         Assert.AreEqual(value, title.VerticalAlignment);
 
-                        EnqueueSleep(_sleepTime);
+                        EnqueueDelay(_sleepTime);
                     }
                 }
             );
@@ -675,7 +675,7 @@ namespace SLVisifireChartsTest
 
             foreach (Title title in TitlesToTest)
                 chart.Titles.Add(title);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {

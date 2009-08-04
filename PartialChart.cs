@@ -1479,7 +1479,7 @@ namespace Visifire.Charts
                         throw new Exception(fooResourceName + " Theme file not found as application resources.");
 
                     using (System.IO.Stream s1 = srif.Stream)
-                    {
+                    {   
                         if (s1 != null)
                         {
                             System.IO.StreamReader reader = new System.IO.StreamReader(s1);
@@ -2163,20 +2163,20 @@ namespace Visifire.Charts
 
                 _renderLock = true;
 
-                try
+                //try
                 {
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
                 }
-                catch (Exception e)
-                {
-                    _renderLock = false;
-                    if (CheckSizeError(e as ArgumentException))
-                        return;
-                    else
-                        throw new Exception(e.Message, e);
-                }
+                //catch (Exception e)
+                //{
+                //    _renderLock = false;
+                //    if (CheckSizeError(e as ArgumentException))
+                //        return;
+                //    else
+                //        throw new Exception(e.Message, e);
+                //}
             }
         }
         

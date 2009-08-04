@@ -31,7 +31,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Legends[0].Href));
 
@@ -51,7 +51,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Visifire.Commons.HrefTargets._self, chart.Legends[0].HrefTarget));
 
@@ -71,7 +71,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(6, chart.Legends[0].LabelMargin));
 
@@ -91,7 +91,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(4), chart.Legends[0].Padding));
 
@@ -111,7 +111,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(HorizontalAlignment.Center, chart.Legends[0].HorizontalAlignment));
 
@@ -131,7 +131,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(VerticalAlignment.Bottom, chart.Legends[0].VerticalAlignment));
 
@@ -151,7 +151,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Black), chart.Legends[0].BorderColor));
 
@@ -171,7 +171,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.Legends[0].BorderThickness));
 
@@ -191,7 +191,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Legends[0].Background));
 
@@ -211,7 +211,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.Legends[0].DockInsidePlotArea));
 
@@ -231,7 +231,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.Legends[0].Enabled));
 
@@ -251,7 +251,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Legends[0].FontColor));
 
@@ -271,7 +271,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Arial"), chart.Legends[0].FontFamily));
 
@@ -291,7 +291,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(11, chart.Legends[0].FontSize, Common.HighPrecisionDelta));
 
@@ -311,7 +311,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Normal, chart.Legends[0].FontStyle));
 
@@ -331,7 +331,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, chart.Legends[0].FontWeight));
 
@@ -351,7 +351,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue(chart.Legends[0].LightingEnabled));
 
@@ -375,7 +375,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new CornerRadius(1), chart.Legends[0].CornerRadius));
 
@@ -395,7 +395,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Legends[0].Title));
 
@@ -415,7 +415,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(HorizontalAlignment.Stretch, chart.Legends[0].TitleAlignmentX));
 
@@ -435,7 +435,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(TextAlignment.Center, chart.Legends[0].TitleTextAlignment));
 
@@ -455,7 +455,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.LightGray), chart.Legends[0].TitleBackground));
 
@@ -475,7 +475,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Legends[0].TitleFontColor));
 
@@ -495,7 +495,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Arial"), chart.Legends[0].TitleFontFamily));
 
@@ -515,7 +515,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(12, chart.Legends[0].TitleFontSize));
 
@@ -535,7 +535,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Normal, chart.Legends[0].TitleFontStyle));
 
@@ -555,7 +555,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Normal, chart.Legends[0].TitleFontWeight));
 
@@ -575,7 +575,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(3, chart.Legends[0].EntryMargin));
 
@@ -845,7 +845,7 @@ namespace SLVisifireChartsTest
                 () => legend.Background = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), legend.Background));
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
 
@@ -1424,7 +1424,7 @@ namespace SLVisifireChartsTest
 
             CreateAndAddDefaultDataSeries(chart, legend);
 
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -1432,7 +1432,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Bottom;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1440,7 +1440,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Center;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1448,7 +1448,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Top;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1456,7 +1456,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Top;
             });
 
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -1464,7 +1464,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Top;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1472,7 +1472,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Center;
             });
 
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -1480,7 +1480,7 @@ namespace SLVisifireChartsTest
                 legend.VerticalAlignment = VerticalAlignment.Bottom;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1568,7 +1568,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Legend legend1 = new Legend();
             legend1.Name = "Legend1";
@@ -1595,7 +1595,7 @@ namespace SLVisifireChartsTest
 
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion

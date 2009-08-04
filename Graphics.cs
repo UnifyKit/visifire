@@ -28,7 +28,7 @@ using Visifire.Commons;
 
 
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Visifire.Charts.Faces class
     /// </summary>
@@ -38,56 +38,75 @@ namespace Visifire.Charts
         /// Initializes a new instance of Visifire.Charts.Faces class
         /// </summary>
         public Faces()
-        {
+        {   
             VisualComponents = new List<FrameworkElement>();
             BorderElements = new List<Shape>();
+            BevelElements = new List<FrameworkElement>();
+            LightingElements = new List<FrameworkElement>();
+            ShadowElements = new List<FrameworkElement>();
+            Parts = new List<DependencyObject>();
         }
-
+        
         /// <summary>
         /// Contains references to individual components of the border elements in the visual
         /// </summary>
-        public List<Shape> BorderElements
-        {
-            get;
-            set;
-        }
+        public List<Shape> BorderElements;
+
+        public List<FrameworkElement> BevelElements;
+
+        public List<FrameworkElement> LightingElements;
+
+        public List<FrameworkElement> ShadowElements;
 
         /// <summary>
         /// Contains references to individual components of the elements in the visual
         /// </summary>
-        public List<FrameworkElement> VisualComponents
-        {
-            get;
-            set;
-        }
+        public List<FrameworkElement> VisualComponents;
 
         /// <summary>
         /// Different parts of Visuals. Parts are used while doing partial update
         /// </summary>
-        public List<FrameworkElement> Parts
-        {
-            get;
-            set;
-        }
+        public List<DependencyObject> Parts;
 
         /// <summary>
         /// Visual of faces
         /// </summary>
-        public FrameworkElement Visual
-        {
-            get;
-            set;
-        }
+        public FrameworkElement Visual;
 
         /// <summary>
         /// Label canvas reference for faces
         /// </summary>
-        public Canvas LabelCanvas
+        public Canvas LabelCanvas;
+
+        internal void ClearList(Panel parent, List<DependencyObject> listReference)
         {
-            get;
-            set;
+            if (parent == null)
+            {
+                listReference.Clear();
+                return;
+            }
+
+            foreach (FrameworkElement fe in listReference)
+                parent.Children.Remove(fe);
+
+            listReference.Clear();
         }
 
+        internal void ClearList(Panel parent, List<FrameworkElement> listReference)
+        {
+            if (parent == null)
+            {
+                listReference.Clear();
+                return;
+            }
+
+            foreach (FrameworkElement fe in listReference)
+                parent.Children.Remove(fe);
+
+            listReference.Clear();
+        }
+
+        public Boolean IsPositive;
     }
 
     /// <summary>
@@ -266,14 +285,11 @@ namespace Visifire.Charts
         /// <param name="xRadius">XRadius as CornerRadius</param>
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
+        public static Canvas Get2DRectangle(FrameworkElement tagReference, out Rectangle rectangle, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
         {
-            Canvas canvas = new Canvas();
+            Canvas canvas = new Canvas() { Width = width, Height = height };
 
-            Path rectangle = new Path() { Tag = new ElementData() { Element = tagReference } };
-
-            canvas.Width = width;
-            canvas.Height = height;
+            rectangle = new Rectangle() {Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
 
             rectangle.StrokeThickness = strokeThickness;
             rectangle.StrokeDashArray = strokeDashArray != null ? CloneCollection(strokeDashArray) : strokeDashArray;
@@ -285,16 +301,18 @@ namespace Visifire.Charts
             rectangle.Stroke = stroke;
 
             rectangle.Fill = fill;
+            rectangle.RadiusX = xRadius.TopLeft;
+            rectangle.RadiusY = xRadius.BottomLeft;
 
-            rectangle.Data = GetRectanglePathGeometry(
-                width,
-                height,
-                GetCorrectedRadius(xRadius, width),
-                GetCorrectedRadius(yRadius, height)
-                );
+            //rectangle.Data = GetRectanglePathGeometry(
+            //    width,
+            //    height,
+            //    GetCorrectedRadius(xRadius, width),
+            //    GetCorrectedRadius(yRadius, height)
+            //    );
 
-            rectangle.SetValue(Canvas.TopProperty, (Double)0);
-            rectangle.SetValue(Canvas.LeftProperty, (Double)0);
+            //rectangle.SetValue(Canvas.TopProperty, (Double)0);
+            //rectangle.SetValue(Canvas.LeftProperty, (Double)0);
 
             canvas.Children.Add(rectangle);
 
@@ -315,7 +333,7 @@ namespace Visifire.Charts
         /// <returns>Canvas</returns>
         public static Canvas Get2DRectangleBevel(FrameworkElement tagReference, Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
         {
-            Canvas canvas = new Canvas();
+            Canvas canvas = new Canvas() {IsHitTestVisible = false, Tag = new ElementData() { Element = tagReference, VisualElementName = "Bevel" } };
 
             canvas.Width = width;
             canvas.Height = height;
@@ -368,16 +386,16 @@ namespace Visifire.Charts
         /// <param name="brush2">Brush2</param>
         /// <param name="orientation">Orientation</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangleGradiance(FrameworkElement tagReference, Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
+        public static Canvas Get2DRectangleGradiance(Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
         {
-            Canvas canvas = new Canvas();
+            Canvas canvas = new Canvas() { IsHitTestVisible = false, Tag = new ElementData() { VisualElementName = "LightingCanvas" } };
 
             canvas.Width = width;
             canvas.Height = height;
 
             if (orientation == Orientation.Vertical)
-            {
-                Rectangle rectLeft = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceLeft" } };
+            {   
+                Rectangle rectLeft = new Rectangle();
                 rectLeft.Width = width / 2 ;
                 rectLeft.Height = height;
                 rectLeft.SetValue(Canvas.TopProperty, (Double)0);
@@ -385,7 +403,7 @@ namespace Visifire.Charts
                 rectLeft.Fill = brush1;
                 canvas.Children.Add(rectLeft);
 
-                Rectangle rectRight = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName="GradianceRight" } };
+                Rectangle rectRight = new Rectangle();
                 rectRight.Width = width / 2;
                 rectRight.Height = height;
                 rectRight.SetValue(Canvas.TopProperty, (Double)0);
@@ -395,7 +413,7 @@ namespace Visifire.Charts
             }
             else
             {
-                Rectangle rectTop = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceTop" } };
+                Rectangle rectTop = new Rectangle();
                 rectTop.Width = width;
                 rectTop.Height = height / 2;
                 rectTop.SetValue(Canvas.TopProperty, (Double)0);
@@ -403,7 +421,7 @@ namespace Visifire.Charts
                 rectTop.Fill = brush1;
                 canvas.Children.Add(rectTop);
 
-                Rectangle rectBottom = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceBottom" } };
+                Rectangle rectBottom = new Rectangle();
                 rectBottom.Width = width;
                 rectBottom.Height = height / 2;
                 rectBottom.SetValue(Canvas.TopProperty, (Double)height / 2);
@@ -447,6 +465,18 @@ namespace Visifire.Charts
             return path;
         }
 
+        public static System.Windows.Media.Effects.DropShadowEffect GetShadowEffect()
+        {
+            return new System.Windows.Media.Effects.DropShadowEffect()
+            {
+                BlurRadius = 5,
+                Direction = -45,
+                ShadowDepth = Chart.SHADOW_DEPTH,
+                Opacity = 0.94,
+                Color = Colors.Gray
+            };
+        }
+
         /// <summary>
         /// Creates and returns a rectangle shadow based on the given params
         /// </summary>
@@ -464,7 +494,7 @@ namespace Visifire.Charts
             CornerRadius radiusX = GetCorrectedRadius(tempXRadius, width/2);
             CornerRadius radiusY = GetCorrectedRadius(tempYRadius, height/2);
 
-            Grid visual = new Grid();
+            Grid visual = new Grid() {IsHitTestVisible = false };
             visual.Height = height;
             visual.Width = width;
 
@@ -1270,6 +1300,8 @@ namespace Visifire.Commons
 
         public static Brush BLACK_BRUSH = new SolidColorBrush(Colors.Black);
         public static Brush RED_BRUSH = new SolidColorBrush(Colors.Red);
+        public static Brush TRANSPARENT_BRUSH = new SolidColorBrush(Colors.Transparent);
+        public static Brush GRAY_BRUSH = new SolidColorBrush(Colors.Gray);
 
         /// <summary>
         /// Array of font sizes

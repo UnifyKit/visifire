@@ -46,7 +46,7 @@ using System.Collections.Generic;
 using Visifire.Commons;
 
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Visifire.Charts.PolygonalChartShapeParams class
     /// </summary>
@@ -385,7 +385,7 @@ namespace Visifire.Charts
         /// <returns>Storyboard</returns>
         private static Storyboard ApplyStackedAreaAnimation(FrameworkElement areaElement, Storyboard storyboard, Double beginTime, Double duration)
         {
-            return AnimationHelper.ApplyOpacityAnimation(areaElement, CurrentDataSeries, storyboard, beginTime, duration, 1);
+            return AnimationHelper.ApplyOpacityAnimation(areaElement, CurrentDataSeries, storyboard, beginTime, duration,0, 1);
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ namespace Visifire.Charts
             marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
             marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
             marker.TextBackground = dataPoint.LabelBackground;
-            marker.MarkerFillColor = dataPoint.MarkerColor;
+            marker.FillColor = dataPoint.MarkerColor;
             marker.Tag = new ElementData() { Element = dataPoint };
             return marker;
         }
@@ -575,7 +575,7 @@ namespace Visifire.Charts
 
                 Faces faces = new Faces();
                 series.Faces = faces;
-                series.Faces.Parts = new List<FrameworkElement>();
+                series.Faces.Parts = new List<DependencyObject>();
 
                 DataPoint currentDataPoint = enabledDataPoints[0];
                 DataPoint nextDataPoint;
@@ -702,8 +702,6 @@ namespace Visifire.Charts
                     Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                     Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
-                    zeroPlankVisual.IsHitTestVisible = false;
-
                     Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                     zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
                     zeroPlankVisual.SetValue(Canvas.TopProperty, top);
@@ -771,31 +769,20 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-            foreach (DataSeries ds in seriesList)
-            {
-                ds.Faces = null;
-            }
-
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
-            List<Double> curYValues;
-            List<Double> nextYValues;
-
-            List<DataPoint> curDataPoints;
-            List<DataPoint> nextDataPoints;
-
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
 
-                curDataPoints = dataPointInStackedOrder[xValues[i]];
-                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
+                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 for (Int32 index = 0; index < curYValues.Count; index++)
                 {
@@ -873,7 +860,7 @@ namespace Visifire.Charts
                         areaParams.Points = points;
                         Faces faces = curDataPoints[index].Parent.Faces;
                         if (faces.Parts == null)
-                            faces.Parts = new List<FrameworkElement>();
+                            faces.Parts = new List<DependencyObject>();
 
                         if (chart.View3D)
                         {   
@@ -935,8 +922,6 @@ namespace Visifire.Charts
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1000,34 +985,23 @@ namespace Visifire.Charts
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
 
-            foreach (DataSeries ds in seriesList)
-            {
-                ds.Faces = null;
-            }
-
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
             Marker marker;
 
-            List<Double> curYValues;
-            List<Double> nextYValues;
-
-            List<DataPoint> curDataPoints;
-            List<DataPoint> nextDataPoints;
-
             for (Int32 i = 0; i < xValues.Length - 1; i++)
             {
-                curYValues = dataPointValuesInStackedOrder[xValues[i]];
-                nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
+                List<Double> curYValues = dataPointValuesInStackedOrder[xValues[i]];
+                List<Double> nextYValues = dataPointValuesInStackedOrder[xValues[i + 1]];
 
                 Double curBase = limitingYValue;
                 Double nextBase = limitingYValue;
                 Double curAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i]].AbsoluteYValueSum;
                 Double nextAbsoluteSum = plotGroup.XWiseStackedDataList[xValues[i + 1]].AbsoluteYValueSum;
 
-                curDataPoints = dataPointInStackedOrder[xValues[i]];
+                List<DataPoint> curDataPoints = dataPointInStackedOrder[xValues[i]];
 
-                nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
+                List<DataPoint> nextDataPoints = dataPointInStackedOrder[xValues[i + 1]];
 
                 if (Double.IsNaN(curAbsoluteSum))
                     curAbsoluteSum = 1;
@@ -1116,7 +1090,7 @@ namespace Visifire.Charts
 
                     Faces faces = curDataPoints[index].Parent.Faces;
                     if (faces.Parts == null)
-                        faces.Parts = new List<FrameworkElement>();
+                        faces.Parts = new List<DependencyObject>();
 
                     foreach (PointCollection points in pointSet)
                     {
@@ -1179,8 +1153,6 @@ namespace Visifire.Charts
 
                 Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                zeroPlankVisual.IsHitTestVisible = false;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, (Double)0);
@@ -1565,7 +1537,7 @@ namespace Visifire.Charts
         internal static Canvas Get2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             if (faces.Parts == null)
-                faces.Parts = new List<FrameworkElement>();
+                faces.Parts = new List<DependencyObject>();
 
             Canvas visual = new Canvas();
 
@@ -1633,8 +1605,6 @@ namespace Visifire.Charts
                     visual.Children.Add(bevel);
                 }
             }
-
-            //faces.VisualComponents.Add(visual);
 
             return visual;
         }
@@ -1753,7 +1723,7 @@ namespace Visifire.Charts
         internal static Canvas GetStacked2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             if (faces.Parts == null)
-                faces.Parts = new List<FrameworkElement>();
+                faces.Parts = new List<DependencyObject>();
 
             Canvas visual = new Canvas();
 

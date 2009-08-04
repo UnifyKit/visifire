@@ -75,7 +75,7 @@ namespace Visifire.Charts
             // Attach event handler with EventChanged event of VisfiireElement
             EventChanged += delegate
             {
-                FirePropertyChanged("MouseEvent");
+                FirePropertyChanged(VcProperties.MouseEvent);
             };
         }
 
@@ -254,7 +254,7 @@ namespace Visifire.Charts
                 if (Opacity != value)
                 {
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -280,7 +280,7 @@ namespace Visifire.Charts
                     if(Visual != null)
                         Visual.Cursor = (Cursor == null) ? Cursors.Arrow : Cursor;
                     else
-                        FirePropertyChanged("Cursor");
+                        FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -349,7 +349,7 @@ namespace Visifire.Charts
                 SetValue(BorderThicknessProperty, value);
 #else
                 SetValue(BorderThicknessProperty, value);
-                FirePropertyChanged("BorderThickness");
+                FirePropertyChanged(VcProperties.BorderThickness);
 #endif
             }
         }
@@ -420,7 +420,7 @@ namespace Visifire.Charts
                 if (Background != value)
                 {
                     SetValue(BackgroundProperty, value);
-                    FirePropertyChanged("Background");
+                    FirePropertyChanged(VcProperties.Background);
                 }
 #else
                 SetValue(BackgroundProperty, value);
@@ -588,7 +588,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("Background");
+            (d as PlotArea).FirePropertyChanged(VcProperties.Background);
         }
 #endif
 
@@ -599,7 +599,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("HrefTarget");
+            (d as PlotArea).FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -609,7 +609,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("Href");
+            (d as PlotArea).FirePropertyChanged(VcProperties.Href);
         }
 
         /// <summary>
@@ -619,7 +619,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBevelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("Bevel");
+            (d as PlotArea).FirePropertyChanged(VcProperties.Bevel);
         }
 
         /// <summary>
@@ -629,7 +629,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("BorderColor");
+            (d as PlotArea).FirePropertyChanged(VcProperties.BorderColor);
         }
         
 #if WPF
@@ -641,7 +641,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("BorderThickness");
+            (d as PlotArea).FirePropertyChanged(VcProperties.BorderThickness);
         }
 
         /// <summary>
@@ -651,7 +651,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("Opacity");
+            (d as PlotArea).FirePropertyChanged(VcProperties.Opacity);
         }
 #endif
         /// <summary>
@@ -661,7 +661,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLightingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("LightingEnabled");
+            (d as PlotArea).FirePropertyChanged(VcProperties.LightingEnabled);
         }
 
         /// <summary>
@@ -671,7 +671,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>        
         private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("CornerRadius");
+            (d as PlotArea).FirePropertyChanged(VcProperties.CornerRadius);
         }
 
         /// <summary>
@@ -681,7 +681,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("ShadowEnabled");
+            (d as PlotArea).FirePropertyChanged(VcProperties.ShadowEnabled);
         }
 
         /// <summary>
@@ -933,25 +933,12 @@ namespace Visifire.Charts
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
                 Double lenthInPixel =((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel- pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 else
                     eventArgs.XValue = xValue;
-
-            }
-
-            if (chart.ChartArea.AxisY != null)
-            {
-                Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lenthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
-
-                eventArgs.YValue = yValue;
             }
 
             return eventArgs;
@@ -972,9 +959,9 @@ namespace Visifire.Charts
                 Double xValue;
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+                Double lenthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
@@ -982,20 +969,9 @@ namespace Visifire.Charts
                     eventArgs.XValue = xValue;
             }
 
-            if (chart.ChartArea.AxisY != null)
-            {
-                Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
-
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                eventArgs.YValue = yValue;
-            }
-
             return eventArgs;
         }
+
 
         /// <summary>
         /// Fire MouseLeftButtonDown event

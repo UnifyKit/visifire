@@ -212,7 +212,7 @@ namespace Visifire.Charts
                     }
                     
                     Faces bubbleFaces = new Faces();
-                    bubbleFaces.Parts = new List<FrameworkElement>();
+                    bubbleFaces.Parts = new List<DependencyObject>();
 
                     Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);

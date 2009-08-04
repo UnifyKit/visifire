@@ -229,7 +229,7 @@ namespace Visifire.Charts
 
                     // Initialize DataPoint faces
                     dataPoint.Faces = new Faces();
-                    dataPoint.Faces.Parts = new List<FrameworkElement>();
+                    dataPoint.Faces.Parts = new List<DependencyObject>();
                     
                     SetDataPointValues(dataPoint, ref highY, ref lowY, ref openY, ref closeY);
                     
@@ -393,7 +393,7 @@ namespace Visifire.Charts
                     if (_tempDataSeries.Storyboard == null)
                         _tempDataSeries.Storyboard = new Storyboard();
 
-                    _tempDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(seriesCanvas, _tempDataSeries, _tempDataSeries.Storyboard, animationBeginTime, 1, 1);
+                    _tempDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(seriesCanvas, _tempDataSeries, _tempDataSeries.Storyboard, animationBeginTime, 1, 0, 1);
                     animationBeginTime += 0.5;
                 }
 
@@ -402,7 +402,7 @@ namespace Visifire.Charts
 
             // Label animation
             if (animationEnabled && _tempDataSeries != null)
-                _tempDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, _tempDataSeries, _tempDataSeries.Storyboard, animationBeginTime, 1, 1);
+                _tempDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, _tempDataSeries, _tempDataSeries.Storyboard, animationBeginTime, 1, 0, 1);
 
             visual.Children.Add(labelCanvas);
 

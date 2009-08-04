@@ -62,9 +62,11 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="system" />
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +136,9 @@
     <Compile Include="..\FunnelChart.cs">
       <Link>FunnelChart.cs</Link>
     </Compile>
+    <Compile Include="..\Graph.cs">
+      <Link>Graph.cs</Link>
+    </Compile>
     <Compile Include="..\Graphics.cs">
       <Link>Graphics.cs</Link>
     </Compile>
@@ -181,6 +186,9 @@
     </Compile>
     <Compile Include="..\RenderHelper.cs">
       <Link>RenderHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\StackedColumn.cs">
+      <Link>StackedColumn.cs</Link>
     </Compile>
     <Compile Include="..\StockChart.cs">
       <Link>StockChart.cs</Link>

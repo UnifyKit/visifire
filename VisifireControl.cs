@@ -138,7 +138,7 @@ namespace Visifire.Commons
 #if WPF   
                 return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
 #else
-                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
+                return (!System.Windows.Browser.HtmlPage.IsEnabled);
 #endif
             }
         }

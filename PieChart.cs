@@ -4185,7 +4185,7 @@ namespace Visifire.Charts
                 }
 
                 Faces faces = new Faces();
-                faces.Parts = new List<FrameworkElement>();
+                faces.Parts = new List<DependencyObject>();
 
                 if (chart.View3D)
                 {
@@ -4376,7 +4376,7 @@ namespace Visifire.Charts
                 }
 
                 Faces faces = new Faces();
-                faces.Parts = new List<FrameworkElement>();
+                faces.Parts = new List<DependencyObject>();
 
                 doughnutParams.TagReference = dataPoint;
 

@@ -31,7 +31,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.PlotArea.Bevel));
 
@@ -52,7 +52,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.PlotArea.BorderColor));
 
@@ -73,7 +73,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new Thickness(0), chart.PlotArea.BorderThickness));
 
@@ -94,7 +94,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.PlotArea.Background));
 
@@ -115,7 +115,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.PlotArea.Href));
 
@@ -136,7 +136,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Visifire.Commons.HrefTargets._self, chart.PlotArea.HrefTarget));
 
@@ -158,7 +158,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.PlotArea.LightingEnabled));
 
@@ -179,7 +179,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(chart.PlotArea.ShadowEnabled));
 
@@ -201,7 +201,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new CornerRadius(0), chart.PlotArea.CornerRadius));
 
@@ -222,7 +222,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNotNull(chart.PlotArea.ToolTipText));
 
@@ -250,7 +250,7 @@ namespace SLVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
             chart.PlotArea.Background = new SolidColorBrush(Colors.Red);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.Bevel = true,
                 () => Assert.IsTrue(chart.PlotArea.Bevel));
@@ -275,7 +275,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.Opacity = 0.5,
                 () => Assert.AreEqual(0.5, chart.PlotArea.Opacity, Common.HighPrecisionDelta));
@@ -301,7 +301,7 @@ namespace SLVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
             chart.PlotArea.BorderThickness = new Thickness(1);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.BorderColor = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.PlotArea.BorderColor));
@@ -326,7 +326,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.BorderThickness = new Thickness(2),
                 () => Assert.AreEqual(new Thickness(2), chart.PlotArea.BorderThickness));
@@ -351,7 +351,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.Background = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.PlotArea.Background));
@@ -377,7 +377,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.PlotArea.Href));
@@ -403,7 +403,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.HrefTarget = HrefTargets._blank,
                 () => Assert.AreEqual(HrefTargets._blank, chart.PlotArea.HrefTarget));
@@ -430,7 +430,7 @@ namespace SLVisifireChartsTest
 
             chart.PlotArea = new PlotArea();
             chart.PlotArea.Background = new SolidColorBrush(Colors.Red);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.LightingEnabled = true,
                 () => Assert.IsTrue(chart.PlotArea.LightingEnabled));
@@ -455,7 +455,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.ShadowEnabled = true,
                 () => Assert.IsTrue(chart.PlotArea.ShadowEnabled));
@@ -483,7 +483,7 @@ namespace SLVisifireChartsTest
             chart.PlotArea = new PlotArea();
             chart.PlotArea.BorderThickness = new Thickness(1);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.CornerRadius = new CornerRadius(5),
                 () => Assert.AreEqual(new CornerRadius(5), chart.PlotArea.CornerRadius));
@@ -509,7 +509,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             chart.PlotArea = new PlotArea();
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.ToolTipText = "ToolTip",
                 () => Assert.AreEqual("ToolTip", chart.PlotArea.ToolTipText));

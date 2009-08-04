@@ -117,10 +117,13 @@ namespace Visifire.Commons
             
             da.BeginTime = TimeSpan.FromSeconds(beginTime);
 
-            for (Int32 index = 0; index < splines.Count; index++)
+            for (Int32 index = 0; index < values.Count; index++)
             {
                 SplineDoubleKeyFrame keyFrame = new SplineDoubleKeyFrame();
-                keyFrame.KeySpline = splines[index];
+
+                if (splines != null)
+                    keyFrame.KeySpline = splines[index];
+
                 keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
                 keyFrame.Value = values[index];
                 da.KeyFrames.Add(keyFrame);
@@ -145,7 +148,7 @@ namespace Visifire.Commons
         internal static Storyboard ApplyOpacityAnimation(Marker marker, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double targetValue)
         {   
             if (marker != null && parentObj != null)
-                return ApplyOpacityAnimation(marker.Visual, parentObj, storyboard, beginTime, 0.75, targetValue);
+                return ApplyOpacityAnimation(marker.Visual, parentObj, storyboard, beginTime, 0.75, 0,targetValue);
             else
                 return storyboard;
         }
@@ -160,11 +163,11 @@ namespace Visifire.Commons
         /// <param name="duration">Animation duration</param>
         /// <param name="targetValue">Target opacity value</param>
         /// <returns>Storyboard</returns>
-        internal static Storyboard ApplyOpacityAnimation(FrameworkElement objectToAnimate, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double duration, Double targetValue)
+        internal static Storyboard ApplyOpacityAnimation(FrameworkElement objectToAnimate, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double duration, Double fromValue, Double targetValue)
         {
             if (objectToAnimate != null && parentObj != null)
             {
-                DoubleCollection values = Graphics.GenerateDoubleCollection(0, targetValue);
+                DoubleCollection values = Graphics.GenerateDoubleCollection(fromValue, targetValue);
                 DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(0, duration);
                 List<KeySpline> splines = GenerateKeySplineList
                     (
@@ -172,7 +175,7 @@ namespace Visifire.Commons
                     new Point(0, 0), new Point(0.5, 1)
                     );
 
-                objectToAnimate.Opacity = 0;
+                objectToAnimate.Opacity = fromValue;
 
                 DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(parentObj, objectToAnimate, "(UIElement.Opacity)", beginTime + 0.5, frameTimes, values, splines);
                 storyboard.Children.Add(opacityAnimation);
@@ -181,7 +184,33 @@ namespace Visifire.Commons
             return storyboard;
         }
 
+        /// <summary>
+        /// Apply Opacity animation to an object
+        /// </summary>
+        /// <param name="objectToAnimate">Object to animate</param>
+        /// <param name="parentObj">Storyboard parent Object</param>
+        /// <param name="storyboard">Storyboard reference</param>
+        /// <param name="beginTime">Begin time</param>
+        /// <param name="duration">Animation duration</param>
+        /// <param name="targetValue">Target opacity value</param>
+        /// <returns>Storyboard</returns>
+        internal static Storyboard ApplyPropertyAnimation(FrameworkElement objectToAnimate, String property, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double[] timeCollection, Double[] valueCollection, List<KeySpline> splain)
+        {
+            if (objectToAnimate != null && parentObj != null)
+            {
+                DoubleCollection values = Graphics.GenerateDoubleCollection(valueCollection);
+                DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(timeCollection);
+        
+                DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(parentObj, objectToAnimate, property, beginTime, frameTimes, values, splain);
+                
+                //if(splain == null)
+                //    opacityAnimation.SpeedRatio = 2;
 
+                storyboard.Children.Add(opacityAnimation);
+            }
+
+            return storyboard;
+        }
 
         /// <summary>
         /// Returns list of KeySpline from point array

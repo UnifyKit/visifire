@@ -58,7 +58,7 @@ namespace Visifire.Commons
         public Marker(MarkerTypes markerType, Double scaleFactor, Size markerSize, Boolean markerBevel, Brush markerColor, String markerLabelText)
         {
             MarkerType = markerType;
-            MarkerFillColor = markerColor;
+            FillColor = markerColor;
             Text = markerLabelText;
             TextOrientation = Orientation.Horizontal;
             TextAlignmentX = AlignmentX.Right;
@@ -89,6 +89,18 @@ namespace Visifire.Commons
         {
             Marker dataPoint = (Marker)o;
             return this.Position.X.CompareTo(dataPoint.Position.X);
+        }
+
+        public void HideLabel()
+        {
+            TextBackgroundCanvas.Background = Graphics.TRANSPARENT_BRUSH;
+            TextBlock.Foreground = Graphics.TRANSPARENT_BRUSH;
+        }
+
+        public void ShowLabel()
+        {
+            TextBackgroundCanvas.Background = TextBackground;
+            TextBlock.Foreground = FontColor;
         }
 
         /// <summary>
@@ -184,8 +196,8 @@ namespace Visifire.Commons
 
             UpdateMarker();
 
-            if (!String.IsNullOrEmpty(Text))
-            {
+            //if (!String.IsNullOrEmpty(Text))
+            {   
                 // Define row and columns 
                 Visual.RowDefinitions.Add(new RowDefinition());
                 Visual.RowDefinitions.Add(new RowDefinition());
@@ -200,7 +212,7 @@ namespace Visifire.Commons
                 // Apply TextBlock Properties 
                 ApplyTextBlockProperties();
 
-                if (TextBackground != null)
+                // if (TextBackground != null)
                 {
                     TextBackgroundCanvas = new Canvas();
                     TextBackgroundCanvas.Background = TextBackground;
@@ -394,6 +406,24 @@ namespace Visifire.Commons
 
         #region Font Properties
 
+        public Boolean LabelEnabled
+        {
+            get
+            {
+                return _labelEnabled;
+            }
+            set
+            {
+                _labelEnabled = value;
+
+                if (Visual != null)
+                    if (value)
+                        ShowLabel();
+                    else
+                        HideLabel();
+            }
+        }
+
         /// <summary>
         /// Get or set the marker label FontFamily
         /// </summary>
@@ -430,6 +460,8 @@ namespace Visifire.Commons
             }
         }
 
+
+
         /// <summary>
         /// Get or set the marker label FontColor
         /// </summary>
@@ -443,6 +475,8 @@ namespace Visifire.Commons
             {
                 _fontColor = value;
 
+                if (TextBlock != null)
+                    TextBlock.Foreground = _fontColor;
             }
         }
 
@@ -459,6 +493,9 @@ namespace Visifire.Commons
             set
             {
                 _fontStyle = value;
+
+                if (TextBlock != null)
+                    TextBlock.FontStyle = _fontStyle;
             }
         }
 
@@ -475,6 +512,8 @@ namespace Visifire.Commons
             {
                 _fontWeight = value;
 
+                if (TextBlock != null)
+                    TextBlock.FontWeight = _fontWeight;
             }
         }
 
@@ -490,6 +529,14 @@ namespace Visifire.Commons
             set
             {
                 _text = value;
+
+                if (TextBlock != null)
+                {
+                    TextBlock.Text = _text;
+                    Size size = Graphics.CalculateVisualSize(TextBlock);
+                    TextBackgroundCanvas.Height = size.Height;
+                    TextBackgroundCanvas.Width = size.Width;
+                }
             }
         }
 
@@ -499,8 +546,17 @@ namespace Visifire.Commons
         /// </summary>
         public Brush TextBackground
         {
-            get;
-            set;
+            get
+            {
+                return _textBackground;
+            }
+            set
+            {
+                _textBackground = value;
+
+                if (TextBlock != null)
+                    TextBlock.Text = _text;
+            }
         }
 
         #endregion
@@ -513,9 +569,9 @@ namespace Visifire.Commons
         public Brush BorderColor
         {
             get
-            {
+            {   
                 if (_borderColor == null)
-                    _borderColor = MarkerFillColor;
+                    _borderColor = FillColor;
 
                 return _borderColor;
             }
@@ -523,6 +579,8 @@ namespace Visifire.Commons
             {
                 _borderColor = value;
 
+                if (MarkerShape != null)
+                    MarkerShape.Stroke = value;
             }
         }
 
@@ -538,16 +596,28 @@ namespace Visifire.Commons
             set
             {
                 _borderThickness = value;
+
+                if (MarkerShape != null)
+                    MarkerShape.StrokeThickness = value;
             }
         }
 
         /// <summary>
         /// Get or set the Marker fill color
         /// </summary>
-        public Brush MarkerFillColor
+        public Brush FillColor
         {
-            get;
-            set;
+            get
+            {   
+                return _markerFillColor;
+            }
+            set
+            {
+                _markerFillColor = value;
+
+                if (MarkerShape != null)
+                    MarkerShape.Fill = value;
+            }
         }
 
         #endregion
@@ -675,7 +745,7 @@ namespace Visifire.Commons
             if (MarkerShape != null)
             {
                 MarkerShape.Stroke = BorderColor;
-                MarkerShape.Fill = MarkerFillColor;
+                MarkerShape.Fill = FillColor;
                 MarkerShape.StrokeThickness = BorderThickness;
                 MarkerShape.Height = MarkerSize.Height * ScaleFactor;
                 MarkerShape.Width = MarkerSize.Width * ScaleFactor;
@@ -771,7 +841,7 @@ namespace Visifire.Commons
         private FrameworkElement GetBevelLayer()
         {
             String xaml = null;
-            Brush topBrush = Graphics.GetBevelTopBrush(MarkerFillColor);
+            Brush topBrush = Graphics.GetBevelTopBrush(FillColor);
             String color;
 
             switch (MarkerType)
@@ -833,9 +903,9 @@ namespace Visifire.Commons
                     Canvas bevelCanvas = Visifire.Charts.ExtendedGraphics.Get2DRectangleBevel(this.Tag as FrameworkElement, width, height,
                     3, 3,
                     topBrush,
-                    Graphics.GetBevelSideBrush(0, MarkerFillColor),
-                    Graphics.GetBevelSideBrush(120, MarkerFillColor),
-                    Graphics.GetBevelSideBrush(100, MarkerFillColor)
+                    Graphics.GetBevelSideBrush(0, FillColor),
+                    Graphics.GetBevelSideBrush(120, FillColor),
+                    Graphics.GetBevelSideBrush(100, FillColor)
                     );
 
                     return bevelCanvas;
@@ -1134,6 +1204,10 @@ namespace Visifire.Commons
 
         #region Data
 
+        private Boolean _labelEnabled;
+
+        private Brush _textBackground;
+
         /// <summary>
         /// The identifier for property FontSize
         /// </summary>
@@ -1163,6 +1237,8 @@ namespace Visifire.Commons
         /// The identifier for property BorderThickness
         /// </summary>
         private Double _borderThickness;
+
+        private Brush _markerFillColor;
 
         /// <summary>
         /// The identifier for property BorderColor

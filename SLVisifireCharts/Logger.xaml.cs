@@ -26,6 +26,38 @@ namespace Visifire.Charts
         {
             InitializeComponent();
             _lineNumber = 1;
+            ScrollViewer.MouseWheel += new MouseWheelEventHandler(ScrollViewer_MouseWheel);
+            ScrollViewer.KeyUp += new KeyEventHandler(ScrollViewer_KeyUp);
+            this.Loaded += new RoutedEventHandler(Logger_Loaded);
+        }
+
+        void Logger_Loaded(object sender, RoutedEventArgs e)
+        {
+           // BackgroundAnimation.Begin();
+        }
+
+        void ScrollViewer_KeyUp(object sender, KeyEventArgs e)
+        {
+            Double delta = 0; // = ScrollViewer.ScrollableHeight %
+
+            if(e.Key == Key.Up)
+                delta = - ScrollViewer.ScrollableHeight / 5;
+            else if(e.Key == Key.Down)
+                delta = ScrollViewer.ScrollableHeight / 5;
+            
+            delta = ScrollViewer.VerticalOffset + delta;
+
+            if (delta < 0)
+                ScrollViewer.ScrollToVerticalOffset(0);
+            else if (delta > ScrollViewer.ScrollableHeight)
+                ScrollViewer.ScrollToVerticalOffset(ScrollViewer.ScrollableHeight);
+            else
+                ScrollViewer.ScrollToVerticalOffset(delta);
+        }
+
+        void ScrollViewer_MouseWheel(object sender, MouseWheelEventArgs e)
+        {   
+            ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset - e.Delta);
         }
 
         /// <summary>
@@ -49,6 +81,95 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+
+        public String Text
+        {
+            get
+            {
+                return logger.Text;
+            }
+        }
+
+        private void HeighlightTextBlock_Loaded(object sender, RoutedEventArgs e)
+        {
+            _highlightTextBlock = sender as TextBlock;
+
+            Highlight(HeighlightText);
+        }
+
+        public String HeighlightText
+        {
+            get;
+            set;
+        }
+
+        public Int32 SkipHighlight
+        {
+            get;
+            set;
+        }
+
+        public String HelpLink
+        {
+            get;
+            set;
+        }
+
+        public void Highlight(String stringValue)
+        {
+            _highlightTextBlock.Inlines.Clear();
+            if (_highlightTextBlock != null && !String.IsNullOrEmpty(Text))
+            {
+                try
+                {
+                    Int32 index = Text.IndexOf(stringValue);
+                    
+
+                    for (Int32 i = 1; i <= SkipHighlight; i++)
+                        index = Text.IndexOf(stringValue, index + stringValue.Length);
+
+                    String s = Text.Substring(0, index);
+
+                    Run run = new Run();
+                    run.Text = s;
+                    run.Foreground = new SolidColorBrush(Colors.Transparent);
+                    _highlightTextBlock.Inlines.Add(run);
+
+                    s = Text.Substring(index, stringValue.Length);
+
+                    run = new Run();
+                    run.Text = s;
+                    run.Foreground = new SolidColorBrush(Colors.Red);
+                    _highlightTextBlock.Inlines.Add(run);
+                }
+                catch
+                {  }
+            }
+
+            (DocHelp.Child as TextBlock).MouseLeftButtonUp -= new MouseButtonEventHandler(Logger_MouseLeftButtonUp);
+
+            if (!String.IsNullOrEmpty(HelpLink))
+            {
+                (DocHelp.Child as TextBlock).MouseLeftButtonUp += new MouseButtonEventHandler(Logger_MouseLeftButtonUp);
+                DocHelp.Visibility = Visibility.Visible;
+                HelpLinkAnimation.Begin();
+                
+            }
+            else
+            {   
+                DocHelp.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        void Logger_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {   
+            System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(HelpLink), "_blank");
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+        }
 
         #endregion
 
@@ -90,6 +211,11 @@ namespace Visifire.Charts
         /// Current line number of logger message
         /// </summary>
         private Int32 _lineNumber;
+
+        /// <summary>
+        /// Highlighting TextBlock
+        /// </summary>
+        private TextBlock _highlightTextBlock;
 
         #endregion
     }

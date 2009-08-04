@@ -3,25 +3,40 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Window1"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-    WindowState="Normal" >
-    <Grid>
-     <vc:Chart Width="500" Height="300" Theme="Theme2" Name="MyChart">
+    WindowState="Normal">
 
-            <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"/>
-            </vc:Chart.Titles>
+    <Grid x:Name="LayoutRoot" Width="500" Height="300">
 
+        <vc:Chart Width="500" Height="300"
+                  Theme="Theme2" Name="MyChart">
+            
+            <vc:Chart.AxesX>
+                <vc:Axis Interval="1000" >
+                    <vc:Axis.AxisLabels>
+                        <vc:AxisLabels />
+                    </vc:Axis.AxisLabels>
+                </vc:Axis>
+            </vc:Chart.AxesX>
+            
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="CandleStick">
+                <!--<vc:DataSeries RenderAs="Stock" XValueType="Time">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1" YValues="10,20,30,5"/>
-                        <vc:DataPoint XValue="2" YValues="20,22,28,18"/>
-                        <vc:DataPoint XValue="3" YValues="20,10,22,8"/>
-                        <vc:DataPoint XValue="4" YValues="20,30,32,8"/>
-                        <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
+                        <vc:DataPoint XValue="5:00 AM" YValues="10,20,30,5"/>
+                        <vc:DataPoint XValue="6:00 AM" YValues="20,22,28,18"/>
+                        <vc:DataPoint XValue="7:00 AM" YValues="20,10,22,8"/>
+                        <vc:DataPoint XValue="8:00 AM" YValues="20,30,32,8"/>
+                        <vc:DataPoint XValue="9:00 PM" YValues="20,30,32,8"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>-->
+                <vc:DataSeries RenderAs="Point">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint XValue="1000" YValue="10"/>
+                        <vc:DataPoint XValue="2000" YValue="20"/>
+                        <vc:DataPoint XValue="3000" YValue="30"/>
+                        <vc:DataPoint XValue="4000" YValue="20"/>
+                        <vc:DataPoint XValue="5000" YValue="20"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
-
             </vc:Chart.Series>
         </vc:Chart>
     </Grid>

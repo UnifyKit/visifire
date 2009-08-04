@@ -581,8 +581,6 @@ namespace Visifire.Charts
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
-                zeroPlankVisual.IsHitTestVisible = false;
-
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum, (Double)dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
                 zeroPlankVisual.SetValue(Canvas.TopProperty, (Double)0);
@@ -840,8 +838,6 @@ namespace Visifire.Charts
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
-                zeroPlankVisual.IsHitTestVisible = false;
-
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
                 zeroPlankVisual.SetValue(Canvas.TopProperty, (Double)0);
@@ -1092,11 +1088,10 @@ namespace Visifire.Charts
                     }
 
                 }
-
             }
 
             if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
-            {
+            {   
                 RectangularChartShapeParams barParams = new RectangularChartShapeParams();
                 barParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
                 barParams.Lighting = true;
@@ -1106,8 +1101,6 @@ namespace Visifire.Charts
                 Faces zeroPlank = ColumnChart.Get3DColumn(barParams);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
-                zeroPlankVisual.IsHitTestVisible = false;
-
                 Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
                 zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
                 zeroPlankVisual.SetValue(Canvas.TopProperty, (Double)0);
@@ -1115,6 +1108,7 @@ namespace Visifire.Charts
                 zeroPlankVisual.Opacity = 0.7;
                 columnCanvas.Children.Add(zeroPlankVisual);
             }
+
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
             return visual;
@@ -1126,9 +1120,9 @@ namespace Visifire.Charts
         /// <param name="barParams">Bar parameters</param>
         /// <returns>Faces for bar</returns>
         internal static Faces Get2DBar(RectangularChartShapeParams barParams)
-        {
+        {   
             Faces faces = new Faces();
-            faces.Parts = new List<FrameworkElement>();
+            faces.Parts = new List<DependencyObject>();
 
             Grid barVisual = new Grid();
 
@@ -1137,11 +1131,12 @@ namespace Visifire.Charts
 
             Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
 
-            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
+            Rectangle rectangle;
+            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, out rectangle, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 background, barParams.XRadius, barParams.YRadius);
 
-            ((barBase.Children[0] as FrameworkElement).Tag as ElementData).VisualElementName = "ColumnBase";
+            (rectangle.Tag as ElementData).VisualElementName = "ColumnBase";
             
             faces.Parts.Add(barBase.Children[0] as FrameworkElement);
             faces.BorderElements.Add(barBase.Children[0] as Path);
@@ -1173,7 +1168,7 @@ namespace Visifire.Charts
 
             if (barParams.Lighting && barParams.Bevel)
             {
-                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
+                Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.Size.Width, barParams.Size.Height,
                     Graphics.GetLeftGradianceBrush(63),
                     Graphics.GetLeftGradianceBrush(63),
                     Orientation.Horizontal);
@@ -1256,7 +1251,7 @@ namespace Visifire.Charts
         internal static Faces Get3DBar(RectangularChartShapeParams barParams)
         {
             Faces faces = new Faces();
-            faces.Parts = new List<FrameworkElement>();
+            faces.Parts = new List<DependencyObject>();
             Canvas barVisual = new Canvas();
 
             barVisual.Width = barParams.Size.Width;
@@ -1266,31 +1261,32 @@ namespace Visifire.Charts
             Brush topBrush = barParams.Lighting ? Graphics.GetTopFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
             Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
 
-            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
+            Rectangle rectangle;
+            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.TagReference,out rectangle, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(front.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(front.Children[0] as Path);
+            faces.Parts.Add(rectangle);
+            faces.BorderElements.Add(rectangle);
 
-            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
+            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, out rectangle, barParams.Size.Width, barParams.Depth,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(top.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(top.Children[0] as Path);
+            faces.Parts.Add(rectangle);
+            faces.BorderElements.Add(rectangle);
 
             top.RenderTransformOrigin = new Point(0, 1);
             SkewTransform skewTransTop = new SkewTransform();
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
+            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.TagReference,out rectangle, barParams.Depth, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(right.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(right.Children[0] as Path);
+            faces.Parts.Add(rectangle);
+            faces.BorderElements.Add(rectangle);
 
             right.RenderTransformOrigin = new Point(0, 0);
             SkewTransform skewTransRight = new SkewTransform();

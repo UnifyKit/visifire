@@ -111,18 +111,6 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(AxisLabels),
             new PropertyMetadata(OnEnabledPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.AxisLabels.TextAlignment dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.AxisLabels.TextAlignment dependency property.
-        /// </returns>
-        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register
-            ("TextAlignment",
-            typeof(TextAlignment),
-            typeof(AxisLabels),
-            new PropertyMetadata(TextAlignment.Left, OnTextAlignmentPropertyChanged));
         
 #if WPF
         /// <summary>
@@ -299,10 +287,10 @@ namespace Visifire.Charts
                if (Opacity != value)
                {
                    SetValue(OpacityProperty, value);
-                   FirePropertyChanged("Opacity");
+                   FirePropertyChanged(VcProperties.Opacity);
                }
-        #else
-                SetValue(OpacityProperty, value);
+#else
+               SetValue(OpacityProperty, value);
         #endif
            }
         }
@@ -327,21 +315,6 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the color for the text in axis labels 
-        /// </summary>
-        public TextAlignment TextAlignment
-        {
-            get
-            {
-                return (TextAlignment)GetValue(TextAlignmentProperty);
-            }
-            set
-            {
-                SetValue(TextAlignmentProperty, value);
-            }
-        }
-
-        /// <summary>
         /// Get or set the font family of axis labels
         /// </summary>
         public new FontFamily FontFamily
@@ -360,7 +333,7 @@ namespace Visifire.Charts
                 if (FontFamily != value)
                 {
                     SetValue(FontFamilyProperty, value);
-                    FirePropertyChanged("FontFamily");
+                    FirePropertyChanged(VcProperties.FontFamily);
                 }
 #else
                 SetValue(FontFamilyProperty, value);
@@ -386,7 +359,7 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.UpdateVisual("FontColor", e.NewValue);
+            axisLabels.UpdateVisual(VcProperties.FontColor, e.NewValue);
         }
 
         /// <summary>
@@ -407,7 +380,7 @@ namespace Visifire.Charts
                 if (FontStyle != value)
                 {
                     SetValue(FontStyleProperty, value);
-                    UpdateVisual("FontStyle", value);
+                    UpdateVisual(VcProperties.FontStyle, value);
                 }
 #else
                  SetValue(FontStyleProperty, value);
@@ -434,7 +407,7 @@ namespace Visifire.Charts
                 if (FontWeight != value)
                 {
                     SetValue(FontWeightProperty, value);
-                    UpdateVisual("FontWeight", value);
+                    UpdateVisual(VcProperties.FontWeight, value);
                 }
 #else
                 SetValue(FontWeightProperty, value);
@@ -459,7 +432,7 @@ namespace Visifire.Charts
                 if (FontSize != value)
                 {
                     SetValue(FontSizeProperty, value);
-                    FirePropertyChanged("FontSize");
+                    FirePropertyChanged(VcProperties.FontSize);
                 }
 #else
                 SetValue(FontSizeProperty, value);
@@ -706,7 +679,7 @@ namespace Visifire.Charts
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("Interval");
+            axisLabels.FirePropertyChanged(VcProperties.Interval);
         }
 
         /// <summary>
@@ -717,7 +690,7 @@ namespace Visifire.Charts
         private static void OnAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("Angle");
+            axisLabels.FirePropertyChanged(VcProperties.Angle);
         }
         
         /// <summary>
@@ -728,18 +701,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("Enabled");
-        }
-
-        /// <summary>
-        /// Event handler attached with TextAlignment property changed event of axislabels element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("TextAlignment");
+            axisLabels.FirePropertyChanged(VcProperties.Enabled);
         }
 
 #if WPF
@@ -752,7 +714,7 @@ namespace Visifire.Charts
         private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("FontFamily");
+            axisLabels.FirePropertyChanged(VcProperties.FontFamily);
         }
 
         /// <summary>
@@ -763,7 +725,7 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.UpdateVisual("FontStyle", e.NewValue);
+            axisLabels.UpdateVisual(VcProperties.FontStyle, e.NewValue);
         }
 
         /// <summary>
@@ -774,7 +736,7 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.UpdateVisual("FontWeight", e.NewValue);
+            axisLabels.UpdateVisual(VcProperties.FontWeight, e.NewValue);
         }
         
         /// <summary>
@@ -785,7 +747,7 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("FontSize");
+            axisLabels.FirePropertyChanged(VcProperties.FontSize);
         }
 
         /// <summary>
@@ -796,7 +758,7 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("Opacity");
+            axisLabels.FirePropertyChanged(VcProperties.Opacity);
         }
 #endif
 
@@ -812,7 +774,7 @@ namespace Visifire.Charts
             if((Double)e.NewValue < 0 || (Double)e.NewValue > 1)
                 throw new Exception("Wrong property value. Range of TextWrapProperty varies from 0 to 1.");
 
-            axisLabels.FirePropertyChanged("TextWrap");
+            axisLabels.FirePropertyChanged(VcProperties.TextWrap);
         }
 
         /// <summary>
@@ -823,7 +785,7 @@ namespace Visifire.Charts
         private static void OnRowsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("Rows");
+            axisLabels.FirePropertyChanged(VcProperties.Rows);
         }
         
         /// <summary>
@@ -1098,6 +1060,7 @@ namespace Visifire.Charts
         private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
         {
             String multiLineText = "";
+            text = text.Trim();
             
             if (!Double.IsNaN(TextWrap))
             {   
@@ -1381,7 +1344,6 @@ namespace Visifire.Charts
             label.FontFamily = FontFamily;
             label.FontStyle = FontStyle;
             label.FontWeight = FontWeight;
-            label.TextAlignment = TextAlignment;
             label.Angle = GetAngle();
         }
 
@@ -1792,7 +1754,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(string propertyName, object value)
+        internal override void UpdateVisual(VcProperties propertyName, object value)
         {   
             if (Visual != null)
             {

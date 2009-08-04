@@ -33,7 +33,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -57,7 +57,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -81,7 +81,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -105,7 +105,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -129,7 +129,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)chart.Series[0].LabelEnabled));
 
@@ -150,7 +150,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LabelStyles.OutSide, (LabelStyles)chart.Series[0].LabelStyle));
 
@@ -171,7 +171,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsNull(chart.Series[0].LabelLineEnabled));
 
@@ -192,7 +192,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.Series[0].Bevel));
             EnqueueTestComplete();
@@ -212,7 +212,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.Series[0].LightingEnabled));
             EnqueueTestComplete();
@@ -232,7 +232,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
@@ -256,7 +256,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -281,7 +281,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -306,7 +306,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -331,7 +331,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -356,7 +356,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -381,7 +381,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -409,7 +409,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -434,7 +434,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -462,7 +462,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -487,7 +487,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -512,7 +512,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -537,7 +537,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -563,7 +563,7 @@ namespace SLVisifireChartsTest
             chart.Series[0].RenderAs = RenderAs.CandleStick;
             chart.Series[0].ShowInLegend = true;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -588,7 +588,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -614,7 +614,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LabelEnabled = true,
                 () => Assert.IsTrue((Boolean)chart.Series[0].LabelEnabled));
@@ -636,7 +636,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].LabelEnabled = true,
                 () => Assert.IsTrue((Boolean)chart.Series[0].DataPoints[2].LabelEnabled));
@@ -658,7 +658,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LabelStyle = LabelStyles.Inside,
                 () => Assert.AreEqual(LabelStyles.Inside, (LabelStyles)chart.Series[0].LabelStyle));
@@ -680,7 +680,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].LabelStyle = LabelStyles.Inside,
                 () => Assert.AreEqual(LabelStyles.Inside, (LabelStyles)chart.Series[0].DataPoints[2].LabelStyle));
@@ -702,7 +702,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -726,7 +726,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LightingEnabled = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].LightingEnabled));
@@ -747,7 +747,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].ShowInLegend = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
@@ -768,7 +768,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].ShowInLegend = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
@@ -789,7 +789,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.Series[0].Href));
@@ -810,7 +810,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[3].Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.Series[0].DataPoints[3].Href));
@@ -831,7 +831,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].Href = "http://www.visifire.com",
                 () => chart.Series[0].HrefTarget = HrefTargets._blank,
@@ -853,7 +853,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.CandleStick;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[3].Href = "http://www.visifire.com",
                 () => chart.Series[0].DataPoints[3].HrefTarget = HrefTargets._blank,
@@ -882,7 +882,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -906,7 +906,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -930,7 +930,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)chart.Series[0].LabelEnabled));
 
@@ -951,7 +951,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LabelStyles.OutSide, (LabelStyles)chart.Series[0].LabelStyle));
 
@@ -972,7 +972,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.Series[0].Bevel));
             EnqueueTestComplete();
@@ -992,7 +992,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.Series[0].LightingEnabled));
             EnqueueTestComplete();
@@ -1012,7 +1012,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
@@ -1037,7 +1037,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1065,7 +1065,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1090,7 +1090,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1115,7 +1115,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1140,7 +1140,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1168,7 +1168,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1193,7 +1193,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1221,7 +1221,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1246,7 +1246,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1271,7 +1271,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1296,7 +1296,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1322,7 +1322,7 @@ namespace SLVisifireChartsTest
             chart.Series[0].RenderAs = RenderAs.Stock;
             chart.Series[0].ShowInLegend = true;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1347,7 +1347,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -1373,7 +1373,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LabelEnabled = true,
                 () => Assert.IsTrue((Boolean)chart.Series[0].LabelEnabled));
@@ -1395,7 +1395,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].LabelEnabled = true,
                 () => Assert.IsTrue((Boolean)chart.Series[0].DataPoints[2].LabelEnabled));
@@ -1417,7 +1417,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LabelStyle = LabelStyles.Inside,
                 () => Assert.AreEqual(LabelStyles.Inside, (LabelStyles)chart.Series[0].LabelStyle));
@@ -1439,7 +1439,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].LabelStyle = LabelStyles.Inside,
                 () => Assert.AreEqual(LabelStyles.Inside, (LabelStyles)chart.Series[0].DataPoints[2].LabelStyle));
@@ -1461,7 +1461,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].Bevel = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].Bevel));
@@ -1482,7 +1482,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].LightingEnabled = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].LightingEnabled));
@@ -1503,7 +1503,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].ShowInLegend = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
@@ -1524,7 +1524,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[2].ShowInLegend = false,
                 () => Assert.IsFalse((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
@@ -1545,7 +1545,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.Series[0].Href));
@@ -1566,7 +1566,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[3].Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.Series[0].DataPoints[3].Href));
@@ -1587,7 +1587,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].Href = "http://www.visifire.com",
                 () => chart.Series[0].HrefTarget = HrefTargets._blank,
@@ -1609,7 +1609,7 @@ namespace SLVisifireChartsTest
             Common.CreateDefaultDataSeries4FinancialCharts(chart);
             chart.Series[0].RenderAs = RenderAs.Stock;
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].DataPoints[3].Href = "http://www.visifire.com",
                 () => chart.Series[0].DataPoints[3].HrefTarget = HrefTargets._blank,
@@ -1635,7 +1635,7 @@ namespace SLVisifireChartsTest
             dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { 20, 28, 42, 10 } });
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.Series[0].DataPoints.Count));
             EnqueueTestComplete();
@@ -1654,7 +1654,7 @@ namespace SLVisifireChartsTest
             dataSeries.DataPoints.Add(new DataPoint() { XValue = 1, YValues = new Double[] { 20, 28, 42, 10 } });
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.Series[0].DataPoints.Count));
             EnqueueTestComplete();
@@ -1676,7 +1676,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.CandleStick;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0, chart.Series[0].DataPoints.Count));
             EnqueueTestComplete();
@@ -1694,7 +1694,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Stock;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0, chart.Series[0].DataPoints.Count));
             EnqueueTestComplete();
@@ -1721,7 +1721,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1764,7 +1764,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1811,7 +1811,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1852,7 +1852,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1897,7 +1897,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1934,7 +1934,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1975,7 +1975,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2016,7 +2016,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2060,7 +2060,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2101,7 +2101,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2147,7 +2147,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2188,7 +2188,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2234,7 +2234,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2275,7 +2275,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2321,7 +2321,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2365,7 +2365,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -2562,7 +2562,6 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
             System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
             System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 
@@ -2588,36 +2587,6 @@ namespace SLVisifireChartsTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void View3D_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            if (_chart.View3D)
-                _chart.View3D = false;
-            else
-                _chart.View3D = true;
-
-            _htmlElement3.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
-        }
-
-        /// <summary>
-        /// Event handler for click event of the Html element
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SwitchDataSeries_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
-        {
-            if (_chart.Series[0].RenderAs == RenderAs.StreamLineFunnel)
-                _chart.Series[0].RenderAs = RenderAs.SectionFunnel;
-            else
-                _chart.Series[0].RenderAs = RenderAs.StreamLineFunnel;
-
-            _htmlElement3.SetProperty("value", "Number of Render Count: " + _chart.ChartArea._renderCount + ". Click here to exit.");
-        }
-
-        /// <summary>
-        /// Event handler for click event of the Html element
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
@@ -2625,7 +2594,6 @@ namespace SLVisifireChartsTest
             {
                 System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
                 System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
                 System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
             }
             catch { }
@@ -2649,9 +2617,9 @@ namespace SLVisifireChartsTest
         private const int _sleepTime = 1000;
 
         /// <summary>
-        /// Chart 
+        /// Chart reference
         /// </summary>
-        private Chart _chart;
+        private Chart _chart = null;
 
         // Create a new instance of Random class
         private Random rand = new Random();
@@ -2675,11 +2643,6 @@ namespace SLVisifireChartsTest
         /// Html element reference
         /// </summary>
         private System.Windows.Browser.HtmlElement _htmlElement2;
-
-        /// <summary>
-        /// Html element reference
-        /// </summary>
-        private System.Windows.Browser.HtmlElement _htmlElement3;
 
         #endregion
     }

@@ -32,33 +32,11 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Double.NaN, chart.AxesX[0].AxisLabels.Angle),
                 () => Assert.AreEqual(Double.NaN, chart.AxesY[0].AxisLabels.Angle));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
-        /// Check the default value of TextAlignment. 
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the default value of TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentDefaultValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Left, chart.AxesX[0].AxisLabels.TextAlignment));
 
             EnqueueTestComplete();
         }
@@ -77,7 +55,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Double.NaN, chart.AxesX[0].AxisLabels.Interval));
@@ -99,7 +77,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.AreEqual(10, chart.AxesX[0].AxisLabels.FontSize),
@@ -122,7 +100,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.AxesX[0].AxisLabels.Rows));
@@ -157,43 +135,11 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(-30, _axisX.AxisLabels.Angle),
                 () => Assert.AreEqual(30, _axisY.AxisLabels.Angle));
-
-            EnqueueTestComplete();
-        }
-
-        /// <summary>
-        /// Check the New value for TextAlignment.
-        /// </summary> 
-        [TestMethod]
-        [Description("Check the new value for TextAlignment.")]
-        [Owner("[....]")]
-        [Asynchronous]
-        public void TextAlignmentNewValue()
-        {
-            Chart chart = new Chart();
-            chart.Width = 400;
-            chart.Height = 300;
-
-            _axisX = new Axis();
-            _axisY = new Axis();
-
-            _axisX.AxisLabels.TextAlignment = TextAlignment.Center;
-            _axisY.AxisLabels.TextAlignment = TextAlignment.Center;
-
-            chart.AxesX.Add(_axisX);
-            chart.AxesY.Add(_axisY);
-
-            Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
-
-            CreateAsyncTask(chart,
-                () => Assert.AreEqual(TextAlignment.Center, _axisX.AxisLabels.TextAlignment),
-                () => Assert.AreEqual(TextAlignment.Center, _axisY.AxisLabels.TextAlignment));
 
             EnqueueTestComplete();
         }
@@ -221,7 +167,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(2, _axisX.AxisLabels.Interval),
@@ -253,7 +199,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0.5, _axisX.AxisLabels.Opacity, Common.HighPrecisionDelta),
@@ -285,7 +231,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(14, _axisX.AxisLabels.FontSize),
@@ -317,7 +263,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(new FontFamily("Arial"), _axisX.AxisLabels.FontFamily),
@@ -349,7 +295,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), _axisX.AxisLabels.FontColor),
@@ -381,7 +327,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontStyles.Italic, _axisX.AxisLabels.FontStyle),
@@ -413,7 +359,7 @@ namespace SLVisifireChartsTest
             chart.AxesY.Add(_axisY);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(FontWeights.Bold, _axisX.AxisLabels.FontWeight),
@@ -440,7 +386,7 @@ namespace SLVisifireChartsTest
             chart.AxesX.Add(_axisX);
 
             Common.CreateAndAddDefaultDataSeries(chart);
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.AreEqual(2, _axisX.AxisLabels.Rows));
@@ -527,7 +473,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -597,6 +543,7 @@ namespace SLVisifireChartsTest
             EnqueueCallback(() =>
             {
                 _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
+                _htmlElement1.SetStyleAttribute("width", "900px");
                 _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
                 _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
                 _htmlElement2.SetStyleAttribute("top", "540px");
@@ -707,7 +654,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             DataSeries dataSeries = new DataSeries();
             dataSeries.RenderAs = RenderAs.Column;
@@ -722,7 +669,7 @@ namespace SLVisifireChartsTest
                 chart.AxesX.Add(axis);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -747,7 +694,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -758,7 +705,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion

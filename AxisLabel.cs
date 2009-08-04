@@ -232,15 +232,6 @@ namespace Visifire.Charts
         #region Font Properties
 
         /// <summary>
-        /// TextAlignment of the axis labels
-        /// </summary>
-        internal TextAlignment TextAlignment
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Font size of the axis labels
         /// </summary>
         internal Double FontSize
@@ -597,7 +588,6 @@ namespace Visifire.Charts
             TextElement.FontFamily = FontFamily;
             TextElement.FontStyle = FontStyle;
             TextElement.FontWeight = FontWeight;
-            TextElement.TextAlignment = TextAlignment;
         }
 
         /// <summary>
