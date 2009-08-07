@@ -1,0 +1,33 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Search Engine Market Share"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis AxisType="Primary" Title="Market Share Percentage" Suffix="%"/>
+    <vc:Axis AxisType="Secondary" Title="Query Volume (millions)" AxisMaximum="6000"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="Market Share" RenderAs="Column" Bevel="False" AxisYType="Primary" ToolTipText="#AxisLabel, MarketShare: #YValue" Cursor="Hand" ShowInLegend="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Google" YValue="68.6"/>
+        <vc:DataPoint AxisXLabel="Yahoo" YValue="16.7"/>
+        <vc:DataPoint AxisXLabel="MSN/Live" YValue="8.7"/>
+        <vc:DataPoint AxisXLabel="Ask" YValue="3.7"/>
+        <vc:DataPoint AxisXLabel="AOL" YValue="1.7"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+    <vc:DataSeries LegendText="Query Volume" RenderAs="Column" Bevel="False" AxisYType="Secondary" ToolTipText="#AxisLabel, Query Volume: #YValue" Cursor="Hand" ShowInLegend="True">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="4990"/>
+        <vc:DataPoint YValue="1230"/>
+        <vc:DataPoint YValue="723"/>
+        <vc:DataPoint YValue="298"/>
+        <vc:DataPoint YValue="137"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

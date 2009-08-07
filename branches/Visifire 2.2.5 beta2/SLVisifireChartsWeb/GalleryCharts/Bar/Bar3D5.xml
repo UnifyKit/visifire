@@ -1,0 +1,31 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme3" View3D="True" Padding="5" Width="450" Height="475">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Total Population in Less Developed Countries" HorizontalAlignment="Left" />
+    <vc:Title Text="1950 - 2020"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Density (persons per sq. km.)">
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineColor="White"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bar" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="1950" YValue="21.6"/>
+        <vc:DataPoint AxisXLabel="1960" YValue="26.3"/>
+        <vc:DataPoint AxisXLabel="1970" YValue="33.4"/>
+        <vc:DataPoint AxisXLabel="1980" YValue="41.5"/>
+        <vc:DataPoint AxisXLabel="1990" YValue="51.0"/>
+        <vc:DataPoint AxisXLabel="2000" YValue="60.2"/>
+        <vc:DataPoint AxisXLabel="2010" YValue="69.3"/>
+        <vc:DataPoint AxisXLabel="2020" YValue="78.5"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
