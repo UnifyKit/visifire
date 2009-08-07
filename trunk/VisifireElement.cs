@@ -42,8 +42,9 @@ namespace Visifire.Commons
         /// </summary>
         public VisifireElement()
         {
-        }
 
+        }
+        
 #if SL
 
         /// <summary>
@@ -200,6 +201,49 @@ namespace Visifire.Commons
             }
         }
 
+#if WPF
+        /// <summary>
+        /// Event handler for the MouseRightButtonDown event 
+        /// </summary>
+        public new event MouseButtonEventHandler MouseRightButtonDown
+        {
+            remove
+            {
+                _onMouseRightButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseRightButtonUp event 
+        /// </summary>
+        public new event MouseButtonEventHandler MouseRightButtonUp
+        {
+            remove
+            {
+                _onMouseRightButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+#endif
 
         /// <summary>
         /// Event handler for the MouseEnter event 
@@ -393,7 +437,19 @@ namespace Visifire.Commons
         /// Handler for MouseLeftButtonUp event
         /// </summary>
         private event MouseButtonEventHandler _onMouseLeftButtonUp; 
-        
+
+#if WPF
+        /// <summary>
+        /// Handler for MouseRightButtonDown event
+        /// </summary>
+        private event MouseButtonEventHandler _onMouseRightButtonDown;
+
+        /// <summary>
+        /// Handler for MouseRightButtonUp event
+        /// </summary>
+        private event MouseButtonEventHandler _onMouseRightButtonUp;
+#endif
+
         /// <summary>
         /// Handler for MouseEnter event
         /// </summary>
@@ -462,16 +518,20 @@ namespace Visifire.Commons
             object eventHandler;
 
             if (plotArea != null)
+            {
                 eventHandler = plotArea.GetMouseLeftButtonDownEventHandler();
+            }
             else
+            {
                 eventHandler = obj._onMouseLeftButtonDown;
+            }
 
             if (eventHandler != null)
                 visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
                 {
                     if (plotArea != null)
                     {
-                        plotArea.FireMouseLeftButtonDownEvent(e);
+                        plotArea.FireMouseButtonDownEvent(e);
                     }
                     else
                     {
@@ -483,16 +543,20 @@ namespace Visifire.Commons
                 };
 
             if (plotArea != null)
+            {
                 eventHandler = plotArea.GetMouseLeftButtonUpEventHandler();
+            }
             else
+            {
                 eventHandler = obj._onMouseLeftButtonUp;
+            }
 
             if (eventHandler != null)
                 visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
                     if (obj.GetType().Equals(typeof(PlotArea)))
                     {
-                        (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
+                        (obj as PlotArea).FireMouseButtonUpEvent(e);
                     }
                     else
                     {
@@ -519,6 +583,62 @@ namespace Visifire.Commons
                             obj._onMouseMove(senderElement, e);
                     }
                 };
+
+            #region RightMouseButtonEvents4WPF
+#if WPF
+            object eventHandler4RightMouseButton;
+
+            if (plotArea != null)
+            {
+                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonDownEventHandler();
+            }
+            else
+            {
+                eventHandler4RightMouseButton = obj._onMouseRightButtonDown;
+            }
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (plotArea != null)
+                    {
+                        plotArea.FireMouseButtonDownEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseRightButtonDown != null)
+                        {
+                            obj._onMouseRightButtonDown(senderElement, e);
+                        }
+                    }
+                };
+
+            if (plotArea != null)
+            {
+                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonUpEventHandler();
+            }
+            else
+            {
+                eventHandler4RightMouseButton = obj._onMouseRightButtonUp;
+            }
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (plotArea != null)
+                    {
+                        plotArea.FireMouseButtonUpEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseRightButtonUp != null)
+                        {
+                            obj._onMouseRightButtonUp(senderElement, e);
+                        }
+                    }
+                };
+#endif
+            #endregion
         }
 
         /// <summary>
@@ -575,7 +695,6 @@ namespace Visifire.Commons
                 };
 
             object eventHandler;
-
             eventHandler = obj._onMouseLeftButtonDown;
 
             if (eventHandler != null)
@@ -644,6 +763,58 @@ namespace Visifire.Commons
                             obj._onMouseMove(dp, e);
                     }
                 };
+
+
+            #region RightMouseButtonEvents4WPF
+#if WPF
+            object eventHandler4RightMouseButton;
+            eventHandler4RightMouseButton = obj._onMouseRightButtonDown;
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseRightButtonDown != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseRightButtonDown != null)
+                                dp._onMouseRightButtonDown(dp, e);
+                        }
+                        else
+                            obj._onMouseRightButtonDown(dp, e);
+                    }
+                };
+
+            eventHandler4RightMouseButton = obj._onMouseRightButtonUp;
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseRightButtonUp != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseRightButtonUp != null)
+                                dp._onMouseRightButtonUp(dp, e);
+                        }
+                        else
+                            obj._onMouseRightButtonUp(dp, e);
+                    }
+                };
+#endif
+            #endregion
         }
 
         /// <summary>

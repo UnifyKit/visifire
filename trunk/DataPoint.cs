@@ -3201,15 +3201,17 @@ namespace Visifire.Charts
                 {
                     if (Parent.Faces != null)
                     {
-                        foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                        if (Object.GetType().Equals(typeof(DataPoint)))
                         {
-                            AttachEvents2AreaVisual(Object, this, face);
+                            foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                                AttachEvents2AreaVisual(Object, this, face);
                         }
                     }
                 }
-
+                
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
+                
             }
             else if (Faces != null)
             {

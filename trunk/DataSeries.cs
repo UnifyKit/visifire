@@ -2896,12 +2896,36 @@ namespace Visifire.Charts
         /// </summary>
         internal void AttachEvent2DataSeriesVisualFaces()
         {
+            if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
+            {
+                AttachEvent2AreaVisualFaces(this);
+            }
+            else
+            {
+                foreach (DataPoint dp in InternalDataPoints)
+                {
+                    dp.AttachEvent2DataPointVisualFaces(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attach events to Area faces
+        /// </summary>
+        /// <param name="Object">Object where events to be attached</param>
+        internal void AttachEvent2AreaVisualFaces(ObservableObject Object)
+        {
+            if (Faces != null)
+            {
+                foreach(FrameworkElement face in Faces.VisualComponents)
+                    AttachEvents2AreaVisual(Object, this, face);
+            }
+
             foreach (DataPoint dp in InternalDataPoints)
             {
                 dp.AttachEvent2DataPointVisualFaces(this);
             }
         }
-
 
         /// <summary>
         /// Get DataPoint for MouseButton event
