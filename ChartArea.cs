@@ -151,7 +151,7 @@ namespace Visifire.Charts
 
             RetainOldScrollOffsetOfScrollViewer();
 
-            Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
+            // Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
 
             AttachOrDetachIntaractivity(chart);          
 
@@ -490,6 +490,7 @@ namespace Visifire.Charts
 
                 Chart.PlotArea.CreateVisualObject();
                 PlotAreaCanvas = Chart.PlotArea.Visual;
+                Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
             }
             else
                 Chart.PlotArea.UpdateProperties();
@@ -2236,12 +2237,15 @@ namespace Visifire.Charts
 
                     if (markerColor == null)
                     {
-                        if (dataPoint.YValues.Length >= 2)
+                        if (dataPoint.YValues != null)
                         {
-                            Double openY = dataPoint.YValues[0];
-                            Double closeY = dataPoint.YValues[1];
+                            if (dataPoint.YValues.Length >= 2)
+                            {
+                                Double openY = dataPoint.YValues[0];
+                                Double closeY = dataPoint.YValues[1];
 
-                            markerColor = (closeY > openY) ? dataPoint.Parent.PriceUpColor : dataPoint.Parent.PriceDownColor;
+                                markerColor = (closeY > openY) ? dataPoint.Parent.PriceUpColor : dataPoint.Parent.PriceDownColor;
+                            }
                         }
                     }
                     else

@@ -42,11 +42,11 @@ namespace Visifire.Commons
         public ObservableObject()
             : base()
         {
-            // Attach event handler with EventChanged event of VisfiireElement
+            // Attach event handler with EventChanged event of VisifireElement
             // But do not attach the event for PlotArea beacuse PlotArea has overridden EventChanged as internal event
             if (!this.GetType().Equals(typeof(PlotArea)))
             {
-                // Attach event handler with EventChanged event of VisfiireElement
+                // Attach event handler with EventChanged event of VisifireElement
                 EventChanged += delegate
                 {
                     FirePropertyChanged("MouseEvent");
