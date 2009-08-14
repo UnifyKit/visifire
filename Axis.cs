@@ -1809,7 +1809,7 @@ namespace Visifire.Charts
 
                 if (IsDateTimeAxis)
                 {
-                    if (interval > 0 || !Double.IsNaN(interval) || IntervalType == IntervalTypes.Auto)
+                    if (interval > 0 || !Double.IsNaN(interval))
                     {
                         AxisManager.Interval = interval;
                         InternalInterval = interval;
@@ -2518,7 +2518,7 @@ namespace Visifire.Charts
                     {
                         Double temp = Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval);
                         
-                        if (temp >= 1)
+                        if (!Double.IsInfinity(temp) && temp >= 1)
                             start = (start - Math.Floor(temp) * InternalInterval);
                     }
 

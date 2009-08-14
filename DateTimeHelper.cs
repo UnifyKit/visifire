@@ -88,7 +88,7 @@ namespace Visifire.Charts
                 case IntervalTypes.Weeks:
                     returnDate = minDate.AddDays(XValue * 7);
                     break;
-
+                    
                 case IntervalTypes.Days:
                     returnDate = minDate.AddDays(XValue);
                     break;

@@ -469,10 +469,38 @@ namespace Visifire.Charts
                         {
                             if (axisX.XValueType != ChartValueTypes.Time)
                             {
+                                //if (axisX.AxisMinimum == null)
+                                //{
+                                //    minDate = minDate.AddDays(-1);
+                                //    autoIntervalType = IntervalTypes.Days;
+                                //}
                                 if (axisX.AxisMinimum == null)
                                 {
-                                    minDate = minDate.AddDays(-1);
-                                    autoIntervalType = IntervalTypes.Days;
+                                    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+                                    {
+                                        minDate = minDate.AddHours(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+                                    {
+                                        minDate = minDate.AddMinutes(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+                                    {
+                                        minDate = minDate.AddSeconds(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                                    {
+                                        minDate = minDate.AddMilliseconds(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else
+                                    {
+                                        minDate = minDate.AddDays(-1);
+                                        autoIntervalType = IntervalTypes.Days;
+                                    }
                                 }
                                 else
                                 {
