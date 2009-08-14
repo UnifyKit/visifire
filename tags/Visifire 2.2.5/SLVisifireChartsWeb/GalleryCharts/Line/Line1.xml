@@ -1,0 +1,23 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" BorderBrush="Gray" Padding="6" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Line Chart"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Line" Cursor="Hand" MarkerEnabled="True" MarkerType="Circle">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="3009"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="4547"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="7047"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="6208"/>
+        <vc:DataPoint AxisXLabel="May" YValue="5222"/>
+        <vc:DataPoint AxisXLabel="June" YValue="7047"/>
+        <vc:DataPoint AxisXLabel="July" YValue="6508"/>
+        <vc:DataPoint AxisXLabel="Aug" YValue="7547"/>
+        <vc:DataPoint AxisXLabel="Sept" YValue="6508"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
