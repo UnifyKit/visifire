@@ -37,7 +37,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -55,7 +55,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(1, chart.Series[0].DataPoints.Count);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -80,7 +80,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -97,7 +97,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(2, chart.Series[0].DataPoints.Count);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -122,7 +122,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisMinimum = new DateTime(2008, 10, 1);
@@ -145,7 +145,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(new DateTime(2008, 10, 1), chart.AxesX[0].AxisMinimum);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -170,7 +170,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisMaximum = new DateTime(2009, 10, 15);
@@ -193,7 +193,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(new DateTime(2009, 10, 15), chart.AxesX[0].AxisMaximum);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -218,7 +218,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -239,7 +239,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(IntervalTypes.Auto, chart.AxesX[0].IntervalType);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -329,7 +329,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.Interval = 1;
@@ -360,7 +360,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(new DateTime(2001, 3, 3), chart.TrendLines[0].Value);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -385,7 +385,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisMinimum = new DateTime(2001, 1, 1);
@@ -405,7 +405,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(new DateTime(2001, 1, 1), chart.AxesX[0].AxisMinimum);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -430,7 +430,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Months;
@@ -451,7 +451,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(chart.AxesX[0].Interval, chart.AxesX[0].InternalInterval);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -476,7 +476,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.StartFromZero = true;
@@ -499,7 +499,7 @@ namespace SLVisifireChartsTest
                 Assert.IsTrue((Boolean)chart.AxesX[0].StartFromZero);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -524,7 +524,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.Interval = 1;
@@ -542,7 +542,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -585,7 +585,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(2000);
+            EnqueueDelay(2000);
             EnqueueTestComplete();
         }
         #endregion
@@ -610,7 +610,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Minutes;
@@ -628,7 +628,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -655,7 +655,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Hours;
@@ -675,7 +675,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -700,7 +700,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Minutes;
@@ -723,7 +723,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -748,7 +748,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.ValueFormatString = "dd/MM/yyyy hh:mm:ss tt";
@@ -770,7 +770,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -795,7 +795,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisMinimum = new DateTime(2008, 12, 1, 1, 2, 4);
@@ -818,7 +818,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -843,7 +843,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisLabels.Angle = -45;
@@ -881,7 +881,7 @@ namespace SLVisifireChartsTest
                     Assert.AreEqual(ds, chart.Series.Count);
                 });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -906,7 +906,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -928,7 +928,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(RenderAs.Pie, chart.Series[0].RenderAs);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -953,7 +953,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -975,7 +975,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(RenderAs.Doughnut, chart.Series[0].RenderAs);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1000,7 +1000,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1022,7 +1022,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(RenderAs.Bar, chart.Series[0].RenderAs);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1047,7 +1047,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.ValueFormatString = "dd MMM yyyy";
@@ -1068,7 +1068,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1093,7 +1093,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
             axis.AxisLabels.Angle = -45;
@@ -1114,7 +1114,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1136,7 +1136,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1149,7 +1149,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(ChartValueTypes.DateTime, chart.Series[0].XValueType);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1174,7 +1174,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1193,7 +1193,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1218,7 +1218,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1239,7 +1239,7 @@ namespace SLVisifireChartsTest
                     Assert.AreEqual("MM/dd/yyyy hh:mm:ss tt", chart.AxesX[0].ValueFormatString);
                 });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1264,7 +1264,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1280,7 +1280,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(1, chart.Series[0].DataPoints.Count);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1305,7 +1305,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1326,7 +1326,7 @@ namespace SLVisifireChartsTest
                 Assert.AreEqual(0.005, chart.AxesX[0].Interval);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -1348,7 +1348,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => chart.AxesX[0].ValueFormatString = "MMM dd yyyy",
@@ -1373,7 +1373,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => chart.AxesX[0].ValueFormatString = "hh:mm:ss",
@@ -1398,7 +1398,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => chart.AxesX[0].ValueFormatString = "MMM/dd/yyyy hh:mm:ss tt",
@@ -1421,7 +1421,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.AreEqual(ChartValueTypes.Auto, chart.Series[0].XValueType));
@@ -1443,7 +1443,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             CreateAsyncTest(chart,
                 () => Assert.AreEqual(IntervalTypes.Auto, chart.AxesX[0].IntervalType));

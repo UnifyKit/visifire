@@ -43,7 +43,7 @@ namespace SLVisifireChartsTest
             {
                 Action capturedAction = action;
                 EnqueueCallback(() => capturedAction());
-                EnqueueSleep(VisualDelayInMilliseconds);
+                EnqueueDelay(VisualDelayInMilliseconds);
             }
 
             // Remove the element from the test surface and finish the test

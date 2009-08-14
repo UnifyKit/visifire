@@ -34,7 +34,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)trendLine.Enabled));
 
@@ -58,7 +58,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = new TrendLine();
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(Orientation.Horizontal, trendLine.Orientation));
 
@@ -82,7 +82,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(AxisTypes.Primary, trendLine.AxisType));
 
@@ -106,7 +106,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), trendLine.LineColor));
 
@@ -130,7 +130,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(2, trendLine.LineThickness));
 
@@ -154,7 +154,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, trendLine.LineStyle));
 
@@ -178,7 +178,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsFalse(trendLine.ShadowEnabled));
 
@@ -208,7 +208,7 @@ namespace SLVisifireChartsTest
             trendLine.Enabled = false;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.Enabled = true,
                 () => Assert.IsTrue((Boolean)trendLine.Enabled));
@@ -234,7 +234,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.TrendLines[0].Href = "http://www.visifire.com",
                 () => Assert.AreEqual("http://www.visifire.com", chart.TrendLines[0].Href),
@@ -263,7 +263,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.Opacity = 0.5,
                 () => Assert.AreEqual(0.5, trendLine.Opacity, Common.HighPrecisionDelta));
@@ -290,7 +290,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.InternalNumericValue = 3,
                 () => trendLine.Orientation = Orientation.Vertical,
@@ -318,7 +318,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.Series[0].AxisYType = AxisTypes.Secondary,
                 () => trendLine.AxisType = AxisTypes.Secondary,
@@ -346,7 +346,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.LineColor = new SolidColorBrush(Colors.Cyan),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Cyan), trendLine.LineColor));
@@ -373,7 +373,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.LineThickness = 5,
                 () => Assert.AreEqual(5, trendLine.LineThickness));
@@ -400,7 +400,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.LineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, trendLine.LineStyle));
@@ -427,7 +427,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.ShadowEnabled = true,
                 () => Assert.IsTrue(trendLine.ShadowEnabled));
@@ -454,7 +454,7 @@ namespace SLVisifireChartsTest
             TrendLine trendLine = TrendLineToTest;
             chart.TrendLines.Add(trendLine);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.Orientation = Orientation.Vertical,
                 () => trendLine.InternalNumericValue = 2,
@@ -490,7 +490,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             chart.TrendLines.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             =>
@@ -511,7 +511,7 @@ namespace SLVisifireChartsTest
             });
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -522,7 +522,7 @@ namespace SLVisifireChartsTest
             });
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -533,7 +533,7 @@ namespace SLVisifireChartsTest
             });
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -544,7 +544,7 @@ namespace SLVisifireChartsTest
             });
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -555,7 +555,7 @@ namespace SLVisifireChartsTest
             });
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
 
             EnqueueCallback(() =>
             {
@@ -565,7 +565,7 @@ namespace SLVisifireChartsTest
                 chart.TrendLines.Add(trendLine);
             });
 
-            EnqueueSleep(1000);
+            EnqueueDelay(1000);
             EnqueueTestComplete();
         }
         #endregion

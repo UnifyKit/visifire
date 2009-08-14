@@ -1044,27 +1044,40 @@ namespace Visifire.Charts
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseButtonDownEvent(MouseButtonEventArgs e)
+        internal void FireMouseLeftButtonDownEvent(MouseButtonEventArgs e)
         {   
             if(_onMouseLeftButtonDown != null)
                 _onMouseLeftButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
+        }
 
+        /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseRightButtonDownEvent(MouseButtonEventArgs e)
+        {
 #if WPF
             if (_onMouseRightButtonDown != null)
                 _onMouseRightButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
 #endif
-
         }
 
         /// <summary>
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseButtonUpEvent(MouseButtonEventArgs e)
+        internal void FireMouseLeftButtonUpEvent(MouseButtonEventArgs e)
         {
             if (_onMouseLeftButtonUp != null)
                 _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
-
+        }
+        
+        /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseRightButtonUpEvent(MouseButtonEventArgs e)
+        {
 #if WPF
             if (_onMouseRightButtonUp != null)
                 _onMouseRightButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));

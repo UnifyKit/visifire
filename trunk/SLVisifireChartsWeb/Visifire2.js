@@ -1,6 +1,6 @@
 /*
-Visifire2.js v2.2.5 beta 2
-    
+Visifire2.js v2.2.5
+
 Copyright (C) 2008 Webyog Softworks Private Limited
 
 This file is a part of Visifire Charts.

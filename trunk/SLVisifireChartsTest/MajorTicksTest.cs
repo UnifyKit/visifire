@@ -34,7 +34,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(0.5, chart.AxesX[0].Ticks[0].LineThickness),
                 () => Assert.AreEqual(0.5, chart.AxesY[0].Ticks[0].LineThickness));
@@ -55,7 +55,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(LineStyles.Solid, chart.AxesX[0].Ticks[0].LineStyle),
                 () => Assert.AreEqual(LineStyles.Solid, chart.AxesY[0].Ticks[0].LineStyle));
@@ -76,7 +76,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesX[0].Ticks[0].LineColor),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Gray), chart.AxesY[0].Ticks[0].LineColor));
@@ -97,7 +97,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(1, chart.AxesX[0].Ticks[0].Interval));
 
@@ -117,7 +117,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => Assert.IsTrue((Boolean)chart.AxesX[0].Ticks[0].Enabled));
 
@@ -141,7 +141,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineThickness = 2,
                 () => Assert.AreEqual(2, chart.AxesX[0].Ticks[0].LineThickness),
@@ -165,7 +165,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].Opacity = 0.5,
                 () => Assert.AreEqual(0.5, chart.AxesX[0].Ticks[0].Opacity, Common.HighPrecisionDelta));
@@ -187,7 +187,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineStyle = LineStyles.Dashed,
                 () => Assert.AreEqual(LineStyles.Dashed, chart.AxesX[0].Ticks[0].LineStyle),
@@ -211,7 +211,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.AxesX[0].Ticks[0].LineColor = new SolidColorBrush(Colors.Red),
                 () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Red), chart.AxesX[0].Ticks[0].LineColor),
@@ -236,7 +236,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -262,7 +262,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -295,7 +295,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             DataSeries dataSeries = new DataSeries();
             for (Int32 i = 0; i < 6; i++)
@@ -318,7 +318,7 @@ namespace SLVisifireChartsTest
                 chart.AxesX.Add(axis);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -343,7 +343,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             DataSeries dataSeries = new DataSeries();
             dataSeries.RenderAs = RenderAs.Bar;
@@ -367,7 +367,7 @@ namespace SLVisifireChartsTest
                 chart.AxesX.Add(axis);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
         }
         #endregion
@@ -383,15 +383,7 @@ namespace SLVisifireChartsTest
         }
 
         #region Private Data
-        /// <summary>
-        /// Html element reference
-        /// </summary>
-        private System.Windows.Browser.HtmlElement _htmlElement1;
 
-        /// <summary>
-        /// Html element reference
-        /// </summary>
-        private System.Windows.Browser.HtmlElement _htmlElement2;
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
@@ -401,16 +393,6 @@ namespace SLVisifireChartsTest
         /// Whether the chart is loaded
         /// </summary>
         private bool _isLoaded = false;
-
-        /// <summary>
-        /// axisX reference
-        /// </summary>
-        private Axis _axisX;
-
-        /// <summary>
-        /// AxisY reference
-        /// </summary>
-        private Axis _axisY;
 
         #endregion
     }

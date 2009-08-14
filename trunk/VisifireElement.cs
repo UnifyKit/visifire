@@ -531,7 +531,7 @@ namespace Visifire.Commons
                 {
                     if (plotArea != null)
                     {
-                        plotArea.FireMouseButtonDownEvent(e);
+                        plotArea.FireMouseLeftButtonDownEvent(e);
                     }
                     else
                     {
@@ -556,7 +556,7 @@ namespace Visifire.Commons
                 {
                     if (obj.GetType().Equals(typeof(PlotArea)))
                     {
-                        (obj as PlotArea).FireMouseButtonUpEvent(e);
+                        (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
                     }
                     else
                     {
@@ -602,7 +602,7 @@ namespace Visifire.Commons
                 {
                     if (plotArea != null)
                     {
-                        plotArea.FireMouseButtonDownEvent(e);
+                        plotArea.FireMouseRightButtonDownEvent(e);
                     }
                     else
                     {
@@ -627,7 +627,7 @@ namespace Visifire.Commons
                 {
                     if (plotArea != null)
                     {
-                        plotArea.FireMouseButtonUpEvent(e);
+                        plotArea.FireMouseRightButtonUpEvent(e);
                     }
                     else
                     {
