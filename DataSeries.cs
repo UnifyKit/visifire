@@ -1256,7 +1256,7 @@ namespace Visifire.Charts
             get
             {
                 if (GetValue(LabelFontFamilyProperty) == null)
-                    return new FontFamily("Arial");
+                    return new FontFamily("Verdana");
                 else
                     return (FontFamily)GetValue(LabelFontFamilyProperty);
             }
@@ -1608,20 +1608,20 @@ namespace Visifire.Charts
 
         #endregion Marker Properties
 
-       /// <summary>
-       /// Get or set ZIndex property
-       /// (Will be used to decide which series comes in front and which one goes back)
-       /// </summary>
-       internal Int32 InternalZIndex
-       {
+        /// <summary>
+        /// Get or set ZIndex property
+        /// (Will be used to decide which series comes in front and which one goes back)
+        /// </summary>
+        internal Int32 InternalZIndex
+        {
            get;
            set;
-       }
+        }
 
         /// <summary>
         /// Get or set the Internal Start angle property
         /// </summary>
-         internal Double InternalStartAngle
+        internal Double InternalStartAngle
          {
              get
              {

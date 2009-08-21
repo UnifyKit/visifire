@@ -4391,7 +4391,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(new FontFamily("Arial"), dataSeries.LabelFontFamily));
+                () => Assert.AreEqual(new FontFamily("Verdana"), dataSeries.LabelFontFamily));
 
             EnqueueTestComplete();
         }

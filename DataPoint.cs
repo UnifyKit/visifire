@@ -1925,7 +1925,7 @@ namespace Visifire.Charts
                                     foreach (FrameworkElement fe in Faces.Parts)
                                         if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
                                 }
-
+    
                                 break;
 
                             case RenderAs.SectionFunnel:
@@ -2709,7 +2709,7 @@ namespace Visifire.Charts
                 foreach (Shape shape in Faces.BorderElements)
                 {
                     if (dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie || dataPoint.Parent.RenderAs == RenderAs.Doughnut))
-                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, 0, BorderColor);
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left, BorderColor);
                     else
                     {
                         Brush borderColor;

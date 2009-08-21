@@ -1,4 +1,569 @@
-﻿/// <summary>
+﻿  private static void PositionLabels2D2(List<DataPoint> dataPoints, Point plotRadius, Point center, Double sum, Size pieSize, Size referenceEllipseSize)
+        {   
+            Double pieRadius = pieSize.Width / 2;
+            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
+            Double meanAngle;
+            Double radius = 0;
+            Int32 i = 0;
+
+            Double offset = 1.1;
+
+            Double centerX, centerY;
+
+            Dictionary<Double, Point> labelYR = new Dictionary<Double, Point>();
+            Dictionary<Double, Point> labeltempYR = new Dictionary<Double, Point>();
+
+            Dictionary<Double, Rect> labeltempPosR = new Dictionary<Double, Rect>();
+            Dictionary<Double, Rect> labelPosR = new Dictionary<Double, Rect>();
+
+            Dictionary<Double, Point> labelYL = new Dictionary<Double, Point>();
+            Dictionary<Double, Point> labeltempYL = new Dictionary<Double, Point>();
+            Dictionary<Double, Rect> labeltempPosL = new Dictionary<Double, Rect>();
+            Dictionary<Double, Rect> labelPosL = new Dictionary<Double, Rect>();
+
+            Dictionary<Double, Point> centers = new Dictionary<Double, Point>();
+            Dictionary<Double, Point> centerPointsOverPie = new Dictionary<Double, Point>();
+
+
+            Double GapL = 2, GapR = 2;
+            Double maxGap;
+
+            Int32 lIndex = 0, rIndex = 0, tIndex = 0;
+            Double tempY, tempX;
+
+            for (i = 0; i < dataPoints.Count; i++)
+            {
+                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoints[i].InternalYValue) / sum;
+                meanAngle = (startAngle + stopAngle) / 2;
+
+                if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
+
+                centerPointsOverPie.Add(i, new Point(pieRadius * Math.Cos(meanAngle), pieRadius * Math.Sin(meanAngle)));
+                
+                Double explodedOffset = 0;
+
+                if (dataPoints[i].LabelStyle == LabelStyles.Inside)
+                {
+                    PlaceLabelInside(dataPoints[i], center, meanAngle, pieSize, referenceEllipseSize, 1, false);
+                }
+                else
+                {   
+                    offset = LABEL_LINE_LENGTH;
+
+                    radius = pieRadius + offset;
+
+                    if (sum == dataPoints[i].InternalYValue)
+                    {
+                        centerX = center.X;
+                        centerY = center.Y;
+                    }
+                    else
+                    {
+                        centerX = center.X + pieRadius * explodedOffset * Math.Cos((startAngle + stopAngle) * 0.5);
+                        centerY = center.Y + pieRadius * explodedOffset * Math.Sin((startAngle + stopAngle) * 0.5);
+                    }
+
+                    tempY = center.Y + radius * Math.Sin(meanAngle);
+
+                    if (explodedOffset > 0)
+                    {   
+                        Double maxAngle = (Math.Abs(Math.Sin(meanAngle)) > Math.Abs(Math.Cos(meanAngle))) ? Math.Sin(meanAngle) : Math.Cos(meanAngle);
+
+                        tempX = centerX + radius * maxAngle * (Math.Sign(Math.Cos(meanAngle)));
+                    }
+                    else
+                    {
+                        tempX = centerX + radius * Math.Cos(meanAngle);
+                    }
+
+                    centers.Add(i, new Point(centerX, centerY));
+
+                    if (meanAngle > (Math.PI) && meanAngle < ( 3 * (Math.PI / 2)))
+                    {
+                        labelYL.Add(lIndex, new Point(i, tempY));
+                        labelPosL.Add(lIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
+                        lIndex++;
+                        if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
+                        (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Orange);
+                        
+                    }else if (meanAngle > (Math.PI / 2) && meanAngle <= Math.PI)
+                    {
+                        labelYL.Add(lIndex, new Point(i, tempY));
+                        labelPosL.Add(lIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
+                        lIndex++;
+                        if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
+
+                        (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Green);
+                    }
+                    else if (meanAngle >= 0 && meanAngle <= (Math.PI / 2))
+                    {
+                        labelYR.Add(rIndex, new Point(i, tempY));
+                        labelPosR.Add(rIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
+                        rIndex++;
+                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
+                        (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
+                    }
+                    else
+                    {
+                        labeltempYR.Add(tIndex, new Point(i, tempY));
+                        labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
+                        tIndex++;
+                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
+                        (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Yellow);
+                    }
+                }
+
+                startAngle = stopAngle;
+            }
+
+            #region "Placing LabelAt Right"
+
+            Double maxY = (dataPoints[0].Chart as Chart).PlotArea.Height;
+            Double minY = 0;
+
+            // Regroup split dictionary
+            Point pt;
+            Rect rt;
+
+            for (i = 0; i < rIndex; i++)
+            {
+                labelYR.TryGetValue(i, out pt);
+                labelYR.Remove(i);
+
+                labelPosR.TryGetValue(i, out rt);
+                labelPosR.Remove(i);
+
+                labeltempYR.Add(tIndex, new Point(pt.X, pt.Y));
+                labeltempPosR.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
+                tIndex++;
+            }
+
+            List<Point> tempList1 = new List<Point>();
+            tempList1.InsertRange(0, labeltempYR.Values);
+            tempList1.Sort(ComparePointY);
+
+            List<Rect> tempList2 = new List<Rect>();
+            tempList2.InsertRange(0, labeltempPosR.Values);
+            tempList2.Sort(CompareRectY);
+            
+            for (i = 0, rIndex = 0; i < tIndex; i++)
+            {
+                labelYR.Add(rIndex, new Point(tempList1[i].X, tempList1[i].Y));
+                labelPosR.Add(rIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
+                rIndex++;
+            }
+
+            maxGap = ((maxY - minY) - (GapR * (labelYR.Count))) / (labelYR.Count);
+
+            PositionLabels(minY, maxY, GapR, maxGap, rIndex, labelYR, "Right");
+
+            for (i = 0; i < rIndex; i++)
+            {
+                labelYR.TryGetValue(i, out pt);
+                labelYR.Remove(i);
+
+                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
+                {
+                    Double X;
+                    labelPosR.TryGetValue(i, out rt);
+
+                    Double tempangle = LineSlope(centers[(Int32)pt.X], new Point(rt.X, pt.Y));
+                    tempangle = Math.Atan(tempangle);
+                    radius = pieRadius + offset;
+                    X = centers[(Int32)pt.X].X + (radius) * Math.Cos(tempangle);
+                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
+                }
+            }
+            
+            #endregion
+
+            #region "Placing LabelAt Left"
+
+            // For placing between angles 90 to 270
+            tIndex = 0;
+
+            for (i = 0; i < lIndex; i++)
+            {
+                labelYL.TryGetValue(i, out pt);
+                labelYL.Remove(i);
+
+                labelPosL.TryGetValue(i, out rt);
+                labelPosL.Remove(i);
+
+                labeltempYL.Add(tIndex, new Point(pt.X, pt.Y));
+                labeltempPosL.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
+                tIndex++;
+            }
+
+            tempList1 = new List<Point>();
+            tempList1.InsertRange(0, labeltempYL.Values);
+            tempList1.Sort(ComparePointY);
+            tempList1.Reverse();
+
+            tempList2 = new List<Rect>();
+            tempList2.InsertRange(0, labeltempPosL.Values);
+            tempList2.Sort(CompareRectY);
+
+            for (i = 0, lIndex = 0; i < tIndex; i++)
+            {
+                labelYL.Add(lIndex, new Point(tempList1[i].X, tempList1[i].Y));
+                labelPosL.Add(lIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
+                lIndex++;
+            }
+
+            maxGap = ((maxY - minY) - (GapL * (labelYL.Count))) / (labelYL.Count);
+
+            PositionLabels(minY, maxY, GapL, maxGap, lIndex, labelYL, "Left");
+
+            for (i = 0; i < lIndex; i++)
+            {
+                labelYL.TryGetValue(i, out pt);
+                labelYL.Remove(i);
+
+                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
+                {   
+                    Double X;
+                    labelPosL.TryGetValue(i, out rt);
+
+                    Double tempangle = LineSlope(centers[(Int32)pt.X], new Point(rt.X, pt.Y));
+                    tempangle = Math.Atan(tempangle);
+                    radius = pieRadius + offset;
+                    X = centers[(Int32)pt.X].X - (radius) * Math.Cos(tempangle);
+                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
+                    X = (Double) dataPoints[(Int32)pt.X].LabelVisual.GetValue(Canvas.LeftProperty);
+                    Point centerPointOverPie = centerPointsOverPie[dataPoints.IndexOf(dataPoints[(Int32)pt.X])];
+
+                    if (X + dataPoints[(Int32)pt.X].LabelVisual.Width > centerPointOverPie.X)
+                        dataPoints[(Int32)pt.X].LabelVisual.SetValue(Canvas.LeftProperty, X - dataPoints[(Int32)pt.X].LabelVisual.Width);
+                }
+            }
+
+            #endregion
+
+        }
+
+
+ /// <summary>
+        /// Position labels for Pie /Doughnut
+        /// </summary>
+        /// <param name="visual">Visual element</param>
+        /// <param name="totalSum">Total YValue sum from all dataPoints</param>
+        /// <param name="dataPoints">List of dataPoint</param>
+        /// <param name="labels">Dictionary of dataPoint labels</param>
+        /// <param name="pieSize">Pie size</param>
+        /// <param name="referenceEllipseSize">Reference ellipse size</param>
+        /// <param name="visualCanvasSize">Visual canvas size</param>
+        /// <param name="scaleY">Scale Y</param>
+        /// <param name="is3D">Whether a 3D chart</param>
+        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Dictionary<DataPoint, Grid> labels, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
+        {
+            Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
+            Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
+            Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
+            Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
+            Double hPieRadius = pieSize.Width / (is3D ? 1 : 2);
+            Double vPieRadius = pieSize.Height / (is3D ? 1 : 2) * scaleY;
+
+            Dictionary<Int32, PostionData> rightPositionData = new Dictionary<int, PostionData>();
+            Dictionary<Int32, PostionData> leftPositionData = new Dictionary<int, PostionData>();
+            Dictionary<Int32, PostionData> tempPositionData = new Dictionary<int, PostionData>();
+
+            Double outerRadius = Math.Min(pieSize.Width, pieSize.Height) / (is3D ? 1 : 2);
+            Int32 index = 0;
+            Int32 rightIndex = 0;
+            Int32 leftIndex = 0;
+
+            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle);
+            Double stopAngle = 0;
+            Double meanAngle = 0;
+
+            Double xPos = 0;
+            Double yPos = 0;
+
+            Double centerX = visualCanvasSize.Width / 2;
+            Double centerY = visualCanvasSize.Height / 2;
+
+            Double gapLeft = 0;
+            Double gapRight = 0;
+
+            foreach (DataPoint dataPoint in dataPoints)
+            {
+                if (dataPoint.InternalYValue == 0) continue;
+
+                stopAngle = startAngle + Math.PI * 2 * (Math.Abs(dataPoint.InternalYValue) / totalSum);
+                meanAngle = (startAngle + stopAngle) / 2;
+
+                centerX = visualCanvasSize.Width / 2;
+                centerY = visualCanvasSize.Height / 2;
+
+                if (dataPoint.LabelStyle == LabelStyles.Inside)
+                {
+                    if (is3D)
+                    {
+                        xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle) - labels[dataPoint].DesiredSize.Width;
+                        yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle) - labels[dataPoint].DesiredSize.Height * 2;
+                    }
+                    else
+                    {
+                        if (!is3D)
+                        {
+                            xPos = centerX + 1.7 * (outerRadius / 3) * Math.Cos(meanAngle);
+                            yPos = centerY + 1.7 * (outerRadius / 3) * Math.Sin(meanAngle);
+                        }
+                        else
+                        {
+                            xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle);
+                            yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle);
+                        }
+                    }
+
+                    xPos = xPos - labels[dataPoint].DesiredSize.Width / 2;
+                    yPos = yPos - labels[dataPoint].DesiredSize.Height / 2;
+
+                    labels[dataPoint].SetValue(Canvas.TopProperty, yPos);
+                    labels[dataPoint].SetValue(Canvas.LeftProperty, xPos);
+                }
+                else
+                {
+                    xPos = centerX + hOuterEllipseRadius * Math.Cos(meanAngle);
+                    yPos = centerY + vOuterEllipseRadius * Math.Sin(meanAngle);
+
+                    if (xPos < centerX)
+                    {
+                        xPos -= labels[dataPoint].DesiredSize.Width + 10;
+                        leftPositionData.Add(leftIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle, Height = labels[dataPoint].DesiredSize.Height, Width = labels[dataPoint].DesiredSize.Width });
+                        gapLeft = Math.Max(gapLeft, labels[dataPoint].DesiredSize.Height);
+                    }
+                    else
+                    {
+                        xPos += 10;
+                        rightPositionData.Add(rightIndex++, new PostionData() { Index = index, xPosition = xPos, yPosition = yPos, MeanAngle = meanAngle, Height = labels[dataPoint].DesiredSize.Height, Width = labels[dataPoint].DesiredSize.Width });
+                        gapRight = Math.Max(gapRight, labels[dataPoint].DesiredSize.Height);
+                    }
+                }
+
+                startAngle = stopAngle;
+                index++;
+            }
+
+            #region Left Alignment
+
+            // Following code for to place the pie labels for those datapoints who’s LabelStyles is OutSide
+            PostionData tempData;
+            Grid oldLabel = null;
+            Double minimumY;
+            Double maximumY;
+            Double extent;
+
+            if (is3D)
+            {
+                minimumY = centerY - vOuterEllipseRadius;
+                maximumY = centerY + vOuterEllipseRadius;
+            }
+            else
+            {
+                minimumY = gapLeft / 2;
+                maximumY = visualCanvasSize.Height - gapLeft / 2;
+            }
+
+            Double maxGapBetweenLabels = ((maximumY - minimumY) - (gapLeft * leftPositionData.Count)) / leftPositionData.Count;
+            PositionLabels(minimumY, maximumY, 0, maxGapBetweenLabels, leftIndex, leftPositionData, false);
+
+            for (Int32 i = 0; i < leftIndex; i++)
+            {
+                leftPositionData.TryGetValue(i, out tempData);
+
+                centerX = visualCanvasSize.Width / 2;
+                centerY = visualCanvasSize.Height / 2;
+
+                extent = Math.Max(centerY - minimumY, maximumY - centerY);
+                if (is3D)
+                {
+                    tempData.xPosition = centerX - Math.Sqrt((1 - Math.Pow((tempData.yPosition - centerY) / extent, 2)) * Math.Pow(hOuterEllipseRadius, 2)) - labels[dataPoints[tempData.Index]].DesiredSize.Width - 10;
+                }
+                else
+                    tempData.xPosition = centerX - hOuterEllipseRadius * Math.Cos(Math.Asin(Math.Abs(tempData.yPosition - centerY) / hOuterEllipseRadius)) - labels[dataPoints[tempData.Index]].DesiredSize.Width - 10;
+
+                if (tempData.xPosition < 0)
+                    tempData.xPosition = 2;
+                if (tempData.yPosition + labels[dataPoints[tempData.Index]].DesiredSize.Height > visualCanvasSize.Height)
+                    tempData.yPosition = visualCanvasSize.Height - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+                if (tempData.yPosition < labels[dataPoints[tempData.Index]].DesiredSize.Height / 2)
+                    tempData.yPosition = labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                if ((bool)dataPoints[tempData.Index].LabelEnabled)
+                {
+                    Double labelTop = tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                    if (tempData.MeanAngle > 1.5 * Math.PI / 2 && tempData.MeanAngle <= 2.7 * Math.PI / 2)
+                    {
+                        if (oldLabel != null)
+                        {
+                            Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                            Double overlapOffset = 0;
+
+                            if (oldTop < labelTop + tempData.Height)
+                            {
+                                overlapOffset = labelTop + tempData.Height - oldTop;
+                                labelTop -= overlapOffset / 2;
+                                oldLabel.SetValue(Canvas.TopProperty, oldTop + overlapOffset / 2);
+
+                                for (int j = i - 2; j >= 0; j--)
+                                {
+                                    PostionData pData;
+                                    leftPositionData.TryGetValue(j, out pData);
+                                    Grid oldOldLabel = labels[dataPoints[pData.Index]];
+
+                                    if ((pData.MeanAngle >= 1.5 * Math.PI / 2 && pData.MeanAngle <= 2.7 * Math.PI / 2))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                                        System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                                        oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                                        Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                                        if (oldTop < top + oldLabel.DesiredSize.Height)
+                                        {
+                                            overlapOffset = top + oldLabel.DesiredSize.Height - oldTop;
+
+                                            oldOldLabel.SetValue(Canvas.TopProperty, oldTop + overlapOffset);
+                                        }
+                                    }
+
+                                    oldLabel = oldOldLabel;
+
+                                }
+                            }
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("Text=" + (labels[dataPoints[tempData.Index]].Children[0] as TextBlock).Text);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, tempData.xPosition);
+
+                }
+
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual as Grid;
+
+            }
+
+            #endregion
+
+            #region Right Alignment
+
+            PostionData[] dataForSorting = rightPositionData.Values.ToArray();
+            Array.Sort(dataForSorting, PostionData.CompareYPosition);
+            rightPositionData.Clear();
+            for (int i = 0; i < dataForSorting.Length; i++)
+                rightPositionData.Add(i, dataForSorting[i]);
+
+            if (is3D)
+            {
+                minimumY = centerY - vOuterEllipseRadius;
+                maximumY = centerY + vOuterEllipseRadius;
+
+            }
+            else
+            {
+                minimumY = gapRight / 2;
+                maximumY = visualCanvasSize.Height - gapRight / 2;
+            }
+            maxGapBetweenLabels = ((maximumY - minimumY) - (gapRight * rightPositionData.Count)) / rightPositionData.Count;
+            PositionLabels(minimumY, maximumY, 0, maxGapBetweenLabels, rightIndex, rightPositionData, true);
+
+            for (Int32 i = 0; i < rightIndex; i++)
+            {
+                rightPositionData.TryGetValue(i, out tempData);
+
+                centerX = visualCanvasSize.Width / 2;
+                centerY = visualCanvasSize.Height / 2;
+
+                extent = Math.Max(centerY - minimumY, maximumY - centerY);
+                if (is3D)
+                {
+                    tempData.xPosition = centerX + Math.Sqrt((1 - Math.Pow((tempData.yPosition - centerY) / extent, 2)) * Math.Pow(hOuterEllipseRadius, 2)) + 10;
+                }
+                else
+                    tempData.xPosition = centerX + hOuterEllipseRadius * Math.Cos(Math.Asin(Math.Abs(tempData.yPosition - centerY) / hOuterEllipseRadius)) + 10;
+
+                if (tempData.xPosition + labels[dataPoints[tempData.Index]].DesiredSize.Width > visualCanvasSize.Width)
+                    tempData.xPosition = visualCanvasSize.Width - labels[dataPoints[tempData.Index]].DesiredSize.Width;
+                if (tempData.yPosition + labels[dataPoints[tempData.Index]].DesiredSize.Height > visualCanvasSize.Height)
+                    tempData.yPosition = visualCanvasSize.Height - labels[dataPoints[tempData.Index]].DesiredSize.Height;
+                if (tempData.yPosition < labels[dataPoints[tempData.Index]].DesiredSize.Height / 2)
+                    tempData.yPosition = labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+
+                if ((bool)dataPoints[tempData.Index].LabelEnabled)
+                {
+                    //labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2);
+
+                    //labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, tempData.xPosition);
+
+                    Double labelTop = tempData.yPosition - labels[dataPoints[tempData.Index]].DesiredSize.Height / 2;
+                    Double labelLeft = tempData.xPosition;
+
+                    if ((tempData.MeanAngle >= 3.7 * Math.PI / 2 && tempData.MeanAngle <= 4 * Math.PI / 2) || (tempData.MeanAngle >= 0 && tempData.MeanAngle <= Math.PI / 4))
+                    {
+                        if (oldLabel != null)
+                        {
+                            Double oldTop = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                            Double overlapOffset = 0;
+
+                            if (labelTop < oldTop + oldLabel.DesiredSize.Height)
+                            {
+                                overlapOffset = oldTop + oldLabel.DesiredSize.Height - labelTop;
+                                labelTop += overlapOffset / 2;
+                                oldLabel.SetValue(Canvas.TopProperty, oldTop - overlapOffset / 2);
+
+                                for (int j = i - 2; j > 0; j--)
+                                {
+                                    PostionData pData;
+                                    rightPositionData.TryGetValue(j, out pData);
+                                    Grid oldOldLabel = labels[dataPoints[pData.Index]];
+
+                                    if ((pData.MeanAngle >= 3.7 * Math.PI / 2 && pData.MeanAngle <= 4 * Math.PI / 2) || (pData.MeanAngle >= 0 && pData.MeanAngle <= Math.PI / 4))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine((oldOldLabel.Children[0] as TextBlock).Text);
+                                        System.Diagnostics.Debug.WriteLine((oldLabel.Children[0] as TextBlock).Text);
+                                        oldTop = (Double)oldOldLabel.GetValue(Canvas.TopProperty);
+                                        Double top = (Double)oldLabel.GetValue(Canvas.TopProperty);
+
+                                        if (top < oldTop + oldOldLabel.DesiredSize.Height)
+                                        {
+                                            overlapOffset = oldTop + oldOldLabel.DesiredSize.Height - top;
+                                            oldTop -= overlapOffset;
+                                            oldOldLabel.SetValue(Canvas.TopProperty, oldTop);
+                                        }
+                                    }
+
+                                    oldLabel = oldOldLabel;
+
+                                }
+                            }
+                        }
+
+                    }
+
+
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.TopProperty, labelTop);
+
+                    labels[dataPoints[tempData.Index]].SetValue(Canvas.LeftProperty, labelLeft);
+                }
+
+                oldLabel = dataPoints[tempData.Index].LabelVisual as Grid;
+            }
+            #endregion
+
+        }
+
+
+
+/// <summary>
 /// Identifies the Visifire.Charts.Axis.Scale dependency property.
 /// </summary>
 /// <returns>

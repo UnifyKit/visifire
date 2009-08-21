@@ -1889,9 +1889,24 @@ namespace Visifire.Charts
                             {
                                 _isAnimationFired = true;
                                 Chart._rootElement.IsHitTestVisible = true;
+
+                                if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                                {
+                                    foreach (DataPoint dataPoint in series.InternalDataPoints)
+                                    {
+                                        if (dataPoint.Faces != null)
+                                        {
+                                            foreach (Shape shape in dataPoint.Faces.BorderElements)
+                                            {
+                                                InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                                            }
+                                        }
+                                    }
+                                }
+
                                 Visifire.Charts.Chart.SelectDataPoints(Chart);
                             };
-#if WPF
+#if WPF                     
                             if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                             {
                                 series.Storyboard.Completed += delegate(object sender, EventArgs e)
@@ -3204,7 +3219,7 @@ namespace Visifire.Charts
 
             Chart._internalAnimationEnabled = false;
 
-            if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
+            if (!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
                 Visifire.Charts.Chart.SelectDataPoints(Chart);
 
             Chart.FireRenderedEvent();

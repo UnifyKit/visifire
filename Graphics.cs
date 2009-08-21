@@ -534,6 +534,11 @@ namespace Visifire.Commons
             return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
         }
 
+        internal static Double DistanceBetweenTwoPoints(Point point1, Point point2)
+        {
+            return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
+        }
+
         /// <summary>
         /// Calculates visual size
         /// </summary>
