@@ -2295,7 +2295,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(new FontFamily("Arial"), dataSeries.LabelFontFamily);
+                Assert.AreEqual(new FontFamily("Verdana"), dataSeries.LabelFontFamily);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

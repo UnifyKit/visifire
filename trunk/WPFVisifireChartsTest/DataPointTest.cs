@@ -1968,7 +1968,7 @@ namespace WPFVisifireChartsTest
             {
                 for (Int32 i = 0; i < 10; i++)
                 {
-                    Assert.AreEqual(new FontFamily("Arial"), dataSeries.DataPoints[i].LabelFontFamily);
+                    Assert.AreEqual(new FontFamily("Verdana"), dataSeries.DataPoints[i].LabelFontFamily);
                 }
             }
 

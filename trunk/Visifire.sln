@@ -61,7 +61,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Ticks.cs = Ticks.cs
 		Title.cs = Title.cs
 		ToolTip.cs = ToolTip.cs
-		TrendLine.cs = TrendLine.cs
 		VisifireControl.cs = VisifireControl.cs
 		VisifireElement.cs = VisifireElement.cs
 		XWiseData.cs = XWiseData.cs

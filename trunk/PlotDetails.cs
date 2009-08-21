@@ -386,25 +386,34 @@ namespace Visifire.Charts
             return isDateTimeAxis;
         }
 
-       /// <summary>
-       /// Set TrendLine values
-       /// </summary>
-       /// <param name="axisX">Axis</param>
+        /// <summary>
+        /// Set TrendLine values
+        /// </summary>
+        /// <param name="axisX">Axis</param>
         private void SetTrendLineValues(Axis axisX)
         {
             if (axisX.IsDateTimeAxis)
             {
                 foreach (TrendLine trendLine in Chart.TrendLines)
-                {
-                    if ((Boolean)trendLine.Enabled &&
-                        ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                        || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-                        )
-                    )
-                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
-                }
+                    SetTrendLineValue(trendLine, axisX);
             }
-
+        }
+        
+        /// <summary>
+        /// Set TrendLine value
+        /// </summary>
+        /// <param name="axisX">Axis</param>
+        internal void SetTrendLineValue(TrendLine trendLine, Axis axisX)
+        {
+            if (axisX != null && axisX.IsDateTimeAxis)
+            {
+                if ((Boolean)trendLine.Enabled &&
+                ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                )
+                )
+                    trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+            }
         }
 
         /// <summary>
@@ -1473,7 +1482,7 @@ namespace Visifire.Charts
             // If there atleast one series in the list then continue to update the list
             if (seriesByRenderAs.Count() > 0)
             {
-                // Get the highest index fron the seriesByRenderAs list
+                // Get the highest index from the seriesByRenderAs list
                 Int32 highestIndex = (from entry in seriesByRenderAs select entry.Value).Max();
 
                 // Convert list to array

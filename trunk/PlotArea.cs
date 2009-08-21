@@ -1037,6 +1037,18 @@ namespace Visifire.Charts
                 eventArgs.YValue = yValue;
             }
 
+            if (chart.ChartArea.AxisY2 != null)
+            {
+                Double yValue;
+                Orientation axisOrientation = chart.ChartArea.AxisY2.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+                yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+
+                eventArgs.YValue = yValue;
+            }
+
             return eventArgs;
         }
 
