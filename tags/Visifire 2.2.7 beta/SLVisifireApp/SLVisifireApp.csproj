@@ -1,0 +1,677 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F16255E4-2248-47D9-9606-BBE44463075F}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SLVisifireApp</RootNamespace>
+    <AssemblyName>SLVisifireApp</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>SLVisifireApp.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>SLVisifireApp.App</SilverlightAppEntry>
+    <TestPageFileName>TestPage.html</TestPageFileName>
+    <CreateTestPage>true</CreateTestPage>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <NoConfig>true</NoConfig>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SLVisifireProfiler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\vivek\Desktop\New Folder (4)\SLVisifireProfiler\SLVisifireProfiler\Bin\Release\SLVisifireProfiler.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area2D1.xaml.cs">
+      <DependentUpon>Area2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area2D2.xaml.cs">
+      <DependentUpon>Area2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area2D3.xaml.cs">
+      <DependentUpon>Area2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area2D4.xaml.cs">
+      <DependentUpon>Area2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area3D1.xaml.cs">
+      <DependentUpon>Area3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Area\Area3D2.xaml.cs">
+      <DependentUpon>Area3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D1.xaml.cs">
+      <DependentUpon>Bar2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D2.xaml.cs">
+      <DependentUpon>Bar2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D3.xaml.cs">
+      <DependentUpon>Bar2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D4.xaml.cs">
+      <DependentUpon>Bar2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D5.xaml.cs">
+      <DependentUpon>Bar2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D6.xaml.cs">
+      <DependentUpon>Bar2D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar2D7.xaml.cs">
+      <DependentUpon>Bar2D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar3D1.xaml.cs">
+      <DependentUpon>Bar3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar3D2.xaml.cs">
+      <DependentUpon>Bar3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar3D3.xaml.cs">
+      <DependentUpon>Bar3D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar3D4.xaml.cs">
+      <DependentUpon>Bar3D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\Bar3D5.xaml.cs">
+      <DependentUpon>Bar3D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble2D1.xaml.cs">
+      <DependentUpon>Bubble2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble2D2.xaml.cs">
+      <DependentUpon>Bubble2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble2D3.xaml.cs">
+      <DependentUpon>Bubble2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble2D4.xaml.cs">
+      <DependentUpon>Bubble2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble2D5.xaml.cs">
+      <DependentUpon>Bubble2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bubble\Bubble3D1.xaml.cs">
+      <DependentUpon>Bubble3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D1.xaml.cs">
+      <DependentUpon>Column2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D10.xaml.cs">
+      <DependentUpon>Column2D10.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D2.xaml.cs">
+      <DependentUpon>Column2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D3.xaml.cs">
+      <DependentUpon>Column2D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D4.xaml.cs">
+      <DependentUpon>Column2D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D5.xaml.cs">
+      <DependentUpon>Column2D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D6.xaml.cs">
+      <DependentUpon>Column2D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D7.xaml.cs">
+      <DependentUpon>Column2D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D8.xaml.cs">
+      <DependentUpon>Column2D8.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column2D\Column2D9.xaml.cs">
+      <DependentUpon>Column2D9.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D1.xaml.cs">
+      <DependentUpon>Column3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D10.xaml.cs">
+      <DependentUpon>Column3D10.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D2.xaml.cs">
+      <DependentUpon>Column3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D3.xaml.cs">
+      <DependentUpon>Column3D3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D4.xaml.cs">
+      <DependentUpon>Column3D4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D5.xaml.cs">
+      <DependentUpon>Column3D5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D6.xaml.cs">
+      <DependentUpon>Column3D6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D7.xaml.cs">
+      <DependentUpon>Column3D7.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D8.xaml.cs">
+      <DependentUpon>Column3D8.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Column3D\Column3D9.xaml.cs">
+      <DependentUpon>Column3D9.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi1.xaml.cs">
+      <DependentUpon>Combi1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi2.xaml.cs">
+      <DependentUpon>Combi2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi3.xaml.cs">
+      <DependentUpon>Combi3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi4.xaml.cs">
+      <DependentUpon>Combi4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi5.xaml.cs">
+      <DependentUpon>Combi5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Combination\Combi6.xaml.cs">
+      <DependentUpon>Combi6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut2D1.xaml.cs">
+      <DependentUpon>Doughnut2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut2D2.xaml.cs">
+      <DependentUpon>Doughnut2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut3D1.xaml.cs">
+      <DependentUpon>Doughnut3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut3D2.xaml.cs">
+      <DependentUpon>Doughnut3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line1.xaml.cs">
+      <DependentUpon>Line1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line2.xaml.cs">
+      <DependentUpon>Line2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line3.xaml.cs">
+      <DependentUpon>Line3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line4.xaml.cs">
+      <DependentUpon>Line4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line5.xaml.cs">
+      <DependentUpon>Line5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Line\Line6.xaml.cs">
+      <DependentUpon>Line6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pie\Pie2D1.xaml.cs">
+      <DependentUpon>Pie2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pie\Pie2D2.xaml.cs">
+      <DependentUpon>Pie2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pie\Pie3D1.xaml.cs">
+      <DependentUpon>Pie3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pie\Pie3D2.xaml.cs">
+      <DependentUpon>Pie3D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point1.xaml.cs">
+      <DependentUpon>Point1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point2.xaml.cs">
+      <DependentUpon>Point2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point3.xaml.cs">
+      <DependentUpon>Point3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point4.xaml.cs">
+      <DependentUpon>Point4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point5.xaml.cs">
+      <DependentUpon>Point5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Point\Point6.xaml.cs">
+      <DependentUpon>Point6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stacked\StackedArea2D1.xaml.cs">
+      <DependentUpon>StackedArea2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedArea3D1.xaml.cs">
+      <DependentUpon>StackedArea3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedBar1002D1.xaml.cs">
+      <DependentUpon>StackedBar1002D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedBar1003D1.xaml.cs">
+      <DependentUpon>StackedBar1003D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedBar2D1.xaml.cs">
+      <DependentUpon>StackedBar2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedColumn2D1.xaml.cs">
+      <DependentUpon>StackedColumn2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedColumn2D2.xaml.cs">
+      <DependentUpon>StackedColumn2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stacked\StackedColumn2D3.xaml.cs">
+      <DependentUpon>StackedColumn2D3.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Area\Area2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Area\Area2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Area\Area2D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Area\Area2D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Area\Area3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Area\Area3D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar2D7.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3D5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble2D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble2D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble2D5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bubble\Bubble3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D10.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D7.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D8.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column2D\Column2D9.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D10.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D7.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D8.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Column3D\Column3D9.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Combination\Combi6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut3D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Line\Line6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pie\Pie2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pie\Pie2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pie\Pie3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pie\Pie3D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Point\Point6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedArea2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedArea3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedBar1002D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedBar1003D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedBar2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedColumn2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedColumn2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stacked\StackedColumn2D3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MyTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SLVisifireCharts\SLVisifireCharts.csproj">
+      <Project>{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}</Project>
+      <Name>SLVisifireCharts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v3.0\Microsoft.Silverlight.CSharp.targets" Condition="" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
