@@ -1328,12 +1328,21 @@ namespace Visifire.Charts
         /// </summary>
         private void SetIncrementalZIndexForSeries()
         {
-            Int32 index =0;
+            Int32 index = 0;
+            Int32 seriesIndex = 0;
 
             foreach (DataSeries dataSeries in Chart.InternalSeries)
             {
-                dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
-                dataSeries.InternalZIndex += index++;
+                if (dataSeries.IsZIndexSet)
+                    dataSeries.InternalZIndex = dataSeries.ZIndex - seriesIndex;
+                else
+                    dataSeries.InternalZIndex = dataSeries.ZIndex - Chart.InternalSeries.Count;
+
+                dataSeries.InternalZIndex = dataSeries.InternalZIndex + index++;
+                seriesIndex++;
+
+                //dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
+                //dataSeries.InternalZIndex += index++;
             }
         }
 
@@ -1343,9 +1352,8 @@ namespace Visifire.Charts
         /// <returns>A dictionary containing DataSeries as key and its corresponding drawing index</returns>
         private Dictionary<DataSeries, Int32> GenerateDrawingOrder()
         {
-            // set an incremental ZIndex levels for all series
             SetIncrementalZIndexForSeries();
-
+            
             // These charts will be drawn in the same plane hence the depth for each chart type increases by one
             Int32 layer3DCount = 0;
             layer3DCount += (GetSeriesCountByRenderAs(RenderAs.Column) > 0) ? 1 : 0;

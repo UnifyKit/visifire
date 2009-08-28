@@ -63,7 +63,7 @@ namespace Visifire.Charts
         public DataSeries()
         {
             ToolTipText = "";
-
+            IsZIndexSet = false;
 
             // Apply default style from generic
 #if WPF
@@ -1618,6 +1618,12 @@ namespace Visifire.Charts
            set;
         }
 
+        internal Boolean IsZIndexSet
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Get or set the Internal Start angle property
         /// </summary>
@@ -2788,6 +2794,7 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.InternalZIndex = (Int32) e.NewValue;
+            dataSeries.IsZIndexSet = true;
             dataSeries.FirePropertyChanged("ZIndex");
         }
 
