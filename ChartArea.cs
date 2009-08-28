@@ -1211,6 +1211,10 @@ namespace Visifire.Charts
                 //else
                     chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
             }
+            else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
+            {
+                chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
+            }
             else
             {
                 if (PlotDetails.ListOfAllDataPoints.Count > 0)
@@ -1237,6 +1241,23 @@ namespace Visifire.Charts
                     chartSize = currentSize;
                 }
 
+            }
+
+#if SL
+            if (chartSize > 32000)
+            {
+                chartSize = 32000;
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
+            }
+#endif
+
+            if ((Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
+            {
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
             }
 
             return chartSize;
@@ -1915,7 +1936,7 @@ namespace Visifire.Charts
 
                                     foreach (DataPoint dataPoint in series.InternalDataPoints)
                                     {
-                                        if ((Boolean)dataPoint.Exploded)
+                                        if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
                                             dataPoint.InteractiveAnimation(true);
                                     }
                                 };

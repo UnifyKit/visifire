@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using Visifire.Profiler;
 
 namespace SLVisifireApp
 {

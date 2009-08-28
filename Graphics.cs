@@ -1265,7 +1265,7 @@ namespace Visifire.Commons
             }
             else
                 brush = new SolidColorBrush(Colors.Transparent);
-
+            
             return brush;
         }
 
