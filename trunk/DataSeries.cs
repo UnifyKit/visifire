@@ -503,6 +503,18 @@ namespace Visifire.Charts
             new PropertyMetadata(OnLabelLineStylePropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.LabelAngle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.LabelAngle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelAngleProperty = DependencyProperty.Register
+            ("LabelAngle",
+            typeof(Double),
+            typeof(DataSeries),
+            new PropertyMetadata(Double.NaN, OnLabelAnglePropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.MarkerEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -1214,6 +1226,24 @@ namespace Visifire.Charts
             set
             {
                 SetValue(LabelEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the LabelAngle property
+        /// </summary>
+        public Double LabelAngle
+        {
+            get
+            {
+                return (Double)GetValue(LabelAngleProperty);
+            }
+            set
+            {
+                if (value > 90 || value < -90)
+                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
+
+                SetValue(LabelAngleProperty, value);
             }
         }
 
@@ -2530,6 +2560,17 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.FirePropertyChanged("LabelLineStyle");
+        }
+
+        /// <summary>
+        /// LabelAngleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("LabelAngle");
         }
 
         /// <summary>

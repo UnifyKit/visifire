@@ -468,17 +468,78 @@ namespace Visifire.Charts
                 };
 
                 tb.CreateVisualObject();
-                
-                Double labelTop = (Double)dataPointVisual.GetValue(Canvas.TopProperty) - tb.Height;
-                Double labelLeft = (Double)dataPointVisual.GetValue(Canvas.LeftProperty) + (dataPointVisual.Width - tb.Width) / 2;
 
-                if (labelTop < 0) labelTop = (Double)dataPointVisual.GetValue(Canvas.TopProperty);
-                if (labelLeft < 0) labelLeft = 1;
-                if (labelLeft + tb.ActualWidth > labelCanvas.Width)
-                    labelLeft = labelCanvas.Width - tb.ActualWidth - 2;
+                Double labelTop;
+                Double labelLeft;
 
-                tb.Visual.SetValue(Canvas.LeftProperty, labelLeft);
-                tb.Visual.SetValue(Canvas.TopProperty, labelTop);
+                if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                {
+                    labelTop = (Double)dataPointVisual.GetValue(Canvas.TopProperty) - tb.Height;
+                    labelLeft = (Double)dataPointVisual.GetValue(Canvas.LeftProperty) + (dataPointVisual.Width - tb.Width) / 2;
+
+                    if (labelTop < 0) labelTop = (Double)dataPointVisual.GetValue(Canvas.TopProperty);
+                    if (labelLeft < 0) labelLeft = 1;
+                    if (labelLeft + tb.ActualWidth > labelCanvas.Width)
+                        labelLeft = labelCanvas.Width - tb.ActualWidth - 2;
+
+                    tb.Visual.SetValue(Canvas.LeftProperty, labelLeft);
+                    tb.Visual.SetValue(Canvas.TopProperty, labelTop);
+                }
+                else
+                {
+                    Point centerOfRotation = new Point((Double)dataPointVisual.GetValue(Canvas.LeftProperty) + dataPointVisual.Width / 2,
+                        (Double)dataPointVisual.GetValue(Canvas.TopProperty));
+
+                    Double radius = 4;
+                    Double angle = 0;
+                    Double angleInRadian = 0;
+
+                    if (dataPoint.LabelAngle > 0 && dataPoint.LabelAngle <= 90)
+                    {
+                        angle = dataPoint.LabelAngle - 180;
+                        angleInRadian = (Math.PI / 180) * angle;
+                        radius += tb.Width;
+                        angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                    }
+                    else if (dataPoint.LabelAngle >= -90 && dataPoint.LabelAngle < 0)
+                    {
+                        angle = dataPoint.LabelAngle;
+                        angleInRadian = (Math.PI / 180) * angle;
+                    }
+                    //else
+                    //{
+                    //    if (LabelAngle >= -90 && LabelAngle < 0)
+                    //    {
+                    //        angle = 180 + LabelAngle;
+                    //        angleInRadian = (Math.PI / 180) * angle;
+                    //        radius += TextBlockSize.Width;
+                    //        angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                    //        SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                    //    }
+                    //    else if (LabelAngle > 0 && LabelAngle <= 90)
+                    //    {
+                    //        angle = LabelAngle;
+                    //        angleInRadian = (Math.PI / 180) * angle;
+                    //        SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                    //    }
+                    //}
+
+                    labelLeft = centerOfRotation.X + radius * Math.Cos(angleInRadian);
+                    labelTop = centerOfRotation.Y + radius * Math.Sin(angleInRadian);
+
+                    labelTop -= tb.Height / 2;
+
+                    tb.Visual.SetValue(Canvas.LeftProperty, labelLeft);
+                    tb.Visual.SetValue(Canvas.TopProperty, labelTop);
+
+                    tb.Visual.RenderTransformOrigin = new Point(0, 0.5);
+                    tb.Visual.RenderTransform = new RotateTransform()
+                    {
+                        CenterX = 0,
+                        CenterY = 0,
+                        Angle = angle
+                    };
+                }
 
                 labelCanvas.Children.Add(tb.Visual);
                 dataPoint.LabelVisual = tb.Visual;
