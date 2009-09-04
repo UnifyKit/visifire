@@ -2600,6 +2600,7 @@ namespace Visifire.Charts
                 {
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = Layouts.FlowLayout;
+
                     if (!Double.IsNaN(Height) && Height > 0)
                     {
                         legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
@@ -2620,6 +2621,7 @@ namespace Visifire.Charts
                 {
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = Layouts.FlowLayout;
+
                     if (!Double.IsNaN(Height) && Height > 0)
                     {
                         legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;

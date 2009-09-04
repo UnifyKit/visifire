@@ -722,6 +722,18 @@ namespace Visifire.Charts
             new PropertyMetadata(OnLabelLineStylePropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelAngle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelAngle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelAngleProperty = DependencyProperty.Register
+            ("LabelAngle",
+            typeof(Double),
+            typeof(DataPoint),
+            new PropertyMetadata(Double.NaN, OnLabelAnglePropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -996,6 +1008,28 @@ namespace Visifire.Charts
             set
             {
                 SetValue(ZValueProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the LabelAngle property
+        /// </summary>
+        public Double LabelAngle
+        {
+            get
+            {
+                if (Double.IsNaN((Double)GetValue(LabelAngleProperty)) && _parent != null)
+                    return _parent.LabelAngle;
+                else
+                    return (Double)GetValue(LabelAngleProperty);
+            }
+            set
+            {
+
+                if (value > 90 || value < -90)
+                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
+
+                SetValue(LabelAngleProperty, value);
             }
         }
 
@@ -2461,6 +2495,17 @@ namespace Visifire.Charts
         {
             DataPoint dataPoint = d as DataPoint;
             dataPoint.FirePropertyChanged("LabelLineStyle");
+        }
+
+        /// <summary>
+        /// LabelAngleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.FirePropertyChanged("LabelAngle");
         }
 
         /// <summary>

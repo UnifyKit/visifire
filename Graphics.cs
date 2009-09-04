@@ -539,6 +539,32 @@ namespace Visifire.Commons
             return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
         }
 
+        internal static void DrawPointAt(Point point, Canvas visual, Color fillColor)
+        {
+            Ellipse e = new Ellipse() { Height = 4, Width = 4, Fill = new SolidColorBrush(fillColor), Stroke = new SolidColorBrush(Colors.Red), StrokeThickness = .25 };
+
+            e.SetValue(Canvas.LeftProperty, point.X - e.Height / 2);
+            e.SetValue(Canvas.TopProperty, point.Y - e.Width / 2);
+            e.SetValue(Canvas.ZIndexProperty, 10001);
+
+            visual.Children.Add(e);
+        }
+
+        internal static Boolean IsPointInside(Point center, Double radius, Point point)
+        {
+            Double distance = Graphics.DistanceBetweenTwoPoints(center, point);
+
+            if (!Double.IsNaN(distance))
+            {
+                if (distance <= radius)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+
         /// <summary>
         /// Calculates visual size
         /// </summary>

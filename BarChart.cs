@@ -103,44 +103,45 @@ namespace Visifire.Charts
             {
                 dataPoint.Marker.CreateVisual();
 
-                if (barParams.IsPositive)
+                if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                 {
-                    if (canvasLeft + markerPosition.X + dataPoint.Marker.MarkerActualSize.Width > chart.PlotArea.BorderElement.Width)
-                        barParams.LabelStyle = LabelStyles.Inside;
-                }
-                else
-                {
-                    if (canvasLeft < dataPoint.Marker.MarkerActualSize.Width)
-                        barParams.LabelStyle = LabelStyles.Inside;
-                }
-
-                dataPoint.Marker.TextAlignmentY = AlignmentY.Center;
-
-                if (!barParams.IsMarkerEnabled)
-                {
-                    if (chart.View3D)
+                    if (barParams.IsPositive)
                     {
-                        if (barParams.LabelStyle == LabelStyles.OutSide)
-                            dataPoint.Marker.MarkerSize = new Size(markerSize.Width + chart.ChartArea.PLANK_DEPTH, markerSize.Height + chart.ChartArea.PLANK_DEPTH);
-                        else
-                            dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
+                        if (canvasLeft + markerPosition.X + dataPoint.Marker.MarkerActualSize.Width > chart.PlotArea.BorderElement.Width)
+                            barParams.LabelStyle = LabelStyles.Inside;
                     }
-                }
-                else
-                {
-                    if (chart.View3D)
+                    else
                     {
-                        barParams.LabelStyle = LabelStyles.Inside;
+                        if (canvasLeft < dataPoint.Marker.MarkerActualSize.Width)
+                            barParams.LabelStyle = LabelStyles.Inside;
                     }
+
+                    dataPoint.Marker.TextAlignmentY = AlignmentY.Center;
+
+                    if (!barParams.IsMarkerEnabled)
+                    {
+                        if (chart.View3D)
+                        {
+                            if (barParams.LabelStyle == LabelStyles.OutSide)
+                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width + chart.ChartArea.PLANK_DEPTH, markerSize.Height + chart.ChartArea.PLANK_DEPTH);
+                            else
+                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width, markerSize.Height);
+                        }
+                    }
+                    else
+                    {
+                        if (chart.View3D)
+                        {
+                            barParams.LabelStyle = LabelStyles.Inside;
+                        }
+                    }
+
+                    if (barParams.IsPositive)
+                        dataPoint.Marker.TextAlignmentX = barParams.LabelStyle == LabelStyles.Inside ? AlignmentX.Left : AlignmentX.Right;
+                    else
+                        dataPoint.Marker.TextAlignmentX = barParams.LabelStyle == LabelStyles.Inside ? AlignmentX.Right : AlignmentX.Left;
                 }
-
-                if (barParams.IsPositive)
-                    dataPoint.Marker.TextAlignmentX = barParams.LabelStyle == LabelStyles.Inside ? AlignmentX.Left : AlignmentX.Right;
-                else
-                    dataPoint.Marker.TextAlignmentX = barParams.LabelStyle == LabelStyles.Inside ? AlignmentX.Right : AlignmentX.Left;
-
             }
-
         }
       
         /// <summary>
@@ -323,6 +324,25 @@ namespace Visifire.Charts
                         markerPosition = new Point(barParams.Depth, barParams.Size.Height / 2 - barParams.Depth);
                     else
                         markerPosition = new Point(0, barParams.Size.Height / 2);
+
+                if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                {
+                    dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;  
+                    dataPoint.Marker.TextOrientation = Orientation.Vertical;
+
+                    if (barParams.IsPositive)
+                    {
+                        dataPoint.Marker.TextAlignmentX = AlignmentX.Right;
+                        dataPoint.Marker.TextAlignmentY = AlignmentY.Center;
+                    }
+                    else
+                    {
+                        dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
+                        dataPoint.Marker.TextAlignmentY = AlignmentY.Center;
+                    }
+
+                    dataPoint.Marker.LabelStyle = (LabelStyles)barParams.LabelStyle;
+                }
 
                 SetMarkerPosition(barParams, chart, dataPoint, labelText, markerSize, left, top, markerPosition);
 

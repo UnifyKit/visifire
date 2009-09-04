@@ -1709,7 +1709,7 @@ namespace Visifire.Charts
                         Rows = rows;
                     }
                 }
-                else if (rows == 2 && !Double.IsNaN((Double)Angle) && (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
+                else if (rows >= 2 && !Double.IsNaN((Double)Angle) && (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
                 {
                     Rows = 1;
 
