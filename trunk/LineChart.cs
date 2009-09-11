@@ -43,7 +43,7 @@ using System.Linq;
 using Visifire.Commons;
 
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Visifire.Charts.LineChartShapeParams class
     /// </summary>
@@ -118,6 +118,8 @@ namespace Visifire.Charts
             String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
             Boolean markerBevel = false;
             dataPoint.Marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, dataPoint.MarkerColor, labelText);
+
+            //dataPoint.Marker.ShadowEnabled =(Boolean) dataPoint.ShadowEnabled;
 
             ApplyMarkerProperties(dataPoint, markerSize);
 
@@ -257,14 +259,25 @@ namespace Visifire.Charts
             if (lineParams.ShadowEnabled)
             {
                 lineShadow = new Path() { Tag = new ElementData() { Element = tagReference } };
-                lineShadow.Stroke = new SolidColorBrush(Colors.LightGray);
-                lineShadow.StrokeThickness = lineParams.LineThickness;
+                lineShadow.Stroke = new SolidColorBrush(Colors.Gray);
+                lineShadow.StrokeThickness = lineParams.LineThickness +0.24;
                 lineShadow.Opacity = 0.5;
+                lineShadow.StrokeLineJoin = PenLineJoin.Round;
+                lineShadow.StrokeStartLineCap = PenLineCap.Round;
+                lineShadow.StrokeEndLineCap = PenLineCap.Round;
                 lineShadow.Data = GetPathGeometry(shadowPointCollectionList);
-                TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
+                TranslateTransform tt = new TranslateTransform() { X = 1.26, Y = 1.26 };
                 lineShadow.RenderTransform = tt;
 
                 visual.Children.Add(lineShadow);
+
+                //System.Windows.Media.Effects.PixelShader e1 = new System.Windows.Media.Effects.PixelShader();
+
+                //e1.UriSource = System.Windows.Media.Effects.ShaderEffect.ImplicitInput;
+                ////e1.BlurRadius = lineParams.LineThickness + 1;
+                //////e1.Direction = 145;
+                ////e1.ShadowDepth = 2;
+                //line.Effect = System.Windows.Media.Effects.ShaderEffect.ImplicitInput;
             }
             else
                 lineShadow = null;
@@ -564,6 +577,10 @@ namespace Visifire.Charts
                 chart.ChartArea.PlotAreaCanvas.MouseLeave += new MouseEventHandler(PlotAreaCanvas_MouseLeave);
                 chart.ChartArea.PlotAreaCanvas.MouseEnter += new MouseEventHandler(PlotAreaCanvas_MouseEnter);
             }
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
+            labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);
 

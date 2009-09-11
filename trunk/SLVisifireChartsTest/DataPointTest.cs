@@ -3506,7 +3506,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual((dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), dataSeries.DataPoints[i].MarkerSize);
+                        Assert.AreEqual((dataSeries.LineThickness * 2), dataSeries.DataPoints[i].MarkerSize);
                     }
                 });
 

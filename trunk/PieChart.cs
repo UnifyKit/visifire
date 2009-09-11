@@ -4774,6 +4774,10 @@ namespace Visifire.Charts
             if (IsLabelEnabled && labelCanvas != null)
                 visual.Children.Add(labelCanvas);
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, 0, width, height);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -5117,6 +5121,10 @@ namespace Visifire.Charts
 
             if (labelCanvas != null)
                 visual.Children.Add(labelCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, 0, width, height);
+            visual.Clip = clipRectangle;
 
             return visual;
         }

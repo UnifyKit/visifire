@@ -4186,7 +4186,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, dataSeries.LineThickness));
+                () => Assert.AreEqual((((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000) > 4 ? 4 : ((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, dataSeries.LineThickness));
 
             EnqueueTestComplete();
         }
@@ -4715,7 +4715,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual((Double)(dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), (Double)dataSeries.MarkerSize, Common.HighPrecisionDelta));
+                () => Assert.AreEqual((Double)(dataSeries.LineThickness * 2), (Double)dataSeries.MarkerSize, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

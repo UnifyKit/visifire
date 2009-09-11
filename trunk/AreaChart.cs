@@ -739,6 +739,11 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
 
             return visual;
@@ -968,7 +973,13 @@ namespace Visifire.Charts
                 visual.Children.Add(zeroPlankVisual);
             }
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
+            
             return visual;
         }
 
@@ -1213,7 +1224,13 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
+
             return visual;
         }
 

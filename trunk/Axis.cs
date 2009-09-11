@@ -870,7 +870,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(ScalingSetProperty, value);
-                ParseScalingSets(value);
             }
         }
 
@@ -1759,6 +1758,7 @@ namespace Visifire.Charts
         private static void OnScalingSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
+            axis.ParseScalingSets((String)e.NewValue);
             axis.FirePropertyChanged("ScalingSet");
         }
 
@@ -2974,7 +2974,7 @@ namespace Visifire.Charts
                 tick.Minimum = AxisManager.AxisMinimumValue;
                 tick.DataMaximum = Maximum;
                 tick.DataMinimum = Minimum;
-                tick.TickLength = 5;
+                //tick.TickLength = 5;
                 tick.ParentAxis = this;
 
                 tick.IsNotificationEnable = true;
