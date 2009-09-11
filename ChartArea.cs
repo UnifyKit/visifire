@@ -72,7 +72,7 @@ namespace Visifire.Charts
         public void Draw(Chart chart)
         {
             System.Diagnostics.Debug.WriteLine("Draw() > ");
-            
+            Boolean isScrollingActive = Chart.IsScrollingActivated;
             _renderCount = 0;
 
             Chart = chart;
@@ -153,8 +153,32 @@ namespace Visifire.Charts
 
             // Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
 
-            AttachOrDetachIntaractivity(chart);          
+            AttachOrDetachIntaractivity(chart);
 
+            if (isScrollingActive && Chart.IsScrollingActivated)
+            {   
+                if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
+                    chart._drawingCanvas.Children.Add(PlotAreaCanvas);
+            }
+            else if (!isScrollingActive && !Chart.IsScrollingActivated)
+            {
+                if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
+                    chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
+            }
+            else if (!isScrollingActive && Chart.IsScrollingActivated)
+            {
+                chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+
+                if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
+                    chart._drawingCanvas.Children.Add(PlotAreaCanvas);
+            }
+            else if (isScrollingActive && !Chart.IsScrollingActivated)
+            {
+                chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+
+                if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
+                    chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
+            }
         }
         
         /// <summary>
@@ -503,9 +527,6 @@ namespace Visifire.Charts
             Chart.PlotArea.DetachToolTip(Chart.PlotArea.BorderElement);
             Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, Chart.PlotArea.BorderElement);
             //Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
-            
-            if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
-                chart._drawingCanvas.Children.Add(PlotAreaCanvas);
         }
 
         /// <summary>
@@ -1441,17 +1462,21 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="axis">Axis</param>
         /// <param name="trendLinesReferingToAAxes">List of trendLine</param>
-        private void AddTrendLines(Axis axis, List<TrendLine> trendLinesReferingToAAxes)
+        private void AddTrendLines(Axis axis, List<TrendLine> trendLinesReferingToAAxes, Canvas trendLineCanvas)
         {
             if (axis != null)
-            {
+            {   
                 foreach (TrendLine trendLine in trendLinesReferingToAAxes)
                 {
                     trendLine.ReferingAxis = axis;
                     trendLine.CreateVisualObject(ChartVisualCanvas.Width, ChartVisualCanvas.Height);
                     if (trendLine.Visual != null)
                     {
-                        ChartVisualCanvas.Children.Add(trendLine.Visual);
+                        trendLineCanvas.Children.Add(trendLine.Visual);
+
+                        RectangleGeometry clipRectangle = new RectangleGeometry();
+                        clipRectangle.Rect = new Rect(0, 0, ChartVisualCanvas.Width, ChartVisualCanvas.Height);
+                        trendLineCanvas.Clip = clipRectangle;
                     }
                 }
             }
@@ -1498,13 +1523,18 @@ namespace Visifire.Charts
                                                       select trendline).ToList();
             }
 
-            AddTrendLines(AxisX, trendLinesReferingToPrimaryAxesX);
+            Canvas trendLineCanvas = new Canvas() { Height = ChartVisualCanvas.Height, Width = ChartVisualCanvas.Width};
 
-            AddTrendLines(AxisY, trendLinesReferingToPrimaryAxisY);
+            AddTrendLines(AxisX, trendLinesReferingToPrimaryAxesX, trendLineCanvas);
 
-            AddTrendLines(AxisX2, trendLinesReferingToSecondaryAxesX);
+            AddTrendLines(AxisY, trendLinesReferingToPrimaryAxisY, trendLineCanvas);
 
-            AddTrendLines(AxisY2, trendLinesReferingToSecondaryAxisY);
+            AddTrendLines(AxisX2, trendLinesReferingToSecondaryAxesX, trendLineCanvas);
+
+            AddTrendLines(AxisY2, trendLinesReferingToSecondaryAxisY, trendLineCanvas);
+
+            ChartVisualCanvas.Children.Add(trendLineCanvas);
+
         }
 
         /// <summary>

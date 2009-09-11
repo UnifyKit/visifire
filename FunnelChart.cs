@@ -96,6 +96,10 @@ namespace Visifire.Charts
                 // here
                 // funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
 
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(0, 0, width, height);
+                _funnelChartGrid.Clip = clipRectangle;
+
                 return _funnelChartGrid;
             }
 

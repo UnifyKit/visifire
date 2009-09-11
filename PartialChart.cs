@@ -2027,7 +2027,8 @@ namespace Visifire.Charts
         {
             if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
             {
-                Double x = e.GetPosition(this).X;
+                Double actualX = e.GetPosition(this).X;
+                Double x = actualX;
                 Double y = e.GetPosition(this).Y;
 
                 #region Set position of ToolTip
@@ -2066,15 +2067,32 @@ namespace Visifire.Charts
                     x = 0;
 
                 if (x < 0)
-                {
                     x = 0;
+
+                // If tooltip still goes out of towards y
+                if (!Double.IsNaN(this.ActualHeight) && y + toolTipSize.Height > this.ActualHeight)
+                {
+                    y = 0;
+                    x = actualX + 10;
+                    if (x <= 0)
+                        x = e.GetPosition(this).X + 10;
+
+                    if ((x + toolTipSize.Width) >= this.ActualWidth)
+                        x = e.GetPosition(this).X - toolTipSize.Width;
+
+                    if (x + toolTipSize.Width > this.ActualWidth)
+                        x = x + toolTipSize.Width - this.ActualWidth;
+
+                    if (toolTipSize.Width == _toolTip.MaxWidth)
+                        x = 0;
+
+                    if (x < 0)
+                        x = 0;
+
                 }
 
                 _toolTip.SetValue(Canvas.LeftProperty, x);
-
                 _toolTip.SetValue(Canvas.TopProperty, y);
-
-                Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
 
                 #endregion
             }

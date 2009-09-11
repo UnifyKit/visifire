@@ -2068,7 +2068,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, (Double)dataSeries.LineThickness, Common.HighPrecisionDelta);
+                Assert.AreEqual(((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000 > 4 ? 4 : ((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, (Double)dataSeries.LineThickness, Common.HighPrecisionDelta);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();
@@ -2695,7 +2695,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual((Double)(dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), (Double)dataSeries.MarkerSize);
+                Assert.AreEqual((Double)(dataSeries.LineThickness * 2), (Double)dataSeries.MarkerSize);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

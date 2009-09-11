@@ -1139,7 +1139,10 @@ namespace Visifire.Charts
                 if ((Nullable<Double>)GetValue(LineThicknessProperty) == null)
                 {
                     if (RenderAs == RenderAs.Line)
-                        return (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                    {
+                        Double retValue = (Double) (((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                        return retValue > 4 ? 4 : retValue;            
+                    }
                     else if (RenderAs == RenderAs.Stock)
                         return 2;
                     else
@@ -1577,7 +1580,7 @@ namespace Visifire.Charts
             {
                 if ((Nullable<Double>)GetValue(MarkerSizeProperty) == null)
                     if (this.RenderAs == RenderAs.Line)
-                        return (this.LineThickness * 1.8);
+                        return (this.LineThickness * 2);
                     else
                         return 8;
                 else

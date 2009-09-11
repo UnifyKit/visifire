@@ -229,18 +229,6 @@
     <Compile Include="Combination\Combi6.xaml.cs">
       <DependentUpon>Combi6.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Doughnut\Doughnut2D1.xaml.cs">
-      <DependentUpon>Doughnut2D1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Doughnut\Doughnut2D2.xaml.cs">
-      <DependentUpon>Doughnut2D2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Doughnut\Doughnut3D1.xaml.cs">
-      <DependentUpon>Doughnut3D1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Doughnut\Doughnut3D2.xaml.cs">
-      <DependentUpon>Doughnut3D2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Line\Line1.xaml.cs">
       <DependentUpon>Line1.xaml</DependentUpon>
     </Compile>
@@ -520,22 +508,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Combination\Combi6.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Doughnut\Doughnut2D1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Doughnut\Doughnut2D2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Doughnut\Doughnut3D1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Doughnut\Doughnut3D2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
