@@ -112,7 +112,7 @@ namespace Visifire.Charts
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="isPositive">Whether YValue is positive or negative</param>
         /// <returns>Marker</returns>
-        private static Marker GetMarkerForDataPoint(Boolean reCreate, Chart chart, Double yPosition, DataPoint dataPoint, Boolean isPositive)
+        internal static Marker GetMarkerForDataPoint(Boolean reCreate, Chart chart, Double yPosition, DataPoint dataPoint, Boolean isPositive)
         {   
             String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
             Boolean markerBevel = false;
@@ -420,9 +420,12 @@ namespace Visifire.Charts
                     Axis axisX = plotGroup.AxisX;
                     Axis axisY = plotGroup.AxisY;
 
-                    (dataSeries.Faces.Visual as Canvas).Width = chart.ChartArea.ChartVisualCanvas.Width;
-                    (dataSeries.Faces.Visual as Canvas).Height = chart.ChartArea.ChartVisualCanvas.Height;
+                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
+                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
 
+                    (dataSeries.Faces.Visual as Canvas).Width = width;
+                    (dataSeries.Faces.Visual as Canvas).Height = height;
+                                        
                     List<DataPoint> pc = new List<DataPoint>();
                     List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
 
@@ -437,8 +440,8 @@ namespace Visifire.Charts
                             continue;
                         }
 
-                        Double x = Graphics.ValueToPixelPosition(0, axisX.Width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
-                        Double y = Graphics.ValueToPixelPosition(axisY.Height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
+                        Double x = Graphics.ValueToPixelPosition(0, width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
+                        Double y = Graphics.ValueToPixelPosition(height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
 
                         dp._visualPosition = new Point(x, y);
 
@@ -612,7 +615,7 @@ namespace Visifire.Charts
             Marker dataPointMarker = dataPoint.Marker;
             Marker legendMarker = dataPoint.LegendMarker;
             
-            //chart.ChartArea.UpdateAxes();
+            // chart.ChartArea.UpdateAxes();
 
             // (Faces.Visual as Canvas).Width = chart.ChartArea.ChartVisualCanvas.Width;
             // (Faces.Visual as Canvas).Height = chart.ChartArea.ChartVisualCanvas.Height;
@@ -652,7 +655,7 @@ namespace Visifire.Charts
             }
 
             if (isAnimationEnabled)
-            {
+            {   
                 #region Apply Animation to the DataPoint
 
                 Storyboard storyBorad = new Storyboard();
@@ -662,7 +665,7 @@ namespace Visifire.Charts
                 pointAnimation.To = new Point(x, y);
                 pointAnimation.SpeedRatio = 2;
                 pointAnimation.Duration = new Duration(new TimeSpan(0, 0, 1));
-
+                
                 target.SetValue(FrameworkElement.NameProperty, "Segment_" + dataPoint.Name);
 
 
@@ -681,7 +684,7 @@ namespace Visifire.Charts
 
                 // Animation for (Canvas.Top) property
                 DoubleAnimation da = new DoubleAnimation()
-                {
+                {   
                     From = (Double)marker.GetValue(Canvas.LeftProperty),
                     To = x - markerSize.Width / 2,
                     Duration = new Duration(new TimeSpan(0, 0, 1)),
@@ -719,37 +722,12 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Generate double collection
-        /// </summary>
-        /// <param name="values">Array of double values</param>
-        /// <returns>DoubleCollection</returns>
-        /* internal static PointCollection GeneratePointCollection(PolyLineSegment segment, List<DataPoint> dataPoints, Boolean createFaces)
-         {
-             PointCollection collection = new PointCollection();
-
-             foreach (DataPoint dataPoint in dataPoints)
-             {
-                 if (createFaces)
-                     dataPoint.Faces = new Faces() { PolyLineSegment = segment };
-                 else
-                     dataPoint.Faces = null;
-
-                 dataPoint.SegmentIndex = dataPoints.IndexOf(dataPoint);
-
-                 collection.Add(dataPoint.VisualPosition);
-             }
-
-             return collection;
-         }
-         */
-
-        /// <summary>
         /// Apply marker properties
         /// </summary>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="markerSize">Marker size</param>
         private static void ApplyMarkerProperties(DataPoint dataPoint)
-        {
+        {   
             Marker marker = dataPoint.Marker;
             marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
             marker.BorderColor = dataPoint.MarkerBorderColor;
@@ -906,23 +884,7 @@ namespace Visifire.Charts
                         if (IsStartPoint)
                         {
                             variableStartPoint = new Point(xPosition, yPosition);
-                        }
-                        else
-                            endPoint = new Point(xPosition, yPosition);
 
-                        if (!IsStartPoint)
-                        {   
-                            //lineParams.LineGeometryGroup.Children.Add(new LineGeometry() { StartPoint = startPoint, EndPoint = endPoint });
-
-                            //if (lineParams.ShadowEnabled)
-                            //    lineParams.LineShadowGeometryGroup.Children.Add(new LineGeometry() { StartPoint = startPoint, EndPoint = endPoint });
-
-                            variableStartPoint = endPoint;
-
-                            IsStartPoint = false;
-                        }
-                        else
-                        {
                             IsStartPoint = !IsStartPoint;
 
                             if (lineParams.Points.Count > 0)
@@ -933,6 +895,13 @@ namespace Visifire.Charts
 
                             lineParams.Points = new List<DataPoint>();
                             lineParams.ShadowPoints = new List<DataPoint>();
+                        }
+                        else
+                        {
+                            endPoint = new Point(xPosition, yPosition);
+
+                            variableStartPoint = endPoint;
+                            IsStartPoint = false;
                         }
 
                         #endregion Generate GeometryGroup for line and line shadow

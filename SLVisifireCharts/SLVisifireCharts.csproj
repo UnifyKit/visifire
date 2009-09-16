@@ -59,6 +59,11 @@
     <ErrorReport>prompt</ErrorReport>
     <NoConfig>true</NoConfig>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -189,6 +194,9 @@
     </Compile>
     <Compile Include="..\StackedColumn.cs">
       <Link>StackedColumn.cs</Link>
+    </Compile>
+    <Compile Include="..\StackedColumn100.cs">
+      <Link>StackedColumn100.cs</Link>
     </Compile>
     <Compile Include="..\StockChart.cs">
       <Link>StockChart.cs</Link>

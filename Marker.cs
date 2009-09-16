@@ -98,7 +98,7 @@ namespace Visifire.Commons
         }
 
         public void ShowLabel()
-        {
+        {   
             TextBackgroundCanvas.Background = TextBackground;
             TextBlock.Foreground = FontColor;
         }
@@ -112,8 +112,14 @@ namespace Visifire.Commons
         /// <param name="anchorPoint">AnchorPoint</param>
         public void AddToParent(Canvas parentCanvas, Double xPosition, Double yPosition, Point anchorPoint)
         {
-            Position = new Point(xPosition, yPosition);
             parentCanvas.Children.Add(Visual);
+            SetPosition(xPosition, yPosition, anchorPoint);
+        }
+
+        public void SetPosition(Double xPosition, Double yPosition, Point anchorPoint)
+        {   
+            Position = new Point(xPosition, yPosition);
+
             Double visualHeight;
             Double visualWidth;
 #if WPF
@@ -122,8 +128,9 @@ namespace Visifire.Commons
             visualHeight = Visual.DesiredSize.Height;
             visualWidth = Visual.DesiredSize.Width;
 #else
-            visualHeight = Visual.ActualHeight;
-            visualWidth = Visual.ActualWidth;
+            Size s = Graphics.CalculateVisualSize(Visual);
+            visualHeight = s.Height;
+            visualWidth = s.Width;
 #endif
 
             if (anchorPoint.X == 0.5)
@@ -143,12 +150,11 @@ namespace Visifire.Commons
             if (TextAlignmentY == AlignmentY.Center)
                 if (TextBlockSize.Height > MarkerShape.Height)
                     yPosition -= (TextBlockSize.Height - MarkerShape.Height) / 2;
-
+            
             Visual.SetValue(Canvas.TopProperty, yPosition);
             Visual.SetValue(Canvas.LeftProperty, xPosition);
-
         }
-
+        
         /// <summary>
         /// Add elements to parent panel
         /// </summary>
@@ -213,7 +219,7 @@ namespace Visifire.Commons
                 ApplyTextBlockProperties();
 
                 // if (TextBackground != null)
-                {
+                {   
                     TextBackgroundCanvas = new Canvas();
                     TextBackgroundCanvas.Background = TextBackground;
                     Visual.Children.Add(TextBackgroundCanvas);
@@ -556,6 +562,9 @@ namespace Visifire.Commons
 
                 if (TextBlock != null)
                     TextBlock.Text = _text;
+
+                if (TextBackgroundCanvas != null)
+                    TextBackgroundCanvas.Background = value;
             }
         }
 
@@ -614,7 +623,7 @@ namespace Visifire.Commons
             set
             {
                 _markerFillColor = value;
-
+                
                 if (MarkerShape != null)
                     MarkerShape.Fill = value;
             }
@@ -790,7 +799,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <returns>Shape</returns>
         private Shape GetShape()
-        {
+        {   
             String xaml = null;
 
             switch (MarkerType)

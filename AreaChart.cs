@@ -507,6 +507,85 @@ namespace Visifire.Charts
             return null;
         }
 
+        public static List<List<DataPoint>> BrokenAreaDataPointsGroup(Double width, Double height, DataSeries dataSeries)
+        {
+            Double xPosition;
+            Double yPosition;
+            Chart chart = dataSeries.Chart as Chart;
+
+            PlotGroup plotGroup = dataSeries.PlotGroup;
+
+            List<List<DataPoint>> brokenAreaDataPointsCollection = new List<List<DataPoint>>();
+
+            List<DataPoint> pointsList4EachBrokenAreaGroup = new List<DataPoint>();
+
+            Point endPoint = new Point();
+            Boolean IsStartPoint = true;
+
+            foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+            {
+                if (dataPoint.Enabled == false)
+                    continue;
+
+                if (Double.IsNaN(dataPoint.InternalYValue))
+                {   
+                    xPosition = Double.NaN;
+                    yPosition = Double.NaN;
+                    IsStartPoint = true;
+                }
+                else
+                {   
+                    xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+                    yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+
+                    // Create Marker
+                    dataPoint.Marker = LineChart.GetMarkerForDataPoint(true, chart, yPosition, dataPoint, dataPoint.InternalYValue > 0);
+
+                    if (IsStartPoint)
+                    {   
+                        IsStartPoint = !IsStartPoint;
+
+                        if (pointsList4EachBrokenAreaGroup.Count > 0)
+                        {   
+                            brokenAreaDataPointsCollection.Add(pointsList4EachBrokenAreaGroup);
+                        }
+
+                        pointsList4EachBrokenAreaGroup = new List<DataPoint>();
+                    }
+                    else
+                    {   
+                        endPoint = new Point(xPosition, yPosition);
+                        IsStartPoint = false;
+                    }
+
+                    dataPoint._visualPosition = new Point(xPosition, yPosition);
+                    pointsList4EachBrokenAreaGroup.Add(dataPoint);
+                }
+            }
+
+            brokenAreaDataPointsCollection.Add(pointsList4EachBrokenAreaGroup);
+
+            return brokenAreaDataPointsCollection;
+        }
+
+        private static void CreateBevelFor2DArea(Canvas areaCanvas, DataPoint currentDataPoint, DataPoint previusDataPoint, Boolean clipAtStart, Boolean clipAtEnd)
+        {
+            Line line4Bevel42DArea = new Line(){
+                StrokeThickness = 3,
+                Stroke = Graphics.GetBevelTopBrush(currentDataPoint.Parent.Color),
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeStartLineCap = PenLineCap.Triangle
+            };
+
+            line4Bevel42DArea.SetValue(Canvas.ZIndexProperty, (Int32) 2);
+            line4Bevel42DArea.X1 = previusDataPoint.Faces.AreaFrontFaceLineSegment.Point.X ;
+            line4Bevel42DArea.Y1 = previusDataPoint.Faces.AreaFrontFaceLineSegment.Point.Y;
+            line4Bevel42DArea.X2 = currentDataPoint._visualPosition.X;
+            line4Bevel42DArea.Y2 = currentDataPoint._visualPosition.Y;
+            currentDataPoint.Faces.BevelLine = line4Bevel42DArea;
+            areaCanvas.Children.Add(line4Bevel42DArea);
+        }
+
         /// <summary>
         /// Get visual object for area chart
         /// </summary>
@@ -518,7 +597,370 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>Area chart canvas</returns>
-        internal static Canvas GetVisualObjectForAreaChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        internal static Canvas GetVisualObjectForAreaChart(Panel preExistingPanel, Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        {   
+            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
+                return null;
+
+            DataSeries series = seriesList[0] as DataSeries;
+            Canvas visual, labelCanvas, areaCanvas;
+
+            RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out areaCanvas, width, height);
+
+            Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
+            Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[series] + 1);
+            
+            visual.SetValue(Canvas.TopProperty, visualOffset);
+            visual.SetValue(Canvas.LeftProperty, -visualOffset);
+            
+            // labelCanvas.SetValue(Canvas.TopProperty, visualOffset);
+            // labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
+            
+            if ((Boolean)series.Enabled)
+            {   
+                if (series.Storyboard == null)
+                    series.Storyboard = new Storyboard();
+
+                CurrentDataSeries = series;
+
+                PlotGroup plotGroup = series.PlotGroup;
+
+                Double limitingYValue = plotGroup.GetLimitingYValue();
+                
+                List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+
+                Faces dataSeriesFaces = new Faces();
+
+                dataSeriesFaces.Visual = areaCanvas;
+                series.Faces = dataSeriesFaces;
+
+                List<List<DataPoint>> brokenAreaDataPointsCollection = BrokenAreaDataPointsGroup(width, height, series);
+
+                DataPoint currentDataPoint;
+                DataPoint nextDataPoint;
+                DataPoint previusDataPoint;
+
+                foreach (List<DataPoint> dataPointList in brokenAreaDataPointsCollection)
+                {   
+                    if (dataPointList.Count <= 0)
+                        continue;
+                    
+                    currentDataPoint = dataPointList[0];
+                    previusDataPoint = currentDataPoint;
+                    PointCollection points = new PointCollection();
+
+                    List<DataPoint> dataPoints = new List<DataPoint>();
+                    Double plankYPos = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
+                    Path frontFacePath = null;
+                    PathGeometry frontFacePathGeometry;
+                    PathFigure frontFacePathFigure = null;
+
+                    Int32 maxZIndex = 0;
+
+                    for (Int32 i = 0; i < dataPointList.Count - 1; i++)
+                    {
+                        Faces dataPointFaces;
+                        Faces nextDataPointFaces = new Faces();
+
+                        currentDataPoint = dataPointList[i];
+                        nextDataPoint = dataPointList[i + 1];
+
+                        if (currentDataPoint.Faces == null)
+                        {
+                            dataPointFaces = new Faces();
+                            currentDataPoint.Faces = dataPointFaces;
+                        }
+                        else
+                            dataPointFaces = currentDataPoint.Faces;
+
+                        nextDataPoint.Faces = nextDataPointFaces;
+
+                        dataPointFaces.PreviousDataPoint = previusDataPoint;
+                        dataPointFaces.NextDataPoint = nextDataPoint;
+
+                        if (i == 0)
+                        {   
+                            // For the first DataPoint left and top face are drawn.
+                            Double xPosDataPoint = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
+
+                            if (chart.View3D)
+                            {
+                                // Set points for left face
+                                Area3DDataPointFace leftFace = new Area3DDataPointFace(depth3d);
+                                leftFace.FrontFacePoints.Add(new Point(xPosDataPoint, plankYPos)); // Bottom Point
+                                leftFace.FrontFacePoints.Add(currentDataPoint._visualPosition);    // Top Point
+                                currentDataPoint.Faces.Area3DLeftFace = leftFace;
+
+                                // Set points for top left face
+                                Area3DDataPointFace topFace = new Area3DDataPointFace(depth3d);
+                                topFace.FrontFacePoints.Add(currentDataPoint._visualPosition);   // Front Left Point
+                                topFace.FrontFacePoints.Add(nextDataPoint._visualPosition);      // Front Right Point     
+                                currentDataPoint.Faces.Area3DRightTopFace = topFace;
+                                nextDataPointFaces.Area3DLeftTopFace = topFace;
+                            }
+ 
+                            // Start creating front face of 3D area
+                            frontFacePath = new Path() { Opacity = 1 };
+                            frontFacePathGeometry = new PathGeometry();
+                            frontFacePathFigure = new PathFigure() { StartPoint = new Point(xPosDataPoint, plankYPos), IsClosed = true };
+                            frontFacePathGeometry.Figures.Add(frontFacePathFigure);
+                            frontFacePath.Data = frontFacePathGeometry;
+                            
+                            // Area front face Line path
+                            LineSegment ls = new LineSegment() { Point = currentDataPoint._visualPosition };
+                            frontFacePathFigure.Segments.Add(ls);
+                            dataPointFaces.AreaFrontFaceLineSegment = ls; 
+                        }
+                        else
+                        {
+                            if (chart.View3D)
+                            {   
+                                // DataPoint which has two different top faces at the left and right side of it position.
+                                Area3DDataPointFace topFace = new Area3DDataPointFace(depth3d);
+                                topFace.FrontFacePoints.Add(currentDataPoint._visualPosition);  // Front Left Point
+                                topFace.FrontFacePoints.Add(nextDataPoint._visualPosition);     // Front Right Point     
+
+                                currentDataPoint.Faces.Area3DRightTopFace = topFace;
+                                nextDataPointFaces.Area3DLeftTopFace = topFace;
+                            }
+                            else
+                            {
+                                // if(currentDataPoint.Parent.Bevel)
+                                CreateBevelFor2DArea(areaCanvas, currentDataPoint, previusDataPoint,false, false); 
+                            }
+
+                            // Area front face Line path
+                            LineSegment ls = new LineSegment() { Point = currentDataPoint._visualPosition };
+                            frontFacePathFigure.Segments.Add(ls);
+                            dataPointFaces.AreaFrontFaceLineSegment = ls; 
+                        }
+
+                        #region Create Marker
+
+                        Marker marker = currentDataPoint.Marker;
+
+                        if (marker != null)
+                        {   
+                            marker.AddToParent(labelCanvas, currentDataPoint._visualPosition.X, currentDataPoint._visualPosition.Y, new Point(0.5, 0.5));
+
+                            // Apply marker animation
+                            if (animationEnabled)
+                            {   
+                                if (currentDataPoint.Parent.Storyboard == null)
+                                    currentDataPoint.Parent.Storyboard = new Storyboard();
+
+                                // Apply marker animation
+                                currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.Opacity * currentDataPoint.Parent.Opacity);
+                            }
+                        }
+
+                        #endregion
+
+                        if (chart.View3D)
+                        {
+                            Int32 zindex = Draw3DArea(areaCanvas, previusDataPoint, currentDataPoint, nextDataPoint, ref dataSeriesFaces, ref dataPointFaces, currentDataPoint.Parent, plankYPos);
+                            maxZIndex = Math.Max(maxZIndex, zindex);
+                        }
+                        else
+                        {   
+                            //areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
+
+                            
+                        }
+
+                        if (i == dataPointList.Count - 2) // If next DataPoint is the last DataPoint
+                        {
+                            if (chart.View3D)
+                            {
+                                Area3DDataPointFace rightFace = new Area3DDataPointFace(depth3d);
+                                rightFace.FrontFacePoints.Add(nextDataPoint._visualPosition); // Front top point
+                                rightFace.FrontFacePoints.Add(new Point(nextDataPoint._visualPosition.X, plankYPos));
+                                nextDataPoint.Faces.Area3DRightFace = rightFace;
+                            }
+                            else
+                            {   
+                                CreateBevelFor2DArea(areaCanvas, nextDataPoint, currentDataPoint, false, false); 
+                            }
+
+                            // Front face for 3D and 2D both
+                            LineSegment ls = new LineSegment() { Point = nextDataPoint._visualPosition };
+                            frontFacePathFigure.Segments.Add(ls);
+                            nextDataPointFaces.AreaFrontFaceLineSegment = ls;
+                            ls = new LineSegment() { Point = new Point(nextDataPoint._visualPosition.X, plankYPos) };
+                            frontFacePathFigure.Segments.Add(ls);
+                            
+                            nextDataPointFaces.NextDataPoint = nextDataPoint;
+                                                       
+                           //  Graphics.DrawPointAt(rightFace.FrontFacePoints[0], areaCanvas, Colors.Yellow);
+
+                            if (chart.View3D)
+                            {   
+                                Int32 zindex = Draw3DArea(areaCanvas, previusDataPoint, nextDataPoint, nextDataPoint, ref dataSeriesFaces, ref nextDataPointFaces, nextDataPoint.Parent, plankYPos);
+                                maxZIndex = Math.Max(maxZIndex, zindex);
+                            }
+                            else
+                            {
+                                // areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
+                                series.Faces.VisualComponents.Add(visual);
+                            }
+                        }
+
+                        previusDataPoint = currentDataPoint;
+                    }
+
+                    if (frontFacePath != null)
+                    {
+                        if (chart.View3D)
+                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetFrontFaceBrush(dataPointList[0].Parent.Color) : dataPointList[0].Parent.Color;
+                        else
+                            frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPointList[0].Parent.Color, "Linear", null) : dataPointList[0].Parent.Color;
+
+                        frontFacePath.SetValue(Canvas.ZIndexProperty, maxZIndex);
+                        areaCanvas.Children.Add(frontFacePath);
+                    }
+                }
+            }
+            
+
+            areaCanvas.Tag = null;
+
+            ColumnChart.CreateOrUpdatePlank(chart, series.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+
+            // Remove old visual and add new visual in to the existing panel
+            if (preExistingPanel != null)
+            {
+                visual.Children.RemoveAt(1);
+                visual.Children.Add(areaCanvas);
+            }
+            else
+            {
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 1);
+                visual.Children.Add(labelCanvas);
+                visual.Children.Add(areaCanvas);
+            }
+            
+
+            return visual;
+        }
+
+        /// <summary>
+        /// Get visual of Area 3D
+        /// </summary>
+        /// <param name="faces">Faces</param>
+        /// <param name="areaParams">AreaParams</param>
+        /// <returns>Canvas</returns>
+        internal static Canvas Get3DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
+        {
+            Canvas visual = new Canvas();
+
+            visual.Width = areaParams.Size.Width;
+            visual.Height = areaParams.Size.Height;
+
+            Point centroid;
+            Brush sideBrush = areaParams.Lighting ? Graphics.GetRightFaceBrush(areaParams.Background) : areaParams.Background;
+            Brush topBrush = areaParams.Lighting ? Graphics.GetTopFaceBrush(areaParams.Background) : areaParams.Background;
+            Int32 pointIndexLimit = areaParams.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
+
+            Canvas polygonSet = new Canvas();
+            Rect size = GetBounds(areaParams.Points);
+            polygonSet.Width = size.Width + areaParams.Depth3D;
+            polygonSet.Height = size.Height + areaParams.Depth3D;
+            polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth3D);
+            polygonSet.SetValue(Canvas.LeftProperty, size.Left);
+            visual.Children.Add(polygonSet);
+
+            for (Int32 i = 0; i < pointIndexLimit; i++)
+            {
+                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference } };
+                PointCollection points = new PointCollection();
+                Int32 index1 = i % areaParams.Points.Count;
+                Int32 index2 = (i + 1) % areaParams.Points.Count;
+
+                points.Add(areaParams.Points[index1]);
+                points.Add(areaParams.Points[index2]);
+                points.Add(new Point(areaParams.Points[index2].X + areaParams.Depth3D, areaParams.Points[index2].Y - areaParams.Depth3D));
+                points.Add(new Point(areaParams.Points[index1].X + areaParams.Depth3D, areaParams.Points[index1].Y - areaParams.Depth3D));
+                sides.Points = points;
+
+                centroid = GetCentroid(points);
+                Int32 zindex = GetAreaZIndex(centroid.X, centroid.Y, areaParams.IsPositive);
+                sides.SetValue(Canvas.ZIndexProperty, zindex);
+
+                if (i == (areaParams.Points.Count - 2))
+                {
+                    sides.Fill = sideBrush;
+                    (sides.Tag as ElementData).VisualElementName = "Side";
+                }
+                else
+                {
+                    sides.Fill = topBrush;
+                    (sides.Tag as ElementData).VisualElementName = "Top";
+                }
+
+                sides.Stroke = areaParams.BorderColor;
+                sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
+                sides.StrokeThickness = areaParams.BorderThickness;
+                sides.StrokeMiterLimit = 1;
+
+                Rect sidesBounds = GetBounds(points);
+                sides.Stretch = Stretch.Fill;
+                sides.Width = sidesBounds.Width;
+                sides.Height = sidesBounds.Height;
+                sides.SetValue(Canvas.TopProperty, sidesBounds.Y - (size.Top - areaParams.Depth3D));
+                sides.SetValue(Canvas.LeftProperty, sidesBounds.X - size.X);
+
+                faces.Parts.Add(sides);
+                polygonSet.Children.Add(sides);
+
+            }
+
+            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
+
+            faces.Parts.Add(polygon);
+            centroid = GetCentroid(areaParams.Points);
+
+            polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
+            polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.Background) : areaParams.Background;
+
+            polygon.Stroke = areaParams.BorderColor;
+            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
+            polygon.StrokeThickness = areaParams.BorderThickness;
+            polygon.StrokeMiterLimit = 1;
+
+            polygon.Points = areaParams.Points;
+
+            polygon.Stretch = Stretch.Fill;
+            polygon.Width = size.Width;
+            polygon.Height = size.Height;
+            polygon.SetValue(Canvas.TopProperty, areaParams.Depth3D);
+            polygon.SetValue(Canvas.LeftProperty, 0.0);
+
+            // apply area animation
+            if (areaParams.AnimationEnabled)
+            {
+                // apply animation to the entire canvas that was used to create the area
+                areaParams.Storyboard = ApplyAreaAnimation(polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
+
+            }
+
+            polygonSet.Children.Add(polygon);
+
+            return visual;
+        }
+
+        ///// <summary>
+        ///// Get visual object for area chart
+        ///// </summary>
+        ///// <param name="width">Width of the PlotArea</param>
+        ///// <param name="height">Height of the PlotArea</param>
+        ///// <param name="plotDetails">PlotDetails</param>
+        ///// <param name="seriesList">List of DataSeries with render as area chart</param>
+        ///// <param name="chart">Chart</param>
+        ///// <param name="plankDepth">PlankDepth</param>
+        ///// <param name="animationEnabled">Whether animation is enabled for chart</param>
+        ///// <returns>Area chart canvas</returns>
+        /*  internal static Canvas GetVisualObjectForAreaChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
@@ -545,34 +987,34 @@ namespace Visifire.Charts
 
                 if (series.Storyboard == null)
                     series.Storyboard = new Storyboard();
-
+                
                 CurrentDataSeries = series;
-
+                
                 PlotGroup plotGroup = series.PlotGroup;
-
+                
                 Brush areaBrush = series.Color;
-
+                
                 Double limitingYValue = 0;
-
+                
                 if (plotGroup.AxisY.InternalAxisMinimum > 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
-
+                
                 if (plotGroup.AxisY.InternalAxisMaximum < 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-
+                
                 PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
-
+                
                 areaParams.Storyboard = series.Storyboard;
                 areaParams.AnimationEnabled = animationEnabled;
                 areaParams.Size = new Size(width, height);
-
+                
                 PointCollection points = new PointCollection();
-
+                
                 List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
-
+                
                 if (enabledDataPoints.Count <= 0)
                     continue;
-
+                
                 Faces faces = new Faces();
                 series.Faces = faces;
                 series.Faces.Parts = new List<DependencyObject>();
@@ -598,6 +1040,7 @@ namespace Visifire.Charts
                     points.Add(new Point(xPosition, yPosition));
 
                     marker = GetMarkerForDataPoint(chart, currentDataPoint, yPosition, currentDataPoint.InternalYValue > 0);
+
                     if (marker != null)
                     {
                         marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
@@ -612,6 +1055,7 @@ namespace Visifire.Charts
                             currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.Opacity * currentDataPoint.Parent.Opacity);
                         }
                     }
+
                     if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
                     {
                         Double xNextPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, nextDataPoint.InternalXValue);
@@ -673,7 +1117,7 @@ namespace Visifire.Charts
 
                 points.Add(new Point(xPosition, yPosition));
 
-                // get the faces
+                // Get the faces
                 areaParams.Points = points;
                 areaParams.IsPositive = (lastDataPoint.InternalYValue > 0);
 
@@ -683,7 +1127,6 @@ namespace Visifire.Charts
                     areaVisual3D.SetValue(Canvas.ZIndexProperty, GetAreaZIndex(xPosition, yPosition, areaParams.IsPositive));
                     areaCanvas.Children.Add(areaVisual3D);
                     series.Faces.VisualComponents.Add(areaVisual3D);
-
                 }
                 else
                 {
@@ -719,7 +1162,8 @@ namespace Visifire.Charts
 
             return visual;
         }
-
+        */
+        
         /// <summary>
         /// Get visual object for stacked area chart
         /// </summary>
@@ -1514,7 +1958,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="points">Collection of points</param>
         /// <returns>Rect</returns>
-        internal static Rect GetBounds(PointCollection points)
+        internal static Rect GetBounds(params Point[] points)
         {
             Double minX = Double.MaxValue, minY = Double.MaxValue, maxX = Double.MinValue, maxY = Double.MinValue;
             foreach (Point point in points)
@@ -1528,6 +1972,24 @@ namespace Visifire.Charts
             return new Rect(minX, minY, Math.Abs(maxX - minX), Math.Abs(maxY - minY));
         }
 
+        /// <summary>
+        /// Get bounds from point collection
+        /// </summary>
+        /// <param name="points">Collection of points</param>
+        /// <returns>Rect</returns>
+        internal static Rect GetBounds(PointCollection points)
+        {
+            Double minX = Double.MaxValue, minY = Double.MaxValue, maxX = Double.MinValue, maxY = Double.MinValue;
+            foreach (Point point in points)
+            {
+                minX = Math.Min(minX, point.X);
+                minY = Math.Min(minY, point.Y);
+
+                maxX = Math.Max(maxX, point.X);
+                maxY = Math.Max(maxY, point.Y);
+            }
+            return new Rect(minX, minY, Math.Abs(maxX - minX), Math.Abs(maxY - minY));
+        }
         /// <summary>
         /// Returns visual for 2DArea
         /// </summary>
@@ -1569,10 +2031,11 @@ namespace Visifire.Charts
                 // apply animation to the polygon that was used to create the area
                 areaParams.Storyboard = ApplyAreaAnimation(polygon, areaParams.Storyboard, areaParams.IsPositive, 0);
             }
+
             visual.Children.Add(polygon);
 
             if (areaParams.Bevel)
-            {
+            {   
                 for (int i = 0; i < areaParams.Points.Count - 1; i++)
                 {
                     if (areaParams.Points[i].X == areaParams.Points[i + 1].X)
@@ -1614,29 +2077,202 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="faces">Faces</param>
         /// <param name="areaParams">AreaParams</param>
-        /// <returns>Canvas</returns>
-        internal static Canvas Get3DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
-        {
-            Canvas visual = new Canvas();
+        /// <returns>ZIndex</returns>
+        internal static Int32 Draw3DArea(Canvas parentVisual, DataPoint previusDataPoint, DataPoint dataPoint, DataPoint nextDataPoint, ref Faces dataSeriesFaces, ref Faces dataPointFaces, DataSeries dataSeries, Double plankYPos)
+        {   
+            Brush sideBrush = (Boolean) dataSeries.LightingEnabled ? Graphics.GetRightFaceBrush(dataSeries.Color) : dataSeries.Color;
+            Brush topBrush = (Boolean)dataSeries.LightingEnabled ? Graphics.GetTopFaceBrush(dataSeries.Color) : dataSeries.Color;
+            
+            // Int32 pointIndexLimit = dataSeries.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
 
-            visual.Width = areaParams.Size.Width;
-            visual.Height = areaParams.Size.Height;
+            Random rand = new Random(DateTime.Now.Millisecond);
 
-            Point centroid;
-            Brush sideBrush = areaParams.Lighting ? Graphics.GetRightFaceBrush(areaParams.Background) : areaParams.Background;
-            Brush topBrush = areaParams.Lighting ? Graphics.GetTopFaceBrush(areaParams.Background) : areaParams.Background;
-            Int32 pointIndexLimit = areaParams.IsPositive ? areaParams.Points.Count - 1 : areaParams.Points.Count;
+            // parentVisual.Background = new SolidColorBrush(Colors.Green);
 
+            Boolean isPositive2Negative = false;    // DataPoint at -ve, previous DataPoint is positive
+            Boolean isNegative2Positive = false;    // DataPoint at -ve, next DataPoint is positive
+
+            if (dataPoint.InternalYValue < 0 && previusDataPoint.InternalYValue > 0)
+                isPositive2Negative = true;
+
+            if (dataPoint.InternalYValue > 0 && nextDataPoint.InternalYValue < 0)
+                isNegative2Positive = true;
+
+            Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isPositive2Negative);            
+            
+            if (dataPointFaces.Area3DLeftFace != null)
+            {   
+                Area3DDataPointFace leftFace = dataPointFaces.Area3DLeftFace;
+                leftFace.CalculateBackFacePoints();
+
+                Path sides = new Path() { Tag = new ElementData() { Element = dataSeries } };
+                sides.SetValue(Canvas.ZIndexProperty, zIndex);
+
+                PathGeometry pg = new PathGeometry();
+                PathFigure pf = new PathFigure() { IsClosed = true };
+                pg.Figures.Add(pf);
+
+                PointCollection facePoints = leftFace.GetFacePoints();
+                pf.StartPoint = leftFace.FrontFacePoints[0];
+
+                // Graphics.DrawPointAt(dataPointFaces.Area3DLeftFace.FrontPointLeft, parentVisual, Colors.Yellow);
+
+                foreach (Point point in facePoints)
+                {
+                    LineSegment ls = new LineSegment() { Point = point };
+                    pf.Segments.Add(ls);
+                }
+
+                sides.Data = pg;
+
+                sides.Fill = sideBrush;
+                // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
+                
+                parentVisual.Children.Add(sides);
+
+                leftFace.LeftFaceHandle = sides;
+
+                dataPointFaces.VisualComponents.Add(sides);
+                dataPointFaces.Parts.Add(sides);
+                dataPointFaces.BorderElements.Add(sides);
+            }
+
+            if (dataPointFaces.Area3DLeftTopFace != null)
+            {                 
+                Area3DDataPointFace topFace = dataPointFaces.Area3DLeftTopFace;
+
+                if (isPositive2Negative)
+                {
+                    Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+                    Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+
+                    Graphics.DrawPointAt(previusDataPoint._visualPosition, parentVisual, Colors.Red);
+                    Graphics.DrawPointAt(dataPoint._visualPosition, parentVisual, Colors.Red);
+
+                    Point midPoint = new Point();
+
+                    if (Graphics.IntersectionOfTwoStraightLines(new Point(previusDataPoint._visualPosition.X, plankYPos),
+                        new Point(dataPoint._visualPosition.X, plankYPos),
+                        previusDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint))
+                    {
+                        topFace.FrontFacePoints[1] = midPoint;
+                    }
+
+                    Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
+                }
+
+                //if (isNegative2Positive)
+                //{   
+                //    Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+                //    Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+
+                //    Graphics.DrawPointAt(previusDataPoint._visualPosition, parentVisual, Colors.Red);
+                //    Graphics.DrawPointAt(dataPoint._visualPosition, parentVisual, Colors.Red);
+
+                //    Point midPoint = new Point();
+
+                //    if (Graphics.IntersectionOfTwoStraightLines(new Point(nextDataPoint._visualPosition.X, plankYPos),
+                //        new Point(dataPoint._visualPosition.X, plankYPos),
+                //        nextDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint))
+                //    {   
+                //        topFace.FrontFacePoints[1] = midPoint;
+                //    }
+
+                //    Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
+                //}
+
+                topFace.CalculateBackFacePoints();
+
+                Path sides = new Path() { Tag = new ElementData() { Element = dataSeries } };
+                sides.SetValue(Canvas.ZIndexProperty, zIndex);
+
+                PathGeometry pg = new PathGeometry();
+                PathFigure pf = new PathFigure() { IsClosed = true };
+                pg.Figures.Add(pf);
+
+                // Graphics.DrawPointAt(dataPointFaces.Area3DTopFace.FrontPointLeft, parentVisual, Colors.Yellow);
+
+                pf.StartPoint = topFace.FrontFacePoints[0];
+
+                PointCollection facePoints = topFace.GetFacePoints();
+
+                foreach (Point point in facePoints)
+                {   
+                    LineSegment ls = new LineSegment() { Point = point };
+                    pf.Segments.Add(ls);
+                }
+                
+                sides.Data = pg;
+
+                sides.Fill = topBrush;
+                // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126))); //sideBrush;
+
+                parentVisual.Children.Add(sides);
+
+                topFace.TopFaceHandle = sides;
+
+                dataPointFaces.VisualComponents.Add(sides);
+                dataPointFaces.Parts.Add(sides);
+                dataPointFaces.BorderElements.Add(sides);
+
+            }
+
+            if (dataPointFaces.Area3DRightFace != null)
+            {
+                Area3DDataPointFace rightFace = dataPointFaces.Area3DRightFace;
+                rightFace.CalculateBackFacePoints();
+
+                Path sides = new Path() { Tag = new ElementData() { Element = dataSeries } };
+                sides.SetValue(Canvas.ZIndexProperty, zIndex);
+
+                PathGeometry pg = new PathGeometry();
+                PathFigure pf = new PathFigure() { IsClosed = true };
+                pg.Figures.Add(pf);
+
+                PointCollection facePoints = rightFace.GetFacePoints();
+                pf.StartPoint = rightFace.FrontFacePoints[0];
+
+                // Graphics.DrawPointAt(dataPointFaces.Area3DLeftFace.FrontPointLeft, parentVisual, Colors.Yellow);
+                // Graphics.DrawPointAt(dataPointFaces.Area3DLeftFace.FrontPointRight, parentVisual, Colors.Yellow);
+                // Graphics.DrawPointAt(dataPointFaces.Area3DLeftFace.BackPointRight, parentVisual, Colors.Yellow);
+                // Graphics.DrawPointAt(dataPointFaces.Area3DLeftFace.BackPointLeft, parentVisual, Colors.Yellow);
+
+                foreach (Point point in facePoints)
+                {
+                    LineSegment ls = new LineSegment() { Point = point };
+                    pf.Segments.Add(ls);
+                }
+
+                sides.Data = pg;
+
+                sides.Fill = sideBrush;
+
+                // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
+
+                parentVisual.Children.Add(sides);
+
+                rightFace.RightFaceHandle = sides;
+
+                dataPointFaces.VisualComponents.Add(sides);
+                dataPointFaces.Parts.Add(sides);
+                dataPointFaces.BorderElements.Add(sides);
+            }
+            
+            return zIndex;
+
+            /*
+             * 
             Canvas polygonSet = new Canvas();
             Rect size = GetBounds(areaParams.Points);
             polygonSet.Width = size.Width + areaParams.Depth3D;
             polygonSet.Height = size.Height + areaParams.Depth3D;
             polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth3D);
             polygonSet.SetValue(Canvas.LeftProperty, size.Left);
-            visual.Children.Add(polygonSet);
+            parentVisual.Children.Add(polygonSet);
+            Random rand = new Random(DateTime.Now.Millisecond);
 
             for (Int32 i = 0; i < pointIndexLimit; i++)
-            {
+            {   
                 Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference }};
                 PointCollection points = new PointCollection();
                 Int32 index1 = i % areaParams.Points.Count;
@@ -1644,22 +2280,47 @@ namespace Visifire.Charts
 
                 points.Add(areaParams.Points[index1]);
                 points.Add(areaParams.Points[index2]);
-                points.Add(new Point(areaParams.Points[index2].X + areaParams.Depth3D, areaParams.Points[index2].Y - areaParams.Depth3D));
-                points.Add(new Point(areaParams.Points[index1].X + areaParams.Depth3D, areaParams.Points[index1].Y - areaParams.Depth3D));
+
+                Point pointAt3DDepth1 = new Point(areaParams.Points[index2].X + areaParams.Depth3D, areaParams.Points[index2].Y - areaParams.Depth3D);
+                Point pointAt3DDepth2 = new Point(areaParams.Points[index1].X + areaParams.Depth3D, areaParams.Points[index1].Y - areaParams.Depth3D);
+
+                points.Add(pointAt3DDepth1);
+                points.Add(pointAt3DDepth2);
+
+                // Testing ----
+                if (index2 != areaParams.Points.Count - 1)
+                {
+                    Point frontMidPoint = Graphics.MidPointOfALine(areaParams.Points[index1], areaParams.Points[index2]);
+                    Point backMidPoint = Graphics.MidPointOfALine(pointAt3DDepth1, pointAt3DDepth2);
+
+                    //Graphics.DrawPointAt(pointAt3DDepth1, visual, Colors.Yellow);
+                    //Graphics.DrawPointAt(backMidPoint, visual, Colors.Yellow);
+
+                    //Graphics.DrawPointAt(areaParams.Points[index1], visual, Colors.Yellow);
+                    //Graphics.DrawPointAt(frontMidPoint, visual, Colors.Yellow);
+                    //Graphics.DrawPointAt(backMidPoint, visual, Colors.Yellow);
+                    //Graphics.DrawPointAt(pointAt3DDepth1, visual, Colors.Yellow);
+
+
+                }
+                
+                
                 sides.Points = points;
 
                 centroid = GetCentroid(points);
+
                 Int32 zindex = GetAreaZIndex(centroid.X, centroid.Y, areaParams.IsPositive);
                 sides.SetValue(Canvas.ZIndexProperty, zindex);
 
                 if (i == (areaParams.Points.Count - 2))
                 {
-                    sides.Fill = sideBrush;
+                    sides.Fill = new SolidColorBrush(Color.FromArgb(255,(byte) rand.Next(155), (byte)rand.Next(200),(byte) rand.Next(126))); //sideBrush;
                     (sides.Tag as ElementData).VisualElementName = "Side";
                 }
                 else
-                {
-                    sides.Fill = topBrush;
+                {   
+                    //sides.Fill = topBrush;
+                    sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
                     (sides.Tag as ElementData).VisualElementName = "Top";
                 }
 
@@ -1686,7 +2347,7 @@ namespace Visifire.Charts
             centroid = GetCentroid(areaParams.Points);
 
             polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
-            polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.Background) : areaParams.Background;
+            //polygon.Fill = areaParams.Lighting ? Graphics.GetBackFaceBrush(areaParams.Background) : areaParams.Background;
 
             polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
@@ -1710,10 +2371,846 @@ namespace Visifire.Charts
             }
 
             polygonSet.Children.Add(polygon);
+            */
 
-            return visual;
+            //return parentVisual;
         }
 
+        internal static void Update(ObservableObject sender, VcProperties property, object newValue, Boolean isAxisChanged)
+        {
+            Boolean isDataPoint = sender.GetType().Equals(typeof(DataPoint));
+
+            if (isDataPoint)
+                UpdateDataPoint(sender as DataPoint, property, newValue, isAxisChanged);
+            else
+                UpdateDataSeries(sender as DataSeries, property, newValue);
+        }
+
+        internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
+        {
+            Boolean is3D = chart.View3D;
+            ChartArea chartArea = chart.ChartArea;
+            Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+
+            // Double width = chart.ChartArea.ChartVisualCanvas.Width;
+            // Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+            Panel preExistingPanel = null;
+            Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+
+            if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+            {
+                preExistingPanel = RenderedCanvasList[currentRenderAs];
+            }
+
+            Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
+
+            if (preExistingPanel == null)
+            {
+                chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                ChartVisualCanvas.Children.Add(renderedChart);
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataPoint"></param>
+        /// <param name="property"></param>
+        /// <param name="newValue"></param>
+        /// <param name="isAxisChanged"></param>
+        private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue, Boolean isAxisChanged)
+        {
+            Chart chart = dataPoint.Chart as Chart;
+            PlotDetails plotDetails = chart.PlotDetails;
+
+            Marker marker = dataPoint.Marker;
+            DataSeries dataSeries = dataPoint.Parent;
+            PlotGroup plotGroup = dataSeries.PlotGroup;
+            Canvas areaVisual = dataSeries.Faces.Visual as Canvas;
+            Canvas labelCanvas = ((areaVisual as FrameworkElement).Parent as Panel).Children[0] as Canvas;
+
+            switch (property)
+            {
+               /* case VcProperties.Bevel:
+                    ApplyOrRemoveBevel(dataPoint);
+
+                    break;
+                case VcProperties.Color:
+                    Update2DAnd3DColumnColor(dataPoint, (Brush)newValue);
+                    break;
+                */
+
+                case VcProperties.Cursor:
+                    dataPoint.SetCursor2DataPointVisualFaces();
+                    break;
+
+                case VcProperties.Href:
+                    dataPoint.SetHref2DataPointVisualFaces();
+                    break;
+
+                case VcProperties.HrefTarget:
+                    dataPoint.SetHref2DataPointVisualFaces();
+                    break;
+
+                    /*
+                case VcProperties.LabelBackground:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else if ((Boolean)dataPoint.LabelEnabled)
+                        marker.TextBackground = dataPoint.LabelBackground;
+                    else
+                        marker.TextBackground = new SolidColorBrush(Colors.Transparent);
+                    break;
+
+                case VcProperties.LabelEnabled:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+
+                    break;
+
+                case VcProperties.LabelFontColor:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.FontColor = dataPoint.LabelFontColor;
+
+                    break;
+
+                case VcProperties.LabelFontFamily:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.FontFamily = dataPoint.LabelFontFamily;
+                    break;
+
+                case VcProperties.LabelFontStyle:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                    break;
+
+                case VcProperties.LabelFontSize:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                    break;
+
+                case VcProperties.LabelFontWeight:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    break;
+
+                case VcProperties.LabelStyle:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    break;
+                case VcProperties.LabelText:
+                    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    break;
+
+                case VcProperties.LegendText:
+                    chart.InvokeRender();
+                    break;
+
+                case VcProperties.LightingEnabled:
+                    ApplyRemoveLighting(dataPoint);
+                    break;
+
+                case VcProperties.MarkerBorderColor:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else if ((Boolean)dataPoint.MarkerEnabled)
+                        marker.BorderColor = dataPoint.MarkerBorderColor;
+                    break;
+
+                case VcProperties.MarkerBorderThickness:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else if ((Boolean)dataPoint.MarkerEnabled)
+                        marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
+                    break;
+
+                case VcProperties.MarkerColor:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else if ((Boolean)dataPoint.MarkerEnabled)
+                        marker.FillColor = dataPoint.MarkerColor;
+                    break;
+
+                case VcProperties.MarkerScale:
+                case VcProperties.MarkerSize:
+                case VcProperties.MarkerType:
+                    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    break;
+
+                case VcProperties.MarkerEnabled:
+                    if (marker == null)
+                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    else if ((Boolean)dataPoint.MarkerEnabled)
+                        LineChart.ShowDataPointMarker(dataPoint);
+                    else
+                        LineChart.HideDataPointMarker(dataPoint);
+
+                    break;
+
+                case VcProperties.ShadowEnabled:
+                    ApplyOrRemoveShadow(dataPoint,
+                        (dataSeries.RenderAs == RenderAs.StackedColumn || dataSeries.RenderAs == RenderAs.StackedColumn100
+                        || dataSeries.RenderAs == RenderAs.StackedBar || dataSeries.RenderAs == RenderAs.StackedBar100
+                        ), true);
+
+                    break;
+
+                case VcProperties.Opacity:
+
+                    if (marker != null)
+                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+
+                    if (dataPoint.Faces.Visual != null)
+                        dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+
+                    break;
+
+                case VcProperties.ShowInLegend:
+                    chart.InvokeRender();
+                    break;
+
+                case VcProperties.ToolTipText:
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    break;
+
+                case VcProperties.XValueType:
+                    chart.InvokeRender();
+                    break;
+                    */
+                case VcProperties.Enabled:
+                    UpdateDataSeries(dataSeries, property, newValue);
+                    break;
+
+                case VcProperties.XValue:
+                    UpdateDataSeries(dataSeries, property, newValue);
+                    break;
+
+                case VcProperties.YValue:
+
+                    if (isAxisChanged)
+                        UpdateDataSeries(dataSeries, property, newValue);
+                    else
+                    {   
+                        if (dataSeries.RenderAs == RenderAs.Area)
+                            UpdateVisualForYValue4AreaChart(chart, dataPoint, isAxisChanged);
+
+                        // else if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        //    UpdateVisualForYValue4StackedColumnChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
+                        // else
+                        //    UpdateVisualForYValue4StackedBarChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
+                    }
+
+                    // chart.Dispatcher.BeginInvoke(new Action<DataPoint>(UpdateXAndYValue), new object[]{dataPoint});
+
+                    break;
+            }
+        }
+
+        public static void UpdateVisualForYValue4AreaChart(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
+        {   
+            DataSeries dataSeries = dataPoint.Parent;               // parent of the current DataPoint
+            Canvas areaCanvas = dataSeries.Faces.Visual as Canvas;  // Existing parent area of column
+            Boolean isPositive = (dataPoint.InternalYValue >= 0);   // Whether YValue is positive
+            Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
+            PlotGroup  plotGroup = dataPoint.Parent.PlotGroup;
+            Double oldMarkerTop = Double.NaN;
+            Double currentMarkerTop = Double.NaN;
+            Point newPosition, oldPosition;
+            Storyboard storyBoardDp = null;
+            Boolean animationEnabled = true;
+            Point oldVisualPositionOfDataPoint;
+            Canvas labelCanvas = (areaCanvas.Parent as Canvas).Children[0] as Canvas;
+
+            // Create new Column with new YValue
+            if (dataPoint.Storyboard != null)
+            {   
+                dataPoint.Storyboard.Stop();
+                dataPoint.Storyboard = null;
+            }
+
+            if (animationEnabled)
+                storyBoardDp = new Storyboard();
+
+            // Update existing Plank
+            ColumnChart.CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+            
+            // Calculate pixel position for DataPoint
+            Double xPosition = Graphics.ValueToPixelPosition(0, areaCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+            Double yPosition = Graphics.ValueToPixelPosition(areaCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+            oldVisualPositionOfDataPoint = dataPoint._visualPosition;
+
+            if (dataPoint.Marker != null && dataPoint.Marker.Visual != null)
+            {
+                oldMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.TopProperty);
+                Double markerNEwTop = yPosition - Math.Abs(oldVisualPositionOfDataPoint.Y - oldMarkerTop);
+                dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, markerNEwTop);
+
+                if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
+                {   
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, "(Canvas.Top)", dataPoint, storyBoardDp, 0,
+                           new Double[] { 0, 1 }, new Double[] { oldMarkerTop, markerNEwTop }, null);
+                }
+            }
+            
+            dataPoint._visualPosition.X = xPosition;
+            dataPoint._visualPosition.Y = yPosition;
+
+            DataPoint nextDataPoint = dataPoint.Faces.NextDataPoint;
+
+            Double plankYPos = Graphics.ValueToPixelPosition(areaCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, plotGroup.GetLimitingYValue());
+
+            // Update left face of the area
+            if (dataPoint.Faces.Area3DLeftFace != null)
+            {   
+                Area3DDataPointFace leftFace = dataPoint.Faces.Area3DLeftFace;
+                Path path = leftFace.LeftFaceHandle as Path;
+
+                // Update front top line
+                LineSegment ls = Area3DDataPointFace.GetLineSegment(path, 0);
+                newPosition = new Point(ls.Point.X, yPosition);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                if (animationEnabled)
+                     AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                        new Double[]{ 0, 1}, new Point[]{oldPosition, newPosition}, null, Double.NaN);
+
+                // Update back top line
+                ls = Area3DDataPointFace.GetLineSegment(path, 1);
+                newPosition = new Point(ls.Point.X, yPosition - leftFace.Depth3d);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                if (animationEnabled)
+                    AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                       new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+            }
+
+            // Update right face of the area
+            if (dataPoint.Faces.Area3DRightTopFace != null)
+            {
+                Area3DDataPointFace rightTopFace = dataPoint.Faces.Area3DRightTopFace;
+                Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+                // rightTopFacePath.Fill = new SolidColorBrush(Colors.Red);
+
+                // Update front left point
+                PathFigure pf = Area3DDataPointFace.GetPathFigure(rightTopFacePath);
+                newPosition = new Point(pf.StartPoint.X, yPosition);
+                oldPosition = pf.StartPoint;
+                pf.StartPoint = newPosition;
+                //rightTopFacePath.Fill = new SolidColorBrush(Colors.Red);
+
+                if (animationEnabled)
+                    //AnimationHelper.ApplyPointAnimation(storyBoardDp, pf, "rightTopFacePath_" + dataPoint.Name, "StartPoint",
+                    //    oldPosition, newPosition, 1, 0);
+
+                    AnimationHelper.ApplyPointAnimation(pf, "StartPoint", dataPoint, storyBoardDp, 0,
+                        new Double[]{ 0, 1}, new Point[]{oldPosition, newPosition}, null, Double.NaN);
+
+                else
+                    pf.StartPoint = newPosition;
+
+                // Update back left point
+                LineSegment ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 2);
+                newPosition = new Point(ls.Point.X, yPosition - rightTopFace.Depth3d);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                if (animationEnabled)
+                    AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                        new Double[]{ 0, 1}, new Point[]{oldPosition, newPosition}, null, Double.NaN);
+                else
+                    ls.Point = newPosition;
+            }
+
+            // Update left-top face of the area
+            if (dataPoint.Faces.Area3DLeftTopFace != null)
+            {   
+                DataPoint previusDataPoint = dataPoint.Faces.PreviousDataPoint;
+                
+                Boolean isPositive2Negative = false;    // DataPoint at -ve, previous DataPoint is +ve
+                Boolean isNegative2Positive = false;    // DataPoint at -ve, next DataPoint is +ve
+                Boolean isNegative2Negative = false;    // DataPoint at -ve, next DataPoint is -ve
+
+                if (dataPoint.InternalYValue < 0 && previusDataPoint != null && previusDataPoint.InternalYValue > 0)
+                    //|| (nextDataPoint != null && nextDataPoint.InternalYValue > 0)))
+                    isPositive2Negative = true;
+
+                if (dataPoint.InternalYValue > 0 && nextDataPoint != null && nextDataPoint.InternalYValue < 0)
+                    isNegative2Positive = true;
+
+                if (dataPoint.InternalYValue < 0 && previusDataPoint != null && nextDataPoint.InternalYValue < 0)
+                    isNegative2Negative = true;
+                
+                Area3DDataPointFace leftTopFace = dataPoint.Faces.Area3DLeftTopFace;
+                Path leftTopFacePath = leftTopFace.TopFaceHandle as Path;
+                // leftTopFacePath.Fill = new SolidColorBrush(Colors.Green);
+
+                // DataPoint was positive but after YValue update it’s became negative
+                if (isPositive2Negative)
+                {   
+                    Point midPoint = new Point();
+
+                    Graphics.IntersectionOfTwoStraightLines(new Point(previusDataPoint._visualPosition.X, plankYPos),
+                        new Point(dataPoint._visualPosition.X, plankYPos),
+                        previusDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint);
+
+                    // leftTopFacePath.Fill = new SolidColorBrush(Colors.Green);
+
+                    Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
+                    Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
+                    Graphics.DrawPointAt(previusDataPoint._visualPosition, areaCanvas, Colors.Red);
+                    
+                    // Update right front point
+                    LineSegment ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 0);
+                    newPosition = new Point(midPoint.X, midPoint.Y);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    // Update right back point
+                    LineSegment ls1 = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 1);
+                    Point newPosition1 = new Point(midPoint.X + leftTopFace.Depth3d, midPoint.Y - leftTopFace.Depth3d);
+                    Point oldPosition1 = ls1.Point;
+                    ls1.Point = newPosition1;
+
+                    //Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance
+                    //Double D2 = Math.Abs(oldPosition.X - dataPoint._visualPosition.X);  // X distance
+                    //Double deltaDistance = D1 - D2;
+                    //Double t = deltaDistance * T1 / D1;
+                    //Double timetoTravleTillPlank = (Double)(T1 + t);
+
+                    
+                    Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance from top to plank
+                    Double T1 = D1 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y);// Time take to traval distance D1
+
+                    Double D2 = Math.Abs(newPosition.X - dataPoint._visualPosition.X);  // Y distance from plank to bottom
+                    Double T2 = D2 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y); // Time take to traval distance D1
+                    
+                    //Double deltaDistance = D1 - D2;
+                    //Double t = deltaDistance * 0.5 / D1;
+                    // Double timetoTravleTillPlank = (Double)(T1);
+
+                    if (animationEnabled)
+                    {
+                        if (dataPoint._oldYValue > 0 && dataPoint.InternalYValue < 0)
+                        {
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                                   new Double[] { 0, T1, T1 + T2 }, new Point[] { oldPosition, 
+                                new Point(oldPosition.X, plankYPos), newPosition }, null, Double.NaN);
+
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                                new Double[] { 0, T1, T1 + T2 },
+                                new Point[] { oldPosition1,new Point(oldPosition1.X, plankYPos - leftTopFace.Depth3d),                             
+                            newPosition1 }, null, Double.NaN);
+                        }
+                        else
+                        {
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                                new Double[] { 0, 1 }, 
+                                new Point[] { oldPosition, newPosition }, null, Double.NaN);
+
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                                new Double[] { 0, 1 },
+                                new Point[] { oldPosition1, newPosition1 }, null, Double.NaN);
+                        }
+                    }
+                }
+                else if (isNegative2Negative)
+                {   
+                    // Right top face of this DataPoint = left top face of next DataPoint
+                    Area3DDataPointFace rightTopFace = nextDataPoint.Faces.Area3DLeftTopFace;
+                    Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+                   // rightTopFacePath.Fill = new SolidColorBrush(Colors.Blue);
+
+                    Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isNegative2Negative);
+                    rightTopFacePath.SetValue(Canvas.ZIndexProperty, zIndex);
+
+                    LineSegment ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 0);
+                    newPosition = new Point(nextDataPoint._visualPosition.X, nextDataPoint._visualPosition.Y);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+
+                    // Update right back point of top right
+                    ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 1);
+                    newPosition = new Point(nextDataPoint._visualPosition.X + rightTopFace.Depth3d, nextDataPoint._visualPosition.Y - rightTopFace.Depth3d);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+                    
+                    // Update right front point for 1st DataPoint
+                    // Or Update left front point
+                    ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 0);
+                    newPosition = new Point(dataPoint._visualPosition.X, yPosition);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+
+                    // Update right back point for 1st DataPoint
+                    // Or Update left back point
+                    ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 1);
+                    newPosition = new Point(dataPoint._visualPosition.X + leftTopFace.Depth3d, yPosition - leftTopFace.Depth3d);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+                }
+                else if (isNegative2Positive)
+                {   
+                    
+                    Point midPoint = new Point();
+
+                    Graphics.IntersectionOfTwoStraightLines(new Point(nextDataPoint._visualPosition.X, plankYPos),
+                        new Point(dataPoint._visualPosition.X, plankYPos),
+                        nextDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint);
+
+                    // Right top face of this DataPoint = left top face of next DataPoint
+                    Area3DDataPointFace rightTopFace = nextDataPoint.Faces.Area3DLeftTopFace;
+                    Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+
+                    Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isNegative2Positive);
+                    rightTopFacePath.SetValue(Canvas.ZIndexProperty, zIndex);
+
+                    // rightTopFacePath.Fill = new SolidColorBrush(Colors.Red);
+
+                    // Update right front point of top right
+                    LineSegment ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 0);
+                    newPosition = new Point(midPoint.X, midPoint.Y);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+
+                    // Update right back point of top right
+                    ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 1);
+                    newPosition = new Point(midPoint.X + leftTopFace.Depth3d, midPoint.Y - leftTopFace.Depth3d);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    if (animationEnabled)
+                        AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                    else
+                        ls.Point = newPosition;
+
+                    // Update right front point of top left face
+                    ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 0);
+                    newPosition = new Point(dataPoint._visualPosition.X, yPosition);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    // Update right back point of top left face
+                    LineSegment ls1 = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 1);
+                    Point newPosition1 = new Point(dataPoint._visualPosition.X + leftTopFace.Depth3d, yPosition - leftTopFace.Depth3d);
+                    Point oldPosition1 = ls1.Point;
+                    ls1.Point = newPosition1;
+                                        
+                    if (animationEnabled)
+                    {
+                        if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue >= 0)
+                        {
+                            Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance from top to plank
+                            Double T1 = D1 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y);// Time take to traval distance D1
+
+                            Double D2 = Math.Abs(oldPosition.X - dataPoint._visualPosition.X);  // Y distance from plank to bottom
+                            Double T2 = D2 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y); // Time take to traval distance D1
+
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                               new Double[] { 0, T1, 1 },
+                               new Point[] { oldPosition, new Point(dataPoint._visualPosition.X, plankYPos)
+                                   , newPosition }
+                               , null, Double.NaN);
+
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                              new Double[] { 0, T1, 1 },
+                              new Point[] { oldPosition1, 
+                                   new Point(dataPoint._visualPosition.X + leftTopFace.Depth3d, plankYPos - leftTopFace.Depth3d),
+                                   newPosition1 }
+                              , null, Double.NaN);
+                        }
+                        else
+                        {
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                                new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                                new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                        }
+                    }
+
+                }
+                else
+                {   
+                    // Update right front point for 1st DataPoint
+                    // Or Update left front point
+                    LineSegment ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 0);
+                    newPosition = new Point(dataPoint._visualPosition.X, yPosition);
+                    oldPosition = ls.Point;
+                    ls.Point = newPosition;
+
+                    //leftTopFacePath.Fill = new SolidColorBrush(Colors.Purple);
+
+                    // Update right back point for 1st DataPoint
+                    // Or Update left back point
+                    LineSegment ls1 = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 1);
+                    Point newPosition1 = new Point(dataPoint._visualPosition.X + leftTopFace.Depth3d, yPosition - leftTopFace.Depth3d);
+                    Point oldPosition1 = ls1.Point;
+                    ls1.Point = newPosition1;
+
+                    if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue >= 0)
+                    {
+                        if (animationEnabled)
+                        {
+                           
+                            Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance from top to plank
+                            Double T1 = D1 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y);// Time take to traval distance D1
+
+                            Double D2 = Math.Abs(oldPosition.X - dataPoint._visualPosition.X);  // Y distance from plank to bottom
+                            Double T2 = D2 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y); // Time take to traval distance D1
+
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                               new Double[] { 0, T1, 1 },
+                               new Point[] { oldPosition, new Point(dataPoint._visualPosition.X, plankYPos)
+                                   , newPosition }
+                               , null, Double.NaN);
+
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                              new Double[] { 0, T1, 1 },
+                              new Point[] { oldPosition1, 
+                                   new Point(dataPoint._visualPosition.X + leftTopFace.Depth3d, plankYPos - leftTopFace.Depth3d),
+                                   newPosition1 }
+                              , null, Double.NaN);
+                        }
+                    }
+                    else
+                    {
+                        if (animationEnabled)
+                        {
+                            AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                              new Double[] { 0, 1 },
+                              new Point[] { oldPosition, newPosition }
+                              , null, Double.NaN);
+                            
+                            AnimationHelper.ApplyPointAnimation(ls1, "Point", dataPoint, storyBoardDp, 0,
+                             new Double[] { 0, 1 },
+                             new Point[] { oldPosition1, newPosition1 }
+                             , null, Double.NaN);
+                        }
+
+                    }
+
+
+                }
+            }
+
+            if (dataPoint.Faces.Area3DRightFace != null)
+            {   
+                Area3DDataPointFace rightFace = dataPoint.Faces.Area3DRightFace;
+                Path rightFacePath = rightFace.RightFaceHandle as Path;
+                // rightFacePath.Fill = new SolidColorBrush(Colors.Green);
+
+                // Update front point
+                PathFigure pf = Area3DDataPointFace.GetPathFigure(rightFacePath);
+                newPosition = new Point(pf.StartPoint.X, yPosition);
+                oldPosition = pf.StartPoint;
+                pf.StartPoint = newPosition;
+
+                if (animationEnabled)
+                    AnimationHelper.ApplyPointAnimation(pf, "StartPoint", dataPoint, storyBoardDp, 0,
+                        new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                else
+                    pf.StartPoint = newPosition;
+
+                // Update back point
+                LineSegment ls = Area3DDataPointFace.GetLineSegment(rightFacePath, 2);
+                newPosition = new Point(ls.Point.X, yPosition - rightFace.Depth3d);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                if (animationEnabled)
+                    AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                        new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                else
+                    ls.Point = newPosition;
+            }
+
+            if (animationEnabled)
+            {
+                oldPosition = dataPoint.Faces.AreaFrontFaceLineSegment.Point;
+                dataPoint.Faces.AreaFrontFaceLineSegment.Point = dataPoint._visualPosition;
+
+                //if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0)
+                //{
+
+                //    Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance
+                //    Double timeTaken2TouchPlank = D1 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y);//Time take to traval distance D1
+                    
+                //    AnimationHelper.ApplyPointAnimation(dataPoint.Faces.AreaFrontFaceLineSegment, "Point", dataPoint, storyBoardDp, 0,
+                //        new Double[] { 0, timeTaken2TouchPlank, 1 },
+                //        new Point[] { oldPosition, new Point(oldPosition.X, plankYPos),
+                //        dataPoint._visualPosition
+                //        }
+                //        , null, Double.NaN);
+
+                //    // AnimationHelper.ApplyPointAnimation(storyBoardDp, dataPoint.Faces.AreaFrontFaceLineSegment, "frontface_" + dataPoint.Name, "Point",
+                //    //    oldPosition, new Point(dataPoint._visualPosition.X, plankYPos), 0.5, 0);
+
+                //    // AnimationHelper.ApplyPointAnimation(storyBoardDp, dataPoint.Faces.AreaFrontFaceLineSegment, "frontface_" + dataPoint.Name, "Point",
+                //    //    oldPosition, new Point(dataPoint._visualPosition.X, plankYPos), 0.5, 0.5);
+                //}
+                //else
+                {
+                    AnimationHelper.ApplyPointAnimation(dataPoint.Faces.AreaFrontFaceLineSegment, "Point", dataPoint, storyBoardDp, 0,
+                        new Double[] { 0, 1 }, new Point[] { oldPosition, dataPoint._visualPosition }, null, Double.NaN);
+                }
+
+                storyBoardDp.Begin();
+            }
+            else
+                dataPoint.Faces.AreaFrontFaceLineSegment.Point = dataPoint._visualPosition;
+
+
+            #region AnimateBevelLayer
+
+            if (dataSeries.Bevel && animationEnabled)
+                AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint);
+
+            #endregion
+            
+            dataPoint.Storyboard = storyBoardDp;
+        }
+
+        /// <summary>
+        /// Animate the Bevel layer
+        /// </summary>
+        /// <param name="dataPoint"></param>
+        private static void AnimateBevelLayer(DataPoint dataPoint, Point oldVisualPositionOfDataPoint)
+        {
+            Line bevelLine = dataPoint.Faces.BevelLine;
+            DataPoint previousDataPoint = dataPoint.Faces.PreviousDataPoint;
+            DataPoint nextDataPoint = dataPoint.Faces.NextDataPoint;
+            Storyboard storyBoardDp = dataPoint.Storyboard;
+            Point oldPosition, newPosition;
+
+            // If dataPoint is the first DataPoint of the area
+            if (dataPoint.Faces.PreviousDataPoint == dataPoint)
+            {
+                AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y1", dataPoint, storyBoardDp, 0,
+                       new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
+            }
+            // dataPoint is the last DataPoint of the area
+            else if (dataPoint == nextDataPoint)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+
+        private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue)
+        {
+            Chart chart = dataSeries.Chart as Chart;
+            Boolean is3D = chart.View3D;
+            Canvas ChartVisualCanvas;
+
+            switch (property)
+            {
+                case VcProperties.DataPoints:
+                case VcProperties.Enabled:
+                case VcProperties.YValue:
+
+                    ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+
+                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+                    PlotDetails plotDetails = chart.PlotDetails;
+                    PlotGroup plotGroup = dataSeries.PlotGroup;
+
+                    //Double columnWidth = CalculateWidthOfEachColumn(chart, width, dataSeries.PlotGroup.AxisX,RenderAs.Column, Orientation.Horizontal);
+
+                    // Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
+                    // Contains a list of serties as per the drawing order generated in the plotdetails
+
+                    List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
+
+                    List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
+
+                    RenderAs currentRenderAs = dataSeries.RenderAs;
+
+                    Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
+
+                    for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
+                    {
+                        if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
+                            selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
+                    }
+
+                    if (selectedDataSeries4Rendering.Count == 0)
+                        return;
+
+                    Panel oldPanel = null;
+                    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+
+                    if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+                    {
+                        oldPanel = RenderedCanvasList[currentRenderAs];
+                    }
+
+                    Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
+
+                    if (oldPanel == null)
+                    {
+                        chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                        renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
+                        ChartVisualCanvas.Children.Add(renderedChart);
+                    }
+                    else
+                        chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
+                    break;
+            }
+        }
+        
         /// <summary>
         /// Get visual for StackedArea 2D
         /// </summary>

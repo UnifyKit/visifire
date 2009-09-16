@@ -1925,7 +1925,6 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal override void UpdateVisual(VcProperties property, object newValue)
         {
-
             if (ValidatePartialUpdate())
             {   
                 Chart chart = Chart as Chart;
@@ -1937,11 +1936,10 @@ namespace Visifire.Charts
                     Double axisMinY = PlotGroup.AxisY.InternalAxisMinimum;
                     Double axisMaxX = PlotGroup.AxisX.InternalAxisMaximum;
                     Double axisMinX = PlotGroup.AxisX.InternalAxisMinimum;
-                                        
+                    
                     // Update InternalList
                     chart.ChartArea.PrePartialUpdateConfiguration(this,property, newValue, true, true, false);
-                   
-
+                    
                     if (PlotGroup.MaximumY > axisMaxY || (Double)PlotGroup.MaximumY < axisMinY
                         || PlotGroup.MaximumX > axisMaxX || PlotGroup.MaximumX < axisMinX)
                         renderAxis = true;
@@ -1949,14 +1947,14 @@ namespace Visifire.Charts
                     // Render Axis if required
                     chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis);
                     
-                    //return;
+                    // Return
                     if (renderAxis)
-                    {
+                    {   
                         // Need to Rerender all charts if axis changes
                         RenderHelper.UpdateVisualObject(chart, property, newValue);
                     }
                     else
-                    {
+                    {   
                         RenderHelper.UpdateVisualObject(this.RenderAs, this, VcProperties.DataPoints, newValue, renderAxis);
                     }
                 }
@@ -1983,7 +1981,7 @@ namespace Visifire.Charts
             else if (propertyName == "Color")
             {   
                 if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
-                {
+                {   
                     if (Faces != null && Faces.Parts != null)
                     {
 

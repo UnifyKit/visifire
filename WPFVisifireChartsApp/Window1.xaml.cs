@@ -34,6 +34,8 @@ namespace WPFVisifireChartsApp
             // Create a Chart
             chart = new Chart();
 
+            MyChart.PlotArea.MouseLeftButtonDown += new EventHandler<PlotAreaMouseButtonEventArgs>(PlotArea_MouseLeftButtonDown);
+            
             // Set Chart size
             chart.Width = 500;
             chart.Height = 300;
@@ -45,7 +47,7 @@ namespace WPFVisifireChartsApp
             DataSeries dataSeries = new DataSeries();
 
             for (Int32 i = 0; i < 5; i++)
-            {
+            {   
                 // Create DataPoint
                 DataPoint dataPoint = new DataPoint();
                 // Set DataPoint property
@@ -59,10 +61,15 @@ namespace WPFVisifireChartsApp
             chart.Series.Add(dataSeries);
 
             // Add Chart to LayoutRoot
-            //LayoutRoot.Children.Add(chart);
+            // LayoutRoot.Children.Add(chart);
 
             // Attach event to Chart
-            chart.MouseLeftButtonDown += new MouseButtonEventHandler(chart_MouseLeftButtonDown);
+            // chart.MouseLeftButtonDown += new MouseButtonEventHandler(chart_MouseLeftButtonDown);
+        }
+
+        void PlotArea_MouseLeftButtonDown(object sender, PlotAreaMouseButtonEventArgs e)
+        {
+            MessageBox.Show("asdasd");
         }
 
         Chart chart;

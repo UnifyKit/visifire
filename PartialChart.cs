@@ -1409,13 +1409,13 @@ namespace Visifire.Charts
         /// <param name="Height">Chart width</param>
         /// <param name="Width">Chart height</param>
         private void ApplyChartShadow(Double width, Double height)
-        {
+        {   
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
-            {
+            {   
                 _shadowGrid.Children.Clear();
 
                 if (_rootElement != null)
-                {
+                {   
                     // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
                     ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                     ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
@@ -2130,6 +2130,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void InvokeRender()
         {
+
             if (_isTemplateApplied)
             {
                 if (_renderLock)
@@ -2296,6 +2297,10 @@ namespace Visifire.Charts
 
         #region Data
 
+        /// <summary>
+        /// Set to true before calling forced rerender redraw
+        /// </summary>
+        internal Boolean _forcedRedraw;
         
         private EventHandler _rendered;
 

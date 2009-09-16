@@ -47,6 +47,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -198,6 +201,9 @@
     </Compile>
     <Compile Include="..\StackedColumn.cs">
       <Link>StackedColumn.cs</Link>
+    </Compile>
+    <Compile Include="..\StackedColumn100.cs">
+      <Link>StackedColumn100.cs</Link>
     </Compile>
     <Compile Include="..\StockChart.cs">
       <Link>StockChart.cs</Link>

@@ -169,7 +169,9 @@ namespace Visifire.Charts
 
             Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
 
-            AttachOrDetachIntaractivity(chart);          
+            AttachOrDetachIntaractivity(chart);
+
+            chart._forcedRedraw = false;
         }
 
         /// <summary>
@@ -183,9 +185,8 @@ namespace Visifire.Charts
 
             if (calculatePlotDetails)
             {
-                //PlotDetails = new PlotDetails(Chart);
+                // PlotDetails = new PlotDetails(Chart);
                 
-
                 PlotDetails.ReCreate(sender, property, newValue);
             }
 
@@ -200,7 +201,9 @@ namespace Visifire.Charts
                 PopulateInternalAxesYList();
 
                 ClearAxesPanel();
-                RenderAxes(_plotAreaSize);
+                Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
+                
+                ResizePanels(remainingSizeAfterDrawingAxes);
 
                 // Check if drawing axis is necessary or not
                // if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1144,10 +1147,7 @@ namespace Visifire.Charts
 
             RenderChart(remainingSizeAfterDrawingAxes);
 
-            Chart._bottomAxisScrollBar.UpdateLayout();
-            Chart._topAxisScrollBar.UpdateLayout();
-            Chart._leftAxisScrollBar.UpdateLayout();
-            Chart._rightAxisScrollBar.UpdateLayout();
+
 
             return remainingSizeAfterDrawingAxes;
         }
@@ -1584,26 +1584,27 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Renders charts based on the orientation type
+        /// Resize existing panels to update the chart
         /// </summary>
-        /// <param name="newSize">NewSize</param>
-        private void RenderChart(Size newSize)
+        internal void ResizePanels(Size remainingSizeAfterDrawingAxes)
         {
-            ClearPlotAreaChildren();
-
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
             PlotAreaScrollViewer.Background = new SolidColorBrush(Colors.Transparent);
 
-            PlotAreaCanvas.Width = newSize.Width;
-            PlotAreaCanvas.Height = newSize.Height;
+            PlotAreaCanvas.Width = remainingSizeAfterDrawingAxes.Width;
+            PlotAreaCanvas.Height = remainingSizeAfterDrawingAxes.Height;
 
-            PlottingCanvas = new Canvas();
+            if (Chart._forcedRedraw || PlottingCanvas == null)
+            {   
+                PlottingCanvas = new Canvas();
+                
+                PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
+                PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
+                PlotAreaCanvas.Children.Add(PlottingCanvas);
+                PlottingCanvas.Background = Graphics.GetRandonColor();
+            }
 
-            PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
-            PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
-            PlotAreaCanvas.Children.Add(PlottingCanvas);
-
-            if (Double.IsNaN(newSize.Height) || newSize.Height <= 0 || Double.IsNaN(newSize.Width) || newSize.Width <= 0)
+            if (Double.IsNaN(remainingSizeAfterDrawingAxes.Height) || remainingSizeAfterDrawingAxes.Height <= 0 || Double.IsNaN(remainingSizeAfterDrawingAxes.Width) || remainingSizeAfterDrawingAxes.Width <= 0)
             {
                 return;
             }
@@ -1612,28 +1613,31 @@ namespace Visifire.Charts
                 if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 {
                     PlottingCanvas.Width = ScrollableLength + PLANK_DEPTH;
-                    PlottingCanvas.Height = newSize.Height;
+                    PlottingCanvas.Height = remainingSizeAfterDrawingAxes.Height;
                 }
                 else if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 {
-                    PlottingCanvas.Width = newSize.Width;
+                    PlottingCanvas.Width = remainingSizeAfterDrawingAxes.Width;
                     PlottingCanvas.Height = ScrollableLength + PLANK_DEPTH;
                 }
             }
 
             // Create the chart canvas
-            ChartVisualCanvas = new Canvas();
 
-            PlottingCanvas.Children.Add(ChartVisualCanvas);
+            if (Chart._forcedRedraw || ChartVisualCanvas == null)
+            {
+                ChartVisualCanvas = new Canvas();
+                PlottingCanvas.Children.Add(ChartVisualCanvas);
+            }
 
             // Default size of the chart canvas
             Size chartCanvasSize = new Size(0, 0);
 
             // Create the various region required for drawing charts
             switch (PlotDetails.ChartOrientation)
-            {   
+            {
                 case ChartOrientationType.Vertical:
-                    chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, newSize);
+                    chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, remainingSizeAfterDrawingAxes);
                     // set chart Canvas position
                     ChartVisualCanvas.SetValue(Canvas.LeftProperty, PLANK_DEPTH);
                     Chart.PlotArea.BorderElement.SetValue(Canvas.LeftProperty, PLANK_DEPTH);
@@ -1641,14 +1645,14 @@ namespace Visifire.Charts
                     break;
 
                 case ChartOrientationType.Horizontal:
-                    chartCanvasSize = CreateRegionsForHorizontalCharts(ScrollableLength, newSize);
+                    chartCanvasSize = CreateRegionsForHorizontalCharts(ScrollableLength, remainingSizeAfterDrawingAxes);
                     // set chart Canvas position
                     ChartVisualCanvas.SetValue(Canvas.LeftProperty, PLANK_OFFSET);
                     Chart.PlotArea.BorderElement.SetValue(Canvas.LeftProperty, PLANK_OFFSET);
                     break;
 
                 case ChartOrientationType.NoAxis:
-                    chartCanvasSize = CreateRegionsForChartsWithoutAxis(newSize);
+                    chartCanvasSize = CreateRegionsForChartsWithoutAxis(remainingSizeAfterDrawingAxes);
                     break;
 
                 default:
@@ -1666,7 +1670,27 @@ namespace Visifire.Charts
             Chart.PlotArea.BorderElement.Height = ChartVisualCanvas.Height;
             Chart.PlotArea.BorderElement.Width = chartCanvasSize.Width;
             Chart.PlotArea.ApplyBevel(PLANK_DEPTH, PLANK_THICKNESS);
-            Chart.PlotArea.ApplyShadow(newSize, PLANK_OFFSET, PLANK_DEPTH, PLANK_THICKNESS);
+            Chart.PlotArea.ApplyShadow(remainingSizeAfterDrawingAxes, PLANK_OFFSET, PLANK_DEPTH, PLANK_THICKNESS);
+
+            Chart._plotCanvas.Width = PlottingCanvas.Width;
+            Chart._plotCanvas.Height = PlottingCanvas.Height;
+
+            // Chart._bottomAxisScrollBar.UpdateLayout();
+            // Chart._topAxisScrollBar.UpdateLayout();
+            // Chart._leftAxisScrollBar.UpdateLayout();
+            // Chart._rightAxisScrollBar.UpdateLayout();
+        }
+
+        /// <summary>
+        /// Renders charts based on the orientation type
+        /// </summary>
+        /// <param name="newSize">NewSize</param>
+        private void RenderChart(Size remainingSizeAfterDrawingAxes)
+        {
+            if (Chart._forcedRedraw)
+                ClearPlotAreaChildren();
+
+            ResizePanels(remainingSizeAfterDrawingAxes);
 
             // Draw the chart grids
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1677,9 +1701,6 @@ namespace Visifire.Charts
 
             // Render each plot group from the plotgroups list of plotdetails
             RenderSeries();
-
-            Chart._plotCanvas.Width = PlottingCanvas.Width;
-            Chart._plotCanvas.Height = PlottingCanvas.Height;
 
             _renderCount++;
         }
@@ -1834,7 +1855,7 @@ namespace Visifire.Charts
             List<DataSeries> selectedDataSeries4Rendering;          // Contains a list of serries to be rendered in a rendering cycle
             Int32 currentDrawingIndex;                              // Drawing index of the selected series 
             RenderAs currentRenderAs;                               // Rendereas type of the selected series
-            Panel renderedChart;                                   // A canvas that contains the chart rendered using the selected series
+            Panel renderedChart = null;                                   // A canvas that contains the chart rendered using the selected series
 
             // This loop will select series for rendering and it will repeat until all series have been rendered
             while (renderedSeriesCount < Chart.InternalSeries.Count)
@@ -1854,23 +1875,40 @@ namespace Visifire.Charts
                 if (selectedDataSeries4Rendering.Count == 0)
                     break;
 
-                renderedChart = RenderSeriesFromList(null, selectedDataSeries4Rendering);
-
-                if (renderedChart != null)
-                    ChartVisualCanvas.Children.Add(renderedChart);
+                Boolean isAlreadyPresent = false;
 
                 if (RenderedCanvasList.ContainsKey(currentRenderAs))
+                {
+                    if (!Chart._forcedRedraw)
+                    {
+                        renderedChart = RenderedCanvasList[currentRenderAs];
+                        isAlreadyPresent = true;
+                    }
+                    else
+                        RenderedCanvasList.Remove(currentRenderAs);
+                }
+
+                renderedChart = RenderSeriesFromList(renderedChart as Panel, selectedDataSeries4Rendering);
+
+                if (renderedChart != null && (isAlreadyPresent == false || Chart._forcedRedraw))
+                    ChartVisualCanvas.Children.Add(renderedChart);
+
+                if (!Chart._forcedRedraw && isAlreadyPresent)
+                {
                     RenderedCanvasList[currentRenderAs] = renderedChart;
+                }
                 else
                     RenderedCanvasList.Add(currentRenderAs, renderedChart);
+
+
 
                 renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
             }
 
-            ApplyOpacity();
-            AttachEventsToolTipHref2DataSeries();
+            //ApplyOpacity();
+            //AttachEventsToolTipHref2DataSeries();
         }
 
         public Dictionary<RenderAs, Panel> RenderedCanvasList = new Dictionary<RenderAs, Panel>();
@@ -1895,9 +1933,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="axis">Axis</param>
         private void AnimateChartGrid(Axis axis)
-        {
+        {   
             if (axis != null)
-            {
+            {   
                 foreach (ChartGrid chartGrid in axis.Grids)
                 {
                     if (chartGrid.Storyboard != null)

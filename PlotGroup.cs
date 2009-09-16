@@ -58,6 +58,22 @@ namespace Visifire.Charts
             AxisY = axisY;
         }
 
+        public Double GetLimitingYValue()
+        {
+            Double limitingYValue = 0;
+
+            if (AxisY != null)
+            {
+                if (AxisY.InternalAxisMinimum > 0)
+                    limitingYValue = (Double)AxisY.InternalAxisMinimum;
+
+                if (AxisY.InternalAxisMaximum < 0)
+                    limitingYValue = (Double)AxisY.InternalAxisMaximum;
+            }
+
+            return limitingYValue;
+        }
+
         #endregion
 
         #region Public Properties
@@ -207,6 +223,8 @@ namespace Visifire.Charts
 #endif
         }
 
+        internal Double DrawingIndex;
+
         #endregion
 
         #region Private Delegates
@@ -271,6 +289,8 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
+
 
         private void CreateXWiseStackedDataEntry(ref List<DataPoint> listOfDataPointsFromAllSeries)
         {
@@ -362,7 +382,7 @@ namespace Visifire.Charts
                     MaximumZ = value > MaximumZ ? value : MaximumZ;
                     MinimumZ = value < MinimumZ ? value : MinimumZ;
                 }
-                else if(listOfDataPointsFromAllSeries[0].Parent.RenderAs == RenderAs.Bubble)
+                else //if (listOfDataPointsFromAllSeries.Count > 0 && listOfDataPointsFromAllSeries[0].Parent.RenderAs == RenderAs.Bubble)
                 {   
                     _zValues = (from dataPoint in listOfDataPointsFromAllSeries where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct().ToArray();
                     

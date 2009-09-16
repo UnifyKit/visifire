@@ -121,10 +121,9 @@ namespace Visifire.Charts
             if (_highlightTextBlock != null && !String.IsNullOrEmpty(Text))
             {
                 try
-                {
+                {   
                     Int32 index = Text.IndexOf(stringValue);
-                    
-
+ 
                     for (Int32 i = 1; i <= SkipHighlight; i++)
                         index = Text.IndexOf(stringValue, index + stringValue.Length);
 
@@ -151,9 +150,7 @@ namespace Visifire.Charts
             if (!String.IsNullOrEmpty(HelpLink))
             {
                 (DocHelp.Child as TextBlock).MouseLeftButtonUp += new MouseButtonEventHandler(Logger_MouseLeftButtonUp);
-                DocHelp.Visibility = Visibility.Visible;
-                HelpLinkAnimation.Begin();
-                
+                DocHelp.Visibility = Visibility.Visible;               
             }
             else
             {   
