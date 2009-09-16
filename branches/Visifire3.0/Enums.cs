@@ -21,6 +21,22 @@
 namespace Visifire.Charts
 {
 
+    internal enum UpdationType
+    {
+        RENDER_CHART,
+        RENDER_PLOTAREA,
+        RENDER_X_AXES,
+        RENDER_Y_AXES,
+        PROPERTY_PARTIAL_UPDATE
+    }
+
+    public enum Signs
+    {
+        Undefined,
+        Positive, 
+        Negative
+    }
+
     /// <summary>
     /// Modes of selection
     /// </summary>

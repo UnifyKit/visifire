@@ -951,11 +951,11 @@ namespace Visifire.Charts
         {
             get
             {
-                if (( Double.IsNaN(YValue) || Enabled == false) && Parent != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedArea))
-                {
-                   return 0;
-                }
-                else
+                //if (( Double.IsNaN(YValue) || Enabled == false) && Parent != null)// && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedArea))
+                //{
+                //   return 0;
+                //}
+                //else
                     return YValue;
             }
         }
@@ -1867,7 +1867,7 @@ namespace Visifire.Charts
             if (!ValidatePartialUpdate())
                 return;
 
-            Chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(UpdateVisual), new object[]{ VcProperties.YValue, newValue } );
+            Chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(UpdateVisual), new object[] { property, newValue });
         }
 
 
@@ -1894,13 +1894,23 @@ namespace Visifire.Charts
                 PlotGroup plotGroup = Parent.PlotGroup;
 
                 if (property == VcProperties.YValue)
-                {
+                {   
                     Double axisMaxY = plotGroup.AxisY.InternalAxisMaximum;
                     Double axisMinY = plotGroup.AxisY.InternalAxisMinimum;
 
                     chart.PlotDetails.ReCreate(this, property, newValue);
 
                     if ((Double)newValue > axisMaxY || (Double)newValue < axisMinY)
+                        renderAxis = true;
+                }
+                else if (property == VcProperties.YValues)
+                {
+                    Double axisMaxY = plotGroup.AxisY.InternalAxisMaximum;
+                    Double axisMinY = plotGroup.AxisY.InternalAxisMinimum;
+
+                    chart.PlotDetails.ReCreate(this, property, newValue);
+
+                    if ((Double)plotGroup.MaximumY > axisMaxY || (Double)plotGroup.MinimumY < axisMinY)
                         renderAxis = true;
                 }
                 else if (property == VcProperties.XValue)
@@ -1913,7 +1923,8 @@ namespace Visifire.Charts
                     if ((Double)newValue > axisMaxX || (Double)newValue < axisMinX)
                         renderAxis = true;
 
-                    /* Double maxXVal = plotGroup.MaximumX;
+                    /* 
+                    Double maxXVal = plotGroup.MaximumX;
                     Double minXVal = plotGroup.MinimumX;
                     
                     chart.PlotDetails.ReCreate(this, property, newValue);
@@ -1933,130 +1944,8 @@ namespace Visifire.Charts
 
                 RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
 
-                //chart._renderLock = false;
+                // chart._renderLock = false;
             }
-
-            /*
-            
-             * switch(property)
-            {   
-                case "YValue":
-
-                    DataPoint.UpdateVisual4ValueTypeProperty(this, property, newValue);
-                    break;
-
-                case "Color":
-
-                    #region Color
-
-                    newValue = Color;
-
-                    if (Faces != null && Faces.Parts != null)
-                    {
-                        switch(Parent.RenderAs)
-                        {
-                            case RenderAs.Column:
-                            case RenderAs.Bar:
-                            case RenderAs.StackedBar:
-                            case RenderAs.StackedBar100:
-                            case RenderAs.StackedColumn:
-                            case RenderAs.StackedColumn100:
-
-                                if (!(Parent.Chart as Chart).View3D)
-                                {
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Path).Fill = (((Boolean)Parent.LightingEnabled) ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", new Double[] { 0.745, 0.99}) : (Brush)newValue);
-                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Polygon).Fill = Graphics.GetBevelTopBrush((Brush)newValue);
-                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -70 : 0), (Brush)newValue);
-                                    if (Faces.Parts[3] != null) (Faces.Parts[3] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -110 : 180), (Brush)newValue);
-                                    if (Faces.Parts[4] != null) (Faces.Parts[4] as Polygon).Fill = null;
-                                    if (Faces.Parts[5] != null) (Faces.Parts[5] as Shape).Fill = Graphics.GetLeftGradianceBrush(63);
-                                    if (Faces.Parts[6] != null) (Faces.Parts[6] as Shape).Fill = ((Parent.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Graphics.GetRightGradianceBrush(63) : Graphics.GetLeftGradianceBrush(63);
-                                }
-                                else
-                                {   
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)newValue) : (Brush)newValue ;   // Front brush
-                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)newValue) : (Brush)newValue;      // Top brush
-                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)newValue) : (Brush)newValue;    // Right
-                                }
-                                
-                            break;
-                                
-                            case RenderAs.Bubble:
-                                if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = ((Parent.Chart as Chart).View3D ? Graphics.GetLightingEnabledBrush3D((Brush)newValue) : ((Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", new Double[] { 0.99, 0.745 }) : (Brush)newValue));
-                                
-                            break;
-
-                            case RenderAs.Pie:
-                            case RenderAs.Doughnut:
-
-                                SectorChartShapeParams pieParams = (SectorChartShapeParams)this.VisualParams;
-                                pieParams.Background = (Brush)newValue;
-
-                                if (!(Parent.Chart as Chart).View3D)
-                                {
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Radial", null) : (Brush)newValue;
-
-                                    if (Faces.Parts[1] != null)
-                                        (Faces.Parts[1] as Shape).Fill = (pieParams.StartAngle > Math.PI * 0.5 && pieParams.StartAngle <= Math.PI * 1.5) ? PieChart.GetDarkerBevelBrush(pieParams.Background, pieParams.StartAngle * 180 / Math.PI + 135) : PieChart.GetLighterBevelBrush(pieParams.Background, -pieParams.StartAngle * 180 / Math.PI);
-
-                                    if (Faces.Parts[2] != null)
-                                        (Faces.Parts[2] as Shape).Fill = (pieParams.StopAngle > Math.PI * 0.5 && pieParams.StopAngle <= Math.PI * 1.5) ? PieChart.GetLighterBevelBrush(pieParams.Background, pieParams.StopAngle * 180 / Math.PI + 135) : PieChart.GetDarkerBevelBrush(pieParams.Background, -pieParams.StopAngle * 180 / Math.PI);
-
-                                    if (Faces.Parts[3] != null)
-                                        (Faces.Parts[3] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[3] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
-                                    
-                                    if (Parent.RenderAs == RenderAs.Doughnut && Faces.Parts[4] != null)
-                                        (Faces.Parts[4] as Shape).Fill = (pieParams.MeanAngle > 0 && pieParams.MeanAngle < Math.PI) ? PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(-0.745, -0.85), Graphics.GenerateDoubleCollection(0, 1)) : (Faces.Parts[4] as Shape).Fill = PieChart.GetCurvedBevelBrush(pieParams.Background, pieParams.MeanAngle * 180 / Math.PI + 90, Graphics.GenerateDoubleCollection(0.745, -0.99), Graphics.GenerateDoubleCollection(0, 1));
-                                }
-                                else
-                                {   
-                                    foreach (FrameworkElement fe in Faces.Parts)
-                                        if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
-                                }
-                                
-                                break;
-
-                            case RenderAs.SectionFunnel:
-                            case RenderAs.StreamLineFunnel:
-                                FunnelSliceParms funnelSliceParms = (FunnelSliceParms)this.VisualParams;
-
-                                foreach (Shape path in Faces.Parts)
-                                {
-                                    FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)newValue, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
-                                }
-                                break;
-
-                            case RenderAs.CandleStick:
-                                foreach (Shape path in Faces.Parts)
-                                {
-                                    CandleStick.ReCalculateAndApplyTheNewBrush(this, path, (Brush)newValue, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D);
-                                }
-                                
-                                break;
-
-                            case RenderAs.Stock:
-                                foreach (Shape path in Faces.Parts)
-                                {
-                                    StockChart.ReCalculateAndApplyTheNewBrush(path, (Brush)newValue, (Boolean)LightingEnabled);
-                                }
-
-                                break;
-                        }
-                    }
-
-                    UpdateMarkerAndLegend(newValue);
-
-                    #endregion
-
-                    break;
-
-                default:
-
-                    FirePropertyChanged(property);
-
-                    break;
-            }
-             */
         }
             
         #endregion
@@ -3318,7 +3207,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Object">Object where events to be attached</param>
         internal void AttachEvent2DataPointVisualFaces(ObservableObject Object)
-        {
+        {   
             if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
             {
                 if (Faces != null)
@@ -3415,7 +3304,7 @@ namespace Visifire.Charts
         /// Set Cursor property for DataPoint visual faces
         /// </summary>
         internal void SetCursor2DataPointVisualFaces()
-        {
+        {   
             if (Faces != null)
                 if (Faces.VisualComponents.Count != 0)
                 {
@@ -3466,7 +3355,10 @@ namespace Visifire.Charts
 
         #region Data
 
-        internal Double _oldYValue;
+        internal Double _oldYValue = 0;
+
+        internal FrameworkElement _oldVisual;
+        internal Point _oldMarkerPosition;
 
         /// <summary>
         /// Parent of this DataPoint 

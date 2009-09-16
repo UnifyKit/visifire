@@ -27,7 +27,9 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Bar:
-                    renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = ColumnChart.GetVisualObjectForColumnChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                   
+                    //renderedCanvas = BarChart.GetVisualObjectForBarChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Line:
@@ -43,23 +45,27 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Area:
-                    renderedCanvas = AreaChart.GetVisualObjectForAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = AreaChart.GetVisualObjectForAreaChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedColumn:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
+                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedColumn100:
-                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
+                    renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
+                  
+                    //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
+                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar100:
-                    renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
+                    renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
+
+                    // renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Pie:
@@ -88,17 +94,39 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Stock:
-                    renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                   // renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.CandleStick:
-                    renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = CandleStick.GetVisualObjectForCandleStick(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
             }
 
             return renderedCanvas;
         }
 
+        internal static void RepareCanvas4Drawing(Canvas preExistingPanel, out Canvas visual, out Canvas labelCanvas, out Canvas drawingCanvas, Double width, Double height)
+        {   
+            if (preExistingPanel != null)
+            {   
+                visual = preExistingPanel as Canvas;
+                labelCanvas = preExistingPanel.Children[0] as Canvas;
+            }
+            else
+            {   
+                visual = new Canvas();
+                labelCanvas = new Canvas();
+            }
+
+            labelCanvas.Width = width; 
+            labelCanvas.Height = height;
+
+            visual.Width = width; 
+            visual.Height = height;
+
+            drawingCanvas = new Canvas() { Width = width, Height = height };
+        }
+        
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue)
         {
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
@@ -134,12 +162,11 @@ namespace Visifire.Charts
                 switch (currentRenderAs)
                 {
                     case RenderAs.Column:
+                    case RenderAs.Bar:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         break;
-
-                    case RenderAs.Bar:
+                        
                         // renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
-                        break;
 
                     case RenderAs.Line:
                         foreach(DataSeries ds in selectedDataSeries4Rendering)
@@ -155,14 +182,18 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.Area:
+                        AreaChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         //renderedCanvas = AreaChart.GetVisualObjectForAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedColumn:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedColumn100:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                        
                         // renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
@@ -204,6 +235,7 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.CandleStick:
+                        CandleStick.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         //renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
                 }
@@ -223,13 +255,12 @@ namespace Visifire.Charts
             switch (chartType)
             {   
                 case RenderAs.Column:
+                case RenderAs.Bar:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
                     //ColumnChart.GetVisualObjectForColumnChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
-
-                case RenderAs.Bar:
+                    
                     //renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
-                    break;
 
                 case RenderAs.Line:
                     LineChart.Update(sender, property, newValue);
@@ -244,6 +275,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Area:
+                    AreaChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = AreaChart.GetVisualObjectForAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
@@ -253,14 +285,17 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.StackedColumn100:
+                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
                    // renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar:
+                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar100:
+                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
@@ -294,6 +329,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.CandleStick:
+                    CandleStick.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
             }

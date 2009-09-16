@@ -329,7 +329,7 @@ namespace Visifire.Charts
             {
                 (element as DataSeries).PlotGroup.Update(ref _listOfAllDataPoints, property, newValue);
             }
-            else if (elementType.Equals(typeof(DataPoint)) && property == VcProperties.YValue)
+            else if (elementType.Equals(typeof(DataPoint)) && (property == VcProperties.YValue || property == VcProperties.YValues))
             {
                 (element as DataPoint).Parent.PlotGroup.Update(ref _listOfAllDataPoints, property, newValue);
             }

@@ -28,7 +28,108 @@ using Visifire.Commons;
 
 
 namespace Visifire.Charts
-{   
+{
+    public enum Face3DType
+    {
+        FrontFace,
+        BackFace,
+        LeftFace,
+        RightFace,
+        BottomFace
+    }
+
+    public class Area3DDataPointFace
+    {
+        public Area3DDataPointFace(Double depth3D)
+        {   
+            _depth3D = depth3D;
+            _frontFacePoints = new PointCollection();
+        }
+
+        /// <summary>
+        /// 3D depth
+        /// </summary>
+        public Double Depth3d
+        {
+            get
+            {   
+                return _depth3D;
+            }
+        }
+
+        /// <summary>
+        /// Set or get points for front face
+        /// </summary>
+        public PointCollection FrontFacePoints
+        {
+            get
+            {   
+                return _frontFacePoints;
+            }
+            set
+            {   
+                _frontFacePoints = value;
+            }
+        }
+        
+        /// <summary>
+        /// Calculates the points for back face
+        /// </summary>
+        public void CalculateBackFacePoints()
+        {
+            _backFacePoints = new PointCollection();
+
+            foreach(Point point in _frontFacePoints)
+                _backFacePoints.Add(new Point(point.X + _depth3D, point.Y - _depth3D));
+        }
+
+        /// <summary>
+        /// Returns points present in at the back face.
+        /// You must call CalculateBackFacePoints() befor you access BackFacePoints property
+        /// </summary>
+        public PointCollection BackFacePoints
+        {
+            get
+            {   
+                return _backFacePoints;
+            }
+        }
+
+        // Returns points to draw a Face returns except the first point of the FrontFacePoints
+        public PointCollection GetFacePoints()
+        {   
+            PointCollection collection = new PointCollection();
+            
+            for(int i = 1; i < _frontFacePoints.Count; i++)
+                collection.Add(_frontFacePoints[i]);
+
+            for(int i = _backFacePoints.Count -1; i >= 0; i--)
+                collection.Add(_backFacePoints[i]);
+
+            return collection;
+        }
+
+        public static PathFigure GetPathFigure(Path path)
+        {   
+            PathGeometry pg = path.Data as PathGeometry;
+            return pg.Figures[0];
+        }
+
+        public static LineSegment GetLineSegment(Path path, Int32 index)
+        {   
+            PathGeometry pg = path.Data as PathGeometry;
+            return (pg.Figures[0].Segments[index] as LineSegment);
+        }
+        
+        PointCollection _frontFacePoints;
+        PointCollection _backFacePoints;
+        Double _depth3D;
+
+        public DependencyObject TopFaceHandle;
+        public DependencyObject LeftFaceHandle;
+        public DependencyObject RightFaceHandle;
+    }   
+
     /// <summary>
     /// Visifire.Charts.Faces class
     /// </summary>
@@ -78,35 +179,44 @@ namespace Visifire.Charts
         /// </summary>
         public Canvas LabelCanvas;
 
-        internal void ClearList(Panel parent, List<DependencyObject> listReference)
+        internal void ClearList(ref List<DependencyObject> listReference)
         {
-            if (parent == null)
-            {
-                listReference.Clear();
-                return;
-            }
-
             foreach (FrameworkElement fe in listReference)
+            {
+                Panel parent = fe.Parent as Panel;
                 parent.Children.Remove(fe);
+            }
 
             listReference.Clear();
         }
 
-        internal void ClearList(Panel parent, List<FrameworkElement> listReference)
+        internal void ClearList(ref List<FrameworkElement> listReference)
         {
-            if (parent == null)
-            {
-                listReference.Clear();
-                return;
-            }
-
             foreach (FrameworkElement fe in listReference)
+            {
+                Panel parent = fe.Parent  as Panel;
                 parent.Children.Remove(fe);
+            }
 
             listReference.Clear();
         }
 
-        public Boolean IsPositive;
+        public void ClearFronta3DFaces()
+        {
+            Area3DLeftFace = null;
+            Area3DLeftTopFace = null;
+            Area3DRightTopFace = null;
+            Area3DRightFace = null;
+        }
+
+        public Area3DDataPointFace Area3DLeftFace;
+        public Area3DDataPointFace Area3DLeftTopFace;
+        public Area3DDataPointFace Area3DRightTopFace;
+        public Area3DDataPointFace Area3DRightFace;
+        public LineSegment AreaFrontFaceLineSegment;
+        public Line BevelLine;
+        public DataPoint PreviousDataPoint;
+        public DataPoint NextDataPoint;
     }
 
     /// <summary>
@@ -559,6 +669,91 @@ namespace Visifire.Commons
 
         #region Static Methods
 
+        internal static Random RAND = new Random(DateTime.Now.Millisecond);
+        public static Brush GetRandonColor()
+        {
+            return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
+        }
+
+        internal static void DrawPointAt(Point point, Canvas visual, Color fillColor)
+        {
+            Ellipse e = new Ellipse() { Height = 4, Width = 4, Fill = new SolidColorBrush(fillColor), Stroke = new SolidColorBrush(Colors.Red), StrokeThickness = .25 };
+
+            e.SetValue(Canvas.LeftProperty, point.X - e.Height / 2);
+            e.SetValue(Canvas.TopProperty, point.Y - e.Width / 2);
+            e.SetValue(Canvas.ZIndexProperty, 10001);
+
+            visual.Children.Add(e);
+        }
+
+
+        internal static bool IntersectionOfTwoStraightLines(Point line1Point1, Point line1Point2,
+            Point line2Point1, Point line2Point2, ref Point intersection)
+        {
+            // Based on the 2d line intersection method from "comp.graphics.algorithms Frequently Asked Questions"
+
+            /*
+                   (Ay-Cy)(Dx-Cx)-(Ax-Cx)(Dy-Cy)
+               r = -----------------------------  (eqn 1)
+                   (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+            */
+
+            Double q = (line1Point1.Y - line2Point1.Y) * (line2Point2.X -
+          line2Point1.X) - (line1Point1.X - line2Point1.X) * (line2Point2.Y -
+          line2Point1.Y);
+            Double d = (line1Point2.X - line1Point1.X) * (line2Point2.Y -
+          line2Point1.Y) - (line1Point2.Y - line1Point1.Y) * (line2Point2.X -
+          line2Point1.X);
+
+            if (d == 0) // parallel lines so no intersection anywhere in space (in curved space, maybe, but not here in Euclidian space.)
+            {
+                return false;
+            }
+
+            Double r = q / d;
+
+            /*
+                   (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)
+               s = -----------------------------  (eqn 2)
+                   (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+            */
+
+            q = (line1Point1.Y - line2Point1.Y) * (line1Point2.X - line1Point1.X) -
+          (line1Point1.X - line2Point1.X) * (line1Point2.Y - line1Point1.Y);
+            Double s = q / d;
+
+            /*
+                   If r>1, P is located on extension of AB
+                   If r<0, P is located on extension of BA
+                   If s>1, P is located on extension of CD
+                   If s<0, P is located on extension of DC
+
+                   The above basically checks if the intersection is located at an
+            extrapolated
+                   point outside of the line segments. To ensure the intersection is
+            only within
+                   the line segments then the above must all be false, ie r between 0
+            and 1
+                   and s between 0 and 1.
+            */
+
+            if (r < 0 || r > 1 || s < 0 || s > 1)
+            {
+                return false;
+            }
+
+            /*
+                   Px=Ax+r(Bx-Ax)
+                   Py=Ay+r(By-Ay)
+            */
+
+            intersection.X = line1Point1.X + (int)(0.5f + r * (line1Point2.X - line1Point1.X));
+
+            intersection.Y = line1Point1.Y + (int)(0.5f + r * (line1Point2.Y - line1Point1.Y));
+
+            return true;
+        }
+
         internal static Point MidPointOfALine(Point point1, Point point2)
         {
             return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
@@ -574,7 +769,7 @@ namespace Visifire.Commons
             Size retVal = new Size(0,0);
 
             if (visual != null)
-            {
+            {   
                 visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 retVal = visual.DesiredSize;
             }
@@ -636,6 +831,21 @@ namespace Visifire.Commons
 
             foreach (Double value in values)
                 collection.Add(value);
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Generate double collection
+        /// </summary>
+        /// <param name="values">Array of double values</param>
+        /// <returns>DoubleCollection</returns>
+        internal static PointCollection GeneratePointCollection(params Point[] points)
+        {
+            PointCollection collection = new PointCollection();
+
+            foreach (Point point in points)
+                collection.Add(point);
 
             return collection;
         }
@@ -764,7 +974,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Creates and returns a front face brush
+        /// Creates and returns a Back face brush
         /// </summary>
         /// <param name="brush">Brush</param>
         /// <returns>Brush</returns>

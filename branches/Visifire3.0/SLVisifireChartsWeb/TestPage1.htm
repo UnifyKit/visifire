@@ -3,36 +3,47 @@
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO8859-1" />
 
-    <script type="text/javascript" src="./Visifire2.js"></script>
+    <script type="text/javascript" src="./Visifire.js"></script>
 
 </head>
 <body>
-    <form name="FORM1" method="post">
 
-    <div id="myChart" style="width: 500;">
-    </div>
 
-    <script language="javascript" type="text/javascript">
+    <div id="myChart" style="width: 500; height:400;">
+        <script language="javascript" type="text/javascript">
             var chartXmlString = ''
-            +'<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" Theme="Theme1">'
-            +'<vc:Chart.Series>'
-            +'<vc:DataSeries RenderAs="Column">'
-            +'<vc:DataSeries.DataPoints>'
-            +'<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
-            +'<vc:DataPoint AxisXLabel="Q2" YValue="60" />'
-            +'<vc:DataPoint AxisXLabel="Q3" YValue="80" />'
-            +'<vc:DataPoint AxisXLabel="Q4" YValue="70" />'
-            +'</vc:DataSeries.DataPoints>'
-            +'</vc:DataSeries>'
-            +'</vc:Chart.Series>'
-            +'</vc:Chart>';
+            + '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" Theme="Theme1">'
+            + '<vc:Chart.Series>'
+            + '<vc:DataSeries Color="Red" RenderAs="Column">'
+            + '<vc:DataSeries.DataPoints>'
+            + '<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
+            + '<vc:DataPoint AxisXLabel="Q2" YValue="60" />'
+            + '<vc:DataPoint AxisXLabel="Q3" YValue="80" />'
+            + '<vc:DataPoint AxisXLabel="Q4" YValue="70" />'
+            + '</vc:DataSeries.DataPoints>'
+            + '</vc:DataSeries>'
+            + '</vc:Chart.Series>'
+            + '</vc:Chart>';
 
-            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 500, 300);
+            var container = document.getElementById("myChart");
+            
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 500, 400);
+            
+            //vChart.isWindowless = true;
+           // vChart.preLoad = (function() { alert('hello') });
+            
             vChart.setDataXml(chartXmlString);
             vChart.render("myChart");
 
-    </script>
+            function resizeChart(vchart, chart, height, width) {
+                chart.SetPropertyFromJs("Height", height);
+                chart.SetPropertyFromJs("Width", width);
+                vchart.setSize(width, height);
 
-    </form>
+            }
+ 
+
+    </script>
+    </div>
 </body>
 </html>

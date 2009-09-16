@@ -6,32 +6,29 @@ Width="Auto" Height="Auto"
 >
     <Grid x:Name="LayoutRoot" Height="Auto">
         <StackPanel Orientation="Vertical">
-            <vc:Chart Name="MyChart" Width="Auto" Height="650" Theme="Theme1" ScrollingEnabled="False">
+            <Button x:Name="button" VerticalAlignment="Bottom" Content="Click" Height="20"></Button>
+            <Button x:Name="button1" VerticalAlignment="Bottom" Content="Animate area" Height="40"></Button>
+            <vc:Chart Name="MyChart" View3D="true" Width="Auto" Height="650" Theme="Theme1" ScrollingEnabled="False">
 
-                <!--<vc:Chart.AxesY>
+            <!--<vc:Chart.AxesY>
                 <vc:Axis AxisMinimum="-200" AxisMaximum="200"></vc:Axis>
             </vc:Chart.AxesY>-->
-
+                
                 <vc:Chart.Series>
                     
-                    <vc:DataSeries RenderAs="Column" LineThickness="2" MarkerSize="8" >
+                    <vc:DataSeries LightingEnabled="true" BorderColor="Black" BorderThickness="2" RenderAs="CandleStick" LabelEnabled="True" ShadowEnabled="True" Bevel="true" MarkerEnabled="false" LineThickness="2" MarkerSize="8" >
                         <vc:DataSeries.DataPoints>
-                          <!--
-                        <vc:DataPoint YValue="10"></vc:DataPoint>
-                        <vc:DataPoint YValue="-13"></vc:DataPoint>
-                        <vc:DataPoint YValue="12"></vc:DataPoint>
-                        <vc:DataPoint YValue="13"></vc:DataPoint>
-                        <vc:DataPoint YValue="12"></vc:DataPoint>
-                        <vc:DataPoint YValue="13"></vc:DataPoint>
-                        <vc:DataPoint YValue="12"></vc:DataPoint>
-                            -->
+                            <vc:DataPoint YValues="15,20,30,10"></vc:DataPoint>
+                            <vc:DataPoint YValues="15,20,30,10"></vc:DataPoint>
+                            <vc:DataPoint YValues="15,20,30,10"></vc:DataPoint>
+                            <vc:DataPoint YValues="15,20,30,10"></vc:DataPoint>
+                            <vc:DataPoint YValues="15,20,30,10"></vc:DataPoint>
                         </vc:DataSeries.DataPoints>
                     </vc:DataSeries>
+                    
                 </vc:Chart.Series>
-
             </vc:Chart>
-
-            <Button x:Name="button" VerticalAlignment="Bottom" Content="Click" Height="20"></Button>
+                       
         </StackPanel>
     </Grid>
 </UserControl>

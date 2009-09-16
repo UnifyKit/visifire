@@ -18,6 +18,9 @@
           <StartWorkingDirectory>
           </StartWorkingDirectory>
           <ShowWebRefOnDebugPrompt>True</ShowWebRefOnDebugPrompt>
+          <OutOfBrowserProjectToDebug>
+          </OutOfBrowserProjectToDebug>
+          <ShowRiaSvcsOnDebugPrompt>True</ShowRiaSvcsOnDebugPrompt>
         </SilverlightProjectProperties>
       </FlavorProperties>
     </VisualStudio>

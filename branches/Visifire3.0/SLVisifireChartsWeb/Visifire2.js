@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.2.3
+Visifire.js v3.0 alpha
     
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -20,9 +20,9 @@ from Webyog, you can use this file under those license terms.
 
 */
 
-if (!window.Visifire2) {
+if (!window.Visifire) {
 
-    /*  Visifire2
+    /*  Visifire
         pXapPath     => Location of SL.Visifire.Charts.xap file path.
         pId          => Silverlight object id.
         pWidth       => Width of the chart container.
@@ -30,7 +30,7 @@ if (!window.Visifire2) {
         pBackground  => Background of the silverlight object
         pWindowless  => Whether the Silverlight object is windowless
     */
-    window.Visifire2 = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless) {
+    window.Visifire = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless) {
         this.id = null;                             // Silverlight object id.
         this.logLevel = 1;                          // Determines whether to log or not.
         this.xapPath = "SL.Visifire.Charts.xap";    // xap file path (default is taken as Visifire.xap in the same directory).
@@ -82,16 +82,16 @@ if (!window.Visifire2) {
 
         this.vThisObject = this;
 
-        this.index = ++Visifire2._slCount;
+        this.index = ++Visifire._slCount;
     }
 
-    window.Visifire2._slCount = 0;  // Number of Visifire controls exists in the current window.
+    window.Visifire._slCount = 0;  // Number of Visifire controls present in the current window.
     
     /*  Set windowless state of silverlight object
         
         pWindowless  => Whether the Silverlight object is windowless
     */
-    Visifire2.prototype.setWindowlessState = function(pWindowless) {
+    Visifire.prototype.setWindowlessState = function(pWindowless) {
         if (pWindowless != null)
             this.windowless = Boolean(pWindowless);
     }
@@ -100,7 +100,7 @@ if (!window.Visifire2) {
         
         pDataXml  => Chart data xml as string
     */
-    Visifire2.prototype.setDataXml = function(pDataXml) {
+    Visifire.prototype.setDataXml = function(pDataXml) {
         var slControl = this._getSlControl();
 
         this.dataXml = pDataXml;
@@ -113,7 +113,7 @@ if (!window.Visifire2) {
         
         pDataUri  => Chart data uri as string
     */
-    Visifire2.prototype.setDataUri = function(pDataUri) {
+    Visifire.prototype.setDataUri = function(pDataUri) {
         var slControl = this._getSlControl();
 
         this.dataUri = pDataUri;
@@ -126,7 +126,7 @@ if (!window.Visifire2) {
         
         pTargetElement  => Target div element
     */
-    Visifire2.prototype.render = function(pTargetElement) {
+    Visifire.prototype.render = function(pTargetElement) {
         var vThisObject = this;            // This Class
         var vSlControl = this._getSlControl();
         
@@ -143,7 +143,7 @@ if (!window.Visifire2) {
         pWidth   => Width of the chart
         pHeight  => Height of the chart
     */
-    Visifire2.prototype.setSize = function(pWidth, pHeight) {
+    Visifire.prototype.setSize = function(pWidth, pHeight) {
         var slControl = this._getSlControl();
 
         if (slControl != null) {
@@ -161,14 +161,14 @@ if (!window.Visifire2) {
         
         level  => loglevel value used to generate a process log depending on logging level.
     */
-    Visifire2.prototype.setLogLevel = function(pLevel) {
+    Visifire.prototype.setLogLevel = function(pLevel) {
         if (pLevel != null)
             this.logLevel = pLevel;
     }
 
     /*  Checks whether the silverlight control is loaded 
     */
-    Visifire2.prototype.isLoaded = function() {
+    Visifire.prototype.isLoaded = function() {
         var slControl = this._getSlControl();
 
         try {
@@ -182,14 +182,14 @@ if (!window.Visifire2) {
 
     /*  Whether the chart data xml is loaded and chart is displayed
     */
-    Visifire2.prototype.isDataLoaded = function() {
+    Visifire.prototype.isDataLoaded = function() {
         var slControl = this._getSlControl();
         return slControl.Content.wrapper.IsDataLoaded;
     }
     
     /*  Attach required events
     */
-    Visifire2.prototype._attachEvents = function() {
+    Visifire.prototype._attachEvents = function() {
         var vThisObject = this; // This Class
 
         window["setVisifireChartsRef" + vThisObject.index] = function(e) {
@@ -205,7 +205,7 @@ if (!window.Visifire2) {
      
     /*  Returns current silverlight control reference 
     */
-    Visifire2.prototype._getSlControl = function() {
+    Visifire.prototype._getSlControl = function() {
         var vThisObject = this; // This Class
 
         if (vThisObject.id != null) {
@@ -220,16 +220,16 @@ if (!window.Visifire2) {
         
         pTargetElement  => Target div element
     */
-    Visifire2.prototype._render = function(pTargetElement) {
+    Visifire.prototype._render = function(pTargetElement) {
         var vThisObject = this;            // This Class
         var vWidth;                        // Width of the chart container
         var vHeight;                       // Height of the chart container
 
-        vThisObject.targerElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
+        vThisObject.targetElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
 
-        vWidth = (vThisObject.width != null) ? vThisObject.width : (vThisObject.targerElement.offsetWidth != 0) ? vThisObject.targerElement.offsetWidth : 500;
+        vWidth = (vThisObject.width != null) ? vThisObject.width : (vThisObject.targetElement.offsetWidth != 0) ? vThisObject.targetElement.offsetWidth : 500;
         
-        vHeight = (vThisObject.height != null) ? vThisObject.height : (vThisObject.targerElement.offsetHeight != 0) ? vThisObject.targerElement.offsetHeight : 300;
+        vHeight = (vThisObject.height != null) ? vThisObject.height : (vThisObject.targetElement.offsetHeight != 0) ? vThisObject.targetElement.offsetHeight : 300;
 
         if (!vThisObject.id)
             vThisObject.id = 'VisifireControl' + vThisObject.index;
@@ -275,7 +275,7 @@ if (!window.Visifire2) {
         html += '<param name="enableHtmlAccess" value="true" />'
 		        + '<param name="background" value="' + vThisObject.background + '" />'
 		        + '<param name="windowless" value="' + vThisObject.windowless + '" />'
-		        + '<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">'
+		        + '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=3.0.40624.0" style="text-decoration: none;">'
 		        + '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
 		        + '<br/>You need Microsoft Silverlight to view Visifire Charts.'
 		        + '<br/> You can install it by clicking on this link.'
@@ -283,14 +283,14 @@ if (!window.Visifire2) {
 		        + '</a>'
 		        + '</object>';
         
-        this.targerElement.innerHTML = html;
+        this.targetElement.innerHTML = html;
     }
     
     /*  Re-render the chart
 
         pSlControl  => Silverlight control reference
     */
-    Visifire2.prototype._reRender = function(pSlControl) {
+    Visifire.prototype._reRender = function(pSlControl) {
         pSlControl.Content.wrapper.ReRenderChart();
     }
 }
