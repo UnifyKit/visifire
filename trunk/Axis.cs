@@ -3015,6 +3015,7 @@ namespace Visifire.Charts
             AxisLabels.DataMaximum = Maximum;
             AxisLabels.DataMinimum = Minimum;
             AxisLabels.ParentAxis = this;
+            AxisLabels.InternalRows = (Int32)AxisLabels.Rows;
             //AxisLabels.Padding = this.Padding;
 
             if (AxisRepresentation == AxisRepresentations.AxisX)

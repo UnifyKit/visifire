@@ -15,7 +15,7 @@ namespace SLVisifireChartsTest
     /// This class runs the unit tests Visifire.Charts.Legend class 
     /// </summary>
     [TestClass]
-    public class AALegendTest : SilverlightControlTest
+    public class LegendTest : SilverlightControlTest
     {
         #region CheckLegendDefaultPropertyValue
         /// <summary>

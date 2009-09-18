@@ -71,6 +71,7 @@ namespace Visifire.Charts
         /// <param name="chart">Chart</param>
         public void Draw(Chart chart)
         {
+           
             System.Diagnostics.Debug.WriteLine("Draw() > ");
             Boolean isScrollingActive = Chart.IsScrollingActivated;
             _renderCount = 0;
@@ -93,8 +94,11 @@ namespace Visifire.Charts
 
             PopulateInternalSeriesList();
 
+            if (PlotDetails != null)
+                PlotDetails = null;
+
             PlotDetails = new PlotDetails(chart);
-           
+       
             SetLegendStyleFromTheme();
 
             CalculatePlankParameters();
@@ -346,6 +350,12 @@ namespace Visifire.Charts
             chartActualSize.Height -= (Chart._chartBorder.BorderThickness.Top + Chart._chartBorder.BorderThickness.Bottom);
             chartActualSize.Width -= (Chart._chartAreaGrid.Margin.Left + Chart._chartAreaGrid.Margin.Right);
             chartActualSize.Height -= (Chart._chartAreaGrid.Margin.Top + Chart._chartAreaGrid.Margin.Bottom);
+
+            if (Chart.Bevel)
+            {
+                chartActualSize.Height -= Chart.BEVEL_DEPTH;
+            }
+
             return chartActualSize;
         }
         
@@ -1318,6 +1328,7 @@ namespace Visifire.Charts
         {
             if (PlottingCanvas != null)
             {
+                PlottingCanvas.Loaded -= PlottingCanvas_Loaded;
                 PlotAreaCanvas.Children.Remove(PlottingCanvas);
                 PlottingCanvas = null;
             }
@@ -1694,7 +1705,7 @@ namespace Visifire.Charts
         private void SaveAxisContentOffsetAndResetMargin(Axis axis, Double scrollBarOffset)
         {
             axis.CurrentScrollScrollBarOffset = scrollBarOffset / axis.ScrollBarElement.Maximum;
-            System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
+            // System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
         }
 
         /// <summary>
@@ -2319,6 +2330,12 @@ namespace Visifire.Charts
 
                 }
 
+                if ((Boolean)dataPoint.LightingEnabled)
+                {
+                    if (dataPoint.Parent.RenderAs == RenderAs.Line)
+                        markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", new Double[] { 0.65, 0.55 });
+                }
+
                 Boolean markerBevel;
                 if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Stock
@@ -2328,10 +2345,7 @@ namespace Visifire.Charts
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line)
                 {
                     markerBevel = false;
-
-                    if ((Boolean)dataPoint.LightingEnabled)
-                        markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", null);
-                }
+                }   
                 else
                     markerBevel = Chart.View3D ? false : dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
 
@@ -2477,6 +2491,12 @@ namespace Visifire.Charts
                             markerColor = markerColor ?? dataPoint.Color;
                         }
 
+                        if ((Boolean)dataSeries.LightingEnabled)
+                        {
+                            if (dataSeries.RenderAs == RenderAs.Line)
+                                markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", new Double[] { 0.65, 0.55 });
+                        }
+
                         Boolean markerBevel;
 
                         if (dataSeries.RenderAs == RenderAs.Point
@@ -2486,9 +2506,6 @@ namespace Visifire.Charts
                             || dataSeries.RenderAs == RenderAs.Line)
                         {
                             markerBevel = false;
-
-                            if ((Boolean)dataSeries.LightingEnabled)
-                                markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", null);
                         }
                         else
                             markerBevel = Chart.View3D ? false : dataSeries.Bevel ? dataSeries.Bevel : false;

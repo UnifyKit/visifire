@@ -529,6 +529,13 @@ namespace Visifire.Commons
 
         #region Static Methods
 
+        internal static Random RAND = new Random(DateTime.Now.Millisecond);
+
+        public static Brush GetRandonColor()
+        {
+            return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
+        }
+
         internal static Point MidPointOfALine(Point point1, Point point2)
         {
             return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);

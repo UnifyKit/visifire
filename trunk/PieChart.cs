@@ -874,7 +874,6 @@ namespace Visifire.Charts
 
                     if (Math.Abs(previousY - currentY) < gap && i != 0)
                     {
-
                         point.Y = previousY - offsetFactor;
                         if (isRight)
                         {
@@ -885,8 +884,9 @@ namespace Visifire.Charts
                             if (point.Y < minY)
                             {
                                 point.Y = (minY + previousY) / 2;
+
                                 if (point.X - gap < 0)
-                                    point.X = point.X - gap;
+                                    point.X = Math.Abs(point.X - gap);
                             }
                         }
 
@@ -1181,6 +1181,48 @@ namespace Visifire.Charts
                         AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], yScalingFactor);
                     }
                 }
+
+                foreach (DataPoint dp in dataPoints)
+                {
+                    Double y = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
+                    Double x = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                    if (y + dp.LabelVisual.Height > maxY)
+                    {
+                        offset = y - dp.LabelVisual.Height - maxY;
+                        //if (y > maxY)
+                        //    offset = y - dp.LabelVisual.Height - maxY;
+                        //else
+                        //    offset = y + dp.LabelVisual.Height - maxY;
+                        dp.LabelVisual.SetValue(Canvas.TopProperty, plotSize.Height - dp.LabelVisual.Height);
+
+                        dp.LabelVisual.SetValue(Canvas.LeftProperty, x + 6);
+                    }
+
+                    //// Place labels out side if they are inside the circle
+                    //if (x > center.X)
+                    //{
+                    //    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
+
+                    //    if (Graphics.IsPointInside(center, radius, labelPosition))
+                    //    {
+                    //        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
+                    //        xx = labelPosition.X + (Double)xx / Math.Cos(Math.PI / 4);
+                    //        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx + 6);
+                    //    }
+                    //}
+                    //else if (x < center.X)
+                    //{
+                    //    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
+
+                    //    if (Graphics.IsPointInside(center, radius, labelPosition))
+                    //    {
+                    //        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
+                    //        xx = labelPosition.X - (Double)xx / Math.Cos(Math.PI / 4);
+                    //        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx - 6);
+                    //    }
+                    //}
+                }
             }
             catch 
             {
@@ -1293,6 +1335,8 @@ namespace Visifire.Charts
             Dictionary<DataPoint, Double> meanAngles = new Dictionary<DataPoint, Double>();
             //Dictionary<DataPoint, Double> labelsAtLeft = new Dictionary<DataPoint, Double>();
 
+           // List<DataPoint> labelsAtRight = new List<DataPoint>();
+
             Double GapL = 2, GapR = 2;
             Double maxGap;
 
@@ -1358,15 +1402,18 @@ namespace Visifire.Charts
                         labelPosR.Add(rIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
                         rIndex++;
                         if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
+
                         //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
                     }
                     else
-                    {
+                    {   
                         labeltempYR.Add(tIndex, new Point(i, tempY));
                         labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
                         tIndex++;
                         if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Yellow);
+
+                        // labelsAtRight.Add(dataPoints[i]);
+                        // (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Yellow);
                     }
                 }
 
@@ -1509,17 +1556,20 @@ namespace Visifire.Charts
                 }
             }
 
+
+            //RearrangeLabels(labelsAtRight, Double.NaN, 0, maxY, Double.NaN);
+
             foreach (DataPoint dp in dataPoints)
             {
                 Double y = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
                 Double x = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
                 if (y + dp.LabelVisual.Height > maxY)
                 {
-                    if (y > maxY)
-                        offset = y - dp.LabelVisual.Height - maxY;
-                    else
-                        offset = y + dp.LabelVisual.Height - maxY;
-                    dp.LabelVisual.SetValue(Canvas.TopProperty, y - offset);
+                    //if (y > maxY)
+                    //    offset = y - dp.LabelVisual.Height - maxY;
+                    //else
+                    //    offset = y + dp.LabelVisual.Height - maxY;
+                    dp.LabelVisual.SetValue(Canvas.TopProperty, plotRadius.Y * 2 - dp.LabelVisual.Height);
 
                     dp.LabelVisual.SetValue(Canvas.LeftProperty, x + 6);
                 }
