@@ -170,19 +170,26 @@ namespace SLVisifireChartsXap
                 _chartCanv = CreateChart();
                 _chartCanv.Opacity = 0;
 
-                // _wrapper.LayoutRoot.Children.Clear();
+                //_wrapper.LayoutRoot.Children.Clear();
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
-
-                _chartCanv.Loaded += delegate
-                {
-                    _oldCanvas.Opacity = 0;
-                    _chartCanv.Opacity = 1;
-                    RemoveOldChartCanvas();
-                };
+                _chartCanv.Loaded += new RoutedEventHandler(newChartCanvas_Loaded);
             }
+        }
 
+        /// <summary>
+        /// New chart canvas loaded event handler applies 
+        /// Applies opacity=1 to new chart canvas and zero for the old chart canvas 
+        /// in order to avoid flickering while real-time update from JavaScript
+        /// </summary>
+        /// <param name="sender">New chart canvas</param>
+        /// <param name="e">RoutedEventArgs</param>
+        void newChartCanvas_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Canvas).Loaded -= newChartCanvas_Loaded;
+            Canvas oldCanvas = _wrapper.LayoutRoot.Children[2] as Canvas;
 
-            // AddDialog(_wrapper);
+            oldCanvas.Visibility = Visibility.Collapsed;
+            _chartCanv.Opacity = 1;
         }
 
         /// <summary>
@@ -346,7 +353,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 2";
             version = version.Replace("Version=", "");
             return version;
         }
@@ -406,20 +413,15 @@ namespace SLVisifireChartsXap
                 canvasXaml += "</Canvas>";
 
                 chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
+                // chartCanvas.Background = Visifire.Commons.Graphics.GetRandonColor();
             }
             catch (Exception e1)
             {   
                 throw new Exception("Error: Invalid chart Data XML found..\n" + CollectWrongPartOfXAML(e1.Message));
             }
 
-            if (_charts == null)
-                _charts = new List<UIElement>();
-
-            if (Charts == null)
-                Charts = new List<Chart>();
-
-            _charts.Clear();
-            Charts.Clear();
+            List<UIElement> _charts = new List<UIElement>();
+            Charts = new List<Chart>();
 
             FindByType(ref _charts, chartCanvas as Panel, typeof(Chart));
 
@@ -675,8 +677,6 @@ namespace SLVisifireChartsXap
 
         private void RemoveOldChartCanvas()
         {
-            Canvas tempChartCanvas = new Canvas(); //(Canvas)XamlReader.Load(String.Format(@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
-
             if (_wrapper.LayoutRoot.Children.Count > 2)
             {
                 for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
@@ -685,11 +685,13 @@ namespace SLVisifireChartsXap
                     try
                     {
                         if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
-                        {
-                            _wrapper.LayoutRoot.Children.RemoveAt(i);
+                        {   
+                            chartCanvas.Children.Clear();
+                            chartCanvas.Resources.Clear();
                             chartCanvas.Loaded -= chartCanv_Loaded;
-                            chartCanvas.Loaded -= chartCanv_Loaded;
-                            tempChartCanvas.Children.Add(chartCanvas);
+                            chartCanvas.Loaded -= newChartCanvas_Loaded;
+                            _wrapper.LayoutRoot.Children.Remove(chartCanvas);
+                            chartCanvas = null;
                         }
                     }
                     catch (Exception e1)
@@ -699,8 +701,7 @@ namespace SLVisifireChartsXap
                 }
             }
 
-            tempChartCanvas.Children.Clear();
-            tempChartCanvas = null;
+            GC.Collect();
         }
 
         /// <summary>
@@ -737,7 +738,8 @@ namespace SLVisifireChartsXap
             }
             catch
             { }
-
+            
+            RemoveOldChartCanvas();
         }
 
         /// <summary>
@@ -911,11 +913,6 @@ namespace SLVisifireChartsXap
         /// Webclient is used for downloading chart data xml
         /// </summary>
         WebClient _webclient;
-
-        /// <summary>
-        /// List of Charts
-        /// </summary>
-        private List<UIElement> _charts;
 
         #endregion
     }

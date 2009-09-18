@@ -28,6 +28,7 @@ using System.ComponentModel;
 using Visifire.Charts;
 using System.Linq;
 using System.Globalization;
+using System.Windows.Data;
 
 namespace Visifire.Commons
 {   
@@ -54,6 +55,13 @@ namespace Visifire.Commons
             }
 
             IsNotificationEnable = true;
+
+#if SL
+            Binding binding = new Binding("Style");
+            binding.Source = this;
+            binding.Mode = BindingMode.TwoWay;
+            this.SetBinding(ObservableObject.InternalStyleProperty, binding);
+#endif
         }
 
         #region Public Methods
@@ -71,15 +79,15 @@ namespace Visifire.Commons
             Chart chart = control as Chart;
             if (chart.StyleDictionary != null)
             {
-#if SL
-                if (Style == null)
-                {   
-                    Style myStyle = chart.StyleDictionary[keyName] as Style;
+//#if SL
+//                if (Style == null)
+//                {   
+//                    Style myStyle = chart.StyleDictionary[keyName] as Style;
                     
-                    if (myStyle != null)
-                        Style = myStyle;
-                }
-#else
+//                    if (myStyle != null)
+//                        Style = myStyle;
+//                }
+//#else
 
                 Style myStyle = chart.StyleDictionary[keyName] as Style;
 
@@ -92,7 +100,7 @@ namespace Visifire.Commons
                          Style = myStyle;
                 }
 
-#endif
+//#endif
             }
 
             IsNotificationEnable = oldIsNotificationEnable;
@@ -272,6 +280,20 @@ namespace Visifire.Commons
         {
             get;
             set;
+        }
+#endif
+
+#if SL
+        private static readonly DependencyProperty InternalStyleProperty = DependencyProperty.Register
+           ("Style",
+           typeof(Style),
+           typeof(ObservableObject),
+           new PropertyMetadata(OnInternalStylePropertyChanged));
+
+        private static void OnInternalStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ObservableObject obj = d as ObservableObject;
+            obj.FirePropertyChanged("Style");
         }
 #endif
 

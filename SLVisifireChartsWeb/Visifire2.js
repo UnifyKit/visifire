@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.2.8 beta
+Visifire2.js v2.2.8 beta 2
 
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -195,7 +195,7 @@ if (!window.Visifire2) {
         window["setVisifireChartsRef" + vThisObject.index] = function(e) {
             vThisObject.charts = e;
         }
-
+        
         if (vThisObject.preLoad != null)
             window["visifireChartPreLoad" + vThisObject.index] = vThisObject.preLoad;
 

@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ClientBin\SL.Visifire.Charts.xap" />
+    <Content Include="RealTimeTest.html" />
     <Content Include="TestCases\RealTimeRenderFirstDataXml.htm" />
     <Content Include="TestCases\MultipleChartsInDivs.htm" />
     <Content Include="TestCases\RealTimeRenderChartUsingDataXml.htm" />

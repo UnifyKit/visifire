@@ -839,8 +839,11 @@ namespace Visifire.Charts
         internal void ApplyBevel(Double plankDepth, Double plankThickness)
         {
             if (_bevelCanvas != null)
+            {
                 BevelGrid.Children.Remove(_bevelCanvas);
-            
+                _bevelCanvas = null;
+            }
+
             if (Bevel)
             {
                 Chart chart = Chart as Chart;

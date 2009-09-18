@@ -771,7 +771,7 @@ namespace Visifire.Charts
                                     else
                                         axisX._isAllXValueZero = false;
 
-                                    System.Diagnostics.Debug.WriteLine("XValue =" + dp.InternalXValue.ToString());
+                                    // System.Diagnostics.Debug.WriteLine("XValue =" + dp.InternalXValue.ToString());
                                 }
                             }
 
