@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="SLVisifireApp.Bar2D2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" BorderBrush="Gray" Padding="6">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Bar Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesX>
+                <vc:Axis Interval="1"/>
+            </vc:Chart.AxesX>
+            
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="2005" RenderAs="Bar" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="5509"/>
+                        <vc:DataPoint YValue="7047"/>
+                        <vc:DataPoint YValue="10047"/>
+                        <vc:DataPoint YValue="8508"/>
+                        <vc:DataPoint YValue="6022"/>
+                        <vc:DataPoint YValue="9047"/>
+                        <vc:DataPoint YValue="7508"/>
+                        <vc:DataPoint YValue="5509"/>
+                        <vc:DataPoint YValue="7047"/>
+                        <vc:DataPoint YValue="10047"/>
+                        <vc:DataPoint YValue="8508"/>
+                        <vc:DataPoint YValue="6022"/>
+                        <vc:DataPoint YValue="9047"/>
+                        <vc:DataPoint YValue="7508"/>
+                        <vc:DataPoint YValue="5509"/>
+                        <vc:DataPoint YValue="7047"/>
+                        <vc:DataPoint YValue="10047"/>
+                        <vc:DataPoint YValue="8508"/>
+                        <vc:DataPoint YValue="6022"/>
+                        <vc:DataPoint YValue="9047"/>
+                        <vc:DataPoint YValue="7508"/>
+                        <vc:DataPoint YValue="8057"/>
+                        <vc:DataPoint YValue="7838"/>
+                        <vc:DataPoint YValue="6557"/>
+                        <vc:DataPoint YValue="5347"/>
+                        <vc:DataPoint YValue="9047"/>
+                        <vc:DataPoint YValue="8608"/>
+                        <vc:DataPoint YValue="7045"/>
+                        <vc:DataPoint YValue="6567"/>
+                        <vc:DataPoint YValue="8508"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>
