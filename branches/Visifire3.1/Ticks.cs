@@ -80,7 +80,7 @@ namespace Visifire.Charts
         ("TickLength",
         typeof(Double),
         typeof(Ticks),
-        new PropertyMetadata(OnTickLengthPropertyChanged));
+        new PropertyMetadata((Double)5, OnTickLengthPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Ticks.LineStyle dependency property.
@@ -563,7 +563,7 @@ namespace Visifire.Charts
 
                     }
 
-                    System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
+                    // System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
 
                     Visual.Children.Add(line);
 

@@ -480,6 +480,49 @@ namespace Visifire.Charts
             }
         }
 
+#if WPF
+        /// <summary>
+        /// Event handler for the MouseLeftButtonDown event 
+        /// </summary>
+        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseRightButtonDown
+        {
+            remove
+            {
+                _onMouseRightButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseLeftButtonUp event 
+        /// </summary>
+        public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseRightButtonUp
+        {
+            remove
+            {
+                _onMouseRightButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+#endif
 
         /// <summary>
         /// Event handler for the MouseMove event 
@@ -796,8 +839,11 @@ namespace Visifire.Charts
         internal void ApplyBevel(Double plankDepth, Double plankThickness)
         {
             if (_bevelCanvas != null)
+            {
                 BevelGrid.Children.Remove(_bevelCanvas);
-            
+                _bevelCanvas = null;
+            }
+
             if (Bevel)
             {
                 Chart chart = Chart as Chart;
@@ -994,6 +1040,18 @@ namespace Visifire.Charts
                 eventArgs.YValue = yValue;
             }
 
+            if (chart.ChartArea.AxisY2 != null)
+            {
+                Double yValue;
+                Orientation axisOrientation = chart.ChartArea.AxisY2.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+                yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+
+                eventArgs.YValue = yValue;
+            }
+
             return eventArgs;
         }
 
@@ -1008,6 +1066,18 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseRightButtonDownEvent(MouseButtonEventArgs e)
+        {
+#if WPF
+            if (_onMouseRightButtonDown != null)
+                _onMouseRightButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
+#endif
+        }
+
+        /// <summary>
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
@@ -1015,6 +1085,18 @@ namespace Visifire.Charts
         {
             if (_onMouseLeftButtonUp != null)
                 _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
+        }
+        
+        /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseRightButtonUpEvent(MouseButtonEventArgs e)
+        {
+#if WPF
+            if (_onMouseRightButtonUp != null)
+                _onMouseRightButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
+#endif
         }
 
         /// <summary>
@@ -1044,6 +1126,26 @@ namespace Visifire.Charts
         {
             return _onMouseLeftButtonUp;
         }
+
+#if WPF
+        /// <summary>
+        /// Get MouseRightButtonDown EventHandler
+        /// </summary>
+        /// <returns></returns>
+        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseRightButtonDownEventHandler()
+        {
+            return _onMouseRightButtonDown;
+        }
+
+        /// <summary>
+        /// Get MouseRightButtonUp EventHandler
+        /// </summary>
+        /// <returns></returns>
+        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseRightButtonUpEventHandler()
+        {
+            return _onMouseRightButtonUp;
+        }
+#endif
 
         /// <summary>
         /// Get MouseLeftButtonUp EventHandler
@@ -1076,6 +1178,18 @@ namespace Visifire.Charts
         /// Handler for MouseLeftButtonUp event
         /// </summary>
         private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseLeftButtonUp;
+
+#if WPF
+        /// <summary>
+        /// Handler for MouseRightButtonDown event
+        /// </summary>
+        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseRightButtonDown;
+
+        /// <summary>
+        /// Handler for MouseRightButtonUp event
+        /// </summary>
+        private event EventHandler<PlotAreaMouseButtonEventArgs> _onMouseRightButtonUp;
+#endif
 
         /// <summary>
         /// Handler for MouseMove event

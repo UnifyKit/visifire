@@ -27,7 +27,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -48,7 +48,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -69,7 +69,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
            
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -90,7 +90,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -111,7 +111,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -132,7 +132,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -167,7 +167,7 @@ namespace SLVisifireChartsTest
             linearGrad.StartPoint = new Point(0.5, 0);
             linearGrad.StartPoint = new Point(0.5, 1);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -188,7 +188,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -209,7 +209,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -230,7 +230,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -254,7 +254,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -276,7 +276,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -298,7 +298,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -320,7 +320,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -342,7 +342,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -364,7 +364,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -400,7 +400,7 @@ namespace SLVisifireChartsTest
             linearGrad.StartPoint = new Point(0.5, 0);
             linearGrad.StartPoint = new Point(0.5, 1);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -422,7 +422,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -444,7 +444,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -466,7 +466,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -477,23 +477,12 @@ namespace SLVisifireChartsTest
 
         #endregion
 
-        /// <summary>
-        /// Event handler for loaded event of the chart
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            _isLoaded = true;
-        }
-
         #region Private Data
 
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
         private const int _sleepTime = 1000;
-        private Boolean _isLoaded = false;
 
         #endregion
     }

@@ -1662,6 +1662,7 @@ namespace Visifire.Charts
             lineMarker.Width = marker.MarkerActualSize.Width + ENTRY_SYMBOL_LINE_WIDTH / 2;
 
 
+
             line.StrokeDashArray = ApplyLineStyleForMarkerOfLegendEntry(line, marker.DataSeriesOfLegendMarker.LineStyle.ToString());
 
             lineMarker.Children.Add(line);

@@ -3185,11 +3185,6 @@ namespace WPFVisifireChartsTest
         }
         #endregion
 
-        void timer_Tick(object sender, EventArgs e)
-        {
-            chart.Series[0].MinPointHeight = rand.Next(0, 100);
-        }
-
         /// <summary>
         /// Event handler for loaded event of the chart
         /// </summary>
@@ -3206,11 +3201,6 @@ namespace WPFVisifireChartsTest
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
         private const int _sleepTime = 1000;
-
-        /// <summary>
-        /// Chart 
-        /// </summary>
-        private Chart chart;
 
         // Create a new instance of Random class
         private Random rand = new Random();

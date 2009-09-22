@@ -240,6 +240,10 @@ namespace Visifire.Charts
                 }
             }
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
 

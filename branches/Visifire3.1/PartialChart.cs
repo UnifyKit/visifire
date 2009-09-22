@@ -1448,6 +1448,9 @@ namespace Visifire.Charts
                 _chartBorder.Margin = new Thickness(0, 0, 0, 0);
                 _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
                 _isShadowApplied = false;
+
+                if (ChartShadowLayer != null)
+                    ChartShadowLayer.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -1507,15 +1510,15 @@ namespace Visifire.Charts
 
             if (StyleDictionary != null)
             {
-#if SL
-                if (Style == null)
-                {
-                    Style myStyle = StyleDictionary["Chart"] as Style;
+//#if SL
+//                if (Style == null)
+//                {
+//                    Style myStyle = StyleDictionary["Chart"] as Style;
 
-                    if (myStyle != null)
-                        Style = myStyle;
-                }
-#else
+//                    if (myStyle != null)
+//                        Style = myStyle;
+//                }
+//#else
                 Style myStyle = StyleDictionary["Chart"] as Style;
 
                 _isThemeChanged = isThemePropertyChanged;
@@ -1528,7 +1531,7 @@ namespace Visifire.Charts
                         Style = myStyle;
                 }
 
-#endif
+//#endif
             }
             else
             {
@@ -2027,7 +2030,8 @@ namespace Visifire.Charts
         {
             if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
             {
-                Double x = e.GetPosition(this).X;
+                Double actualX = e.GetPosition(this).X;
+                Double x = actualX;
                 Double y = e.GetPosition(this).Y;
 
                 #region Set position of ToolTip
@@ -2066,15 +2070,32 @@ namespace Visifire.Charts
                     x = 0;
 
                 if (x < 0)
-                {
                     x = 0;
+
+                // If tooltip still goes out of towards y
+                if (!Double.IsNaN(this.ActualHeight) && y + toolTipSize.Height > this.ActualHeight)
+                {
+                    y = 0;
+                    x = actualX + 10;
+                    if (x <= 0)
+                        x = e.GetPosition(this).X + 10;
+
+                    if ((x + toolTipSize.Width) >= this.ActualWidth)
+                        x = e.GetPosition(this).X - toolTipSize.Width;
+
+                    if (x + toolTipSize.Width > this.ActualWidth)
+                        x = x + toolTipSize.Width - this.ActualWidth;
+
+                    if (toolTipSize.Width == _toolTip.MaxWidth)
+                        x = 0;
+
+                    if (x < 0)
+                        x = 0;
+
                 }
 
                 _toolTip.SetValue(Canvas.LeftProperty, x);
-
                 _toolTip.SetValue(Canvas.TopProperty, y);
-
-                Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
 
                 #endregion
             }
@@ -2163,20 +2184,20 @@ namespace Visifire.Charts
 
                 _renderLock = true;
 
-                try
-                {
+                //try
+                //{
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
-                }
-                catch (Exception e)
-                {
-                    _renderLock = false;
-                    if (CheckSizeError(e as ArgumentException))
-                        return;
-                    else
-                        throw new Exception(e.Message, e);
-                }
+                //}
+                //catch (Exception e)
+                //{
+                //    _renderLock = false;
+                //    if (CheckSizeError(e as ArgumentException))
+                //        return;
+                //    else
+                //        throw new Exception(e.Message, e);
+                //}
             }
         }
         
@@ -2334,12 +2355,12 @@ namespace Visifire.Charts
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
 
-#if WPF
+//#if WPF
         /// <summary>
         /// Whether Theme is changed by the user
         /// </summary>
         internal Boolean _isThemeChanged = false;
-#endif
+//#endif
 
         #endregion
     }

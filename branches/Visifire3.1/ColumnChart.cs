@@ -180,67 +180,70 @@ namespace Visifire.Charts
             {
                 dataPoint.Marker.CreateVisual();
 
-                if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
-                    dataPoint.Marker.TextOrientation = Orientation.Vertical;
-                else
-                    dataPoint.Marker.TextOrientation = Orientation.Horizontal;
-
-                if (columnParams.IsPositive)
-                {
-                    if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
-                    {
-                        if (canvasTop - dataPoint.Marker.MarkerActualSize.Width - dataPoint.Marker.MarkerSize.Height < 0)
-                            columnParams.LabelStyle = LabelStyles.Inside;
-                    }
+                if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                {                
+                    if (columnParams.Size.Width < dataPoint.Marker.TextBlockSize.Width)
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
                     else
-                    {
-                        if (canvasTop - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height < 0)
-                            columnParams.LabelStyle = LabelStyles.Inside;
-                    }
-                }
-                else
-                {
-                    if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
-                    {
-                        if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Width + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
-                            columnParams.LabelStyle = LabelStyles.Inside;
-                    }
-                    else
-                    {
-                        if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
-                            columnParams.LabelStyle = LabelStyles.Inside;
-                    }
-                }
+                        dataPoint.Marker.TextOrientation = Orientation.Horizontal;
 
-                dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
-
-                if (!columnParams.IsMarkerEnabled)
-                {
-                    if (chart.View3D)
+                    if (columnParams.IsPositive)
                     {
-                        if (columnParams.LabelStyle == LabelStyles.OutSide)
+                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
                         {
-                            if (columnParams.IsPositive)
-                                dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS, markerSize.Height / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS);
+                            if (canvasTop - dataPoint.Marker.MarkerActualSize.Width - dataPoint.Marker.MarkerSize.Height < 0)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                        else
+                        {
+                            if (canvasTop - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height < 0)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                    }
+                    else
+                    {
+                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                        {
+                            if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Width + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                        else
+                        {
+                            if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                                columnParams.LabelStyle = LabelStyles.Inside;
+                        }
+                    }
+
+                    dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+
+                    if (!columnParams.IsMarkerEnabled)
+                    {
+                        if (chart.View3D)
+                        {
+                            if (columnParams.LabelStyle == LabelStyles.OutSide)
+                            {
+                                if (columnParams.IsPositive)
+                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS, markerSize.Height / 2 + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS);
+                                else
+                                    dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2, markerSize.Height / 2);
+                            }
                             else
                                 dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2, markerSize.Height / 2);
                         }
-                        else
-                            dataPoint.Marker.MarkerSize = new Size(markerSize.Width / 2, markerSize.Height / 2);
                     }
-                }
-                else
-                {
-                    if (chart.View3D)
+                    else
                     {
-                        columnParams.LabelStyle = LabelStyles.Inside;
+                        if (chart.View3D)
+                        {
+                            columnParams.LabelStyle = LabelStyles.Inside;
+                        }
                     }
-                }
 
-                if (columnParams.IsPositive)
-                    dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Bottom : AlignmentY.Top;
-                else
-                    dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Top : AlignmentY.Bottom;
+                    if (columnParams.IsPositive)
+                        dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Bottom : AlignmentY.Top;
+                    else
+                        dataPoint.Marker.TextAlignmentY = columnParams.LabelStyle == LabelStyles.Inside ? AlignmentY.Top : AlignmentY.Bottom;
+                }
             }
         }
 
@@ -286,12 +289,31 @@ namespace Visifire.Charts
                     else
                         markerPosition = new Point(columnParams.Size.Width / 2, columnParams.Size.Height);
 
+                if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                {
+                    dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
+                    dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+
+                    if (columnParams.IsPositive)
+                    {
+                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
+                    }
+                    else
+                    {
+                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
+                    }
+                    dataPoint.Marker.LabelStyle = (LabelStyles)columnParams.LabelStyle;
+                }
+
                 SetMarkerPosition(columnParams, chart, dataPoint, labelText, markerSize, left, top, markerPosition);
 
                 columnParams.LabelFontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0)? LabelStyles.OutSide:(LabelStyles)columnParams.LabelStyle);
                 dataPoint.Marker.FontColor = columnParams.LabelFontColor;
 
                 dataPoint.Marker.Tag = new ElementData() { Element = dataPoint };
+
                 dataPoint.Marker.CreateVisual();
 
                 dataPoint.Marker.AddToParent(markerCanvas, markerPosition.X, markerPosition.Y, new Point(0.5, 0.5));
@@ -808,6 +830,10 @@ namespace Visifire.Charts
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -1073,6 +1099,11 @@ namespace Visifire.Charts
             }
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -1349,6 +1380,10 @@ namespace Visifire.Charts
 
             visual.Children.Add(columnCanvas);
             visual.Children.Add(labelCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
+            visual.Clip = clipRectangle;
 
             return visual;
         }

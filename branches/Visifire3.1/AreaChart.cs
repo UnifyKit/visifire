@@ -481,22 +481,44 @@ namespace Visifire.Charts
 
                 if (true && !String.IsNullOrEmpty(labelText))
                 {
+                    if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                    {
+                        dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
+
+                        if (isPositive)
+                        {
+                            dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                        }
+                        else
+                        {
+                            dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        }
+
+                        dataPoint.Marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                    }
+
                     dataPoint.Marker.CreateVisual();
 
-                    dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
-                    if (isPositive)
+                    if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                     {
-                        if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+                        if (isPositive)
+                        {
+                            if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                        }
                         else
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
-                    }
-                    else
-                    {
-                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
-                        else
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        {
+                            if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        }
                     }
                 }
 
@@ -717,6 +739,11 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
 
             return visual;
@@ -946,7 +973,13 @@ namespace Visifire.Charts
                 visual.Children.Add(zeroPlankVisual);
             }
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
+            
             return visual;
         }
 
@@ -1191,7 +1224,13 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(areaCanvas);
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            labelCanvas.Clip = clipRectangle;
+
             visual.Children.Add(labelCanvas);
+
             return visual;
         }
 

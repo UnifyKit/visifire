@@ -386,25 +386,34 @@ namespace Visifire.Charts
             return isDateTimeAxis;
         }
 
-       /// <summary>
-       /// Set TrendLine values
-       /// </summary>
-       /// <param name="axisX">Axis</param>
+        /// <summary>
+        /// Set TrendLine values
+        /// </summary>
+        /// <param name="axisX">Axis</param>
         private void SetTrendLineValues(Axis axisX)
         {
             if (axisX.IsDateTimeAxis)
             {
                 foreach (TrendLine trendLine in Chart.TrendLines)
-                {
-                    if ((Boolean)trendLine.Enabled &&
-                        ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                        || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-                        )
-                    )
-                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
-                }
+                    SetTrendLineValue(trendLine, axisX);
             }
-
+        }
+        
+        /// <summary>
+        /// Set TrendLine value
+        /// </summary>
+        /// <param name="axisX">Axis</param>
+        internal void SetTrendLineValue(TrendLine trendLine, Axis axisX)
+        {
+            if (axisX != null && axisX.IsDateTimeAxis)
+            {
+                if ((Boolean)trendLine.Enabled &&
+                ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                )
+                )
+                    trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+            }
         }
 
         /// <summary>
@@ -469,10 +478,38 @@ namespace Visifire.Charts
                         {
                             if (axisX.XValueType != ChartValueTypes.Time)
                             {
+                                //if (axisX.AxisMinimum == null)
+                                //{
+                                //    minDate = minDate.AddDays(-1);
+                                //    autoIntervalType = IntervalTypes.Days;
+                                //}
                                 if (axisX.AxisMinimum == null)
                                 {
-                                    minDate = minDate.AddDays(-1);
-                                    autoIntervalType = IntervalTypes.Days;
+                                    if (axisX.InternalIntervalType == IntervalTypes.Hours)
+                                    {
+                                        minDate = minDate.AddHours(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Minutes)
+                                    {
+                                        minDate = minDate.AddMinutes(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Seconds)
+                                    {
+                                        minDate = minDate.AddSeconds(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else if (axisX.InternalIntervalType == IntervalTypes.Milliseconds)
+                                    {
+                                        minDate = minDate.AddMilliseconds(-1);
+                                        autoIntervalType = axisX.InternalIntervalType;
+                                    }
+                                    else
+                                    {
+                                        minDate = minDate.AddDays(-1);
+                                        autoIntervalType = IntervalTypes.Days;
+                                    }
                                 }
                                 else
                                 {
@@ -734,7 +771,7 @@ namespace Visifire.Charts
                                     else
                                         axisX._isAllXValueZero = false;
 
-                                    System.Diagnostics.Debug.WriteLine("XValue =" + dp.InternalXValue.ToString());
+                                    // System.Diagnostics.Debug.WriteLine("XValue =" + dp.InternalXValue.ToString());
                                 }
                             }
 
@@ -1291,12 +1328,21 @@ namespace Visifire.Charts
         /// </summary>
         private void SetIncrementalZIndexForSeries()
         {
-            Int32 index =0;
+            Int32 index = 0;
+            Int32 seriesIndex = 0;
 
             foreach (DataSeries dataSeries in Chart.InternalSeries)
             {
-                dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
-                dataSeries.InternalZIndex += index++;
+                if (dataSeries.IsZIndexSet)
+                    dataSeries.InternalZIndex = dataSeries.ZIndex - seriesIndex;
+                else
+                    dataSeries.InternalZIndex = dataSeries.ZIndex - Chart.InternalSeries.Count;
+
+                dataSeries.InternalZIndex = dataSeries.InternalZIndex + index++;
+                seriesIndex++;
+
+                //dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
+                //dataSeries.InternalZIndex += index++;
             }
         }
 
@@ -1306,9 +1352,8 @@ namespace Visifire.Charts
         /// <returns>A dictionary containing DataSeries as key and its corresponding drawing index</returns>
         private Dictionary<DataSeries, Int32> GenerateDrawingOrder()
         {
-            // set an incremental ZIndex levels for all series
             SetIncrementalZIndexForSeries();
-
+            
             // These charts will be drawn in the same plane hence the depth for each chart type increases by one
             Int32 layer3DCount = 0;
             layer3DCount += (GetSeriesCountByRenderAs(RenderAs.Column) > 0) ? 1 : 0;
@@ -1445,7 +1490,7 @@ namespace Visifire.Charts
             // If there atleast one series in the list then continue to update the list
             if (seriesByRenderAs.Count() > 0)
             {
-                // Get the highest index fron the seriesByRenderAs list
+                // Get the highest index from the seriesByRenderAs list
                 Int32 highestIndex = (from entry in seriesByRenderAs select entry.Value).Max();
 
                 // Convert list to array

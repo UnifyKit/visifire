@@ -722,6 +722,18 @@ namespace Visifire.Charts
             new PropertyMetadata(OnLabelLineStylePropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelAngle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelAngle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelAngleProperty = DependencyProperty.Register
+            ("LabelAngle",
+            typeof(Double),
+            typeof(DataPoint),
+            new PropertyMetadata(Double.NaN, OnLabelAnglePropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -996,6 +1008,28 @@ namespace Visifire.Charts
             set
             {
                 SetValue(ZValueProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the LabelAngle property
+        /// </summary>
+        public Double LabelAngle
+        {
+            get
+            {
+                if (Double.IsNaN((Double)GetValue(LabelAngleProperty)) && _parent != null)
+                    return _parent.LabelAngle;
+                else
+                    return (Double)GetValue(LabelAngleProperty);
+            }
+            set
+            {
+
+                if (value > 90 || value < -90)
+                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
+
+                SetValue(LabelAngleProperty, value);
             }
         }
 
@@ -1925,7 +1959,7 @@ namespace Visifire.Charts
                                     foreach (FrameworkElement fe in Faces.Parts)
                                         if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
                                 }
-
+    
                                 break;
 
                             case RenderAs.SectionFunnel:
@@ -2464,6 +2498,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// LabelAngleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.FirePropertyChanged("LabelAngle");
+        }
+
+        /// <summary>
         /// MarkerEnabledProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2709,7 +2754,7 @@ namespace Visifire.Charts
                 foreach (Shape shape in Faces.BorderElements)
                 {
                     if (dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie || dataPoint.Parent.RenderAs == RenderAs.Doughnut))
-                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, 0, BorderColor);
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left, BorderColor);
                     else
                     {
                         Brush borderColor;
@@ -3201,15 +3246,17 @@ namespace Visifire.Charts
                 {
                     if (Parent.Faces != null)
                     {
-                        foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                        if (Object.GetType().Equals(typeof(DataPoint)))
                         {
-                            AttachEvents2AreaVisual(Object, this, face);
+                            foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                                AttachEvents2AreaVisual(Object, this, face);
                         }
                     }
                 }
-
+                
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
+                
             }
             else if (Faces != null)
             {
