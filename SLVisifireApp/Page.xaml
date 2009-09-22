@@ -3,22 +3,241 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
->
-    <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="500" Height="300" Theme="Theme2" Name="MyChart">
+>   
 
-            <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"/>
-            </vc:Chart.Titles>
-            
-            <vc:Chart.Series>
-                <vc:DataSeries RenderAs="CandleStick">
+    <Grid x:Name="LayoutRoot">
+        <!--<Border Width="200" Height="200" Style="{StaticResource Style5}" x:Name="border"></Border>-->
+        <vc:Chart Width="500" Height="300"
+                  Theme="Theme1" View3D="False" Name="MyChart">
+            <!--<vc:Chart.PlotArea>
+                <vc:PlotArea Background="Aqua"></vc:PlotArea>
+            </vc:Chart.PlotArea>-->
+                
+                <vc:Chart.Series>
+                <vc:DataSeries StartAngle="0" LabelText="#YValue." YValueFormatString="##.0000#" RenderAs="Pie" LabelFontSize="9"  ShowInLegend="false">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1" YValues="10,20,30,5"/>
-                        <vc:DataPoint XValue="2" YValues="20,22,28,18"/>
-                        <vc:DataPoint XValue="3" YValues="20,10,22,8"/>
-                        <vc:DataPoint XValue="4" YValues="20,30,32,8"/>
-                        <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
+                        
+                        <!--<vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="190"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="3000"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="190"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>-->
+
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="11"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="13"/>
+                        <vc:DataPoint YValue="14"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="11"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="13"/>
+                        <vc:DataPoint YValue="14"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="11"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="13"/>
+                        <vc:DataPoint YValue="14"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="11"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="13"/>
+                        <vc:DataPoint YValue="14"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        
+                        <!--<vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="7"/>
+                        <vc:DataPoint YValue="8"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="11"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="13"/>
+                        <vc:DataPoint YValue="14"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="10"/>-->
+
+                         <!--<vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="0.0001"/>
+                        <vc:DataPoint YValue="0.001"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
+                        <!--<vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.002"/>
+                        <vc:DataPoint YValue="0.01"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="0"/>
+                        <vc:DataPoint YValue="10"/>-->
+                        
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

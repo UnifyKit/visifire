@@ -1,6 +1,6 @@
 /*
-Visifire2.js v2.2.5 beta
-    
+Visifire2.js v2.2.8 beta 2
+
 Copyright (C) 2008 Webyog Softworks Private Limited
 
 This file is a part of Visifire Charts.
@@ -85,7 +85,7 @@ if (!window.Visifire2) {
         this.index = ++Visifire2._slCount;
     }
 
-    window.Visifire2._slCount = 0;  // Number of Visifire controls exists in the current window.
+    window.Visifire2._slCount = 0;  // Number of Visifire controls present in the current window.
     
     /*  Set windowless state of silverlight object
         
@@ -195,7 +195,7 @@ if (!window.Visifire2) {
         window["setVisifireChartsRef" + vThisObject.index] = function(e) {
             vThisObject.charts = e;
         }
-
+        
         if (vThisObject.preLoad != null)
             window["visifireChartPreLoad" + vThisObject.index] = vThisObject.preLoad;
 
@@ -225,11 +225,11 @@ if (!window.Visifire2) {
         var vWidth;                        // Width of the chart container
         var vHeight;                       // Height of the chart container
 
-        vThisObject.targerElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
+        vThisObject.targetElement = (typeof (pTargetElement) == "string") ? document.getElementById(pTargetElement) : pTargetElement;
 
-        vWidth = (vThisObject.width != null) ? vThisObject.width : (vThisObject.targerElement.offsetWidth != 0) ? vThisObject.targerElement.offsetWidth : 500;
+        vWidth = (vThisObject.width != null) ? vThisObject.width : (vThisObject.targetElement.offsetWidth != 0) ? vThisObject.targetElement.offsetWidth : 500;
         
-        vHeight = (vThisObject.height != null) ? vThisObject.height : (vThisObject.targerElement.offsetHeight != 0) ? vThisObject.targerElement.offsetHeight : 300;
+        vHeight = (vThisObject.height != null) ? vThisObject.height : (vThisObject.targetElement.offsetHeight != 0) ? vThisObject.targetElement.offsetHeight : 300;
 
         if (!vThisObject.id)
             vThisObject.id = 'VisifireControl' + vThisObject.index;
@@ -275,7 +275,7 @@ if (!window.Visifire2) {
         html += '<param name="enableHtmlAccess" value="true" />'
 		        + '<param name="background" value="' + vThisObject.background + '" />'
 		        + '<param name="windowless" value="' + vThisObject.windowless + '" />'
-		        + '<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">'
+		        + '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=3.0.40624.0" style="text-decoration: none;">'
 		        + '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>'
 		        + '<br/>You need Microsoft Silverlight to view Visifire Charts.'
 		        + '<br/> You can install it by clicking on this link.'
@@ -283,7 +283,7 @@ if (!window.Visifire2) {
 		        + '</a>'
 		        + '</object>';
         
-        this.targerElement.innerHTML = html;
+        this.targetElement.innerHTML = html;
     }
     
     /*  Re-render the chart

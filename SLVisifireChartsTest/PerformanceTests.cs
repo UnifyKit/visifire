@@ -85,7 +85,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -170,7 +170,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -255,7 +255,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -341,7 +341,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -427,7 +427,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -537,7 +537,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -627,7 +627,7 @@ namespace SLVisifireChartsTest
                 totalDuration = (end - start).TotalSeconds;
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {

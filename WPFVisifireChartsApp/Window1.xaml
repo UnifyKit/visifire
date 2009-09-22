@@ -3,27 +3,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Window1"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-    WindowState="Normal" >
-    <Grid>
-     <vc:Chart Width="500" Height="300" Theme="Theme2" Name="MyChart">
-
-            <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"/>
-            </vc:Chart.Titles>
-
+    WindowState="Normal">
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Width="500" Height="300" Theme="Theme1" Name="MyChart">
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="CandleStick">
+                <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1" YValues="10,20,30,5"/>
-                        <vc:DataPoint XValue="2" YValues="20,22,28,18"/>
-                        <vc:DataPoint XValue="3" YValues="20,10,22,8"/>
-                        <vc:DataPoint XValue="4" YValues="20,30,32,8"/>
-                        <vc:DataPoint XValue="5" YValues="20,30,32,8"/>
+                        <vc:DataPoint YValue="1"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="3"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
-
             </vc:Chart.Series>
         </vc:Chart>
     </Grid>
-    
 </Window>
+
+              

@@ -40,7 +40,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             DataSeries dataSeries = new DataSeries();
             DataPoint dataPoint = null;
@@ -73,7 +73,7 @@ namespace SLVisifireChartsTest
                 dataPoint.YValue = rand.Next(-100, 100);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueTestComplete();
 
         }
@@ -106,7 +106,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -125,7 +125,7 @@ namespace SLVisifireChartsTest
                 chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -253,7 +253,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries1);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -1845,7 +1845,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             Random rand = new Random();
-            EnqueueSleep(2000);
+            EnqueueDelay(2000);
 
             CreateAsyncTask(chart,
                 delegate
@@ -1880,7 +1880,7 @@ namespace SLVisifireChartsTest
             chart.Series.Add(dataSeries);
 
             Random rand = new Random();
-            EnqueueSleep(2000);
+            EnqueueDelay(2000);
 
             CreateAsyncTask(chart,
                 delegate
@@ -1914,7 +1914,7 @@ namespace SLVisifireChartsTest
 
             Random rand = new Random();
             Double r, g, b;
-            EnqueueSleep(3000);
+            EnqueueDelay(3000);
 
             CreateAsyncTask(chart,
                 delegate
@@ -1945,7 +1945,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[5].Exploded = true,
                 () => Assert.IsTrue((Boolean)dataSeries.DataPoints[5].Exploded));
@@ -1969,7 +1969,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2000,7 +2000,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2030,7 +2030,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2060,7 +2060,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2090,7 +2090,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2120,7 +2120,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2150,7 +2150,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2180,7 +2180,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2210,7 +2210,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2240,7 +2240,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2269,7 +2269,7 @@ namespace SLVisifireChartsTest
             dataSeries.RenderAs = RenderAs.Pie;
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2300,7 +2300,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2331,7 +2331,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2361,7 +2361,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2391,7 +2391,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2421,7 +2421,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[1].MarkerType = MarkerTypes.Cross,
                 () => dataSeries.DataPoints[2].MarkerType = MarkerTypes.Diamond,
@@ -2451,7 +2451,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2482,7 +2482,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2513,7 +2513,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2543,7 +2543,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2574,7 +2574,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2604,7 +2604,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(4000);
+            EnqueueDelay(4000);
             CreateAsyncTask(chart,
                 () => dataSeries.DataPoints[1].ToolTipText = "#AxisLabel",
                 () => Assert.AreEqual("#AxisLabel", dataSeries.DataPoints[1].ToolTipText));
@@ -2627,7 +2627,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2656,7 +2656,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2687,7 +2687,7 @@ namespace SLVisifireChartsTest
             dataSeries.DataPoints[0].BorderThickness = new Thickness(2);
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2716,7 +2716,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2747,7 +2747,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2779,7 +2779,7 @@ namespace SLVisifireChartsTest
             dataSeries.BorderThickness = new Thickness(1);
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2792,7 +2792,7 @@ namespace SLVisifireChartsTest
                     }
                 });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
         }
 
         /// <summary>
@@ -2810,7 +2810,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2821,7 +2821,7 @@ namespace SLVisifireChartsTest
                     }
                 });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
         }
 
         /// <summary>
@@ -2839,7 +2839,7 @@ namespace SLVisifireChartsTest
             DataSeries dataSeries = CreateDataSeries();
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTest(chart,
                 delegate
                 {
@@ -2850,7 +2850,7 @@ namespace SLVisifireChartsTest
                     }
                 });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
         }
 
         #endregion CheckNewPropertyValue
@@ -2872,7 +2872,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2898,7 +2898,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2923,7 +2923,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2950,7 +2950,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -2979,7 +2979,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3007,7 +3007,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3036,7 +3036,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3065,7 +3065,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3094,13 +3094,13 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual(new FontFamily("Arial"), dataSeries.DataPoints[i].LabelFontFamily);
+                        Assert.AreEqual(new FontFamily("Verdana"), dataSeries.DataPoints[i].LabelFontFamily);
                     }
                 });
 
@@ -3123,7 +3123,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3152,7 +3152,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3181,7 +3181,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3210,7 +3210,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3239,7 +3239,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3268,7 +3268,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3297,7 +3297,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3325,7 +3325,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3354,7 +3354,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3384,7 +3384,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3413,7 +3413,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3442,7 +3442,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3471,7 +3471,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3500,13 +3500,13 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual((dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), dataSeries.DataPoints[i].MarkerSize);
+                        Assert.AreEqual((dataSeries.LineThickness * 2), dataSeries.DataPoints[i].MarkerSize);
                     }
                 });
 
@@ -3529,7 +3529,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3557,7 +3557,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3586,7 +3586,7 @@ namespace SLVisifireChartsTest
 
             chart.Series.Add(dataSeries);
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 delegate
                 {
@@ -3624,7 +3624,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3643,7 +3643,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -3677,7 +3677,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3696,7 +3696,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -3727,7 +3727,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3756,7 +3756,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -3791,7 +3791,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3810,7 +3810,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3842,7 +3842,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -3873,7 +3873,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3893,7 +3893,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3907,7 +3907,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -3939,7 +3939,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3959,7 +3959,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -3973,7 +3973,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4005,7 +4005,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4025,7 +4025,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4043,7 +4043,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4079,7 +4079,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4119,7 +4119,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4138,7 +4138,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4175,7 +4175,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4194,7 +4194,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4225,7 +4225,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4254,7 +4254,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4289,7 +4289,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4308,7 +4308,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4340,7 +4340,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4371,7 +4371,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4391,7 +4391,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4405,7 +4405,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4437,7 +4437,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4457,7 +4457,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4471,7 +4471,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4503,7 +4503,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4523,7 +4523,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4541,7 +4541,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4577,7 +4577,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4617,7 +4617,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4636,7 +4636,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4673,7 +4673,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4692,7 +4692,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4723,7 +4723,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4752,7 +4752,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4787,7 +4787,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4806,7 +4806,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4838,7 +4838,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4869,7 +4869,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4889,7 +4889,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4903,7 +4903,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -4935,7 +4935,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4955,7 +4955,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -4969,7 +4969,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5001,7 +5001,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5021,7 +5021,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5039,7 +5039,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5075,7 +5075,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5115,7 +5115,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5134,7 +5134,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5171,7 +5171,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5190,7 +5190,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5221,7 +5221,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5250,7 +5250,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5285,7 +5285,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5304,7 +5304,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5336,7 +5336,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5367,7 +5367,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5387,7 +5387,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5401,7 +5401,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5433,7 +5433,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5453,7 +5453,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5467,7 +5467,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5499,7 +5499,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5519,7 +5519,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5537,7 +5537,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5573,7 +5573,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5613,7 +5613,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5632,7 +5632,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5669,7 +5669,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5688,7 +5688,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5719,7 +5719,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5748,7 +5748,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5783,7 +5783,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5802,7 +5802,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5834,7 +5834,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5865,7 +5865,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5885,7 +5885,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5899,7 +5899,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5931,7 +5931,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5951,7 +5951,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -5965,7 +5965,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -5997,7 +5997,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6017,7 +6017,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6035,7 +6035,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6071,7 +6071,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6111,7 +6111,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6130,7 +6130,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6167,7 +6167,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6186,7 +6186,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6217,7 +6217,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6246,7 +6246,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6281,7 +6281,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6300,7 +6300,7 @@ namespace SLVisifireChartsTest
                 _chart.Series.Add(dataSeries1);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6332,7 +6332,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6363,7 +6363,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6383,7 +6383,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6397,7 +6397,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6429,7 +6429,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6449,7 +6449,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6463,7 +6463,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement2);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6495,7 +6495,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(_chart);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6515,7 +6515,7 @@ namespace SLVisifireChartsTest
                 }
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {
@@ -6533,7 +6533,7 @@ namespace SLVisifireChartsTest
                 System.Windows.Browser.HtmlPage.Document.Body.AppendChild(_htmlElement3);
             });
 
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
             EnqueueCallback(() =>
             {
                 _htmlElement1.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.HtmlElement1_OnClick));
@@ -6569,7 +6569,7 @@ namespace SLVisifireChartsTest
             _chart.Series.Add(dataSeries);
 
             EnqueueConditional(() => { return _isLoaded; });
-            EnqueueSleep(_sleepTime);
+            EnqueueDelay(_sleepTime);
 
             EnqueueCallback(() =>
             {

@@ -404,6 +404,13 @@ namespace Visifire.Charts
            typeof(Axis),
            new PropertyMetadata(Double.NaN, OnScrollBarOffsetChanged));
 
+
+
+        // Using a DependencyProperty as the backing store for ScrollBarScale.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ScrollBarScaleProperty =
+            DependencyProperty.Register("ScrollBarScale", typeof(double), typeof(Axis), new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
+
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.Enabled dependency property.
         /// </summary>
@@ -863,7 +870,6 @@ namespace Visifire.Charts
             set
             {
                 SetValue(ScalingSetProperty, value);
-                ParseScalingSets(value);
             }
         }
 
@@ -897,6 +903,24 @@ namespace Visifire.Charts
                 if (value < 0 || value > 1)
                     throw new Exception("Value does not fall under the expected range. ScrollBarOffset always varies from 0 to 1.");
                 SetValue(ScrollBarOffsetProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// ScrollBarScale sets the size of ScrollBar thumb.  
+        /// Example, if ScrollBarScale is set to 0.5, width of ScrollBar thumb will be
+        /// half of the ScrollBar width which in turn increase the PlotArea width to
+        /// double the actual width of PlotArea.
+        /// </summary>
+        public Double ScrollBarScale
+        {
+            get { return (Double)GetValue(ScrollBarScaleProperty); }
+            set {
+
+                if (value <= 0 || value > 1)
+                    throw new Exception("Value does not fall under the expected range. ScrollBarScale always varies from 0 to 1.");
+
+                SetValue(ScrollBarScaleProperty, value);
             }
         }
 
@@ -1734,6 +1758,7 @@ namespace Visifire.Charts
         private static void OnScalingSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
+            axis.ParseScalingSets((String)e.NewValue);
             axis.FirePropertyChanged("ScalingSet");
         }
 
@@ -1761,6 +1786,16 @@ namespace Visifire.Charts
                 axis.SetScrollBarValueFromOffset((Double)e.NewValue);
         }
 
+
+        private static void OnScrollBarScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+
+            //if (axis._isScrollToOffsetEnabled)
+            //    axis.SetScrollBarValueFromOffset((Double)e.NewValue);
+            axis.FirePropertyChanged("ScrollBarScale");
+        }
+
         /// <summary>
         /// Event handler manages enabled property change event of axis
         /// </summary>
@@ -1771,6 +1806,8 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
             axis.FirePropertyChanged("Enabled");
         }
+
+        
 
         /// <summary>
         /// Event handler manages interval type property change event of axis
@@ -1809,7 +1846,7 @@ namespace Visifire.Charts
 
                 if (IsDateTimeAxis)
                 {
-                    if (interval > 0 || !Double.IsNaN(interval) || IntervalType == IntervalTypes.Auto)
+                    if (interval > 0 || !Double.IsNaN(interval))
                     {
                         AxisManager.Interval = interval;
                         InternalInterval = interval;
@@ -2518,7 +2555,7 @@ namespace Visifire.Charts
                     {
                         Double temp = Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval);
                         
-                        if (temp >= 1)
+                        if (!Double.IsInfinity(temp) && temp >= 1)
                             start = (start - Math.Floor(temp) * InternalInterval);
                     }
 
@@ -2937,7 +2974,7 @@ namespace Visifire.Charts
                 tick.Minimum = AxisManager.AxisMinimumValue;
                 tick.DataMaximum = Maximum;
                 tick.DataMinimum = Minimum;
-                tick.TickLength = 5;
+                //tick.TickLength = 5;
                 tick.ParentAxis = this;
 
                 tick.IsNotificationEnable = true;
@@ -2978,6 +3015,7 @@ namespace Visifire.Charts
             AxisLabels.DataMaximum = Maximum;
             AxisLabels.DataMinimum = Minimum;
             AxisLabels.ParentAxis = this;
+            AxisLabels.InternalRows = (Int32)AxisLabels.Rows;
             //AxisLabels.Padding = this.Padding;
 
             if (AxisRepresentation == AxisRepresentations.AxisX)

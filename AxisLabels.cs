@@ -467,11 +467,12 @@ namespace Visifire.Charts
             }
         }
 
+
         /// <summary>
         /// Get or set the number of rows of the axis labels
         /// </summary>
 #if SL
-       [System.ComponentModel.TypeConverter(typeof(Converters.NullableInt32Converter))]
+        [System.ComponentModel.TypeConverter(typeof(Converters.NullableInt32Converter))]
 #endif
         public Nullable<Int32> Rows
         {
@@ -481,6 +482,7 @@ namespace Visifire.Charts
             }
             set
             {
+                InternalRows = (Int32)((value == null)? 0: value);
                 SetValue(RowsProperty, value);
             }
         }
@@ -544,6 +546,15 @@ namespace Visifire.Charts
             {   
                 SetValue(TextWrapProperty, value);
             }
+        }
+
+        /// <summary>
+        /// Get or set the number of rows of the axis labels
+        /// </summary>
+        internal Int32 InternalRows
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -1222,7 +1233,7 @@ namespace Visifire.Charts
                 }
 
                 // Set the new position
-                label.Position = new Point(position, height * (Int32)Rows - top - ((i % (Int32)Rows) * _maxRowHeight) + Padding.Top);
+                label.Position = new Point(position, height * (Int32)InternalRows - top - ((i % (Int32)InternalRows) * _maxRowHeight) + Padding.Top);
 
                 // Create the visual element again
                 label.CreateVisualObject(true);
@@ -1233,7 +1244,7 @@ namespace Visifire.Charts
             }
 
             // set the height of the visual canvas
-            Visual.Height = height * (Int32)Rows + Padding.Top;
+            Visual.Height = height * (Int32)InternalRows + Padding.Top;
 
             // calculate the overflow due to this set of axis labels
             CalculateHorizontalOverflow();
@@ -1426,7 +1437,7 @@ namespace Visifire.Charts
                 }
 
                 // Set the new position
-                label.Position = new Point(position, top + ((i % (Int32)Rows) * _maxRowHeight));
+                label.Position = new Point(position, top + ((i % (Int32)InternalRows) * _maxRowHeight));
 
                 // Create the visual element again
                 label.CreateVisualObject(true);
@@ -1439,7 +1450,7 @@ namespace Visifire.Charts
             }
 
             // set the height of the visual canvas
-            Visual.Height = height * (Int32)Rows + Padding.Bottom;
+            Visual.Height = height * (Int32)InternalRows + Padding.Bottom;
 
             // calculate the overflow due to this set of axis labels
             CalculateHorizontalOverflow();
@@ -1560,57 +1571,75 @@ namespace Visifire.Charts
             return fontSize;
         }
 
+        private Int32 CalculateRows()
+        {
+            TextBlock textBlock = new TextBlock();
+
+            textBlock = SetFontProperties(textBlock);
+
+            //Calculate interval
+            Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
+
+            Double pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + Minimum);
+            List<Double> labelWidths = new List<Double>();
+            Double maxRowHeight = 0;
+            Size textBlockSize;
+
+            foreach (AxisLabel label in AxisLabelList)
+            {
+                textBlock.Text = " " + label.Text + " ";
+                textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+
+                if (!Double.IsNaN((Double)this.Angle))
+                {
+#if WPF
+                    textBlockSize.Width = (Math.Cos(AxisLabel.GetRadians(GetAngle())) * textBlock.DesiredSize.Height) + textBlock.DesiredSize.Height / 2;
+#else
+                    textBlockSize.Width = (Math.Cos(AxisLabel.GetRadians(GetAngle())) * textBlock.ActualHeight) + textBlock.ActualHeight / 2;
+#endif
+                }
+                maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
+
+                labelWidths.Add(textBlockSize.Width);
+            }
+
+            _maxRowHeight = maxRowHeight;
+
+            Boolean overlap;
+            Int32 rows;
+            for (rows = 1; rows <= 3; rows++)
+            {
+                overlap = false;
+                for (Int32 i = 0; i < labelWidths.Count - rows; i++)
+                {
+                    Double labelFittingSize = labelWidths[i] / 2 + labelWidths[i + rows] / 2;
+                    if (labelFittingSize > pixelInterval * rows)
+                    {
+                        overlap = true;
+                        break;
+                    }
+                }
+                if (!overlap)
+                    break;
+            }
+
+            return rows;
+        }
+
         /// <summary>
         /// Calculate number of rows for axislabels
         /// </summary>
         /// <returns></returns>
         private Int32 CalculateNumberOfRows()
         {
-            if (Rows <= 0)
+            if (InternalRows <= 0)
             {
-                TextBlock textBlock = new TextBlock();
-                textBlock = SetFontProperties(textBlock);
-
-                //Calculate interval
-                Double interval = (Double)((Double.IsNaN((Double)Interval) && Interval <= 0) ? Interval : ParentAxis.InternalInterval);
-
-                Double pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + Minimum);
-                List<Double> labelWidths = new List<Double>();
-                Double maxRowHeight = 0;
-                Size textBlockSize;
-
-                foreach (AxisLabel label in AxisLabelList)
-                {
-                    textBlock.Text = " " + label.Text + " ";
-                    textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
-                    maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
-                    labelWidths.Add(textBlockSize.Width);
-                }
-
-                _maxRowHeight = maxRowHeight;
-
-                Boolean overlap;
                 Int32 rows;
-                for (rows = 1; rows <= 3; rows++)
-                {
-                    overlap = false;
-                    for (Int32 i = 0; i < labelWidths.Count - rows; i++)
-                    {
-                        Double labelFittingSize = labelWidths[i] / 2 + labelWidths[i + rows] / 2;
-                        if (labelFittingSize > pixelInterval * rows)
-                        {
-                            overlap = true;
-                            break;
-                        }
-                    }
-                    if (!overlap)
-                        break;
-                }
-
+                rows = CalculateRows();
                 return rows;
             }
             else
-                return (Int32)Rows;
+                return (Int32)InternalRows;
         }
 
         /// <summary>
@@ -1669,24 +1698,38 @@ namespace Visifire.Charts
                 Double initialFontSize = CalculateFontSize(max);
                 FontSize = initialFontSize;
             }
-            if (Rows <= 0)
+
+            if (InternalRows <= 0)
             {
                 Int32 rows = CalculateNumberOfRows();
 
                 if (rows > 2 && Double.IsNaN((Double)Angle))
                 {
-                    Rows = 1;
+                    InternalRows = 1;
 
                     Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
-                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval)|| (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
-                        ParentAxis.SkipOffset = CalculateSkipOffset((int)Rows, (Double)Angle, Width);
+                    if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
+                        ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)Angle, Width);
                     else
+                    {
                         ParentAxis.SkipOffset = 0;
+
+                        rows = CalculateRows();
+
+                        InternalRows = rows;
+                    }
+                }
+                else if (rows >= 2 && !Double.IsNaN((Double)Angle) && (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
+                {
+                    InternalRows = 1;
+
+                    ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)Angle, Width);
+                    
                 }
                 else
                 {
-                    Rows = rows;
+                    InternalRows = rows;
                 }
             }
             else
@@ -1721,17 +1764,34 @@ namespace Visifire.Charts
             Double pixelInterval;
             TextBlock textBlock = new TextBlock();
             textBlock = SetFontProperties(textBlock);
-            textBlock.Text = "ABCD";
+            //textBlock.Text = "ABCD";
+            
+            Double maxHeight = 0;
+            List<Double> labelHeights = new List<Double>();
+            
+            foreach (AxisLabel label in AxisLabelList)
+            {
+                textBlock.Text = label.Text;
+#if WPF 
+                Size textBlockSize = Graphics.CalculateVisualSize(textBlock);
+                labelHeights.Add(textBlockSize.Height);
+#else
+                labelHeights.Add(textBlock.ActualHeight);
+#endif
+            }
 
-            Size textBlockSize = Graphics.CalculateVisualSize(textBlock);
+            for (Int32 i = 0; i < labelHeights.Count - 1; i++)
+            {
+                maxHeight = Math.Max(maxHeight, (labelHeights[i] + labelHeights[i + 1]) / 2 + 2);
+            }
 
             while(overlap)
             {   
                 pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + skipOffset + Minimum);
 #if WPF
-                if (pixelInterval >= textBlockSize.Height)
+                if (pixelInterval >= maxHeight)
 #else
-                if (pixelInterval >= textBlock.ActualHeight)
+                if (pixelInterval >= maxHeight)
 #endif
                 {
                     overlap = false;
@@ -1826,7 +1886,7 @@ namespace Visifire.Charts
             // List to store the values for which the labels are created
             LabelValues = new List<Double>();
 
-            if (FontSize > _savedFontSize || Angle != _savedAngle || Rows != _savedRows)
+            if (FontSize > _savedFontSize || Angle != _savedAngle || InternalRows != _savedRows)
                 _isRedraw = false;
 
             // check if this is a first time draw or a redraw
@@ -1835,14 +1895,14 @@ namespace Visifire.Charts
                 // if redraw then restore the original values
                 Angle = _savedAngle;
                 FontSize = _savedFontSize;
-                Rows = _savedRows;
+                InternalRows = _savedRows;
             }
             else
             {
                 // Preserve the original values for future use
                 _savedAngle = (Double)Angle;
                 _savedFontSize = FontSize;
-                _savedRows = (Int32)Rows;
+                _savedRows = (Int32)InternalRows;
                 _isRedraw = true;
             }
 

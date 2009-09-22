@@ -63,7 +63,7 @@ namespace Visifire.Charts
         public DataSeries()
         {
             ToolTipText = "";
-
+            IsZIndexSet = false;
 
             // Apply default style from generic
 #if WPF
@@ -501,6 +501,18 @@ namespace Visifire.Charts
             typeof(LineStyles),
             typeof(DataSeries),
             new PropertyMetadata(OnLabelLineStylePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.LabelAngle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.LabelAngle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelAngleProperty = DependencyProperty.Register
+            ("LabelAngle",
+            typeof(Double),
+            typeof(DataSeries),
+            new PropertyMetadata(Double.NaN, OnLabelAnglePropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.MarkerEnabled dependency property.
@@ -1127,7 +1139,10 @@ namespace Visifire.Charts
                 if ((Nullable<Double>)GetValue(LineThicknessProperty) == null)
                 {
                     if (RenderAs == RenderAs.Line)
-                        return (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                    {
+                        Double retValue = (Double) (((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
+                        return retValue > 4 ? 4 : retValue;            
+                    }
                     else if (RenderAs == RenderAs.Stock)
                         return 2;
                     else
@@ -1218,6 +1233,24 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or set the LabelAngle property
+        /// </summary>
+        public Double LabelAngle
+        {
+            get
+            {
+                return (Double)GetValue(LabelAngleProperty);
+            }
+            set
+            {
+                if (value > 90 || value < -90)
+                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
+
+                SetValue(LabelAngleProperty, value);
+            }
+        }
+
+        /// <summary>
         /// Get or set the LabelText property
         /// </summary>
         public String LabelText
@@ -1256,7 +1289,7 @@ namespace Visifire.Charts
             get
             {
                 if (GetValue(LabelFontFamilyProperty) == null)
-                    return new FontFamily("Arial");
+                    return new FontFamily("Verdana");
                 else
                     return (FontFamily)GetValue(LabelFontFamilyProperty);
             }
@@ -1547,7 +1580,7 @@ namespace Visifire.Charts
             {
                 if ((Nullable<Double>)GetValue(MarkerSizeProperty) == null)
                     if (this.RenderAs == RenderAs.Line)
-                        return (this.LineThickness * 1.8);
+                        return (this.LineThickness * 2);
                     else
                         return 8;
                 else
@@ -1608,20 +1641,26 @@ namespace Visifire.Charts
 
         #endregion Marker Properties
 
-       /// <summary>
-       /// Get or set ZIndex property
-       /// (Will be used to decide which series comes in front and which one goes back)
-       /// </summary>
-       internal Int32 InternalZIndex
-       {
+        /// <summary>
+        /// Get or set ZIndex property
+        /// (Will be used to decide which series comes in front and which one goes back)
+        /// </summary>
+        internal Int32 InternalZIndex
+        {
            get;
            set;
-       }
+        }
+
+        internal Boolean IsZIndexSet
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Get or set the Internal Start angle property
         /// </summary>
-         internal Double InternalStartAngle
+        internal Double InternalStartAngle
          {
              get
              {
@@ -2527,6 +2566,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// LabelAngleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged("LabelAngle");
+        }
+
+        /// <summary>
         /// MarkerEnabledProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2788,6 +2838,7 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.InternalZIndex = (Int32) e.NewValue;
+            dataSeries.IsZIndexSet = true;
             dataSeries.FirePropertyChanged("ZIndex");
         }
 
@@ -2830,6 +2881,8 @@ namespace Visifire.Charts
                         }
                         else
                             dataPoint._isAutoName = false;
+
+                        // dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(DataPoint_PropertyChanged);
@@ -2896,12 +2949,36 @@ namespace Visifire.Charts
         /// </summary>
         internal void AttachEvent2DataSeriesVisualFaces()
         {
+            if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
+            {
+                AttachEvent2AreaVisualFaces(this);
+            }
+            else
+            {
+                foreach (DataPoint dp in InternalDataPoints)
+                {
+                    dp.AttachEvent2DataPointVisualFaces(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attach events to Area faces
+        /// </summary>
+        /// <param name="Object">Object where events to be attached</param>
+        internal void AttachEvent2AreaVisualFaces(ObservableObject Object)
+        {
+            if (Faces != null)
+            {
+                foreach(FrameworkElement face in Faces.VisualComponents)
+                    AttachEvents2AreaVisual(Object, this, face);
+            }
+
             foreach (DataPoint dp in InternalDataPoints)
             {
                 dp.AttachEvent2DataPointVisualFaces(this);
             }
         }
-
 
         /// <summary>
         /// Get DataPoint for MouseButton event

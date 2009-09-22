@@ -248,7 +248,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(1, chart.AxesX[0].AxisLabels.Rows);
+                Assert.AreEqual(0, chart.AxesX[0].AxisLabels.Rows);
             }
 
             window.Dispatcher.InvokeShutdown();

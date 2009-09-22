@@ -183,17 +183,25 @@ namespace Visifire.Charts
             }
         }
 
+
+        private Boolean _includeZero;
         /// <summary>
         /// Write-only property used to include zero in the axis range.
         /// </summary>
         public Boolean IncludeZero
         {
+            get
+            {
+                return _includeZero;
+            }
             set
             {
+                _includeZero = true;
                 // If zero is included need to set min value as 0.
                 if (value == true && this._min > 0)
-                    this._min = 0;
+                    this._min = 0;                
             }
+            
         }
 
         /// <summary>

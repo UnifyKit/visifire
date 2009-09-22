@@ -18,6 +18,7 @@ using Visifire.Charts;
 using System.Globalization;
 using System.Windows.Browser;
 using System.Windows.Markup;
+using System.Text.RegularExpressions;
 
 namespace SLVisifireChartsXap
 {
@@ -169,19 +170,26 @@ namespace SLVisifireChartsXap
                 _chartCanv = CreateChart();
                 _chartCanv.Opacity = 0;
 
-                // _wrapper.LayoutRoot.Children.Clear();
+                //_wrapper.LayoutRoot.Children.Clear();
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
-
-                _chartCanv.Loaded += delegate
-                {
-                    _oldCanvas.Opacity = 0;
-                    _chartCanv.Opacity = 1;
-                    RemoveOldChartCanvas();
-                };
+                _chartCanv.Loaded += new RoutedEventHandler(newChartCanvas_Loaded);
             }
+        }
 
+        /// <summary>
+        /// New chart canvas loaded event handler applies 
+        /// Applies opacity=1 to new chart canvas and zero for the old chart canvas 
+        /// in order to avoid flickering while real-time update from JavaScript
+        /// </summary>
+        /// <param name="sender">New chart canvas</param>
+        /// <param name="e">RoutedEventArgs</param>
+        void newChartCanvas_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Canvas).Loaded -= newChartCanvas_Loaded;
+            Canvas oldCanvas = _wrapper.LayoutRoot.Children[2] as Canvas;
 
-            // AddDialog(_wrapper);
+            oldCanvas.Visibility = Visibility.Collapsed;
+            _chartCanv.Opacity = 1;
         }
 
         /// <summary>
@@ -345,8 +353,8 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
-
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 2";
+            version = version.Replace("Version=", "");
             return version;
         }
 
@@ -358,8 +366,7 @@ namespace SLVisifireChartsXap
         {
             // Add Logger
             Logger = new Logger();
-            Logger.Log("Error Log " + Dialog.Message + ":\n--------------------------------");
-            Logger.LogLine("Copy & Paste the contents of this log in www.visifire.com/forums for support.\n");
+            Logger.Log(Dialog.Message + " error log:\n");
             Logger.Visibility = Visibility.Collapsed;
 
             wrapper.LayoutRoot.Children.Add(Logger);
@@ -374,7 +381,7 @@ namespace SLVisifireChartsXap
             // Add Dialog
             Dialog = new Dialog();
             Dialog.Visibility = Visibility.Collapsed;
-            Dialog.Message = GetAssemblyVersion();
+            Dialog.Message = "Visifire " + GetAssemblyVersion();
             wrapper.LayoutRoot.Children.Add(Dialog);
         }
 
@@ -406,20 +413,15 @@ namespace SLVisifireChartsXap
                 canvasXaml += "</Canvas>";
 
                 chartCanvas = (Canvas)XamlReader.Load(canvasXaml);
+                // chartCanvas.Background = Visifire.Commons.Graphics.GetRandonColor();
             }
             catch (Exception e1)
-            {
-                throw new Exception("Error: Invalid chart Data XML found..\n" + e1.Message);
+            {   
+                throw new Exception("Error: Invalid chart Data XML found..\n" + CollectWrongPartOfXAML(e1.Message));
             }
 
-            if (_charts == null)
-                _charts = new List<UIElement>();
-
-            if (Charts == null)
-                Charts = new List<Chart>();
-
-            _charts.Clear();
-            Charts.Clear();
+            List<UIElement> _charts = new List<UIElement>();
+            Charts = new List<Chart>();
 
             FindByType(ref _charts, chartCanvas as Panel, typeof(Chart));
 
@@ -429,7 +431,6 @@ namespace SLVisifireChartsXap
                 chart.LogLevel = _logLevel;
                 chart.ControlId = _controlId;
             }
-
 
             if (!String.IsNullOrEmpty(_setVisifireChartsRefFunctionName))
             {
@@ -463,6 +464,196 @@ namespace SLVisifireChartsXap
         }
 
         /// <summary>
+        /// Get Line number and char number
+        /// </summary>
+        /// <param name="errorMsg"></param>
+        /// <returns></returns>
+        private String CollectWrongPartOfXAML(string errorMsg)
+        {
+            Int32 errorStartCharNumber = 0;
+            Int32 errorLineNumber;
+            Int32 actualErrorLineNumber = 0;
+            _skipHighlightValue = 0;
+            
+            try
+            {
+                if (errorMsg.Contains("Line:") || errorMsg.Contains("Position:"))
+                {   
+                    String str = errorMsg.Substring(errorMsg.IndexOf('[') + 1, errorMsg.IndexOf(']') - errorMsg.IndexOf('[') - 1);
+
+                    String[] st = str.Split(' ');
+
+                    errorLineNumber = Int32.Parse(st[1]) - 1;
+                    errorStartCharNumber = Int32.Parse(st[3]);// -SKIP_CHARACTER;
+
+                    if (errorLineNumber < 0)
+                        errorLineNumber = 0;
+
+                    actualErrorLineNumber = errorLineNumber;
+
+                    if ((errorLineNumber == 0 && errorStartCharNumber == 0))
+                    {
+                        Int32 index1 = errorMsg.IndexOf("support ") + 8;
+                        Int32 index2 = errorMsg.IndexOf(" as");
+
+                        //Regex objAlphaPattern = new Regex("(/>[^>]*(" + errorMsg.Substring(index1, index2 - index1) + ")[^<]*<)");
+                        //Regex objAlphaPattern = new Regex("<vc\\:Chart[\\s]+.*");
+                        Regex objAlphaPattern = new Regex("(>[\\s]*(" + errorMsg.Substring(index1, index2 - index1) + ")[\\s]*<)");
+                        if(objAlphaPattern.IsMatch(_dataXml))
+                        {   
+                            MatchCollection matchs = objAlphaPattern.Matches(_dataXml);
+
+                            foreach (Match match in matchs)
+                            {
+                                _string2Highlight = match.Value; //_dataXml.Substring(match.Index, match.Length);
+                            }
+
+                            _skipHighlightValue = 0;
+                        }
+                        else
+                            _skipHighlightValue = 1;
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(_dataXml))
+                        {
+                            String[] _xmlLines = _dataXml.Split('\n');
+
+                            if (!String.IsNullOrEmpty(_xmlLines[(errorLineNumber - 1) < 0 ? 0 : errorLineNumber - 1]))
+                            {
+                                String line = _xmlLines[errorLineNumber - 1];
+                                String token;
+
+                                Int32 index = 0;
+                                
+                                if (errorMsg.Contains("AG_E_PARSER_BAD_PROPERTY_VALUE"))
+                                {
+                                    index = line.Substring(errorStartCharNumber, line.Length - errorStartCharNumber).IndexOf('"');
+                                    token = line.Substring(0, errorStartCharNumber + index).Trim();
+
+                                    if(token.LastIndexOf(' ') != -1)
+                                        token = (line.Trim()).Substring(token.LastIndexOf(' '), token.Length - token.LastIndexOf(' ')).Trim();
+
+                                }
+                                else
+                                    token = line.Substring(0, errorStartCharNumber).Trim();
+
+
+
+                                if (errorMsg.Contains("Unknown attribute") || errorMsg.Contains("Invalid attribute value") || errorMsg.Contains("whitespace expected"))
+                                {
+                                    index = token.LastIndexOf(' ');
+
+                                    if (index == -1)
+                                        index = token.LastIndexOf('<');
+                                }
+                                else if(errorMsg.Contains("wfc: no '<' in attribute value"))
+                                {
+                                    index = token.LastIndexOf('"');
+
+                                    if (index == -1)
+                                        index = -7009;
+                                }
+                                else if(errorMsg.Contains("illegal qualified name character"))
+                                {
+                                    index = token.LastIndexOf('"');
+
+                                    if (index == -1)
+                                        index = -7051;
+                                }
+                                else
+                                {
+                                    index = token.LastIndexOf('<');
+                                }
+
+                                if (index >= 0)
+                                {
+                                    if (errorMsg.Contains("Canvas does not support text content") || errorMsg.Contains("'>' expected") || errorMsg.Contains("'>' expected") || errorMsg.Contains("wfc: element type match"))
+                                    {
+                                        Int32 len=0;
+                                        for (int i = 0; i < errorLineNumber - 1; i++)
+                                            len += _xmlLines[i].Length;
+
+                                        token = _dataXml.Substring(0, len + index);
+                                        _string2Highlight = token;
+                                    }
+                                    else
+                                    {
+                                        Int32 length = errorStartCharNumber - index;
+                                        token = token.Substring(index, token.Length - index);
+                                        _string2Highlight=token;
+                                    }
+                                }
+                                // 7009 : wfc: no '<' in attribute value
+                                // 7051 : illegal qualified name character
+                                else if (index == -7009 || index == -7051) 
+                                {
+                                    Int32 len =0;
+                                    Int32 errorCode = index;
+
+                                    for (int i = 0; i < errorLineNumber -1; i++)
+                                        len += _xmlLines[i].Length;
+
+                                    index = len + errorStartCharNumber;
+
+                                    token = _dataXml.Substring(0, index);
+
+                                    if (errorCode == -7051)
+                                        index = token.LastIndexOf('=');
+                                    else
+                                        index = token.LastIndexOf('"');
+
+                                    if (index == -1)
+                                        _string2Highlight=token;
+                                    else
+                                        _string2Highlight=token.Substring(index, token.Length - index);
+
+                                    if (actualErrorLineNumber > 1)
+                                    {
+                                        actualErrorLineNumber = actualErrorLineNumber - 1;
+                                        line = _xmlLines[actualErrorLineNumber-1];
+                                        Int32 newPosition =line.LastIndexOf(_string2Highlight.Trim());
+                                        errorMsg = errorMsg.Replace("Position: " + errorStartCharNumber.ToString(), "Position: " + newPosition.ToString());
+
+                                        errorStartCharNumber = newPosition;
+                                    }
+                                    //errorMsg = errorMsg.Replace("Position: " + errorStartCharNumber.ToString(), "");
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(token))
+                                        _string2Highlight=token;
+                                    else if (!String.IsNullOrEmpty(line))
+                                        _string2Highlight=line;
+                                    else
+                                        _string2Highlight = null;
+                                }
+                            }
+                        }
+                    }
+
+                    errorMsg = errorMsg.Replace("Line: " + (errorLineNumber + 1).ToString(), "Line: " + actualErrorLineNumber.ToString());
+                    errorMsg = errorMsg.Replace("[Line: 0 Position: 0]", "");
+
+                    if (errorMsg.Contains("AG_E_PARSER_PROPERTY_NOT_FOUND"))
+                    {
+                        //_string2Highlight = null;
+                        errorMsg += "\n\nNote: Make sure that name of a property of chart or other chart element is not \nmisspelled.";
+                    }
+                }
+            }
+            catch
+            {
+                _string2Highlight = null;
+            }
+          
+            return errorMsg;
+        }
+
+        private String _string2Highlight;
+        private Int32 _skipHighlightValue;
+
+        /// <summary>
         /// Finds list of objects of specified type.
         /// </summary>
         private static void FindByType(ref List<UIElement> tResult, Panel parent, Type objType)
@@ -486,8 +677,6 @@ namespace SLVisifireChartsXap
 
         private void RemoveOldChartCanvas()
         {
-            Canvas tempChartCanvas = new Canvas(); //(Canvas)XamlReader.Load(String.Format(@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
-
             if (_wrapper.LayoutRoot.Children.Count > 2)
             {
                 for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
@@ -496,11 +685,13 @@ namespace SLVisifireChartsXap
                     try
                     {
                         if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
-                        {
-                            _wrapper.LayoutRoot.Children.RemoveAt(i);
+                        {   
+                            chartCanvas.Children.Clear();
+                            chartCanvas.Resources.Clear();
                             chartCanvas.Loaded -= chartCanv_Loaded;
-                            chartCanvas.Loaded -= chartCanv_Loaded;
-                            tempChartCanvas.Children.Add(chartCanvas);
+                            chartCanvas.Loaded -= newChartCanvas_Loaded;
+                            _wrapper.LayoutRoot.Children.Remove(chartCanvas);
+                            chartCanvas = null;
                         }
                     }
                     catch (Exception e1)
@@ -510,8 +701,7 @@ namespace SLVisifireChartsXap
                 }
             }
 
-            tempChartCanvas.Children.Clear();
-            tempChartCanvas = null;
+            GC.Collect();
         }
 
         /// <summary>
@@ -537,8 +727,8 @@ namespace SLVisifireChartsXap
 
             try
             {
-                if (!String.IsNullOrEmpty(_onChartPreLoadedFunctionName))
-                    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartPreLoadedFunctionName));
+                // if (!String.IsNullOrEmpty(_onChartPreLoadedFunctionName))
+                //    System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartPreLoadedFunctionName));
 
                 if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
                     System.Windows.Browser.HtmlPage.Window.Eval(String.Format(@"if( {0} != null) {0}=null;", _onChartLoadedFunctionName));
@@ -548,7 +738,8 @@ namespace SLVisifireChartsXap
             }
             catch
             { }
-
+            
+            RemoveOldChartCanvas();
         }
 
         /// <summary>
@@ -596,7 +787,13 @@ namespace SLVisifireChartsXap
                     Logger.LogLine("InnerException: " + e.ExceptionObject.InnerException.Message + "\n");
 
                 Logger.LogLine("Exception: " + e.ExceptionObject.Message + "\n");
-                Logger.LogLine("XML: \n" + _dataXml + "\n"); ;
+                
+                // _skipHighlightValue = Logger.Text.Length;
+
+                Logger.LogLine("XML:\n" + _dataXml + "\n");
+
+                Logger.LogLine("Copy & Paste the contents of this log in www.visifire.com/forums for support.\n");
+
                 Logger.LogLine("StackTrace: \n" + e.ExceptionObject.StackTrace + "\n");
                 Logger.Visibility = Visibility.Visible;
 
@@ -607,6 +804,14 @@ namespace SLVisifireChartsXap
                     if (child != Logger)
                         child.Visibility = Visibility.Collapsed;
                 }
+
+                //CalculateSkipHighlightingText(Logger.Text);
+
+                Logger.SkipHighlight = _skipHighlightValue;
+                Logger.HeighlightText = _string2Highlight;
+                Logger.HelpLink = "http://visifire.com/visifire_charts_documentation.php";
+
+                // Logger.Highlight(_string2Highlight);
             }
 
             e.Handled = true;
@@ -708,11 +913,6 @@ namespace SLVisifireChartsXap
         /// Webclient is used for downloading chart data xml
         /// </summary>
         WebClient _webclient;
-
-        /// <summary>
-        /// List of Charts
-        /// </summary>
-        private List<UIElement> _charts;
 
         #endregion
     }

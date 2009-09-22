@@ -70,6 +70,7 @@ namespace Visifire.Commons
             Bevel = markerBevel;
 
             Opacity = 1;
+            LabelAngle = Double.NaN;
         }
 
         /// <summary>
@@ -124,13 +125,16 @@ namespace Visifire.Commons
             else if (anchorPoint.Y == 1)
                 yPosition -= (MarkerShape.Height + ((TextAlignmentY == AlignmentY.Top) ? _markerShapePosition.Y : 0));
 
-            if (TextAlignmentX == AlignmentX.Center)
-                if (TextBlockSize.Width > MarkerShape.Width)
-                    xPosition -= (TextBlockSize.Width - MarkerShape.Width) / 2;
+            if (Double.IsNaN(LabelAngle))
+            {
+                if (TextAlignmentX == AlignmentX.Center)
+                    if (TextBlockSize.Width > MarkerShape.Width)
+                        xPosition -= (TextBlockSize.Width - MarkerShape.Width) / 2;
 
-            if (TextAlignmentY == AlignmentY.Center)
-                if (TextBlockSize.Height > MarkerShape.Height)
-                    yPosition -= (TextBlockSize.Height - MarkerShape.Height) / 2;
+                if (TextAlignmentY == AlignmentY.Center)
+                    if (TextBlockSize.Height > MarkerShape.Height)
+                        yPosition -= (TextBlockSize.Height - MarkerShape.Height) / 2;
+            }
 
             Visual.SetValue(Canvas.TopProperty, yPosition);
             Visual.SetValue(Canvas.LeftProperty, xPosition);
@@ -200,19 +204,69 @@ namespace Visifire.Commons
                 // Apply TextBlock Properties 
                 ApplyTextBlockProperties();
 
-                if (TextBackground != null)
+                if (!Double.IsNaN(LabelAngle))
                 {
+                    // Create Canvas for TextBlock
+                    LabelCanvas = new Canvas();
+
                     TextBackgroundCanvas = new Canvas();
                     TextBackgroundCanvas.Background = TextBackground;
-                    Visual.Children.Add(TextBackgroundCanvas);
+
+                    TextBackgroundCanvas.Children.Add(TextBlock);
+
+                    // Add TextBackgroundCanvas to LabelCanvas
+                    LabelCanvas.Children.Add(TextBackgroundCanvas);
+
+                    // Set Alignment
+                    SetAlignment4Label();
+
+                    if (TextAlignmentX == AlignmentX.Left)
+                    {
+                        LabelCanvas.SetValue(Grid.ColumnProperty, 0);
+                    }
+                    else if (TextAlignmentX == AlignmentX.Right)
+                    {
+                        LabelCanvas.SetValue(Grid.ColumnProperty, 2);
+                    }
+                    else
+                    {
+                        LabelCanvas.SetValue(Grid.ColumnProperty, 1);
+                        LabelCanvas.HorizontalAlignment = HorizontalAlignment.Center;
+                    }
+
+                    if (TextAlignmentY == AlignmentY.Top)
+                    {
+                        LabelCanvas.SetValue(Grid.RowProperty, 0);
+                        LabelCanvas.VerticalAlignment = VerticalAlignment.Top;
+                    }
+                    else if (TextAlignmentY == AlignmentY.Bottom)
+                    {
+                        LabelCanvas.SetValue(Grid.RowProperty, 2);
+                        LabelCanvas.VerticalAlignment = VerticalAlignment.Top;
+                    }
+                    else
+                    {
+                        LabelCanvas.SetValue(Grid.RowProperty, 1);
+                        LabelCanvas.VerticalAlignment = VerticalAlignment.Top;
+                    }
+
+                    // Add LabelCanvas into Visual
+                    Visual.Children.Add(LabelCanvas);
                 }
+                else
+                {
+                    if (TextBackground != null)
+                    {
+                        TextBackgroundCanvas = new Canvas();
+                        TextBackgroundCanvas.Background = TextBackground;
+                        Visual.Children.Add(TextBackgroundCanvas);
+                    }
 
-                // Set Alignment
-                SetAlignment4Label();
+                    // Set Alignment
+                    SetAlignment4Label();
 
-
-                // Add TextBlock into Visual
-                Visual.Children.Add(TextBlock);
+                    Visual.Children.Add(TextBlock);
+                }
 
                 TextBlock.Margin = new Thickness(LabelMargin, 0, 0, 0);
 
@@ -582,6 +636,12 @@ namespace Visifire.Commons
             set;
         }
 
+        internal Point MarkerPosition
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// MarkerShadow of the Marker shape
         /// </summary>
@@ -604,6 +664,27 @@ namespace Visifire.Commons
         /// TextBlock for Marker
         /// </summary>
         internal TextBlock TextBlock
+        {
+            get;
+            set;
+        }
+
+        internal Canvas LabelCanvas
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Angle for Marker labels
+        /// </summary>
+        internal Double LabelAngle
+        {
+            get;
+            set;
+        }
+
+        internal LabelStyles LabelStyle
         {
             get;
             set;
@@ -896,6 +977,32 @@ namespace Visifire.Commons
             rotateTransform.Angle = angle;
         }
 
+        private void SetRotation(Double radius, Double angle, Double angleInRadian, Point centerOfRotation)
+        {
+            Double left = centerOfRotation.X + radius * Math.Cos(angleInRadian);
+            Double top = centerOfRotation.Y + radius * Math.Sin(angleInRadian);
+
+            top -= TextBlockSize.Height / 2;
+
+            if (TextBackgroundCanvas != null)
+            {
+                TextBackgroundCanvas.SetValue(Canvas.LeftProperty, left);
+                TextBackgroundCanvas.SetValue(Canvas.TopProperty, top);
+
+                TextBackgroundCanvas.Width = TextBlockSize.Width;
+                TextBackgroundCanvas.Height = TextBlockSize.Height;
+
+                TextBackgroundCanvas.RenderTransformOrigin = new Point(0, 0.5);
+
+                TextBackgroundCanvas.RenderTransform = new RotateTransform()
+                {
+                    CenterX = 0,
+                    CenterY = 0,
+                    Angle = angle
+                };
+            }
+        }
+
         /// <summary>
         /// Set alignment for the Marker label
         /// </summary>
@@ -933,9 +1040,54 @@ namespace Visifire.Commons
                                     break;
 
                                 case AlignmentX.Center:
+                                    if (Double.IsNaN(LabelAngle))
+                                    {
+                                        SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
+                                        tt.Y = -TextBlockSize.Width / 2 + TextBlockSize.Height / 2 - 5;
+                                    }
+                                    else
+                                    {
+                                        Point centerOfRotation = new Point(Position.X, Position.Y);
+                                        Double radius = MarkerSize.Height / 2 * ScaleFactor;
+                                        Double angle = 0;
+                                        Double angleInRadian = 0;
 
-                                    SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
-                                    tt.Y = -TextBlockSize.Width / 2 + TextBlockSize.Height / 2 - 5;
+                                        if (LabelStyle == LabelStyles.OutSide)
+                                        {
+                                            if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            centerOfRotation = new Point(Position.X, Position.Y + MarkerSize.Height/2);
+                                            if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = 180 + LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                    }
                                     break;
 
                                 case AlignmentX.Right:
@@ -951,9 +1103,48 @@ namespace Visifire.Commons
                             switch (TextAlignmentX)
                             {
                                 case AlignmentX.Left:
-                                    SetRotateTransformValues(ref rt, TextBlockSize.Width, TextBlockSize.Height / 2, 90);
-                                    tt.Y = TextBlockSize.Width / 2;
-                                    tt.X = -TextBlockSize.Height / 2;
+                                    if (Double.IsNaN(LabelAngle))
+                                    {
+                                        SetRotateTransformValues(ref rt, TextBlockSize.Width, TextBlockSize.Height / 2, 90);
+                                        tt.Y = TextBlockSize.Width / 2;
+                                        tt.X = -TextBlockSize.Height / 2;
+                                    }
+                                    else
+                                    {
+                                        Point centerOfRotation = new Point(Position.X + MarkerSize.Width / 2, Position.Y + MarkerSize.Height / 2);
+                                        Double radius = MarkerSize.Width / 2 * ScaleFactor;
+                                        Double angle = 0;
+                                        Double angleInRadian = 0;
+
+                                        if (LabelStyle == LabelStyles.OutSide)
+                                        {
+                                            if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(LabelAngle <= 90 && LabelAngle >= -90)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                    }
                                     break;
 
                                 case AlignmentX.Center:
@@ -962,9 +1153,48 @@ namespace Visifire.Commons
                                     break;
 
                                 case AlignmentX.Right:
-                                    SetRotateTransformValues(ref rt, 0, TextBlockSize.Height / 2, -90);
-                                    tt.Y = TextBlockSize.Width / 2;
-                                    tt.X = TextBlockSize.Height / 2;
+                                    if (Double.IsNaN(LabelAngle))
+                                    {
+                                        SetRotateTransformValues(ref rt, 0, TextBlockSize.Height / 2, -90);
+                                        tt.Y = TextBlockSize.Width / 2;
+                                        tt.X = TextBlockSize.Height / 2;
+                                    }
+                                    else
+                                    {
+                                        Point centerOfRotation = new Point(Position.X - MarkerSize.Width / 2, Position.Y + MarkerSize.Height / 2);
+                                        Double radius = MarkerSize.Width / 2 * ScaleFactor;
+                                        Double angle = 0;
+                                        Double angleInRadian = 0;
+
+                                        if (LabelStyle == LabelStyles.OutSide)
+                                        {
+                                            if (LabelAngle <= 90 && LabelAngle >= -90)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                    }
                                     break;
                             }
 
@@ -982,9 +1212,57 @@ namespace Visifire.Commons
                                     break;
 
                                 case AlignmentX.Center:
+                                    if (Double.IsNaN(LabelAngle))
+                                    {
+                                        SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
+                                        tt.Y = TextBlockSize.Height + MarkerSize.Height * ScaleFactor;
+                                    }
+                                    else
+                                    {
+                                        Point centerOfRotation = new Point();
+                                        Double radius = MarkerSize.Height / 2 * ScaleFactor;
+                                        Double angle = 0;
+                                        Double angleInRadian = 0;
 
-                                    SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
-                                    tt.Y = TextBlockSize.Height + MarkerSize.Height * ScaleFactor;
+                                        if (LabelStyle == LabelStyles.OutSide)
+                                        {
+                                            centerOfRotation = new Point(Position.X, Position.Y);
+
+                                            if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = 180 + LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            centerOfRotation = new Point(Position.X, Position.Y - MarkerSize.Height / 2);
+
+                                            if (LabelAngle > 0 && LabelAngle <= 90)
+                                            {
+                                                angle = LabelAngle - 180;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                radius += TextBlockSize.Width;
+                                                angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                            else if (LabelAngle >= -90 && LabelAngle < 0)
+                                            {
+                                                angle = LabelAngle;
+                                                angleInRadian = (Math.PI / 180) * angle;
+                                                SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                            }
+                                        }
+                                    }
                                     break;
 
                                 case AlignmentX.Right:
@@ -996,14 +1274,17 @@ namespace Visifire.Commons
                             break;
                     }
 
-                    TextBlock.RenderTransform = tg;
-
-                    if (TextBackgroundCanvas != null)
+                    if (Double.IsNaN(LabelAngle))
                     {
-                        TextBackgroundCanvas.RenderTransformOrigin = TextBlock.RenderTransformOrigin;
-                        TextBackgroundCanvas.RenderTransform = tg;
-                        TextBackgroundCanvas.Height = TextBlockSize.Height;
-                        TextBackgroundCanvas.Width = TextBlockSize.Width;
+                        TextBlock.RenderTransform = tg;
+
+                        if (TextBackgroundCanvas != null)
+                        {
+                            TextBackgroundCanvas.RenderTransformOrigin = TextBlock.RenderTransformOrigin;
+                            TextBackgroundCanvas.RenderTransform = tg;
+                            TextBackgroundCanvas.Height = TextBlockSize.Height;
+                            TextBackgroundCanvas.Width = TextBlockSize.Width;
+                        }
                     }
                 }
 
@@ -1016,73 +1297,75 @@ namespace Visifire.Commons
         /// </summary>
         private void SetLabelBackgroundAndSymbolPosition()
         {
-
-            if (TextBackgroundCanvas != null)
+            if (Double.IsNaN(LabelAngle))
             {
-                TextBackgroundCanvas.Height = TextBlockSize.Height;
-                TextBackgroundCanvas.Width = TextBlockSize.Width;
-            }
-
-            if (TextAlignmentX == AlignmentX.Left)
-            {
-                TextBlock.SetValue(Grid.ColumnProperty, 0);
-                _markerShapePosition.X = TextBlockSize.Width;
-
                 if (TextBackgroundCanvas != null)
                 {
-                    TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 0);
+                    TextBackgroundCanvas.Height = TextBlockSize.Height;
+                    TextBackgroundCanvas.Width = TextBlockSize.Width;
                 }
 
-            }
-            else if (TextAlignmentX == AlignmentX.Right)
-            {
-                TextBlock.SetValue(Grid.ColumnProperty, 2);
-
-                if (TextBackgroundCanvas != null)
+                if (TextAlignmentX == AlignmentX.Left)
                 {
-                    TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 2);
+                    TextBlock.SetValue(Grid.ColumnProperty, 0);
+                    _markerShapePosition.X = TextBlockSize.Width;
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 0);
+                    }
+
                 }
-            }
-            else
-            {
-                TextBlock.SetValue(Grid.ColumnProperty, 1);
-                TextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-
-                if (TextBackgroundCanvas != null)
+                else if (TextAlignmentX == AlignmentX.Right)
                 {
-                    TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 1);
-                    TextBackgroundCanvas.HorizontalAlignment = HorizontalAlignment.Center;
+                    TextBlock.SetValue(Grid.ColumnProperty, 2);
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 2);
+                    }
                 }
-            }
-
-            if (TextAlignmentY == AlignmentY.Top)
-            {
-                TextBlock.SetValue(Grid.RowProperty, 0);
-                _markerShapePosition.Y = TextBlockSize.Height;
-
-                if (TextBackgroundCanvas != null)
+                else
                 {
-                    TextBackgroundCanvas.SetValue(Grid.RowProperty, 0);
+                    TextBlock.SetValue(Grid.ColumnProperty, 1);
+                    TextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.ColumnProperty, 1);
+                        TextBackgroundCanvas.HorizontalAlignment = HorizontalAlignment.Center;
+                    }
                 }
-            }
-            else if (TextAlignmentY == AlignmentY.Bottom)
-            {
-                TextBlock.SetValue(Grid.RowProperty, 2);
 
-                if (TextBackgroundCanvas != null)
+                if (TextAlignmentY == AlignmentY.Top)
                 {
-                    TextBackgroundCanvas.SetValue(Grid.RowProperty, 2);
+                    TextBlock.SetValue(Grid.RowProperty, 0);
+                    _markerShapePosition.Y = TextBlockSize.Height;
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.RowProperty, 0);
+                    }
                 }
-            }
-            else
-            {
-                TextBlock.SetValue(Grid.RowProperty, 1);
-                TextBlock.VerticalAlignment = VerticalAlignment.Center;
-
-                if (TextBackgroundCanvas != null)
+                else if (TextAlignmentY == AlignmentY.Bottom)
                 {
-                    TextBackgroundCanvas.SetValue(Grid.RowProperty, 1);
-                    TextBackgroundCanvas.VerticalAlignment = VerticalAlignment.Center;
+                    TextBlock.SetValue(Grid.RowProperty, 2);
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.RowProperty, 2);
+                    }
+                }
+                else
+                {
+                    TextBlock.SetValue(Grid.RowProperty, 1);
+                    TextBlock.VerticalAlignment = VerticalAlignment.Center;
+
+                    if (TextBackgroundCanvas != null)
+                    {
+                        TextBackgroundCanvas.SetValue(Grid.RowProperty, 1);
+                        TextBackgroundCanvas.VerticalAlignment = VerticalAlignment.Center;
+                    }
                 }
             }
 
@@ -1091,7 +1374,6 @@ namespace Visifire.Commons
 
             if (TextAlignmentY == AlignmentY.Center)
                 _markerShapePosition.Y += Math.Abs((TextBlockSize.Height - MarkerShape.Height) / 2);
-
         }
 
         /// <summary>
