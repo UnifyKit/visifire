@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Visifire Charts</title>
+<script language="javascript" type="text/javascript" >
+</script>
+</head>
+<body>
+<!-- To embed in existing html copy the code below -->
+<script type="text/javascript" src="Visifire2.js"></script>
+<div id="VisifireChart">
+<script language="javascript" type="text/javascript">
+    var chartXmlString = ''
++ '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0" Theme="Theme1" View3D="true" Watermark="True" SmartLabelEnabled="True">'
++ '<vc:Chart.Titles>'
++ '<vc:Title Text="Global Fortune 5 Companies 2007" />'
++ '</vc:Chart.Titles>'
++ '<vc:Chart.AxesX>'
++ '<vc:Axis Title="Companies" />'
++ '</vc:Chart.AxesX>'
++ '<vc:Chart.AxesY>'
++ '<vc:Axis Title="Revenue in Million dollars" AxisType="Primary" />'
++ '</vc:Chart.AxesY>'
++ '<vc:Chart.Series>'
++ '<vc:DataSeries ShowInLegend="false" RenderAs="Doughnut" AxisYType="Primary">'
++ '<vc:DataSeries.DataPoints>'
++ '<vc:DataPoint AxisXLabel="Wall-Mart" YValue="592796" />'
++ '<vc:DataPoint AxisXLabel="Exxon Mobil" YValue="250473" />'
++ '<vc:DataPoint AxisXLabel="Shell" YValue="40304" />'
++ '<vc:DataPoint AxisXLabel="BP" YValue="22254" />'
++ '<vc:DataPoint AxisXLabel="General Motors" YValue="10993" />'
++ '</vc:DataSeries.DataPoints>'
++ '</vc:DataSeries>'
++ '</vc:Chart.Series>'
++ '</vc:Chart>';
+    var vChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
+    vChart.setDataXml(chartXmlString);
+    vChart.render("VisifireChart");
+</script>
+</div>
+<!-- Copy till here -->
+</body>
+</html>
+
