@@ -190,7 +190,21 @@ namespace Visifire.Charts
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
 
                     marker.Tag = new ElementData() { Element = dataPoint };
-                    
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                        {
+                            marker.LabelAngle = dataPoint.LabelAngle;
+                            marker.TextOrientation = Orientation.Vertical;
+
+                            marker.TextAlignmentX = AlignmentX.Center;
+                            marker.TextAlignmentY = AlignmentY.Center;
+
+                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                        }
+                    }
+
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     if (marker.MarkerType != MarkerTypes.Cross)
@@ -257,4 +271,4 @@ namespace Visifire.Charts
 
         #endregion
     }
-}
+    }

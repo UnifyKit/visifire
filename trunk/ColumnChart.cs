@@ -187,30 +187,33 @@ namespace Visifire.Charts
                     else
                         dataPoint.Marker.TextOrientation = Orientation.Horizontal;
 
-                    if (columnParams.IsPositive)
+                    if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                     {
-                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                        if (columnParams.IsPositive)
                         {
-                            if (canvasTop - dataPoint.Marker.MarkerActualSize.Width - dataPoint.Marker.MarkerSize.Height < 0)
-                                columnParams.LabelStyle = LabelStyles.Inside;
+                            if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                            {
+                                if (canvasTop - dataPoint.Marker.MarkerActualSize.Width - dataPoint.Marker.MarkerSize.Height < 0)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                            }
+                            else
+                            {
+                                if (canvasTop - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height < 0)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                            }
                         }
                         else
                         {
-                            if (canvasTop - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height < 0)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                    }
-                    else
-                    {
-                        if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
-                        {
-                            if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Width + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
-                                columnParams.LabelStyle = LabelStyles.Inside;
-                        }
-                        else
-                        {
-                            if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
-                                columnParams.LabelStyle = LabelStyles.Inside;
+                            if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
+                            {
+                                if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Width + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                            }
+                            else
+                            {
+                                if (canvasTop + markerPosition.Y + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height > chart.PlotArea.BorderElement.Height + chart.ChartArea.PLANK_DEPTH - chart.ChartArea.PLANK_THICKNESS)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                            }
                         }
                     }
 

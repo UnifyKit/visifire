@@ -425,7 +425,33 @@ namespace Visifire.Charts
            ("EntryMargin",
            typeof(Double),
            typeof(Legend),
-           new PropertyMetadata(OnEntryMarginPropertyPropertyChanged));
+           new PropertyMetadata(OnEntryMarginPropertyChanged));
+
+#if WPF
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.MaxHeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Register
+           ("MaxHeight",
+           typeof(Double),
+           typeof(Legend),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.MaxWidth dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Register
+           ("MaxWidth",
+           typeof(Double),
+           typeof(Legend),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+#endif
 
         /// <summary>
         /// Get or set the HrefTarget property
@@ -998,6 +1024,52 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the maximum height of the Legend
+        /// </summary>
+        public new Double MaxHeight
+        {
+            get
+            {
+                return (Double)GetValue(MaxHeightProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxHeight != value)
+                {
+                    SetValue(MaxHeightProperty, value);
+                    FirePropertyChanged("MaxHeight");
+                }
+#else
+                SetValue(MaxHeightProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Get or set the maximum height of the Legend
+        /// </summary>
+        public new Double MaxWidth
+        {
+            get
+            {
+                return (Double)GetValue(MaxWidthProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxWidth != value)
+                {
+                    SetValue(MaxWidthProperty, value);
+                    FirePropertyChanged("MaxWidth");
+                }
+#else
+                SetValue(MaxWidthProperty, value);
+#endif
+            }
+        }
+
         #endregion
 
         #region Public Events And Delegates
@@ -1011,9 +1083,9 @@ namespace Visifire.Charts
         #region Internal Properties
 
         /// <summary>
-        /// Get or set the maximum width of the legend
+        /// Get or set the maximum height of the Legend
         /// </summary>
-        internal Double MaximumWidth
+        internal Double InternalMaximumHeight
         {
             get;
             set;
@@ -1022,7 +1094,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the maximum height of the Legend
         /// </summary>
-        internal Double MaximumHeight
+        internal Double InternalMaximumWidth
         {
             get;
             set;
@@ -1453,11 +1525,35 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnEntryMarginPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnEntryMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
             legend.FirePropertyChanged("EntryMargin");
         }
+
+#if WPF
+        /// <summary>
+        /// Event handler attached with MaxHeight property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.FirePropertyChanged("MaxHeight");
+        }
+
+        /// <summary>
+        /// Event handler attached with MaxWidth property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.FirePropertyChanged("MaxWidth");
+        }
+#endif
 
         /// <summary>
         /// Apply font properties of a TextBlock
@@ -1730,7 +1826,7 @@ namespace Visifire.Charts
                     lineMarker.HorizontalAlignment = HorizontalAlignment.Left;
                     lineMarker.VerticalAlignment = VerticalAlignment.Center;
 
-                    if ((currentHeight + lineMarker.Height) <= MaximumHeight)
+                    if ((currentHeight + lineMarker.Height) <= InternalMaximumHeight)
                     {
                         (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
                         currentHeight += lineMarker.Height;
@@ -1747,7 +1843,7 @@ namespace Visifire.Charts
                 {
                     markerAsSymbol.CreateVisual();
 
-                    if ((currentHeight + markerAsSymbol.MarkerActualSize.Height) <= MaximumHeight)
+                    if ((currentHeight + markerAsSymbol.MarkerActualSize.Height) <= InternalMaximumHeight)
                     {
                         (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(markerAsSymbol.Visual);
                         currentHeight += markerAsSymbol.MarkerActualSize.Height;
@@ -1783,7 +1879,7 @@ namespace Visifire.Charts
 
             EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
 
-            MaxRows = (Int32)(MaximumHeight / (maxEntrySize.SymbolSize.Height + maxEntrySize.TextSize.Height + EntryMargin + LabelMargin));
+            MaxRows = (Int32)(InternalMaximumHeight / (maxEntrySize.SymbolSize.Height + maxEntrySize.TextSize.Height + EntryMargin + LabelMargin));
 
             MaxColumns = (Int32)Math.Ceiling(((Double)Entries.Count / MaxRows));
 
@@ -1885,7 +1981,7 @@ namespace Visifire.Charts
                     //if (marker.DataSeriesOfLegendMarker.MarkerEnabled == false)
                     //    marker.MarkerShape.Opacity = 0;
 
-                    if ((currentWidth + lineMarker.Width) <= MaximumWidth)
+                    if ((currentWidth + lineMarker.Width) <= InternalMaximumWidth)
                     {
                         (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(lineMarker);
                         currentWidth += lineMarker.Width;
@@ -1902,7 +1998,7 @@ namespace Visifire.Charts
                 {
                     marker.CreateVisual();
 
-                    if ((currentWidth + marker.MarkerActualSize.Width) <= MaximumWidth)
+                    if ((currentWidth + marker.MarkerActualSize.Width) <= InternalMaximumWidth)
                     {
                         (legendPanel.Children[currentPanelIndex] as StackPanel).Children.Add(marker.Visual);
                         currentWidth += marker.MarkerActualSize.Width;
@@ -1936,7 +2032,7 @@ namespace Visifire.Charts
 
             EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
 
-            MaxColumns = (Int32)(MaximumWidth / (maxEntrySize.SymbolSize.Width + maxEntrySize.TextSize.Width + EntryMargin + LabelMargin));
+            MaxColumns = (Int32)(InternalMaximumWidth / (maxEntrySize.SymbolSize.Width + maxEntrySize.TextSize.Width + EntryMargin + LabelMargin));
 
             MaxRows = (Int32)Math.Ceiling(((Double)Entries.Count / MaxColumns));
 
@@ -2004,8 +2100,8 @@ namespace Visifire.Charts
         {
             Grid legendContent = new Grid();
 
-            MaximumWidth -= 2 * Padding.Left;
-            MaximumHeight -= 2 * Padding.Left;
+            InternalMaximumWidth -= 2 * Padding.Left;
+            InternalMaximumHeight -= 2 * Padding.Left;
 
             if (Orientation == Orientation.Vertical)
             {
@@ -2072,6 +2168,11 @@ namespace Visifire.Charts
 
                 legendTitle.CreateVisualObject();
 
+                legendTitle.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                if(legendTitle.DesiredSize.Width > MaxWidth)
+                    legendTitle.Visual.Width = MaxWidth;
+
                 LegendContainer.Children.Add(legendTitle.Visual);
             }
 
@@ -2079,14 +2180,25 @@ namespace Visifire.Charts
 
             LegendContainer.Children.Add(legendContent);
 
+            LegendContainer.VerticalAlignment = VerticalAlignment.Center;
+            LegendContainer.HorizontalAlignment = HorizontalAlignment.Center;
+
             ApplyVisualProperty();
 
             innerGrid.Children.Add(LegendContainer);
 
             Visual.Cursor = this.Cursor;
             Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            Visual.Height = Visual.DesiredSize.Height;
-            Visual.Width = Visual.DesiredSize.Width + Padding.Left;
+
+            if (!Double.IsPositiveInfinity(MaxHeight) && MaxHeight < Visual.DesiredSize.Height)
+                Visual.Height = MaxHeight;
+            else
+                Visual.Height = Visual.DesiredSize.Height;
+
+            if (!Double.IsPositiveInfinity(MaxWidth) && MaxWidth < Visual.DesiredSize.Width + Padding.Left)
+                Visual.Width = MaxWidth;
+            else
+                Visual.Width = Visual.DesiredSize.Width + Padding.Left;
         }
 
         #endregion

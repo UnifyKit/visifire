@@ -1184,8 +1184,6 @@ namespace Visifire.Charts
                 {
                     if ((Chart as Chart).Series.Count > 1)
                         return true;
-                    else if ((Chart as Chart).Series.Count == 1 && (this.RenderAs == RenderAs.Pie || this.RenderAs == RenderAs.Doughnut || this.RenderAs == RenderAs.SectionFunnel || this.RenderAs == RenderAs.StreamLineFunnel))
-                        return true;
                     else
                         return false;
                         
@@ -1261,7 +1259,7 @@ namespace Visifire.Charts
                 {
                     if (RenderAs == RenderAs.Doughnut || RenderAs == RenderAs.Pie || RenderAs == RenderAs.StreamLineFunnel)
                     {
-                        return "#Percentage%";
+                        return "#AxisXLabel, #YValue";
                     }
                     else if(RenderAs == RenderAs.Stock || RenderAs == RenderAs.CandleStick)
                     {
@@ -1399,10 +1397,10 @@ namespace Visifire.Charts
         public Nullable<LabelStyles> LabelStyle
         {
             get
-            {   
+            {
                 if ((Nullable<LabelStyles>)GetValue(LabelStyleProperty) == null)
                 {
-                   switch (RenderAs)
+                    switch (RenderAs)
                     {
                         case RenderAs.StackedColumn:
                         case RenderAs.StackedBar:
@@ -1412,11 +1410,17 @@ namespace Visifire.Charts
                         case RenderAs.StackedArea100:
                             return LabelStyles.Inside;
                         default:
-                            return LabelStyles.OutSide;
+                            {
+                                IsLabelStyleSet = false;
+                                return LabelStyles.OutSide;
+                            }
                     }
                 }
                 else
+                {
+                    IsLabelStyleSet = true;
                     return (Nullable<LabelStyles>)GetValue(LabelStyleProperty);
+                }
             }
             set
             {
@@ -2051,6 +2055,12 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        internal Boolean IsLabelStyleSet
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Collection of InternalDataPoints used for calculation
@@ -2881,6 +2891,8 @@ namespace Visifire.Charts
                         }
                         else
                             dataPoint._isAutoName = false;
+
+                        // dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
 
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(DataPoint_PropertyChanged);

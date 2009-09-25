@@ -1327,9 +1327,15 @@ namespace Visifire.Charts
             get
             {
                 if ((Nullable<LabelStyles>)GetValue(LabelStyleProperty) == null && _parent != null)
+                {
+                    IsLabelStyleSet = false;
                     return _parent.LabelStyle;
+                }
                 else
+                {
+                    IsLabelStyleSet = true;
                     return (Nullable<LabelStyles>)GetValue(LabelStyleProperty);
+                }
 
             }
             set
@@ -2007,6 +2013,12 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+        internal Boolean IsLabelStyleSet
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// InternalXValue used for internally generated XValue of type double

@@ -33,6 +33,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.View3D = true;
+            chart.SmartLabelEnabled = true;
 
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -1172,6 +1173,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.View3D = true;
+            chart.SmartLabelEnabled = true;
 
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);

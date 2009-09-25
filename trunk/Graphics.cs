@@ -546,6 +546,20 @@ namespace Visifire.Commons
             return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
         }
 
+        internal static Point IntersectingPointOfTwoLines(Point p1, Point p2, Point p3, Point p4)
+        {
+            Double ua = ((p4.X - p3.X) * (p1.Y - p3.Y) - (p4.Y - p3.Y) * (p1.X - p3.X));
+            ua /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double ub = ((p2.X - p1.X) * (p1.Y - p3.Y) - (p2.Y - p1.Y) * (p1.X - p3.X));
+            ub /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double x = p1.X + ua * (p2.X - p1.X);
+            Double y = p1.X + ub * (p2.Y - p1.Y);
+
+            return new Point(x, y);
+        }
+
         internal static void DrawPointAt(Point point, Canvas visual, Color fillColor)
         {
             Ellipse e = new Ellipse() { Height = 4, Width = 4, Fill = new SolidColorBrush(fillColor), Stroke = new SolidColorBrush(Colors.Red), StrokeThickness = .25 };
@@ -555,6 +569,13 @@ namespace Visifire.Commons
             e.SetValue(Canvas.ZIndexProperty, 10001);
 
             visual.Children.Add(e);
+        }
+
+        internal static Point SecondPointOfIntersectionOfCord(Point center,  Double xRadius, Double yRadius, Point linePointOutSidePie)
+        {
+            Double x = Math.Sqrt(xRadius * xRadius - Math.Pow((linePointOutSidePie.Y + center.Y), 2)) - center.X;
+            Double y = Math.Sqrt(yRadius * yRadius - Math.Pow((linePointOutSidePie.X + center.X), 2)) - center.Y;
+            return  new Point(x,y);
         }
 
         internal static Boolean IsPointInside(Point center, Double radius, Point point)

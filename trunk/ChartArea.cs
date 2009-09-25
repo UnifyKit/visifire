@@ -43,7 +43,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 
 #endif
-
+using System.Windows.Media.Animation;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -1023,7 +1023,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Reset all storyboards associated with dataseries to null 
         /// </summary>
-        private void ResetStoryboards()
+        public void ResetStoryboards()
         {
             if (Chart._internalAnimationEnabled)
             {
@@ -1036,6 +1036,10 @@ namespace Visifire.Charts
                     if (ds.Storyboard != null)
                         ds.Storyboard.Stop();
 #endif
+
+                    if (ds.Storyboard != null)
+                        ds.Storyboard.Children.Clear();
+
                     ds.Storyboard = null;
                     ds.Faces = null;
                 }
@@ -1097,8 +1101,16 @@ namespace Visifire.Charts
                 UpdateLayoutSettings(plotAreaSize);
 
                 plotAreaSize.Width -= SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
-                totalHeightReduced = DrawAxesX(plotAreaSize);
+                Double totalHeightReduced2 = DrawAxesX(plotAreaSize);
                 plotAreaSize.Width += SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
+
+                if (totalHeightReduced2 != totalHeightReduced)
+                {
+                    plotAreaSize.Height += totalHeightReduced;
+                    plotAreaSize.Height -= totalHeightReduced2;
+                    UpdateLayoutSettings(plotAreaSize);
+                    DrawAxesX(plotAreaSize);
+                }
 
                 DrawAxesY(plotAreaSize);
 
@@ -1242,7 +1254,7 @@ namespace Visifire.Charts
                 //else
                     chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
             }
-            else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
+            else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)) && !IsAutoCalculatedScrollBarScale)
             {
                 chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
             }
@@ -1289,11 +1301,24 @@ namespace Visifire.Charts
                 Chart.AxesX[0].IsNotificationEnable = false;
                 Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
                 Chart.AxesX[0].IsNotificationEnable = true;
+                //IsAutoCalculatedScrollBarScale = true;
+            }
+            else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
+            {
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
             }
 
             return chartSize;
         }
-        
+
+        internal Boolean IsAutoCalculatedScrollBarScale
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Set a blank dataseries if series collection of chart is empty
         /// </summary>
@@ -2608,10 +2633,28 @@ namespace Visifire.Charts
                 {
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
+
                     if (!Double.IsNaN(Width) && Width > 0)
                     {
-                        legend.MaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
-                        legend.MaximumHeight = Double.PositiveInfinity;
+                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                            legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                        else
+                        {
+                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.MaxWidth;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                            legend.InternalMaximumHeight = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.MaxHeight;
+                        }
                     }
 
                     legend.CreateVisualObject();
@@ -2629,10 +2672,28 @@ namespace Visifire.Charts
                 {
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
-                    if (!Double.IsNaN(Width) && Width > 0)
+
+                    if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
                     {
-                        legend.MaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
-                        legend.MaximumHeight = Double.PositiveInfinity;
+                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                            legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                        else
+                        {
+                            if(legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.MaxWidth;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                            legend.InternalMaximumHeight = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.MaxHeight;
+                        }
                     }
 
                     legend.CreateVisualObject();
@@ -2648,10 +2709,27 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Vertical;
                     legend.LegendLayout = Layouts.FlowLayout;
 
-                    if (!Double.IsNaN(Height) && Height > 0)
+                    if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
                     {
-                        legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                        legend.MaximumWidth = Double.PositiveInfinity;
+                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                            legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                        else
+                        {
+                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.MaxHeight;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                            legend.InternalMaximumWidth = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.MaxWidth;
+                        }
                     }
 
                     legend.CreateVisualObject();
@@ -2671,8 +2749,25 @@ namespace Visifire.Charts
 
                     if (!Double.IsNaN(Height) && Height > 0)
                     {
-                        legend.MaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                        legend.MaximumWidth = Double.PositiveInfinity;
+                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                            legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                        else
+                        {
+                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.MaxHeight;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                            legend.InternalMaximumWidth = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.MaxWidth;
+                        }
                     }
 
                     legend.CreateVisualObject();
@@ -2687,8 +2782,16 @@ namespace Visifire.Charts
                 {
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
-                    if (legend.MaximumWidth == 0)
-                        legend.MaximumWidth = Width * 60 / 100;
+
+                    if (Double.IsPositiveInfinity(legend.MaxWidth)) // legend.MaximumWidth == 0
+                        legend.InternalMaximumWidth = Width * 60 / 100;
+                    else
+                    {
+                        if (legend.MaxWidth > Width * 60 / 100)
+                            legend.InternalMaximumWidth = Width * 60 / 100;
+                        else
+                            legend.InternalMaximumWidth = legend.MaxWidth;
+                    }
 
                     legend.CreateVisualObject();
 
