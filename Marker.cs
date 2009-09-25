@@ -1148,8 +1148,34 @@ namespace Visifire.Commons
                                     break;
 
                                 case AlignmentX.Center:
-                                    TextBlock.RenderTransformOrigin = new Point(0.5, 0.5);
-                                    rt.Angle = 90;
+                                    if (Double.IsNaN(LabelAngle))
+                                    {
+                                        TextBlock.RenderTransformOrigin = new Point(0.5, 0.5);
+                                        rt.Angle = 90;
+                                    }
+                                    else
+                                    {
+                                        Point centerOfRotation = new Point(Position.X, Position.Y + MarkerShape.Height / 2);
+                                        Double radius = 4;
+                                        Double angle = 0;
+                                        Double angleInRadian = 0;
+
+                                        if (LabelAngle > 0 && LabelAngle <= 90)
+                                        {
+                                            angle = LabelAngle - 180;
+                                            angleInRadian = (Math.PI / 180) * angle;
+                                            radius += TextBlockSize.Width;
+                                            angle = (angleInRadian - Math.PI) * (180 / Math.PI);
+                                            SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                        }
+                                        else if (LabelAngle >= -90 && LabelAngle < 0)
+                                        {
+                                            angle = LabelAngle;
+                                            angleInRadian = (Math.PI / 180) * angle;
+                                            SetRotation(radius, angle, angleInRadian, centerOfRotation);
+                                        }
+                                        
+                                    }
                                     break;
 
                                 case AlignmentX.Right:

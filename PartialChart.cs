@@ -217,13 +217,24 @@ namespace Visifire.Charts
 
         #region Public Properties
 
-        // Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
+        /// <summary>
+        /// Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
+        /// </summary>
+        public static readonly DependencyProperty SmartLabelEnabledProperty =
+            DependencyProperty.Register("SmartLabelEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnSmartLabelEnabledPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.DataPointWidth dependency property.  
+        /// </summary>
         public static readonly DependencyProperty DataPointWidthProperty =
             DependencyProperty.Register("DataPointWidth",
             typeof(Double),
             typeof(Chart),
-            new PropertyMetadata(Double.NaN,OnDataPointWidthPropertyChanged));
-
+            new PropertyMetadata(Double.NaN, OnDataPointWidthPropertyChanged));
+            
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
         /// </summary>
@@ -458,6 +469,16 @@ namespace Visifire.Charts
             {
                 SetValue(UniqueColorsProperty, value);
             }
+        }
+
+        /// <summary>
+        /// Whether skipping of labels are allowed
+        /// Note: Currently implemented for Pie and Doughnut charts only
+        /// </summary>
+        public Boolean SmartLabelEnabled
+        {
+            get { return (Boolean)GetValue(SmartLabelEnabledProperty); }
+            set { SetValue(SmartLabelEnabledProperty, value); }
         }
 
         /// <summary>
@@ -1574,6 +1595,16 @@ namespace Visifire.Charts
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
         }
 
+        /// <summary>
+        /// DataPointWidthProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSmartLabelEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
         /// <summary>
         /// DataPointWidthProperty changed call back function
         /// </summary>

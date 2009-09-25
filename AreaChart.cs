@@ -505,20 +505,37 @@ namespace Visifire.Charts
                     if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                     {
                         dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+
+                        
                         if (isPositive)
                         {
-                            if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
-                            else
+                            if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
+                            {
+                                if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                else
+                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                            }
+                            else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                         }
                         else
                         {
-                            if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
-                            else
+                            if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
+                            {
+                                if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                else
+                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                            }
+                            else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                         }
+                        
                     }
                 }
 

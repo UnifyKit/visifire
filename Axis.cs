@@ -1794,6 +1794,18 @@ namespace Visifire.Charts
             //if (axis._isScrollToOffsetEnabled)
             //    axis.SetScrollBarValueFromOffset((Double)e.NewValue);
             axis.FirePropertyChanged("ScrollBarScale");
+
+            if (axis.Chart != null && (axis.Chart as Chart).ChartArea != null)
+            {
+                if (axis.IsNotificationEnable)
+                {
+                    (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = false;
+                }
+                else
+                {
+                    (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = true;
+                }
+            }
         }
 
         /// <summary>
@@ -2283,7 +2295,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-
+            
             InternalStackPanel.Height += ticksHeight;
 
             if (Width == ScrollableSize)

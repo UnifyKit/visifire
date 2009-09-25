@@ -105,15 +105,18 @@ namespace Visifire.Charts
 
                 if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                 {
-                    if (barParams.IsPositive)
+                    if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                     {
-                        if (canvasLeft + markerPosition.X + dataPoint.Marker.MarkerActualSize.Width > chart.PlotArea.BorderElement.Width)
-                            barParams.LabelStyle = LabelStyles.Inside;
-                    }
-                    else
-                    {
-                        if (canvasLeft < dataPoint.Marker.MarkerActualSize.Width)
-                            barParams.LabelStyle = LabelStyles.Inside;
+                        if (barParams.IsPositive)
+                        {
+                            if (canvasLeft + markerPosition.X + dataPoint.Marker.MarkerActualSize.Width > chart.PlotArea.BorderElement.Width)
+                                barParams.LabelStyle = LabelStyles.Inside;
+                        }
+                        else
+                        {
+                            if (canvasLeft < dataPoint.Marker.MarkerActualSize.Width)
+                                barParams.LabelStyle = LabelStyles.Inside;
+                        }
                     }
 
                     dataPoint.Marker.TextAlignmentY = AlignmentY.Center;

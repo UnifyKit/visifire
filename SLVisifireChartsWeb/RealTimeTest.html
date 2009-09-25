@@ -27,7 +27,7 @@
      + '         <vc:Title Text="TEST" FontSize=\"14\"/>'
      + '     </vc:Chart.Titles>'
      + '     <vc:Chart.Series>'
-     + '         <vc:DataSeries RenderAs=\"Column\" LabelEnabled=\"False\"  LegendText="LegendText">'
+     + '         <vc:DataSeries RenderAs=\"Line\" LabelEnabled=\"False\"  LegendText="LegendText">'
      + '             <vc:DataSeries.DataPoints>'
                         
      + '                <vc:DataPoint AxisXLabel="1" YValue="10"/>'
@@ -51,19 +51,19 @@
 	// Render chart1
     vChart.render("VisifireChart0");
 
-    vChart2.setDataXml(chartXml);
-	
-	// Render chart2
-    vChart2.render("VisifireChart1");
+//    vChart2.setDataXml(chartXml);
+//	
+//	// Render chart2
+//    vChart2.render("VisifireChart1");
 
-    vChart3.setDataXml(chartXml);
-    
-	// Render chart3
-    vChart3.render("VisifireChart2");
+//    vChart3.setDataXml(chartXml);
+//    
+//	// Render chart3
+//    vChart3.render("VisifireChart2");
 
 	}
 
-	 setInterval("MyUpdate()", 3000); // Update every 3 sec. 
+	 setInterval("MyUpdate()", 100); // Update every 3 sec. 
     
 	</script>
 	</head>

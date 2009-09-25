@@ -138,6 +138,15 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Whether the label line target point is at the right side of the label
+        /// </summary>
+        public Boolean LabelLineTargetToRight
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// OuterRadius of the pie
         /// </summary>
         public Double OuterRadius
@@ -824,412 +833,66 @@ namespace Visifire.Charts
         /// <param name="visualCanvasSize">Visual canvas size</param>
         /// <param name="scaleY">Scale Y</param>
         /// <param name="is3D">Whether a 3D chart</param>
-        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Dictionary<DataPoint, Canvas> labels, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
+        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
         {
-            Point plotRadius;
-            Point startPos = new Point(visualCanvasSize.Width / 2, (visualCanvasSize.Height / 2));
+            //Point plotRadius;
+            Double xRadiusLabel = referenceEllipseSize.Width / 2;
+            Double yRadiusLabel = referenceEllipseSize.Height / 2;
+            Double xRadiusChart = pieSize.Width / 2;
+            Double yRadiusChart = pieSize.Height / 2;
+            Point center;
+            Chart chart = null;
+            //if(is3D)
+            //    center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2 - (yRadiusChart * scaleY) / 2);
+            //else
+                center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
+            
+            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle, meanAngle;
+            //Graphics.DrawPointAt(center, visual, System.Windows.Media.Colors.Red);
 
-            if (is3D)
+            CircularLabel prevousLabel = null;
+            CircularLabel cLabel = null;
+            Rect boundingArea = new Rect(0, 0, visual.Width, visual.Height);
+            // List of CircularLabels
+            List<CircularLabel> circularLabels = new List<CircularLabel>();
+
+            // Creating the LinkList of CircularLabels
+            foreach (DataPoint dp in dataPoints)
             {
-                Double hPieRadius = pieSize.Width / (is3D ? 1 : 2);
-                //Double vPieRadius = (pieSize.Height / (is3D ? 1 : 2)) * scaleY;
-                //Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
-                //Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
-                //Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
-                Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
-                Point pieRadius = new Point(hPieRadius, vOuterEllipseRadius);
-                plotRadius = new Point(pieSize.Width, pieSize.Height);
-                PositionLabels3D(dataPoints, plotRadius, startPos, pieRadius, totalSum, scaleY, visualCanvasSize, pieSize, referenceEllipseSize);
+                chart = dp.Chart as Chart;
+                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dp.InternalYValue) / totalSum;
+                meanAngle = (startAngle + stopAngle) / 2;
+
+                if (dp.LabelStyle == LabelStyles.Inside)
+                {
+                    meanAngle = CircularLabel.ResetMeanAngle(meanAngle);
+                    PlaceLabelInside(dp, center, meanAngle, pieSize, referenceEllipseSize, scaleY, is3D);
+                    startAngle = stopAngle; 
+                    continue;
+                }
+
+                // if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
+
+                cLabel = new CircularLabel(dp.LabelVisual, center, meanAngle, xRadiusLabel, yRadiusLabel, xRadiusChart, yRadiusChart, visual);
+                cLabel.Boundary = boundingArea;
+
+                if (prevousLabel != null)
+                    prevousLabel.NextLabel = cLabel;
+
+                cLabel.PreviusLabel = prevousLabel;
+                prevousLabel = cLabel;
+
+                circularLabels.Add(cLabel);
+
+                startAngle = stopAngle;
             }
-            else
-            {
-                plotRadius = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
-                PositionLabels2D(dataPoints, plotRadius, startPos, totalSum, pieSize, referenceEllipseSize);
+
+            if (circularLabels.Count > 0)
+            {   
+                circularLabels[0].PreviusLabel = cLabel;
+                cLabel.NextLabel = circularLabels[0];
+                LabelPlacementHelper.CircularLabelPlacment(boundingArea, circularLabels, (chart != null) ? chart.SmartLabelEnabled : false);
             }
-
-        }
-
-        private static void PositionLabels(Double minY, Double maxY, Double gap, Double maxGap, Double labelCount, Dictionary<Double, Point> labelPositions, String side)
-        {
-            Boolean isRight = (side == "Right");
-            Double limit = (isRight) ? minY : maxY;
-            Double sign = (isRight) ? -1 : 1;
-            Int32 iterationCount = 0;
-            Boolean isOverlap = false;
-            Double previousY;
-            Double currentY;
-            Point point;
-
-            Double offsetFactor = sign * ((gap > maxGap) ? maxGap / 2 : gap / 2);
-
-            do
-            {
-                previousY = limit;
-                isOverlap = false;
-
-                for (Int32 i = 0; i < labelCount; i++)
-                {
-                    labelPositions.TryGetValue(i, out point);
-                    currentY = point.Y;
-
-                    if (Math.Abs(previousY - currentY) < gap && i != 0)
-                    {
-                        point.Y = previousY - offsetFactor;
-                        if (isRight)
-                        {
-                            if (point.Y > maxY) point.Y = (previousY + maxY - gap) / 2;
-                        }
-                        else
-                        {
-                            if (point.Y < minY)
-                            {
-                                point.Y = (minY + previousY) / 2;
-
-                                if (point.X - gap < 0)
-                                    point.X = Math.Abs(point.X - gap);
-                            }
-                        }
-
-                        currentY = point.Y;
-
-                        labelPositions.Remove(i);
-                        labelPositions.Add(i, new Point(point.X, point.Y));
-
-                        labelPositions.TryGetValue(i - 1, out point);
-                        point.Y = previousY + offsetFactor;
-
-                        if (isRight)
-                        {
-                            if (point.Y < minY) point.Y = (minY + previousY) / 2;
-                        }
-                        else
-                        {
-                            if (point.Y > maxY) point.Y = (previousY + maxY - gap) / 2;
-                        }
-
-                        labelPositions.Remove(i - 1);
-                        labelPositions.Add(i - 1, new Point(point.X, point.Y));
-                        isOverlap = true;
-
-                        if (isRight)
-                        {
-                            if (previousY < currentY) isOverlap = true;
-                        }
-                        else
-                        {
-                            if (previousY > currentY) isOverlap = true;
-                        }
-                        break;
-                    }
-
-                    previousY = currentY;
-                }
-                iterationCount++;
-
-            } while (isOverlap && iterationCount < 128);
-
-            if (isOverlap)
-            {
-                Double stepSize = (maxY - minY) / labelCount;
-                for (Int32 i = 0; i < labelCount; i++)
-                {
-                    labelPositions.TryGetValue(i, out point);
-                    if (isRight)
-                    {
-                        point.Y = stepSize * i;
-                    }
-                    else
-                    {
-                        point.Y = maxY - stepSize * (i + 1);
-                    }
-
-                    labelPositions.Remove(i);
-                    labelPositions.Add(i, new Point(point.X, point.Y));
-                }
-            }
-        }
-
-        private static void PositionLabels3D(List<DataPoint> dataPoints, Point plotRadius, Point startPos, Point pieRadius, Double sum,
-            Double YScale, Size plotSize, Size pieSize, Size referenceEllipseSize)
-        {
-            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
-            Double meanAngle;
-            Double radius = 0;
-            Int32 i = 0;
-
-            Double depth = plotSize.Height * 0.075;
-
-            Double centerX = 0, centerY = 0;
-
-            Double offset = 0;
-            Dictionary<Double, Double> labelOR = new Dictionary<Double, Double>();
-            Dictionary<Double, Point> labelYR = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Point> labeltempYR = new Dictionary<Double, Point>();
-            Dictionary<Double, Rect> labeltempPosR = new Dictionary<Double, Rect>();
-
-
-            Dictionary<Double, Double> labelOL = new Dictionary<Double, Double>();
-            Dictionary<Double, Point> labelYL = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Rect> labelPosL = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosR = new Dictionary<Double, Rect>();
-
-            Dictionary<Double, Point> centers = new Dictionary<Double, Point>();
-            Dictionary<DataPoint, Double> meanAngles = new Dictionary<DataPoint, Double>();
-            //List<DataPoint> labelsAtLeft = new List<DataPoint>();
-            Double GapL = 2, GapR = 2;
-            Double maxGap;
-
-            Int32 lIndex = 0, rIndex = 0, tIndex = 0;
-            Double tempY, tempX;
-            Double pieradius;
-            Double yScalingFactor = pieRadius.Y / pieRadius.X;
-
-            try
-            {
-
-                for (i = 0; i < dataPoints.Count; i++)
-                {
-                    stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoints[i].InternalYValue) / sum;
-                    meanAngle = (startAngle + stopAngle) / 2;
-                    meanAngles.Add(dataPoints[i], meanAngle);
-                    if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
-
-                    Double explodeOffset = 0;
-
-                    pieradius = pieRadius.X;
-                    radius = plotRadius.X;
-                    if (dataPoints[i].LabelStyle == LabelStyles.Inside)
-                    {
-                        PlaceLabelInside(dataPoints[i], startPos, meanAngle, pieSize, referenceEllipseSize, YScale, true);
-                        //centerX = startPos.X + pieradius * explodeOffset * Math.Cos(angle);
-                        //centerY = startPos.Y + pieradius * explodeOffset * Math.Sin(angle) * yScalingFactor;
-
-                        //if (DataPoints[i].LabelEnabled == true)
-                        //{
-                        //    tempX = centerX + pieradius * 0.7 * Math.Cos(angle) - DataPoints[i].LabelVisual.ActualWidth / 2;
-                        //    tempY = (centerY - depth / 2) + pieradius * 0.7 * Math.Sin(angle) * yScalingFactor - DataPoints[i].LabelVisual.Height / 2;
-                        //    AttachLabel(DataPoints[i], tempY, tempX, pieradius, angle, new Point(centerX, centerY), yScalingFactor);
-                        //}
-                        //return;
-                    }
-                    else
-                    {
-                        offset = LABEL_LINE_LENGTH;
-
-                        centerX = startPos.X + pieradius * explodeOffset * Math.Cos(meanAngle);
-                        centerY = startPos.Y + pieradius * explodeOffset * Math.Sin(meanAngle) * yScalingFactor;
-
-                        centers.Add(i, new Point(centerX, centerY));
-                        tempY = startPos.Y + (radius + offset) * Math.Sin(meanAngle) * yScalingFactor;
-
-                        tempX = centerX + (radius + offset) * Math.Cos(meanAngle);
-
-                        //if (meanAngle < 5 * (Math.PI / 4) && meanAngle > 3 * (Math.PI / 4))
-                        //{   
-                        //    labelsAtLeft.Add(dataPoints[i]);
-                        //    //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Green);
-                        //}
-
-                        if (meanAngle > (Math.PI / 2) && meanAngle < (Math.PI * 3 / 2))
-                        {
-                            labelYL.Add(lIndex, new Point(i, tempY));
-                            labelPosL.Add(lIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                            lIndex++;
-                            if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
-                        }
-                        else if (meanAngle >= 0 && meanAngle <= (Math.PI / 2))
-                        {
-                            labelYR.Add(rIndex, new Point(i, tempY));
-                            labelPosR.Add(rIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                            rIndex++;
-                            if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                        }
-                        else
-                        {
-                            labeltempYR.Add(tIndex, new Point(i, tempY));
-                            labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                            tIndex++;
-                            if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                        }
-                    }
-
-                    startAngle = stopAngle;
-                }
-
-                // Regroup split dictionary
-                Point pt;
-                Rect rt;
-
-                for (i = 0; i < rIndex; i++)
-                {
-                    labelYR.TryGetValue(i, out pt);
-                    labelYR.Remove(i);
-
-                    labelPosR.TryGetValue(i, out rt);
-                    labelPosR.Remove(i);
-
-                    labeltempYR.Add(tIndex, new Point(pt.X, pt.Y));
-                    labeltempPosR.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
-                    tIndex++;
-                }
-
-                List<Point> tempList1 = new List<Point>();
-                tempList1.InsertRange(0, labeltempYR.Values);
-                tempList1.Sort(ComparePointY);
-
-                List<Rect> tempList2 = new List<Rect>();
-                tempList2.InsertRange(0, labeltempPosR.Values);
-                tempList2.Sort(CompareRectY);
-
-                for (i = 0, rIndex = 0; i < tIndex; i++)
-                {
-                    labelYR.Add(rIndex, new Point(tempList1[i].X, tempList1[i].Y));
-                    labelPosR.Add(rIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
-                    rIndex++;
-                }
-
-                Double maxY = (dataPoints[0].Chart as Chart).PlotArea.Height;
-                Double minY = 0;
-
-                // For placing between angles 90 to 270
-                maxGap = ((maxY - minY) - (GapL * (labelYL.Count))) / (labelYL.Count);
-
-                PositionLabels(minY, maxY, GapL, maxGap, lIndex, labelYL, "Left");
-
-                List<DataPoint> leftTopDataPoints = new List<DataPoint>();
-                // List<DataPoint> leftBottomDataPoints = new List<DataPoint>();
-                Double index = 0;
-                for (i = 0; i < lIndex; i++)
-                {
-                    labelYL.TryGetValue(i, out pt);
-                    labelYL.Remove(i);
-
-                    if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                    {
-                        labelPosL.TryGetValue(i, out rt);
-
-                        meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                        if (meanAngle >= 5 * Math.PI / 4 && meanAngle < 3 * (Math.PI / 2))
-                        {
-                            //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                            leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                            //X -= LABEL_LINE_LENGTH;
-                            //X -= LABEL_LINE_LENGTH * Math.Sign(index);
-                            //index += 0.5;
-                        }
-                        else if (meanAngle > Math.PI / 2 && meanAngle < 3 * Math.PI / 4)
-                        {
-                            rt.X -= LABEL_LINE_LENGTH;
-                            //leftBottomDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        }
-
-                        AttachLabel(dataPoints[(Int32)pt.X], pt.Y, rt.X, rt.Width, rt.Height, centers[(Int32)pt.X], yScalingFactor);
-                    }
-                }
-
-                leftTopDataPoints.Reverse();
-                index = 0;
-                // move all left top labels to more left 
-                foreach (DataPoint dp in leftTopDataPoints)
-                {
-                    Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                    X -= LABEL_LINE_LENGTH * index;
-                    System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                    dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                    index += 0.5;
-                }
-
-                //leftBottomDataPoints.Reverse();
-                //index = 0;
-                //// move all left bottom labels to more left 
-                //foreach (DataPoint dp in leftBottomDataPoints)
-                //{
-                //    Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                //    X -= LABEL_LINE_LENGTH * Math.Sin(index);
-                //    //X -= LABEL_LINE_LENGTH * index;
-                //    System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                //    dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                //    index += 0.5;
-                //}
-
-                // For placing between angles 270 to 360 and 0 to 90
-                maxGap = ((maxY - minY) - (GapR * (labelYR.Count))) / (labelYR.Count);
-
-                PositionLabels(minY, maxY, GapR, maxGap, rIndex, labelYR, "Right");
-                index = 0;
-
-                for (i = 0; i < rIndex; i++)
-                {
-                    labelYR.TryGetValue(i, out pt);
-                    labelYR.Remove(i);
-
-                    if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                    {
-                        labelPosR.TryGetValue(i, out rt);
-                        Double X = rt.X;
-                        meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                        if (meanAngle < 7 * Math.PI / 4 && meanAngle > 3 * (Math.PI / 2))
-                        {
-                            //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                            //leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                            X += LABEL_LINE_LENGTH * index;
-                            index += 0.5;
-                        }
-
-                        AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], yScalingFactor);
-                    }
-                }
-
-                foreach (DataPoint dp in dataPoints)
-                {
-                    Double y = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
-                    Double x = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-
-                    if (y + dp.LabelVisual.Height > maxY)
-                    {
-                        offset = y - dp.LabelVisual.Height - maxY;
-                        //if (y > maxY)
-                        //    offset = y - dp.LabelVisual.Height - maxY;
-                        //else
-                        //    offset = y + dp.LabelVisual.Height - maxY;
-                        dp.LabelVisual.SetValue(Canvas.TopProperty, plotSize.Height - dp.LabelVisual.Height);
-
-                        dp.LabelVisual.SetValue(Canvas.LeftProperty, x + 6);
-                    }
-
-                    //// Place labels out side if they are inside the circle
-                    //if (x > center.X)
-                    //{
-                    //    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
-
-                    //    if (Graphics.IsPointInside(center, radius, labelPosition))
-                    //    {
-                    //        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
-                    //        xx = labelPosition.X + (Double)xx / Math.Cos(Math.PI / 4);
-                    //        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx + 6);
-                    //    }
-                    //}
-                    //else if (x < center.X)
-                    //{
-                    //    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
-
-                    //    if (Graphics.IsPointInside(center, radius, labelPosition))
-                    //    {
-                    //        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
-                    //        xx = labelPosition.X - (Double)xx / Math.Cos(Math.PI / 4);
-                    //        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx - 6);
-                    //    }
-                    //}
-                }
-            }
-            catch 
-            {
-            }
-            //labelsAtLeft.Reverse();
-            //(labelsAtLeft[0].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
-            //RearrangeLabels(labelsAtLeft, 0, (Double)labelsAtLeft[0].GetValue(Canvas.TopProperty), maxY, plotSize.Width / 2);
         }
 
         private static void RearrangeLabels(List<DataPoint> dataPoints, Double leftOfArea, Double topOfArea, Double areaHeight, Double areaWidth)
@@ -1274,8 +937,10 @@ namespace Visifire.Charts
             Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
             Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
             Double outerRadius = Math.Min(pieSize.Width, pieSize.Height) / (is3D ? 1 : 2);
+
             RenderAs renderAs = dataPoint.Parent.RenderAs;
             Double xPos, yPos;
+
             if (is3D)
             {
                 xPos = center.X + hInnerEllipseRadius * Math.Cos(meanAngle) - dataPoint.LabelVisual.Width;
@@ -1283,8 +948,6 @@ namespace Visifire.Charts
             }
             else
             {
-                // if (!is3D)
-                // {
                 if (renderAs == RenderAs.Doughnut)
                 {
                     xPos = center.X + 1.9 * (outerRadius / 3) * Math.Cos(meanAngle);
@@ -1295,13 +958,6 @@ namespace Visifire.Charts
                     xPos = center.X + 1.7 * (outerRadius / 3) * Math.Cos(meanAngle);
                     yPos = center.Y + 1.7 * (outerRadius / 3) * Math.Sin(meanAngle);
                 }
-
-                // }
-                //else
-                // {   
-                //    xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle);
-                //    yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle);
-                // }
             }
 
             xPos = xPos - dataPoint.LabelVisual.Width / 2;
@@ -1309,365 +965,6 @@ namespace Visifire.Charts
 
             dataPoint.LabelVisual.SetValue(Canvas.TopProperty, yPos);
             dataPoint.LabelVisual.SetValue(Canvas.LeftProperty, xPos);
-        }
-
-        private static void PositionLabels2D(List<DataPoint> dataPoints, Point plotRadius, Point center, Double sum, Size pieSize, Size referenceEllipseSize)
-        {
-            Double pieRadius = pieSize.Width / 2;
-            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
-            Double meanAngle;
-            Double radius = 0;
-            Int32 i = 0;
-
-            Double offset = 1.1;
-
-            Double centerX, centerY;
-
-            Dictionary<Double, Point> labelYR = new Dictionary<Double, Point>();
-            Dictionary<Double, Point> labelYL = new Dictionary<Double, Point>();
-            Dictionary<Double, Point> labeltempYR = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Rect> labeltempPosR = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosL = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosR = new Dictionary<Double, Rect>();
-
-            Dictionary<Double, Point> centers = new Dictionary<Double, Point>();
-            Dictionary<DataPoint, Double> meanAngles = new Dictionary<DataPoint, Double>();
-            //Dictionary<DataPoint, Double> labelsAtLeft = new Dictionary<DataPoint, Double>();
-
-           // List<DataPoint> labelsAtRight = new List<DataPoint>();
-
-            Double GapL = 2, GapR = 2;
-            Double maxGap;
-
-            Int32 lIndex = 0, rIndex = 0, tIndex = 0;
-            Double tempY, tempX;
-
-            for (i = 0; i < dataPoints.Count; i++)
-            {
-                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoints[i].InternalYValue) / sum;
-                meanAngle = (startAngle + stopAngle) / 2;
-                meanAngles.Add(dataPoints[i], meanAngle);
-                if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
-
-                Double explodedOffset = 0;
-
-                if (dataPoints[i].LabelStyle == LabelStyles.Inside)
-                {
-                    PlaceLabelInside(dataPoints[i], center, meanAngle, pieSize, referenceEllipseSize, 1, false);
-                }
-                else
-                {   
-                    offset = LABEL_LINE_LENGTH;
-
-                    radius = pieRadius + offset;
-
-                    if (sum == dataPoints[i].InternalYValue)
-                    {
-                        centerX = center.X;
-                        centerY = center.Y;
-                    }
-                    else
-                    {
-                        centerX = center.X + pieRadius * explodedOffset * Math.Cos((startAngle + stopAngle) * 0.5);
-                        centerY = center.Y + pieRadius * explodedOffset * Math.Sin((startAngle + stopAngle) * 0.5);
-                    }
-
-                    tempY = center.Y + radius * Math.Sin(meanAngle);
-
-                    if (explodedOffset > 0)
-                    {
-                        Double maxAngle = (Math.Abs(Math.Sin(meanAngle)) > Math.Abs(Math.Cos(meanAngle))) ? Math.Sin(meanAngle) : Math.Cos(meanAngle);
-
-                        tempX = centerX + radius * maxAngle * (Math.Sign(Math.Cos(meanAngle)));
-                    }
-                    else
-                    {
-                        tempX = centerX + radius * Math.Cos(meanAngle);
-                    }
-
-                    centers.Add(i, new Point(centerX, centerY));
-
-                    if (meanAngle > (Math.PI / 2) && meanAngle < (Math.PI * 3 / 2))
-                    {
-                        labelYL.Add(lIndex, new Point(i, tempY));
-                        labelPosL.Add(lIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        lIndex++;
-                        if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Green);
-                    }
-                    else if (meanAngle >= 0 && meanAngle <= (Math.PI / 2))
-                    {
-                        labelYR.Add(rIndex, new Point(i, tempY));
-                        labelPosR.Add(rIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        rIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {   
-                        labeltempYR.Add(tIndex, new Point(i, tempY));
-                        labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        tIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-
-                        // labelsAtRight.Add(dataPoints[i]);
-                        // (dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Yellow);
-                    }
-                }
-
-                startAngle = stopAngle;
-            }
-
-            // Regroup split dictionary
-            Point pt;
-            Rect rt;
-
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                labelPosR.TryGetValue(i, out rt);
-                labelPosR.Remove(i);
-
-                labeltempYR.Add(tIndex, new Point(pt.X, pt.Y));
-                labeltempPosR.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
-                tIndex++;
-            }
-
-            List<Point> tempList1 = new List<Point>();
-            tempList1.InsertRange(0, labeltempYR.Values);
-            tempList1.Sort(ComparePointY);
-
-            List<Rect> tempList2 = new List<Rect>();
-            tempList2.InsertRange(0, labeltempPosR.Values);
-            tempList2.Sort(CompareRectY);
-
-            for (i = 0, rIndex = 0; i < tIndex; i++)
-            {
-                labelYR.Add(rIndex, new Point(tempList1[i].X, tempList1[i].Y));
-                labelPosR.Add(rIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
-                rIndex++;
-            }
-
-            Double maxY = (dataPoints[0].Chart as Chart).PlotArea.Height;
-            Double minY = 0;
-
-            // For placing between angles 90 to 270
-            maxGap = ((maxY - minY) - (GapL * (labelYL.Count))) / (labelYL.Count);
-
-            PositionLabels(minY, maxY, GapL, maxGap, lIndex, labelYL, "Left");
-
-            List<DataPoint> leftTopDataPoints = new List<DataPoint>();
-            List<DataPoint> leftBottomDataPoints = new List<DataPoint>();
-
-            for (i = 0; i < lIndex; i++)
-            {
-                if (labelYL.TryGetValue(i, out pt))
-                {
-                    labelYL.Remove(i);
-
-                    if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                    {
-                        Double X;
-                        labelPosL.TryGetValue(i, out rt);
-
-                        Double tempangle = LineSlope(new Point(rt.X, pt.Y), centers[(Int32)pt.X]);
-                        tempangle = Math.Atan(tempangle);
-                        radius = pieRadius + offset;
-                        X = centers[(Int32)pt.X].X - (radius) * Math.Cos(tempangle);
-
-                        meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                        if (meanAngle >= 5 * Math.PI / 4 && meanAngle < 3 * (Math.PI / 2))
-                        {
-                            //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                            leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        }
-                        else if (meanAngle > Math.PI / 2 && meanAngle < 3 * (Math.PI / 4))
-                        {
-                            leftBottomDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        }
-
-                        AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
-                    }
-                }
-            }
-
-            leftTopDataPoints.Reverse();
-            Double index = 0;
-
-            // move all left top labels to more left 
-            foreach (DataPoint dp in leftTopDataPoints)
-            {
-                Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                X -= LABEL_LINE_LENGTH * Math.Sin(index);
-                //X -= LABEL_LINE_LENGTH * index;
-                System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                index += 0.5;
-            }
-
-            leftBottomDataPoints.Reverse();
-            index = 0;
-
-            // move all left bottom labels to more left 
-            foreach (DataPoint dp in leftBottomDataPoints)
-            {
-                Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                X -= LABEL_LINE_LENGTH * Math.Sin(index);
-                //X -= LABEL_LINE_LENGTH * index;
-                System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                index += 0.5;
-            }
-
-            maxGap = ((maxY - minY) - (GapR * (labelYR.Count))) / (labelYR.Count);
-
-            PositionLabels(minY, maxY, GapR, maxGap, rIndex, labelYR, "Right");
-
-            index = 0;
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                {
-                    Double X;
-                    labelPosR.TryGetValue(i, out rt);
-
-                    Double tempangle = LineSlope(centers[(Int32)pt.X], new Point(rt.X, pt.Y));
-                    tempangle = Math.Atan(tempangle);
-                    radius = pieRadius + offset;
-                    X = centers[(Int32)pt.X].X + (radius) * Math.Cos(tempangle);
-
-                    meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                    if (meanAngle < 7 * Math.PI / 4 && meanAngle > 3 * (Math.PI / 2))
-                    {
-                        //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                        //leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        X += LABEL_LINE_LENGTH * Math.Sin(index);
-                        index += 0.5;
-                    }
-
-                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
-                }
-            }
-
-
-            //RearrangeLabels(labelsAtRight, Double.NaN, 0, maxY, Double.NaN);
-
-            foreach (DataPoint dp in dataPoints)
-            {
-                Double y = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
-                Double x = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                if (y + dp.LabelVisual.Height > maxY)
-                {
-                    //if (y > maxY)
-                    //    offset = y - dp.LabelVisual.Height - maxY;
-                    //else
-                    //    offset = y + dp.LabelVisual.Height - maxY;
-                    dp.LabelVisual.SetValue(Canvas.TopProperty, plotRadius.Y * 2 - dp.LabelVisual.Height);
-
-                    dp.LabelVisual.SetValue(Canvas.LeftProperty, x + 6);
-                }
-
-                // Place labels out side if they are inside the circle
-                if (x > center.X)
-                {
-                    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
-
-                    if (Graphics.IsPointInside(center, radius, labelPosition))
-                    {
-                        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
-                        xx = labelPosition.X + (Double)xx / Math.Cos(Math.PI / 4);
-                        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx + 6);
-                    }
-                }
-                else if (x < center.X)
-                {
-                    Point labelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
-
-                    if (Graphics.IsPointInside(center, radius, labelPosition))
-                    {   
-                        Double xx = radius - Graphics.DistanceBetweenTwoPoints(center, labelPosition);
-                        xx = labelPosition.X - (Double)xx / Math.Cos(Math.PI / 4);
-                        dp.LabelVisual.SetValue(Canvas.LeftProperty, xx - 6);
-                    }
-                }
-            }
-        }
-
-        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
-        {
-            Point plotRadius;
-            Point startPos = new Point(visualCanvasSize.Width / 2, (visualCanvasSize.Height / 2));
-
-            if (is3D)
-            {
-                Double hPieRadius = pieSize.Width / (is3D ? 1 : 2);
-
-                // Double vPieRadius = (pieSize.Height / (is3D ? 1 : 2)) * scaleY;
-                // Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
-                // Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
-                // Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
-
-                Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
-                Point pieRadius = new Point(hPieRadius, vOuterEllipseRadius);
-                plotRadius = new Point(pieSize.Width, pieSize.Height);
-                PositionLabels3D(dataPoints, plotRadius, startPos, pieRadius, totalSum, scaleY, visualCanvasSize, pieSize, referenceEllipseSize);
-            }
-            else
-            {
-                plotRadius = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
-                PositionLabels2D(dataPoints, plotRadius, startPos, totalSum, pieSize, referenceEllipseSize);
-            }
-        }
-
-        private static void AttachLabel(DataPoint dataPioint, Double top, Double left, Double radius, Double angle, Point center, Double yScalingFactor)
-        {
-            Double plotAreaWidth = (dataPioint.Chart as Chart).ChartArea.PlotAreaCanvas.Width;
-            Double plotAreaHeight = (dataPioint.Chart as Chart).ChartArea.PlotAreaCanvas.Width;
-            Double newLeft = left;
-            Double newTop = top;
-            Canvas label = dataPioint.LabelVisual as Canvas;
-
-            if (angle > Math.PI / 2 && angle < Math.PI * 3 / 2)
-                newLeft = left - label.Width - 10;
-            else
-                newLeft = left + 10;
-
-            // this condition places the label such that they do not go outside of the plot area in horizontal direction
-            if (angle > (Math.PI / 2) && angle < (Math.PI * 3 / 2))
-            {
-
-                if (newLeft < 0)
-                    newLeft = 0;
-            }
-            else
-            {
-
-                if ((newLeft + dataPioint.LabelVisual.Width) > (plotAreaWidth))
-                    newLeft = (plotAreaWidth - label.Width);
-            }
-
-            // this condition places the label such that they do not go outside of the plot area in horizontal direction
-            if (angle > Math.PI && angle < Math.PI * 2)
-            {
-                if (newTop < 0)
-                    newTop = 0;
-            }
-            else
-            {
-                if ((newTop + label.Height) > (plotAreaHeight))
-                    newTop = plotAreaHeight - label.Height;
-
-            }
-
-            label.SetValue(Canvas.TopProperty, (Double)newTop);
-            label.SetValue(Canvas.LeftProperty, (Double)newLeft);
         }
 
         private static Int32 ComparePointY(Point a, Point b)
@@ -1710,7 +1007,7 @@ namespace Visifire.Charts
         private static Canvas CreateAndPositionLabels(Double totalSum, List<DataPoint> dataPoints, Double width, Double height, Double scaleY, Boolean is3D, ref Size size)
         {
             Canvas visual = new Canvas() { Height = height, Width = width };
-            Dictionary<DataPoint, Canvas> labels = new Dictionary<DataPoint, Canvas>();
+            List<DataPoint> labelsToBePlaced = new List<DataPoint>();
 
             Double labelLineLength = LABEL_LINE_LENGTH;
 
@@ -1738,7 +1035,7 @@ namespace Visifire.Charts
                 else
                     label.Visibility = Visibility.Collapsed;
 
-                labels.Add(dataPoint, label);
+                labelsToBePlaced.Add(dataPoint);
 
                 if (isLabelEnabled)
                     visual.Children.Add(label);
@@ -1763,13 +1060,24 @@ namespace Visifire.Charts
             {
                 if (isLabelOutside)
                 {
-                    pieCanvasWidth = minLength - labelLineLength * 2;
-                    pieCanvasHeight = pieCanvasWidth;
+                    if (is3D)
+                    {
+                        pieCanvasWidth = minLength - labelLineLength * 2;
+                        pieCanvasHeight = pieCanvasWidth;
 
-                    labelEllipseWidth = minLength;
-                    labelEllipseHeight = labelEllipseWidth;
+                        labelEllipseWidth = pieCanvasWidth * 2 + labelLineLength * 2;
+                        labelEllipseHeight = labelEllipseWidth * scaleY + LABEL_LINE_LENGTH * 2;
+                    }
+                    else
+                    {
+                        pieCanvasWidth = minLength - labelLineLength * 2 - LABEL_LINE_LENGTH * 2;
+                        pieCanvasHeight = pieCanvasWidth;
 
-                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                        labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH * 2;
+                        labelEllipseHeight = labelEllipseWidth;
+                    }
+                                       
+                    PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
                 else
                 {
@@ -1779,7 +1087,7 @@ namespace Visifire.Charts
                     labelEllipseWidth = pieCanvasWidth;
                     labelEllipseHeight = pieCanvasHeight;
 
-                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                    PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
             }
             else
@@ -1938,7 +1246,7 @@ namespace Visifire.Charts
             {
                 Path labelLine = new Path() { Tag = new ElementData() { Element = pieParams.TagReference } };
                 Double meanAngle = pieParams.MeanAngle;
-
+                labelLine.SetValue(Canvas.ZIndexProperty, -100000);
                 Point piePoint = new Point();
                 piePoint.X = center.X + pieParams.OuterRadius * Math.Cos(meanAngle);
                 piePoint.Y = center.Y + pieParams.OuterRadius * Math.Sin(meanAngle);
@@ -1948,8 +1256,14 @@ namespace Visifire.Charts
                 labelPoint.Y = center.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                // midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                if (pieParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
                 midPoint.Y = labelPoint.Y;
+
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
                 labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : midPoint));
@@ -2122,7 +1436,7 @@ namespace Visifire.Charts
 
                 #region "Outer Bevel"
                 Shape outerBevel;
-                
+
                 if (enabledDataPoints.Count == 1 || noOfNonZeroDataPoint.Count() == 1)
                 {
                     outerBevel = new Ellipse() { Height = pieParams.OuterRadius * 2, Width = pieParams.OuterRadius * 2, Tag = new ElementData() { Element = pieParams.TagReference } };
@@ -2424,7 +1738,13 @@ namespace Visifire.Charts
                 labelPoint.Y = center.Y + doughnutParams.LabelPoint.Y - doughnutParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                //midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;            
+                if (doughnutParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
+
                 midPoint.Y = labelPoint.Y;
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
@@ -2722,7 +2042,12 @@ namespace Visifire.Charts
                 labelPoint.Y = centerOfPie.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < centerOfPie.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                //midPoint.X = (labelPoint.X < centerOfPie.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                if (pieParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
                 midPoint.Y = labelPoint.Y;
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
@@ -4653,9 +3978,9 @@ namespace Visifire.Charts
             Double offsetY = 0;
 
             Boolean IsLabelEnabled;
-            Size pieCanvasSize = new Size();
+            Size pieSize = new Size();
 
-            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvasSize);
+            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieSize);
 
             Debug.WriteLine("Labels Positioning over: " + DateTime.Now.ToLongTimeString());
 
@@ -4668,7 +3993,7 @@ namespace Visifire.Charts
                 labelCanvas.IsHitTestVisible = false;
             }
 
-            Double radius = Math.Min(pieCanvasSize.Width, pieCanvasSize.Height) / (chart.View3D ? 1 : 2);
+            Double radius = Math.Min(pieSize.Width, pieSize.Height) / (chart.View3D ? 1 : 2);
             Double startAngle = series.InternalStartAngle;
             Double endAngle = 0;
             Double angle;
@@ -4756,14 +4081,21 @@ namespace Visifire.Charts
 
                 if (dataPoint.LabelVisual != null)
                 {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    if (dataPoint.LabelVisual.Visibility == Visibility.Collapsed)
+                        pieParams.LabelLineEnabled = false;
+
+                    Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                    if (left < width / 2)
                     {
+                        pieParams.LabelLineTargetToRight = true;
                         // pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        pieParams.LabelPoint = new Point(left + dataPoint.LabelVisual.Width + LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
                     else
                     {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        pieParams.LabelLineTargetToRight = false;
+                        pieParams.LabelPoint = new Point(left - LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
 
                     // apply animation to the labels
@@ -4859,7 +4191,7 @@ namespace Visifire.Charts
 
             if ((from dp in enabledDataPoints select dp.InternalYValue).Sum() == 0)
                 enabledDataPoints.Clear();
-            
+
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
 
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
@@ -4971,14 +4303,31 @@ namespace Visifire.Charts
 
                 if (dataPoint.LabelVisual != null)
                 {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    if (dataPoint.LabelVisual.Visibility == Visibility.Collapsed)
+                        doughnutParams.LabelLineEnabled = false;
+
+                    Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                    if (left < width / 2)
                     {
-                        doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        doughnutParams.LabelLineTargetToRight = true;
+                        // pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                        doughnutParams.LabelPoint = new Point(left + dataPoint.LabelVisual.Width + LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
                     else
                     {
-                        doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        doughnutParams.LabelLineTargetToRight = false;
+                        doughnutParams.LabelPoint = new Point(left - LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
+
+                    //if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    //{
+                    //    doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                    //}
+                    //else
+                    //{
+                    //    doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                    //}
 
                     // apply animation to the labels
                     if (animationEnabled)
@@ -4986,6 +4335,8 @@ namespace Visifire.Charts
                         series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
                         dataPoint.LabelVisual.Opacity = 0;
                     }
+
+                   
                 }
 
                 if (dataPoint.LabelStyle == LabelStyles.Inside && dataPoint.InternalYValue == 0)
@@ -5187,8 +4538,8 @@ namespace Visifire.Charts
 
         #region Data
 
-        static Double LABEL_LINE_LENGTH = 20;
-        static Double LABEL_LINE_GAP = 3;
+        public static Double LABEL_LINE_LENGTH = 18;
+
 
         /// <summary>
         /// Visfiire.Charts.PieChart.PathGeometryParams class

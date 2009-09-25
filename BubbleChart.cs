@@ -226,8 +226,23 @@ namespace Visifire.Charts
                     Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
 
                     String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
+
                     Boolean markerBevel = false;
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, markerScale * (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
+
+                    if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                        {
+                            marker.LabelAngle = dataPoint.LabelAngle;
+                            marker.TextOrientation = Orientation.Vertical;
+
+                            marker.TextAlignmentX = AlignmentX.Center;
+                            marker.TextAlignmentY = AlignmentY.Center;
+                           
+                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                        }
+                    }
 
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
@@ -249,15 +264,18 @@ namespace Visifire.Charts
 
                     Double gap = (markerScale * (Double)dataPoint.MarkerScale * (Double)dataPoint.MarkerSize) / 2;
 
-                    if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
-                        marker.TextAlignmentY = AlignmentY.Bottom;
-                    else if (yPosition + gap > height && (yPosition + marker.TextBlockSize.Height / 2) > height)
-                        marker.TextAlignmentY = AlignmentY.Top;
+                    if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                    {
+                        if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
+                            marker.TextAlignmentY = AlignmentY.Bottom;
+                        else if (yPosition + gap > height && (yPosition + marker.TextBlockSize.Height / 2) > height)
+                            marker.TextAlignmentY = AlignmentY.Top;
 
-                    if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
-                        marker.TextAlignmentX = AlignmentX.Right;
-                    else if (xPosition + gap > width && (xPosition + marker.TextBlockSize.Width / 2) > width)
-                        marker.TextAlignmentX = AlignmentX.Left;
+                        if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
+                            marker.TextAlignmentX = AlignmentX.Right;
+                        else if (xPosition + gap > width && (xPosition + marker.TextBlockSize.Width / 2) > width)
+                            marker.TextAlignmentX = AlignmentX.Left;
+                    }
 
                     marker.CreateVisual();
 
@@ -287,7 +305,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-chart.ChartArea.PLANK_DEPTH, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
             visual.Clip = clipRectangle;
 
             return visual;
