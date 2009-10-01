@@ -740,11 +740,11 @@ namespace Visifire.Charts
             }
 
             // if (_isFirstTimeRender)
-            {   
-                axis.Scroll -= AxesXScrollBarElement_Scroll;
-                axis.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                axis.SetScrollBarValueFromOffset(axis.ScrollBarOffset);
-            }
+            //{   
+                //axis.Scroll -= AxesXScrollBarElement_Scroll;
+                //axis.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                //axis.SetScrollBarValueFromOffset(axis.ScrollBarOffset);
+            //}
         }
 
         /// <summary>
@@ -1758,7 +1758,6 @@ namespace Visifire.Charts
 
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                     (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -offset);
-
 
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
 
@@ -3375,6 +3374,37 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Scroll event is used to scroll to the horizontal/vertical offset of ScrollViewer
+        /// </summary>
+        private void AttachScrollEvents()
+        {
+            if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
+                AxisX.Scroll -= AxesXScrollBarElement_Scroll;
+                AxisX.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
+            }
+            if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
+                AxisX2.Scroll -= AxesXScrollBarElement_Scroll;
+                AxisX2.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
+            }
+            if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
+                AxisX.Scroll -= AxesXScrollBarElement_Scroll;
+                AxisX.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
+            }
+            if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
+                AxisX2.Scroll -= AxesXScrollBarElement_Scroll;
+                AxisX2.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
+            }
+        }
+
+        /// <summary>
         /// Event handler for loaded event of the PlottingCanvas
         /// </summary>
         /// <param name="sender">Canvas</param>
@@ -3382,6 +3412,8 @@ namespace Visifire.Charts
         private void PlottingCanvas_Loaded(object sender, RoutedEventArgs e)
         {
             PlottingCanvas.Loaded -= new RoutedEventHandler(PlottingCanvas_Loaded);
+
+            AttachScrollEvents();
 
             Chart._renderLock = false;
 

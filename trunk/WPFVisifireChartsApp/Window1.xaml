@@ -6,18 +6,16 @@
     WindowState="Normal" Height="369" Width="583">
     <Grid x:Name="LayoutRoot">
 
-        <vc:Chart x:Name="MyChart" 
-                  Theme="Theme1" View3D="true" Width="500" Height="300">
-
+        <vc:Chart x:Name="MyChart" Theme="Theme1" Width="500" Height="300">
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries>
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="1" />
-                        <vc:DataPoint YValue="2"/>
-                        <vc:DataPoint YValue="3" />
-                        <vc:DataPoint YValue="4" />
-                        <vc:DataPoint YValue="5" />
+                        <vc:DataPoint YValue="10" />
+                        <vc:DataPoint YValue="20" />
+                        <vc:DataPoint YValue="40" />
+                        <vc:DataPoint YValue="50" />
+                        <vc:DataPoint YValue="30" />
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

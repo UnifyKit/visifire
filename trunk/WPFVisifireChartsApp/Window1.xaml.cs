@@ -19,6 +19,7 @@ using Visifire.Commons;
 using System.Windows.Media.Animation;
 using System.IO;
 using System.Xml;
+using System.Windows.Controls.Primitives;
 
 namespace WPFVisifireChartsApp
 {

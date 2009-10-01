@@ -1,4 +1,77 @@
-﻿  private static void PositionLabels2D2(List<DataPoint> dataPoints, Point plotRadius, Point center, Double sum, Size pieSize, Size referenceEllipseSize)
+﻿	 if (dataPoint.LabelVisual != null)
+            {
+                unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+                Double newOffset = 0;
+                if (left < widthOfPlotArea / 2)
+                {   
+                    if (unExplodedPoints.LabelPosition.X + offsetX < 0)
+                    {
+                        if (left < 0)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
+                            newOffset = offsetX;
+                            explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - newOffset, explodedPoints.LabelLineEndPoint.Y);
+                            explodedPoints.LabelLineMidPoint = explodedPoints.LabelLineEndPoint;
+
+                        }
+                        else
+                        {
+                            //offsetX = (pieParams.OuterRadius - left) * pieParams.ExplodeRatio * Math.Cos(pieParams.MeanAngle);
+                            Double moved = unExplodedPoints.LabelPosition.X - offsetX;
+                            explodedPoints.LabelPosition = new Point(0, unExplodedPoints.LabelPosition.Y);
+
+
+                            newOffset = left;
+
+                            explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - newOffset, explodedPoints.LabelLineEndPoint.Y);
+                            explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - newOffset, explodedPoints.LabelLineMidPoint.Y);
+
+                            //offsetX = (widthOfPlotArea / 2 - left) * Math.Cos(meanAngle);
+
+                            //explodedPoints.LabelLineEndPoint = new Point(unExplodedPoints.LabelLineEndPoint.X, explodedPoints.LabelLineEndPoint.Y);
+                            //explodedPoints.LabelLineMidPoint = new Point(unExplodedPoints.LabelLineMidPoint.X, explodedPoints.LabelLineMidPoint.Y);
+
+                            System.Diagnostics.Debug.WriteLine("Labels=" + ((dataPoint.LabelVisual as Canvas).Children[0] as TextBlock).Text); ;
+                            
+                            //explodedPoints.LabelLineEndPoint = new Point(dataPoint.LabelVisual.Width, explodedPoints.LabelLineEndPoint.Y);
+                            //explodedPoints.LabelLineMidPoint = new Point(dataPoint.LabelVisual.Width, explodedPoints.LabelLineMidPoint.Y);
+
+                        }
+
+                    }
+                    else
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                }
+                else
+                {
+                    Double labelRight = unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width;
+                    if (labelRight > widthOfPlotArea)
+                    {
+                        // Label which is already goes out of PlotArea. Do not explode that label.
+                        if (left + dataPoint.LabelVisual.Width > widthOfPlotArea)
+                        {
+                            explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
+                            newOffset = offsetX;
+                        }
+                        else
+                        {
+                            explodedPoints.LabelPosition = new Point(widthOfPlotArea - dataPoint.LabelVisual.Width, unExplodedPoints.LabelPosition.Y);
+                            newOffset = widthOfPlotArea - dataPoint.LabelVisual.Width - left;
+                        }
+
+                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - newOffset, explodedPoints.LabelLineEndPoint.Y);
+                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - newOffset, explodedPoints.LabelLineMidPoint.Y);
+
+                    }
+                    else
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                }
+            }
+
+
+
+  private static void PositionLabels2D2(List<DataPoint> dataPoints, Point plotRadius, Point center, Double sum, Size pieSize, Size referenceEllipseSize)
         {   
             Double pieRadius = pieSize.Width / 2;
             Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
