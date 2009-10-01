@@ -13,7 +13,7 @@ using Visifire.Commons;
 namespace SLVisifireChartsTest
 {
     [TestClass]
-    public class AAFunnelChartTests:SilverlightControlTest
+    public class FunnelChartTests:SilverlightControlTest
     {
         #region StreamLineFunnelProperties
 

@@ -400,10 +400,10 @@ namespace Visifire.Commons
 
                     if (left < label.Center.X)
                     {
-                        //left = label.Center.X - (label.Position.X - label.Center.X);
+                        left = label.Center.X - (label.Position.X - label.Center.X);
                         //left = areaWidth - label.Position.X - label.LabelVisual.Width;
                         //left = areaWidth - label.Position.X - (label.Center.X - left) + label.LabelVisual.Width;
-                        left = label.Center.X - (label.Position.X - label.Center.X) - label.LabelVisual.Width;
+                        //left = label.Center.X - (label.Position.X - label.Center.X) - label.LabelVisual.Width;
                     }
                     else
                         left = label.Position.X;
@@ -1031,8 +1031,13 @@ namespace Visifire.Commons
             Double x = Position.X, y = Position.Y;
 
             // For left side labels line should target to the right handside of the label
-            // if (x < Center.X)
-            //    x = x - LabelVisual.Width;
+            if (x < Center.X)
+            {
+                if (x - LabelVisual.Width < 0)
+                    x = 0;
+                else
+                    x = x - LabelVisual.Width;
+            }
 
             // if (y + LabelVisual.Height > YRadiusLabel * 2)
             //     y = YRadiusLabel * 2 - LabelVisual.Height;
