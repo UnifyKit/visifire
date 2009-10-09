@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="SLVisifireApp.Doughnut3D2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" View3D="True" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Internet Users in America"/>
+            </vc:Chart.Titles>
+                
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Doughnut" Cursor="Hand" LabelLineColor="Black" LabelLineStyle="Dotted">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="North America" YValue="70.5"/>
+                        <vc:DataPoint AxisXLabel="Latin America" YValue="20.2"/>
+                        <vc:DataPoint AxisXLabel="World" YValue="9.3"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

@@ -1,0 +1,34 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="World Gold Mine Production and Reserves, 2007"/>
+    <vc:Title Text="Bubble size indicates gold reserves" FontSize="9" HorizontalAlignment="Left"
+              VerticalAlignment="Bottom" Padding="2"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis>
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineThickness="0.25"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis AxisMaximum="350" Title="Production (metric tons)"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bubble" ToolTipText="Production: #YValue, Reserves: #ZValue" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Unites States" YValue="240" ZValue="2700"/>
+        <vc:DataPoint AxisXLabel="Australia" YValue="280" ZValue="5000"/>
+        <vc:DataPoint AxisXLabel="Canada" YValue="100" ZValue="1300"/>
+        <vc:DataPoint AxisXLabel="China" YValue="250" ZValue="1200"/>
+        <vc:DataPoint AxisXLabel="Russia" YValue="160" ZValue="3000"/>
+        <vc:DataPoint AxisXLabel="South Africa" YValue="270" ZValue="6000"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
