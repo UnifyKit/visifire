@@ -473,6 +473,8 @@ namespace Visifire.Charts
 
                 tb.CreateVisualObject();
 
+                tb.TextElement.SetValue(Canvas.TopProperty, -(Double)1);
+
                 Double labelTop;
                 Double labelLeft;
 
@@ -487,7 +489,7 @@ namespace Visifire.Charts
                         labelLeft = labelCanvas.Width - tb.ActualWidth - 2;
 
                     tb.Visual.SetValue(Canvas.LeftProperty, labelLeft);
-                    tb.Visual.SetValue(Canvas.TopProperty, labelTop);
+                    tb.Visual.SetValue(Canvas.TopProperty, labelTop - 2);
                 }
                 else
                 {

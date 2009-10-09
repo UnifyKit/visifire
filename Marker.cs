@@ -992,6 +992,8 @@ namespace Visifire.Commons
                 TextBackgroundCanvas.Width = TextBlockSize.Width;
                 TextBackgroundCanvas.Height = TextBlockSize.Height;
 
+                TextBlock.SetValue(Canvas.TopProperty, -(Double)2);
+
                 TextBackgroundCanvas.RenderTransformOrigin = new Point(0, 0.5);
 
                 TextBackgroundCanvas.RenderTransform = new RotateTransform()
@@ -1044,6 +1046,7 @@ namespace Visifire.Commons
                                     {
                                         SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
                                         tt.Y = -TextBlockSize.Width / 2 + TextBlockSize.Height / 2 - 5;
+                                        tt.X = -1;
                                     }
                                     else
                                     {
@@ -1071,17 +1074,18 @@ namespace Visifire.Commons
                                         }
                                         else
                                         {
-                                            centerOfRotation = new Point(Position.X, Position.Y + MarkerSize.Height/2);
+                                            centerOfRotation = new Point(Position.X, Position.Y + MarkerSize.Height / 2);
                                             if (LabelAngle >= -90 && LabelAngle < 0)
                                             {
                                                 angle = 180 + LabelAngle;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
                                             else if (LabelAngle > 0 && LabelAngle <= 90)
                                             {
+                                                radius += 3;
                                                 angle = LabelAngle;
                                                 angleInRadian = (Math.PI / 180) * angle;
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
@@ -1122,7 +1126,7 @@ namespace Visifire.Commons
                                             {
                                                 angle = LabelAngle - 180;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
@@ -1130,16 +1134,17 @@ namespace Visifire.Commons
                                             {
                                                 angle = LabelAngle - 180;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
                                         }
                                         else
                                         {
-                                            if(LabelAngle <= 90 && LabelAngle >= -90)
+                                            if (LabelAngle <= 90 && LabelAngle >= -90)
                                             {
                                                 angle = LabelAngle;
+                                                radius += 3;
                                                 angleInRadian = (Math.PI / 180) * angle;
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
@@ -1174,7 +1179,7 @@ namespace Visifire.Commons
                                             angleInRadian = (Math.PI / 180) * angle;
                                             SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                         }
-                                        
+
                                     }
                                     break;
 
@@ -1197,6 +1202,7 @@ namespace Visifire.Commons
                                             if (LabelAngle <= 90 && LabelAngle >= -90)
                                             {
                                                 angle = LabelAngle;
+                                                radius += 3;
                                                 angleInRadian = (Math.PI / 180) * angle;
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
@@ -1207,7 +1213,7 @@ namespace Visifire.Commons
                                             {
                                                 angle = LabelAngle - 180;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
@@ -1215,7 +1221,7 @@ namespace Visifire.Commons
                                             {
                                                 angle = LabelAngle - 180;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
@@ -1241,7 +1247,9 @@ namespace Visifire.Commons
                                     if (Double.IsNaN(LabelAngle))
                                     {
                                         SetRotateTransformValues(ref rt, TextBlockSize.Width / 2, TextBlockSize.Height / 2, -90);
-                                        tt.Y = TextBlockSize.Height + MarkerSize.Height * ScaleFactor;
+                                        //tt.Y = TextBlockSize.Height + MarkerSize.Height * ScaleFactor;
+                                        tt.Y = TextBlockSize.Width / 2;
+                                        tt.X = -1;
                                     }
                                     else
                                     {
@@ -1277,12 +1285,13 @@ namespace Visifire.Commons
                                             {
                                                 angle = LabelAngle - 180;
                                                 angleInRadian = (Math.PI / 180) * angle;
-                                                radius += TextBlockSize.Width;
+                                                radius += TextBlockSize.Width + 3;
                                                 angle = (angleInRadian - Math.PI) * (180 / Math.PI);
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
                                             }
                                             else if (LabelAngle >= -90 && LabelAngle < 0)
                                             {
+                                                radius += 3;
                                                 angle = LabelAngle;
                                                 angleInRadian = (Math.PI / 180) * angle;
                                                 SetRotation(radius, angle, angleInRadian, centerOfRotation);
@@ -1310,6 +1319,94 @@ namespace Visifire.Commons
                             TextBackgroundCanvas.RenderTransform = tg;
                             TextBackgroundCanvas.Height = TextBlockSize.Height;
                             TextBackgroundCanvas.Width = TextBlockSize.Width;
+                        }
+                    }
+                }
+                else
+                {
+                    if (DataSeriesOfLegendMarker == null)
+                    {
+                        TransformGroup tg = new TransformGroup();
+                        RotateTransform rt = new RotateTransform();
+                        TranslateTransform tt = new TranslateTransform();
+
+                        tg.Children.Add(rt);
+                        tg.Children.Add(tt);
+
+                        switch (TextAlignmentY)
+                        {
+                            case AlignmentY.Top:
+
+                                switch (TextAlignmentX)
+                                {
+                                    case AlignmentX.Center:
+                                        if (Double.IsNaN(LabelAngle))
+                                        {
+                                            SetRotateTransformValues(ref rt, 0, 0, 0);
+                                            tt.Y = -3;
+                                        }
+                                        break;
+                                }
+                                break;
+
+                            case AlignmentY.Bottom:
+
+                                switch (TextAlignmentX)
+                                {
+                                    case AlignmentX.Center:
+                                        if (Double.IsNaN(LabelAngle))
+                                        {
+                                            SetRotateTransformValues(ref rt, 0, 0, 0);
+                                            tt.Y = 1;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case AlignmentY.Center:
+
+                                switch (TextAlignmentX)
+                                {
+                                    case AlignmentX.Left:
+                                        if (Double.IsNaN(LabelAngle))
+                                        {
+                                            SetRotateTransformValues(ref rt, 0, 0, 0);
+                                            tt.X = -5;
+                                            tt.Y = -1;
+                                        }
+                                        break;
+
+                                    case AlignmentX.Center:
+                                        if (Double.IsNaN(LabelAngle))
+                                        {
+                                            SetRotateTransformValues(ref rt, 0, 0, 0);
+                                            tt.Y = -1;
+                                        }
+                                        break;
+
+                                    case AlignmentX.Right:
+                                        if (Double.IsNaN(LabelAngle))
+                                        {
+                                            SetRotateTransformValues(ref rt, 0, 0, 0);
+                                            tt.X = 4;
+                                            tt.Y = -1;
+                                        }
+                                        break;
+                                }
+
+                                break;
+                        }
+
+                        if (Double.IsNaN(LabelAngle))
+                        {
+                            TextBlock.RenderTransform = tg;
+
+                            if (TextBackgroundCanvas != null)
+                            {
+                                TextBackgroundCanvas.RenderTransformOrigin = TextBlock.RenderTransformOrigin;
+                                TextBackgroundCanvas.RenderTransform = tg;
+                                TextBackgroundCanvas.Height = TextBlockSize.Height;
+                                TextBackgroundCanvas.Width = TextBlockSize.Width;
+                            }
                         }
                     }
                 }

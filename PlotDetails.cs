@@ -1237,7 +1237,7 @@ namespace Visifire.Charts
         private void AddToPlotGroupsList(RenderAs renderAs, Axis axisX, Axis axisY, List<DataSeries> series)
         {
             // Create a new PlotGroup
-            PlotGroup plotGroupEntry = new PlotGroup(renderAs, axisX, axisY);
+            PlotGroup plotGroupEntry = new PlotGroup(renderAs, axisX, axisY, Chart);
 
             // Assign the series list to the PlotGroup
             plotGroupEntry.DataSeriesList = series;
