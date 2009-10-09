@@ -47,7 +47,7 @@ namespace Visifire.Charts
         /// <param name="renderAs">RenderAs</param>
         /// <param name="axisX">axisX</param>
         /// <param name="axisY">AxisY</param>
-        public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY)
+        public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY, Chart chart)
         {
             DataSeriesList = new List<DataSeries>();
             
@@ -56,6 +56,7 @@ namespace Visifire.Charts
             RenderAs = renderAs;
             AxisX = axisX;
             AxisY = axisY;
+            Chart = chart;
         }
 
         #endregion
@@ -73,6 +74,12 @@ namespace Visifire.Charts
         #endregion
         
         #region Internal Properties
+
+        internal Chart Chart
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// PlotGroup is enabled if atleast one dataSeries in DataSeriesList is enabled
@@ -275,6 +282,33 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
+        /// This function will find the dependent variable types from the current PlotGroup.
+        /// </summary>
+        /// <returns></returns>
+        internal List<Type> GetDependentVariableTypes()
+        {
+            List<Type> types = new List<Type>();
+            var dataSeriesCount = (from dataSeries in DataSeriesList
+                                   where dataSeries.RenderAs == RenderAs.CandleStick
+                                   || dataSeries.RenderAs == RenderAs.Stock
+                                   select dataSeries).Count();
+
+            if (dataSeriesCount == DataSeriesList.Count)
+                types.Add(typeof(List<Double>));
+            else
+            {
+                types.Add(typeof(Double));
+                var bubbleSeriesCount = (from dataSeries in DataSeriesList
+                                       where dataSeries.RenderAs == RenderAs.Bubble
+                                       select dataSeries).Count();
+                if (bubbleSeriesCount > 0)
+                    types.Add(typeof(Double));
+            }
+
+            return types;
+        }
+
+        /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>
         internal void Update()
@@ -291,7 +325,7 @@ namespace Visifire.Charts
                 {
                     List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
-                    // Concatinate the lists of InternalDataPoints
+                    // Concatenate the lists of InternalDataPoints
                     dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
 
                     // set the plot group reference
@@ -324,26 +358,40 @@ namespace Visifire.Charts
 
             // Get a list of all XValues,YValues and ZValues from all InternalDataPoints from all the DataSeries in this Group
             var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct();
-            List<Double> yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
-            var zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct();
+            
+            List<Double> yValues = null;
+            List<Double> zValues = null;
 
-            List<Double> yValuesList = new List<double>();
+            if(GetDependentVariableTypes().Count == 1 && GetDependentVariableTypes()[0] == typeof(List<Double>))
+                yValues = new List<Double>();
+            else if (GetDependentVariableTypes().Count == 2)
+            {
+                yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+                zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct().ToList();
+            }
+            else
+                yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+
+            List<Double> yValuesList = new List<Double>();
 
             foreach (DataPoint dp in dataPoints)
             {
-                if (dp.YValues != null)
-                    yValuesList.AddRange(dp.YValues);
+                if (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock)
+                {
+                    if (dp.YValues != null)
+                        yValuesList.AddRange(dp.YValues);
+                }
             }
 
             yValues.AddRange(yValuesList);
 
             // Calculate max value
             MaximumX = (xValues.Count() > 0) ? (xValues).Max() : 0;
-            MaximumZ = (zValues.Count() > 0) ? (zValues).Max() : 0;
+            MaximumZ = (zValues != null && zValues.Count() > 0) ? (zValues).Max() : 0;
 
             // Calculate min value
             MinimumX = (xValues.Count() > 0) ? (xValues).Min() : 0;
-            MinimumZ = (zValues.Count() > 0) ? (zValues).Min() : 0;
+            MinimumZ = (zValues != null && zValues.Count() > 0) ? (zValues).Min() : 0;
 
             // variables to store the yValuee sum in case of stacked type charts
             // var positiveYValue;

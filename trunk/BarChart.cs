@@ -319,12 +319,12 @@ namespace Visifire.Charts
 
                 if (barParams.IsPositive)
                     if (chart.View3D)
-                        markerPosition = new Point(barParams.Size.Width + barParams.Depth, barParams.Size.Height / 2 - barParams.Depth);
+                        markerPosition = new Point(barParams.Size.Width, barParams.Size.Height / 2);
                     else
                         markerPosition = new Point(barParams.Size.Width, barParams.Size.Height / 2);
                 else
                     if (chart.View3D)
-                        markerPosition = new Point(barParams.Depth, barParams.Size.Height / 2 - barParams.Depth);
+                        markerPosition = new Point(0, barParams.Size.Height / 2);
                     else
                         markerPosition = new Point(0, barParams.Size.Height / 2);
 
@@ -393,8 +393,8 @@ namespace Visifire.Charts
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[plotGroupList[0].DataSeriesList[0]] + 1);
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
-            labelCanvas.SetValue(Canvas.TopProperty, visualOffset);
-            labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
+            //labelCanvas.SetValue(Canvas.TopProperty, visualOffset);
+            //labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
 
             Double minDiffValue = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
             if (Double.IsPositiveInfinity(minDiffValue))

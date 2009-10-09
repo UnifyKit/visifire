@@ -837,7 +837,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Text element of the title to display text content
         /// </summary>
-        private TextBlock TextElement
+        internal TextBlock TextElement
         {
             get;
             set;
