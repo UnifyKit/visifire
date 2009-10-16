@@ -186,9 +186,25 @@ namespace Visifire.Charts
                         dataPoint.Marker.TextOrientation = Orientation.Vertical;
                     else
                         dataPoint.Marker.TextOrientation = Orientation.Horizontal;
-
+                    
                     if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                     {
+                        if (!columnParams.IsTopOfStack && dataPoint.Parent.RenderAs != RenderAs.Column)
+                        {
+                            if (dataPoint.Marker.TextOrientation == Orientation.Horizontal)
+                            {
+                                if (columnParams.Size.Height - 4 >= dataPoint.Marker.TextBlockSize.Height)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                                else
+                                    columnParams.LabelStyle = LabelStyles.OutSide;
+                            }
+                            else
+                                if (columnParams.Size.Height - 4 >= dataPoint.Marker.TextBlockSize.Width)
+                                    columnParams.LabelStyle = LabelStyles.Inside;
+                                else
+                                    columnParams.LabelStyle = LabelStyles.OutSide;
+                        }
+
                         if (columnParams.IsPositive)
                         {
                             if (dataPoint.Marker.TextOrientation == Orientation.Vertical)
@@ -487,7 +503,7 @@ namespace Visifire.Charts
             columnParams.Lighting = (Boolean)dataPoint.LightingEnabled;
             columnParams.Shadow = (Boolean)dataPoint.ShadowEnabled;
             columnParams.BorderBrush = dataPoint.BorderColor;
-            columnParams.BorderThickness = ((Thickness)dataPoint.BorderThickness).Left;
+            columnParams.BorderThickness = ((Thickness)dataPoint.InternalBorderThickness).Left;
             columnParams.BorderStyle = ExtendedGraphics.GetDashArray((BorderStyles)dataPoint.BorderStyle);
             columnParams.IsPositive = isPositive;
             columnParams.BackgroundBrush = dataPoint.Color;
@@ -731,7 +747,7 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
                 }
 
@@ -803,7 +819,7 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
 
                 }
@@ -1003,7 +1019,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         bottom = top;
@@ -1071,7 +1087,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         top = bottom;
@@ -1282,7 +1298,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
                         bottom = top;
                     }
@@ -1351,7 +1367,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedColumnChartAnimation(columnVisual, dataPoint.Parent.Storyboard, columnParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         top = bottom;

@@ -191,12 +191,12 @@ namespace Visifire.Charts
                 IsNotificationEnable = false,
                 Chart = dataPoint.Chart,
                 Text = dataPoint.TextParser(dataPoint.LabelText),
-                FontSize = (Double)dataPoint.LabelFontSize,
-                FontColor = (isStreamLine && sliceIndex == 0) ? Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, null, LabelStyles.OutSide) : Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)dataPoint.LabelStyle),
-                FontFamily = dataPoint.LabelFontFamily,
-                FontStyle = (FontStyle)dataPoint.LabelFontStyle,
-                FontWeight = (FontWeight)dataPoint.LabelFontWeight,
-                Background = dataPoint.LabelBackground
+                InternalFontSize = (Double)dataPoint.LabelFontSize,
+                InternalFontColor = (isStreamLine && sliceIndex == 0) ? Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, null, LabelStyles.OutSide) : Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (LabelStyles)dataPoint.LabelStyle),
+                InternalFontFamily = dataPoint.LabelFontFamily,
+                InternalFontStyle = (FontStyle)dataPoint.LabelFontStyle,
+                InternalFontWeight = (FontWeight)dataPoint.LabelFontWeight,
+                InternalBackground = dataPoint.LabelBackground
             };
 
             title.CreateVisualObject();
@@ -968,10 +968,10 @@ namespace Visifire.Charts
 
                 if ((funnelSlice.DataPoint.Chart as Chart).AnimationEnabled)
                 {
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(topBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(leftBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(rightBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(bottomBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(topBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(leftBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(rightBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(bottomBevelPath, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
                 }
             }
         }
@@ -1152,8 +1152,8 @@ namespace Visifire.Charts
                 // Apply animation for the 3D funnel slice
                 if (animationEnabled)
                 {
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(funnelTopEllipse, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(path4Slice, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(funnelTopEllipse, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(path4Slice, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
                 }
 
                 #endregion
@@ -1185,7 +1185,7 @@ namespace Visifire.Charts
 
                 // Apply animation for the 2D funnel slice
                 if (animationEnabled)
-                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(path4Slice, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.Opacity, 1);
+                    funnelSlice.DataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(path4Slice, funnelSlice.DataPoint.Parent, funnelSlice.DataPoint.Parent.Storyboard, 0, funnelSlice.DataPoint.InternalOpacity, 1);
 
                 if (!isLightingGradientLayer)
                 {

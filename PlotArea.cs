@@ -38,11 +38,10 @@ using System.Windows.Browser;
 
 using Visifire.Commons;
 using System.ComponentModel;
-
+using System.Windows.Data;
 
 namespace Visifire.Charts
-{
-
+{   
     /// <summary>
     /// Visifire.Charts.PlotArea class
     /// </summary>
@@ -79,11 +78,65 @@ namespace Visifire.Charts
             };
         }
 
+        public override void Bind()
+        {
+#if SL
+            Binding b = new Binding("Background");
+            b.Source = this;
+            this.SetBinding(InternalBackgroundProperty, b);
+
+            b = new Binding("BorderThickness");
+            b.Source = this;
+            this.SetBinding(InternalBorderThicknessProperty, b);
+
+            b = new Binding("Opacity");
+            b.Source = this;
+            this.SetBinding(InternalOpacityProperty, b);
+#endif
+        }
+
         #endregion
 
         #region Public Properties
 
-#if WPF
+#if SL
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.PlotArea.Background dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.PlotArea.Background dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBackgroundProperty = DependencyProperty.Register
+            ("InternalBackground",
+            typeof(Brush),
+            typeof(PlotArea),
+            new PropertyMetadata(OnBackgroundPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.PlotArea.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.PlotArea.Opacity dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalOpacityProperty = DependencyProperty.Register
+            ("InternalOpacity",
+            typeof(Double),
+            typeof(PlotArea),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.PlotArea.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.PlotArea.BorderThickness dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+            ("InternalBorderThickness",
+            typeof(Thickness),
+            typeof(PlotArea),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+#else
         
         /// <summary>
         /// Identifies the Visifire.Charts.PlotArea.Background dependency property.
@@ -91,7 +144,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.PlotArea.Background dependency property.
         /// </returns>
-        private new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
+        public new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
             ("Background",
             typeof(Brush),
             typeof(PlotArea),
@@ -108,6 +161,18 @@ namespace Visifire.Charts
             typeof(Double),
             typeof(PlotArea),
             new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+                /// <summary>
+        /// Identifies the Visifire.Charts.PlotArea.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.PlotArea.BorderThickness dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
+            ("BorderThickness",
+            typeof(Thickness),
+            typeof(PlotArea),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
 #endif
 
         /// <summary>
@@ -160,17 +225,7 @@ namespace Visifire.Charts
         
 #if WPF
         
-        /// <summary>
-        /// Identifies the Visifire.Charts.PlotArea.BorderThickness dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.PlotArea.BorderThickness dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
-            ("BorderThickness",
-            typeof(Thickness),
-            typeof(PlotArea),
-            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+
 #endif
 
         /// <summary>
@@ -253,6 +308,7 @@ namespace Visifire.Charts
 #if SL
                 if (Opacity != value)
                 {
+                    InternalOpacity = value;
                     SetValue(OpacityProperty, value);
                     FirePropertyChanged("Opacity");
                 }
@@ -348,9 +404,25 @@ namespace Visifire.Charts
 #if WPF
                 SetValue(BorderThicknessProperty, value);
 #else
+                InternalBorderThickness = value;
                 SetValue(BorderThicknessProperty, value);
                 FirePropertyChanged("BorderThickness");
 #endif
+            }
+        }
+
+        /// <summary>
+        /// Get or set the BorderThickness of title
+        /// </summary>
+        internal Thickness InternalBorderThickness
+        {
+            get
+            {
+                return (Thickness)((_borderThickness == null) ? GetValue(BorderThicknessProperty) : _borderThickness);
+            }
+            set
+            {
+                _borderThickness = value;
             }
         }
 
@@ -419,6 +491,7 @@ namespace Visifire.Charts
 #if SL
                 if (Background != value)
                 {
+                    InternalBackground = value;
                     SetValue(BackgroundProperty, value);
                     FirePropertyChanged("Background");
                 }
@@ -428,6 +501,35 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the Background property of title
+        /// </summary>
+        internal Brush InternalBackground
+        {
+            get
+            {
+                return (Brush)((_internalBackground == null) ? GetValue(BackgroundProperty) : _internalBackground);
+            }
+            set
+            {
+                _internalBackground = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Opacity property
+        /// </summary>
+        internal Double InternalOpacity
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalOpacity) ? GetValue(OpacityProperty) : _internalOpacity);
+            }
+            set
+            {
+                _internalOpacity = value;
+            }
+        }
         #endregion
 
         #region Public Events And Delegates
@@ -621,9 +723,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
-
-#if WPF
-        
+       
         /// <summary>
         /// BackgroundProperty changed call back function
         /// </summary>
@@ -631,9 +731,34 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as PlotArea).FirePropertyChanged("Background");
+            PlotArea plotArea = d as PlotArea;
+            plotArea.InternalBackground = (Brush)e.NewValue;
+            plotArea.FirePropertyChanged("Background");
         }
-#endif
+
+        /// <summary>
+        /// OpacityProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PlotArea plotArea = d as PlotArea;
+            plotArea.InternalOpacity = (Double)e.NewValue;
+            plotArea.FirePropertyChanged("Opacity");
+        }
+
+        /// <summary>
+        /// BorderThicknessProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PlotArea plotArea = d as PlotArea;
+            plotArea.InternalBorderThickness = (Thickness)e.NewValue;
+            plotArea.FirePropertyChanged("BorderThickness");
+        }
 
         /// <summary>
         /// HrefTargetProperty changed call back function
@@ -675,28 +800,6 @@ namespace Visifire.Charts
             (d as PlotArea).FirePropertyChanged("BorderColor");
         }
         
-#if WPF
-        
-        /// <summary>
-        /// BorderThicknessProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as PlotArea).FirePropertyChanged("BorderThickness");
-        }
-
-        /// <summary>
-        /// OpacityProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as PlotArea).FirePropertyChanged("Opacity");
-        }
-#endif
         /// <summary>
         /// LightingEnabledProperty changed call back function
         /// </summary>
@@ -813,17 +916,17 @@ namespace Visifire.Charts
             Visual.Margin = new Thickness(0);
             Visual.Cursor = (Cursor == null) ? Cursors.Arrow : Cursor;
 
-            BorderElement.Opacity = this.Opacity;
+            BorderElement.Opacity = this.InternalOpacity;
 
-            if (Background != null)
-                BorderElement.Background = Background;
+            if (InternalBackground != null)
+                BorderElement.Background = InternalBackground;
 
             if (BorderColor != null)
                 BorderElement.BorderBrush = BorderColor;
 
-            if (BorderThickness != null)
+            if (InternalBorderThickness != null)
             {
-                BorderElement.BorderThickness = BorderThickness;
+                BorderElement.BorderThickness = InternalBorderThickness;
             }
 
             if (CornerRadius != null)
@@ -848,16 +951,16 @@ namespace Visifire.Charts
             {
                 Chart chart = Chart as Chart;
 
-                _bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(this, BorderElement.Width - BorderThickness.Left - BorderThickness.Right// - plankDepth
-                , BorderElement.Height - BorderThickness.Top - BorderThickness.Bottom //+ ((chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? 0 : (-plankDepth - plankThickness))
+                _bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(this, BorderElement.Width - InternalBorderThickness.Left - InternalBorderThickness.Right// - plankDepth
+                , BorderElement.Height - InternalBorderThickness.Top - InternalBorderThickness.Bottom //+ ((chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal || chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis) ? 0 : (-plankDepth - plankThickness))
                 , Charts.Chart.BEVEL_DEPTH, Charts.Chart.BEVEL_DEPTH
                 , Graphics.GetBevelTopBrush(BorderElement.Background)
                 , Graphics.GetBevelSideBrush(0, BorderElement.Background)
                 , Graphics.GetBevelSideBrush(180, BorderElement.Background)
                 , Graphics.GetBevelSideBrush(90, BorderElement.Background));
 
-                _bevelCanvas.SetValue(Canvas.LeftProperty, BorderThickness.Left);
-                _bevelCanvas.SetValue(Canvas.TopProperty, BorderThickness.Top);
+                _bevelCanvas.SetValue(Canvas.LeftProperty, InternalBorderThickness.Left);
+                _bevelCanvas.SetValue(Canvas.TopProperty, InternalBorderThickness.Top);
 
                 _bevelCanvas.IsHitTestVisible = false;
                 
@@ -876,7 +979,7 @@ namespace Visifire.Charts
                 {
                     if (Bevel)
                     {
-                        LightingBorder.Background = Graphics.GetFrontFaceBrush(Background);
+                        LightingBorder.Background = Graphics.GetFrontFaceBrush(InternalBackground);
                         LightingBorder.Background.Opacity = 0.6;
                     }
                     else
@@ -1168,6 +1271,10 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        Brush _internalBackground = null;
+        Nullable<Thickness> _borderThickness = null;
+        Double _internalOpacity = Double.NaN;
 
         /// <summary>
         /// Handler for MouseLeftButtonDown event

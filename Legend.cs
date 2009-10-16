@@ -21,6 +21,8 @@ using System.Windows.Shapes;
 
 #endif
 
+using System.Windows.Data;
+
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -52,6 +54,60 @@ namespace Visifire.Charts
 #endif      
 
             Entries = new List<KeyValuePair<String, Marker>>();
+        }
+
+        public override void Bind()
+        {
+#if SL
+            Binding b = new Binding("FontSize");
+            b.Source = this;
+            this.SetBinding(InternalFontSizeProperty, b);
+
+            b = new Binding("FontFamily");
+            b.Source = this;
+            this.SetBinding(InternalFontFamilyProperty, b);
+
+            b = new Binding("FontStyle");
+            b.Source = this;
+            this.SetBinding(InternalFontStyleProperty, b);
+
+            b = new Binding("FontWeight");
+            b.Source = this;
+            this.SetBinding(InternalFontWeightProperty, b);
+
+            b = new Binding("BorderThickness");
+            b.Source = this;
+            this.SetBinding(InternalBorderThicknessProperty, b);
+
+            b = new Binding("Background");
+            b.Source = this;
+            this.SetBinding(InternalBackgroundProperty, b);
+
+            b = new Binding("HorizontalAlignment");
+            b.Source = this;
+            this.SetBinding(InternalHorizontalAlignmentProperty, b);
+
+            b = new Binding("VerticalAlignment");
+            b.Source = this;
+            this.SetBinding(InternalVerticalAlignmentProperty, b);
+
+            b = new Binding("Padding");
+            b.Source = this;
+            this.SetBinding(InternalPaddingProperty, b);
+
+            b = new Binding("Opacity");
+            b.Source = this;
+            this.SetBinding(InternalOpacityProperty, b);
+
+
+            b = new Binding("MaxWidth");
+            b.Source = this;
+            this.SetBinding(InternalMaxWidthProperty, b);
+
+            b = new Binding("MaxHeight");
+            b.Source = this;
+            this.SetBinding(InternalMaxHeightProperty, b);
+#endif
         }
 
         #endregion
@@ -106,44 +162,6 @@ namespace Visifire.Charts
             typeof(Legend),
             new PropertyMetadata(OnLabelMarginPropertyChanged));
 
-#if WPF
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.Padding dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.Padding dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty PaddingProperty = DependencyProperty.Register
-             ("Padding",
-             typeof(Thickness),
-             typeof(Legend),
-             new PropertyMetadata(OnPaddingPropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.HorizontalAlignment dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.HorizontalAlignment dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty HorizontalAlignmentProperty = DependencyProperty.Register
-            ("HorizontalAlignment",
-            typeof(HorizontalAlignment),
-            typeof(Legend),
-            new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.VerticalAlignment dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.VerticalAlignment dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Register
-            ("VerticalAlignment",
-            typeof(VerticalAlignment),
-            typeof(Legend),
-            new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
-#endif
-
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.BorderColor dependency property.
         /// </summary>
@@ -157,7 +175,7 @@ namespace Visifire.Charts
              new PropertyMetadata(OnBorderColorPropertyChanged));
 
         /// <summary>
-        /// Identifies the Visifire.Charts.Legend.TitleFontColor dependency property.
+        /// Identifies the Visifire.Charts.Legend.LegendFontColor dependency property.
         /// </summary>
         /// <returns>
         /// The identifier for the Visifire.Charts.Legend.TitleFontColor dependency property.
@@ -167,33 +185,6 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(Legend),
             new PropertyMetadata(OnTitleFontColorPropertyChanged));
-
-#if WPF
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.BorderThickness dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.BorderThickness dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
-            ("BorderThickness",
-            typeof(Thickness),
-            typeof(Legend),
-            new PropertyMetadata(OnBorderThicknessPropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.Background dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.Background dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
-            ("Background",
-            typeof(Brush),
-            typeof(Legend),
-            new PropertyMetadata(OnBackgroundPropertyChanged));
-#endif
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.DockInsidePlotArea dependency property.
@@ -230,70 +221,6 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(Legend),
             new PropertyMetadata(OnFontColorPropertyChanged));
-
-#if WPF
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.FontFamily dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.FontFamily dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register 
-            ("FontFamily",
-            typeof(FontFamily),
-            typeof(Legend),
-            new PropertyMetadata(OnFontFamilyPropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.FontSize dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.FontSize dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register 
-            ("FontSize",
-            typeof(Double),
-            typeof(Legend),
-            new PropertyMetadata(OnFontSizePropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.FontStyle dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.FontStyle dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register 
-            ("FontStyle",
-            typeof(FontStyle),
-            typeof(Legend),
-            new PropertyMetadata(OnFontStylePropertyChanged));
-        
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.FontWeight dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.FontWeight dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
-            ("FontWeight",
-            typeof(FontWeight),
-            typeof(Legend),
-            new PropertyMetadata(OnFontWeightPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.Legend.Opacity dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.Legend.Opacity dependency property.
-        /// </returns>
-        public new static readonly DependencyProperty OpacityProperty = DependencyProperty.Register
-            ("Opacity",
-            typeof(Double),
-            typeof(Legend),
-            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
-
-#endif
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.LightingEnabled dependency property.
@@ -427,7 +354,272 @@ namespace Visifire.Charts
            typeof(Legend),
            new PropertyMetadata(OnEntryMarginPropertyChanged));
 
-#if WPF
+#if SL
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontSize dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontSize dependency property.
+        /// </returns>
+        private static readonly DependencyProperty
+            InternalFontSizeProperty = DependencyProperty.Register
+            ("InternalFontSize",
+            typeof(Double),
+            typeof(Legend), new PropertyMetadata(OnFontSizePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontFamily dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontFamily dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontFamilyProperty = DependencyProperty.Register
+            ("InternalFontFamily",
+            typeof(FontFamily),
+            typeof(Legend),
+            new PropertyMetadata(OnFontFamilyPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontStyle dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
+            ("InternalFontStyle",
+            typeof(FontStyle),
+            typeof(Legend),
+            new PropertyMetadata(OnFontStylePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.FontWeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.FontWeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
+            ("InternalFontWeight",
+            typeof(FontWeight),
+            typeof(Legend),
+            new PropertyMetadata(OnFontWeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.BorderThickness dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+            ("InternalBorderThickness",
+            typeof(Thickness),
+            typeof(Legend),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Background dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Background dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBackgroundProperty = DependencyProperty.Register
+            ("InternalBackground",
+            typeof(Brush),
+            typeof(Legend),
+            new PropertyMetadata(OnBackgroundPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.HorizontalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.HorizontalAlignment dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalHorizontalAlignmentProperty = DependencyProperty.Register
+            ("InternalHorizontalAlignment",
+            typeof(HorizontalAlignment),
+            typeof(Legend),
+            new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.VerticalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.VerticalAlignment dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalVerticalAlignmentProperty = DependencyProperty.Register
+            ("InternalVerticalAlignment",
+            typeof(VerticalAlignment),
+            typeof(Legend),
+            new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
+
+         /// <summary>
+        /// Identifies the Visifire.Charts.Title.Padding dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Padding dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalPaddingProperty = DependencyProperty.Register
+            ("InternalPadding",
+            typeof(Thickness),
+            typeof(Legend),
+            new PropertyMetadata(OnPaddingPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.Opacity dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalOpacityProperty = DependencyProperty.Register
+            ("InternalOpacity",
+            typeof(Double),
+            typeof(Legend),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.MaxHeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxHeightProperty = DependencyProperty.Register
+           ("InternalMaxHeight",
+           typeof(Double),
+           typeof(Legend),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.MaxWidth dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxWidthProperty = DependencyProperty.Register
+           ("InternalMaxWidth",
+           typeof(Double),
+           typeof(Legend),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+#else
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.FontFamily dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.FontFamily dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register 
+            ("FontFamily",
+            typeof(FontFamily),
+            typeof(Legend),
+            new PropertyMetadata(OnFontFamilyPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.FontSize dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.FontSize dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register 
+            ("FontSize",
+            typeof(Double),
+            typeof(Legend),
+            new PropertyMetadata(OnFontSizePropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.FontStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.FontStyle dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register 
+            ("FontStyle",
+            typeof(FontStyle),
+            typeof(Legend),
+            new PropertyMetadata(OnFontStylePropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.FontWeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.FontWeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
+            ("FontWeight",
+            typeof(FontWeight),
+            typeof(Legend),
+            new PropertyMetadata(OnFontWeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.Opacity dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty OpacityProperty = DependencyProperty.Register
+            ("Opacity",
+            typeof(Double),
+            typeof(Legend),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+                /// <summary>
+        /// Identifies the Visifire.Charts.Legend.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.BorderThickness dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register
+            ("BorderThickness",
+            typeof(Thickness),
+            typeof(Legend),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.Background dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.Background dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register
+            ("Background",
+            typeof(Brush),
+            typeof(Legend),
+            new PropertyMetadata(OnBackgroundPropertyChanged));
+
+                /// <summary>
+        /// Identifies the Visifire.Charts.Legend.Padding dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.Padding dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty PaddingProperty = DependencyProperty.Register
+             ("Padding",
+             typeof(Thickness),
+             typeof(Legend),
+             new PropertyMetadata(OnPaddingPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.HorizontalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.HorizontalAlignment dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty HorizontalAlignmentProperty = DependencyProperty.Register
+            ("HorizontalAlignment",
+            typeof(HorizontalAlignment),
+            typeof(Legend),
+            new PropertyMetadata(OnHorizontalAlignmentPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.VerticalAlignment dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.VerticalAlignment dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty VerticalAlignmentProperty = DependencyProperty.Register
+            ("VerticalAlignment",
+            typeof(VerticalAlignment),
+            typeof(Legend),
+            new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.MaxHeight dependency property.
         /// </summary>
@@ -512,6 +704,7 @@ namespace Visifire.Charts
 #if SL
                 if (Opacity != value)
                 {
+                    InternalOpacity = value;
                     SetValue(OpacityProperty, value);
                     FirePropertyChanged("Opacity");
                 }
@@ -569,6 +762,8 @@ namespace Visifire.Charts
 #if WPF
                 SetValue(PaddingProperty, value);
 #else
+
+                InternalPadding = value;
                 SetValue(PaddingProperty, value);
                 FirePropertyChanged("Padding");
 #endif
@@ -589,6 +784,7 @@ namespace Visifire.Charts
 #if SL
                 if (HorizontalAlignment != value)
                 {
+                    InternalHorizontalAlignment = value;
                     SetValue(HorizontalAlignmentProperty, value);
                     FirePropertyChanged("HorizontalAlignment");
                 }
@@ -613,6 +809,7 @@ namespace Visifire.Charts
 #if SL
                 if (VerticalAlignment != value)
                 {
+                    InternalVerticalAlignment = value;
                     SetValue(VerticalAlignmentProperty, value);
                     FirePropertyChanged("VerticalAlignment");
                 }
@@ -651,6 +848,7 @@ namespace Visifire.Charts
 #if SL
                 if (BorderThickness != value)
                 {
+                    InternalBorderThickness = value;
                     SetValue(BorderThicknessProperty, value);
                     FirePropertyChanged("BorderThickness");
                 }
@@ -671,9 +869,10 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
+#if SL          
                 if (Background != value)
                 {
+                    InternalBackground = value;
                     SetValue(BackgroundProperty, value);
                     FirePropertyChanged("Background");
                 }
@@ -750,7 +949,8 @@ namespace Visifire.Charts
 
 #if SL
                 if (FontFamily != value)
-                {
+                {   
+                    InternalFontFamily = value;
                     SetValue(FontFamilyProperty, value);
                     FirePropertyChanged("FontFamily");
                 }
@@ -775,6 +975,7 @@ namespace Visifire.Charts
 #if SL
                 if (FontSize != value)
                 {
+                    InternalFontSize = value;
                     SetValue(FontSizeProperty, value);
                     FirePropertyChanged("FontSize");
                 }
@@ -800,7 +1001,8 @@ namespace Visifire.Charts
             {
 #if SL
                 if (FontStyle != value)
-                {
+                {   
+                    InternalFontStyle = value;
                     SetValue(FontStyleProperty, value);
                     FirePropertyChanged("FontStyle");
                 }
@@ -824,13 +1026,14 @@ namespace Visifire.Charts
             }
             set
             {
-#if WPF
-                if (FontWeight != value)
+#if SL
+                if (InternalFontWeight != value)
                 {
+                    InternalFontWeight = value;
                     SetValue(FontWeightProperty, value);
                     FirePropertyChanged("FontWeight");
                 }
-#else
+#else           
                 SetValue(FontWeightProperty, value);
 #endif
             }
@@ -1035,7 +1238,7 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
+#if SL          
                 if (MaxHeight != value)
                 {
                     SetValue(MaxHeightProperty, value);
@@ -1061,12 +1264,210 @@ namespace Visifire.Charts
 #if SL
                 if (MaxWidth != value)
                 {
+                    InternalMaxWidth = value;
                     SetValue(MaxWidthProperty, value);
                     FirePropertyChanged("MaxWidth");
                 }
 #else
                 SetValue(MaxWidthProperty, value);
 #endif
+            }
+        }
+
+
+
+        /// <summary>
+        /// Get or set the FontFamily property of title
+        /// </summary>
+        internal FontFamily InternalFontFamily
+        {
+            get
+            {
+                FontFamily retVal;
+
+                if (_internalFontFamily == null)
+                    retVal = (FontFamily)GetValue(FontFamilyProperty);
+                else
+                    retVal = _internalFontFamily;
+
+                return (retVal == null) ? new FontFamily("Verdana") : retVal;
+            }
+            set
+            {
+
+                _internalFontFamily = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontSize property of title
+        /// </summary>
+        internal Double InternalFontSize
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalFontSize) ? GetValue(FontSizeProperty) : _internalFontSize);
+            }
+            set
+            {
+                _internalFontSize = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontStyle property of title text
+        /// </summary>
+#if WPF
+        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
+#endif
+        internal FontStyle InternalFontStyle
+        {
+            get
+            {
+                return (FontStyle)((_internalFontStyle == null) ? GetValue(FontStyleProperty) : _internalFontStyle);
+            }
+            set
+            {
+                _internalFontStyle = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontWeight property of title text
+        /// </summary>
+#if WPF
+         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+#endif
+        internal FontWeight InternalFontWeight
+        {
+            get
+            {
+                return (FontWeight)((_internalFontWeight == null) ? GetValue(FontWeightProperty) : _internalFontWeight);
+            }
+            set
+            {
+                _internalFontWeight = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the BorderThickness of title
+        /// </summary>
+        internal Thickness InternalBorderThickness
+        {
+            get
+            {
+                return (Thickness)((_borderThickness == null) ? GetValue(BorderThicknessProperty) : _borderThickness);
+            }
+            set
+            {
+                _borderThickness = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Background property of title
+        /// </summary>
+        internal Brush InternalBackground
+        {
+            get
+            {
+                return (Brush)((_internalBackground == null) ? GetValue(BackgroundProperty) : _internalBackground);
+            }
+            set
+            {
+                _internalBackground = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the HorizontalAlignment property of title
+        /// </summary>
+        internal HorizontalAlignment InternalHorizontalAlignment
+        {
+            get
+            {
+                return (HorizontalAlignment)((_internalHorizontalAlignment == null) ? GetValue(HorizontalAlignmentProperty) : _internalHorizontalAlignment);
+            }
+            set
+            {
+                _internalHorizontalAlignment = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the VerticalAlignment property of title
+        /// </summary>
+        internal VerticalAlignment InternalVerticalAlignment
+        {
+            get
+            {
+                return (VerticalAlignment)((_internalVerticalAlignment == null) ? GetValue(VerticalAlignmentProperty) : _internalVerticalAlignment);
+            }
+            set
+            {
+                _internalVerticalAlignment = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Padding property of title
+        /// </summary>
+        public Thickness InternalPadding
+        {
+            get
+            {
+                return (Thickness)((_internalPadding == null) ? GetValue(PaddingProperty) : _internalPadding);
+            }
+            set
+            {
+                _internalPadding = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Get or set the Opacity property
+        /// </summary>
+        internal Double InternalOpacity
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalOpacity) ? GetValue(OpacityProperty) : _internalOpacity);
+            }
+            set
+            {
+                _internalOpacity = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the maximum height of the Legend
+        /// </summary>
+        internal Double InternalMaxHeight
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxheight) ? GetValue(MaxHeightProperty) : _internalMaxheight);
+            }
+            set
+            {
+                _internalMaxheight = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the maximum height of the Legend
+        /// </summary>
+        internal Double InternalMaxWidth
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxWidth) ? GetValue(MaxWidthProperty) : _internalMaxWidth);
+            }
+            set
+            {
+                _internalMaxWidth = value;
             }
         }
 
@@ -1235,53 +1636,6 @@ namespace Visifire.Charts
             legend.FirePropertyChanged("LabelMargin");
         }
 
-#if WPF    
-    
-        /// <summary>
-        /// Event handler attached with Padding property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("Padding");
-        }
-
-        /// <summary>
-        /// Event handler attached with HorizontalAlignment property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("HorizontalAlignment");
-        }
-        
-        /// <summary>
-        /// Event handler attached with VerticalAlignment property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("VerticalAlignment");
-        }
-
-        /// <summary>
-        /// Event handler attached with Opacity property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("Opacity");
-        }
-#endif
-
         /// <summary>
         /// Event handler attached with BorderColor property changed event of Legend element
         /// </summary>
@@ -1292,31 +1646,6 @@ namespace Visifire.Charts
             Legend legend = d as Legend;
             legend.FirePropertyChanged("BorderColor");
         }
-
-#if WPF
-        
-        /// <summary>
-        /// Event handler attached with BorderThickness property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("BorderThickness");
-        }
-        
-        /// <summary>
-        /// Event handler attached with Background property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("Background");
-        }
-#endif
 
         /// <summary>
         /// Event handler attached with DockInsidePlotArea property changed event of Legend element
@@ -1351,8 +1680,8 @@ namespace Visifire.Charts
             legend.FirePropertyChanged("FontColor");
         }
 
-#if WPF
-        
+        //------------------------------------------------------------
+
         /// <summary>
         /// Event handler attached with FontFamily property changed event of Legend element
         /// </summary>
@@ -1361,9 +1690,20 @@ namespace Visifire.Charts
         private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("FontFamily");
+
+            if (e.NewValue == null || e.OldValue == null)
+            {
+                legend.InternalFontFamily = (FontFamily)e.NewValue;
+                legend.FirePropertyChanged("FontFamily");
+            }
+            else if (e.NewValue.ToString() != e.OldValue.ToString())
+            {
+                legend.InternalFontFamily = (FontFamily)e.NewValue;
+                legend.FirePropertyChanged("FontFamily");
+            }
+            //legend.FirePropertyChanged("FontFamily");
         }
-        
+
         /// <summary>
         /// Event handler attached with FontSize property changed event of Legend element
         /// </summary>
@@ -1372,9 +1712,10 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
+            legend.InternalFontSize = (Double)e.NewValue;
             legend.FirePropertyChanged("FontSize");
         }
-        
+
         /// <summary>
         /// Event handler attached with FontStyle property changed event of Legend element
         /// </summary>
@@ -1383,6 +1724,7 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
+            legend.InternalFontStyle = (FontStyle)e.NewValue;
             legend.FirePropertyChanged("FontStyle");
         }
         
@@ -1394,10 +1736,106 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
+            legend.InternalFontWeight = (FontWeight)e.NewValue;
             legend.FirePropertyChanged("FontWeight");
         }
-#endif
 
+        /// <summary>
+        /// Event handler attached with BorderThickness property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalBorderThickness = (Thickness)e.NewValue;
+            legend.FirePropertyChanged("BorderThickness");
+        }
+
+        /// <summary>
+        /// Event handler attached with Background property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalBackground = (Brush)e.NewValue;
+            legend.FirePropertyChanged("Background");
+        }
+
+        /// <summary>
+        /// Event handler attached with Padding property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalPadding = (Thickness)e.NewValue;
+            legend.FirePropertyChanged("Padding");
+        }
+
+        /// <summary>
+        /// Event handler attached with HorizontalAlignment property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalHorizontalAlignment = (HorizontalAlignment)e.NewValue;
+            legend.FirePropertyChanged("HorizontalAlignment");
+        }
+
+        /// <summary>
+        /// Event handler attached with VerticalAlignment property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalVerticalAlignment = (VerticalAlignment)e.NewValue;
+            legend.FirePropertyChanged("VerticalAlignment");
+        }
+
+        /// <summary>
+        /// Event handler attached with Opacity property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalOpacity = (Double)e.NewValue;
+            legend.FirePropertyChanged("Opacity");
+        }
+
+        /// <summary>
+        /// Event handler attached with MaxHeight property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalMaxHeight = (Double)e.NewValue;
+            legend.FirePropertyChanged("MaxHeight");
+        }
+
+        /// <summary>
+        /// Event handler attached with MaxWidth property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.InternalMaxWidth = (Double)e.NewValue;
+            legend.FirePropertyChanged("MaxWidth");
+        }
+        //----------------------------------------------
 
         /// <summary>
         /// Event handler attached with LightingEnabled property changed event of Legend element
@@ -1531,29 +1969,6 @@ namespace Visifire.Charts
             legend.FirePropertyChanged("EntryMargin");
         }
 
-#if WPF
-        /// <summary>
-        /// Event handler attached with MaxHeight property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("MaxHeight");
-        }
-
-        /// <summary>
-        /// Event handler attached with MaxWidth property changed event of Legend element
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Legend legend = d as Legend;
-            legend.FirePropertyChanged("MaxWidth");
-        }
-#endif
 
         /// <summary>
         /// Apply font properties of a TextBlock
@@ -1561,10 +1976,10 @@ namespace Visifire.Charts
         /// <param name="textBlock"></param>
         private void ApplyFontProperty(TextBlock textBlock)
         {
-            textBlock.FontFamily = FontFamily;
-            textBlock.FontStyle = FontStyle;
-            textBlock.FontWeight = FontWeight;
-            textBlock.FontSize = FontSize;
+            textBlock.FontFamily = InternalFontFamily;
+            textBlock.FontStyle = InternalFontStyle;
+            textBlock.FontWeight = InternalFontWeight;
+            textBlock.FontSize = InternalFontSize;
             textBlock.Foreground = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, this.DockInsidePlotArea);
         }
 
@@ -1574,10 +1989,10 @@ namespace Visifire.Charts
         /// <param name="marker">Marker</param>
         private void ApplyFontPropertiesOfMarkerAsSymbol(Marker marker)
         {
-            marker.FontFamily = FontFamily;
-            marker.FontStyle = FontStyle;
-            marker.FontWeight = FontWeight;
-            marker.FontSize = FontSize;
+            marker.FontFamily = InternalFontFamily;
+            marker.FontStyle = InternalFontStyle;
+            marker.FontWeight = InternalFontWeight;
+            marker.FontSize = InternalFontSize;
             marker.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, this.DockInsidePlotArea);
         }
 
@@ -1588,21 +2003,21 @@ namespace Visifire.Charts
         private void ApplyFontProperty(Title title)
         {
             if (TitleFontFamily != null)
-                title.FontFamily = TitleFontFamily;
+                title.InternalFontFamily = TitleFontFamily;
 
             if (TitleFontSize != 0)
-                title.FontSize = TitleFontSize;
+                title.InternalFontSize = TitleFontSize;
 
             if (TitleFontStyle != null)
-                title.FontStyle = TitleFontStyle;
+                title.InternalFontStyle = TitleFontStyle;
 
             if (TitleFontWeight != null)
-                title.FontWeight = TitleFontWeight;
+                title.InternalFontWeight = TitleFontWeight;
 
             if (!String.IsNullOrEmpty(Title))
                 title.Text = GetFormattedMultilineText(Title);
 
-            title.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), TitleFontColor, this.DockInsidePlotArea);
+            title.InternalFontColor = Charts.Chart.CalculateFontColor((Chart as Chart), TitleFontColor, this.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -1615,14 +2030,14 @@ namespace Visifire.Charts
 
             Visual.BorderBrush = BorderColor;
 
-            Visual.BorderThickness = BorderThickness;
+            Visual.BorderThickness = InternalBorderThickness;
 
             Visual.CornerRadius = CornerRadius;
-            Visual.Background = this.Background;
+            Visual.Background = this.InternalBackground;
 
-            Visual.HorizontalAlignment = HorizontalAlignment;
-            Visual.VerticalAlignment = VerticalAlignment;
-            Visual.Opacity = this.Opacity;
+            Visual.HorizontalAlignment = InternalHorizontalAlignment;
+            Visual.VerticalAlignment = InternalVerticalAlignment;
+            Visual.Opacity = this.InternalOpacity;
 
             ApplyLighting();
             AttachHref(Chart, Visual, Href, HrefTarget);
@@ -1765,7 +2180,7 @@ namespace Visifire.Charts
             
             lineMarker.Children.Add(marker.Visual);
 
-            if (!(VerticalAlignment == VerticalAlignment.Center && (HorizontalAlignment == HorizontalAlignment.Left || HorizontalAlignment == HorizontalAlignment.Right)))
+            if (!(InternalVerticalAlignment == VerticalAlignment.Center && (InternalHorizontalAlignment == HorizontalAlignment.Left || InternalHorizontalAlignment == HorizontalAlignment.Right)))
             {
                 line.Margin = new Thickness(ENTRY_SYMBOL_LINE_WIDTH / 2, marker.Visual.Margin.Top, marker.Visual.Margin.Right, marker.Visual.Margin.Bottom);
                 marker.Visual.Margin = new Thickness(ENTRY_SYMBOL_LINE_WIDTH / 2, marker.Visual.Margin.Top, marker.Visual.Margin.Right, marker.Visual.Margin.Bottom);
@@ -2100,8 +2515,8 @@ namespace Visifire.Charts
         {
             Grid legendContent = new Grid();
 
-            InternalMaximumWidth -= 2 * Padding.Left;
-            InternalMaximumHeight -= 2 * Padding.Left;
+            InternalMaximumWidth -= 2 * InternalPadding.Left;
+            InternalMaximumHeight -= 2 * InternalPadding.Left;
 
             if (Orientation == Orientation.Vertical)
             {
@@ -2127,8 +2542,8 @@ namespace Visifire.Charts
             }
 
             legendContent.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            legendContent.Height = legendContent.DesiredSize.Height + Padding.Left * 2;
-            legendContent.Width = legendContent.DesiredSize.Width + Padding.Left * 2;
+            legendContent.Height = legendContent.DesiredSize.Height + InternalPadding.Left * 2;
+            legendContent.Width = legendContent.DesiredSize.Width + InternalPadding.Left * 2;
 
             return legendContent;
         }
@@ -2160,18 +2575,18 @@ namespace Visifire.Charts
                 ApplyFontProperty(legendTitle);
 
                 if (TitleBackground != null)
-                    legendTitle.Background = TitleBackground;
+                    legendTitle.InternalBackground = TitleBackground;
 
-                legendTitle.HorizontalAlignment = TitleAlignmentX;
-                legendTitle.VerticalAlignment = VerticalAlignment.Top;
+                legendTitle.InternalHorizontalAlignment = TitleAlignmentX;
+                legendTitle.InternalVerticalAlignment = VerticalAlignment.Top;
                 legendTitle.TextAlignment = TitleTextAlignment;
 
                 legendTitle.CreateVisualObject();
 
                 legendTitle.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-                if(legendTitle.DesiredSize.Width > MaxWidth)
-                    legendTitle.Visual.Width = MaxWidth;
+                if(legendTitle.DesiredSize.Width > InternalMaxWidth)
+                    legendTitle.Visual.Width = InternalMaxWidth;
 
                 LegendContainer.Children.Add(legendTitle.Visual);
             }
@@ -2190,15 +2605,15 @@ namespace Visifire.Charts
             Visual.Cursor = this.Cursor;
             Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-            if (!Double.IsPositiveInfinity(MaxHeight) && MaxHeight < Visual.DesiredSize.Height)
-                Visual.Height = MaxHeight;
+            if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < Visual.DesiredSize.Height)
+                Visual.Height = InternalMaxHeight;
             else
                 Visual.Height = Visual.DesiredSize.Height;
 
-            if (!Double.IsPositiveInfinity(MaxWidth) && MaxWidth < Visual.DesiredSize.Width + Padding.Left)
-                Visual.Width = MaxWidth;
+            if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < Visual.DesiredSize.Width + InternalPadding.Left)
+                Visual.Width = InternalMaxWidth;
             else
-                Visual.Width = Visual.DesiredSize.Width + Padding.Left;
+                Visual.Width = Visual.DesiredSize.Width + InternalPadding.Left;
         }
 
         #endregion
@@ -2210,6 +2625,20 @@ namespace Visifire.Charts
         #region Data
 
         private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
+ 
+        private Double _internalFontSize = Double.NaN;
+        private FontFamily _internalFontFamily = null;
+        internal Brush InternalFontColor;
+        Nullable<FontStyle> _internalFontStyle = null;
+        Nullable<FontWeight> _internalFontWeight = null;
+        Nullable<Thickness> _borderThickness = null;
+        Brush _internalBackground = null;
+        Nullable<HorizontalAlignment> _internalHorizontalAlignment = null;
+        Nullable<VerticalAlignment> _internalVerticalAlignment = null;
+        Nullable<Thickness> _internalPadding = null;
+        Double _internalOpacity = Double.NaN;
+        Double _internalMaxheight = Double.NaN;
+        Double _internalMaxWidth = Double.NaN;
 
 #if WPF
 

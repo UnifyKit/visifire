@@ -477,20 +477,20 @@ namespace Visifire.Charts
 
                 elementSize = Graphics.CalculateVisualSize(legend.Visual);
 
-                if (legend.VerticalAlignment == VerticalAlignment.Bottom || legend.VerticalAlignment == VerticalAlignment.Top)
+                if (legend.InternalVerticalAlignment == VerticalAlignment.Bottom || legend.InternalVerticalAlignment == VerticalAlignment.Top)
                 {
                     boundingRec.Height -= elementSize.Height;
-                    if (legend.VerticalAlignment == VerticalAlignment.Bottom)
+                    if (legend.InternalVerticalAlignment == VerticalAlignment.Bottom)
                         Chart._bottomOuterLegendPanel.Height += elementSize.Height;
                     else
                         Chart._topOuterLegendPanel.Height += elementSize.Height;
                 }
-                else if (legend.VerticalAlignment == VerticalAlignment.Center || legend.VerticalAlignment == VerticalAlignment.Stretch)
+                else if (legend.InternalVerticalAlignment == VerticalAlignment.Center || legend.InternalVerticalAlignment == VerticalAlignment.Stretch)
                 {
-                    if (legend.HorizontalAlignment == HorizontalAlignment.Left || legend.HorizontalAlignment == HorizontalAlignment.Right)
+                    if (legend.InternalHorizontalAlignment == HorizontalAlignment.Left || legend.InternalHorizontalAlignment == HorizontalAlignment.Right)
                     {
                         boundingRec.Width -= elementSize.Width;
-                        if (legend.HorizontalAlignment == HorizontalAlignment.Left)
+                        if (legend.InternalHorizontalAlignment == HorizontalAlignment.Left)
                             Chart._leftOuterLegendPanel.Width += elementSize.Width;
                         else
                             Chart._rightOuterLegendPanel.Width += elementSize.Width;
@@ -555,20 +555,20 @@ namespace Visifire.Charts
 
                 elementSize = Graphics.CalculateVisualSize(title.Visual);
 
-                if (title.VerticalAlignment == VerticalAlignment.Bottom || title.VerticalAlignment == VerticalAlignment.Top)
+                if (title.InternalVerticalAlignment == VerticalAlignment.Bottom || title.InternalVerticalAlignment == VerticalAlignment.Top)
                 {
                     boundingRec.Height -= elementSize.Height;
-                    if (title.VerticalAlignment == VerticalAlignment.Bottom)
+                    if (title.InternalVerticalAlignment == VerticalAlignment.Bottom)
                         Chart._bottomOuterTitlePanel.Height += elementSize.Height;
                     else
                         Chart._topOuterTitlePanel.Height += elementSize.Height;
                 }
-                else if (title.VerticalAlignment == VerticalAlignment.Center || title.VerticalAlignment == VerticalAlignment.Stretch)
+                else if (title.InternalVerticalAlignment == VerticalAlignment.Center || title.InternalVerticalAlignment == VerticalAlignment.Stretch)
                 {
-                    if (title.HorizontalAlignment == HorizontalAlignment.Left || title.HorizontalAlignment == HorizontalAlignment.Right)
+                    if (title.InternalHorizontalAlignment == HorizontalAlignment.Left || title.InternalHorizontalAlignment == HorizontalAlignment.Right)
                     {
                         boundingRec.Width -= elementSize.Width;
-                        if (title.HorizontalAlignment == HorizontalAlignment.Left)
+                        if (title.InternalHorizontalAlignment == HorizontalAlignment.Left)
                             Chart._leftOuterTitlePanel.Width += elementSize.Width;
                         else
                             Chart._rightOuterTitlePanel.Width += elementSize.Width;
@@ -1109,10 +1109,10 @@ namespace Visifire.Charts
                     plotAreaSize.Height += totalHeightReduced;
                     plotAreaSize.Height -= totalHeightReduced2;
                     UpdateLayoutSettings(plotAreaSize);
-                    DrawAxesX(plotAreaSize);
+                    DrawAxesY(plotAreaSize);
                 }
-
-                DrawAxesY(plotAreaSize);
+                else
+                    DrawAxesY(plotAreaSize);
 
                 #endregion Horizontal Render
             }
@@ -1984,7 +1984,7 @@ namespace Visifire.Charts
                                         {
                                             foreach (Shape shape in dataPoint.Faces.BorderElements)
                                             {
-                                                InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                                                InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.InternalBorderThickness.Left, dataPoint.BorderColor);
                                             }
                                         }
                                     }
@@ -2588,40 +2588,40 @@ namespace Visifire.Charts
             }
 
             List<Legend> legendsOnTop = (from entry in chart.Legends
-                                         where entry.Entries.Count > 0 && entry.VerticalAlignment == VerticalAlignment.Top
+                                         where entry.Entries.Count > 0 && entry.InternalVerticalAlignment == VerticalAlignment.Top
                                          && entry.DockInsidePlotArea == DockInsidePlotArea
                                          && (Boolean)entry.Enabled
                                          select entry).ToList();
 
             List<Legend> legendsOnBottom = (from entry in chart.Legends
                                             where entry.Entries.Count > 0
-                                            && entry.VerticalAlignment == VerticalAlignment.Bottom
+                                            && entry.InternalVerticalAlignment == VerticalAlignment.Bottom
                                             && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
                                             select entry).ToList();
 
             List<Legend> legendsOnLeft = (from entry in chart.Legends
                                           where entry.Entries.Count > 0
-                                          && (entry.VerticalAlignment == VerticalAlignment.Center ||
-                                          entry.VerticalAlignment == VerticalAlignment.Stretch)
-                                          && entry.HorizontalAlignment == HorizontalAlignment.Left
+                                          && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
+                                          entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
+                                          && entry.InternalHorizontalAlignment == HorizontalAlignment.Left
                                           && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
                                           select entry).ToList();
 
             List<Legend> legendsOnRight = (from entry in chart.Legends
                                            where entry.Entries.Count > 0
-                                           && (entry.VerticalAlignment == VerticalAlignment.Center ||
-                                           entry.VerticalAlignment == VerticalAlignment.Stretch)
-                                           && entry.HorizontalAlignment == HorizontalAlignment.Right
+                                           && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
+                                           entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
+                                           && entry.InternalHorizontalAlignment == HorizontalAlignment.Right
                                            && entry.DockInsidePlotArea == DockInsidePlotArea
                                            && (Boolean)entry.Enabled
                                            select entry).ToList();
 
             List<Legend> legendsAtCenter = (from entry in chart.Legends
                                             where entry.Entries.Count > 0
-                                            && (entry.VerticalAlignment == VerticalAlignment.Center ||
-                                            entry.VerticalAlignment == VerticalAlignment.Stretch)
-                                            && (entry.HorizontalAlignment == HorizontalAlignment.Center ||
-                                            entry.HorizontalAlignment == HorizontalAlignment.Stretch)
+                                            && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
+                                            entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
+                                            && (entry.InternalHorizontalAlignment == HorizontalAlignment.Center ||
+                                            entry.InternalHorizontalAlignment == HorizontalAlignment.Stretch)
                                             && entry.DockInsidePlotArea == DockInsidePlotArea
                                             && (Boolean)entry.Enabled
                                             select entry).ToList();
@@ -2635,24 +2635,24 @@ namespace Visifire.Charts
 
                     if (!Double.IsNaN(Width) && Width > 0)
                     {
-                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
                             legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                         else
                         {
-                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
                                 legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                             else
-                                legend.InternalMaximumWidth = legend.MaxWidth;
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
 
-                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
                             legend.InternalMaximumHeight = Double.PositiveInfinity;
                         else
                         {
-                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
                                 legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                             else
-                                legend.InternalMaximumHeight = legend.MaxHeight;
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
                         }
                     }
 
@@ -2674,24 +2674,24 @@ namespace Visifire.Charts
 
                     if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
                     {
-                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
                             legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                         else
                         {
-                            if(legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                            if(legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
                                 legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                             else
-                                legend.InternalMaximumWidth = legend.MaxWidth;
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
 
-                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
                             legend.InternalMaximumHeight = Double.PositiveInfinity;
                         else
                         {
-                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
                                 legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                             else
-                                legend.InternalMaximumHeight = legend.MaxHeight;
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
                         }
                     }
 
@@ -2710,24 +2710,24 @@ namespace Visifire.Charts
 
                     if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
                     {
-                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
                             legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                         else
                         {
-                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
                                 legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                             else
-                                legend.InternalMaximumHeight = legend.MaxHeight;
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
                         }
 
-                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
                             legend.InternalMaximumWidth = Double.PositiveInfinity;
                         else
                         {
-                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
                                 legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                             else
-                                legend.InternalMaximumWidth = legend.MaxWidth;
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
                     }
 
@@ -2748,24 +2748,24 @@ namespace Visifire.Charts
 
                     if (!Double.IsNaN(Height) && Height > 0)
                     {
-                        if (Double.IsPositiveInfinity(legend.MaxHeight))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
                             legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                         else
                         {
-                            if (legend.MaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
+                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
                                 legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
                             else
-                                legend.InternalMaximumHeight = legend.MaxHeight;
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
                         }
 
-                        if (Double.IsPositiveInfinity(legend.MaxWidth))
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
                             legend.InternalMaximumWidth = Double.PositiveInfinity;
                         else
                         {
-                            if (legend.MaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
+                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
                                 legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
                             else
-                                legend.InternalMaximumWidth = legend.MaxWidth;
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
                     }
 
@@ -2782,14 +2782,14 @@ namespace Visifire.Charts
                     legend.Orientation = Orientation.Horizontal;
                     legend.LegendLayout = Layouts.FlowLayout;
 
-                    if (Double.IsPositiveInfinity(legend.MaxWidth)) // legend.MaximumWidth == 0
+                    if (Double.IsPositiveInfinity(legend.InternalMaxWidth)) // legend.MaximumWidth == 0
                         legend.InternalMaximumWidth = Width * 60 / 100;
                     else
                     {
-                        if (legend.MaxWidth > Width * 60 / 100)
+                        if (legend.InternalMaxWidth > Width * 60 / 100)
                             legend.InternalMaximumWidth = Width * 60 / 100;
                         else
-                            legend.InternalMaximumWidth = legend.MaxWidth;
+                            legend.InternalMaximumWidth = legend.InternalMaxWidth;
                     }
 
                     legend.CreateVisualObject();
@@ -2844,7 +2844,7 @@ namespace Visifire.Charts
 
             // Get Titles on the top of the ChartArea using LINQ
             var titlesOnTop = from title in titles
-                              where (title.VerticalAlignment == VerticalAlignment.Top && title.Enabled == true)
+                              where (title.InternalVerticalAlignment == VerticalAlignment.Top && title.Enabled == true)
                               select title;
 
             // Add Title on the top of the ChartArea
@@ -2853,7 +2853,7 @@ namespace Visifire.Charts
 
             // Get Titles on the bottom of the ChartArea using LINQ
             var titlesOnBottom = from title in titles
-                                 where (title.VerticalAlignment == VerticalAlignment.Bottom && title.Enabled == true)
+                                 where (title.InternalVerticalAlignment == VerticalAlignment.Bottom && title.Enabled == true)
                                  select title;
 
             titlesOnBottom.Reverse();
@@ -2864,8 +2864,8 @@ namespace Visifire.Charts
 
             // Get Titles on the left of the ChartArea using LINQ
             var titlesAtLeft = from title in titles
-                               where ((title.VerticalAlignment == VerticalAlignment.Center || title.VerticalAlignment == VerticalAlignment.Stretch) 
-                               && title.HorizontalAlignment == HorizontalAlignment.Left 
+                               where ((title.InternalVerticalAlignment == VerticalAlignment.Center || title.InternalVerticalAlignment == VerticalAlignment.Stretch) 
+                               && title.InternalHorizontalAlignment == HorizontalAlignment.Left 
                                && title.Enabled == true)
                                select title;
 
@@ -2879,8 +2879,8 @@ namespace Visifire.Charts
 
             // Get Titles on the right of the ChartArea using LINQ
             var titlesAtRight = from title in titles
-                                where ((title.VerticalAlignment == VerticalAlignment.Center || title.VerticalAlignment == VerticalAlignment.Stretch) 
-                                && title.HorizontalAlignment == HorizontalAlignment.Right 
+                                where ((title.InternalVerticalAlignment == VerticalAlignment.Center || title.InternalVerticalAlignment == VerticalAlignment.Stretch) 
+                                && title.InternalHorizontalAlignment == HorizontalAlignment.Right 
                                 && title.Enabled == true)
                                 select title;
 
@@ -2895,8 +2895,8 @@ namespace Visifire.Charts
 
             // Get Titles on the right of the ChartArea using LINQ
             var titlesOnCenter = from title in titles
-                                 where ((title.HorizontalAlignment == HorizontalAlignment.Center || title.HorizontalAlignment == HorizontalAlignment.Stretch) 
-                                 && (title.VerticalAlignment == VerticalAlignment.Center || title.VerticalAlignment == VerticalAlignment.Stretch) 
+                                 where ((title.InternalHorizontalAlignment == HorizontalAlignment.Center || title.InternalHorizontalAlignment == HorizontalAlignment.Stretch) 
+                                 && (title.InternalVerticalAlignment == VerticalAlignment.Center || title.InternalVerticalAlignment == VerticalAlignment.Stretch) 
                                  && title.Enabled == true)
                                  select title;
 
@@ -3140,7 +3140,7 @@ namespace Visifire.Charts
             {
                 if (ds.Faces != null)
                 {
-                    ds.Faces.Visual.Opacity = ds.Opacity;
+                    ds.Faces.Visual.Opacity = ds.InternalOpacity;
                 }
 
                 foreach (DataPoint dp in ds.InternalDataPoints)
@@ -3151,29 +3151,29 @@ namespace Visifire.Charts
                         {
                             if (ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
                             {
-                                dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
+                                dp.Faces.Visual.Opacity = ds.InternalOpacity * dp.InternalOpacity;
                                 if (dp.LabelVisual != null)
-                                    dp.LabelVisual.Opacity = ds.Opacity * dp.Opacity;
+                                    dp.LabelVisual.Opacity = ds.InternalOpacity * dp.InternalOpacity;
                             }
                             else if (dp.Faces.VisualComponents.Count != 0)
                             {   
                                 foreach (FrameworkElement face in dp.Faces.VisualComponents)
                                 {
-                                    face.Opacity = dp.Opacity * ds.Opacity;
+                                    face.Opacity = dp.InternalOpacity * ds.InternalOpacity;
                                 }
                             }
                             else
-                                dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
+                                dp.Faces.Visual.Opacity = ds.InternalOpacity * dp.InternalOpacity;
                         }
                         else if(dp.Faces.Visual != null)
-                            dp.Faces.Visual.Opacity = ds.Opacity * dp.Opacity;
+                            dp.Faces.Visual.Opacity = ds.InternalOpacity * dp.InternalOpacity;
                     }
 
 
                     if (Chart.AnimationEnabled == false || (Chart.AnimationEnabled && !_isFirstTimeRender))
                     {
                         if (dp.Marker != null && dp.Marker.Visual != null)
-                            dp.Marker.Visual.Opacity = ds.Opacity * dp.Opacity;
+                            dp.Marker.Visual.Opacity = ds.InternalOpacity * dp.InternalOpacity;
                     }
                 }
             }
@@ -3216,7 +3216,9 @@ namespace Visifire.Charts
                         if (ds.RenderAs == RenderAs.Line)
                         {
                             if (dp.Marker != null)
+                            {
                                 dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+                            }
                         }
 
                         if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
@@ -3444,7 +3446,7 @@ namespace Visifire.Charts
        /// <param name="height">Available height for title</param>
         private void AddTitle(Chart chart, Title title, Panel panel, Double width, Double height)
         {
-            Double tempFontSize = title.FontSize;
+            Double tempFontSize = title.InternalFontSize;
             title.Chart = chart;
 
         RECREATE_TITLE:
@@ -3453,16 +3455,16 @@ namespace Visifire.Charts
 
            Size size = Graphics.CalculateVisualSize(title.Visual);
             
-            if (title.VerticalAlignment == VerticalAlignment.Top || title.VerticalAlignment == VerticalAlignment.Bottom
-                || (title.VerticalAlignment == VerticalAlignment.Center && title.HorizontalAlignment == HorizontalAlignment.Center))
+            if (title.InternalVerticalAlignment == VerticalAlignment.Top || title.InternalVerticalAlignment == VerticalAlignment.Bottom
+                || (title.InternalVerticalAlignment == VerticalAlignment.Center && title.InternalHorizontalAlignment == HorizontalAlignment.Center))
             {
                 if (size.Width > width && (chart.ActualWidth - width) < width)
                 {
-                    if (title.FontSize == 1)
+                    if (title.InternalFontSize == 1)
                         goto OUT;
 
                     title.IsNotificationEnable = false;
-                    title.FontSize -= 1;
+                    title.InternalFontSize -= 1;
                     title.IsNotificationEnable = true;
                     goto RECREATE_TITLE;
                 }
@@ -3471,11 +3473,11 @@ namespace Visifire.Charts
             {
                 if (size.Height >= height || title.Height >= height)
                 {
-                    if (title.FontSize == 1)
+                    if (title.InternalFontSize == 1)
                         goto OUT;
 
                     title.IsNotificationEnable = false;
-                    title.FontSize -= 1;
+                    title.InternalFontSize -= 1;
                     title.IsNotificationEnable = true;
                     goto RECREATE_TITLE;
                 }
@@ -3483,7 +3485,7 @@ namespace Visifire.Charts
         OUT:
 
             title.IsNotificationEnable = false;
-            title.FontSize = tempFontSize;
+            title.InternalFontSize = tempFontSize;
             title.IsNotificationEnable = true;
 
             // Add title Visual as children of panel

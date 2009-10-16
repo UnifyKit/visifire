@@ -28,9 +28,12 @@ namespace WPFVisifireChartsApp
     /// </summary>
     public partial class Window1 : Window
     {
+        //public BoundValues bv = new BoundValues();
+
         public Window1()
         {
             InitializeComponent();
+
         }
     }
 }

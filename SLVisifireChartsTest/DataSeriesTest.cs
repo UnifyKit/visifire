@@ -3866,8 +3866,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => dataSeries.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, dataSeries.Opacity, Common.HighPrecisionDelta));
+                () => dataSeries.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, dataSeries.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

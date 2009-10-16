@@ -1646,9 +1646,30 @@ namespace Visifire.Charts
         /// <returns>Returns the minimum data value as Double</returns>
         internal Double GetAxisXMinimumDataValue(Axis axisX)
         {
-            return (from plotData in PlotGroups
-                    where (!Double.IsNaN(plotData.MinimumX) && plotData.AxisX == axisX)
-                    select plotData.MinimumX).Min();
+            Double dataSeriesCount = 0;
+            Double min = Double.PositiveInfinity;
+            foreach (PlotGroup plotGroup in PlotGroups)
+            {
+                dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
+                                   where dataSeries.DataPoints.Count > 0
+                                   select dataSeries).Count();
+                if (dataSeriesCount > 0)
+                {
+                    if ((!Double.IsNaN(plotGroup.MinimumX) && plotGroup.AxisX == axisX))
+                    {
+                        min = Math.Min(min, plotGroup.MinimumX);
+                    }
+                }
+            }
+
+            if (!Double.IsPositiveInfinity(min))
+                return min;
+            else
+                return 0;
+
+            //return (from plotData in PlotGroups
+            //        where (!Double.IsNaN(plotData.MinimumX) && plotData.AxisX == axisX)
+            //        select plotData.MinimumX).Min();
         }
 
         /// <summary>
@@ -1658,9 +1679,30 @@ namespace Visifire.Charts
         /// <returns>Returns the minimum data value as Double</returns>
         internal Double GetAxisYMinimumDataValue(Axis axisY)
         {
-            return (from plotData in PlotGroups
-                    where (!Double.IsNaN(plotData.MinimumY) && plotData.AxisY == axisY)
-                    select plotData.MinimumY).Min();
+            Double dataSeriesCount = 0;
+            Double min = Double.PositiveInfinity;
+            foreach (PlotGroup plotGroup in PlotGroups)
+            {
+                dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
+                                   where dataSeries.DataPoints.Count > 0
+                                   select dataSeries).Count();
+                if (dataSeriesCount > 0)
+                {
+                    if ((!Double.IsNaN(plotGroup.MinimumY) && plotGroup.AxisY == axisY))
+                    {
+                        min = Math.Min(min, plotGroup.MinimumY);
+                    }
+                }
+            }
+
+            if (!Double.IsPositiveInfinity(min))
+                return min;
+            else
+                return 0;
+
+            //return (from plotData in PlotGroups
+            //        where (!Double.IsNaN(plotData.MinimumY) && plotData.AxisY == axisY)
+            //        select plotData.MinimumY).Min();
         }
 
         /// <summary>
@@ -1692,9 +1734,34 @@ namespace Visifire.Charts
         /// <returns>Double</returns>
         internal Double GetMaxOfMinDifferencesForXValue()
         {
-            return (from plotData in PlotGroups
-                    where !Double.IsNaN(plotData.MinDifferenceX)
-                    select plotData.MinDifferenceX).Max();
+            Double max = Double.NegativeInfinity;
+            foreach (PlotGroup plotGroup in PlotGroups)
+            {
+                var dsList = (from dataSeries in plotGroup.DataSeriesList
+                              where dataSeries.DataPoints.Count > 0
+                              select dataSeries);
+
+                if (dsList != null && dsList.Count() > 0)
+                {
+                    var plotGroups = (from d in dsList select d.PlotGroup);
+
+                    if (plotGroups != null && plotGroups.Count() > 0)
+                    {
+                        Double tempMax = (from plotData in plotGroups
+                                          where !Double.IsNaN(plotData.MinDifferenceX)
+                                          select plotData.MinDifferenceX).Max();
+                        
+                        if (tempMax > max)
+                            max = tempMax;
+                    }
+                }
+            }
+
+            return Double.IsNegativeInfinity(max) ? Double.PositiveInfinity : max;
+
+            //return (from plotData in PlotGroups
+            // where !Double.IsNaN(plotData.MinDifferenceX)
+            // select plotData.MinDifferenceX).Max();
         }
 
         /// <summary>

@@ -2684,7 +2684,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.DataPoints[0].BorderThickness = new Thickness(2);
+            dataSeries.DataPoints[0].InternalBorderThickness = new Thickness(2);
             chart.Series.Add(dataSeries);
 
             EnqueueDelay(_sleepTime);
@@ -2693,8 +2693,8 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
-                        Assert.AreEqual(new Thickness(2), dataSeries.DataPoints[i].BorderThickness);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
+                        Assert.AreEqual(new Thickness(2), dataSeries.DataPoints[i].InternalBorderThickness);
                     }
                 });
 
@@ -2722,7 +2722,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
                         dataSeries.DataPoints[i].BorderColor = new SolidColorBrush(Colors.Magenta);
                         Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), dataSeries.DataPoints[i].BorderColor);
                     }
@@ -2753,7 +2753,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
                         dataSeries.DataPoints[i].BorderColor = new SolidColorBrush(Colors.Magenta);
                         dataSeries.DataPoints[i].BorderStyle = BorderStyles.Dashed;
                         Assert.AreEqual(BorderStyles.Dashed, dataSeries.DataPoints[i].BorderStyle);
@@ -2776,7 +2776,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.BorderThickness = new Thickness(1);
+            dataSeries.InternalBorderThickness = new Thickness(1);
             chart.Series.Add(dataSeries);
 
             EnqueueDelay(_sleepTime);
@@ -2816,8 +2816,8 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].Opacity = 0.5;
-                        Assert.AreEqual(0.5, dataSeries.DataPoints[i].Opacity, Common.HighPrecisionDelta);
+                        dataSeries.DataPoints[i].InternalOpacity = 0.5;
+                        Assert.AreEqual(0.5, dataSeries.DataPoints[i].InternalOpacity, Common.HighPrecisionDelta);
                     }
                 });
 
@@ -2956,7 +2956,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual(new Thickness(0), dataSeries.DataPoints[i].BorderThickness);
+                        Assert.AreEqual(new Thickness(0), dataSeries.DataPoints[i].InternalBorderThickness);
                     }
                 });
 

@@ -1383,7 +1383,7 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             Common.CreateAndAddDefaultDataSeries(chart);
-
+           
             TitleTest titleTest = new TitleTest();
             bool changedObserved = false;
             foreach (Title title in titleTest.TitlesToTest)

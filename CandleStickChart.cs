@@ -128,7 +128,7 @@ namespace Visifire.Charts
         /// <returns></returns>
         internal static Double GetStrokeThickness(DataPoint dataPoint)
         {
-            return dataPoint.BorderThickness.Left == 0 ? ((Double)dataPoint.Parent.LineThickness >= _dataPointWidth / 2 ? _dataPointWidth / 4 : (Double)dataPoint.Parent.LineThickness) : dataPoint.BorderThickness.Left;
+            return dataPoint.InternalBorderThickness.Left == 0 ? ((Double)dataPoint.Parent.LineThickness >= _dataPointWidth / 2 ? _dataPointWidth / 4 : (Double)dataPoint.Parent.LineThickness) : dataPoint.InternalBorderThickness.Left;
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Visifire.Charts
                         Width = _dataPointWidth, 
                         Height = Math.Max(Math.Abs(openY - closeY), 1),
                         Stroke = GetOpenCloseRectangleBorderbrush(dataPoint, dataPointColor),
-                        StrokeThickness = dataPoint.BorderThickness.Left,
+                        StrokeThickness = dataPoint.InternalBorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString()),
                         Tag = new ElementData() { Element = dataPoint, VisualElementName = "OcRect" }
                     };
@@ -320,7 +320,7 @@ namespace Visifire.Charts
                             Width = _dataPointWidth,
                             Height = Math.Max(Math.Abs(openY - closeY), 1),
                             Stroke = _shadowColor,
-                            StrokeThickness = dataPoint.BorderThickness.Left,
+                            StrokeThickness = dataPoint.InternalBorderThickness.Left,
                             StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                         };
                         
@@ -340,7 +340,7 @@ namespace Visifire.Charts
                     {
                         Double reduceSize = openCloseRect.StrokeThickness;
 
-                        if (dataPoint.Parent.SelectionEnabled && dataPoint.BorderThickness.Left == 0)
+                        if (dataPoint.Parent.SelectionEnabled && dataPoint.InternalBorderThickness.Left == 0)
                             reduceSize = 1.5 + reduceSize;
 
                         if (openCloseRect.Width - 2 * reduceSize >= 0 && openCloseRect.Height - 2 * reduceSize >= 0)
@@ -463,12 +463,12 @@ namespace Visifire.Charts
                 Title tb = new Title()
                 {   
                     Text = dataPoint.TextParser(dataPoint.LabelText),
-                    FontFamily = dataPoint.LabelFontFamily,
-                    FontSize = dataPoint.LabelFontSize.Value,
-                    FontWeight = (FontWeight)dataPoint.LabelFontWeight,
-                    FontStyle = (FontStyle)dataPoint.LabelFontStyle,
-                    Background = dataPoint.LabelBackground,
-                    FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide)
+                    InternalFontFamily = dataPoint.LabelFontFamily,
+                    InternalFontSize = dataPoint.LabelFontSize.Value,
+                    InternalFontWeight = (FontWeight)dataPoint.LabelFontWeight,
+                    InternalFontStyle = (FontStyle)dataPoint.LabelFontStyle,
+                    InternalBackground = dataPoint.LabelBackground,
+                    InternalFontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide)
                 };
 
                 tb.CreateVisualObject();

@@ -192,6 +192,11 @@ namespace Visifire.Commons
             return false;
         }
 
+        public virtual void Bind()
+        {
+
+        }
+
         /// <summary>
         /// Fire property change event
         /// </summary>
@@ -204,7 +209,7 @@ namespace Visifire.Commons
             {
 #if SL          
                 if (IsInDesignMode)
-                {
+                {   
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
                 }
                 else if (Chart != null && (Chart as Chart)._isTemplateApplied)
@@ -293,7 +298,37 @@ namespace Visifire.Commons
         private static void OnInternalStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ObservableObject obj = d as ObservableObject;
-            obj.FirePropertyChanged("Style");
+            //Style style = (Style)e.NewValue;
+
+            //Boolean is2Break =false;
+
+            //foreach (Setter setter in obj.Style.Setters)
+            //{
+            //    if (setter == null)
+            //        return;
+
+            //    switch (setter.Property.ToString())
+            //    {
+            //        case "FontWeight":
+            //            obj.UpdateVisual("FontWeight", e.NewValue);
+            //            break;
+            //        case "FontStyle":
+            //            obj.UpdateVisual("FontWeight", e.NewValue);
+            //            break;
+
+            //        default:
+            //            is2Break = true;
+            //            obj.FirePropertyChanged("Style");
+            //            break;
+            //    }
+
+            //    if (is2Break)
+            //        break;
+            //}
+
+            obj.Bind();
+            
+            // obj.FirePropertyChanged("Style");
         }
 #endif
 
