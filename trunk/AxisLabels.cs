@@ -70,6 +70,32 @@ namespace Visifire.Charts
 #endif
 
             WidthOfACharacter = Double.NaN;
+            InternalAngle = Double.NaN;
+        }
+
+        public override void Bind()
+        {
+#if SL
+            Binding b = new Binding("FontSize");
+            b.Source = this;
+            this.SetBinding(InternalFontSizeProperty, b);
+
+            b = new Binding("FontFamily");
+            b.Source = this;
+            this.SetBinding(InternalFontFamilyProperty, b);
+
+            b = new Binding("FontStyle");
+            b.Source = this;
+            this.SetBinding(InternalFontStyleProperty, b);
+
+            b = new Binding("FontWeight");
+            b.Source = this;
+            this.SetBinding(InternalFontWeightProperty, b);
+
+            b = new Binding("Opacity");
+            b.Source = this;
+            this.SetBinding(InternalOpacityProperty, b);
+#endif
         }
 
         #endregion
@@ -131,7 +157,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.AxisLabels.FontFamily dependency property.
         /// </returns>
-        private new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register
+        public new static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register
             ("FontFamily",
             typeof(FontFamily),
             typeof(AxisLabels),
@@ -170,7 +196,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.AxisLabels.FontStyle dependency property.
         /// </returns>
-        private new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
+        public new static readonly DependencyProperty FontStyleProperty = DependencyProperty.Register
             ("FontStyle",
             typeof(FontStyle),
             typeof(AxisLabels),
@@ -182,7 +208,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.AxisLabels.FontWeight dependency property.
         /// </returns>
-        private new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
+        public new static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register
             ("FontWeight",
             typeof(FontWeight),
             typeof(AxisLabels),
@@ -194,7 +220,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.AxisLabels.FontSize dependency property.
         /// </returns>
-        private new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register
+        public new static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register
             ("FontSize",
             typeof(Double),
             typeof(AxisLabels),
@@ -263,26 +289,23 @@ namespace Visifire.Charts
             }
         }
 
-        /// <summary>
-        /// Get or set the axis labels angle
-        /// </summary>
 #if SL
        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
 #endif
-        public Nullable<Double> Angle
-        {
-            get
-            {
-                if ((Nullable<Double>)GetValue(AngleProperty) == null)
-                    return Double.NaN;
-                else
-                    return (Nullable<Double>)GetValue(AngleProperty);
-            }
-            set
-            {
-                SetValue(AngleProperty, value);
-            }
-        }
+       public Nullable<Double> Angle
+       {
+           get
+           {
+               if ((Nullable<Double>)GetValue(AngleProperty) == null)
+                   return InternalAngle;
+               else
+                   return (Nullable<Double>)GetValue(AngleProperty);
+           }
+           set
+           {
+               SetValue(AngleProperty, value);
+           }
+       }
 
         /// <summary>
         /// Get or set the Opacity property
@@ -298,6 +321,7 @@ namespace Visifire.Charts
         #if SL
                if (Opacity != value)
                {
+                   InternalOpacity = value;
                    SetValue(OpacityProperty, value);
                    FirePropertyChanged("Opacity");
                }
@@ -358,18 +382,19 @@ namespace Visifire.Charts
 
 #if SL
                 if (FontFamily != value)
-                {
+                {   
+                    InternalFontFamily = value;
                     SetValue(FontFamilyProperty, value);
                     FirePropertyChanged("FontFamily");
                 }
-#else
+#else           
                 SetValue(FontFamilyProperty, value);
 #endif
             }
         }
 
         /// <summary>
-        /// Get or set the color for the text in axis labels 
+        /// Get or set the color for the text in axis labels
         /// </summary>
         public Brush FontColor
         {
@@ -396,16 +421,17 @@ namespace Visifire.Charts
          [TypeConverter(typeof(System.Windows.FontStyleConverter))]
 #endif
         public new FontStyle FontStyle
-        {
+        {   
             get
-            {
+            {   
                 return (FontStyle)(GetValue(FontStyleProperty));
             }
             set
             {
 #if SL          
-                if (FontStyle != value)
+                if (InternalFontStyle != value)
                 {
+                    InternalFontStyle = value;
                     SetValue(FontStyleProperty, value);
                     UpdateVisual("FontStyle", value);
                 }
@@ -432,7 +458,8 @@ namespace Visifire.Charts
 
 #if SL          
                 if (FontWeight != value)
-                {
+                {   
+                    InternalFontWeight = value;
                     SetValue(FontWeightProperty, value);
                     UpdateVisual("FontWeight", value);
                 }
@@ -443,21 +470,18 @@ namespace Visifire.Charts
             }
         }
 
-        /// <summary>
-        /// Get or set the font Size of axis labels
-        /// </summary>
         public new Double FontSize
         {
             get
-            {
+            {   
                 return (Double)GetValue(FontSizeProperty);
             }
             set
             {
-
-#if SL
+#if SL          
                 if (FontSize != value)
                 {
+                    InternalFontSize = value;
                     SetValue(FontSizeProperty, value);
                     FirePropertyChanged("FontSize");
                 }
@@ -466,7 +490,6 @@ namespace Visifire.Charts
 #endif
             }
         }
-
 
         /// <summary>
         /// Get or set the number of rows of the axis labels
@@ -503,6 +526,7 @@ namespace Visifire.Charts
             }
         }
 
+
         #endregion
 
         #region Public Events
@@ -515,10 +539,172 @@ namespace Visifire.Charts
 
         #region Internal Properties
 
+#if SL
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.FontSize dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.FontSize dependency property.
+        /// </returns>
+        private static readonly DependencyProperty
+            InternalFontSizeProperty = DependencyProperty.Register
+            ("InternalFontSize",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnFontSizePropertyChanged));
+        
+        /// Identifies the Visifire.Charts.AxisLabels.FontFamily dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.FontFamily dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontFamilyProperty = DependencyProperty.Register
+            ("InternalFontFamily",
+            typeof(FontFamily),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnFontFamilyPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.FontStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.FontStyle dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontStyleProperty = DependencyProperty.Register
+            ("InternalFontStyle",
+            typeof(FontStyle),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnFontStylePropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.FontWeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.FontWeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalFontWeightProperty = DependencyProperty.Register
+            ("InternalFontWeight",
+            typeof(FontWeight),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnFontWeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.Opacity dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalOpacityProperty = DependencyProperty.Register
+            ("InternalOpacity",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+#endif
+        /// <summary>
+        /// Get or set the FontFamily property of title
+        /// </summary>
+        internal FontFamily InternalFontFamily
+        {
+            get
+            {
+                FontFamily retVal;
+
+                if (_internalFontFamily == null)
+                    retVal = (FontFamily)GetValue(FontFamilyProperty);
+                else
+                    retVal = _internalFontFamily;
+
+                return (retVal == null) ? new FontFamily("Verdana") : retVal;
+            }
+            set
+            {
+
+                _internalFontFamily = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontSize property of title
+        /// </summary>
+        internal Double InternalFontSize
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalFontSize) ? GetValue(FontSizeProperty) : _internalFontSize);
+            }
+            set
+            {
+                _internalFontSize = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontStyle property of title text
+        /// </summary>
+#if WPF
+        [TypeConverter(typeof(System.Windows.FontStyleConverter))]
+#endif
+        internal FontStyle InternalFontStyle
+        {
+            get
+            {
+                return (FontStyle)((_internalFontStyle == null) ? GetValue(FontStyleProperty) : _internalFontStyle);
+            }
+            set
+            {
+                _internalFontStyle = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the FontWeight property of title text
+        /// </summary>
+#if WPF
+         [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
+#endif
+        internal FontWeight InternalFontWeight
+        {
+            get
+            {
+                return (FontWeight)((_internalFontWeight == null) ? GetValue(FontWeightProperty) : _internalFontWeight);
+            }
+            set
+            {
+                _internalFontWeight = value;
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Opacity property
+        /// </summary>
+        internal Double InternalOpacity
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalOpacity) ? GetValue(OpacityProperty) : _internalOpacity);
+            }
+            set
+            {
+                _internalOpacity = value;
+            }
+        }
+
+
         /// <summary>
         /// Average width of a character after applying 
         /// </summary>
         internal Double WidthOfACharacter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Get or set the axis labels angle
+        /// </summary>
+        internal Nullable<Double> InternalAngle
         {
             get;
             set;
@@ -728,6 +914,7 @@ namespace Visifire.Charts
         private static void OnAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalAngle = (Nullable<Double>)e.NewValue;
             axisLabels.FirePropertyChanged("Angle");
         }
         
@@ -753,7 +940,7 @@ namespace Visifire.Charts
             axisLabels.FirePropertyChanged("TextAlignment");
         }
 
-#if WPF
+
 
         /// <summary>
         /// Event handler attached with FontFamily property changed event of axislabels element
@@ -763,7 +950,17 @@ namespace Visifire.Charts
         private static void OnFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
-            axisLabels.FirePropertyChanged("FontFamily");
+
+            if (e.NewValue == null || e.OldValue == null)
+            {
+                axisLabels.InternalFontFamily = (FontFamily)e.NewValue;
+                axisLabels.FirePropertyChanged("FontFamily");
+            }
+            else if (e.NewValue.ToString() != e.OldValue.ToString())
+            {
+                axisLabels.InternalFontFamily = (FontFamily)e.NewValue;
+                axisLabels.FirePropertyChanged("FontFamily");
+            }
         }
 
         /// <summary>
@@ -774,6 +971,7 @@ namespace Visifire.Charts
         private static void OnFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalFontStyle = (FontStyle)e.NewValue;
             axisLabels.UpdateVisual("FontStyle", e.NewValue);
         }
 
@@ -785,6 +983,7 @@ namespace Visifire.Charts
         private static void OnFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalFontWeight = (FontWeight)e.NewValue;
             axisLabels.UpdateVisual("FontWeight", e.NewValue);
         }
         
@@ -796,6 +995,7 @@ namespace Visifire.Charts
         private static void OnFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalFontSize = (Double)e.NewValue;
             axisLabels.FirePropertyChanged("FontSize");
         }
 
@@ -807,9 +1007,10 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalOpacity = (Double)e.NewValue;
             axisLabels.FirePropertyChanged("Opacity");
         }
-#endif
+
 
         /// <summary>
         /// Event handler attached with TextWrap property changed event of axislabels element
@@ -1211,7 +1412,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(true);
+                label.CreateVisualObject(false);
 
                 // get the max height of the labels
                 height = Math.Max(Math.Max(height, label.ActualHeight), _maxRowHeight);
@@ -1224,6 +1425,9 @@ namespace Visifire.Charts
 
                 // get the position of the label
                 Double position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, LabelValues[i]);
+
+                // Create the visual element again
+                label.CreateVisualObject(false);
 
                 //Calculate vertical Position
                 Double top = 0;
@@ -1283,7 +1487,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(true); 
+                label.CreateVisualObject(false); 
 
                 // get the max width of the labels
                 width = Math.Max(width, label.ActualWidth);
@@ -1296,8 +1500,11 @@ namespace Visifire.Charts
                 // get the position of the label
                 Double position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, LabelValues[i]);
 
+                // Create the visual element again
+                label.CreateVisualObject(false);
+
                 //Calculate horizontal Position
-                Double left = 0;
+                Double left = 1;
                 if (GetAngle() != 0)
                 {
                     left = Math.Abs((label.ActualTextHeight / 2) * Math.Cos(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
@@ -1353,15 +1560,18 @@ namespace Visifire.Charts
                 // get the position of the label
                 Double position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, LabelValues[i]);
 
+                // Create the visual element again
+                label.CreateVisualObject(false);
+
                 //Calculate horizontal Position
-                Double left = 0;
+                Double left = 1;
                 if (GetAngle() != 0)
                 {
                     left = Math.Abs((label.ActualTextHeight / 2) * Math.Cos(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
                 }
 
                 // Set the new position
-                label.Position = new Point(0, position);
+                label.Position = new Point(left, position);
 
                 // Create the visual element again
                 label.CreateVisualObject(true);
@@ -1387,11 +1597,11 @@ namespace Visifire.Charts
         private void ApplyAxisLabelFontProperties(AxisLabel label)
         {
             //Set size affecting font properties
-            label.FontSize = FontSize;
+            label.FontSize = InternalFontSize;
             label.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, false);
-            label.FontFamily = FontFamily;
-            label.FontStyle = FontStyle;
-            label.FontWeight = FontWeight;
+            label.FontFamily = InternalFontFamily;
+            label.FontStyle = InternalFontStyle;
+            label.FontWeight = InternalFontWeight;
             label.TextAlignment = TextAlignment;
             label.Angle = GetAngle();
         }
@@ -1430,6 +1640,9 @@ namespace Visifire.Charts
 
                 //Calculate vertical Position
                 Double top = 0;
+
+                // Create the visual element again
+                label.CreateVisualObject(false);
 
                 if (GetAngle() != 0)
                 {
@@ -1520,7 +1733,7 @@ namespace Visifire.Charts
         /// </summary>
         private Double GetAngle()
         {
-            return Double.IsNaN((Double)this.Angle) ? 0 : (Double)this.Angle;
+            return Double.IsNaN((Double)this.InternalAngle) ? 0 : (Double)this.InternalAngle;
         }
 
         /// <summary>
@@ -1530,12 +1743,12 @@ namespace Visifire.Charts
         /// <returns>FontSize as Double</returns>
         private Double CalculateFontSize(Double area)
         {
-            if (Double.IsNaN(FontSize) || FontSize <= 0)
+            if (Double.IsNaN(InternalFontSize) || InternalFontSize <= 0)
             {
                 return Graphics.DefaultFontSizes[1];
             }
             else
-                return FontSize;
+                return InternalFontSize;
         }
                 
         /// <summary>
@@ -1590,7 +1803,7 @@ namespace Visifire.Charts
                 textBlock.Text = " " + label.Text + " ";
                 textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
 
-                if (!Double.IsNaN((Double)this.Angle))
+                if (!Double.IsNaN((Double)this.InternalAngle))
                 {
 #if WPF
                     textBlockSize.Width = (Math.Cos(AxisLabel.GetRadians(GetAngle())) * textBlock.DesiredSize.Height) + textBlock.DesiredSize.Height / 2;
@@ -1649,11 +1862,11 @@ namespace Visifire.Charts
         /// <returns>TextBlock</returns>
         private TextBlock SetFontProperties(TextBlock textBlock)
         {
-            textBlock.FontSize = FontSize;
+            textBlock.FontSize = InternalFontSize;
             /* set other font properties */
-            textBlock.FontFamily = FontFamily;
-            textBlock.FontStyle = FontStyle;
-            textBlock.FontWeight = FontWeight;
+            textBlock.FontFamily = InternalFontFamily;
+            textBlock.FontStyle = InternalFontStyle;
+            textBlock.FontWeight = InternalFontWeight;
             
             return textBlock;
         }
@@ -1693,24 +1906,24 @@ namespace Visifire.Charts
             Double width = Double.IsNaN(Width) ? 0 : Width;
             Double height = Double.IsNaN(Height) ? 0 : Height;
             Double max = Math.Max(width, height);
-            if (Double.IsNaN(FontSize) || FontSize <= 0)
+            if (Double.IsNaN(InternalFontSize) || InternalFontSize <= 0)
             {
                 Double initialFontSize = CalculateFontSize(max);
-                FontSize = initialFontSize;
+                InternalFontSize = initialFontSize;
             }
 
             if (InternalRows <= 0)
             {
                 Int32 rows = CalculateNumberOfRows();
 
-                if (rows > 2 && Double.IsNaN((Double)Angle))
+                if (rows > 2 && Double.IsNaN((Double)InternalAngle))
                 {
                     InternalRows = 1;
 
-                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
+                    InternalAngle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
 
                     if ((Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
-                        ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)Angle, Width);
+                        ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)InternalAngle, Width);
                     else
                     {
                         ParentAxis.SkipOffset = 0;
@@ -1720,11 +1933,11 @@ namespace Visifire.Charts
                         InternalRows = rows;
                     }
                 }
-                else if (rows >= 2 && !Double.IsNaN((Double)Angle) && (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
+                else if (rows >= 2 && !Double.IsNaN((Double)InternalAngle) && (Double.IsNaN((Double)ParentAxis.Interval) && Double.IsNaN((Double)Interval) || (ParentAxis.IntervalType == IntervalTypes.Auto && ParentAxis.IsDateTimeAxis)))
                 {
                     InternalRows = 1;
 
-                    ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)Angle, Width);
+                    ParentAxis.SkipOffset = CalculateSkipOffset((int)InternalRows, (Double)InternalAngle, Width);
                     
                 }
                 else
@@ -1736,9 +1949,9 @@ namespace Visifire.Charts
             {   
                 Int32 rows = CalculateNumberOfRows();
 
-                if (rows > 2 && Double.IsNaN((Double)Angle))
+                if (rows > 2 && Double.IsNaN((Double)InternalAngle))
                 {
-                    Angle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
+                    InternalAngle = ((Chart as Chart).IsScrollingActivated && ParentAxis.XValueType != ChartValueTypes.Numeric) ? -90 : -45;
                 }
             }
 
@@ -1821,9 +2034,9 @@ namespace Visifire.Charts
             Double width = Double.IsNaN(Width) ? 0 : Width;
             Double height = Double.IsNaN(Height) ? 0 : Height;
             Double max = Math.Max(width, height);
-            if (Double.IsNaN(FontSize) || FontSize <= 0)
+            if (Double.IsNaN(InternalFontSize) || InternalFontSize <= 0)
             {
-                FontSize = CalculateFontSize(max);
+                InternalFontSize = CalculateFontSize(max);
             }
         }
 
@@ -1886,22 +2099,22 @@ namespace Visifire.Charts
             // List to store the values for which the labels are created
             LabelValues = new List<Double>();
 
-            if (FontSize > _savedFontSize || Angle != _savedAngle || InternalRows != _savedRows)
+            if (InternalFontSize != _savedFontSize || InternalAngle != _savedAngle || InternalRows != _savedRows)
                 _isRedraw = false;
 
             // check if this is a first time draw or a redraw
             if (_isRedraw)
             {
                 // if redraw then restore the original values
-                Angle = _savedAngle;
-                FontSize = _savedFontSize;
+                InternalAngle = _savedAngle;
+                InternalFontSize = _savedFontSize;
                 InternalRows = _savedRows;
             }
             else
             {
                 // Preserve the original values for future use
-                _savedAngle = (Double)Angle;
-                _savedFontSize = FontSize;
+                _savedAngle = (Double)InternalAngle;
+                _savedFontSize = InternalFontSize;
                 _savedRows = (Int32)InternalRows;
                 _isRedraw = true;
             }
@@ -1912,7 +2125,7 @@ namespace Visifire.Charts
             // Set the position of the labels
             SetLabelPosition();
 
-            Visual.Opacity = Opacity;
+            Visual.Opacity = InternalOpacity;
         }
 
         #endregion
@@ -1952,6 +2165,13 @@ namespace Visifire.Charts
         /// Parent axis
         /// </summary>
         private Axis _parent;
+
+        private Double _internalFontSize = Double.NaN;
+        private FontFamily _internalFontFamily = null;
+        internal Brush InternalFontColor;
+        Nullable<FontStyle> _internalFontStyle = null;
+        Nullable<FontWeight> _internalFontWeight = null;
+        Double _internalOpacity = Double.NaN;
 
 #if WPF
 

@@ -107,6 +107,22 @@ namespace Visifire.Charts
                 {
                     if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                     {
+                        if (!barParams.IsTopOfStack && dataPoint.Parent.RenderAs != RenderAs.Bar)
+                        {
+                            if (dataPoint.Marker.TextOrientation == Orientation.Horizontal)
+                            {
+                                if (barParams.Size.Width - 4 >= dataPoint.Marker.TextBlockSize.Width)
+                                    barParams.LabelStyle = LabelStyles.Inside;
+                                else
+                                    barParams.LabelStyle = LabelStyles.OutSide;
+                            }
+                            else
+                                if (barParams.Size.Width - 4 >= dataPoint.Marker.TextBlockSize.Width)
+                                    barParams.LabelStyle = LabelStyles.Inside;
+                                else
+                                    barParams.LabelStyle = LabelStyles.OutSide;
+                        }
+
                         if (barParams.IsPositive)
                         {
                             if (canvasLeft + markerPosition.X + dataPoint.Marker.MarkerActualSize.Width > chart.PlotArea.BorderElement.Width)
@@ -515,7 +531,7 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, barParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
                 }
 
@@ -589,7 +605,7 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, barParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
                 }
             }
@@ -783,7 +799,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         left = right;
@@ -849,7 +865,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         right = left;
@@ -1049,7 +1065,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         left = right;
@@ -1117,7 +1133,7 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         right = left;

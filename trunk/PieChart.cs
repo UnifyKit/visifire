@@ -707,7 +707,7 @@ namespace Visifire.Charts
 
             Canvas visual = new Canvas() { Height = textBlockSize.Height, Width = textBlockSize.Width, Background = dataPoint.LabelBackground, Tag = new ElementData() { Element = dataPoint } };
 
-            visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
 
             visual.Children.Add(textBlock);
 
@@ -3639,7 +3639,7 @@ namespace Visifire.Charts
                     // apply animation to the 3D sections
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.InternalOpacity, 0.5);
                         path.Opacity = 0;
                     }
                 }
@@ -3955,7 +3955,7 @@ namespace Visifire.Charts
                     // apply animation to the labels
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, dataPoint.Opacity * dataPoint.Parent.Opacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity, 0.5);
                         dataPoint.LabelVisual.Opacity = 0;
                     }
                 }
@@ -3987,7 +3987,7 @@ namespace Visifire.Charts
                     {
                         foreach (Shape shape in dataPoint.Faces.BorderElements)
                         {
-                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.InternalBorderThickness.Left, dataPoint.BorderColor);
                         }
                     }
                 }
@@ -4255,7 +4255,7 @@ namespace Visifire.Charts
                             // apply animation to the 3D sections
                             if (animationEnabled)
                             {
-                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.InternalOpacity, 0.5);
                                 path.Opacity = 0;
                             }
                         }
@@ -4339,7 +4339,7 @@ namespace Visifire.Charts
                     {
                         foreach (Shape shape in dataPoint.Faces.BorderElements)
                         {
-                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.InternalBorderThickness.Left, dataPoint.BorderColor);
                         }
                     }
                 }

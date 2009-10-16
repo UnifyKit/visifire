@@ -227,7 +227,7 @@ namespace Visifire.Charts
 
                     marker.CreateVisual();
 
-                    marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+                    marker.Visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
 
                     marker.AddToParent(visual, xPosition, yPosition, new Point(0.5, 0.5));
 
@@ -255,7 +255,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
             visual.Clip = clipRectangle;
 
             return visual;

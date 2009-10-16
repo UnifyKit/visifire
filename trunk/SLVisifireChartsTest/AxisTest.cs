@@ -667,10 +667,10 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             CreateAsyncTest(chart,
-                () => _axisX.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, _axisX.Opacity, Common.HighPrecisionDelta),
-                () => _axisY.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, _axisY.Opacity, Common.HighPrecisionDelta));
+                () => _axisX.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, _axisX.InternalOpacity, Common.HighPrecisionDelta),
+                () => _axisY.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, _axisY.InternalOpacity, Common.HighPrecisionDelta));
         }
 
         ///// <summary>

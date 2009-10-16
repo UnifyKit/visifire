@@ -425,7 +425,7 @@ namespace Visifire.Charts
             areaParams.Bevel = series.Bevel;
             areaParams.BorderColor = series.BorderColor;
             areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
-            areaParams.BorderThickness = series.BorderThickness.Left;
+            areaParams.BorderThickness = series.InternalBorderThickness.Left;
             areaParams.Depth3D = depth3d;
             areaParams.TagReference = series;
             return areaParams;
@@ -470,7 +470,7 @@ namespace Visifire.Charts
         /// <param name="position">position of the marker</param>
         /// <param name="isPositive">Whether DataPoint Value is positive or negative</param>
         /// <returns>Marker</returns>
-        internal static Marker GetMarkerForDataPoint(Chart chart, DataPoint dataPoint, Double position, bool isPositive)
+        internal static Marker GetMarkerForDataPoint(Chart chart, Double height, Boolean isTopOfStack, DataPoint dataPoint, Double position, bool isPositive)
         {
             if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
             {
@@ -506,15 +506,24 @@ namespace Visifire.Charts
                     {
                         dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
 
-                        
                         if (isPositive)
                         {
                             if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                             {
-                                if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                if (!isTopOfStack)
+                                {
+                                    if (position + dataPoint.Marker.TextBlockSize.Height > height)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                }
                                 else
-                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                {
+                                    if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                }
                             }
                             else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
@@ -525,10 +534,15 @@ namespace Visifire.Charts
                         {
                             if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                             {
-                                if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                if (!isTopOfStack)
                                     dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                                 else
-                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                {
+                                    if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                }
                             }
                             else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
@@ -636,7 +650,7 @@ namespace Visifire.Charts
 
                     points.Add(new Point(xPosition, yPosition));
 
-                    marker = GetMarkerForDataPoint(chart, currentDataPoint, yPosition, currentDataPoint.InternalYValue > 0);
+                    marker = GetMarkerForDataPoint(chart, height, true, currentDataPoint, yPosition, currentDataPoint.InternalYValue > 0);
                     if (marker != null)
                     {
                         marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
@@ -648,7 +662,7 @@ namespace Visifire.Charts
                                 currentDataPoint.Parent.Storyboard = new Storyboard();
 
                             // Apply marker animation
-                            currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.Opacity * currentDataPoint.Parent.Opacity);
+                            currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.InternalOpacity * currentDataPoint.Parent.InternalOpacity);
                         }
                     }
                     if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
@@ -691,7 +705,7 @@ namespace Visifire.Charts
 
                 points.Add(new Point(xPosition, yPosition));
 
-                marker = GetMarkerForDataPoint(chart, lastDataPoint, yPosition, lastDataPoint.InternalYValue > 0);
+                marker = GetMarkerForDataPoint(chart, height, true, lastDataPoint, yPosition, lastDataPoint.InternalYValue > 0);
 
                 if (marker != null)
                 {
@@ -703,7 +717,7 @@ namespace Visifire.Charts
                             lastDataPoint.Parent.Storyboard = new Storyboard();
 
                         // Apply marker animation
-                        lastDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, lastDataPoint.Parent.Storyboard, 1, lastDataPoint.Opacity * lastDataPoint.Parent.Opacity);
+                        lastDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, lastDataPoint.Parent.Storyboard, 1, lastDataPoint.InternalOpacity * lastDataPoint.Parent.InternalOpacity);
                     }
                 }
 
@@ -758,7 +772,7 @@ namespace Visifire.Charts
             visual.Children.Add(areaCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);
@@ -856,7 +870,11 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
+                    Boolean isTopOfStack = false;
+                    if (index == curYValues.Count - 1)
+                        isTopOfStack = true;
+
+                    marker = GetMarkerForDataPoint(chart, height, isTopOfStack, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {
                         if (curDataPoints[index].Parent.Storyboard == null)
@@ -867,11 +885,14 @@ namespace Visifire.Charts
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
+                        if (index == nextYValues.Count - 1)
+                            isTopOfStack = true;
+
+                        marker = GetMarkerForDataPoint(chart, height, isTopOfStack, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (nextDataPoints[index].Parent.Storyboard == null)
@@ -882,7 +903,7 @@ namespace Visifire.Charts
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
                         }
                     }
 
@@ -992,7 +1013,7 @@ namespace Visifire.Charts
             visual.Children.Add(areaCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);
@@ -1107,7 +1128,7 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
+                    marker = GetMarkerForDataPoint(chart, height, false, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {
                         if (curDataPoints[index].Parent.Storyboard == null)
@@ -1118,11 +1139,11 @@ namespace Visifire.Charts
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
+                        marker = GetMarkerForDataPoint(chart, height, false, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (curDataPoints[index].Parent.Storyboard == null)
@@ -1133,7 +1154,7 @@ namespace Visifire.Charts
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
                         }
                     }
 
@@ -1243,7 +1264,7 @@ namespace Visifire.Charts
             visual.Children.Add(areaCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);

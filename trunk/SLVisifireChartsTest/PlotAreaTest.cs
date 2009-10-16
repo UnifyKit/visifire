@@ -277,8 +277,8 @@ namespace SLVisifireChartsTest
             chart.PlotArea = new PlotArea();
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => chart.PlotArea.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, chart.PlotArea.Opacity, Common.HighPrecisionDelta));
+                () => chart.PlotArea.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, chart.PlotArea.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

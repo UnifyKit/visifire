@@ -187,7 +187,7 @@ namespace Visifire.Charts
 
             dataPoint.Marker.CreateVisual();
 
-            dataPoint.Marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Marker.Visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
 
             ApplyDefaultInteractivityForMarker(dataPoint);
 

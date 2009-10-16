@@ -516,8 +516,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -541,8 +541,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();
@@ -1275,8 +1275,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -1300,8 +1300,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();

@@ -279,7 +279,7 @@ namespace Visifire.Charts
 
                     marker.CreateVisual();
 
-                    marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+                    marker.Visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
 
                     marker.AddToParent(visual, xPosition, yPosition, new Point(0.5, 0.5));
 

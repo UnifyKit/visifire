@@ -236,9 +236,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <Style TargetType="vc:DataPoint">
-
+        
     </Style>
 
     <Style TargetType="vc:Title">

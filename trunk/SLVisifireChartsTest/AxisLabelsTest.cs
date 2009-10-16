@@ -246,8 +246,8 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
-            _axisX.AxisLabels.Opacity = 0.5;
-            _axisY.AxisLabels.Opacity = 0.5;
+            _axisX.AxisLabels.InternalOpacity = 0.5;
+            _axisY.AxisLabels.InternalOpacity = 0.5;
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -256,8 +256,8 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(0.5, _axisX.AxisLabels.Opacity, Common.HighPrecisionDelta),
-                () => Assert.AreEqual(0.5, _axisY.AxisLabels.Opacity, Common.HighPrecisionDelta));
+                () => Assert.AreEqual(0.5, _axisX.AxisLabels.InternalOpacity, Common.HighPrecisionDelta),
+                () => Assert.AreEqual(0.5, _axisY.AxisLabels.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

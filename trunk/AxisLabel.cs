@@ -615,7 +615,7 @@ namespace Visifire.Charts
 
             CalculateTextElementSize();
             
-           // if(positioningAllowed)
+            if(positioningAllowed)
                 SetPosition();
 
             // calculate the actual size of the AxisLabel element

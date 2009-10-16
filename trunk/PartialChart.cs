@@ -2255,7 +2255,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (chart.PlotArea.Background == null)
+                    if (chart.PlotArea.InternalBackground == null)
                     {
                         if (chart.Background == null)
                         {
@@ -2269,7 +2269,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
                         returnBrush = Graphics.GetDefaultFontColor(intensity);
                     }
                 }
@@ -2310,7 +2310,7 @@ namespace Visifire.Charts
                 {   
                     if (chart.PlotArea != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.Background == null)
+                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.InternalBackground == null)
                         {
                             if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
                             {
@@ -2324,7 +2324,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
                             brush = Graphics.GetDefaultFontColor(intensity);
                         }
                     }

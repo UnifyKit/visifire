@@ -276,7 +276,7 @@ namespace Visifire.Charts
                         X2 = dataPointVisual.Width / 2,
                         Y1 = 0,
                         Y2 = dataPointVisual.Height,
-                        StrokeThickness = (Double) dataPoint.BorderThickness.Left,
+                        StrokeThickness = (Double) dataPoint.InternalBorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                     };
 
@@ -291,7 +291,7 @@ namespace Visifire.Charts
                         Y1 = openY,
                         Y2 = openY,
                         Stroke = highLow.Stroke,
-                        StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                        StrokeThickness = (Double)dataPoint.InternalBorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                     };
 
@@ -304,7 +304,7 @@ namespace Visifire.Charts
                         Y1 = closeY,
                         Y2 = closeY,
                         Stroke = highLow.Stroke,
-                        StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                        StrokeThickness = (Double)dataPoint.InternalBorderThickness.Left,
                         StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                     };
 
@@ -321,7 +321,7 @@ namespace Visifire.Charts
                             Y1 = 0 + CandleStick._shadowDepth,
                             Y2 = dataPointVisual.Height + CandleStick._shadowDepth,
                             Stroke = CandleStick._shadowColor,
-                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeThickness = (Double)dataPoint.InternalBorderThickness.Left,
                             StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                         };
                         
@@ -334,7 +334,7 @@ namespace Visifire.Charts
                             Y1 = openY + CandleStick._shadowDepth,
                             Y2 = openY + CandleStick._shadowDepth,
                             Stroke = CandleStick._shadowColor,
-                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeThickness = (Double)dataPoint.InternalBorderThickness.Left,
                             StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                         };
 
@@ -347,7 +347,7 @@ namespace Visifire.Charts
                             Y1 = closeY + CandleStick._shadowDepth,
                             Y2 = closeY + CandleStick._shadowDepth,
                             Stroke = CandleStick._shadowColor,
-                            StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+                            StrokeThickness = (Double)dataPoint.InternalBorderThickness.Left,
                             StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
                         };
 

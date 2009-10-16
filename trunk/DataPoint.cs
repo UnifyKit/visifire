@@ -81,6 +81,19 @@ namespace Visifire.Charts
 #endif
         }
 
+        public override void Bind()
+        {
+#if SL
+            Binding b = new Binding("BorderThickness");
+            b.Source = this;
+            this.SetBinding(InternalBorderThicknessProperty, b);
+            
+            b = new Binding("Opacity");
+            b.Source = this;
+            this.SetBinding(InternalOpacityProperty, b);
+#endif
+        }
+
         /// <summary>
         /// Set DateTime in AxisXLabel
         /// </summary>
@@ -880,7 +893,7 @@ namespace Visifire.Charts
         public new Double Opacity
         {
             get
-            {
+            {   
                 return (Double)GetValue(OpacityProperty);
             }
             set
@@ -888,6 +901,7 @@ namespace Visifire.Charts
 #if SL
                 if (Opacity != value)
                 {
+                    InternalOpacity = value;
                     SetValue(OpacityProperty, value);
                     FirePropertyChanged("Opacity");
                 }
@@ -1749,19 +1763,20 @@ namespace Visifire.Charts
         public new Thickness BorderThickness
         {
             get
-            {
+            {   
                 Thickness retVal = (Thickness)GetValue(BorderThicknessProperty);
 
                 if (retVal == new Thickness(0, 0, 0, 0))
-                    retVal = (_parent == null) ? retVal : _parent.BorderThickness;
+                    retVal = (_parent == null) ? retVal : _parent.InternalBorderThickness;
 
                 return retVal;
             }
             set
             {
-#if SL
+#if SL          
                 if (BorderThickness != value)
-                {
+                {   
+                    InternalBorderThickness = value;
                     SetValue(BorderThicknessProperty, value);
                     FirePropertyChanged("BorderThickness");
                 }
@@ -1874,7 +1889,7 @@ namespace Visifire.Charts
                 return _parent;
             }
             internal set
-            {
+            {   
                 System.Diagnostics.Debug.Assert(typeof(DataSeries).Equals(value.GetType()), "Unknown Parent", "DataPoint should have DataSeries as Parent");
                 _parent = value;
             }
@@ -2013,6 +2028,71 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Properties
+
+
+#if SL
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.Opacity dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.Opacity dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalOpacityProperty = DependencyProperty.Register
+            ("InternalOpacity",
+            typeof(Double),
+            typeof(DataPoint),
+            new PropertyMetadata(1.0, OnOpacityPropertyChanged));
+
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.BorderThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.BorderThickness dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalBorderThicknessProperty = DependencyProperty.Register
+            ("InternalBorderThickness",
+            typeof(Thickness),
+            typeof(DataPoint),
+            new PropertyMetadata(OnBorderThicknessPropertyChanged));
+
+#endif
+
+        /// <summary>
+        /// Get or set the BorderThickness of title
+        /// </summary>
+        internal Thickness InternalBorderThickness
+        {
+            get
+            {
+                Thickness retVal = (Thickness)((_borderThickness == null) ? GetValue(BorderThicknessProperty) : _borderThickness);
+
+                if (retVal == new Thickness(0, 0, 0, 0))
+                    retVal = (_parent == null) ? retVal : _parent.InternalBorderThickness;
+
+                return retVal;
+            }
+            set
+            {
+                _borderThickness = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Get or set the Opacity property
+        /// </summary>
+        internal Double InternalOpacity
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalOpacity) ? GetValue(OpacityProperty) : _internalOpacity);
+            }
+            set
+            {
+                _internalOpacity = value;
+            }
+        }
 
         internal Boolean IsLabelStyleSet
         {
@@ -2177,7 +2257,6 @@ namespace Visifire.Charts
             dataPoint.FirePropertyChanged("Href");
         }
 
-#if WPF
         /// <summary>
         /// OpacityProperty changed call back function
         /// </summary>
@@ -2186,9 +2265,9 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
+            dataPoint.InternalOpacity = (Double)e.NewValue;
             dataPoint.FirePropertyChanged("Opacity");
         }
-#endif
 
         /// <summary>
         /// YValueProperty changed call back function
@@ -2619,8 +2698,6 @@ namespace Visifire.Charts
             dataPoint.FirePropertyChanged("LegendText");
         }
 
-#if WPF
-
         /// <summary>
         /// BorderThicknessProperty changed call back function
         /// </summary>
@@ -2629,10 +2706,9 @@ namespace Visifire.Charts
         private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
+            dataPoint.InternalBorderThickness = (Thickness)e.NewValue;
             dataPoint.FirePropertyChanged("BorderThickness");
         }
-
-#endif
 
         /// <summary>
         /// BorderColorProperty changed call back function
@@ -2766,7 +2842,7 @@ namespace Visifire.Charts
                 foreach (Shape shape in Faces.BorderElements)
                 {
                     if (dataPoint.Parent != null && (dataPoint.Parent.RenderAs == RenderAs.Pie || dataPoint.Parent.RenderAs == RenderAs.Doughnut))
-                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left, BorderColor);
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)InternalBorderThickness).Left, BorderColor);
                     else
                     {
                         Brush borderColor;
@@ -2776,7 +2852,7 @@ namespace Visifire.Charts
                         else
                             borderColor = BorderColor;
 
-                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)BorderThickness).Left, borderColor);
+                        InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)InternalBorderThickness).Left, borderColor);
                     }
 
                     if (allowPropertyChange)
@@ -3417,6 +3493,9 @@ namespace Visifire.Charts
         /// Whether price is up for financial charts
         /// </summary>
         internal Boolean _isPriceUp;
+
+        Nullable<Thickness> _borderThickness = null;
+        Double _internalOpacity = Double.NaN;
 
 #if WPF
         /// <summary>
