@@ -230,20 +230,6 @@ namespace Visifire.Charts
                     Boolean markerBevel = false;
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, markerScale * (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
 
-                    if ((Boolean)dataPoint.LabelEnabled)
-                    {
-                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
-                        {
-                            marker.LabelAngle = dataPoint.LabelAngle;
-                            marker.TextOrientation = Orientation.Vertical;
-
-                            marker.TextAlignmentX = AlignmentX.Center;
-                            marker.TextAlignmentY = AlignmentY.Center;
-                           
-                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        }
-                    }
-
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
                     if (dataPoint.BorderColor != null)
@@ -251,30 +237,47 @@ namespace Visifire.Charts
                     
                     marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
 
-                    marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
-                    marker.FontSize = (Double)dataPoint.LabelFontSize;
-                    marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-                    marker.FontFamily = dataPoint.LabelFontFamily;
-                    marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
-
-                    marker.TextAlignmentX = AlignmentX.Center;
-                    marker.TextAlignmentY = AlignmentY.Center;
                     marker.Tag = new ElementData() { Element = dataPoint };
-                    marker.CreateVisual();
 
                     Double gap = (markerScale * (Double)dataPoint.MarkerScale * (Double)dataPoint.MarkerSize) / 2;
 
-                    if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                    if (!String.IsNullOrEmpty(labelText))
                     {
-                        if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
-                            marker.TextAlignmentY = AlignmentY.Bottom;
-                        else if (yPosition + gap > height && (yPosition + marker.TextBlockSize.Height / 2) > height)
-                            marker.TextAlignmentY = AlignmentY.Top;
+                        marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+                        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                        marker.FontFamily = dataPoint.LabelFontFamily;
+                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                        marker.TextBackground = dataPoint.LabelBackground;
 
-                        if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
-                            marker.TextAlignmentX = AlignmentX.Right;
-                        else if (xPosition + gap > width && (xPosition + marker.TextBlockSize.Width / 2) > width)
-                            marker.TextAlignmentX = AlignmentX.Left;
+                        marker.TextAlignmentX = AlignmentX.Center;
+                        marker.TextAlignmentY = AlignmentY.Center;
+
+                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                        {
+                            marker.LabelAngle = dataPoint.LabelAngle;
+                            marker.TextOrientation = Orientation.Vertical;
+
+                            marker.TextAlignmentX = AlignmentX.Center;
+                            marker.TextAlignmentY = AlignmentY.Center;
+
+                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                        }
+
+                        marker.CreateVisual();
+
+                        if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                        {
+                            if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
+                                marker.TextAlignmentY = AlignmentY.Bottom;
+                            else if (yPosition + gap > height && (yPosition + marker.TextBlockSize.Height / 2) > height)
+                                marker.TextAlignmentY = AlignmentY.Top;
+
+                            if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
+                                marker.TextAlignmentX = AlignmentX.Right;
+                            else if (xPosition + gap > width && (xPosition + marker.TextBlockSize.Width / 2) > width)
+                                marker.TextAlignmentX = AlignmentX.Left;
+                        }
                     }
 
                     marker.CreateVisual();

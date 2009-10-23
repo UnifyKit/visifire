@@ -121,10 +121,17 @@ namespace Visifire.Charts
 
             //dataPoint.Marker.ShadowEnabled =(Boolean) dataPoint.ShadowEnabled;
 
-            ApplyMarkerProperties(dataPoint, markerSize);
+            ApplyMarkerShapeProperties(dataPoint, markerSize);
 
             if (true && !String.IsNullOrEmpty(labelText))
             {
+                dataPoint.Marker.FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+                dataPoint.Marker.FontFamily = dataPoint.LabelFontFamily;
+                dataPoint.Marker.FontSize = (Double)dataPoint.LabelFontSize;
+                dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
+
                 if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
                 {
                     dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
@@ -154,7 +161,8 @@ namespace Visifire.Charts
                     {
                         if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                         {
-                            if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                            //if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)                            
+                            if (position - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height / 2 < 0 || dataPoint.LabelStyle == LabelStyles.Inside)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                             else
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
@@ -168,7 +176,7 @@ namespace Visifire.Charts
                     {
                         if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
                         {
-                            if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                            if (position + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height / 2 > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                             else
                                 dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
@@ -339,17 +347,11 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPoint">DataPoint</param>
         /// <param name="markerSize">Marker size</param>
-        private static void ApplyMarkerProperties(DataPoint dataPoint, Size markerSize)
+        private static void ApplyMarkerShapeProperties(DataPoint dataPoint, Size markerSize)
         {
             dataPoint.Marker.MarkerSize = markerSize;
             dataPoint.Marker.BorderColor = dataPoint.MarkerBorderColor;
             dataPoint.Marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
-            dataPoint.Marker.FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
-            dataPoint.Marker.FontFamily = dataPoint.LabelFontFamily;
-            dataPoint.Marker.FontSize = (Double)dataPoint.LabelFontSize;
-            dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
-            dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-            dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
             dataPoint.Marker.MarkerFillColor = dataPoint.MarkerColor;
         }
 
@@ -595,11 +597,40 @@ namespace Visifire.Charts
                 chart.ChartArea.PlotAreaCanvas.MouseEnter += new MouseEventHandler(PlotAreaCanvas_MouseEnter);
             }
 
-            RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
-            labelCanvas.Clip = clipRectangle;
+            Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
+                                 where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
+                                 select tick.TickLength).Sum();
+
+            if (tickLengthOfAxisX == 0)
+                tickLengthOfAxisX = 5;
+
+            Double tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
+                               where axis.AxisType == AxisTypes.Primary
+                               from tick in axis.Ticks
+                               where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                               select tick.TickLength).Sum();
+
+            if (tickLengthOfPrimaryAxisY == 0)
+                tickLengthOfPrimaryAxisY = 8;
+
+            Double tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
+                                               where axis.AxisType == AxisTypes.Secondary
+                                               from tick in axis.Ticks
+                                               where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                               select tick.TickLength).Sum();
+
+            if (tickLengthOfSecondaryAxisY == 0)
+                tickLengthOfSecondaryAxisY = 8;
 
             visual.Children.Add(labelCanvas);
+
+            Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
+                    where c.AxisY.AxisType == AxisTypes.Secondary
+                    select c).Count();
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX);
+            visual.Clip = clipRectangle;
 
             // If animation is not enabled or if there are no series in the serieslist the dont apply animation
             if (animationEnabled && seriesList.Count > 0)
@@ -669,7 +700,7 @@ namespace Visifire.Charts
 
             foreach (DataSeries ds in _listOfDataSeries)
             {
-                if (!ds.MovingMarkerEnabled)
+                if (!ds.MovingMarkerEnabled || ds.DataPoints.Count == 0)
                     continue;
 
                 if (ds._movingMarker != null)

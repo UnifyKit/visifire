@@ -509,15 +509,17 @@ namespace Visifire.Charts
                     }
 
                     dataPoint.Faces = column;
-                    dataPoint.Faces.LabelCanvas = labelCanvas;
 
                     columnVisual.SetValue(Canvas.LeftProperty, left);
                     columnVisual.SetValue(Canvas.TopProperty, top);
 
                     columnCanvas.Children.Add(columnVisual);
 
-                    labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
-                    dataPoint.Faces.LabelCanvas = labelCanvas;
+                    if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                    {
+                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                        dataPoint.Faces.LabelCanvas = labelCanvas;
+                    }
 
                     // Apply animation
                     if (animationEnabled)
@@ -531,7 +533,8 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, barParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                        if(dataPoint.Marker != null)
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
                 }
 
@@ -583,15 +586,20 @@ namespace Visifire.Charts
                     }
 
                     dataPoint.Faces = column;
-                    dataPoint.Faces.LabelCanvas = labelCanvas;
 
                     columnVisual.SetValue(Canvas.LeftProperty, left);
                     columnVisual.SetValue(Canvas.TopProperty, top);
 
                     columnCanvas.Children.Add(columnVisual);
 
-                    labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
-                    dataPoint.Faces.LabelCanvas = labelCanvas;
+                    if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                    {
+                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                        dataPoint.Faces.LabelCanvas = labelCanvas;
+                    }
+
+                    //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                    //dataPoint.Faces.LabelCanvas = labelCanvas;
 
                     // Apply animation
                     if (animationEnabled)
@@ -605,7 +613,8 @@ namespace Visifire.Charts
                         dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, barParams);
 
                         // Apply animation to the marker and labels
-                        dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                        if(dataPoint.Marker != null)
+                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                     }
                 }
             }
@@ -631,7 +640,9 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(columnCanvas);
-            visual.Children.Add(labelCanvas);
+
+            if(labelCanvas.Children.Count > 0)
+                visual.Children.Add(labelCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
@@ -779,13 +790,19 @@ namespace Visifire.Charts
                         }
 
                         dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
 
                         barVisual.SetValue(Canvas.LeftProperty, left);
                         barVisual.SetValue(Canvas.TopProperty, top);
 
                         columnCanvas.Children.Add(barVisual);
-                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+
+                        if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                        {
+                            labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                            dataPoint.Faces.LabelCanvas = labelCanvas;
+                        }
+
+                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
 
                         // Apply animation
                         if (animationEnabled)
@@ -799,7 +816,8 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                            if(dataPoint.Marker != null)
+                                dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         left = right;
@@ -845,13 +863,19 @@ namespace Visifire.Charts
                         }
 
                         dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
 
                         barVisual.SetValue(Canvas.LeftProperty, left);
                         barVisual.SetValue(Canvas.TopProperty, top);
 
                         columnCanvas.Children.Add(barVisual);
-                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+
+                        if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                        {
+                            labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                            dataPoint.Faces.LabelCanvas = labelCanvas;
+                        }
+
+                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
 
                         // Apply animation
                         if (animationEnabled)
@@ -865,7 +889,8 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                            if(dataPoint.Marker != null)
+                                dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         right = left;
@@ -893,7 +918,9 @@ namespace Visifire.Charts
                 columnCanvas.Children.Add(zeroPlankVisual);
             }
             visual.Children.Add(columnCanvas);
-            visual.Children.Add(labelCanvas);
+
+            if(labelCanvas.Children.Count > 0)
+                visual.Children.Add(labelCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
@@ -1045,13 +1072,19 @@ namespace Visifire.Charts
                         }
 
                         dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
 
                         barVisual.SetValue(Canvas.LeftProperty, left);
                         barVisual.SetValue(Canvas.TopProperty, top);
 
                         columnCanvas.Children.Add(barVisual);
-                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+
+                        if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                        {
+                            labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                            dataPoint.Faces.LabelCanvas = labelCanvas;
+                        }
+
+                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
 
                         // Apply animation
                         if (animationEnabled)
@@ -1065,7 +1098,8 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                            if(dataPoint.Marker != null)
+                                dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         left = right;
@@ -1113,13 +1147,19 @@ namespace Visifire.Charts
                         }
 
                         dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
 
                         barVisual.SetValue(Canvas.LeftProperty, left);
                         barVisual.SetValue(Canvas.TopProperty, top);
 
                         columnCanvas.Children.Add(barVisual);
-                        labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+
+                        if ((Boolean)dataPoint.LabelEnabled || (Boolean)dataPoint.MarkerEnabled)
+                        {
+                            labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
+                            dataPoint.Faces.LabelCanvas = labelCanvas;
+                        }
+
+                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
 
                         // Apply animation
                         if (animationEnabled)
@@ -1133,14 +1173,13 @@ namespace Visifire.Charts
                             dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, barParams, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
 
                             // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
+                            if(dataPoint.Marker != null)
+                                dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity);
                         }
 
                         right = left;
                     }
-
                 }
-
             }
 
             if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
@@ -1164,7 +1203,9 @@ namespace Visifire.Charts
                 columnCanvas.Children.Add(zeroPlankVisual);
             }
             visual.Children.Add(columnCanvas);
-            visual.Children.Add(labelCanvas);
+            
+            if(labelCanvas.Children.Count > 0)
+                visual.Children.Add(labelCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
@@ -1224,7 +1265,7 @@ namespace Visifire.Charts
                 faces.Parts.Add(null);
             }
 
-            if (barParams.Lighting && barParams.Bevel)
+            if (!barParams.Lighting && barParams.Bevel)
             {
                 Canvas gradienceCanvas = ExtendedGraphics.Get2DRectangleGradiance(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                     Graphics.GetLeftGradianceBrush(63),
