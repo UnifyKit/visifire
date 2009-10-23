@@ -45,6 +45,7 @@ using System.Collections.Generic;
 #endif
 using System.Windows.Media.Animation;
 using Visifire.Commons;
+using System.Windows.Input;
 
 namespace Visifire.Charts
 {
@@ -3180,12 +3181,53 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// The function checks for default interactivity. If events are attached to any DataPoint
+        /// or DataSeries for Pie/Doughnut/Funnel chart, default interactivity is not allowed.
+        /// Means if events are attached to any DataPoint or DataSeries then on click of DataPoint,
+        /// it won't explode.
+        /// </summary>
+        /// <param name="ds">DataSeries</param>
+        private void Check4DefaultInteractivity(DataSeries ds)
+        {
+            if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
+            {
+                MouseButtonEventHandler onMouseLeftButtonDown4DataSeries = null;
+                MouseButtonEventHandler onMouseLeftButtonUp4DataSeries = null;
+
+                MouseButtonEventHandler onMouseLeftButtonDown4DataPoint = null;
+                MouseButtonEventHandler onMouseLeftButtonUp4DataPoint = null;
+
+                onMouseLeftButtonDown4DataSeries = ds.GetMouseLeftButtonDownEventHandler();
+                onMouseLeftButtonUp4DataSeries = ds.GetMouseLeftButtonUpEventHandler();
+
+                foreach (DataPoint dp in ds.DataPoints)
+                {
+                    onMouseLeftButtonDown4DataPoint = dp.GetMouseLeftButtonDownEventHandler();
+                    onMouseLeftButtonUp4DataPoint = dp.GetMouseLeftButtonUpEventHandler();
+
+                    if (onMouseLeftButtonDown4DataPoint != null || onMouseLeftButtonUp4DataPoint != null)
+                        break;
+                }
+
+                if ((onMouseLeftButtonDown4DataSeries == null && onMouseLeftButtonUp4DataSeries == null)
+                    && (onMouseLeftButtonDown4DataPoint == null && onMouseLeftButtonUp4DataPoint == null))
+                    _isDefaultInteractivityAllowed = true;
+            }
+        }
+
+        /// <summary>
         /// Attach events for each DataSeries and InternalDataPoints
         /// </summary>
         private void AttachEventsToolTipHref2DataSeries()
         {
             foreach (DataSeries ds in Chart.InternalSeries)
             {
+                #region Check for default interactivity
+
+                Check4DefaultInteractivity(ds);
+
+                #endregion
+
                 ds.AttachEvent2DataSeriesVisualFaces();
 
                 foreach (DataPoint dp in ds.InternalDataPoints)
@@ -3544,7 +3586,12 @@ namespace Visifire.Charts
         /// <summary>
         /// Grid animation duration
         /// </summary>
-        internal static Double GRID_ANIMATION_DURATION = 1;             
+        internal static Double GRID_ANIMATION_DURATION = 1;
+
+        /// <summary>
+        /// Whether default interactivity is allowed for Pie/Doughnut/Funnel chart
+        /// </summary>
+        internal Boolean _isDefaultInteractivityAllowed = false;
 
         /// <summary>
         /// Chart scroll-viewer Offset for horizontal chart. 

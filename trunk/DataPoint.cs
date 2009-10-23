@@ -3211,6 +3211,7 @@ namespace Visifire.Charts
         {
             // If interactivity animation is not running already and the slice is not exploded
             // then explode the slice
+
             if (Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
             {
                 if (!Parent.Exploded)
@@ -3303,15 +3304,23 @@ namespace Visifire.Charts
                         foreach (FrameworkElement element in Faces.VisualComponents)
                         {
                             AttachEvents2Visual(Object, this, element);
-                            element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                            element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+
+                            if((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
+                            {
+                                element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                                element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                            }
                         }
                     }
                     else
                     {
                         AttachEvents2Visual(Object, this, Faces.Visual);
-                        Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                        Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+
+                        if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
+                        {
+                            Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                            Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                        }
                     }
 
                     if (this.ExplodeAnimation != null)
@@ -3497,6 +3506,7 @@ namespace Visifire.Charts
         Nullable<Thickness> _borderThickness = null;
         Double _internalOpacity = Double.NaN;
 
+       
 #if WPF
         /// <summary>
         /// Whether the default style is applied

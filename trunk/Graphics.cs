@@ -282,7 +282,9 @@ namespace Visifire.Charts
             rectangle.StrokeMiterLimit = 1;
             rectangle.StrokeStartLineCap = PenLineCap.Flat;
             rectangle.StrokeLineJoin = PenLineJoin.Bevel;
-            rectangle.Stroke = stroke;
+
+            if(strokeThickness > 0)
+                rectangle.Stroke = stroke;
 
             rectangle.Fill = fill;
 

@@ -35,6 +35,7 @@ using System.Windows.Media.Animation;
 using System.Collections.Generic;
 #endif
 
+using System.Linq;
 using Visifire.Commons;
 
 namespace Visifire.Charts
@@ -179,7 +180,6 @@ namespace Visifire.Charts
                     Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
                     Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
-
                     Brush markerColor = dataPoint.Color;
                     markerColor = (chart.View3D ? Graphics.GetLightingEnabledBrush3D(markerColor) :
                         ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));
@@ -190,20 +190,6 @@ namespace Visifire.Charts
                     Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
 
                     marker.Tag = new ElementData() { Element = dataPoint };
-
-                    if ((Boolean)dataPoint.LabelEnabled)
-                    {
-                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
-                        {
-                            marker.LabelAngle = dataPoint.LabelAngle;
-                            marker.TextOrientation = Orientation.Vertical;
-
-                            marker.TextAlignmentX = AlignmentX.Center;
-                            marker.TextAlignmentY = AlignmentY.Center;
-
-                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        }
-                    }
 
                     marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
                     marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
@@ -216,14 +202,44 @@ namespace Visifire.Charts
                         marker.BorderColor = markerColor;
                     marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
 
-                    marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
-                    marker.FontSize = (Double)dataPoint.LabelFontSize;
-                    marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-                    marker.FontFamily = dataPoint.LabelFontFamily;
-                    marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                    if (!String.IsNullOrEmpty(labelText))
+                    {
+                        marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+                        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                        marker.FontFamily = dataPoint.LabelFontFamily;
+                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                        marker.TextBackground = dataPoint.LabelBackground;
 
-                    marker.TextAlignmentX = AlignmentX.Center;
-                    marker.TextAlignmentY = AlignmentY.Center;
+                        marker.TextAlignmentX = AlignmentX.Center;
+                        marker.TextAlignmentY = AlignmentY.Center;
+
+                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                        {
+                            marker.LabelAngle = dataPoint.LabelAngle;
+                            marker.TextOrientation = Orientation.Vertical;
+
+                            marker.TextAlignmentX = AlignmentX.Center;
+                            marker.TextAlignmentY = AlignmentY.Center;
+
+                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                        }
+
+                        marker.CreateVisual();
+
+                        if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                        {
+                            if ((yPosition - marker.TextBlockSize.Height / 2) < 0)
+                                marker.TextAlignmentY = AlignmentY.Bottom;
+                            else if ((yPosition + marker.TextBlockSize.Height / 2) > height)
+                                marker.TextAlignmentY = AlignmentY.Top;
+
+                            if ((xPosition - marker.TextBlockSize.Width / 2) < 0)
+                                marker.TextAlignmentX = AlignmentX.Right;
+                            else if ((xPosition + marker.TextBlockSize.Width / 2) > width)
+                                marker.TextAlignmentX = AlignmentX.Left;
+                        }
+                    }
 
                     marker.CreateVisual();
 
@@ -253,9 +269,38 @@ namespace Visifire.Charts
                     dataPoint.Faces = point;
                 }
             }
+            
+            Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
+                                        where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
+                                        select tick.TickLength).Sum();
+
+            if (tickLengthOfAxisX == 0)
+                tickLengthOfAxisX = 5;
+
+            Double tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
+                                               where axis.AxisType == AxisTypes.Primary
+                                               from tick in axis.Ticks
+                                               where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                               select tick.TickLength).Sum();
+
+            if (tickLengthOfPrimaryAxisY == 0)
+                tickLengthOfPrimaryAxisY = 8;
+
+            Double tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
+                                                 where axis.AxisType == AxisTypes.Secondary
+                                                 from tick in axis.Ticks
+                                                 where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                                 select tick.TickLength).Sum();
+
+            if (tickLengthOfSecondaryAxisY == 0)
+                tickLengthOfSecondaryAxisY = 8;
+
+            Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
+                                     where c.AxisY.AxisType == AxisTypes.Secondary
+                                     select c).Count();
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + 6);
+            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX);
             visual.Clip = clipRectangle;
 
             return visual;

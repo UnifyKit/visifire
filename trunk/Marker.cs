@@ -160,30 +160,37 @@ namespace Visifire.Commons
 
             // Create Shape for Marker
             MarkerShape = GetShape();
-            MarkerShadow = GetShape();
 
             if (MarkerShape != null)
                 MarkerShape.Tag = Tag;
 
-            if (MarkerShadow != null)
-                MarkerShadow.Tag = Tag;
-
-            // Set shadow properties
-            MarkerShadow.Fill = GetMarkerShadowColor();
-            TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
-            MarkerShadow.RenderTransform = tt;
-
-            // display or hide the shadow
-            MarkerShadow.Visibility = (ShadowEnabled ? Visibility.Visible : Visibility.Collapsed);
-
-            // Set properties
             MarkerShape.SetValue(Grid.RowProperty, 1);
             MarkerShape.SetValue(Grid.ColumnProperty, 1);
-            MarkerShadow.SetValue(Grid.RowProperty, 1);
-            MarkerShadow.SetValue(Grid.ColumnProperty, 1);
 
-            // Add Shape for Marker into Visual
-            Visual.Children.Add(MarkerShadow);
+            if (ShadowEnabled)
+            {
+                MarkerShadow = GetShape();
+
+                if (MarkerShadow != null)
+                    MarkerShadow.Tag = Tag;
+
+                // Set shadow properties
+                MarkerShadow.Fill = GetMarkerShadowColor();
+                TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
+                MarkerShadow.RenderTransform = tt;
+
+                // display or hide the shadow
+                //MarkerShadow.Visibility = (ShadowEnabled ? Visibility.Visible : Visibility.Collapsed);
+
+                // Set properties
+               
+                MarkerShadow.SetValue(Grid.RowProperty, 1);
+                MarkerShadow.SetValue(Grid.ColumnProperty, 1);
+
+                // Add Shape for Marker into Visual
+                Visual.Children.Add(MarkerShadow);
+            }
+
             Visual.Children.Add(MarkerShape);
 
             UpdateMarker();
@@ -760,9 +767,13 @@ namespace Visifire.Commons
                 MarkerShape.StrokeThickness = BorderThickness;
                 MarkerShape.Height = MarkerSize.Height * ScaleFactor;
                 MarkerShape.Width = MarkerSize.Width * ScaleFactor;
-                MarkerShadow.Height = MarkerSize.Height * ScaleFactor;
-                MarkerShadow.Width = MarkerSize.Width * ScaleFactor;
-                MarkerShadow.Stroke = null;
+
+                if (MarkerShadow != null)
+                {
+                    MarkerShadow.Height = MarkerSize.Height * ScaleFactor;
+                    MarkerShadow.Width = MarkerSize.Width * ScaleFactor;
+                    MarkerShadow.Stroke = null;
+                }
             }
 
             if (BevelLayer != null)
@@ -808,14 +819,16 @@ namespace Visifire.Commons
             {
                 case MarkerTypes.Circle:
 
-                    Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
+                    //Ellipse ellipse = new Ellipse() { Height = 6, Width = 6 };
 
-                    GradientStopCollection gsc = new GradientStopCollection();
-                    gsc.Add(new GradientStop() { Offset = 0, Color = Colors.White });
-                    gsc.Add(new GradientStop() { Offset = 1, Color = Colors.Gray });
-                    ellipse.Fill = new LinearGradientBrush() { GradientStops = gsc, StartPoint = new Point(0.5, 1), EndPoint = new Point(0.5, 0) };
+                    //GradientStopCollection gsc = new GradientStopCollection();
+                    //gsc.Add(new GradientStop() { Offset = 0, Color = Colors.White });
+                    //gsc.Add(new GradientStop() { Offset = 1, Color = Colors.Gray });
+                    //ellipse.Fill = new LinearGradientBrush() { GradientStops = gsc, StartPoint = new Point(0.5, 1), EndPoint = new Point(0.5, 0) };
 
-                    return ellipse;
+                    //return ellipse;
+
+                    return new Ellipse() { Height = 6, Width = 6, Stroke = new SolidColorBrush(Colors.Transparent) };
 
                 case MarkerTypes.Cross:
                     xaml = String.Format(@"<Path xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Height=""6"" Width=""6"" Fill=""#FFFFFFFF"" Stretch=""Fill"" Stroke=""#FF000000"" Data=""M126.66666,111 L156.33333,84.333336 M156.00032,111 L126.33299,84.667"" StrokeThickness=""0.5"" />");

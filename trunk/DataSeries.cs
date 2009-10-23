@@ -2870,7 +2870,7 @@ namespace Visifire.Charts
 
             if (!dataSeries._isSelectedEventAttached)
             {
-                MouseButtonEventHandler event1 = dataSeries.GetMouseLeftButtonDownEvent();
+                MouseButtonEventHandler event1 = dataSeries.GetMouseLeftButtonDownEventHandler();
 
                 if(event1 != null)
                     dataSeries.IsNotificationEnable = false;
@@ -2946,8 +2946,6 @@ namespace Visifire.Charts
                     {
                         dataPoint.Parent = this;
 
-                        Type str = dataPoint.Parent.GetType();
-
                         if (Chart != null)
                             dataPoint.Chart = Chart;
 
@@ -2956,7 +2954,8 @@ namespace Visifire.Charts
 
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
                         {
-                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
+                            //dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
+                            dataPoint.Name = "DataPoint" + (this.DataPoints.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
                             dataPoint._isAutoName = true;
                         }
                         else

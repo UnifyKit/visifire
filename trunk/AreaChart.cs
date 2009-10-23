@@ -272,9 +272,12 @@ namespace Visifire.Charts
                     (sides.Tag as ElementData).VisualElementName = "Top";
                 }
 
-                sides.Stroke = areaParams.BorderColor;
                 sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
                 sides.StrokeThickness = areaParams.BorderThickness;
+
+                if(sides.StrokeThickness > 0)
+                    sides.Stroke = areaParams.BorderColor;
+
                 sides.StrokeMiterLimit = 1;
 
                 Rect sidesBounds = GetBounds(points);
@@ -519,7 +522,8 @@ namespace Visifire.Charts
                                 }
                                 else
                                 {
-                                    if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    //if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    if (position - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height / 2 < 0 || dataPoint.LabelStyle == LabelStyles.Inside)
                                         dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                                     else
                                         dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
@@ -538,7 +542,7 @@ namespace Visifire.Charts
                                     dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                                 else
                                 {
-                                    if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    if (position + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height / 2 > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
                                         dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                                     else
                                         dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
@@ -1655,9 +1659,12 @@ namespace Visifire.Charts
 
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.Background, "Linear", null) : areaParams.Background;
 
-            polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
+
+            if(polygon.StrokeThickness > 0)
+                polygon.Stroke = areaParams.BorderColor;
+
             polygon.StrokeMiterLimit = 1;
             polygon.Points = areaParams.Points;
 
@@ -1770,9 +1777,12 @@ namespace Visifire.Charts
                     (sides.Tag as ElementData).VisualElementName = "Top";
                 }
 
-                sides.Stroke = areaParams.BorderColor;
                 sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
                 sides.StrokeThickness = areaParams.BorderThickness;
+
+                if(sides.StrokeThickness > 0)
+                    sides.Stroke = areaParams.BorderColor;
+
                 sides.StrokeMiterLimit = 1;
 
                 Rect sidesBounds = GetBounds(points);
@@ -1795,9 +1805,12 @@ namespace Visifire.Charts
             polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
             polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.Background) : areaParams.Background;
 
-            polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
+
+            if(polygon.StrokeThickness > 0)
+                polygon.Stroke = areaParams.BorderColor;
+
             polygon.StrokeMiterLimit = 1;
 
             polygon.Points = areaParams.Points;
@@ -1843,9 +1856,12 @@ namespace Visifire.Charts
 
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.Background, "Linear", null) : areaParams.Background;
 
-            polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
+
+            if(polygon.StrokeThickness > 0)
+                polygon.Stroke = areaParams.BorderColor;
+
             polygon.StrokeMiterLimit = 1;
 
             polygon.Points = areaParams.Points;
@@ -1907,9 +1923,12 @@ namespace Visifire.Charts
             polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
             polygon.Fill = areaParams.Lighting ? Graphics.GetFrontFaceBrush(areaParams.Background) : areaParams.Background;
 
-            polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;
+
+            if(polygon.StrokeThickness > 0)
+                polygon.Stroke = areaParams.BorderColor;
+
             polygon.StrokeMiterLimit = 1;
 
             polygon.Points = areaParams.Points;
