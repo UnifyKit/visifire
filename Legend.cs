@@ -2156,7 +2156,7 @@ namespace Visifire.Charts
         private Canvas GetNewMarkerForLineChart(Marker marker)
         {
             Canvas lineMarker = new Canvas();
-            Line line = new Line();
+            Line line = new Line() { Tag = marker.Tag };
 
             line.Margin = new Thickness(EntryMargin);
             line.Stroke = (marker.BorderColor);
@@ -2171,9 +2171,7 @@ namespace Visifire.Charts
             line.Width = ENTRY_SYMBOL_LINE_WIDTH;
 
             lineMarker.Width = marker.MarkerActualSize.Width + ENTRY_SYMBOL_LINE_WIDTH / 2;
-
-
-
+            
             line.StrokeDashArray = ApplyLineStyleForMarkerOfLegendEntry(line, marker.DataSeriesOfLegendMarker.LineStyle.ToString());
 
             lineMarker.Children.Add(line);
@@ -2213,7 +2211,7 @@ namespace Visifire.Charts
             legendPanel.Height = 0;
 
             foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {
+            {   
                 Marker markerAsSymbol = labelAndSymbol.Value;
                 markerAsSymbol.Margin = EntryMargin;
                 markerAsSymbol.LabelMargin = LabelMargin;
@@ -2229,7 +2227,7 @@ namespace Visifire.Charts
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )
 
-                {
+                {   
                     markerAsSymbol.BorderColor = markerAsSymbol.MarkerFillColor;
                     markerAsSymbol.MarkerFillColor = new SolidColorBrush(Colors.White);
                     markerAsSymbol.BorderThickness = 0.7;
@@ -2367,7 +2365,7 @@ namespace Visifire.Charts
             legendPanel.Children.Add(StackPanelRow());
 
             foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {
+            {   
                 Marker marker = labelAndSymbol.Value;
                 marker.Margin = EntryMargin;
                 marker.LabelMargin = LabelMargin;
@@ -2563,11 +2561,13 @@ namespace Visifire.Charts
                 return;
             }
 
-            Visual = new Border();
-            Grid innerGrid = new Grid();
+            ElementData tag = new ElementData { Element = this, VisualElementName = "Legend" };
+
+            Visual = new Border() { Tag = tag };
+            Grid innerGrid = new Grid() { Tag = tag };
             (Visual as Border).Child = innerGrid;
 
-            LegendContainer = new StackPanel();
+            LegendContainer = new StackPanel() { Tag = tag };
 
             if (!String.IsNullOrEmpty(Title))
             {
@@ -2581,7 +2581,7 @@ namespace Visifire.Charts
                 legendTitle.InternalVerticalAlignment = VerticalAlignment.Top;
                 legendTitle.TextAlignment = TitleTextAlignment;
 
-                legendTitle.CreateVisualObject();
+                legendTitle.CreateVisualObject(tag);
 
                 legendTitle.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
@@ -2592,6 +2592,7 @@ namespace Visifire.Charts
             }
 
             Grid legendContent = CreateLegendContent();
+            legendContent.Tag = tag;
 
             LegendContainer.Children.Add(legendContent);
 

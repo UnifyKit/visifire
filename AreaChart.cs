@@ -595,6 +595,9 @@ namespace Visifire.Charts
 
             Marker marker;
 
+            Double minimumXValue = Double.MaxValue;
+            Double maximumXValue = Double.MinValue;
+
             foreach (DataSeries series in seriesList)
             {
                 if (series.Enabled == false)
@@ -610,6 +613,9 @@ namespace Visifire.Charts
                 Brush areaBrush = series.Color;
 
                 Double limitingYValue = 0;
+
+                minimumXValue = Math.Min(minimumXValue, plotGroup.MinimumX);
+                maximumXValue = Math.Max(maximumXValue, plotGroup.MaximumX);
 
                 if (plotGroup.AxisY.InternalAxisMinimum > 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
@@ -773,15 +779,47 @@ namespace Visifire.Charts
                 series.Faces.LabelCanvas = labelCanvas;
             }
 
-            visual.Children.Add(areaCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
+            visual.Children.Add(areaCanvas);
+            
+            // Clip the label canvas
+            
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);
 
             return visual;
+        }
+
+        internal static void GetClipCoordinates(Chart chart, ref Double clipLeft, ref Double clipTop, ref Double clipWidth, ref Double clipHeight, Double minimumXValue, Double maximumXValue)
+        {
+            Double tickLengthOfAxisX = 0, tickLengthOfPrimaryAxisY = 0, tickLengthOfSecondaryAxisY = 0;
+            Axis.CalculateTotalTickLength(chart, ref tickLengthOfAxisX, ref tickLengthOfPrimaryAxisY, ref tickLengthOfSecondaryAxisY);
+
+            if (minimumXValue >= chart.ChartArea.AxisX.InternalAxisMinimum)
+            {
+                clipLeft -= tickLengthOfPrimaryAxisY;
+                clipWidth += tickLengthOfPrimaryAxisY;
+            }
+
+            if (maximumXValue <= chart.ChartArea.AxisX.InternalAxisMaximum)
+            {
+                clipWidth += tickLengthOfSecondaryAxisY;
+            }
         }
 
         /// <summary>
@@ -826,6 +864,9 @@ namespace Visifire.Charts
             Dictionary<Double, List<DataPoint>> dataPointInStackedOrder = plotDetails.GetDataPointInStackOrder(plotGroup);
 
             Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
+
+            Double minimumXValue = plotGroup.MinimumX;
+            Double maximumXValue = plotGroup.MaximumX;
 
             Double limitingYValue = 0;
             if (plotGroup.AxisY.InternalAxisMinimum > 0)
@@ -1014,10 +1055,25 @@ namespace Visifire.Charts
                 zeroPlankVisual.Opacity = 0.7;
                 visual.Children.Add(zeroPlankVisual);
             }
-            visual.Children.Add(areaCanvas);
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
+            visual.Children.Add(areaCanvas);
+
+            // Clip the label canvas
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);
@@ -1069,6 +1125,9 @@ namespace Visifire.Charts
             Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
 
             Double limitingYValue = 0;
+
+            Double minimumXValue = plotGroup.MinimumX;
+            Double maximumXValue = plotGroup.MaximumX;
 
             if (plotGroup.AxisY.InternalAxisMinimum > 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
@@ -1265,10 +1324,24 @@ namespace Visifire.Charts
                 visual.Children.Add(zeroPlankVisual);
             }
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
             visual.Children.Add(areaCanvas);
 
-            RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-8, -chart.ChartArea.PLANK_DEPTH, width + 8 + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 6);
+            // Clip the label canvas
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
             labelCanvas.Clip = clipRectangle;
 
             visual.Children.Add(labelCanvas);

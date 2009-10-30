@@ -418,6 +418,7 @@ namespace Visifire.Charts
 
             Canvas visual = new Canvas() { Width = width, Height = height };        // Canvas for line chart
             Canvas labelCanvas = new Canvas() { Width = width, Height = height };   // Canvas for placing labels
+            Canvas lineChartCanvas = new Canvas() { Width = width, Height = height };
 
             Double depth3d = plankDepth / (plotDetails.Layer3DCount == 0 ? 1 : plotDetails.Layer3DCount) * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1 - (plotDetails.Layer3DCount == 0 ? 0 : 1));
@@ -432,6 +433,9 @@ namespace Visifire.Charts
 
             Boolean isMovingMarkerEnabled = false; // Whether moving marker is enabled for atleast one series
 
+            Double minimumXValue = Double.MaxValue;
+            Double maximumXValue = Double.MinValue;
+
             foreach (DataSeries series in seriesList)
             {
                 if ((Boolean)series.Enabled == false)
@@ -444,6 +448,9 @@ namespace Visifire.Charts
 
                 PlotGroup plotGroup = series.PlotGroup;
                 LineChartShapeParams lineParams = new LineChartShapeParams();
+
+                minimumXValue = Math.Min(minimumXValue, plotGroup.MinimumX);
+                maximumXValue = Math.Max(maximumXValue, plotGroup.MaximumX);
 
                 series.Faces = new Faces();
                 series.Faces.Parts = new List<FrameworkElement>();
@@ -549,7 +556,7 @@ namespace Visifire.Charts
                 line2dCanvas.Height = height;
 
                 series.Faces.Parts.Add(polyline);
-                visual.Children.Add(line2dCanvas);
+                lineChartCanvas.Children.Add(line2dCanvas);
 
                 series.Faces.Visual = line2dCanvas;
                 series.Faces.LabelCanvas = labelCanvas;
@@ -597,39 +604,24 @@ namespace Visifire.Charts
                 chart.ChartArea.PlotAreaCanvas.MouseEnter += new MouseEventHandler(PlotAreaCanvas_MouseEnter);
             }
 
-            Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
-                                 where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
-                                 select tick.TickLength).Sum();
-
-            if (tickLengthOfAxisX == 0)
-                tickLengthOfAxisX = 5;
-
-            Double tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
-                               where axis.AxisType == AxisTypes.Primary
-                               from tick in axis.Ticks
-                               where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                               select tick.TickLength).Sum();
-
-            if (tickLengthOfPrimaryAxisY == 0)
-                tickLengthOfPrimaryAxisY = 8;
-
-            Double tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
-                                               where axis.AxisType == AxisTypes.Secondary
-                                               from tick in axis.Ticks
-                                               where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                               select tick.TickLength).Sum();
-
-            if (tickLengthOfSecondaryAxisY == 0)
-                tickLengthOfSecondaryAxisY = 8;
-
+            visual.Children.Add(lineChartCanvas);
             visual.Children.Add(labelCanvas);
 
-            Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
-                    where c.AxisY.AxisType == AxisTypes.Secondary
-                    select c).Count();
+            //Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
+            //        where c.AxisY.AxisType == AxisTypes.Secondary
+            //        select c).Count();
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX);
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            AreaChart.GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
+
             visual.Clip = clipRectangle;
 
             // If animation is not enabled or if there are no series in the serieslist the dont apply animation
@@ -644,8 +636,15 @@ namespace Visifire.Charts
                 CurrentDataSeries.Storyboard = ApplyLineChartAnimation(labelCanvas, CurrentDataSeries.Storyboard, false);
             }
 
+            clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + chart.ChartArea.PLANK_DEPTH);
+            lineChartCanvas.Clip = clipRectangle;
+
             return visual;
         }
+
+        
+
 
         /// <summary>
         /// MouseEnter event handler for MouseEnter event over PlotAreaCanvas

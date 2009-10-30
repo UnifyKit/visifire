@@ -1547,10 +1547,12 @@ namespace Visifire.Charts
                 // Set Border Properties 
                 title.Visual.BorderBrush = title.BorderColor;
 
-                Binding binding = new Binding("Background");
-                binding.Source = title;
-                binding.Mode = BindingMode.TwoWay;
-                title.Visual.SetBinding(Border.BackgroundProperty, binding);
+                //Binding binding = new Binding("Background");
+                //binding.Source = title;
+                //binding.Mode = BindingMode.TwoWay;
+                //title.Visual.SetBinding(Border.BackgroundProperty, binding);
+
+                title.Visual.Background = title.InternalBackground;
 
                 title.Visual.VerticalAlignment = title.InternalVerticalAlignment;
                 title.Visual.HorizontalAlignment = title.InternalHorizontalAlignment;
@@ -1639,15 +1641,15 @@ namespace Visifire.Charts
         /// <summary>
         /// Creates the Title visual object
         /// </summary>
-        internal void CreateVisualObject()
-        {
+        internal void CreateVisualObject(ElementData tag)
+        {   
             if (!(Boolean)Enabled)
                 return;
 
             // Creating Title Visual Object
             Visual = new Border();
-            TextElement = new TextBlock();
-            InnerCanvas = new Canvas();
+            TextElement = new TextBlock() { Tag = tag };
+            InnerCanvas = new Canvas() { Tag = tag };
             InnerCanvas.Children.Add(TextElement);
             Visual.Child = InnerCanvas;
             Visual.Opacity = this.InternalOpacity;

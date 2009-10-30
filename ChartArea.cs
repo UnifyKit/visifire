@@ -2396,6 +2396,7 @@ namespace Visifire.Charts
 
                                 
                 dataPoint.LegendMarker.DataSeriesOfLegendMarker = dataPoint.Parent;
+                dataPoint.LegendMarker.Tag = new ElementData() { Element = dataPoint };
 
                 legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataPoint.LegendMarker));
             }
@@ -2557,8 +2558,9 @@ namespace Visifire.Charts
                         if ((dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.Stock || dataSeries.RenderAs == RenderAs.CandleStick) && dataSeries.MarkerEnabled == false)
                             dataSeries.LegendMarker.Opacity = 0;
 
+                        dataSeries.LegendMarker.Tag = new ElementData() { Element = dataSeries };
                         legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
-                    }
+                    }   
 
                     if (legend != null && legend.Reversed)
                         legend.Entries.Reverse();
@@ -3493,7 +3495,7 @@ namespace Visifire.Charts
 
         RECREATE_TITLE:
 
-            title.CreateVisualObject();
+            title.CreateVisualObject(new ElementData() { Element = title });
 
            Size size = Graphics.CalculateVisualSize(title.Visual);
             

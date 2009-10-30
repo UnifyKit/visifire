@@ -296,6 +296,7 @@ namespace Visifire.Commons
             if (Bevel)
             {
                 BevelLayer = GetBevelLayer();
+                BevelLayer.IsHitTestVisible = false;
                 BevelLayer.SetValue(Grid.RowProperty, 1);
                 BevelLayer.SetValue(Grid.ColumnProperty, 1);
                 BevelLayer.SetValue(Grid.RowProperty, 1);
