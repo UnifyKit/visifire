@@ -199,7 +199,7 @@ namespace Visifire.Charts
                 InternalBackground = dataPoint.LabelBackground
             };
 
-            title.CreateVisualObject();
+            title.CreateVisualObject(new ElementData(){Element = dataPoint});
 
             if (!(Boolean)dataPoint.LabelEnabled)
                 title.Visual.Visibility = Visibility.Collapsed;

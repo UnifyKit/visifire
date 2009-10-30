@@ -2571,7 +2571,7 @@ namespace Visifire.Charts
 
         RECAL:
 
-            AxisTitleElement.CreateVisualObject();
+            AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
 #if WPF
             AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
 #endif
@@ -2964,6 +2964,41 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Calculate total tick length from an axis
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="tickLengthOfAxisX"></param>
+        /// <param name="tickLengthOfPrimaryAxisY"></param>
+        /// <param name="tickLengthOfSecondaryAxisY"></param>
+        internal static void CalculateTotalTickLength(Chart chart, ref Double tickLengthOfAxisX, ref Double tickLengthOfPrimaryAxisY, ref Double tickLengthOfSecondaryAxisY)
+        {
+            tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
+                                 where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
+                                 select tick.TickLength).Sum();
+
+            if (tickLengthOfAxisX == 0)
+                tickLengthOfAxisX = 5;
+
+            tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
+                                        where axis.AxisType == AxisTypes.Primary
+                                        from tick in axis.Ticks
+                                        where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                        select tick.TickLength).Sum();
+
+            if (tickLengthOfPrimaryAxisY == 0)
+                tickLengthOfPrimaryAxisY = 8;
+
+            tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
+                                          where axis.AxisType == AxisTypes.Secondary
+                                          from tick in axis.Ticks
+                                          where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                          select tick.TickLength).Sum();
+
+            if (tickLengthOfSecondaryAxisY == 0)
+                tickLengthOfSecondaryAxisY = 8;
+        }
 
         /// <summary>
         /// Converts pixel position to value

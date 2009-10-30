@@ -471,7 +471,7 @@ namespace Visifire.Charts
                     InternalFontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide)
                 };
 
-                tb.CreateVisualObject();
+                tb.CreateVisualObject(new ElementData() { Element = dataPoint });
 
                 tb.TextElement.SetValue(Canvas.TopProperty, -(Double)1);
 

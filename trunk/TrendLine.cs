@@ -754,8 +754,8 @@ namespace Visifire.Charts
             Visual.Opacity = this.Opacity;
             Visual.Cursor = this.Cursor;
             Double shadowThickness = LineThickness + 2;
-            Line = new Line();
-            Shadow = new Line();
+            Line = new Line() { Tag = new ElementData() { Element = this } }; 
+            Shadow = new Line() { IsHitTestVisible = false };
 
             ApplyProperties();
 

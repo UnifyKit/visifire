@@ -4,11 +4,9 @@
     Title="Window1"
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
     WindowState="Normal">
-    
+  
     <Grid x:Name="LayoutRoot">
-
-        <vc:Chart Width="500" Height="250" Theme="Theme1">
-
+        <vc:Chart Width="500" Height="300" Theme="Theme1">
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
@@ -21,5 +19,6 @@
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+
     </Grid>
 </Window>

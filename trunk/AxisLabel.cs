@@ -603,10 +603,10 @@ namespace Visifire.Charts
         /// <summary>
         /// Create visual for AxisLabel
         /// </summary>
-        internal void CreateVisualObject(Boolean positioningAllowed)
+        internal void CreateVisualObject(Boolean positioningAllowed, ElementData tag)
         {
-            Visual = new Canvas();
-            TextElement = new TextBlock();
+            Visual = new Canvas() { Tag = tag };
+            TextElement = new TextBlock(){ Tag = tag };
             Rotation = new RotateTransform();
             TextElement.RenderTransform = Rotation;
             Visual.Children.Add(TextElement);
