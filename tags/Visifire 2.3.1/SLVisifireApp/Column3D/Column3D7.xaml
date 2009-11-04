@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="SLVisifireApp.Column3D7"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" View3D="True" BorderBrush="Gray" CornerRadius="5">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Product Sales" FontSize="14" />
+            </vc:Chart.Titles>
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Revenue" Prefix="$"/>
+                <vc:Axis AxisType="Secondary" Title="Profit" Prefix="$"/>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="Revenue" RenderAs="Column" AxisYType="Primary" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Product A" YValue="42000"/>
+                        <vc:DataPoint AxisXLabel="Product B" YValue="12293"/>
+                        <vc:DataPoint AxisXLabel="Product C" YValue="30745"/>
+                        <vc:DataPoint AxisXLabel="Product D" YValue="24365"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Profit" RenderAs="Column" AxisYType="Secondary" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="22122"/>
+                        <vc:DataPoint YValue="5600"/>
+                        <vc:DataPoint YValue="13980"/>
+                        <vc:DataPoint YValue="12039"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>
