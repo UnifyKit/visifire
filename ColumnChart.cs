@@ -191,10 +191,10 @@ namespace Visifire.Charts
                 {
                     if (isVertical)
                     {
-                        if (columnParams.Size.Height - 4 - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Width)
+                        if (columnParams.Size.Height - insideGap - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Width)
                         {
                             labelLeft = canvasLeft + columnParams.Size.Width / 2;
-                            labelTop = canvasTop + columnParams.Size.Height - 1;
+                            labelTop = canvasTop - tb.TextBlockDesiredSize.Height + columnParams.Size.Height + insideGap;
                             angle = -90;
                         }
                         else
@@ -211,8 +211,16 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
-                        labelTop = canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale) + insideGap;
+                        if (columnParams.Size.Height - insideGap - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Height)
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop - tb.TextBlockDesiredSize.Height + columnParams.Size.Height + insideGap;
+                        }
+                        else
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale) + insideGap;
+                        }
                     }
                 }
                 else
@@ -236,9 +244,9 @@ namespace Visifire.Charts
                 {
                     if (isVertical)
                     {
-                        if (columnParams.Size.Height - 4 - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Width)
+                        if (columnParams.Size.Height - insideGap - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Width)
                         {
-                            centerOfRotation = new Point(canvasLeft + columnParams.Size.Width / 2, canvasTop - columnParams.Size.Height + 2);
+                            centerOfRotation = new Point(canvasLeft + columnParams.Size.Width / 2, canvasTop - columnParams.Size.Height + insideGap);
                             angle = -90 - 180;
                             angleInRadian = (Math.PI / 180) * angle;
                             radius += tb.Width;
@@ -256,9 +264,18 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
-                        labelTop = canvasTop - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - insideGap);
-                        angle = 0;
+                        if (columnParams.Size.Height + insideGap - (dataPoint.MarkerSize / 2 * dataPoint.MarkerScale) < tb.TextBlockDesiredSize.Height)
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop - columnParams.Size.Height+ insideGap;
+                            angle = 0;
+                        }
+                        else
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - insideGap);
+                            angle = 0;
+                        }
                     }
                 }
                 else
@@ -298,6 +315,7 @@ namespace Visifire.Charts
 
             LabelStyles autoLabelStyle = (LabelStyles)columnParams.LabelStyle;
 
+            // Calculate proper position for Canvas top
             if (columnParams.IsPositive)
                 canvasTop -= 6;
             else
@@ -324,8 +342,8 @@ namespace Visifire.Charts
                 Double labelTop = 0;
                 Double labelLeft = 0;
 
-                Double outsideGap = (chart.View3D ? 4 : 4);
-                Double insideGap = (chart.View3D ? 6 : 6);
+                Double outsideGap = 4;
+                Double insideGap = 6;
 
                 if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                 {
@@ -443,7 +461,7 @@ namespace Visifire.Charts
                         {
                             centerOfRotation = new Point(canvasLeft + columnParams.Size.Width / 2,
                             canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale));
-                            radius = (Double)(dataPoint.MarkerSize / 2 * dataPoint.MarkerScale);
+                            radius = 4;
                             if (dataPoint.LabelAngle >= -90 && dataPoint.LabelAngle < 0)
                             {
                                 angle = 180 + dataPoint.LabelAngle;
@@ -472,9 +490,9 @@ namespace Visifire.Charts
                         if (autoLabelStyle == LabelStyles.OutSide)
                         {
                             centerOfRotation = new Point(canvasLeft + columnParams.Size.Width / 2,
-                            canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale));
+                            canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale) + 10);
 
-                            radius = 10;
+                            radius = 4;
 
                             if (dataPoint.LabelAngle >= -90 && dataPoint.LabelAngle < 0)
                             {
@@ -1234,21 +1252,6 @@ namespace Visifire.Charts
                 }
             }
 
-            // Apply animation
-            if (animationEnabled)
-            {
-                // Apply animation to the marker and labels
-                if (CurrentDataSeries != null && labelCanvas != null)
-                {
-                    if (CurrentDataSeries.Storyboard != null)
-                        CurrentDataSeries.Storyboard.Stop();
-                    else
-                        CurrentDataSeries.Storyboard = new Storyboard();
-
-                    CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
-                }
-            }
-
             if (!plankDrawn && chart.View3D && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMinimum < 0 && dataSeriesList4Rendering[0].PlotGroup.AxisY.InternalAxisMaximum > 0)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1272,8 +1275,26 @@ namespace Visifire.Charts
 
             visual.Children.Add(columnCanvas);
 
-            if (labelCanvas.Children.Count > 0)
+            if (labelCanvas != null && labelCanvas.Children.Count > 0)
+            {
+                // Apply animation
+                if (animationEnabled)
+                {
+                    // Apply animation to the marker and labels
+                    if (CurrentDataSeries != null)
+                    {
+                        if (CurrentDataSeries.Storyboard != null)
+                            CurrentDataSeries.Storyboard.Stop();
+                        else
+                            CurrentDataSeries.Storyboard = new Storyboard();
+
+                        CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
+                    }
+
+                }
+
                 visual.Children.Add(labelCanvas);
+            }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH);
@@ -1538,21 +1559,6 @@ namespace Visifire.Charts
                 }
             }
 
-            // Apply animation
-            if (animationEnabled)
-            {
-                // Apply animation to the marker and labels
-                if (CurrentDataSeries != null && labelCanvas != null)
-                {
-                    if (CurrentDataSeries.Storyboard != null)
-                        CurrentDataSeries.Storyboard.Stop();
-                    else
-                        CurrentDataSeries.Storyboard = new Storyboard();
-
-                    CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
-                }
-            }
-
             if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1573,10 +1579,29 @@ namespace Visifire.Charts
                 zeroPlankVisual.Opacity = 0.7;
                 columnCanvas.Children.Add(zeroPlankVisual);
             }
+
             visual.Children.Add(columnCanvas);
 
-            if(labelCanvas.Children.Count > 0)
+            if (labelCanvas != null && labelCanvas.Children.Count > 0)
+            {
+                // Apply animation
+                if (animationEnabled)
+                {
+                    // Apply animation to the marker and labels
+                    if (CurrentDataSeries != null)
+                    {
+                        if (CurrentDataSeries.Storyboard != null)
+                            CurrentDataSeries.Storyboard.Stop();
+                        else
+                            CurrentDataSeries.Storyboard = new Storyboard();
+
+                        CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
+                    }
+
+                }
+
                 visual.Children.Add(labelCanvas);
+            }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH);
@@ -1850,21 +1875,6 @@ namespace Visifire.Charts
                 }
             }
 
-            // Apply animation
-            if (animationEnabled)
-            {
-                // Apply animation to the marker and labels
-                if (CurrentDataSeries != null && labelCanvas != null)
-                {
-                    if (CurrentDataSeries.Storyboard != null)
-                        CurrentDataSeries.Storyboard.Stop();
-                    else
-                        CurrentDataSeries.Storyboard = new Storyboard();
-
-                    CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
-                }
-            }
-
             if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
             {
                 RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
@@ -1887,9 +1897,27 @@ namespace Visifire.Charts
             }
 
             visual.Children.Add(columnCanvas);
-            
-            if(labelCanvas.Children.Count > 0)
+
+            if (labelCanvas != null && labelCanvas.Children.Count > 0)
+            {
+                // Apply animation
+                if (animationEnabled)
+                {
+                    // Apply animation to the marker and labels
+                    if (CurrentDataSeries != null)
+                    {
+                        if (CurrentDataSeries.Storyboard != null)
+                            CurrentDataSeries.Storyboard.Stop();
+                        else
+                            CurrentDataSeries.Storyboard = new Storyboard();
+
+                        CurrentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, CurrentDataSeries, CurrentDataSeries.Storyboard, 1, 1, 1);
+                    }
+
+                }
+
                 visual.Children.Add(labelCanvas);
+            }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH);

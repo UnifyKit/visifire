@@ -226,7 +226,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
+                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -1212,7 +1212,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
+                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -3362,6 +3362,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
             chart.Series[0].RenderAs = RenderAs.StreamLineFunnel;
+            chart.Series[0].ShowInLegend = true;
 
             EnqueueDelay(_sleepTime);
 
@@ -3451,6 +3452,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
             chart.Series[0].RenderAs = RenderAs.SectionFunnel;
+            chart.Series[0].ShowInLegend = true;
 
             EnqueueDelay(_sleepTime);
 
