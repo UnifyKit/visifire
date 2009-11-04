@@ -350,7 +350,7 @@ namespace Visifire.Commons
             set
             {
                 // System.Diagnostics.Debug.Assert(value < 1, "ScaleFactor can not be less than 1..");
-                if (value > 1)
+                if (value >= 1)
                     _scaleFactor = value;
             }
         }
