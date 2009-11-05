@@ -1170,11 +1170,11 @@ namespace Visifire.Charts
             {
                 if (e.NewItems != null)
                     foreach (DataSeries ds in e.NewItems)
-                    {
+                    {   
                         ds.Chart = this;
 
                         foreach (DataPoint dp in ds.DataPoints)
-                        {
+                        {   
                             dp.Chart = this;
                         }
 
@@ -1183,7 +1183,9 @@ namespace Visifire.Charts
 
                         if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
                         {
-                            ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
+                            ds.Name = "DataSeries" + (this.Series.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
+
+                            // ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
                             ds._isAutoName = true;
                         }
                         else

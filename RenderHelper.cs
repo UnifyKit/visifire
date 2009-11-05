@@ -33,15 +33,15 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Line:
-                    renderedCanvas = LineChart.GetVisualObjectForLineChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = LineChart.GetVisualObjectForLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Point:
-                    renderedCanvas = PointChart.GetVisualObjectForPointChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = PointChart.GetVisualObjectForPointChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Bubble:
-                    renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Area:
@@ -94,7 +94,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Stock:
-                   // renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    renderedCanvas = StockChart.GetVisualObjectForStockChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.CandleStick:
@@ -111,6 +111,7 @@ namespace Visifire.Charts
             {   
                 visual = preExistingPanel as Canvas;
                 labelCanvas = preExistingPanel.Children[0] as Canvas;
+                labelCanvas.Children.Clear();
             }
             else
             {   
@@ -124,7 +125,26 @@ namespace Visifire.Charts
             visual.Width = width; 
             visual.Height = height;
 
+            drawingCanvas =  new Canvas() { Width = width, Height = height };
+        }
+
+        internal static void RepareCanvas4Drawing(Canvas preExistingPanel, out Canvas visual, out Canvas drawingCanvas, Double width, Double height)
+        {   
+            if (preExistingPanel != null)
+            {   
+                visual = preExistingPanel as Canvas;
+                visual.Children.Clear();
+            }
+            else
+            {
+                visual = new Canvas();
+            }
+
+            visual.Width = width;
+            visual.Height = height;
+
             drawingCanvas = new Canvas() { Width = width, Height = height };
+            visual.Children.Add(drawingCanvas);
         }
         
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue)
@@ -169,15 +189,23 @@ namespace Visifire.Charts
                         // renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
                     case RenderAs.Line:
-                        foreach(DataSeries ds in selectedDataSeries4Rendering)
-                            LineChart.Update(ds, property, newValue);
+
+                        if(property == VcProperties.Enabled)
+                            LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                        else
+                            foreach(DataSeries ds in selectedDataSeries4Rendering)
+                                LineChart.Update(ds, property, newValue);
                         break;
 
                     case RenderAs.Point:
+                        PointChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+
                         //renderedCanvas = PointChart.GetVisualObjectForPointChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.Bubble:
+                        BubbleChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+
                         //renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
@@ -198,10 +226,13 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.StackedBar:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         //renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedBar100:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+
                         //renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
@@ -231,6 +262,7 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.Stock:
+                        StockChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         //renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
@@ -251,7 +283,8 @@ namespace Visifire.Charts
         internal static void UpdateVisualObject(RenderAs chartType, Visifire.Commons.ObservableObject sender, VcProperties property, object newValue, Boolean isAXisChanged)
         {
             Boolean isDataPoint = sender.GetType().Equals(typeof(DataPoint));
-
+            DataPoint dataPoint = sender as DataPoint;
+            Chart chart = (sender as ObservableObject).Chart as Chart;
             switch (chartType)
             {   
                 case RenderAs.Column:
@@ -263,14 +296,31 @@ namespace Visifire.Charts
                     //renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
                 case RenderAs.Line:
-                    LineChart.Update(sender, property, newValue);
+
+                    if (isAXisChanged && isDataPoint)
+                    {   foreach (DataSeries ds in chart.Series)
+                        {
+                            //if (ds == dataPoint.Parent)
+                            //    continue;
+
+                            foreach (DataPoint dp in ds.DataPoints)
+                            {   
+                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                            }
+                        }
+                    }
+                    else
+                        LineChart.Update(sender, property, newValue);
+                    
                     break;
 
                 case RenderAs.Point:
+                    PointChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = PointChart.GetVisualObjectForPointChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Bubble:
+                    BubbleChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
@@ -325,6 +375,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Stock:
+                    StockChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 

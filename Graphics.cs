@@ -376,6 +376,9 @@ namespace Visifire.Charts
         /// <returns>DoubleCollection</returns>
         public static DoubleCollection CloneCollection(DoubleCollection collection)
         {
+            if (collection == null)
+                return null;
+
             DoubleCollection newCollection = new DoubleCollection();
             foreach (Double value in collection)
                 newCollection.Add(value);
@@ -395,26 +398,20 @@ namespace Visifire.Charts
         /// <param name="xRadius">XRadius as CornerRadius</param>
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangle(FrameworkElement tagReference, out Rectangle rectangle, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
+        public static Rectangle Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
         {
-            Canvas canvas = new Canvas() { Width = width, Height = height };
+            // Canvas canvas = new Canvas() { Width = width, Height = height };
 
-            rectangle = new Rectangle() {Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
-
-            rectangle.StrokeThickness = strokeThickness;
-            rectangle.StrokeDashArray = strokeDashArray != null ? CloneCollection(strokeDashArray) : strokeDashArray;
+            Rectangle rectangle = new Rectangle() { Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
             rectangle.StrokeDashCap = PenLineCap.Flat;
             rectangle.StrokeEndLineCap = PenLineCap.Flat;
             rectangle.StrokeMiterLimit = 1;
             rectangle.StrokeStartLineCap = PenLineCap.Flat;
             rectangle.StrokeLineJoin = PenLineJoin.Bevel;
-            rectangle.Stroke = stroke;
-
+            UpdateBorderOf2DRectangle(ref rectangle, strokeThickness, CloneCollection(strokeDashArray), stroke, xRadius, yRadius);
             rectangle.Fill = fill;
-            rectangle.RadiusX = xRadius.TopLeft;
-            rectangle.RadiusY = xRadius.BottomLeft;
 
-            //rectangle.Data = GetRectanglePathGeometry(
+            // rectangle.Data = GetRectanglePathGeometry(
             //    width,
             //    height,
             //    GetCorrectedRadius(xRadius, width),
@@ -424,11 +421,19 @@ namespace Visifire.Charts
             //rectangle.SetValue(Canvas.TopProperty, (Double)0);
             //rectangle.SetValue(Canvas.LeftProperty, (Double)0);
 
-            canvas.Children.Add(rectangle);
+            //canvas.Children.Add(rectangle);
 
-            return canvas;
+            return rectangle;
         }
 
+        public static void UpdateBorderOf2DRectangle(ref Rectangle rectangle, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, CornerRadius xRadius, CornerRadius yRadius)
+        {
+            rectangle.RadiusX = xRadius.TopLeft;
+            rectangle.RadiusY = xRadius.BottomLeft;
+            rectangle.StrokeThickness = strokeThickness;
+            rectangle.StrokeDashArray = strokeDashArray != null ? strokeDashArray : strokeDashArray;
+            rectangle.Stroke = stroke;
+        }
         /// <summary>
         /// Creates and returns a rectangle bevel layer based on the given params
         /// </summary>
@@ -670,7 +675,7 @@ namespace Visifire.Commons
         #region Static Methods
 
         internal static Random RAND = new Random(DateTime.Now.Millisecond);
-        public static Brush GetRandonColor()
+        public static Brush GetRandomColor()
         {
             return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
         }
@@ -764,7 +769,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="visual">Visual as FrameworkElement</param>
         /// <returns>Visual size</returns>
-        internal static Size CalculateVisualSize(FrameworkElement visual)
+        public static Size CalculateVisualSize(FrameworkElement visual)
         {
             Size retVal = new Size(0,0);
 
@@ -776,6 +781,50 @@ namespace Visifire.Commons
 
             return retVal;
         }
+
+        /// <summary>
+        /// Get 3dBrush with or without lighting for bubble
+        /// </summary>
+        internal static Brush Get3DBrushLighting(Brush solidColorBrush, Boolean lightingEnabled)
+        {   
+            if (solidColorBrush.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                Color color = (solidColorBrush as SolidColorBrush).Color;
+
+                RadialGradientBrush rgb = new RadialGradientBrush()
+                {   
+                    Center = new Point(0.3, 0.3),
+                    RadiusX = 0.93,
+                    RadiusY = 1,
+                    GradientOrigin = new Point(0.2, 0.2)
+                };
+
+                if (color == Colors.Black)
+                {
+                    if(lightingEnabled)
+                        rgb.GradientStops.Add(new GradientStop() { Color = Colors.White, Offset = 0 });
+
+                    rgb.GradientStops.Add(new GradientStop() { Color = Colors.Gray, Offset = 0.1 });
+                    rgb.GradientStops.Add(new GradientStop() { Color = Colors.Black, Offset = 1 });
+                }
+                else
+                {
+                    Color darkerColor = Graphics.GetDarkerColor(color, 0.2);
+
+                    if (lightingEnabled)
+                        rgb.GradientStops.Add(new GradientStop() { Color = Colors.White, Offset = 0 });
+
+                    rgb.GradientStops.Add(new GradientStop() { Color = color, Offset = 0.1 });
+                    rgb.GradientStops.Add(new GradientStop() { Color = darkerColor, Offset = 1 });
+                }
+
+                return rgb;
+            }
+            else
+                return solidColorBrush;
+
+        }
+
 
         /// <summary>
         /// Calculates textblock size

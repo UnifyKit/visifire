@@ -43,7 +43,7 @@ using System.Linq;
 using Visifire.Commons;
 
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Visifire.Charts.LineChartShapeParams class
     /// </summary>
@@ -155,11 +155,13 @@ namespace Visifire.Charts
                 marker.Bevel = false;
                 marker.FillColor = dataPoint.MarkerColor;
                 marker.Text = labelText;
+                marker.TextAlignmentX = AlignmentX.Center;
+                marker.TextAlignmentY = AlignmentY.Center;
             }
 
             ApplyMarkerProperties(dataPoint);
 
-            if (true && !String.IsNullOrEmpty(labelText))
+            if (!String.IsNullOrEmpty(labelText))
             {   
                 dataPoint.Marker.CreateVisual();
 
@@ -189,6 +191,14 @@ namespace Visifire.Charts
 
             ApplyDefaultInteractivityForMarker(dataPoint);
 
+            //dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
+            ObservableObject.AttachEvents2Visual(dataPoint, dataPoint, dataPoint.Marker.Visual);
+            //dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
+            ObservableObject.AttachEvents2Visual(dataPoint.Parent, dataPoint, dataPoint.Marker.Visual);
+            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Marker.Visual);
+            dataPoint.AttachHref(chart, dataPoint.Marker.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
             return dataPoint.Marker;
         }
 
@@ -201,9 +211,9 @@ namespace Visifire.Charts
             if ((Boolean)dataPoint.MarkerEnabled)
             {
                 if (!dataPoint.Parent.MovingMarkerEnabled)
-                {
+                {   
                     dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
-                    {
+                    {   
                         if (!dataPoint.Selected)
                         {
                             Shape shape = sender as Shape;
@@ -240,7 +250,7 @@ namespace Visifire.Charts
             dataPoint.Marker.MarkerShape.Stroke = tarnsparentColor;
 
             if (dataPoint.Marker.MarkerShadow != null)
-            {
+            {   
                 dataPoint.Marker.MarkerShadow.Visibility = Visibility.Collapsed;
             }
 
@@ -277,7 +287,7 @@ namespace Visifire.Charts
         /// <param name="lineShadow">line shadow path reference</param>
         /// <returns>Canvas</returns>
         private static Canvas GetLine2D(DataSeries tagReference, LineChartShapeParams lineParams, out Path line, out Path lineShadow, List<List<DataPoint>> pointCollectionList, List<List<DataPoint>> shadowPointCollectionList)
-        {
+        {   
             Canvas visual = new Canvas();
             line = new Path() { Tag = new ElementData() { Element = tagReference } };
             line.StrokeLineJoin = PenLineJoin.Round;
@@ -292,12 +302,18 @@ namespace Visifire.Charts
             line.Data = GetPathGeometry(null, pointCollectionList, true);
 
             if (lineParams.ShadowEnabled)
-            {
-                lineShadow = new Path() { Tag = new ElementData() { Element = tagReference } };
-                lineShadow.Stroke = new SolidColorBrush(Colors.LightGray);
+            {   
+                lineShadow = new Path() { IsHitTestVisible = false };
+                lineShadow.Stroke = Graphics.GetLightingEnabledBrush( new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
+                lineShadow.StrokeStartLineCap = PenLineCap.Round;
+                lineShadow.StrokeEndLineCap = PenLineCap.Round;
+                lineShadow.StrokeLineJoin = PenLineJoin.Round;
                 lineShadow.StrokeThickness = lineParams.LineThickness;
                 lineShadow.Opacity = 0.5;
-                lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, false);
+
+                if (lineParams.ShadowEnabled)
+                    lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, false);
+
                 TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
                 lineShadow.RenderTransform = tt;
 
@@ -407,32 +423,160 @@ namespace Visifire.Charts
                 UpdateDataSeries(sender as DataSeries, property, newValue);
         }
 
-        private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue)
-        {   
+        internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
+        {
+            Boolean is3D = chart.View3D;
+            ChartArea chartArea = chart.ChartArea;
+            Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+
+            // Double width = chart.ChartArea.ChartVisualCanvas.Width;
+            // Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+            Panel preExistingPanel = null;
+            Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+
+            if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+            {
+                preExistingPanel = RenderedCanvasList[currentRenderAs];
+            }
+
+            Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
+
+            if (preExistingPanel == null)
+            {
+                chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                ChartVisualCanvas.Children.Add(renderedChart);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj">Object may be DataSeries or DataPoint</param>
+        /// <param name="property"></param>
+        /// <param name="newValue"></param>
+        private static void UpdateDataSeries(ObservableObject obj, VcProperties property, object newValue)
+        {
+
+            DataPoint dataPoint= null;
+            DataSeries dataSeries = obj as DataSeries;
+            Boolean isDataPoint = false;
+            
+            if (dataSeries == null)
+            {
+                isDataPoint = true;
+                dataPoint = obj as DataPoint;
+                dataSeries = dataPoint.Parent;
+            }
+
+            Chart chart = dataSeries.Chart as Chart;
+            PlotGroup plotGroup = dataSeries.PlotGroup;
+            Canvas line2dCanvas = null;
+            Canvas label2dCanvas = null;
+            Path linePath = null;
+            Path lineShadowPath = null;
+
+            if (dataSeries.Faces != null)
+            {
+                if (dataSeries.Faces.Parts.Count > 0)
+                {
+                    linePath = dataSeries.Faces.Parts[0] as Path;
+
+                    if (dataSeries.Faces.Parts.Count > 1)
+                        lineShadowPath = dataSeries.Faces.Parts[1] as Path;
+                }
+
+                line2dCanvas = dataSeries.Faces.Visual as Canvas;
+                label2dCanvas = dataSeries.Faces.LabelCanvas as Canvas;
+            }
+            else
+                return;
+
+            Double height = chart.ChartArea.ChartVisualCanvas.Height;
+            Double width = chart.ChartArea.ChartVisualCanvas.Width;
+
             switch (property)
             {   
-                case VcProperties.DataPoints:
+                case VcProperties.Color:
+                    if(linePath != null)
+                        linePath.Stroke = ((Boolean)dataSeries.LightingEnabled) ? Graphics.GetLightingEnabledBrush(newValue as Brush, "Linear", new Double[] { 0.65, 0.55 }) : newValue as Brush; //dataPoint.Color;
+                    break;
+                case VcProperties.LightingEnabled:
+                    if (linePath != null)
+                        linePath.Stroke = ((Boolean)newValue) ? Graphics.GetLightingEnabledBrush(dataSeries.Color, "Linear", new Double[] { 0.65, 0.55 }) : dataSeries.Color;
+                        
+                    break;
+
+                case VcProperties.Opacity:
+                    if (linePath != null)
+                        linePath.Opacity = dataSeries.Opacity;
+                    break;
+                case VcProperties.LineStyle:
+                case VcProperties.LineThickness:
+
+                    if (lineShadowPath != null)
+                        lineShadowPath.StrokeThickness = (Double)dataSeries.LineThickness;
+                    if (linePath != null)
+                        linePath.StrokeThickness = (Double)dataSeries.LineThickness;
+
+                    if (lineShadowPath != null)
+                        lineShadowPath.StrokeDashArray = ExtendedGraphics.GetDashArray(dataSeries.LineStyle);
+                    if (linePath != null)
+                        linePath.StrokeDashArray = ExtendedGraphics.GetDashArray(dataSeries.LineStyle);
+
+                    break;
                 case VcProperties.Enabled:
+                    
+                    if (!isDataPoint && line2dCanvas != null)
+                    {
+                        if ((Boolean)newValue == false)
+                        {
+                            line2dCanvas.Visibility = Visibility.Collapsed;
+                            label2dCanvas.Visibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            line2dCanvas.Visibility = Visibility.Visible;
+                            label2dCanvas.Visibility = Visibility.Visible;
+                        }
 
-                    Chart chart = dataSeries.Chart as Chart;
+                        chart._toolTip.Hide();
 
-                    PlotGroup plotGroup = dataSeries.PlotGroup;
+                        break;
+                    }
+
+                    goto NEXT;
+
+                case VcProperties.ShadowEnabled:
+                case VcProperties.DataPoints:
+                NEXT:
                     Axis axisX = plotGroup.AxisX;
                     Axis axisY = plotGroup.AxisY;
 
-                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
-                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    height = chart.ChartArea.ChartVisualCanvas.Height;
+                    width = chart.ChartArea.ChartVisualCanvas.Width;
 
                     (dataSeries.Faces.Visual as Canvas).Width = width;
                     (dataSeries.Faces.Visual as Canvas).Height = height;
-                                        
+                    (dataSeries.Faces.LabelCanvas as Canvas).Width = width;
+                    (dataSeries.Faces.LabelCanvas as Canvas).Height = height;
+                    
                     List<DataPoint> pc = new List<DataPoint>();
                     List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
 
                     pointCollectionList.Add(pc);
+                    // List<DataPoint> enabledDataPoints = (from dp in dataSeries.InternalDataPoints where (Boolean) dp.Enabled == true select dp).ToList();
+                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                    {   
+                        if (dp.Enabled == false)
+                        {   
+                            if (dp.Marker != null && dp.Marker.Visual != null)
+                                dp.Marker.Visual.Visibility = Visibility.Collapsed;
 
-                    foreach (DataPoint dp in dataSeries.DataPoints)
-                    {
+                            chart._toolTip.Hide();
+                            continue;
+                        }
+
                         if (Double.IsNaN(dp.YValue))
                         {
                             pc = new List<DataPoint>();
@@ -443,16 +587,22 @@ namespace Visifire.Charts
                         Double x = Graphics.ValueToPixelPosition(0, width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
                         Double y = Graphics.ValueToPixelPosition(height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
 
+                        Point newMarkerPosition;
                         dp._visualPosition = new Point(x, y);
 
                         if (dp.Marker != null && dp.Marker.Visual != null)
                         {
-                            dp.Marker.Visual.SetValue(Canvas.TopProperty, y - dp.Marker.MarkerSize.Height / 2);
-                            dp.Marker.Visual.SetValue(Canvas.LeftProperty, x - dp.Marker.MarkerSize.Width / 2);
+                            newMarkerPosition = dp.Marker.CalculateActualPosition(x, y, new Point(0.5, 0.5));
+
+                            dp.Marker.Visual.Visibility = Visibility.Visible;
+                            dp.Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
+                            dp.Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
                         }
                         else
                         {
                             Marker marker = LineChart.GetMarkerForDataPoint(true, chart, y, dp, dp.InternalYValue > 0);
+                            newMarkerPosition = marker.CalculateActualPosition(x, y, new Point(0.5, 0.5));
+
                             marker.AddToParent(dp.Parent.Faces.LabelCanvas, x, y, new Point(0.5, 0.5));
                             dp._parsedToolTipText = dp.TextParser(dp.ToolTipText);
                             dp.AttachToolTip(chart, dp, marker.Visual);
@@ -469,38 +619,49 @@ namespace Visifire.Charts
 
                     // Update GeometryGroup for shadow
                     if (dataSeries.Faces.Parts[1] != null)
-                    {   
-                        // gg.Children.Clear();
-                        GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
+                    {
+                        if (dataSeries.ShadowEnabled)
+                        {
+                            (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
+                            
+                            // gg.Children.Clear();
+                            GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
 
-                        // Apply new Data for Line
-                        LineChart.GetPathGeometry(ggShadow, pointCollectionList, false);
+                            // Apply new Data for Line
+                            LineChart.GetPathGeometry(ggShadow, pointCollectionList, false);
+                        }
+                        else
+                            (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
                     }
 
                     break;
             }
         }
-
+        
         private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue)
         {   
             Chart chart = dataPoint.Chart as Chart;
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;
             PlotGroup plotGroup = dataSeries.PlotGroup;
+            Double height = chart.ChartArea.ChartVisualCanvas.Height;
+            Double width = chart.ChartArea.ChartVisualCanvas.Width;
+            Double xPosition, yPosition;
+            Canvas line2dLabelCanvas = null;
+
+            if (dataSeries.Faces != null)
+                line2dLabelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
 
             switch (property)
             {
                 case VcProperties.Color:
-                    marker.BorderColor = dataPoint.Color;
+                    marker.BorderColor = newValue as Brush; //dataPoint.Color;
                     break;
                 case VcProperties.Cursor:
                     dataPoint.SetCursor2DataPointVisualFaces();
                     break;
 
                 case VcProperties.Href:
-                    dataPoint.SetHref2DataPointVisualFaces();
-                    break;
-
                 case VcProperties.HrefTarget:
                     dataPoint.SetHref2DataPointVisualFaces();
                     break;
@@ -510,7 +671,10 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelEnabled:
-                    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+                    //if (marker.LabelEnabled == false)
+                        CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    //else
+                    //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
                     break;
 
                 case VcProperties.LabelFontColor:
@@ -518,14 +682,20 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelFontFamily:
-                    marker.FontFamily = dataPoint.LabelFontFamily;
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    // marker.FontFamily = dataPoint.LabelFontFamily;
                     break;
 
                 case VcProperties.LabelFontStyle:
-                    marker.FontStyle = (FontStyle) dataPoint.LabelFontStyle;
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
+                    //marker.FontStyle = (FontStyle) dataPoint.LabelFontStyle;
                     break;
+
                 case VcProperties.LabelFontSize:
-                    marker.FontSize = (Double) dataPoint.LabelFontSize;
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
+                   // marker.FontSize = (Double) dataPoint.LabelFontSize;
                     break;
 
                 case VcProperties.LabelFontWeight:
@@ -533,10 +703,12 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelStyle:
-
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
                     break;
+
                 case VcProperties.LabelText:
-                    marker.Text = dataPoint.TextParser(dataPoint.LabelText);
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    //marker.Text = dataPoint.TextParser(dataPoint.LabelText);
                     break;
 
                 case VcProperties.LegendText:
@@ -547,10 +719,13 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.MarkerBorderColor:
-                    marker.BorderColor = dataPoint.MarkerBorderColor;
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
+                    //marker.BorderColor = dataPoint.MarkerBorderColor;
                     break;
                 case VcProperties.MarkerBorderThickness:
-                    marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    //marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
                     break;
 
                 case VcProperties.MarkerColor:
@@ -558,18 +733,22 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.MarkerEnabled:
-                    if((Boolean)dataPoint.MarkerEnabled)
-                        ShowDataPointMarker(dataPoint);
-                    else
-                        HideDataPointMarker(dataPoint);
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
+                    //if((Boolean)dataPoint.MarkerEnabled)
+                    //    ShowDataPointMarker(dataPoint);
+                    //else
+                    //    HideDataPointMarker(dataPoint);
                     break;
 
                 case VcProperties.MarkerScale:                   
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
                 case VcProperties.ShadowEnabled:
-                    Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
-                    LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
+                    //Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+                    //LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
                     break;
 
                 case VcProperties.Opacity:
@@ -579,14 +758,18 @@ namespace Visifire.Charts
                     chart.InvokeRender();
                     break;
                 case VcProperties.ToolTipText:
+                case VcProperties.XValueFormatString:
+                case VcProperties.YValueFormatString:
                     dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
                     break;
                 case VcProperties.XValueType:
                     chart.InvokeRender();
                     break;
 
                 case VcProperties.Enabled:
-                    UpdateDataSeries(dataSeries, VcProperties.Enabled, newValue);
+                    if((Boolean)dataPoint.Parent.Enabled)
+                        UpdateDataSeries(dataPoint, VcProperties.Enabled, newValue);
                     break;
 
                 case VcProperties.XValue:
@@ -604,10 +787,14 @@ namespace Visifire.Charts
 
         private static void UpdateXAndYValue(DataPoint dataPoint)
         {
-            Boolean isAnimationEnabled = true;
+            Boolean isAnimationEnabled = false;
+
+            if (!(Boolean)dataPoint.Enabled)
+                return;
 
             Chart chart = dataPoint.Chart as Chart;
             DataSeries dataSeries = dataPoint.Parent;
+            dataSeries._movingMarker.Visibility = Visibility.Collapsed;
 
             Axis axisX = dataSeries.PlotGroup.AxisX;
             Axis axisY = dataSeries.PlotGroup.AxisY;
@@ -619,16 +806,23 @@ namespace Visifire.Charts
 
             // (Faces.Visual as Canvas).Width = chart.ChartArea.ChartVisualCanvas.Width;
             // (Faces.Visual as Canvas).Height = chart.ChartArea.ChartVisualCanvas.Height;
+            // Double x = Graphics.ValueToPixelPosition(0, axisX.Width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dataPoint.InternalXValue);
 
-            Double x = Graphics.ValueToPixelPosition(0, axisX.Width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dataPoint.InternalXValue);
-            Double y = Graphics.ValueToPixelPosition(axisY.Height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dataPoint.InternalYValue);
+            Double x = Graphics.ValueToPixelPosition(0, chart.ChartArea.ChartVisualCanvas.Width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dataPoint.InternalXValue);
+            Double y = Graphics.ValueToPixelPosition(chart.ChartArea.ChartVisualCanvas.Height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dataPoint.InternalYValue);
 
-            if(!isAnimationEnabled)
-            if (dataPointMarker != null && dataPointMarker.Visual != null)
-            {
-                dataPointMarker.Visual.SetValue(Canvas.TopProperty, y - dataPointMarker.MarkerSize.Height / 2);
-                dataPointMarker.Visual.SetValue(Canvas.LeftProperty, x - dataPointMarker.MarkerSize.Width / 2);
-            }
+            dataPoint._visualPosition = new Point(x, y);
+            Point newMarkerPosition = new Point();
+            
+            if(dataPointMarker != null)
+                newMarkerPosition = dataPointMarker.CalculateActualPosition(x, y, new Point(0.5, 0.5));
+                        
+            if (!isAnimationEnabled)
+                if (dataPointMarker != null && dataPointMarker.Visual != null)
+                {
+                    dataPointMarker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
+                    dataPointMarker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
+                }
 
             DependencyObject target;    // Target object
             Point oldPoint;             // Old Position
@@ -642,7 +836,7 @@ namespace Visifire.Charts
                 target = pathFigure;
                 oldPoint = pathFigure.StartPoint;
                 
-                if (!isAnimationEnabled)
+                 if (!isAnimationEnabled)
                     pathFigure.StartPoint = new Point(x, y);
             }
             else
@@ -657,6 +851,9 @@ namespace Visifire.Charts
             if (isAnimationEnabled)
             {   
                 #region Apply Animation to the DataPoint
+
+                //if (dataPoint.Storyboard != null)
+                //    dataPoint.Storyboard.Pause();
 
                 Storyboard storyBorad = new Storyboard();
                 PointAnimation pointAnimation = new PointAnimation();
@@ -680,37 +877,39 @@ namespace Visifire.Charts
                 #region Attach Animation with Marker
 
                 FrameworkElement marker = dataPoint.Marker.Visual;
-                Size markerSize = dataPoint.Marker.MarkerSize;
-
-                // Animation for (Canvas.Top) property
-                DoubleAnimation da = new DoubleAnimation()
-                {   
-                    From = (Double)marker.GetValue(Canvas.LeftProperty),
-                    To = x - markerSize.Width / 2,
-                    Duration = new Duration(new TimeSpan(0, 0, 1)),
-                    SpeedRatio = 2
-                };
-
-                Storyboard.SetTarget(da, marker);
-                Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
-                Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
-
-                storyBorad.Children.Add(da);
-
-                // Animation for (Canvas.Top) property
-                da = new DoubleAnimation()
+                
+                if (marker != null)
                 {
-                    From = (Double)marker.GetValue(Canvas.TopProperty),
-                    To = y - markerSize.Height / 2,
-                    Duration = new Duration(new TimeSpan(0, 0, 1)),
-                    SpeedRatio = 2
-                };
+                    // Animation for (Canvas.Top) property
+                    DoubleAnimation da = new DoubleAnimation()
+                    {
+                        From = (Double)marker.GetValue(Canvas.LeftProperty),
+                        To = newMarkerPosition.X,
+                        Duration = new Duration(new TimeSpan(0, 0, 1)),
+                        SpeedRatio = 2
+                    };
 
-                Storyboard.SetTarget(da, marker);
-                Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
-                Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
+                    Storyboard.SetTarget(da, marker);
+                    Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
+                    Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
 
-                storyBorad.Children.Add(da);
+                    storyBorad.Children.Add(da);
+
+                    // Animation for (Canvas.Top) property
+                    da = new DoubleAnimation()
+                    {
+                        From = (Double)marker.GetValue(Canvas.TopProperty),
+                        To = newMarkerPosition.Y,
+                        Duration = new Duration(new TimeSpan(0, 0, 1)),
+                        SpeedRatio = 2
+                    };
+
+                    Storyboard.SetTarget(da, marker);
+                    Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
+                    Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
+
+                    storyBorad.Children.Add(da);
+                }
 
                 #endregion
 
@@ -719,6 +918,17 @@ namespace Visifire.Charts
                 // Start the animation
                 storyBorad.Begin();
             }
+
+            //chart.ChartArea.ChartVisualCanvas.Background = new SolidColorBrush(Colors.Blue);
+            dataSeries.Faces.Visual.Width = chart.ChartArea.ChartVisualCanvas.Width;
+            dataSeries.Faces.Visual.Height = chart.ChartArea.ChartVisualCanvas.Height;
+
+            dataSeries.Faces.LabelCanvas.Width = chart.ChartArea.ChartVisualCanvas.Width;
+            dataSeries.Faces.LabelCanvas.Height = chart.ChartArea.ChartVisualCanvas.Height;
+
+            // Update ToolTip Text
+            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+            chart._toolTip.Hide();
         }
         
         /// <summary>
@@ -729,6 +939,7 @@ namespace Visifire.Charts
         private static void ApplyMarkerProperties(DataPoint dataPoint)
         {   
             Marker marker = dataPoint.Marker;
+            marker.ScaleFactor = (Double) dataPoint.MarkerScale;
             marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
             marker.BorderColor = dataPoint.MarkerBorderColor;
             marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
@@ -738,6 +949,7 @@ namespace Visifire.Charts
             marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
             marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
             marker.TextBackground = dataPoint.LabelBackground;
+            marker.ShadowEnabled = (Boolean) dataPoint.ShadowEnabled;
             marker.FillColor = dataPoint.MarkerColor;
         }
 
@@ -771,7 +983,7 @@ namespace Visifire.Charts
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, 1);
             DoubleCollection timeFrames = Graphics.GenerateDoubleCollection(0, 1);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
-
+            
             storyboard.Children.Add(AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, GradStop2, "(GradientStop.Offset)", beginTime, timeFrames, values, splines));
 
             values = Graphics.GenerateDoubleCollection(0.01, 1);
@@ -787,6 +999,195 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        internal static Marker CreateMarkerAForLineDataPoint(DataPoint dataPoint, Double width, Double height, ref Canvas line2dLabelCanvas, out Double xPosition, out Double yPosition)
+        {
+            PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
+            Chart chart = dataPoint.Chart as Chart;
+
+            xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+            yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+                        
+            // Create Marker
+            Marker marker = GetMarkerForDataPoint(true, chart, yPosition, dataPoint, dataPoint.InternalYValue > 0);
+            marker.AddToParent(line2dLabelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
+
+            //Graphics.DrawPointAt(new Point(xPosition, yPosition), line2dLabelCanvas, Colors.Red);
+
+            return marker;
+        }
+
+        internal static void CreateAlineSeries(DataSeries series, Double width, Double height, Canvas labelCanvas, Canvas chartsCanvas, Boolean animationEnabled)
+        {   
+            Canvas line2dCanvas;
+            Canvas line2dLabelCanvas;
+
+            // Removing exising line chart for a series
+            if(series.Faces != null)
+            {
+                line2dCanvas = series.Faces.Visual as Canvas;
+                line2dLabelCanvas = series.Faces.LabelCanvas;
+
+                if (line2dCanvas != null)
+                {   
+                    Panel parent = line2dCanvas.Parent as Panel;
+                    
+                    if (parent != null)
+                        parent.Children.Remove(line2dCanvas);
+                }
+
+                if (line2dLabelCanvas != null)
+                {
+                    Panel parent = line2dLabelCanvas.Parent as Panel;
+
+                    if (parent != null)
+                        parent.Children.Remove(line2dLabelCanvas);
+                }
+            }
+
+            if ((Boolean)series.Enabled == false)
+                return;
+
+            Double xPosition, yPosition;
+            Chart chart  = (series.Chart as Chart);
+
+            line2dLabelCanvas = new Canvas() { Width = width, Height = height };   // Canvas for placing labels
+
+            _listOfDataSeries.Add(series);
+
+            List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
+            List<List<DataPoint>> shadowPointCollectionList = new List<List<DataPoint>>();
+
+            PlotGroup plotGroup = series.PlotGroup;
+            LineChartShapeParams lineParams = new LineChartShapeParams();
+
+            #region Set LineParms
+
+            lineParams.Points = new List<DataPoint>();
+            lineParams.ShadowPoints = new List<DataPoint>();
+            lineParams.LineGeometryGroup = new GeometryGroup();
+            lineParams.LineThickness = (Double)series.LineThickness;
+            lineParams.LineColor = series.Color;
+            lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
+            lineParams.Lighting = (Boolean)series.LightingEnabled;
+            lineParams.ShadowEnabled = series.ShadowEnabled;
+
+            if (series.ShadowEnabled)
+                lineParams.LineShadowGeometryGroup = new GeometryGroup();
+
+            #endregion
+
+            series.VisualParams = lineParams;
+
+            Point variableStartPoint = new Point(), endPoint = new Point();
+            Boolean IsStartPoint = true;
+
+            // Polyline polyline, PolylineShadow;
+            // Canvas line2dCanvas = new Canvas();
+            // Canvas lineCanvas;
+
+            foreach (DataPoint dataPoint in series.InternalDataPoints)
+            {
+                if (dataPoint.Enabled == false)
+                    continue;
+
+                if (Double.IsNaN(dataPoint.InternalYValue))
+                {
+                    xPosition = Double.NaN;
+                    yPosition = Double.NaN;
+                    IsStartPoint = true;
+                }
+                else
+                {
+                    CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+
+                    #region Generate GeometryGroup for line and line shadow
+
+                    if (IsStartPoint)
+                    {
+                        variableStartPoint = new Point(xPosition, yPosition);
+
+                        IsStartPoint = !IsStartPoint;
+
+                        if (lineParams.Points.Count > 0)
+                        {
+                            pointCollectionList.Add(lineParams.Points);
+                            shadowPointCollectionList.Add(lineParams.ShadowPoints);
+                        }
+
+                        lineParams.Points = new List<DataPoint>();
+                        lineParams.ShadowPoints = new List<DataPoint>();
+                    }
+                    else
+                    {
+                        endPoint = new Point(xPosition, yPosition);
+
+                        variableStartPoint = endPoint;
+                        IsStartPoint = false;
+                    }
+
+                    #endregion Generate GeometryGroup for line and line shadow
+
+                    dataPoint._visualPosition = new Point(xPosition, yPosition);
+                    lineParams.Points.Add(dataPoint);
+
+                    if (lineParams.ShadowEnabled)
+                        lineParams.ShadowPoints.Add(dataPoint);
+                }
+            }
+
+            pointCollectionList.Add(lineParams.Points);
+            shadowPointCollectionList.Add(lineParams.ShadowPoints);
+
+            series.Faces = new Faces();
+            series.Faces.Parts = new List<DependencyObject>();
+
+            Path polyline, PolylineShadow;
+            line2dCanvas = GetLine2D(series, lineParams, out polyline, out PolylineShadow, pointCollectionList, shadowPointCollectionList);
+
+            line2dCanvas.Width = width;
+            line2dCanvas.Height = height;
+
+            series.Faces.Parts.Add(polyline);
+            series.Faces.Parts.Add(PolylineShadow);
+
+            labelCanvas.Children.Add(line2dLabelCanvas);
+            chartsCanvas.Children.Add(line2dCanvas);
+
+            series.Faces.Visual = line2dCanvas;
+            series.Faces.LabelCanvas = line2dLabelCanvas;
+
+            // Apply animation
+            if (animationEnabled)
+            {
+                if (series.Storyboard == null)
+                    series.Storyboard = new Storyboard();
+                else
+                    series.Storyboard.Stop();
+
+                CurrentDataSeries = series;
+
+                // Apply animation to the lines
+                series.Storyboard = ApplyLineChartAnimation(line2dCanvas, series.Storyboard, true);
+            }
+
+            // Create Moving Marker
+            //if (series.MovingMarkerEnabled)
+            {
+                Double movingMarkerSize = (Double)series.MarkerSize * (Double)series.MarkerScale * MOVING_MARKER_SCALE;
+
+                if (movingMarkerSize < 6)
+                    movingMarkerSize = 6;
+
+                Ellipse movingMarker = new Ellipse() { Visibility = Visibility.Collapsed, IsHitTestVisible = false, Height = movingMarkerSize, Width = movingMarkerSize, Fill = lineParams.LineColor };
+
+                labelCanvas.Children.Add(movingMarker);
+                series._movingMarker = movingMarker;
+            }
+            //else
+            //series._movingMarker = null;
+
+        }
+
         /// <summary>
         /// Returns the visual object for line chart 
         /// </summary>
@@ -798,170 +1199,29 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>Canvas</returns>
-        internal static Canvas GetVisualObjectForLineChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        internal static Canvas GetVisualObjectForLineChart(Panel preExistingPanel, Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
 
-            Canvas visual = new Canvas() { Width = width, Height = height };        // Canvas for line chart
-            Canvas labelCanvas = new Canvas() { Width = width, Height = height };   // Canvas for placing labels
-
+            Canvas visual, labelCanvas, chartsCanvas;
+            RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out chartsCanvas, width, height);
+           // visual.Background = Graphics.GetRandomColor();
             Double depth3d = plankDepth / (plotDetails.Layer3DCount == 0 ? 1 : plotDetails.Layer3DCount) * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1 - (plotDetails.Layer3DCount == 0 ? 0 : 1));
 
             // Set visual canvas position
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
+            // visual.Background = new SolidColorBrush(Colors.Yellow);
 
-            Double xPosition, yPosition;
-
+            
             _listOfDataSeries = new List<DataSeries>();
 
             Boolean isMovingMarkerEnabled = false; // Whether moving marker is enabled for atleast one series
 
             foreach (DataSeries series in seriesList)
-            {
-                if ((Boolean)series.Enabled == false)
-                    continue;
-
-                _listOfDataSeries.Add(series);
-
-                List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
-                List<List<DataPoint>> shadowPointCollectionList = new List<List<DataPoint>>();
-
-                PlotGroup plotGroup = series.PlotGroup;
-                LineChartShapeParams lineParams = new LineChartShapeParams();
-
-                series.Faces = new Faces();
-                series.Faces.Parts = new List<DependencyObject>();
-
-                #region Set LineParms
-
-                lineParams.Points = new List<DataPoint>();
-                lineParams.ShadowPoints = new List<DataPoint>();
-                lineParams.LineGeometryGroup = new GeometryGroup();
-                lineParams.LineThickness = (Double)series.LineThickness;
-                lineParams.LineColor = series.Color;
-                lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
-                lineParams.Lighting = (Boolean)series.LightingEnabled;
-                lineParams.ShadowEnabled = series.ShadowEnabled;
-
-                if (series.ShadowEnabled)
-                    lineParams.LineShadowGeometryGroup = new GeometryGroup();
-
-                #endregion
-
-                series.VisualParams = lineParams;
-
-                Point variableStartPoint = new Point(), endPoint = new Point();
-                Boolean IsStartPoint = true;
-
-                //Polyline polyline, PolylineShadow;
-                //Canvas line2dCanvas = new Canvas();
-                //Canvas lineCanvas;
-
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
-                {
-                    if (dataPoint.Enabled == false)
-                        continue;
-
-                    if (Double.IsNaN(dataPoint.InternalYValue))
-                    {
-                        xPosition = Double.NaN;
-                        yPosition = Double.NaN;
-                        IsStartPoint = true;
-                    }
-                    else
-                    {
-                        xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
-                        yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
-
-                        // Create Marker
-                        Marker marker = GetMarkerForDataPoint(true, chart, yPosition, dataPoint, dataPoint.InternalYValue > 0);
-                        marker.AddToParent(labelCanvas, xPosition, yPosition, new Point(0.5, 0.5));
-
-                        #region Generate GeometryGroup for line and line shadow
-
-                        if (IsStartPoint)
-                        {
-                            variableStartPoint = new Point(xPosition, yPosition);
-
-                            IsStartPoint = !IsStartPoint;
-
-                            if (lineParams.Points.Count > 0)
-                            {
-                                pointCollectionList.Add(lineParams.Points);
-                                shadowPointCollectionList.Add(lineParams.ShadowPoints);
-                            }
-
-                            lineParams.Points = new List<DataPoint>();
-                            lineParams.ShadowPoints = new List<DataPoint>();
-                        }
-                        else
-                        {
-                            endPoint = new Point(xPosition, yPosition);
-
-                            variableStartPoint = endPoint;
-                            IsStartPoint = false;
-                        }
-
-                        #endregion Generate GeometryGroup for line and line shadow
-
-                        dataPoint._visualPosition = new Point(xPosition, yPosition);
-                        lineParams.Points.Add(dataPoint);
-
-                        if (lineParams.ShadowEnabled)
-                            lineParams.ShadowPoints.Add(dataPoint);
-                    }
-                }
-
-                pointCollectionList.Add(lineParams.Points);
-                shadowPointCollectionList.Add(lineParams.ShadowPoints);
-
-                series.Faces = new Faces();
-                series.Faces.Parts = new List<DependencyObject>();
-
-                Path polyline, PolylineShadow;
-                Canvas line2dCanvas = GetLine2D(series, lineParams, out polyline, out PolylineShadow, pointCollectionList, shadowPointCollectionList);
-
-                line2dCanvas.Width = width;
-                line2dCanvas.Height = height;
-
-                series.Faces.Parts.Add(polyline);
-                series.Faces.Parts.Add(PolylineShadow);
-
-                visual.Children.Add(line2dCanvas);
-
-                series.Faces.Visual = line2dCanvas;
-                series.Faces.LabelCanvas = labelCanvas;
-
-                // Apply animation
-                if (animationEnabled)
-                {
-                    if (series.Storyboard == null)
-                        series.Storyboard = new Storyboard();
-
-                    CurrentDataSeries = series;
-
-                    // Apply animation to the lines
-                    series.Storyboard = ApplyLineChartAnimation(line2dCanvas, series.Storyboard, true);
-                }
-
-                // Create Moving Marker
-                //if (series.MovingMarkerEnabled)
-                {
-                    Double movingMarkerSize = (Double)series.MarkerSize * (Double)series.MarkerScale * MOVING_MARKER_SCALE;
-
-                    if (movingMarkerSize < 6)
-                        movingMarkerSize = 6;
-
-                    Ellipse movingMarker = new Ellipse() { Visibility = Visibility.Collapsed, IsHitTestVisible = false, Height = movingMarkerSize, Width = movingMarkerSize, Fill = lineParams.LineColor };
-
-                    labelCanvas.Children.Add(movingMarker);
-                    series._movingMarker = movingMarker;
-                }
-                //else
-                    //series._movingMarker = null;
-
+            {   
+                CreateAlineSeries(series, width, height, labelCanvas, chartsCanvas, animationEnabled);
                 isMovingMarkerEnabled = isMovingMarkerEnabled || series.MovingMarkerEnabled;
             }
 
@@ -977,8 +1237,6 @@ namespace Visifire.Charts
                 chart.ChartArea.PlotAreaCanvas.MouseEnter += new MouseEventHandler(PlotAreaCanvas_MouseEnter);
             }
 
-            visual.Children.Add(labelCanvas);
-
             // If animation is not enabled or if there are no series in the serieslist the dont apply animation
             if (animationEnabled && seriesList.Count > 0)
             {
@@ -989,6 +1247,20 @@ namespace Visifire.Charts
                     CurrentDataSeries.Storyboard = new Storyboard();
 
                 CurrentDataSeries.Storyboard = ApplyLineChartAnimation(labelCanvas, CurrentDataSeries.Storyboard, false);
+            }
+
+            // Remove old visual and add new visual in to the existing panel
+            if (preExistingPanel != null)
+            {
+                visual.Children.RemoveAt(1);
+               // chartsCanvas.Background = Graphics.GetRandomColor();
+                visual.Children.Add(chartsCanvas);
+            }
+            else
+            {
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 1);
+                visual.Children.Add(labelCanvas);
+                visual.Children.Add(chartsCanvas);
             }
 
             return visual;
@@ -1064,7 +1336,7 @@ namespace Visifire.Charts
                     {
                         if (dp.Marker != null)
                         {
-                            dp._distance = Math.Abs(xPosition - dp.Marker.Position.X);
+                            dp._distance = Math.Abs(xPosition - dp._visualPosition.X);
 
                             if (nearestDataPoint == null)
                             {
@@ -1077,7 +1349,7 @@ namespace Visifire.Charts
                         }
                     }
 
-                    // DataPoint nearestDataPoint = (from dp in ds.DataPoints orderby Math.Abs(xPosition - dp.Marker.Position.X) select dp).First();
+                    // DataPoint nearestDataPoint = (from dp in ds.DataPoints orderby Math.Abs(xPosition - dp._visualPosition.X) select dp).First();
 
                     Ellipse movingMarker = ds._movingMarker;
 
@@ -1098,8 +1370,8 @@ namespace Visifire.Charts
                         movingMarker.Width = movingMarker.Height;
                         movingMarker.StrokeThickness = 0;
 
-                        movingMarker.SetValue(Canvas.LeftProperty, nearestDataPoint.Marker.Position.X - movingMarker.Width / 2);
-                        movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint.Marker.Position.Y - movingMarker.Height / 2);
+                        movingMarker.SetValue(Canvas.LeftProperty, nearestDataPoint._visualPosition.X - movingMarker.Width / 2);
+                        movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint._visualPosition.Y - movingMarker.Height / 2);
                     }
                 }
             }

@@ -22,17 +22,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Documents;
-
-
 #else
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 #endif
-
+using System.Linq;
 namespace Visifire.Charts
 {
     /// <summary>
@@ -292,7 +287,7 @@ namespace Visifire.Charts
 
 
 
-        private void CreateXWiseStackedDataEntry(ref List<DataPoint> listOfDataPointsFromAllSeries)
+        private void CreateXWiseStackedDataEntry(ref List<DataPoint> listOfDataPointsFromAllSeries, params RenderAs[] chartTypes)
         {
             XWiseStackedDataList.Clear();
 
@@ -302,7 +297,11 @@ namespace Visifire.Charts
             // Populates the Xwise sorted Stacked data list with entries from 
             // all the datapoints from all DataSeries from this group
             foreach (DataPoint dataPoint in listOfDataPointsFromAllSeries)
-            {   
+            {
+                // Check whether the DataPoint is under the list of RenderAs
+                if (!chartTypes.Any(w => w == dataPoint.Parent.RenderAs))
+                    continue;
+                
                 if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
                 {   
                     // gets the existing  node
@@ -393,7 +392,7 @@ namespace Visifire.Charts
 
             if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.YValues || property == VcProperties.YValue)
             {
-                if(property != VcProperties.YValue)
+                if(property != VcProperties.YValues)
                     _yValues = (from dataPoint in listOfDataPointsFromAllSeries where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
 
                 // List<Double> yValuesList = new List<double>();
@@ -437,13 +436,13 @@ namespace Visifire.Charts
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
 
-                        if (property == VcProperties.YValue)
-                        {
-                            Double value =(Double)newValue;
-                            MaximumY = value > MaximumY ? value : MaximumY;
-                            MinimumY = value < MinimumY ? value : MinimumY;
-                        }
-                        else
+                        //if (property == VcProperties.YValue)
+                        //{
+                        //    Double value =(Double)newValue;
+                        //    MaximumY = value > MaximumY ? value : MaximumY;
+                        //    MinimumY = value < MinimumY ? value : MinimumY;
+                        //}
+                        //else
                         {
                             MaximumY = (_yValues.Count() > 0) ? (_yValues).Max() : 0;
                             MinimumY = (_yValues.Count() > 0) ? (_yValues).Min() : 0;
@@ -455,7 +454,7 @@ namespace Visifire.Charts
                     case RenderAs.StackedBar:
                     case RenderAs.StackedColumn:
                         {
-                            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries);
+                            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries, RenderAs.StackedColumn, RenderAs.StackedBar, RenderAs.StackedArea);
 
                             if (property == VcProperties.YValue)
                             {
@@ -479,7 +478,7 @@ namespace Visifire.Charts
                     case RenderAs.StackedBar100:
                     case RenderAs.StackedColumn100:
                         {
-                            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries);
+                            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
 
                             if (property == VcProperties.YValue)
                             {

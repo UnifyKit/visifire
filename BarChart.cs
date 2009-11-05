@@ -140,11 +140,9 @@ namespace Visifire.Charts
                     dataPoint.Marker.TextAlignmentX = labelStyle == LabelStyles.Inside ? AlignmentX.Left : AlignmentX.Right;
                 else
                     dataPoint.Marker.TextAlignmentX = labelStyle == LabelStyles.Inside ? AlignmentX.Right : AlignmentX.Left;
-
             }
-
         }
-      
+        
         /// <summary>
         /// Calculate height of each bar
         /// </summary>
@@ -293,7 +291,10 @@ namespace Visifire.Charts
         /// <param name="top">Top position</param>
         /// <returns>Marker canvas</returns>
         internal static void CreateOrUpdateMarker4HorizontalChart(Chart chart, Canvas labelCanvas, DataPoint dataPoint, Double left, Double top, Boolean isPositive, Double depth3d)
-        {   
+        {
+            if (dataPoint.Faces == null)
+                return;
+
             Canvas barVisual = dataPoint.Faces.Visual as Canvas;
 
             if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
@@ -389,6 +390,7 @@ namespace Visifire.Charts
 
             dataPoint.Faces = column;
             dataPoint.Faces.LabelCanvas = labelCanvas;
+            dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
 
             columnVisual.SetValue(Canvas.LeftProperty, isPositive ? left : right);
             columnVisual.SetValue(Canvas.TopProperty, top);
@@ -414,10 +416,13 @@ namespace Visifire.Charts
                 dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, CurrentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
             }
 
+            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
         }
 
         /// <summary>
@@ -512,7 +517,9 @@ namespace Visifire.Charts
 
             // Plot positive values
             foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
-            {   
+            {
+                dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
                 if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                     continue;
 
@@ -528,11 +535,12 @@ namespace Visifire.Charts
             
             animationBeginTime = 0.4;
             animationTime = 1.0 / plotGroup.XWiseStackedDataList[xValue].Negative.Count;
-
-
+            
             // Plot negative values
             foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
-            {   
+            {
+                dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
                 if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                     continue;
 
@@ -668,12 +676,13 @@ namespace Visifire.Charts
         /// <param name="animationEnabled"></param>
         /// <param name="animationBeginTime"></param>
         private static void CreateStackedBarVisual(RenderAs chartType, Boolean isPositive, Canvas columnCanvas, Canvas labelCanvas,
-    DataPoint dataPoint, Double top, ref Double left, ref Double right, Double finalHeight,
-    ref Double prevSum, Double absoluteSum, Double depth3d, Boolean animationEnabled,
-    Double animationBeginTime)
+            DataPoint dataPoint, Double top, ref Double left, ref Double right, Double finalHeight,
+            ref Double prevSum, Double absoluteSum, Double depth3d, Boolean animationEnabled,
+            Double animationBeginTime)
         {
             PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
-            
+            Chart chart = dataPoint.Chart as Chart;
+
             Double percentYValue;
 
             if (chartType == RenderAs.StackedBar100)
@@ -738,6 +747,14 @@ namespace Visifire.Charts
                 left = right;
             else
                 right = left;
+
+            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
+            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
         }
 
         /// <summary>
@@ -847,6 +864,8 @@ namespace Visifire.Charts
                     // Plot positive values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
                     {
+                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
 
@@ -915,6 +934,8 @@ namespace Visifire.Charts
                     // Plot negative values
                     foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
                     {
+                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
                         if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                             continue;
 
@@ -1024,31 +1045,31 @@ namespace Visifire.Charts
             Brush rightBrush = barParams.Lighting ? Graphics.GetRightFaceBrush(barParams.BackgroundBrush) : barParams.BackgroundBrush;
 
             Rectangle rectangle;
-            Canvas front = ExtendedGraphics.Get2DRectangle(barParams.TagReference,out rectangle, barParams.Size.Width, barParams.Size.Height,
+            Rectangle front = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 frontBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(rectangle);
-            faces.BorderElements.Add(rectangle);
+            faces.Parts.Add(front);
+            faces.BorderElements.Add(front);
 
-            Canvas top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, out rectangle, barParams.Size.Width, barParams.Depth,
+            Rectangle top = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Depth,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 topBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(rectangle);
-            faces.BorderElements.Add(rectangle);
+            faces.Parts.Add(top);
+            faces.BorderElements.Add(top);
 
             top.RenderTransformOrigin = new Point(0, 1);
             SkewTransform skewTransTop = new SkewTransform();
             skewTransTop.AngleX = -45;
             top.RenderTransform = skewTransTop;
 
-            Canvas right = ExtendedGraphics.Get2DRectangle(barParams.TagReference,out rectangle, barParams.Depth, barParams.Size.Height,
+            Rectangle right = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Depth, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
-            faces.Parts.Add(rectangle);
-            faces.BorderElements.Add(rectangle);
+            faces.Parts.Add(right);
+            faces.BorderElements.Add(right);
 
             right.RenderTransformOrigin = new Point(0, 0);
             SkewTransform skewTransRight = new SkewTransform();
@@ -1107,14 +1128,17 @@ namespace Visifire.Charts
             Brush background = (barParams.Lighting ? Graphics.GetLightingEnabledBrush(barParams.BackgroundBrush, "Linear", null) : barParams.BackgroundBrush);
 
             Rectangle rectangle;
-            Canvas barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, out rectangle, barParams.Size.Width, barParams.Size.Height,
+            Rectangle barBase = ExtendedGraphics.Get2DRectangle(barParams.TagReference, barParams.Size.Width, barParams.Size.Height,
                 barParams.BorderThickness, barParams.BorderStyle, barParams.BorderBrush,
                 background, barParams.XRadius, barParams.YRadius);
 
-            (rectangle.Tag as ElementData).VisualElementName = "ColumnBase";
+            (barBase.Tag as ElementData).VisualElementName = "ColumnBase";
 
-            faces.Parts.Add(barBase.Children[0] as FrameworkElement);
-            faces.BorderElements.Add(barBase.Children[0] as Path);
+            //faces.Parts.Add(barBase.Children[0] as FrameworkElement);
+            //faces.BorderElements.Add(barBase.Children[0] as Path);
+
+            faces.Parts.Add(barBase);
+            faces.BorderElements.Add(barBase);
 
             barVisual.Children.Add(barBase);
 

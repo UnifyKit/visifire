@@ -316,27 +316,28 @@ namespace Visifire.Charts
 
             // Create list of datapoints from all series
             if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
+                || (elementType.Equals(typeof(DataSeries)) && (property == VcProperties.DataPoints || property == VcProperties.Enabled))
                 )
                 CreateListOfDataPoints();
 
             // Identifies the various plot groups and populates the list
             if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
+                || (elementType.Equals(typeof(DataSeries)) && (property == VcProperties.RenderAs || property == VcProperties.Enabled))
                 )
                 PopulatePlotGroups();
+
             else if (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
             {
                 (element as DataSeries).PlotGroup.Update(ref _listOfAllDataPoints, property, newValue);
             }
-            else if (elementType.Equals(typeof(DataPoint)) && (property == VcProperties.YValue || property == VcProperties.YValues))
+            else if (elementType.Equals(typeof(DataPoint)) && (property == VcProperties.XValue || property == VcProperties.YValue || property == VcProperties.YValues))
             {
                 (element as DataPoint).Parent.PlotGroup.Update(ref _listOfAllDataPoints, property, newValue);
             }
             
             if(elementType.Equals(typeof(Chart)) && property == VcProperties.TrendLines)
                 SetTrendLineValues(_axisXPrimary);
-                
+            
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
                 || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
@@ -1949,7 +1950,9 @@ namespace Visifire.Charts
                 {
                     if (dataSeries.Enabled == true)
                     {
-                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+                       // List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+
+                        List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
                         dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
                     }

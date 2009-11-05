@@ -319,6 +319,7 @@ namespace Visifire.Charts
         StartAngle,
         StartFromZero,
         Suffix,
+        ScrollBarScale,
         Text,
         TextAlignment,
         TextWrap,
