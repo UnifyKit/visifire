@@ -178,7 +178,7 @@ namespace Visifire.Charts
         /// Update the axis
         /// </summary>
         /// <param name="isSizeChanged"></param>
-        internal void PrePartialUpdateConfiguration(VisifireElement sender, VcProperties property, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis)
+        internal void PrePartialUpdateConfiguration(VisifireElement sender, VcProperties property, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             if(updateLists)
                 PopulateInternalSeriesList();
@@ -203,11 +203,11 @@ namespace Visifire.Charts
                 ClearAxesPanel();
                 Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
                 
-                ResizePanels(remainingSizeAfterDrawingAxes);
+                ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
 
-                // Check if drawing axis is necessary or not
-               // if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-                //    SetAxesProperties();
+                //  Check if drawing axis is necessary or not
+                //  if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+                //      SetAxesProperties();
             }
         }
 
@@ -368,7 +368,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <returns></returns>
         private Size GetActualChartSize()
-        {
+        {   
             Size chartActualSize = new Size(Chart._chartBorder.ActualWidth, Chart._chartBorder.ActualHeight);
             chartActualSize.Width -= (Chart._chartBorder.Padding.Left + Chart._chartBorder.Padding.Right);
             chartActualSize.Height -= (Chart._chartBorder.Padding.Top + Chart._chartBorder.Padding.Bottom);
@@ -1089,15 +1089,15 @@ namespace Visifire.Charts
 
                 DrawAxesY(plotAreaSize);
                 
-                Double totalHeightReduced2 = DrawAxesX(plotAreaSize);
+                //Double totalHeightReduced2 = DrawAxesX(plotAreaSize);
 
-                if (totalHeightReduced2 != totalHeightReduced1)
-                {
-                    plotAreaSize.Height += totalHeightReduced1;
-                    plotAreaSize.Height -= totalHeightReduced2;
-                    UpdateLayoutSettings(plotAreaSize);
-                    DrawAxesY(plotAreaSize);
-                }
+                //if (totalHeightReduced2 != totalHeightReduced1)
+                //{
+                //    plotAreaSize.Height += totalHeightReduced1;
+                //    plotAreaSize.Height -= totalHeightReduced2;
+                //    UpdateLayoutSettings(plotAreaSize);
+                //    DrawAxesY(plotAreaSize);
+                //}
 
                 #endregion
             }
@@ -1145,10 +1145,8 @@ namespace Visifire.Charts
 
             Size remainingSizeAfterDrawingAxes = RenderAxes(plotAreaSize);
 
-            RenderChart(remainingSizeAfterDrawingAxes);
-
-
-
+            RenderChart(remainingSizeAfterDrawingAxes, AxisRepresentations.AxisX, false);
+            
             return remainingSizeAfterDrawingAxes;
         }
 
@@ -1236,9 +1234,14 @@ namespace Visifire.Charts
             
             ScrollableLength = chartSize;
             Chart._plotAreaScrollViewer.Height = newSize.Height;
-
             Chart._plotAreaScrollViewer.UpdateLayout();
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
+
+           // this.PlottingCanvas
+           //     this.ChartVisualCanvas
+           //this.PlotAreaCanvas
+
+
         }
 
         /// <summary>
@@ -1261,8 +1264,12 @@ namespace Visifire.Charts
                 //else
                     chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
             }
+            else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)) && !IsAutoCalculatedScrollBarScale)
+            {
+                chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
+            }
             else
-            {   
+            {
                 if (PlotDetails.ListOfAllDataPoints.Count > 0)
                 {
                     Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
@@ -1286,9 +1293,40 @@ namespace Visifire.Charts
                 {
                     chartSize = currentSize;
                 }
+
+            }
+
+#if SL
+            if (chartSize > 32000)
+            {
+                chartSize = 32000;
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
+            }
+#endif
+
+            if ((Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
+            {
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
+                //IsAutoCalculatedScrollBarScale = true;
+            }
+            else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
+            {
+                Chart.AxesX[0].IsNotificationEnable = false;
+                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                Chart.AxesX[0].IsNotificationEnable = true;
             }
 
             return chartSize;
+        }
+
+        internal Boolean IsAutoCalculatedScrollBarScale
+        {
+            get;
+            set;
         }
         
         /// <summary>
@@ -1336,8 +1374,15 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="plankThickness">PlankThickness</param>
         /// <param name="position">Position</param>
-        private void DrawHorizontalPlank(Double plankDepth, Double plankThickness, Double position)
+        private void DrawHorizontalPlank(Double plankDepth, Double plankThickness, Double position, AxisRepresentations axisChanged, Boolean isPartialUpdate)
         {
+            if (isPartialUpdate && axisChanged == AxisRepresentations.AxisY)
+            {   
+                //  Update with new size
+                ColumnChart.Update3DPlank(ScrollableLength - plankDepth, plankThickness, plankDepth, _horizontalPlank);
+                return;
+            }
+
             Brush frontBrush, topBrush, rightBrush;
 
             List<Color> colors = new List<Color>();
@@ -1352,7 +1397,7 @@ namespace Visifire.Charts
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
             colors.Add(Color.FromArgb(255, 142, 142, 142));  // #FF8E8787
 
-            rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
+            rightBrush = frontBrush; // Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
 
             colors = new List<Color>();
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
@@ -1361,16 +1406,8 @@ namespace Visifire.Charts
 
             topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0.357, 1, 0 });
 
-            RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-            columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)246, (Byte)246, (Byte)246));
-
-            columnParams.Lighting = false;
-            columnParams.Size = new Size(ScrollableLength - plankDepth, plankThickness);
-            columnParams.Depth = plankDepth;
-            columnParams.BorderThickness = 0.25;
-            columnParams.BorderBrush = new SolidColorBrush(Colors.White);
-            Faces plankFaces = ColumnChart.Get3DColumn(columnParams, frontBrush, topBrush, new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)130, (Byte)130, (Byte)130)));
-            Panel plank = plankFaces.Visual as Panel;
+            _horizontalPlank = ColumnChart.Get3DPlank(ScrollableLength - plankDepth, plankThickness, plankDepth, frontBrush, topBrush, new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)130, (Byte)130, (Byte)130)));
+            Panel plank = _horizontalPlank.Visual as Panel;
 #if SL
             plank.SetValue(Canvas.TopProperty, position - plankThickness);
 #else
@@ -1385,13 +1422,22 @@ namespace Visifire.Charts
             PlottingCanvas.Children.Add(plank);
         }
 
+        internal Faces _horizontalPlank;
+        internal Faces _verticalPlank;
+        
         /// <summary>
         /// Draws the Vertical 3D Plank
         /// </summary>
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="plankThickness">PlankThickness</param>
-        private void DrawVerticalPlank(Double plankDepth, Double plankThickness)
+        private void DrawVerticalPlank(Double plankDepth, Double plankThickness, AxisRepresentations axisChanged, Boolean isPartialUpdate)
         {
+            if (isPartialUpdate && axisChanged == AxisRepresentations.AxisX)
+            {
+                ColumnChart.Update3DPlank(plankThickness, ScrollableLength - plankDepth, plankDepth, _verticalPlank);
+                return;
+            }
+
             RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
             Brush frontBrush, topBrush, rightBrush;
 
@@ -1415,17 +1461,8 @@ namespace Visifire.Charts
 
             topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.084, 0.441), new Point(1.916, 0.443), colors, new List<double>() { 0, 1 });
 
-            columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)223, (Byte)223, (Byte)223));
-            columnParams.Lighting = false;
-            columnParams.BorderThickness = 0.45;
-
-            columnParams.BorderBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)128, (Byte)128, (Byte)128));
-            columnParams.Bevel = true;
-            columnParams.Size = new Size(plankThickness, ScrollableLength - plankDepth);
-            columnParams.Depth = plankDepth;
-
-            Faces plankFaces = ColumnChart.Get3DColumn(columnParams, frontBrush, topBrush, rightBrush);
-            Panel plank = plankFaces.Visual as Panel;
+            _verticalPlank = ColumnChart.Get3DPlank(plankThickness, ScrollableLength - plankDepth, plankDepth, frontBrush, topBrush, rightBrush);
+            Panel plank = _verticalPlank.Visual as Panel;
 
             plank.SetValue(Canvas.TopProperty, plankDepth);
             plank.SetValue(Canvas.ZIndexProperty, -1);
@@ -1440,13 +1477,19 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="plankThickness">PlankThickness</param>
         /// <param name="plankOpacity">PlankOpacity</param>
-        private void DrawVerticalPlank(Double height, Double plankDepth, Double plankThickness, Double plankOpacity)
+        private void DrawVerticalPlank(Double height, Double plankDepth, Double plankThickness, Double plankOpacity, Boolean isPartialUpdate)
         {
-            RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-            columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
-            columnParams.Lighting = true;
-            columnParams.Size = new Size(plankThickness, height);
-            columnParams.Depth = plankDepth;
+            if (isPartialUpdate)
+            {
+                ColumnChart.Update3DPlank(plankThickness, height, plankDepth, _verticalPlank);
+                return;
+            }
+
+            // RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
+            // columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
+            // columnParams.Lighting = true;
+            // columnParams.Size = new Size(plankThickness, height);
+            // columnParams.Depth = plankDepth;
 
             List<Color> colors = new List<Color>();
             colors.Add(Color.FromArgb(255, 232, 232, 232));
@@ -1454,8 +1497,8 @@ namespace Visifire.Charts
 
             Brush rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 0, 1 });
 
-            Faces plankFaces = ColumnChart.Get3DColumn(columnParams, null, null, rightBrush);
-            Panel plank = plankFaces.Visual as Panel;
+            _verticalPlank = ColumnChart.Get3DPlank(plankThickness, height, plankDepth, null, null, rightBrush);
+            Panel plank = _verticalPlank.Visual as Panel;
 
             plank.SetValue(Canvas.TopProperty, plankDepth);
             plank.SetValue(Canvas.ZIndexProperty, -1);
@@ -1586,8 +1629,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Resize existing panels to update the chart
         /// </summary>
-        internal void ResizePanels(Size remainingSizeAfterDrawingAxes)
-        {
+        internal void ResizePanels(Size remainingSizeAfterDrawingAxes, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
+        {   
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
             PlotAreaScrollViewer.Background = new SolidColorBrush(Colors.Transparent);
 
@@ -1601,7 +1644,7 @@ namespace Visifire.Charts
                 PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
                 PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
                 PlotAreaCanvas.Children.Add(PlottingCanvas);
-                PlottingCanvas.Background = Graphics.GetRandonColor();
+                //PlottingCanvas.Background = Graphics.GetRandomColor();
             }
 
             if (Double.IsNaN(remainingSizeAfterDrawingAxes.Height) || remainingSizeAfterDrawingAxes.Height <= 0 || Double.IsNaN(remainingSizeAfterDrawingAxes.Width) || remainingSizeAfterDrawingAxes.Width <= 0)
@@ -1637,7 +1680,7 @@ namespace Visifire.Charts
             switch (PlotDetails.ChartOrientation)
             {
                 case ChartOrientationType.Vertical:
-                    chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, remainingSizeAfterDrawingAxes);
+                    chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
                     // set chart Canvas position
                     ChartVisualCanvas.SetValue(Canvas.LeftProperty, PLANK_DEPTH);
                     Chart.PlotArea.BorderElement.SetValue(Canvas.LeftProperty, PLANK_DEPTH);
@@ -1645,7 +1688,7 @@ namespace Visifire.Charts
                     break;
 
                 case ChartOrientationType.Horizontal:
-                    chartCanvasSize = CreateRegionsForHorizontalCharts(ScrollableLength, remainingSizeAfterDrawingAxes);
+                    chartCanvasSize = CreateRegionsForHorizontalCharts(ScrollableLength, remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
                     // set chart Canvas position
                     ChartVisualCanvas.SetValue(Canvas.LeftProperty, PLANK_OFFSET);
                     Chart.PlotArea.BorderElement.SetValue(Canvas.LeftProperty, PLANK_OFFSET);
@@ -1685,12 +1728,12 @@ namespace Visifire.Charts
         /// Renders charts based on the orientation type
         /// </summary>
         /// <param name="newSize">NewSize</param>
-        private void RenderChart(Size remainingSizeAfterDrawingAxes)
+        private void RenderChart(Size remainingSizeAfterDrawingAxes, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {
             if (Chart._forcedRedraw)
                 ClearPlotAreaChildren();
 
-            ResizePanels(remainingSizeAfterDrawingAxes);
+            ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
 
             // Draw the chart grids
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1876,6 +1919,7 @@ namespace Visifire.Charts
                     break;
 
                 Boolean isAlreadyPresent = false;
+                renderedChart = null;       
 
                 if (RenderedCanvasList.ContainsKey(currentRenderAs))
                 {
@@ -2094,6 +2138,8 @@ namespace Visifire.Charts
             }
         }
 
+        ColorSet _chartColorSet;
+
         /// <summary>
         /// Set dataPoint colors from ColorSet
         /// </summary>
@@ -2111,196 +2157,210 @@ namespace Visifire.Charts
             if (!String.IsNullOrEmpty(Chart.ColorSet))
             {
                 colorSet = Chart.GetColorSetByName(Chart.ColorSet);
+                _chartColorSet = colorSet;
             }
 
             if (series.Count == 1)
-            {   
-                if (series[0].RenderAs == RenderAs.CandleStick)
-                {   
-                    if (series[0].PriceUpColor == null)
-                    {
-                        series[0].IsNotificationEnable = false;
-                        series[0].PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
-                        series[0].IsNotificationEnable = true;
-                    }
-                }
-                else
-                {
-                    if (!String.IsNullOrEmpty(series[0].ColorSet))
-                    {
-                        colorSet = Chart.GetColorSetByName(series[0].ColorSet);
-
-                        if (colorSet == null)
-                            throw new Exception("ColorSet named " + series[0].ColorSet + " is not found.");
-                    }
-                    else if (colorSet == null)
-                    {
-                        throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
-                    }
-
-                    Brush seriesColor = series[0].GetValue(DataSeries.ColorProperty) as Brush;
-
-                    if (!Chart.UniqueColors || series[0].RenderAs == RenderAs.Area || series[0].RenderAs == RenderAs.Line || series[0].RenderAs == RenderAs.StackedArea || series[0].RenderAs == RenderAs.StackedArea100)
-                    {   
-                        if (seriesColor == null)
-                            series[0]._internalColor = colorSet.GetNewColorFromColorSet();
-                        else
-                            series[0]._internalColor = seriesColor;
-
-                        colorSet.ResetIndex();
-
-                        foreach (DataPoint dp in series[0].DataPoints)
-                        {
-                            dp.IsNotificationEnable = false;
-
-                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-
-                            if (dPColor == null)
-                                if (!Chart.UniqueColors)
-                                    dp._internalColor = series[0]._internalColor;
-                                else if (seriesColor == null)
-                                    dp._internalColor = colorSet.GetNewColorFromColorSet();
-                                else
-                                    dp._internalColor = seriesColor;
-                            else
-                                dp._internalColor = dPColor;
-
-                            dp.IsNotificationEnable = true;
-                        }
-                    }
-                    else
-                    {   
-                        series[0]._internalColor = null;
-
-                        foreach (DataPoint dp in series[0].DataPoints)
-                        {
-                            dp.IsNotificationEnable = false;
-
-                            Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-
-                            if (dPColor == null)
-                            {
-                                if (seriesColor == null)
-                                    dp._internalColor = colorSet.GetNewColorFromColorSet();
-                                else
-                                    dp._internalColor = seriesColor;
-                            }
-                            else
-                                dp._internalColor = dPColor;
-
-                            dp.IsNotificationEnable = true;
-                        }
-                    }
-                }
+            {
+                LoadSeriesColorSet4SingleSeries(series[0]);
             }
             else if (series.Count > 1)
-            {   
-                ColorSet colorSet4MultiSeries = null;
-                Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false; // Unique color for each DataPoint
-                Brush seriesColor = null;
-
-                if (colorSet != null)
-                    colorSet.ResetIndex();
+            {
+                if (_chartColorSet != null)
+                    _chartColorSet.ResetIndex();
 
                 foreach (DataSeries ds in series)
                 {
-                    if (ds.RenderAs == RenderAs.CandleStick)
-                    {   
-                        if (ds.PriceUpColor == null)
-                        {   
-                            ds.IsNotificationEnable = false;
-                                ds.PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
-                            ds.IsNotificationEnable = true;
-                        }
-                    }
-                    else
-                    {   
-                        colorSet4MultiSeries = colorSet;
-                        FLAG_UNIQUE_COLOR_4_EACH_DP = false;
-
-                        if (!String.IsNullOrEmpty(ds.ColorSet))
-                        {
-                            colorSet4MultiSeries = Chart.GetColorSetByName(ds.ColorSet);
-
-                            if (colorSet4MultiSeries == null)
-                                throw new Exception("ColorSet named " + ds.ColorSet + " is not found.");
-
-                            FLAG_UNIQUE_COLOR_4_EACH_DP = true;
-                        }
-                        else if (colorSet4MultiSeries == null)
-                        {
-                            throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
-                        }
-
-                        if (ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
-                        {
-                            seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-
-                            Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
-
-                            if (DataSeriesColor == null)
-                            {   
-                                ds._internalColor = seriesColor;
-                            }
-                            else
-                                ds._internalColor = DataSeriesColor;
-
-                            foreach (DataPoint dp in ds.DataPoints)
-                            {
-                                dp.IsNotificationEnable = false;
-
-                                Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-
-                                if (dPColor != null)
-                                    dp._internalColor = dPColor;
-
-                                dp.IsNotificationEnable = true;
-                            }
-                        }
-                        else
-                        {
-                            if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
-                                seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-
-                            foreach (DataPoint dp in ds.DataPoints)
-                            {
-                                dp.IsNotificationEnable = false;
-                                Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
-                                if (dPColor == null)
-                                {
-                                    // If unique color for each DataPoint
-                                    if (FLAG_UNIQUE_COLOR_4_EACH_DP)
-                                    {
-                                        dp._internalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
-                                        ds._internalColor = null;
-                                    }
-                                    else
-                                    {
-                                        Brush DataSeriesColor = ds.GetValue(DataSeries.ColorProperty) as Brush;
-                                        if (DataSeriesColor == null)
-                                            ds._internalColor = seriesColor;
-                                        else
-                                            ds._internalColor = DataSeriesColor;
-
-                                        dp.IsNotificationEnable = true;
-
-                                        break;
-                                    }
-                                }
-                                else
-                                    dp._internalColor = dPColor;
-
-                                dp.IsNotificationEnable = true;
-                            }
-                        }
-
-                        ds.IsNotificationEnable = true;
-                    }
+                    LoadSeriesColorSet(ds);
                 }
             }
 
             if (colorSet != null)
                 colorSet.ResetIndex();
+        }
+
+        internal void LoadSeriesColorSet4SingleSeries(DataSeries dataSeries)
+        {
+            ColorSet colorSet = _chartColorSet;
+
+            if (dataSeries.RenderAs == RenderAs.CandleStick)
+            {
+                if (dataSeries.PriceUpColor == null)
+                {
+                    dataSeries.IsNotificationEnable = false;
+                    dataSeries.PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
+                    dataSeries.IsNotificationEnable = true;
+                }
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(dataSeries.ColorSet))
+                {
+                    colorSet = Chart.GetColorSetByName(dataSeries.ColorSet);
+
+                    if (colorSet == null)
+                        throw new Exception("ColorSet named " + dataSeries.ColorSet + " is not found.");
+                }
+                else if (colorSet == null)
+                {
+                    throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
+                }
+
+                Brush seriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
+
+                if (!Chart.UniqueColors || dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StackedArea || dataSeries.RenderAs == RenderAs.StackedArea100)
+                {
+                    if (seriesColor == null)
+                        dataSeries._internalColor = colorSet.GetNewColorFromColorSet();
+                    else
+                        dataSeries._internalColor = seriesColor;
+
+                    colorSet.ResetIndex();
+
+                    foreach (DataPoint dp in dataSeries.DataPoints)
+                    {
+                        dp.IsNotificationEnable = false;
+
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                        if (dPColor == null)
+                            if (!Chart.UniqueColors)
+                                dp._internalColor = dataSeries._internalColor;
+                            else if (seriesColor == null)
+                                dp._internalColor = colorSet.GetNewColorFromColorSet();
+                            else
+                                dp._internalColor = seriesColor;
+                        else
+                            dp._internalColor = dPColor;
+
+                        dp.IsNotificationEnable = true;
+                    }
+                }
+                else
+                {
+                    dataSeries._internalColor = null;
+
+                    foreach (DataPoint dp in dataSeries.DataPoints)
+                    {
+                        dp.IsNotificationEnable = false;
+
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                        if (dPColor == null)
+                        {
+                            if (seriesColor == null)
+                                dp._internalColor = colorSet.GetNewColorFromColorSet();
+                            else
+                                dp._internalColor = seriesColor;
+                        }
+                        else
+                            dp._internalColor = dPColor;
+
+                        dp.IsNotificationEnable = true;
+                    }
+                }
+            }
+        }
+
+        internal void LoadSeriesColorSet(DataSeries dataSeries)
+        {
+            ColorSet colorSet4MultiSeries = null;
+            Boolean FLAG_UNIQUE_COLOR_4_EACH_DP = false; // Unique color for each DataPoint
+            Brush seriesColor = null;
+          
+
+            if (dataSeries.RenderAs == RenderAs.CandleStick)
+            {
+                if (dataSeries.PriceUpColor == null)
+                {
+                    dataSeries.IsNotificationEnable = false;
+                    dataSeries.PriceUpColor = _financialColorSet.GetNewColorFromColorSet();
+                    dataSeries.IsNotificationEnable = true;
+                }
+            }
+            else
+            {
+                colorSet4MultiSeries = _chartColorSet;
+                FLAG_UNIQUE_COLOR_4_EACH_DP = false;
+
+                if (!String.IsNullOrEmpty(dataSeries.ColorSet))
+                {
+                    colorSet4MultiSeries = Chart.GetColorSetByName(dataSeries.ColorSet);
+
+                    if (colorSet4MultiSeries == null)
+                        throw new Exception("ColorSet named " + dataSeries.ColorSet + " is not found.");
+
+                    FLAG_UNIQUE_COLOR_4_EACH_DP = true;
+                }
+                else if (colorSet4MultiSeries == null)
+                {
+                    throw new Exception("ColorSet named " + Chart.ColorSet + " is not found.");
+                }
+
+                if (dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StackedArea || dataSeries.RenderAs == RenderAs.StackedArea100)
+                {
+                    seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+
+                    Brush DataSeriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
+
+                    if (DataSeriesColor == null)
+                    {
+                        dataSeries._internalColor = seriesColor;
+                    }
+                    else
+                        dataSeries._internalColor = DataSeriesColor;
+
+                    foreach (DataPoint dp in dataSeries.DataPoints)
+                    {
+                        dp.IsNotificationEnable = false;
+
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+
+                        if (dPColor != null)
+                            dp._internalColor = dPColor;
+
+                        dp.IsNotificationEnable = true;
+                    }
+                }
+                else
+                {
+                    if (!FLAG_UNIQUE_COLOR_4_EACH_DP)
+                        seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+
+                    foreach (DataPoint dp in dataSeries.DataPoints)
+                    {
+                        dp.IsNotificationEnable = false;
+                        Brush dPColor = dp.GetValue(DataPoint.ColorProperty) as Brush;
+                        if (dPColor == null)
+                        {
+                            // If unique color for each DataPoint
+                            if (FLAG_UNIQUE_COLOR_4_EACH_DP)
+                            {
+                                dp._internalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+                                dataSeries._internalColor = null;
+                            }
+                            else
+                            {
+                                Brush DataSeriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
+                                if (DataSeriesColor == null)
+                                    dataSeries._internalColor = seriesColor;
+                                else
+                                    dataSeries._internalColor = DataSeriesColor;
+
+                                dp.IsNotificationEnable = true;
+
+                                break;
+                            }
+                        }
+                        else
+                            dp._internalColor = dPColor;
+
+                        dp.IsNotificationEnable = true;
+                    }
+                }
+
+                dataSeries.IsNotificationEnable = true;
+            }
         }
 
         /// <summary>
@@ -3151,7 +3211,7 @@ namespace Visifire.Charts
         /// <param name="chartSize">Chart size as Double</param>
         /// <param name="NewSize">NewSize</param>
         /// <returns>Size</returns>
-        private Size CreateRegionsForVerticalCharts(Double chartSize, Size NewSize)
+        private Size CreateRegionsForVerticalCharts(Double chartSize, Size NewSize, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             Double chartCanvasHeight = 0;
             Double chartCanvasWidth = 0;
@@ -3173,10 +3233,10 @@ namespace Visifire.Charts
                             plankOpacity = 1;
                     }
 
-                    DrawHorizontalPlank(PLANK_DEPTH, PLANK_THICKNESS, NewSize.Height);
+                    DrawHorizontalPlank(PLANK_DEPTH, PLANK_THICKNESS, NewSize.Height, renderAxisType, isPartialUpdate);
 
                     if (NewSize.Height - PLANK_DEPTH - PLANK_THICKNESS > 0)
-                        DrawVerticalPlank(NewSize.Height - PLANK_DEPTH - PLANK_THICKNESS, PLANK_DEPTH, 0.25, plankOpacity);
+                        DrawVerticalPlank(NewSize.Height - PLANK_DEPTH - PLANK_THICKNESS, PLANK_DEPTH, 0.25, plankOpacity, isPartialUpdate);
 
                     // Set the chart canvas size
                     chartCanvasHeight = NewSize.Height - PLANK_OFFSET;
@@ -3207,7 +3267,7 @@ namespace Visifire.Charts
         /// <param name="chartSize">Chart size as Double</param>
         /// <param name="NewSize">NewSize</param>
         /// <returns>Size</returns>
-        private Size CreateRegionsForHorizontalCharts(Double chartSize, Size NewSize)
+        private Size CreateRegionsForHorizontalCharts(Double chartSize, Size NewSize, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {
             Double chartCanvasHeight = 0;
             Double chartCanvasWidth = 0;
@@ -3221,7 +3281,7 @@ namespace Visifire.Charts
                 if (Chart.View3D)
                 {
                     // Draw 3D horizontal plank 
-                    DrawVerticalPlank(PLANK_DEPTH, PLANK_THICKNESS);
+                    DrawVerticalPlank(PLANK_DEPTH, PLANK_THICKNESS, renderAxisType, isPartialUpdate);
 
                     // Set the chart canvas size
                     chartCanvasHeight = chartSize - PLANK_DEPTH;
@@ -3286,8 +3346,8 @@ namespace Visifire.Charts
 
             Chart._internalAnimationEnabled = false;
 
-            if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
-                Visifire.Charts.Chart.SelectDataPoints(Chart);
+            //if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
+            //    Visifire.Charts.Chart.SelectDataPoints(Chart);
 
             Chart.FireRenderedEvent();
 

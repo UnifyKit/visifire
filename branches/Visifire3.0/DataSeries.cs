@@ -849,7 +849,8 @@ namespace Visifire.Charts
                 if (Opacity != value)
                 {
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged(VcProperties.Opacity);
+                    UpdateVisual(VcProperties.Opacity, value);
+                    //FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -868,7 +869,7 @@ namespace Visifire.Charts
             }
             set
             {
-                if (base.Cursor != value)
+                //if (base.Cursor != value)
                 {   
                     base.Cursor = value;
                     if (DataPoints != null)
@@ -1675,7 +1676,8 @@ namespace Visifire.Charts
                 if (BorderThickness != value)
                 {
                     SetValue(BorderThicknessProperty, value);
-                    FirePropertyChanged(VcProperties.BorderThickness);
+                    UpdateVisual(VcProperties.BorderThickness, value);
+                    // FirePropertyChanged(VcProperties.BorderThickness);
                 }
 #else
                 SetValue(BorderThicknessProperty, value);
@@ -1926,145 +1928,129 @@ namespace Visifire.Charts
         internal override void UpdateVisual(VcProperties property, object newValue)
         {
             if (ValidatePartialUpdate())
-            {   
+            {
                 Chart chart = Chart as Chart;
                 Boolean renderAxis = false;
+                if (property == VcProperties.ColorSet)
+                {
+                    Brush brush = null;
+                    (Chart as Chart).ChartArea.LoadSeriesColorSet4SingleSeries(this);
 
-                if (property == VcProperties.DataPoints)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                    {
+                        if ((Brush)GetValue(DataSeries.ColorProperty) == null)
+                            brush = InternalDataPoints[0]._internalColor;
+                        else
+                            brush = Color;
+
+                        RenderHelper.UpdateVisualObject(RenderAs, this, VcProperties.Color, brush, renderAxis);
+                    }
+
+                    foreach (DataPoint dp in InternalDataPoints)
+                    {
+                        if (!String.IsNullOrEmpty(ColorSet) && (Brush)dp.GetValue(DataSeries.ColorProperty) == null)
+                            brush = dp._internalColor;
+
+                        RenderHelper.UpdateVisualObject(RenderAs, dp, VcProperties.Color, brush, renderAxis);
+                    }
+
+                }
+                else if (property == VcProperties.Color )
                 {   
-                    Double axisMaxY = PlotGroup.AxisY.InternalAxisMaximum;
-                    Double axisMinY = PlotGroup.AxisY.InternalAxisMinimum;
-                    Double axisMaxX = PlotGroup.AxisX.InternalAxisMaximum;
-                    Double axisMinX = PlotGroup.AxisX.InternalAxisMinimum;
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                        RenderHelper.UpdateVisualObject(RenderAs, this, VcProperties.Color, newValue, renderAxis);
+
+                    foreach (DataPoint dp in InternalDataPoints)
+                        RenderHelper.UpdateVisualObject(RenderAs, dp, VcProperties.Color, dp.Color, renderAxis);
+                }
+                else if (property == VcProperties.ShadowEnabled || property == VcProperties.Opacity)
+                {
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                        //LineChart.Update(this, property, newValue);
+                        RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
+
+                    foreach (DataPoint dp in InternalDataPoints)
+                        RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
+                }
+                else if (property == VcProperties.LineStyle || property == VcProperties.LineThickness || property == VcProperties.LightingEnabled)
+                {
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                        RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
                     
-                    // Update InternalList
-                    chart.ChartArea.PrePartialUpdateConfiguration(this,property, newValue, true, true, false);
-                    
-                    if (PlotGroup.MaximumY > axisMaxY || (Double)PlotGroup.MaximumY < axisMinY
-                        || PlotGroup.MaximumX > axisMaxX || PlotGroup.MaximumX < axisMinX)
+                    foreach (DataPoint dp in InternalDataPoints)
+                        RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
+                }
+                else if (property == VcProperties.DataPoints || property == VcProperties.Enabled)
+                {
+                    AxisRepresentations axisRepresentation = AxisRepresentations.AxisX;
+
+                    Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                    Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                    Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                    Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, true, true, false, AxisRepresentations.AxisX, true);
+
+                    Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                    Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                    Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                    Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+
+                    System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                    System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+
+                    if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
+                    {
                         renderAxis = true;
+                        axisRepresentation = AxisRepresentations.AxisY;
+                    }
+                    else if (NewAxisMaxX != OldAxisMaxX || NewAxisMinX != OldAxisMinX)
+                    {
+                        renderAxis = true;
+                    }
 
                     // Render Axis if required
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis);
-                    
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis, axisRepresentation, true);
+
                     // Return
                     if (renderAxis)
-                    {   
+                    {
                         // Need to Rerender all charts if axis changes
                         RenderHelper.UpdateVisualObject(chart, property, newValue);
                     }
                     else
-                    {   
-                        RenderHelper.UpdateVisualObject(this.RenderAs, this, VcProperties.DataPoints, newValue, renderAxis);
+                    {
+                        RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                     }
+
+                    //// Render Axis if required
+                    //chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis, axisRepresentation, true);
+
+                    //// Return
+                    //if (renderAxis)
+                    //{
+                    //    // Need to Rerender all charts if axis changes
+                    //    RenderHelper.UpdateVisualObject(chart, property, newValue);
+                    //}
+                    //else
+                    //{
+                    //    RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
+                    //}
                 }
                 else if (property == VcProperties.AxisXType ||
                     property == VcProperties.AxisXType || property == VcProperties.Enabled)
                 {
                     renderAxis = true;
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, true, true, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, true, true, true, AxisRepresentations.AxisX, true);
                     RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
                 }
                 else
-                    foreach(DataPoint dp in InternalDataPoints)
+                    foreach (DataPoint dp in InternalDataPoints)
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
 
                 // FirePropertyChanged(VcProperties.DataPoints);
             }
 
-            /*
-
-            if (propertyName == "DataPoints")
-            {
-                DataSeries.UpdateDataPointsVisual(this);
-            }
-            else if (propertyName == "Color")
-            {   
-                if (RenderAs == RenderAs.Area || RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
-                {   
-                    if (Faces != null && Faces.Parts != null)
-                    {
-
-                        if ((Chart as Chart).View3D)
-                        {
-                            Brush sideBrush = (Boolean)LightingEnabled ? Graphics.GetRightFaceBrush((Brush)value) : (Brush)value;
-                            Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)value) : (Brush)value;
-
-                            foreach (FrameworkElement fe in Faces.Parts)
-                            {
-                                ElementData ed = fe.Tag as ElementData;
-
-                                if (ed != null)
-                                {
-                                    if (ed.VisualElementName == "AreaBase")
-                                        (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
-                                    else if (ed.VisualElementName == "Side")
-                                        (fe as Shape).Fill = sideBrush;
-                                    else if (ed.VisualElementName == "Top")
-                                        (fe as Shape).Fill = topBrush;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            foreach (FrameworkElement fe in Faces.Parts)
-                            {
-                                ElementData ed = fe.Tag as ElementData;
-
-                                if (ed != null)
-                                {
-                                    if (ed.VisualElementName == "AreaBase")
-                                    {
-                                        (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
-                                    }
-                                    else if (ed.VisualElementName == "Bevel")
-                                    {
-                                        (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
-                                    }
-                                }
-                            }
-                        }
-
-                        foreach (DataPoint dp in InternalDataPoints)
-                            dp.UpdateVisual("Color", null);
-                    }
-                }
-                else if (RenderAs == RenderAs.Line)
-                {
-                    if (VisualParams != null)
-                    {
-                        LineChartShapeParams lineParams = VisualParams as LineChartShapeParams;
-                        (Faces.Parts[0] as Path).Stroke = lineParams.Lighting ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.65, 0.55 }) : (Brush)value;
-                        foreach (DataPoint dp in InternalDataPoints)
-                            dp.UpdateVisual("Color", null);
-                    }
-                }
-                else if (RenderAs != RenderAs.CandleStick) // CandleStick does not require Color update for DataSeries
-                {
-                    foreach (DataPoint dp in InternalDataPoints)
-                        dp.UpdateVisual("Color", null);
-                }
-
-                if (LegendMarker != null && LegendMarker.Visual != null && RenderAs != RenderAs.CandleStick)
-                {
-                    LegendMarker.BorderColor = (Brush)Color;
-                    //LegendMarker.MarkerFillColor = (Brush)Color;
-
-                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Stock)
-                    {
-                        if ((LegendMarker.Visual as Grid).Parent != null && (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
-                            (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)Color;
-                    }
-                    else
-                        LegendMarker.MarkerFillColor = (Brush)Color;
-
-                    LegendMarker.UpdateMarker();
-                }
-            }
-            else
-                FirePropertyChanged(VcProperties.Color");
- * 
- * */
         }
 
         #endregion
@@ -2403,7 +2389,8 @@ namespace Visifire.Charts
         private static void OnColorSetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.FirePropertyChanged(VcProperties.ColorSet);
+            dataSeries.UpdateVisual(VcProperties.ColorSet, e.NewValue);
+            //dataSeries.FirePropertyChanged(VcProperties.ColorSet);
         }
         
         /// <summary>
@@ -2462,8 +2449,8 @@ namespace Visifire.Charts
         private static void OnShowInLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.UpdateVisual(VcProperties.ShowInLegend, e.NewValue);
-            // dataSeries.FirePropertyChanged(VcProperties.ShowInLegend);
+            //dataSeries.UpdateVisual(VcProperties.ShowInLegend, e.NewValue);
+            dataSeries.FirePropertyChanged(VcProperties.ShowInLegend);
         }
 
         /// <summary>
@@ -2523,7 +2510,7 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.UpdateVisual(VcProperties.LabelFontColor, e.NewValue);
-            dataSeries.FirePropertyChanged(VcProperties.LabelFontColor);
+            //dataSeries.FirePropertyChanged(VcProperties.LabelFontColor);
         }
 
         /// <summary>
@@ -2936,8 +2923,9 @@ namespace Visifire.Charts
                             dataPoint.InternalXValue = this.DataPoints.Count;
 
                         if (String.IsNullOrEmpty((String)dataPoint.GetValue(NameProperty)))
-                        {   
-                            dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
+                        {
+                            dataPoint.Name = "DataPoint" + (this.DataPoints.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
+                            // dataPoint.SetValue(NameProperty, dataPoint.GetType().Name + this.DataPoints.IndexOf(dataPoint).ToString() + "_" + Guid.NewGuid().ToString().Replace('-','_'));
                             dataPoint._isAutoName = true;
                         }
                         else
@@ -3017,7 +3005,7 @@ namespace Visifire.Charts
             if (Chart != null)
             {   
                 foreach (DataPoint dp in DataPoints)
-                    dp.OnToolTipTextPropertyChanged(newValue);
+                    dp.OnToolTipTextPropertyChanged(dp.ToolTipText);
             }
         }
 
@@ -3027,7 +3015,7 @@ namespace Visifire.Charts
         internal void AttachEvent2DataSeriesVisualFaces()
         {   
             foreach (DataPoint dp in InternalDataPoints)
-            {
+            {   
                 dp.AttachEvent2DataPointVisualFaces(this);
             }
         }

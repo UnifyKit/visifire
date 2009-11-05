@@ -92,6 +92,11 @@ namespace Visifire.Charts
 
         #region Public Properties
 
+
+        // Using a DependencyProperty as the backing store for ScrollBarScale.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ScrollBarScaleProperty =
+            DependencyProperty.Register("ScrollBarScale", typeof(double), typeof(Axis), new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.AxisLabels dependency property.
         /// </summary>
@@ -429,6 +434,25 @@ namespace Visifire.Charts
             typeof(IntervalTypes),
             typeof(Axis),
             new PropertyMetadata(OnIntervalTypePropertyChanged));
+
+        /// <summary>
+        /// ScrollBarScale sets the size of ScrollBar thumb.  
+        /// Example, if ScrollBarScale is set to 0.5, width of ScrollBar thumb will be
+        /// half of the ScrollBar width which in turn increase the PlotArea width to
+        /// double the actual width of PlotArea.
+        /// </summary>
+        public Double ScrollBarScale
+        {
+            get { return (Double)GetValue(ScrollBarScaleProperty); }
+            set
+            {
+
+                if (value <= 0 || value > 1)
+                    throw new Exception("Value does not fall under the expected range. ScrollBarScale always varies from 0 to 1.");
+
+                SetValue(ScrollBarScaleProperty, value);
+            }
+        }
 
         /// <summary>
         /// Get or set the "AxisLabels element" property of the axis
@@ -1389,6 +1413,26 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Methods
+        private static void OnScrollBarScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+
+            //if (axis._isScrollToOffsetEnabled)
+            //    axis.SetScrollBarValueFromOffset((Double)e.NewValue);
+            axis.FirePropertyChanged(VcProperties.ScrollBarScale);
+
+            if (axis.Chart != null && (axis.Chart as Chart).ChartArea != null)
+            {
+                if (axis.IsNotificationEnable)
+                {
+                    (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = false;
+                }
+                else
+                {
+                    (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = true;
+                }
+            }
+        }
 
 #if WPF 
 

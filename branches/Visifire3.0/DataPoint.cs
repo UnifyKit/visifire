@@ -907,7 +907,8 @@ namespace Visifire.Charts
                     if (Faces != null || (this.Parent != null && this.Parent.Faces != null) || this.Marker != null)
                         SetCursor2DataPointVisualFaces();
                     else
-                        UpdateVisual(VcProperties.Cursor, value);
+                    
+                    UpdateVisual(VcProperties.Cursor, value);
                         //FirePropertyChanged(VcProperties.Cursor);
                 }
             }
@@ -1025,6 +1026,8 @@ namespace Visifire.Charts
             {
                 if ((Brush)GetValue(ColorProperty) == null)
                 {
+                    Chart chart =(Chart as Chart);
+
                     if (_parent == null)
                         return _internalColor;
                     else
@@ -1626,7 +1629,7 @@ namespace Visifire.Charts
         public override String ToolTipText
         {   
             get
-            {
+            {   
                 if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
                     return null;
 
@@ -1879,8 +1882,8 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal override void UpdateVisual(VcProperties property, object newValue)
         {
-            //if (!ValidatePartialUpdate())
-            //    return;
+            if (!ValidatePartialUpdate())
+                return;
 
             Chart chart = Chart as Chart;
 
@@ -1892,55 +1895,61 @@ namespace Visifire.Charts
                 Boolean renderAxis = false;
                 Boolean calculatePlotDetails = false;
                 PlotGroup plotGroup = Parent.PlotGroup;
+                AxisRepresentations axisRepresentation = AxisRepresentations.AxisX;
 
-                if (property == VcProperties.YValue)
-                {   
-                    Double axisMaxY = plotGroup.AxisY.InternalAxisMaximum;
-                    Double axisMinY = plotGroup.AxisY.InternalAxisMinimum;
-
-                    chart.PlotDetails.ReCreate(this, property, newValue);
-
-                    if ((Double)newValue > axisMaxY || (Double)newValue < axisMinY)
-                        renderAxis = true;
-                }
-                else if (property == VcProperties.YValues)
+                if (property == VcProperties.YValue || property == VcProperties.YValues)
                 {
-                    Double axisMaxY = plotGroup.AxisY.InternalAxisMaximum;
-                    Double axisMinY = plotGroup.AxisY.InternalAxisMinimum;
-
-                    chart.PlotDetails.ReCreate(this, property, newValue);
-
-                    if ((Double)plotGroup.MaximumY > axisMaxY || (Double)plotGroup.MinimumY < axisMinY)
-                        renderAxis = true;
-                }
-                else if (property == VcProperties.XValue)
-                {
-                    Double axisMaxX = plotGroup.AxisX.InternalAxisMaximum;
-                    Double axisMinX = plotGroup.AxisX.InternalAxisMinimum;
-
-                    chart.PlotDetails.ReCreate(this, property, newValue);
-
-                    if ((Double)newValue > axisMaxX || (Double)newValue < axisMinX)
-                        renderAxis = true;
-
-                    /* 
-                    Double maxXVal = plotGroup.MaximumX;
-                    Double minXVal = plotGroup.MinimumX;
+                    Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                    Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
                     
                     chart.PlotDetails.ReCreate(this, property, newValue);
 
-                    if ((plotGroup.MaximumX != maxXVal || plotGroup.MinimumX != minXVal))
-                        renderAxis = true;
+                    Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                    Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
 
+                    System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                    System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+                    
+                    if (NewAxisMaxY != OldAxisMaxY || (Double)NewAxisMinY != OldAxisMinY)
+                    {   
+                        renderAxis = true;
+                        axisRepresentation = AxisRepresentations.AxisY;
+                    }
+                }
+                else if (property == VcProperties.XValue)
+                {   
+                    //Double axisMaxX = plotGroup.AxisX.InternalAxisMaximum;
+                    //Double axisMinX = plotGroup.AxisX.InternalAxisMinimum;
+                    
+                    //chart.PlotDetails.ReCreate(this, property, newValue);
+                    //newValue = Double.Parse(newValue.ToString());
+                    //if ((Double)newValue > axisMaxX || (Double)newValue < axisMinX)
+                    //{
+                    //    renderAxis = true;
+                    //    axisRepresentation = AxisRepresentations.AxisX;
+                    //}
+                    
+                    Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                    Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                    
                     chart.PlotDetails.ReCreate(this, property, newValue);
 
-                    if (plotGroup.MaximumX != maxXVal || plotGroup.MinimumX != minXVal)
-                        renderAxis = true;*/
+                    Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                    Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                    
+                    System.Diagnostics.Debug.WriteLine("OldAxisMaxX = " + OldAxisMaxX.ToString() + " OldAxisMinX=" + OldAxisMinX.ToString());
+                    System.Diagnostics.Debug.WriteLine("NewAxisMaxX = " + NewAxisMaxX.ToString() + " NewAxisMinX=" + NewAxisMinX.ToString());
+
+                    if (NewAxisMaxX != OldAxisMaxX || (Double)NewAxisMinX != OldAxisMinX)
+                    {   
+                        renderAxis = true;
+                        axisRepresentation = AxisRepresentations.AxisX;
+                    }
                 }
 
-                // renderAxis = false;
+                //renderAxis = false;
 
-                chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, updateInternalLists, calculatePlotDetails, renderAxis);
+                chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, updateInternalLists, calculatePlotDetails, renderAxis, axisRepresentation, true);
 
                 RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
 
@@ -1959,7 +1968,17 @@ namespace Visifire.Charts
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// StoryBoard attached with the DataPoint for animation
+        /// </summary>
+        internal Storyboard StoryboardZValueAni
+        {
+            get;
+            set;
         } 
+        
         
         /// <summary>
         /// InternalXValue used for internally generated XValue of type double
@@ -2249,8 +2268,8 @@ namespace Visifire.Charts
         private static void OnAxisXLabelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.InvokeUpdateVisual(VcProperties.AxisXLabel, e.NewValue);
-            //dataPoint.FirePropertyChanged(VcProperties.AxisXLabel);
+            //dataPoint.InvokeUpdateVisual(VcProperties.AxisXLabel, e.NewValue);
+            dataPoint.FirePropertyChanged(VcProperties.AxisXLabel);
         }
         
         /// <summary>
@@ -3249,7 +3268,7 @@ namespace Visifire.Charts
             }
             else if (Faces != null)
             {
-                if (Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
+                if (Parent.RenderAs == RenderAs.Bubble|| Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
                 {
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
@@ -3295,7 +3314,7 @@ namespace Visifire.Charts
                     AttachHref(Chart, this.Parent.Faces.Visual, Href, (HrefTargets)HrefTarget);
 
             if (this.Marker != null)
-            {
+            {   
                 AttachHref(Chart, Marker.Visual, Href, (HrefTargets)HrefTarget);
             }
         }
@@ -3316,16 +3335,16 @@ namespace Visifire.Charts
                 else if(Faces.Visual != null)
                     Faces.Visual.Cursor = GetCursor();
 
-            if (this.Parent.Faces != null)
-                if (this.Parent.Faces.VisualComponents.Count != 0)
-                {
-                    foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
-                    {
-                        face.Cursor = GetCursor();
-                    }
-                }
-                else
-                    this.Parent.Faces.Visual.Cursor = GetCursor();
+            //if (this.Parent.Faces != null)
+            //    if (this.Parent.Faces.VisualComponents.Count != 0)
+            //    {
+            //        foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+            //        {
+            //            face.Cursor = GetCursor();
+            //        }
+            //    }
+            //    else
+            //        this.Parent.Faces.Visual.Cursor = GetCursor();
 
             if (this.Marker != null)
             {
@@ -3404,6 +3423,8 @@ namespace Visifire.Charts
         /// Visual target render point of the visual
         /// </summary>
         internal Point _visualPosition;
+
+        internal Double _targetBubleSize;
 
 #if WPF
         /// <summary>

@@ -74,6 +74,8 @@ namespace Visifire.Charts
             Faces column;
             Panel columnVisual = null;
 
+            dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
+            
             if (chart.View3D)
             {   
                 column = ColumnChart.Get3DColumn(dataPoint, columnWidth, columnHeight, depth3d, dataPoint.Color, null, null, null, (Boolean)dataPoint.LightingEnabled,
@@ -123,12 +125,13 @@ namespace Visifire.Charts
             else
                 top = bottom;
 
+            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
-
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
-
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
         }
         
         /// <summary>
@@ -241,8 +244,10 @@ namespace Visifire.Charts
             // Plot positive values
             foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
             {
+                dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
+                
                 if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
-                    continue;
+                   continue;
 
                 isTopOFStack = (dataPoint == dataPointAtTopOfStack);
 
@@ -287,6 +292,8 @@ namespace Visifire.Charts
             // Plot negative values
             foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
             {
+                dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
+
                 if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
                     continue;
 
@@ -408,8 +415,9 @@ namespace Visifire.Charts
             Boolean animationEnabled = true;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
-            Canvas columnCanvas = dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
-            Canvas labelCanvas = (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
+            Canvas labelCanvas = dataPoint.Faces.LabelCanvas;  // Parent canvas of Datapoint label
+            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas; ;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
+           
             PlotGroup plotGroup = dataSeries.PlotGroup;                                 // PlotGroup reference
 
             // Calculate 3d depth for the DataPoints
@@ -432,12 +440,14 @@ namespace Visifire.Charts
             // Storing reference of old Visual 
             foreach (DataPoint dp in listOfDataPoint)
             {
-                dp._oldVisual = dp.Faces.Visual;
-
                 if (dp.Marker != null && dp.Marker.Visual != null)
                     dp._oldMarkerPosition = new Point((Double)dp.Marker.Visual.GetValue(Canvas.LeftProperty), (Double)dp.Marker.Visual.GetValue(Canvas.TopProperty));
 
-                columnCanvas.Children.Remove(dp._oldVisual);
+                if (dp.Faces != null)
+                {
+                    dp._oldVisual = dp.Faces.Visual;
+                    columnCanvas.Children.Remove(dp._oldVisual);
+                }
             }
 
             // Calculate limiting value
@@ -465,6 +475,9 @@ namespace Visifire.Charts
                 // Loop through all Datapoints under the PlotGroup of the current DataPoint and apply animation
                 foreach (DataPoint dp in listOfDataPoint)
                 {
+                    if (dp.Faces == null || dp._oldVisual == null)
+                        continue;
+
                     FrameworkElement newVisual = dp.Faces.Visual;                       // New StackedColumn visual reference of DataPoint
                     Double oldLeft = (Double)dp._oldVisual.GetValue(Canvas.LeftProperty); // Left of the old visual of the DataPoint
                     Double newLeft = (Double)newVisual.GetValue(Canvas.LeftProperty);     // Left of the new visual of the DataPoint
@@ -530,8 +543,13 @@ namespace Visifire.Charts
             Boolean animationEnabled = true;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
-            Canvas columnCanvas = dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
-            Canvas labelCanvas = (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
+            Canvas labelCanvas = dataPoint.Faces.LabelCanvas;// (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
+            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas; 
+                //dataSeries.Faces.Visual as Canvas;// dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
+
+            Double height = labelCanvas.Height;
+            Double width = labelCanvas.Width;
+
             PlotGroup plotGroup = dataSeries.PlotGroup;                                 // PlotGroup reference
 
             // Calculate 3d depth for the DataPoints
@@ -539,7 +557,7 @@ namespace Visifire.Charts
 
             // Calculate required parameters for Creating new Stacked Columns
             Double minDiff, widthPerColumn, maxColumnWidth;
-            widthPerColumn = CalculateWidthOfEachStackedColumn(chart, plotGroup, columnCanvas.Width, out minDiff, out  maxColumnWidth);
+            widthPerColumn = CalculateWidthOfEachStackedColumn(chart, plotGroup, width, out minDiff, out  maxColumnWidth);
 
             // List of effected DataPoints for the current update of YValue property of the DataPoint
             XWiseStackedData effectedDataPoints = plotGroup.XWiseStackedDataList[dataPoint.InternalXValue];
@@ -554,12 +572,16 @@ namespace Visifire.Charts
             // Storing reference of old Visual 
             foreach(DataPoint dp in listOfDataPoint)
             {   
-                dp._oldVisual = dp.Faces.Visual;
+                
 
                 if (dp.Marker != null && dp.Marker.Visual != null)
                     dp._oldMarkerPosition = new Point((Double)dp.Marker.Visual.GetValue(Canvas.LeftProperty), (Double)dp.Marker.Visual.GetValue(Canvas.TopProperty));
 
-                columnCanvas.Children.Remove(dp._oldVisual);
+                if (dp.Faces != null)
+                {
+                    dp._oldVisual = dp.Faces.Visual;
+                    columnCanvas.Children.Remove(dp._oldVisual);
+                }
             }
 
             // Calculate limiting value
@@ -587,6 +609,9 @@ namespace Visifire.Charts
                 // Loop through all Datapoints under the PlotGroup of the current DataPoint and apply animation
                 foreach (DataPoint dp in listOfDataPoint)
                 {
+                    if (dp.Faces == null || dp._oldVisual == null)
+                        continue;
+
                     FrameworkElement newVisual = dp.Faces.Visual;                       // New StackedColumn visual reference of DataPoint
                     Double oldTop = (Double)dp._oldVisual.GetValue(Canvas.TopProperty); // Top of the old visual of the DataPoint
                     Double newTop = (Double)newVisual.GetValue(Canvas.TopProperty);     // Top of the new visual of the DataPoint

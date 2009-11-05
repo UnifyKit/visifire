@@ -103,6 +103,9 @@
     <Compile Include="..\BarChart.cs">
       <Link>BarChart.cs</Link>
     </Compile>
+    <Compile Include="..\Bubble.cs">
+      <Link>Bubble.cs</Link>
+    </Compile>
     <Compile Include="..\BubbleChart.cs">
       <Link>BubbleChart.cs</Link>
     </Compile>

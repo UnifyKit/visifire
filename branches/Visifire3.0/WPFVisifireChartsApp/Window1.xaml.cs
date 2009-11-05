@@ -31,86 +31,74 @@ namespace WPFVisifireChartsApp
         {
             InitializeComponent();
 
-            // Create a Chart
-            chart = new Chart();
-
-            MyChart.PlotArea.MouseLeftButtonDown += new EventHandler<PlotAreaMouseButtonEventArgs>(PlotArea_MouseLeftButtonDown);
-            
-            // Set Chart size
-            chart.Width = 500;
-            chart.Height = 300;
-
-            // Initialize Random class
-            Random rand = new Random();
-
-            // Create DataSeries
-            DataSeries dataSeries = new DataSeries();
-
-            for (Int32 i = 0; i < 5; i++)
-            {   
-                // Create DataPoint
-                DataPoint dataPoint = new DataPoint();
-                // Set DataPoint property
-                dataPoint.YValue = rand.Next(10, 100);
-
-                // Add DataPoint to DataPoints collection of DataSeries
-                dataSeries.DataPoints.Add(dataPoint);
-            }
-
-            // Add DataSeries to Series collection of Chart
-            chart.Series.Add(dataSeries);
-
-            // Add Chart to LayoutRoot
-            // LayoutRoot.Children.Add(chart);
-
-            // Attach event to Chart
-            // chart.MouseLeftButtonDown += new MouseButtonEventHandler(chart_MouseLeftButtonDown);
-        }
-
-        void PlotArea_MouseLeftButtonDown(object sender, PlotAreaMouseButtonEventArgs e)
-        {
-            MessageBox.Show("asdasd");
-        }
-
-        Chart chart;
-
-        void chart_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ExportToPng(new Uri("d:/visifire.png"), chart);
-        }
-
-        public void ExportToPng(Uri path, Visifire.Charts.Chart surface)
-        {
-            if (path == null) return;
-
-            // Save current canvas transform
-            Transform transform = surface.LayoutTransform;
-            // reset current transform (in case it is scaled or rotated)
-            surface.LayoutTransform = null;
-
-            // Create a render bitmap and push the surface to it
-            RenderTargetBitmap renderBitmap =
-              new RenderTargetBitmap(
-                (int)surface.Width,
-                (int)surface.Height,
-                96d,
-                96d,
-                PixelFormats.Pbgra32);
-            renderBitmap.Render(surface);
-
-            // Create a file stream for saving image
-            using (FileStream outStream = new FileStream(path.LocalPath, FileMode.Create))
+            for (Int32 i = 0; i < 3; i++)
             {
-                // Use png encoder for our data
-                PngBitmapEncoder encoder = new PngBitmapEncoder();
-                // push the rendered bitmap to it
-                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-                // save the data to the stream
-                encoder.Save(outStream);
+                DataSeries ds = new DataSeries();
+                if (i == 0 || i == 1)
+                    ds.RenderAs = RenderAs.Line;
+                else
+                    ds.RenderAs = RenderAs.CandleStick;
+
+                Int32 m = 1;
+                Int32 d = 1;
+                Int32 y = 2009;
+                for (Int32 j = 0; j < 2500; j++)
+                {
+                    DataPoint dp = new DataPoint();
+                    if (d == 28)
+                    {
+                        d = 1;
+                        m++;
+                    }
+                    if (m > 12)
+                    {
+                        m = 1;
+                        d = 1;
+                        y++;
+                    }
+                    dp.XValue = new DateTime(y, m, d++);
+                    dp.YValue = rand.Next(10, 100);
+                    ds.DataPoints.Add(dp);
+                }
+
+                MyChart1.Series.Add(ds);
             }
 
-            // Restore previously saved layout
-            surface.LayoutTransform = transform;
+            for (Int32 i = 0; i < 3; i++)
+            {
+                DataSeries ds = new DataSeries();
+                if (i == 0 || i == 1)
+                    ds.RenderAs = RenderAs.Line;
+                else
+                    ds.RenderAs = RenderAs.Column;
+
+                Int32 m = 1;
+                Int32 d = 1;
+                Int32 y = 2009;
+                for (Int32 j = 0; j < 2500; j++)
+                {
+                    DataPoint dp = new DataPoint();
+                    if (d == 28)
+                    {
+                        d = 1;
+                        m++;
+                    }
+                    if (m > 12)
+                    {
+                        m = 1;
+                        d = 1;
+                        y++;
+                    }
+                    dp.XValue = new DateTime(y, m, d++);
+                    dp.YValue = rand.Next(10, 100);
+                    ds.DataPoints.Add(dp);
+                }
+
+
+                MyChart2.Series.Add(ds);
+            }
         }
+
+        Random rand = new Random();
     }
 }

@@ -182,7 +182,7 @@ namespace Visifire.Charts
         }
 
         internal static void ApplyOrRemoveBevel(DataPoint dataPoint, Double dataPointWidth)
-        {
+        {   
             // Removing parts of bevel
             Canvas bevelCanvas = null;
             Faces faces = dataPoint.Faces;
@@ -276,9 +276,6 @@ namespace Visifire.Charts
                 // Added to DataPoint visual Canvas
                 dataPointVisual.Children.Add(openCloseShadowRect);
                 dataPointVisual.Children.Add(highLowShadowLine);
-
-
-
             }
         }
 
@@ -393,6 +390,9 @@ namespace Visifire.Charts
             if (dataPoint.YValues == null || dataPoint.Enabled == false)
                 return;
 
+            // Creating ElementData for Tag
+            ElementData tagElement = new ElementData() { Element = dataPoint };
+
             // Initialize DataPoint faces
             dataPoint.Faces = new Faces();
             
@@ -401,7 +401,7 @@ namespace Visifire.Charts
             dataPoint.Faces.Visual = dataPointVisual;
 
             // Create High and Low Line
-            Line highLowLine = new Line();
+            Line highLowLine = new Line() { Tag = tagElement };
             
             dataPoint.Faces.Parts.Add(highLowLine);
             dataPoint.Faces.VisualComponents.Add(highLowLine);
@@ -410,7 +410,7 @@ namespace Visifire.Charts
             /* Create Open-Close Rectangle
              * Math.Max is used to make sure that the rectangle is visible 
              * even when the difference between high and low is 0 */
-            Rectangle openCloseRect = new Rectangle();
+            Rectangle openCloseRect = new Rectangle() { Tag = tagElement };
             
             dataPoint.Faces.VisualComponents.Add(openCloseRect);
             dataPoint.Faces.BorderElements.Add(openCloseRect);
@@ -425,7 +425,7 @@ namespace Visifire.Charts
             candleStickCanvas.Children.Add(dataPointVisual);
 
             CreateAndPositionLabel(labelCanvas, dataPoint);
-           
+            
             Chart chart = dataPoint.Chart as Chart;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);

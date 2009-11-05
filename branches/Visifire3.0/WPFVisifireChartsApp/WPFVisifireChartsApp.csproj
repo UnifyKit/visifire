@@ -74,16 +74,16 @@
     </Reference>
     <BlendEmbeddedFont Include="Fonts\segoeui.ttf">
       <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
+    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuib.ttf">
       <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
+    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuii.ttf">
       <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
+    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuiz.ttf">
       <IsSystemFont>True</IsSystemFont>
-    </BlendEmbeddedFont>
+    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -142,5 +142,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="SubsetFont.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Expression\Blend\3.0\WPF\Microsoft.Expression.Blend.WPF.targets" />
 </Project>

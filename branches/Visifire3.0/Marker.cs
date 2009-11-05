@@ -42,13 +42,14 @@ using System.Windows.Browser;
 
 #endif
 using Visifire.Charts;
+using System.Windows.Media.Effects;
 
 namespace Visifire.Commons
 {
     /// <summary>
     /// Visifire.Commons.Marker class
     /// </summary>
-    public class Marker : IComparable
+    public class Marker
     {
         #region Public Methods
 
@@ -79,17 +80,17 @@ namespace Visifire.Commons
         {
 
         }
-
-        /// <summary>
-        /// Compare two Markers
-        /// </summary>
-        /// <param name="o">Object</param>
-        /// <returns>int</returns>
-        public int CompareTo(Object o)
-        {
-            Marker dataPoint = (Marker)o;
-            return this.Position.X.CompareTo(dataPoint.Position.X);
-        }
+        
+        ///// <summary>
+        ///// Compare two Markers
+        ///// </summary>
+        ///// <param name="o">Object</param>
+        ///// <returns>int</returns>
+        //public int CompareTo(Object o)
+        //{
+        //    Marker dataPoint = (Marker)o;
+        //    return this.Position.X.CompareTo(dataPoint.Position.X);
+        //}
 
         public void HideLabel()
         {
@@ -116,43 +117,56 @@ namespace Visifire.Commons
             SetPosition(xPosition, yPosition, anchorPoint);
         }
 
+
+        /// <summary>
+        /// Set Visual position
+        /// </summary>
+        /// <param name="xPosition">Position x</param>
+        /// <param name="yPosition">Position y</param>
+        /// <param name="anchorPoint">Anchor point</param>
         public void SetPosition(Double xPosition, Double yPosition, Point anchorPoint)
         {   
             Position = new Point(xPosition, yPosition);
+            Point actualPosOfVisual = CalculateActualPosition(xPosition, yPosition, anchorPoint);
 
+            Visual.SetValue(Canvas.TopProperty, actualPosOfVisual.Y);
+            Visual.SetValue(Canvas.LeftProperty, actualPosOfVisual.X);
+        }
+
+        /// <summary>
+        /// Calculates actual position of the visual
+        /// </summary>
+        /// <returns>Actual position of the visual</returns>
+        public Point CalculateActualPosition(Double xPosition, Double yPosition, Point anchorPoint)
+        {   
             Double visualHeight;
             Double visualWidth;
-#if WPF
 
-            Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            visualHeight = Visual.DesiredSize.Height;
-            visualWidth = Visual.DesiredSize.Width;
-#else
-            Size s = Graphics.CalculateVisualSize(Visual);
-            visualHeight = s.Height;
-            visualWidth = s.Width;
-#endif
+            // Size s = Graphics.CalculateVisualSize(Visual);
+
+            visualHeight = MarkerActualSize.Height;
+            visualWidth = MarkerActualSize.Width;
 
             if (anchorPoint.X == 0.5)
                 xPosition -= (MarkerShape.Width / 2 + ((TextAlignmentX == AlignmentX.Left) ? _markerShapePosition.X : 0));
             else if (anchorPoint.X == 1)
                 xPosition -= (MarkerShape.Width + ((TextAlignmentX == AlignmentX.Left) ? _markerShapePosition.X : 0));
-
+                
             if (anchorPoint.Y == 0.5)
                 yPosition -= (MarkerShape.Height / 2 + ((TextAlignmentY == AlignmentY.Top) ? _markerShapePosition.Y : 0));
             else if (anchorPoint.Y == 1)
                 yPosition -= (MarkerShape.Height + ((TextAlignmentY == AlignmentY.Top) ? _markerShapePosition.Y : 0));
+                
 
             if (TextAlignmentX == AlignmentX.Center)
                 if (TextBlockSize.Width > MarkerShape.Width)
                     xPosition -= (TextBlockSize.Width - MarkerShape.Width) / 2;
-
+                    
             if (TextAlignmentY == AlignmentY.Center)
                 if (TextBlockSize.Height > MarkerShape.Height)
                     yPosition -= (TextBlockSize.Height - MarkerShape.Height) / 2;
             
-            Visual.SetValue(Canvas.TopProperty, yPosition);
-            Visual.SetValue(Canvas.LeftProperty, xPosition);
+            return new Point(xPosition, yPosition);
         }
         
         /// <summary>
@@ -160,50 +174,85 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="parent">Panel</param>
         public void AddToParent(Panel parent)
-        {
+        {   
             parent.Children.Add(Visual);
+        }
+
+
+        internal void ApplyRemoveShadow()
+        {
+            if (ShadowEnabled)
+            {
+                if (PixelLavelShadow)
+                {
+                    DropShadowEffect drp = new DropShadowEffect();
+                    drp.Color = Colors.Gray;
+                    drp.BlurRadius = 100;
+                    drp.ShadowDepth = 4;
+                    drp.Opacity = 0.62;
+                    drp.Direction = 302;
+                    MarkerShape.Effect = drp;
+                }
+                else
+                {
+                    MarkerShadow = GetShape();
+                    MarkerShadow.Tag = Tag;
+
+                    // Set shadow properties
+                    MarkerShadow.Fill = GetMarkerShadowColor();
+                    TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
+                    MarkerShadow.RenderTransform = tt;
+
+                    // display or hide the shadow
+                    MarkerShadow.Visibility = (ShadowEnabled ? Visibility.Visible : Visibility.Collapsed);
+
+                    // Set properties
+                    MarkerShadow.SetValue(Grid.RowProperty, 1);
+                    MarkerShadow.SetValue(Grid.ColumnProperty, 1);
+
+                    // Add Shape for Marker into Visual
+                    Visual.Children.Add(MarkerShadow);
+
+                    MarkerShape.Effect = null;
+                }
+            }
+            else
+            {
+                MarkerShape.Effect = null;
+                
+                if(MarkerShadow != null)
+                    Visual.Children.Remove(MarkerShadow);
+
+                MarkerShadow = null;
+            }
         }
 
         /// <summary>
         /// Create visual for Marker
         /// </summary>
         public void CreateVisual()
-        {
+        {   
             // Create Visual as Grid
             Visual = new Grid();
+            //Visual.Background = new SolidColorBrush(Colors.Yellow);
+            //Visual.ShowGridLines = true;
 
             // Create Shape for Marker
             MarkerShape = GetShape();
-            MarkerShadow = GetShape();
+            MarkerShape.Tag = Tag;
 
-            if (MarkerShape != null)
-                MarkerShape.Tag = Tag;
-
-            if (MarkerShadow != null)
-                MarkerShadow.Tag = Tag;
-
-            // Set shadow properties
-            MarkerShadow.Fill = GetMarkerShadowColor();
-            TranslateTransform tt = new TranslateTransform() { X = 1, Y = 1 };
-            MarkerShadow.RenderTransform = tt;
-
-            // display or hide the shadow
-            MarkerShadow.Visibility = (ShadowEnabled ? Visibility.Visible : Visibility.Collapsed);
-
-            // Set properties
-            MarkerShape.SetValue(Grid.RowProperty, 1);
-            MarkerShape.SetValue(Grid.ColumnProperty, 1);
-            MarkerShadow.SetValue(Grid.RowProperty, 1);
-            MarkerShadow.SetValue(Grid.ColumnProperty, 1);
-
-            // Add Shape for Marker into Visual
-            Visual.Children.Add(MarkerShadow);
+            if (ShadowEnabled)
+                ApplyRemoveShadow();
+            
             Visual.Children.Add(MarkerShape);
 
             UpdateMarker();
 
-            //if (!String.IsNullOrEmpty(Text))
-            {   
+            if (!String.IsNullOrEmpty(Text))
+            {
+                MarkerShape.SetValue(Grid.RowProperty, 1);
+                MarkerShape.SetValue(Grid.ColumnProperty, 1);
+
                 // Define row and columns 
                 Visual.RowDefinitions.Add(new RowDefinition());
                 Visual.RowDefinitions.Add(new RowDefinition());
@@ -218,8 +267,8 @@ namespace Visifire.Commons
                 // Apply TextBlock Properties 
                 ApplyTextBlockProperties();
 
-                // if (TextBackground != null)
-                {   
+                //if (TextBackground != null)
+                {
                     TextBackgroundCanvas = new Canvas();
                     TextBackgroundCanvas.Background = TextBackground;
                     Visual.Children.Add(TextBackgroundCanvas);
@@ -228,13 +277,19 @@ namespace Visifire.Commons
                 // Set Alignment
                 SetAlignment4Label();
 
-
                 // Add TextBlock into Visual
                 Visual.Children.Add(TextBlock);
 
                 TextBlock.Margin = new Thickness(LabelMargin, 0, 0, 0);
-
                 Visual.Margin = new Thickness(Margin, Margin, Margin, Margin);
+            }
+            else
+            { 
+                TextBlock = null;
+                TextBackgroundCanvas = null;
+                TextBlockSize = new Size(0,0);
+                _markerShapePosition.X = 0;
+                _markerShapePosition.Y = 0;
             }
 
             MarkerShape.Opacity = Opacity;
@@ -246,7 +301,7 @@ namespace Visifire.Commons
         /// Update Marker with new properties
         /// </summary>
         public void UpdateMarker()
-        {
+        {   
             if (BevelLayer != null)
                 Visual.Children.Remove(BevelLayer);
 
@@ -306,7 +361,7 @@ namespace Visifire.Commons
             set
             {
                 // System.Diagnostics.Debug.Assert(value < 1, "ScaleFactor can not be less than 1..");
-                if (value > 1)
+                if (value >= 1)
                     _scaleFactor = value;
             }
         }
@@ -445,6 +500,9 @@ namespace Visifire.Commons
             set
             {
                 _fontFamily = value;
+
+                if (TextBlock != null)
+                    TextBlock.FontFamily = value;
             }
         }
 
@@ -646,7 +704,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Marker shape reference
         /// </summary>
-        internal Shape MarkerShape
+        public Shape MarkerShape
         {
             get;
             set;
@@ -725,6 +783,15 @@ namespace Visifire.Commons
         }
 
         /// <summary>
+        /// This property applies only for Bubble and Point charts
+        /// </summary>
+        internal bool PixelLavelShadow
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// DataSeries used in Legend for line chart
         /// </summary>
         internal DataSeries DataSeriesOfLegendMarker
@@ -749,18 +816,25 @@ namespace Visifire.Commons
         /// Apply all style properties of the Marker text
         /// </summary>
         private void ApplyMarkerShapeProperties()
-        {
+        {   
             // Set Border Properties
             if (MarkerShape != null)
             {
-                MarkerShape.Stroke = BorderColor;
-                MarkerShape.Fill = FillColor;
                 MarkerShape.StrokeThickness = BorderThickness;
                 MarkerShape.Height = MarkerSize.Height * ScaleFactor;
                 MarkerShape.Width = MarkerSize.Width * ScaleFactor;
-                MarkerShadow.Height = MarkerSize.Height * ScaleFactor;
-                MarkerShadow.Width = MarkerSize.Width * ScaleFactor;
-                MarkerShadow.Stroke = null;
+                
+                if(MarkerShape.StrokeThickness >= 0)
+                    MarkerShape.Stroke = BorderColor;
+                    
+                MarkerShape.Fill = FillColor;
+
+                if (MarkerShadow != null)
+                {   
+                    MarkerShadow.Height = MarkerSize.Height * ScaleFactor;
+                    MarkerShadow.Width = MarkerSize.Width * ScaleFactor;
+                    MarkerShadow.Stroke = null;
+                }
             }
 
             if (BevelLayer != null)
