@@ -218,7 +218,7 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
-        /// Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
+        /// Identifies the Visifire.Charts.Chart.SmartLabelEnabled dependency property.  
         /// </summary>
         public static readonly DependencyProperty SmartLabelEnabledProperty =
             DependencyProperty.Register("SmartLabelEnabled",
@@ -1608,6 +1608,7 @@ namespace Visifire.Charts
             Chart c = d as Chart;
             c.InvokeRender();
         }
+
         /// <summary>
         /// DataPointWidthProperty changed call back function
         /// </summary>

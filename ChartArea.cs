@@ -799,7 +799,9 @@ namespace Visifire.Charts
 
                 Size size = Graphics.CalculateVisualSize(Chart._bottomAxisContainer);
                 totalHeightReduced += size.Height;
-                
+
+                AxisX.Height = size.Height;
+
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                     (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -1 * AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
 
@@ -841,7 +843,9 @@ namespace Visifire.Charts
 
                 Size size = Graphics.CalculateVisualSize(Chart._topAxisContainer);
                 totalHeightReduced += size.Height;
-               
+
+                AxisX2.Height = size.Height;
+
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -AxisX2.GetScrollBarValueFromOffset(AxisX2.CurrentScrollScrollBarOffset));
 
@@ -861,6 +865,8 @@ namespace Visifire.Charts
 
                 Size size = Graphics.CalculateVisualSize(Chart._bottomAxisContainer);
                 totalHeightReduced += size.Height;
+
+                AxisY.Height = size.Height;
             }
             else
                 Chart._leftAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -879,6 +885,7 @@ namespace Visifire.Charts
                 Size size = Graphics.CalculateVisualSize(Chart._topAxisContainer);
                 totalHeightReduced += size.Height;
 
+                AxisY2.Height = size.Height;
             }
             else
                 Chart._rightAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -940,6 +947,8 @@ namespace Visifire.Charts
                 Size size = Graphics.CalculateVisualSize(Chart._leftAxisContainer);
                 totalWidthReduced += size.Width;
 
+                AxisX.Width = size.Width;
+
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                     (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
 
@@ -980,6 +989,8 @@ namespace Visifire.Charts
                 Size size = Graphics.CalculateVisualSize(Chart._rightAxisContainer);
                 totalWidthReduced += size.Width;
 
+                AxisX2.Width = size.Width;
+
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -AxisX2.GetScrollBarValueFromOffset(AxisX2.CurrentScrollScrollBarOffset));
 
@@ -1015,6 +1026,8 @@ namespace Visifire.Charts
 
                 Size size = Graphics.CalculateVisualSize(Chart._rightAxisContainer);
                 totalWidthReduced += size.Width;
+
+                AxisY2.Width = size.Width;
 
             }
 

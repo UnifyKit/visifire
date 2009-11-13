@@ -67,16 +67,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Private Properties
-
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-        
+       
         #endregion
 
         #region Private Delegates
@@ -93,7 +84,7 @@ namespace Visifire.Charts
         /// <param name="width">Width of the chart canvas</param>
         /// <param name="height">Height of the chart canvas</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyBubbleChartAnimation(Panel bubbleGrid, Storyboard storyboard, Double width, Double height)
+        private static Storyboard ApplyBubbleChartAnimation(DataSeries currentDataSeries, Panel bubbleGrid, Storyboard storyboard, Double width, Double height)
         {
             TranslateTransform translateTransform = new TranslateTransform() { X = 0, Y = -height };
             bubbleGrid.RenderTransform = translateTransform;
@@ -150,8 +141,8 @@ namespace Visifire.Charts
                 new Point(0, 0), new Point(0.5, 1),
                 new Point(0.5, 0), new Point(1, 1));
 
-            DoubleAnimationUsingKeyFrames xTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.X)", begin * 0.5 + 0.5, times1, translateXValues, splines3);
-            DoubleAnimationUsingKeyFrames yTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.Y)", begin * 0.5 + 0.5, times2, translateYValues, splines4);
+            DoubleAnimationUsingKeyFrames xTranslateAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, translateTransform, "(TranslateTransform.X)", begin * 0.5 + 0.5, times1, translateXValues, splines3);
+            DoubleAnimationUsingKeyFrames yTranslateAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, translateTransform, "(TranslateTransform.Y)", begin * 0.5 + 0.5, times2, translateYValues, splines4);
             storyboard.Children.Add(xTranslateAnimation);
             storyboard.Children.Add(yTranslateAnimation);
 
@@ -176,6 +167,7 @@ namespace Visifire.Charts
         internal static Canvas GetVisualObjectForBubbleChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+            DataSeries currentDataSeries = null;
 
             Canvas visual = new Canvas();
             visual.Width = width;
@@ -292,10 +284,10 @@ namespace Visifire.Charts
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = dataPoint.Parent;
+                        currentDataSeries = dataPoint.Parent;
 
                         // Apply animation to the bubbles
-                        dataPoint.Parent.Storyboard = ApplyBubbleChartAnimation(marker.Visual, dataPoint.Parent.Storyboard, width, height);
+                        dataPoint.Parent.Storyboard = ApplyBubbleChartAnimation(currentDataSeries, marker.Visual, dataPoint.Parent.Storyboard, width, height);
                     }
 
                     bubbleFaces.Parts.Add(marker.MarkerShape);

@@ -207,15 +207,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -350,7 +341,7 @@ namespace Visifire.Charts
         /// <param name="isPositive">Whether DataPoint is positive</param>
         /// <param name="beginTime">Animation begin time</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyAreaAnimation(UIElement areaElement, Storyboard storyboard, bool isPositive, Double beginTime)
+        private static Storyboard ApplyAreaAnimation(DataSeries currentDataSeries, UIElement areaElement, Storyboard storyboard, bool isPositive, Double beginTime)
         {
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
             areaElement.RenderTransform = scaleTransform;
@@ -372,7 +363,7 @@ namespace Visifire.Charts
                 new Point(0, 0), new Point(0.5, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
+            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
             storyboard.Children.Add(growAnimation);
 
             return storyboard;
@@ -386,9 +377,9 @@ namespace Visifire.Charts
         /// <param name="beginTime">Animation begin time</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyStackedAreaAnimation(FrameworkElement areaElement, Storyboard storyboard, Double beginTime, Double duration)
+        private static Storyboard ApplyStackedAreaAnimation(DataSeries currentDataSeries, FrameworkElement areaElement, Storyboard storyboard, Double beginTime, Double duration)
         {
-            return AnimationHelper.ApplyOpacityAnimation(areaElement, CurrentDataSeries, storyboard, beginTime, duration, 1);
+            return AnimationHelper.ApplyOpacityAnimation(areaElement, currentDataSeries, storyboard, beginTime, duration, 1);
         }
 
         /// <summary>
@@ -400,13 +391,13 @@ namespace Visifire.Charts
         /// <param name="opacity">Target opacity</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateOpacityAnimation(Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
+        private static Storyboard CreateOpacityAnimation(DataSeries currentDataSeries, Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
         {
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, opacity);
             DoubleCollection frames = Graphics.GenerateDoubleCollection(0, duration);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(frames.Count);
 
-            DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
             storyboard.Children.Add(opacityAnimation);
 
             return storyboard;
@@ -580,6 +571,8 @@ namespace Visifire.Charts
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
 
+            DataSeries currentDataSeries = null; // Current working DataSeries
+            
             Boolean plankDrawn = false;
 
             Canvas visual = new Canvas() { Width = width, Height = height };
@@ -606,7 +599,7 @@ namespace Visifire.Charts
                 if (series.Storyboard == null)
                     series.Storyboard = new Storyboard();
 
-                CurrentDataSeries = series;
+                currentDataSeries = series;
 
                 PlotGroup plotGroup = series.PlotGroup;
 
@@ -672,7 +665,7 @@ namespace Visifire.Charts
                                 currentDataPoint.Parent.Storyboard = new Storyboard();
 
                             // Apply marker animation
-                            currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.InternalOpacity * currentDataPoint.Parent.InternalOpacity);
+                            currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.InternalOpacity * currentDataPoint.Parent.InternalOpacity);
                         }
                     }
                     if (Math.Sign(currentDataPoint.InternalYValue) != Math.Sign(nextDataPoint.InternalYValue))
@@ -692,14 +685,14 @@ namespace Visifire.Charts
 
                         if (chart.View3D)
                         {
-                            Canvas areaVisual3D = Get3DArea(ref faces, areaParams);
+                            Canvas areaVisual3D = Get3DArea(currentDataSeries, ref faces, areaParams);
                             areaVisual3D.SetValue(Canvas.ZIndexProperty, GetAreaZIndex(xPosition, yPosition, areaParams.IsPositive));
                             areaCanvas.Children.Add(areaVisual3D);
                             series.Faces.VisualComponents.Add(areaVisual3D);
                         }
                         else
                         {
-                            areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
+                            areaCanvas.Children.Add(Get2DArea(currentDataSeries, ref faces, areaParams));
                             series.Faces.VisualComponents.Add(areaCanvas);
                         }
 
@@ -727,7 +720,7 @@ namespace Visifire.Charts
                             lastDataPoint.Parent.Storyboard = new Storyboard();
 
                         // Apply marker animation
-                        lastDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, lastDataPoint.Parent.Storyboard, 1, lastDataPoint.InternalOpacity * lastDataPoint.Parent.InternalOpacity);
+                        lastDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, lastDataPoint.Parent.Storyboard, 1, lastDataPoint.InternalOpacity * lastDataPoint.Parent.InternalOpacity);
                     }
                 }
 
@@ -741,8 +734,8 @@ namespace Visifire.Charts
                 areaParams.IsPositive = (lastDataPoint.InternalYValue > 0);
 
                 if (chart.View3D)
-                {
-                    Canvas areaVisual3D = Get3DArea(ref faces, areaParams);
+                {   
+                    Canvas areaVisual3D = Get3DArea(currentDataSeries, ref faces, areaParams);
                     areaVisual3D.SetValue(Canvas.ZIndexProperty, GetAreaZIndex(xPosition, yPosition, areaParams.IsPositive));
                     areaCanvas.Children.Add(areaVisual3D);
                     series.Faces.VisualComponents.Add(areaVisual3D);
@@ -750,7 +743,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
+                    areaCanvas.Children.Add(Get2DArea(currentDataSeries, ref faces, areaParams));
                     series.Faces.VisualComponents.Add(areaCanvas);
                 }
 
@@ -838,6 +831,8 @@ namespace Visifire.Charts
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
 
+            DataSeries currentDataSeries = null; // Current working DataSeries
+            
             Boolean plankDrawn = false;
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1);
@@ -925,12 +920,12 @@ namespace Visifire.Charts
                         if (curDataPoints[index].Parent.Storyboard == null)
                             curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = curDataPoints[index].Parent;
+                        currentDataSeries = curDataPoints[index].Parent;
 
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
@@ -943,12 +938,12 @@ namespace Visifire.Charts
                             if (nextDataPoints[index].Parent.Storyboard == null)
                                 nextDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                            CurrentDataSeries = nextDataPoints[index].Parent;
+                            currentDataSeries = nextDataPoints[index].Parent;
 
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
                         }
                     }
 
@@ -974,7 +969,7 @@ namespace Visifire.Charts
                     DataSeries series = curDataPoints[index].Parent;
                     Brush areaBrush = series.Color;
 
-                    CurrentDataSeries = series;
+                    currentDataSeries = series;
 
                     PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
 
@@ -1007,8 +1002,8 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
-                                storyboard = ApplyStackedAreaAnimation(frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         else
@@ -1023,7 +1018,7 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
 
@@ -1096,6 +1091,8 @@ namespace Visifire.Charts
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
+
+            DataSeries currentDataSeries = null; // Current working DataSeries
 
             Boolean plankDrawn = false;
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
@@ -1197,12 +1194,12 @@ namespace Visifire.Charts
                         if (curDataPoints[index].Parent.Storyboard == null)
                             curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = curDataPoints[index].Parent;
+                        currentDataSeries = curDataPoints[index].Parent;
 
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].InternalOpacity * curDataPoints[index].Parent.InternalOpacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
@@ -1212,12 +1209,12 @@ namespace Visifire.Charts
                             if (curDataPoints[index].Parent.Storyboard == null)
                                 curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                            CurrentDataSeries = curDataPoints[index].Parent;
+                            currentDataSeries = curDataPoints[index].Parent;
 
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].InternalOpacity * nextDataPoints[index].Parent.InternalOpacity);
                         }
                     }
 
@@ -1244,7 +1241,7 @@ namespace Visifire.Charts
                     DataSeries series = curDataPoints[index].Parent;
                     Brush areaBrush = series.Color;
 
-                    CurrentDataSeries = series;
+                    currentDataSeries = series;
 
                     PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
 
@@ -1277,13 +1274,13 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
-                                storyboard = ApplyStackedAreaAnimation(frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         else
                         {
-                            Canvas area2d = Get2DArea(ref faces, areaParams);
+                            Canvas area2d = Get2DArea(currentDataSeries, ref faces, areaParams);
                             areaCanvas.Children.Add(area2d);
                             curDataPoints[index].Parent.Faces.VisualComponents.Add(area2d);
                             if (animationEnabled)
@@ -1293,7 +1290,7 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         curDataPoints[index].Parent.Faces.Visual = visual;
@@ -1716,7 +1713,7 @@ namespace Visifire.Charts
         /// <param name="faces">Faces</param>
         /// <param name="areaParams">Area parameters</param>
         /// <returns>Canvas</returns>
-        internal static Canvas Get2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
+        internal static Canvas Get2DArea(DataSeries currentDataSeries, ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             if (faces.Parts == null)
                 faces.Parts = new List<FrameworkElement>();
@@ -1752,7 +1749,7 @@ namespace Visifire.Charts
             if (areaParams.AnimationEnabled)
             {
                 // apply animation to the polygon that was used to create the area
-                areaParams.Storyboard = ApplyAreaAnimation(polygon, areaParams.Storyboard, areaParams.IsPositive, 0);
+                areaParams.Storyboard = ApplyAreaAnimation(currentDataSeries, polygon, areaParams.Storyboard, areaParams.IsPositive, 0);
             }
             visual.Children.Add(polygon);
 
@@ -1781,7 +1778,7 @@ namespace Visifire.Charts
 
                     if (areaParams.AnimationEnabled)
                     {
-                        areaParams.Storyboard = CreateOpacityAnimation(areaParams.Storyboard, bevel, 1, 1, 1);
+                        areaParams.Storyboard = CreateOpacityAnimation(currentDataSeries, areaParams.Storyboard, bevel, 1, 1, 1);
                         bevel.Opacity = 0;
                     }
 
@@ -1802,7 +1799,7 @@ namespace Visifire.Charts
         /// <param name="faces">Faces</param>
         /// <param name="areaParams">AreaParams</param>
         /// <returns>Canvas</returns>
-        internal static Canvas Get3DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
+        internal static Canvas Get3DArea(DataSeries currentDataSeries, ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             Canvas visual = new Canvas();
 
@@ -1898,7 +1895,7 @@ namespace Visifire.Charts
             if (areaParams.AnimationEnabled)
             {
                 // apply animation to the entire canvas that was used to create the area
-                areaParams.Storyboard = ApplyAreaAnimation(polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
+                areaParams.Storyboard = ApplyAreaAnimation(currentDataSeries, polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
 
             }
 

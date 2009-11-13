@@ -1340,6 +1340,3 @@ namespace Visifire.Commons
         #endregion
     }
 }
-
-
-
