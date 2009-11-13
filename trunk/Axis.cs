@@ -45,6 +45,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Windows.Browser;
 
 #endif
 using Visifire.Commons;
@@ -453,6 +454,30 @@ namespace Visifire.Charts
             typeof(IntervalTypes),
             typeof(Axis),
             new PropertyMetadata(OnIntervalTypePropertyChanged));
+
+        /// <summary>
+        /// Height of the Axis
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new Double Height
+        {
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// Width of the Axis
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new Double Width
+        {
+            get;
+            internal set;
+        }
 
         /// <summary>
         /// Get or set the "AxisLabels element" property of the axis
@@ -1319,24 +1344,6 @@ namespace Visifire.Charts
         /// Details about plot groups
         /// </summary>
         internal PlotDetails PlotDetails
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Get or set the width of the axis
-        /// </summary>
-        internal new Double Width
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Get or set the height of the axis
-        /// </summary>
-        internal new Double Height
         {
             get;
             set;

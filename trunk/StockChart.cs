@@ -67,15 +67,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -84,102 +75,9 @@ namespace Visifire.Charts
 
         #region Private Methods
 
-        /// <summary>
-        /// Apply animation for point chart
-        /// </summary>
-        /// <param name="pointGrid">Point chart grid</param>
-        /// <param name="storyboard">Stroyboard</param>
-        /// <param name="width">Width of the chart canvas</param>
-        /// <param name="height">Height of the chart canvas</param>
-        /// <returns>Storyboard</returns>
-        private static Storyboard ApplyStockChartAnimation(Panel pointGrid, Storyboard storyboard, Double width, Double height)
-        {
-#if WPF
-            if (storyboard != null && storyboard.GetValue(System.Windows.Media.Animation.Storyboard.TargetProperty) != null)
-                storyboard.Stop();
-#else
-            if (storyboard != null)
-                storyboard.Stop();
-#endif
-
-            TransformGroup group = new TransformGroup();
-            ScaleTransform scaleTransform = new ScaleTransform() { ScaleX = 0, ScaleY = 0, CenterX = 0.5, CenterY = 0.5 };
-            TranslateTransform translateTransform = new TranslateTransform() { X = 0, Y = 0 };
-            group.Children.Add(scaleTransform);
-            group.Children.Add(translateTransform);
-
-            pointGrid.RenderTransform = group;
-
-            Random rand = new Random((Int32)DateTime.Now.Ticks);
-            double begin = rand.NextDouble();
-
-            pointGrid.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-            DoubleCollection times = Graphics.GenerateDoubleCollection(0, 0.5, 0.75, 1);
-            DoubleCollection scaleValues = Graphics.GenerateDoubleCollection(0, 1, 0.5, 1);
-            DoubleCollection translateXValues = Graphics.GenerateDoubleCollection(pointGrid.DesiredSize.Width / 2, 0, pointGrid.DesiredSize.Width / 4, 0);
-            DoubleCollection translateYValues = Graphics.GenerateDoubleCollection(pointGrid.DesiredSize.Height / 2, 0, pointGrid.DesiredSize.Height / 4, 0);
-            List<KeySpline> splines1 = AnimationHelper.GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
-            List<KeySpline> splines2 = AnimationHelper.GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
-            List<KeySpline> splines3 = AnimationHelper.GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
-            List<KeySpline> splines4 = AnimationHelper.GenerateKeySplineList(new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1), new Point(0, 0.5), new Point(0.5, 1));
-
-            DoubleAnimationUsingKeyFrames xScaleAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleX)", begin + 0.5, times, scaleValues, splines1);
-            DoubleAnimationUsingKeyFrames yScaleAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", begin + 0.5, times, scaleValues, splines2);
-            DoubleAnimationUsingKeyFrames xTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.X)", begin + 0.5, times, translateXValues, splines3);
-            DoubleAnimationUsingKeyFrames yTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.Y)", begin + 0.5, times, translateYValues, splines4);
-
-            storyboard.Children.Add(xScaleAnimation);
-            storyboard.Children.Add(yScaleAnimation);
-            storyboard.Children.Add(xTranslateAnimation);
-            storyboard.Children.Add(yTranslateAnimation);
-
-            return storyboard;
-        }
-
         #endregion
 
         #region Internal Methods
-
-         /// <summary>
-        /// Calculate DataPoint width
-        /// </summary>
-        /// <param name="width">PlotCanvas width</param>
-        /// <param name="height">PlotCanvas height</param>
-        /// <param name="chart">Chart reference</param>
-        /// <returns>DataPointWidth as Double</returns>
-        //private static Double CalculateDataPointWidth(Double width, Double height, Chart chart)
-        //{
-        //    Double dataPointWidth;
-
-        //    Double minDiffValue = chart.PlotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Column, RenderAs.StackedColumn, RenderAs.StackedColumn100, RenderAs.Stock, RenderAs.CandleStick);
-            
-        //    if (double.IsPositiveInfinity(minDiffValue))
-        //        minDiffValue = 0;
-
-        //    if (Double.IsNaN(chart.DataPointWidth))
-        //    {
-        //        if (minDiffValue != 0)
-        //        {
-        //            dataPointWidth = Graphics.ValueToPixelPosition(0, width, (Double)chart.AxesX[0].InternalAxisMinimum, (Double)chart.AxesX[0].InternalAxisMaximum, minDiffValue + (Double)chart.AxesX[0].InternalAxisMinimum);
-        //            dataPointWidth *= .9;
-
-        //            if (dataPointWidth < 5)
-        //                dataPointWidth = 5;
-        //        }
-        //        else
-        //        {
-        //            dataPointWidth = width * .3;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        dataPointWidth = chart.PlotArea.Width / 100 * chart.DataPointWidth;
-        //    }
-
-        //    return dataPointWidth;
-        //}
-
 
         /// <summary>
         /// Recalculate and apply new brush

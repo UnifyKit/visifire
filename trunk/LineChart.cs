@@ -87,15 +87,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -362,7 +353,7 @@ namespace Visifire.Charts
         /// <param name="storyboard">Storyboard</param>
         /// <param name="isLineCanvas">Whether canvas is line canvas</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyLineChartAnimation(Panel canvas, Storyboard storyboard, Boolean isLineCanvas)
+        private static Storyboard ApplyLineChartAnimation(DataSeries currentDataSeries, Panel canvas, Storyboard storyboard, Boolean isLineCanvas)
         {
             LinearGradientBrush opacityMaskBrush = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
 
@@ -386,13 +377,13 @@ namespace Visifire.Charts
             DoubleCollection timeFrames = Graphics.GenerateDoubleCollection(0, 1);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-            storyboard.Children.Add(AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, GradStop2, "(GradientStop.Offset)", beginTime, timeFrames, values, splines));
+            storyboard.Children.Add(AnimationHelper.CreateDoubleAnimation(currentDataSeries, GradStop2, "(GradientStop.Offset)", beginTime, timeFrames, values, splines));
 
             values = Graphics.GenerateDoubleCollection(0.01, 1);
             timeFrames = Graphics.GenerateDoubleCollection(0, 1);
             splines = AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0), new Point(1, 1));
 
-            storyboard.Children.Add(AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, GradStop3, "(GradientStop.Offset)", beginTime, timeFrames, values, splines));
+            storyboard.Children.Add(AnimationHelper.CreateDoubleAnimation(currentDataSeries, GradStop3, "(GradientStop.Offset)", beginTime, timeFrames, values, splines));
 
             return storyboard;
         }
@@ -415,6 +406,7 @@ namespace Visifire.Charts
         internal static Canvas GetVisualObjectForLineChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+            DataSeries currentDataSeries = null;
 
             Canvas visual = new Canvas() { Width = width, Height = height };        // Canvas for line chart
             Canvas labelCanvas = new Canvas() { Width = width, Height = height };   // Canvas for placing labels
@@ -567,10 +559,10 @@ namespace Visifire.Charts
                     if (series.Storyboard == null)
                         series.Storyboard = new Storyboard();
 
-                    CurrentDataSeries = series;
+                    currentDataSeries = series;
 
                     // Apply animation to the lines
-                    series.Storyboard = ApplyLineChartAnimation(line2dCanvas, series.Storyboard, true);
+                    series.Storyboard = ApplyLineChartAnimation(currentDataSeries, line2dCanvas, series.Storyboard, true);
                 }
                 
                 // Create Moving Marker
@@ -628,12 +620,12 @@ namespace Visifire.Charts
             if (animationEnabled && seriesList.Count > 0)
             {
                 // Apply animation to the label canvas
-                CurrentDataSeries = seriesList[0];
+                currentDataSeries = seriesList[0];
 
-                if (CurrentDataSeries.Storyboard == null)
-                    CurrentDataSeries.Storyboard = new Storyboard();
+                if (currentDataSeries.Storyboard == null)
+                    currentDataSeries.Storyboard = new Storyboard();
 
-                CurrentDataSeries.Storyboard = ApplyLineChartAnimation(labelCanvas, CurrentDataSeries.Storyboard, false);
+                currentDataSeries.Storyboard = ApplyLineChartAnimation(currentDataSeries, labelCanvas, currentDataSeries.Storyboard, false);
             }
 
             clipRectangle = new RectangleGeometry();
@@ -642,10 +634,7 @@ namespace Visifire.Charts
 
             return visual;
         }
-
         
-
-
         /// <summary>
         /// MouseEnter event handler for MouseEnter event over PlotAreaCanvas
         /// </summary>

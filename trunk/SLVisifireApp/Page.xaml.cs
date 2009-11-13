@@ -18,6 +18,7 @@ using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Windows.Browser;
 using System.Windows.Controls.Primitives;
+using System.IO;
 
 namespace SLVisifireApp
 {

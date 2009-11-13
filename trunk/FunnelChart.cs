@@ -16,8 +16,6 @@ namespace Visifire.Charts
 {
     internal static class FunnelChart
     {
-        public static Grid _funnelChartGrid;
-
         /// <summary>
         /// Returns the visual object for funnel chart 
         /// </summary>
@@ -64,7 +62,7 @@ namespace Visifire.Charts
                     funnelDataPoints = tempDataPoints.ToList();
 
                 // Create funnel chart canvas
-                _funnelChartGrid = new Grid() { Height = height, Width = width };
+                Grid _funnelChartGrid = new Grid() { Height = height, Width = width };
 
                 #region Create layout for Funnel chart and labels
 
@@ -91,7 +89,7 @@ namespace Visifire.Charts
                 Double bottomRadius = 5;
                 Double gapRatio = (chart.View3D) ? 0.04 : 0.02;
 
-                funnelCanvas = CreateFunnelChart(funnelSeries, funnelDataPoints, isStreamLine, funnelCanvas, minPointHeight, chart.View3D, yScale, gapRatio, isSameSlantAngle, bottomRadius, animationEnabled);
+                funnelCanvas = CreateFunnelChart(_funnelChartGrid, funnelSeries, funnelDataPoints, isStreamLine, funnelCanvas, minPointHeight, chart.View3D, yScale, gapRatio, isSameSlantAngle, bottomRadius, animationEnabled);
 
                 // here
                 // funnelChartCanvas.Background = new SolidColorBrush(Colors.Red);
@@ -222,7 +220,7 @@ namespace Visifire.Charts
         /// <param name="bottomRadius">Bottom most raduis of a funnel</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>Canvas with funnel</returns>
-        private static Canvas CreateFunnelChart(DataSeries dataSeries, List<DataPoint> dataPoints, Boolean isStreamLine, Canvas funnelCanvas, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius, Boolean animationEnabled)
+        private static Canvas CreateFunnelChart(Grid _funnelChartGrid, DataSeries dataSeries, List<DataPoint> dataPoints, Boolean isStreamLine, Canvas funnelCanvas, Double minPointHeight, Boolean is3D, Double yScale, Double gapRatio, Boolean isSameSlantAngle, Double bottomRadius, Boolean animationEnabled)
         {
             Boolean isAnimationEnabled = (dataSeries.Chart as Chart).AnimationEnabled;
             Double plotHeight = funnelCanvas.Height;

@@ -886,8 +886,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => chart.Series[0].ShowInLegend = false,
-                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
+                () => chart.Series[0].ShowInLegend = true,
+                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -907,8 +907,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => chart.Series[0].DataPoints[2].ShowInLegend = false,
-                () => Assert.IsFalse((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
+                () => chart.Series[0].DataPoints[2].ShowInLegend = true,
+                () => Assert.IsTrue((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
             EnqueueTestComplete();
         }
 

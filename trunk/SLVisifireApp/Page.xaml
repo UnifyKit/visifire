@@ -5,8 +5,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 Width="Auto" Height="Auto"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="500" Height="300" Theme="Theme1">
-
+        <vc:Chart Theme="Theme1" Width="500" Height="300">
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
