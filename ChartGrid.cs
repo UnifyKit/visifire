@@ -255,7 +255,7 @@ namespace Visifire.Charts
         internal Canvas Visual
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -779,7 +779,10 @@ namespace Visifire.Charts
                 return;
             }
 
-            Visual = new Canvas();
+            if (Visual == null)
+                Visual = new Canvas();
+            else
+                Visual.Children.Clear();
 
             Width = width;
             Height = height;

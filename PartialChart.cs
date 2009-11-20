@@ -217,7 +217,18 @@ namespace Visifire.Charts
 
         #region Public Properties
 
-        // Using a DependencyProperty as the backing store for DataPointWidth. This enables animation, styling, binding, etc...
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.SmartLabelEnabled dependency property.  
+        /// </summary>
+        public static readonly DependencyProperty SmartLabelEnabledProperty =
+            DependencyProperty.Register("SmartLabelEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnSmartLabelEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.DataPointWidth dependency property.  
+        /// </summary>
         public static readonly DependencyProperty DataPointWidthProperty =
             DependencyProperty.Register("DataPointWidth",
             typeof(Double),
@@ -307,6 +318,17 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Chart),
             null);
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty AnimatedUpdateProperty = DependencyProperty.Register
+            ("AnimatedUpdate",
+            typeof(Boolean),
+            typeof(Chart), new PropertyMetadata(false));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.InternalBorderThickness dependency property.
@@ -461,6 +483,16 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Whether skipping of labels are allowed
+        /// Note: Currently implemented for Pie and Doughnut charts only
+        /// </summary>
+        public Boolean SmartLabelEnabled
+        {
+            get { return (Boolean)GetValue(SmartLabelEnabledProperty); }
+            set { SetValue(SmartLabelEnabledProperty, value); }
+        }
+
+        /// <summary>
         /// Width of a DataPoint
         /// </summary>
         public Double DataPointWidth
@@ -593,6 +625,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(AnimationEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Enables or disables animation
+        /// </summary>
+        public Boolean AnimatedUpdate
+        {
+            get
+            {
+                return (Boolean)GetValue(AnimatedUpdateProperty);
+            }
+            set
+            {
+                SetValue(AnimatedUpdateProperty, value);
             }
         }
 
@@ -1196,7 +1243,49 @@ namespace Visifire.Charts
                     }
                  
             }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            {
+                if (e.OldItems != null)
+                {
+                    foreach (DataSeries ds in e.OldItems)
+                    {
+                        if(ds.PlotGroup.DataSeriesList.Count == 1 || (View3D && ds.RenderAs == RenderAs.Area))
+                        {   
+                            Panel seriesVisual = ds.Visual;
 
+                            // remove pre existing parent panel for the series visual 
+                            if (seriesVisual != null && seriesVisual.Parent != null)
+                            {   
+                                Panel parent = seriesVisual.Parent as Panel;
+                                parent.Children.Remove(seriesVisual);
+                            }
+                        }
+
+                        ds.Visual = null;
+                    }
+                }
+            }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
+                if (this.InternalSeries != null)
+                {
+                    foreach (DataSeries ds in InternalSeries)
+                    {   
+                        Panel seriesVisual = ds.Visual;
+
+                        // remove pre existing parent panel for the series visual 
+                        if (seriesVisual != null && seriesVisual.Parent != null)
+                        {
+                            Panel parent = seriesVisual.Parent as Panel;
+                            parent.Children.Remove(seriesVisual);
+                        }
+                    }
+
+                    InternalSeries.Clear();
+                }
+            }
+
+            _datapoint2UpdatePartially = null;
             InvokeRender();
         }
               
@@ -1450,6 +1539,9 @@ namespace Visifire.Charts
                 _chartBorder.Margin = new Thickness(0, 0, 0, 0);
                 _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
                 _isShadowApplied = false;
+
+                if (ChartShadowLayer != null)
+                    ChartShadowLayer.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -1509,15 +1601,15 @@ namespace Visifire.Charts
 
             if (StyleDictionary != null)
             {
-#if SL
-                if (Style == null)
-                {
-                    Style myStyle = StyleDictionary["Chart"] as Style;
+//#if SL
+//                if (Style == null)
+//                {
+//                    Style myStyle = StyleDictionary["Chart"] as Style;
 
-                    if (myStyle != null)
-                        Style = myStyle;
-                }
-#else
+//                    if (myStyle != null)
+//                        Style = myStyle;
+//                }
+//#else
                 Style myStyle = StyleDictionary["Chart"] as Style;
 
                 _isThemeChanged = isThemePropertyChanged;
@@ -1530,7 +1622,7 @@ namespace Visifire.Charts
                         Style = myStyle;
                 }
 
-#endif
+//#endif
             }
             else
             {
@@ -1578,6 +1670,17 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="d">Chart</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSmartLabelEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
+
+        /// <summary>
+        /// DataPointWidthProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnDataPointWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
@@ -1614,6 +1717,7 @@ namespace Visifire.Charts
         private static void OnView3DPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
+            c._forcedRedraw = true;
             c.InvokeRender();
         }
 
@@ -2029,7 +2133,8 @@ namespace Visifire.Charts
         {
             if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
             {
-                Double x = e.GetPosition(this).X;
+                Double actualX = e.GetPosition(this).X;
+                Double x = actualX;
                 Double y = e.GetPosition(this).Y;
 
                 #region Set position of ToolTip
@@ -2068,15 +2173,32 @@ namespace Visifire.Charts
                     x = 0;
 
                 if (x < 0)
-                {
                     x = 0;
+
+                // If tooltip still goes out of towards y
+                if (!Double.IsNaN(this.ActualHeight) && y + toolTipSize.Height > this.ActualHeight)
+                {
+                    y = 0;
+                    x = actualX + 10;
+                    if (x <= 0)
+                        x = e.GetPosition(this).X + 10;
+
+                    if ((x + toolTipSize.Width) >= this.ActualWidth)
+                        x = e.GetPosition(this).X - toolTipSize.Width;
+
+                    if (x + toolTipSize.Width > this.ActualWidth)
+                        x = x + toolTipSize.Width - this.ActualWidth;
+
+                    if (toolTipSize.Width == _toolTip.MaxWidth)
+                        x = 0;
+
+                    if (x < 0)
+                        x = 0;
+
                 }
 
                 _toolTip.SetValue(Canvas.LeftProperty, x);
-
                 _toolTip.SetValue(Canvas.TopProperty, y);
-
-                Double left = (Double)_toolTip.GetValue(Canvas.LeftProperty);
 
                 #endregion
             }
@@ -2166,20 +2288,20 @@ namespace Visifire.Charts
 
                 _renderLock = true;
 
-                //try
-                {
+                try
+                {   
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
                 }
-                //catch (Exception e)
-                //{
-                //    _renderLock = false;
-                //    if (CheckSizeError(e as ArgumentException))
-                //        return;
-                //    else
-                //        throw new Exception(e.Message, e);
-                //}
+                catch (Exception e)
+                {
+                    _renderLock = false;
+                    if (CheckSizeError(e as ArgumentException))
+                        return;
+                    else
+                        throw new Exception(e.Message, e);
+                }
             }
         }
         
@@ -2206,7 +2328,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (chart.PlotArea.Background == null)
+                    if (chart.PlotArea.InternalBackground == null)
                     {
                         if (chart.Background == null)
                         {
@@ -2220,7 +2342,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                        intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
                         returnBrush = Graphics.GetDefaultFontColor(intensity);
                     }
                 }
@@ -2258,10 +2380,10 @@ namespace Visifire.Charts
                     }
                 }
                 else
-                {   
+                {
                     if (chart.PlotArea != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.Background == null)
+                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.InternalBackground == null)
                         {
                             if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
                             {
@@ -2275,7 +2397,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.Background);
+                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
                             brush = Graphics.GetDefaultFontColor(intensity);
                         }
                     }
@@ -2298,6 +2420,10 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        internal Boolean PARTIAL_RENDER_LOCK = false;
+        internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
+        internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
 
         /// <summary>
         /// Set to true before calling forced rerender redraw
@@ -2341,12 +2467,12 @@ namespace Visifire.Charts
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
 
-#if WPF
+
         /// <summary>
         /// Whether Theme is changed by the user
         /// </summary>
         internal Boolean _isThemeChanged = false;
-#endif
+
 
         #endregion
     }

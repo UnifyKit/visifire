@@ -19,7 +19,7 @@ internal abstract class Graph
         {
             if (dataPoint.Parent.RenderAs == RenderAs.Point)
             {
-                marker.FillColor = (Brush)newValue;
+                marker.MarkerFillColor = (Brush)newValue;
 
                 if (marker.MarkerType != MarkerTypes.Cross)
                 {
@@ -58,7 +58,7 @@ internal abstract class Graph
                     break;
 
                 default:
-                    marker.FillColor = (Brush)newValue;
+                    marker.MarkerFillColor = (Brush)newValue;
                     break;
             }
 

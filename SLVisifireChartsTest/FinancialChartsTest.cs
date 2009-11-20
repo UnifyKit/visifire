@@ -516,8 +516,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -541,8 +541,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();
@@ -1275,8 +1275,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -1300,8 +1300,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();
@@ -2570,23 +2570,6 @@ namespace SLVisifireChartsTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HtmlElement2_OnClick(object sender, HtmlEventArgs e)
-        {
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 1500);
-            timer.Start();
-        }
-
-        void timer_Tick(object sender, EventArgs e)
-        {
-            _chart.Series[0].MinPointHeight = rand.Next(0, 100);
-        }
-
-        /// <summary>
-        /// Event handler for click event of the Html element
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Exit_OnClick(object sender, System.Windows.Browser.HtmlEventArgs e)
         {
             EnqueueTestComplete();
@@ -2615,11 +2598,6 @@ namespace SLVisifireChartsTest
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>
         private const int _sleepTime = 1000;
-
-        /// <summary>
-        /// Chart reference
-        /// </summary>
-        private Chart _chart = null;
 
         // Create a new instance of Random class
         private Random rand = new Random();

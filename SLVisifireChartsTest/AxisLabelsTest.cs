@@ -42,6 +42,28 @@ namespace SLVisifireChartsTest
         }
 
         /// <summary>
+        /// Check the default value of TextAlignment. 
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the default value of TextAlignment.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void TextAlignmentDefaultValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueDelay(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(TextAlignment.Left, chart.AxesX[0].AxisLabels.TextAlignment));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
         /// Check the default value of Interval. 
         /// </summary> 
         [TestMethod]
@@ -103,7 +125,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(1, chart.AxesX[0].AxisLabels.Rows));
+                () => Assert.AreEqual(0, chart.AxesX[0].AxisLabels.Rows));
 
             EnqueueTestComplete();
         }
@@ -140,6 +162,38 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 () => Assert.AreEqual(-30, _axisX.AxisLabels.Angle),
                 () => Assert.AreEqual(30, _axisY.AxisLabels.Angle));
+
+            EnqueueTestComplete();
+        }
+
+        /// <summary>
+        /// Check the New value for TextAlignment.
+        /// </summary> 
+        [TestMethod]
+        [Description("Check the new value for TextAlignment.")]
+        [Owner("[....]")]
+        [Asynchronous]
+        public void TextAlignmentNewValue()
+        {
+            Chart chart = new Chart();
+            chart.Width = 400;
+            chart.Height = 300;
+
+            _axisX = new Axis();
+            _axisY = new Axis();
+
+            _axisX.AxisLabels.TextAlignment = TextAlignment.Center;
+            _axisY.AxisLabels.TextAlignment = TextAlignment.Center;
+
+            chart.AxesX.Add(_axisX);
+            chart.AxesY.Add(_axisY);
+
+            Common.CreateAndAddDefaultDataSeries(chart);
+            EnqueueDelay(_sleepTime);
+
+            CreateAsyncTask(chart,
+                () => Assert.AreEqual(TextAlignment.Center, _axisX.AxisLabels.TextAlignment),
+                () => Assert.AreEqual(TextAlignment.Center, _axisY.AxisLabels.TextAlignment));
 
             EnqueueTestComplete();
         }
@@ -192,8 +246,8 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
-            _axisX.AxisLabels.Opacity = 0.5;
-            _axisY.AxisLabels.Opacity = 0.5;
+            _axisX.AxisLabels.InternalOpacity = 0.5;
+            _axisY.AxisLabels.InternalOpacity = 0.5;
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -202,8 +256,8 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(0.5, _axisX.AxisLabels.Opacity, Common.HighPrecisionDelta),
-                () => Assert.AreEqual(0.5, _axisY.AxisLabels.Opacity, Common.HighPrecisionDelta));
+                () => Assert.AreEqual(0.5, _axisX.AxisLabels.InternalOpacity, Common.HighPrecisionDelta),
+                () => Assert.AreEqual(0.5, _axisY.AxisLabels.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }
@@ -543,7 +597,6 @@ namespace SLVisifireChartsTest
             EnqueueCallback(() =>
             {
                 _htmlElement1 = Common.GetDisplayMessageButton(_htmlElement1);
-                _htmlElement1.SetStyleAttribute("width", "900px");
                 _htmlElement1.SetProperty("value", numberOfDataPoint + " AxisLabels are added. Click here to exit.");
                 _htmlElement2 = Common.GetDisplayMessageButton(_htmlElement2);
                 _htmlElement2.SetStyleAttribute("top", "540px");
@@ -695,7 +748,7 @@ namespace SLVisifireChartsTest
 
             EnqueueConditional(() => { return _isLoaded; });
             EnqueueDelay(_sleepTime);
-
+            
             EnqueueCallback(() =>
             {
                 DataSeries dataSeries = new DataSeries();

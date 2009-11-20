@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 
 namespace Visifire.Commons
-{   
+{
     /// <summary>
     /// Visifire Control base class
     /// </summary>
@@ -39,12 +39,12 @@ namespace Visifire.Commons
         /// <returns>String</returns>
         public static String GetAbsolutePath(String path)
         {
-#if SL      
+#if SL
             String address, queryString;
             String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
-                        
+
             Int32 index = path.IndexOf('?');
-            
+
             if (index == -1)
             {
                 address = path;
@@ -83,7 +83,7 @@ namespace Visifire.Commons
         #endregion
 
         #region Public Properties
-        
+
         /// <summary>
         /// Identifies the Visifire.Commons.ToolTipEnabled dependency property.
         /// </summary>
@@ -138,7 +138,7 @@ namespace Visifire.Commons
 #if WPF   
                 return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
 #else
-                return (!System.Windows.Browser.HtmlPage.IsEnabled);
+                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
 #endif
             }
         }
@@ -375,5 +375,5 @@ namespace Visifire.Commons
 
         #endregion
 
-        }
     }
+}

@@ -77,11 +77,6 @@
     <ErrorReport>prompt</ErrorReport>
     <NoConfig>true</NoConfig>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
-    <OutputPath>bin\WPF\</OutputPath>
-    <NoConfig>true</NoConfig>
-    <NoStdLib>true</NoStdLib>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Silverlight.Testing, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -19,6 +19,7 @@ using Visifire.Commons;
 using System.Windows.Media.Animation;
 using System.IO;
 using System.Xml;
+using System.Windows.Threading;
 
 namespace WPFVisifireChartsApp
 {
@@ -30,75 +31,6 @@ namespace WPFVisifireChartsApp
         public Window1()
         {
             InitializeComponent();
-
-            for (Int32 i = 0; i < 3; i++)
-            {
-                DataSeries ds = new DataSeries();
-                if (i == 0 || i == 1)
-                    ds.RenderAs = RenderAs.Line;
-                else
-                    ds.RenderAs = RenderAs.CandleStick;
-
-                Int32 m = 1;
-                Int32 d = 1;
-                Int32 y = 2009;
-                for (Int32 j = 0; j < 2500; j++)
-                {
-                    DataPoint dp = new DataPoint();
-                    if (d == 28)
-                    {
-                        d = 1;
-                        m++;
-                    }
-                    if (m > 12)
-                    {
-                        m = 1;
-                        d = 1;
-                        y++;
-                    }
-                    dp.XValue = new DateTime(y, m, d++);
-                    dp.YValue = rand.Next(10, 100);
-                    ds.DataPoints.Add(dp);
-                }
-
-                MyChart1.Series.Add(ds);
-            }
-
-            for (Int32 i = 0; i < 3; i++)
-            {
-                DataSeries ds = new DataSeries();
-                if (i == 0 || i == 1)
-                    ds.RenderAs = RenderAs.Line;
-                else
-                    ds.RenderAs = RenderAs.Column;
-
-                Int32 m = 1;
-                Int32 d = 1;
-                Int32 y = 2009;
-                for (Int32 j = 0; j < 2500; j++)
-                {
-                    DataPoint dp = new DataPoint();
-                    if (d == 28)
-                    {
-                        d = 1;
-                        m++;
-                    }
-                    if (m > 12)
-                    {
-                        m = 1;
-                        d = 1;
-                        y++;
-                    }
-                    dp.XValue = new DateTime(y, m, d++);
-                    dp.YValue = rand.Next(10, 100);
-                    ds.DataPoints.Add(dp);
-                }
-
-
-                MyChart2.Series.Add(ds);
-            }
         }
-
-        Random rand = new Random();
     }
 }

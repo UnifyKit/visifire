@@ -68,15 +68,7 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-        
+       
         #endregion
 
         #region Private Delegates
@@ -93,7 +85,7 @@ namespace Visifire.Charts
         /// <param name="width">Width of the chart canvas</param>
         /// <param name="height">Height of the chart canvas</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyBubbleChartAnimation(Panel bubbleGrid, Storyboard storyboard, Double width, Double height)
+        private static Storyboard ApplyBubbleChartAnimation(DataSeries currentDataSeries, Panel bubbleGrid, Storyboard storyboard, Double width, Double height)
         {
             TranslateTransform translateTransform = new TranslateTransform() { X = 0, Y = -height };
             bubbleGrid.RenderTransform = translateTransform;
@@ -150,8 +142,8 @@ namespace Visifire.Charts
                 new Point(0, 0), new Point(0.5, 1),
                 new Point(0.5, 0), new Point(1, 1));
 
-            DoubleAnimationUsingKeyFrames xTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.X)", begin * 0.5 + 0.5, times1, translateXValues, splines3);
-            DoubleAnimationUsingKeyFrames yTranslateAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, translateTransform, "(TranslateTransform.Y)", begin * 0.5 + 0.5, times2, translateYValues, splines4);
+            DoubleAnimationUsingKeyFrames xTranslateAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, translateTransform, "(TranslateTransform.X)", begin * 0.5 + 0.5, times1, translateXValues, splines3);
+            DoubleAnimationUsingKeyFrames yTranslateAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, translateTransform, "(TranslateTransform.Y)", begin * 0.5 + 0.5, times2, translateYValues, splines4);
             storyboard.Children.Add(xTranslateAnimation);
             storyboard.Children.Add(yTranslateAnimation);
 
@@ -174,13 +166,13 @@ namespace Visifire.Charts
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Bubble chart canvas</returns>
         internal static Canvas GetVisualObjectForBubbleChart(Panel preExistingPanel, Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
-        {
+        {   
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
 
             // Visual for all bubble charts, Nothing but presisting visual for buble chart
             Canvas visual;
 
-            // Hold all bubbles of all series 
+            // Holds all bubbles of all series 
             Canvas bubbleChartCanvas;
 
             RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out bubbleChartCanvas, width, height);
@@ -192,22 +184,23 @@ namespace Visifire.Charts
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
 
             foreach (DataSeries series in seriesList)
-            {   
-                if (series.Enabled == false)
-                    continue;
-
+            {
                 Faces dsFaces = new Faces() { Visual = bubbleChartCanvas };
                 series.Faces = dsFaces;
+
+                if (series.Enabled == false)
+                    continue;
+                                
                 //out Double minimumZVal, out Double maximumZVal
                 PlotGroup plotGroup = series.PlotGroup;
 
                 Double minimumZVal, maximumZVal;
                 CalculateMaxAndMinZValue(series, out minimumZVal, out maximumZVal);
 
-                Boolean pixelLavelShadow;
+                // Boolean pixelLavelShadow = false;
 
-                if (series.InternalDataPoints.Count <= 25)
-                    pixelLavelShadow = true;
+                //if (series.InternalDataPoints.Count <= 25)
+                //    pixelLavelShadow = true;
 
                 foreach (DataPoint dataPoint in series.InternalDataPoints)
                 {   
@@ -219,16 +212,14 @@ namespace Visifire.Charts
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = dataPoint.Parent;
-
                         // Apply animation to the bubbles
-                        dataPoint.Parent.Storyboard = ApplyBubbleChartAnimation(dataPoint.Marker.Visual, dataPoint.Parent.Storyboard, width, height);
+                        dataPoint.Parent.Storyboard = ApplyBubbleChartAnimation(dataPoint.Parent, dataPoint.Marker.Visual, dataPoint.Parent.Storyboard, width, height);
                     }
                 }
             }
-            
+
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, 0, width, height);
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
             visual.Clip = clipRectangle;
 
             return visual;
@@ -240,9 +231,9 @@ namespace Visifire.Charts
 
             // Remove preexisting dataPoint visual and label visual
             if (dpFaces != null && dpFaces.Visual != null && bubleChartCanvas == dpFaces.Visual.Parent)
-            {
+            {   
                 bubleChartCanvas.Children.Remove(dataPoint.Faces.Visual);
-                //dpFaces = null;
+                // dpFaces = null;
             }
 
             dataPoint.Faces = null;
@@ -257,7 +248,6 @@ namespace Visifire.Charts
             Canvas dataPointVisual = new Canvas();
 
             Faces bubbleFaces = new Faces();
-            bubbleFaces.Parts = new List<DependencyObject>();
 
             Double xPosition = Graphics.ValueToPixelPosition(0, plotWidth, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
             Double yPosition = Graphics.ValueToPixelPosition(plotHeight, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
@@ -277,32 +267,51 @@ namespace Visifire.Charts
             if (dataPoint.BorderColor != null)
                 marker.BorderColor = dataPoint.BorderColor;
 
+            marker.TextBackground = dataPoint.LabelBackground;
             marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
             marker.TextAlignmentX = AlignmentX.Center;
             marker.TextAlignmentY = AlignmentY.Center;
             marker.Tag = new ElementData() { Element = dataPoint };
 
+            Double gap = ((Double)dataPoint.MarkerScale * (Double)dataPoint.MarkerSize) / 2;
+
             if (!String.IsNullOrEmpty(labelText))
-            {   
+            {
                 marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
                 marker.FontSize = (Double)dataPoint.LabelFontSize;
                 marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
                 marker.FontFamily = dataPoint.LabelFontFamily;
                 marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                marker.TextBackground = dataPoint.LabelBackground;
+
+                marker.TextAlignmentX = AlignmentX.Center;
+                marker.TextAlignmentY = AlignmentY.Center;
+
+                if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                {
+                    marker.LabelAngle = dataPoint.LabelAngle;
+                    marker.TextOrientation = Orientation.Vertical;
+
+                    marker.TextAlignmentX = AlignmentX.Center;
+                    marker.TextAlignmentY = AlignmentY.Center;
+
+                    marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                }
 
                 marker.CreateVisual();
-                
-                Double gap = (marker.ScaleFactor * (Double)dataPoint.MarkerSize) / 2;
 
-                if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
-                    marker.TextAlignmentY = AlignmentY.Bottom;
-                else if (yPosition + gap > plotHeight && (yPosition + marker.TextBlockSize.Height / 2) > plotHeight)
-                    marker.TextAlignmentY = AlignmentY.Top;
+                if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                {
+                    if (yPosition - gap < 0 && (yPosition - marker.TextBlockSize.Height / 2) < 0)
+                        marker.TextAlignmentY = AlignmentY.Bottom;
+                    else if (yPosition + gap > plotHeight && (yPosition + marker.TextBlockSize.Height / 2) > plotHeight)
+                        marker.TextAlignmentY = AlignmentY.Top;
 
-                if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
-                    marker.TextAlignmentX = AlignmentX.Right;
-                else if (xPosition + gap > plotWidth && (xPosition + marker.TextBlockSize.Width / 2) > plotWidth)
-                    marker.TextAlignmentX = AlignmentX.Left;
+                    if (xPosition - gap < 0 && (xPosition - marker.TextBlockSize.Width / 2) < 0)
+                        marker.TextAlignmentX = AlignmentX.Right;
+                    else if (xPosition + gap > plotWidth && (xPosition + marker.TextBlockSize.Width / 2) > plotWidth)
+                        marker.TextAlignmentX = AlignmentX.Left;
+                }
             }
 
             marker.PixelLavelShadow = false; // pixelLavelShadow;
@@ -317,13 +326,17 @@ namespace Visifire.Charts
 
             bubbleFaces.Visual = marker.Visual;
             dataPoint.Faces = bubbleFaces;
-            
-            marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
 
+            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
-            
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
+            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
+
+            if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                dataPoint.Select(true);
         }
 
         internal static void UpdateBubblePositionAccording2XandYValue(DataPoint dataPoint, Double drawingAreaWidth, Double drawingAreaHeight, Boolean animatedUpdate, Double oldSize, Double newSize)
@@ -416,10 +429,15 @@ namespace Visifire.Charts
             }
 
             Random rand = new Random(DateTime.Now.Millisecond);
-            storyboard.SpeedRatio = rand.NextDouble();
-            
-            storyboard.Begin();
+            storyboard.SpeedRatio = 2 - rand.NextDouble();
             dataPoint.Storyboard = storyboard;
+
+
+#if WPF
+            storyboard.Begin(dataPoint.Chart._rootElement, true);
+#else
+            storyboard.Begin();
+#endif
 
         }
 
@@ -505,50 +523,50 @@ namespace Visifire.Charts
             {
                 case VcProperties.DataPoints:
                 //case VcProperties.YValues:
+                    chart.ChartArea.RenderSeries();
+                    //Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
 
-                    Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+                    //Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    //Double height = chart.ChartArea.ChartVisualCanvas.Height;
 
-                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
-                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
+                    //PlotDetails plotDetails = chart.PlotDetails;
+                    //PlotGroup plotGroup = dataSeries.PlotGroup;
 
-                    PlotDetails plotDetails = chart.PlotDetails;
-                    PlotGroup plotGroup = dataSeries.PlotGroup;
+                    //List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
 
-                    List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
+                    //List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
 
-                    List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
+                    //RenderAs currentRenderAs = dataSeries.RenderAs;
 
-                    RenderAs currentRenderAs = dataSeries.RenderAs;
+                    //Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
 
-                    Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
+                    //for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
+                    //{
+                    //    if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
+                    //        selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
+                    //}
 
-                    for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
-                    {
-                        if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
-                            selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
-                    }
+                    //if (selectedDataSeries4Rendering.Count == 0)
+                    //    return;
 
-                    if (selectedDataSeries4Rendering.Count == 0)
-                        return;
+                    //Panel oldPanel = null;
+                    //Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
 
-                    Panel oldPanel = null;
-                    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+                    //if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+                    //{
+                    //    oldPanel = RenderedCanvasList[currentRenderAs];
+                    //}
 
-                    if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
-                    {
-                        oldPanel = RenderedCanvasList[currentRenderAs];
-                    }
+                    //Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
 
-                    Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
-
-                    if (oldPanel == null)
-                    {
-                        chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
-                        renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
-                        ChartVisualCanvas.Children.Add(renderedChart);
-                    }
-                    else
-                        chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
+                    //if (oldPanel == null)
+                    //{
+                    //    chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                    //    renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
+                    //    ChartVisualCanvas.Children.Add(renderedChart);
+                    //}
+                    //else
+                    //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
 
                     break;
 
@@ -561,7 +579,7 @@ namespace Visifire.Charts
         }
 
         internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
-        {
+        {   
             Boolean is3D = chart.View3D;
             ChartArea chartArea = chart.ChartArea;
             Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
@@ -599,12 +617,27 @@ namespace Visifire.Charts
             PlotDetails plotDetails = chart.PlotDetails;
             Marker marker = dataPoint.Marker;
             DataSeries dataSeries = dataPoint.Parent;
-            Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
-            Canvas bubleChartCanvas = bubbleVisual.Parent as Canvas;
-
+            Canvas bubleChartCanvas = dataSeries.Faces.Visual as Canvas;
+            
             Double plotHeight = chart.ChartArea.ChartVisualCanvas.Height;
             Double plotWidth = chart.ChartArea.ChartVisualCanvas.Width;
+            Double minimumZVal, maximumZVal;
 
+            ColumnChart.UpdateParentVisualCanvasSize(chart, bubleChartCanvas);
+            
+            if (property == VcProperties.Enabled)
+            {   
+                dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
+                CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
+                return;
+            }
+
+            if (dataPoint.Faces == null)
+                return;
+
+            Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
+            
             switch (property)
             {
                 case VcProperties.Bevel:
@@ -623,7 +656,7 @@ namespace Visifire.Charts
 
                 case VcProperties.LabelBackground:
                     if (marker != null)
-                        marker.TextBackground = new SolidColorBrush(Colors.Transparent);
+                        marker.TextBackground = dataPoint.LabelBackground;
                     break;
 
                 case VcProperties.LabelEnabled:
@@ -648,10 +681,10 @@ namespace Visifire.Charts
                         marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
                     break;
 
-                case VcProperties.LabelFontSize:
-                    if (marker != null)
-                        marker.FontSize = (Double)dataPoint.LabelFontSize;
-                    break;
+                //case VcProperties.LabelFontSize:
+                //    if (marker != null)
+                //        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                //    break;
 
                 case VcProperties.LabelFontWeight:
                     if (marker != null)
@@ -678,29 +711,25 @@ namespace Visifire.Charts
                         marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
                     break;
 
-                case VcProperties.MarkerColor:
-                    if (marker != null)
-                        marker.FillColor = dataPoint.MarkerColor;
-                    break;
-
+                case VcProperties.XValueFormatString:
+                case VcProperties.YValueFormatString:
+                case VcProperties.LabelFontSize:
                 case VcProperties.LabelStyle:
                 case VcProperties.LabelText:
                 case VcProperties.MarkerScale:
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
-                case VcProperties.Enabled:
-
-                    Double minimumZVal, maximumZVal;
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                     CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
                     CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
                     break;
 
-                // case VcProperties.MarkerEnabled:
-                //    break;
-
                 case VcProperties.ShadowEnabled:
                     if (marker != null)
+                    {
+                        marker.ShadowEnabled = (Boolean)dataPoint.ShadowEnabled;
                         marker.ApplyRemoveShadow();
+                    }
                     break;
 
                 case VcProperties.Opacity:
@@ -719,22 +748,39 @@ namespace Visifire.Charts
                 case VcProperties.XValueType:
                     chart.InvokeRender();
                     break;
-                
+                    
                 case VcProperties.XValue:
                 case VcProperties.YValue:
-                    if(marker != null)
-                        UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, true, marker.MarkerShape.Width, marker.MarkerShape.Width);
+
+                    if (isAxisChanged)
+                        UpdateDataSeries(dataSeries, property, newValue, false);
+                    else
+                        if(marker != null)
+                        {   
+                            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+
+                            if ((Boolean)dataPoint.LabelEnabled)
+                                marker.Text = dataPoint.TextParser(dataPoint.LabelText);
+                            
+                            UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
+                        }
+
                     break;
 
                 case VcProperties.ZValue:
 
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+
+                    //if ((Boolean)dataPoint.LabelEnabled)
+                    //    marker.Text = dataPoint.TextParser(dataPoint.LabelText);
+                    
                     CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
                     
                     foreach (DataPoint dp in dataSeries.InternalDataPoints)
                     {
                         if (Double.IsNaN(dp.InternalYValue) || (dp.Enabled == false))
                             continue;
-
+                        
                         ApplyZValue(dp, minimumZVal, maximumZVal, plotWidth, plotHeight);
                     }
 

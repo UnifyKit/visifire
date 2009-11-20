@@ -1,102 +1,18 @@
-﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300">
-<vc:Chart.Titles>
-<vc:Title Text="Visifire Bubble Chart">
-</vc>
-</vc:Chart.Titles>
-<vc:Chart.Legends>
-<vc:Legend EntryMargin="5" LabelMargin="5">
-</vc>
-</vc:Chart.Legends>
-<vc:Chart.AxesX>
-<vc:Axis Interval="1">
-</vc>
-</vc:Chart.AxesX>
-<vc:Chart.Series>
-<vc:DataSeries LegendText="2005" RenderAs="Bubble" ToolTipText="Size: #ZValue">
-<vc:DataSeries.DataPoints>
-<vc:DataPoint YValue="6009" ZValue="300">
-</vc>
-<vc:DataPoint YValue="7547" ZValue="200">
-</vc>
-<vc:DataPoint YValue="5047" ZValue="400">
-</vc>
-<vc:DataPoint YValue="8208" ZValue="600">
-</vc>
-<vc:DataPoint YValue="2222" ZValue="450">
-</vc>
-<vc:DataPoint YValue="7009" ZValue="340">
-</vc>
-<vc:DataPoint YValue="2527" ZValue="100">
-</vc>
-<vc:DataPoint YValue="3047" ZValue="230">
-</vc>
-<vc:DataPoint YValue="6248" ZValue="330">
-</vc>
-<vc:DataPoint YValue="3422" ZValue="422">
-</vc>
-<vc:DataPoint YValue="2459" ZValue="345">
-</vc>
-<vc:DataPoint YValue="5667" ZValue="234">
-</vc>
-<vc:DataPoint YValue="2347" ZValue="480">
-</vc>
-<vc:DataPoint YValue="4567" ZValue="230">
-</vc>
-<vc:DataPoint YValue="3678" ZValue="150">
-</vc>
-<vc:DataPoint YValue="6009" ZValue="300">
-</vc>
-<vc:DataPoint YValue="3689" ZValue="80">
-</vc>
-<vc:DataPoint YValue="5047" ZValue="100">
-</vc>
-<vc:DataPoint YValue="3456" ZValue="300">
-</vc>
-<vc:DataPoint YValue="1890" ZValue="550">
-</vc>
-<vc:DataPoint YValue="2568" ZValue="300">
-</vc>
-<vc:DataPoint YValue="4567" ZValue="500">
-</vc>
-<vc:DataPoint YValue="4568" ZValue="370">
-</vc>
-<vc:DataPoint YValue="5678" ZValue="380">
-</vc>
-<vc:DataPoint YValue="2672" ZValue="250">
-</vc>
-<vc:DataPoint YValue="2480" ZValue="310">
-</vc>
-<vc:DataPoint YValue="3567" ZValue="204">
-</vc>
-<vc:DataPoint YValue="4578" ZValue="440">
-</vc>
-<vc:DataPoint YValue="7346" ZValue="260">
-</vc>
-<vc:DataPoint YValue="5345" ZValue="480">
-</vc>
-<vc:DataPoint YValue="4568" ZValue="309">
-</vc>
-<vc:DataPoint YValue="3467" ZValue="250">
-</vc>
-<vc:DataPoint YValue="8732" ZValue="470">
-</vc>
-<vc:DataPoint YValue="2344" ZValue="680">
-</vc>
-<vc:DataPoint YValue="3322" ZValue="180">
-</vc>
-<vc:DataPoint YValue="2345" ZValue="480">
-</vc>
-<vc:DataPoint YValue="4768" ZValue="309">
-</vc>
-<vc:DataPoint YValue="4667" ZValue="250">
-</vc>
-<vc:DataPoint YValue="2232" ZValue="170">
-</vc>
-<vc:DataPoint YValue="1335" ZValue="280">
-</vc>
-<vc:DataPoint YValue="2342" ZValue="180">
-</vc>
-</vc:DataSeries.DataPoints>
-</vc:DataSeries>
-</vc:Chart.Series>
+﻿<vc:Chart Name="MyChart1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme2"
+        Width="500" Height="300">
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint XValue="1" YValue="10"/>
+        <vc:DataPoint XValue="2" YValue="22"/>
+        <vc:DataPoint XValue="3" YValue="20"/>
+        <vc:DataPoint XValue="4" YValue="30"/>
+        <vc:DataPoint XValue="5" YValue="8"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+
 </vc:Chart>
+
+

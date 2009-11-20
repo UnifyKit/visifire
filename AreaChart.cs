@@ -207,15 +207,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -347,7 +338,7 @@ namespace Visifire.Charts
         /// <param name="isPositive">Whether DataPoint is positive</param>
         /// <param name="beginTime">Animation begin time</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyAreaAnimation(UIElement areaElement, Storyboard storyboard, bool isPositive, Double beginTime)
+        private static Storyboard ApplyAreaAnimation(DataSeries currentDataSeries, UIElement areaElement, Storyboard storyboard, bool isPositive, Double beginTime)
         {
             ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
             areaElement.RenderTransform = scaleTransform;
@@ -369,7 +360,7 @@ namespace Visifire.Charts
                 new Point(0, 0), new Point(0.5, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
+            DoubleAnimationUsingKeyFrames growAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, scaleTransform, "(ScaleTransform.ScaleY)", beginTime + 0.5, frameTimes, values, splines);
             storyboard.Children.Add(growAnimation);
 
             return storyboard;
@@ -383,9 +374,9 @@ namespace Visifire.Charts
         /// <param name="beginTime">Animation begin time</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard ApplyStackedAreaAnimation(FrameworkElement areaElement, Storyboard storyboard, Double beginTime, Double duration)
+        private static Storyboard ApplyStackedAreaAnimation(DataSeries currentDataSeries, FrameworkElement areaElement, Storyboard storyboard, Double beginTime, Double duration)
         {
-            return AnimationHelper.ApplyOpacityAnimation(areaElement, CurrentDataSeries, storyboard, beginTime, duration,0, 1);
+            return AnimationHelper.ApplyOpacityAnimation(areaElement, currentDataSeries, storyboard, beginTime, duration,0, 1);
         }
 
         /// <summary>
@@ -397,13 +388,13 @@ namespace Visifire.Charts
         /// <param name="opacity">Target opacity</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateOpacityAnimation(Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
+        private static Storyboard CreateOpacityAnimation(DataSeries currentDataSeries, Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
         {
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, opacity);
             DoubleCollection frames = Graphics.GenerateDoubleCollection(0, duration);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(frames.Count);
 
-            DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(CurrentDataSeries, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = AnimationHelper.CreateDoubleAnimation(currentDataSeries, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
             storyboard.Children.Add(opacityAnimation);
 
             return storyboard;
@@ -457,7 +448,7 @@ namespace Visifire.Charts
             marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
             marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
             marker.TextBackground = dataPoint.LabelBackground;
-            marker.FillColor = dataPoint.MarkerColor;
+            marker.MarkerFillColor = dataPoint.MarkerColor;
             marker.Tag = new ElementData() { Element = dataPoint };
             return marker;
         }
@@ -470,7 +461,7 @@ namespace Visifire.Charts
         /// <param name="position">position of the marker</param>
         /// <param name="isPositive">Whether DataPoint Value is positive or negative</param>
         /// <returns>Marker</returns>
-        internal static Marker GetMarkerForDataPoint(Chart chart, DataPoint dataPoint, Double position, bool isPositive)
+        internal static Marker GetMarkerForDataPoint(Chart chart, Double height, Boolean isTopOfStack, DataPoint dataPoint, Double position, bool isPositive)
         {
             if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
             {
@@ -481,22 +472,76 @@ namespace Visifire.Charts
 
                 if (true && !String.IsNullOrEmpty(labelText))
                 {
+                    if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                    {
+                        dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
+                        dataPoint.Marker.TextOrientation = Orientation.Vertical;
+
+                        if (isPositive)
+                        {
+                            dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                        }
+                        else
+                        {
+                            dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        }
+
+                        dataPoint.Marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                    }
+
                     dataPoint.Marker.CreateVisual();
 
-                    dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
-                    if (isPositive)
+                    if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                     {
-                        if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
+
+                        if (isPositive)
+                        {
+                            if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
+                            {
+                                if (!isTopOfStack)
+                                {
+                                    if (position + dataPoint.Marker.TextBlockSize.Height > height)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                }
+                                else
+                                {
+                                    //if (position < dataPoint.Marker.MarkerActualSize.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                    if (position - dataPoint.Marker.MarkerActualSize.Height - dataPoint.Marker.MarkerSize.Height / 2 < 0 || dataPoint.LabelStyle == LabelStyles.Inside)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                }
+                            }
+                            else if (dataPoint.LabelStyle == LabelStyles.OutSide)
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        }
                         else
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
-                    }
-                    else
-                    {
-                        if (position + dataPoint.Marker.MarkerActualSize.Height > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
-                        else
-                            dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                        {
+                            if (dataPoint.LabelStyle == LabelStyles.OutSide && !dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet)
+                            {
+                                if (!isTopOfStack)
+                                    dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                else
+                                {
+                                    if (position + dataPoint.Marker.MarkerActualSize.Height + dataPoint.Marker.MarkerSize.Height / 2 > chart.PlotArea.BorderElement.Height || dataPoint.LabelStyle == LabelStyles.Inside)
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                                    else
+                                        dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                                }
+                            }
+                            else if (dataPoint.LabelStyle == LabelStyles.OutSide)
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
+                            else
+                                dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
+                        }
+
                     }
                 }
 
@@ -504,6 +549,7 @@ namespace Visifire.Charts
 
                 return dataPoint.Marker;
             }
+
             return null;
         }
 
@@ -522,10 +568,15 @@ namespace Visifire.Charts
             Point endPoint = new Point();
             Boolean IsStartPoint = true;
 
-            foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+            List<DataPoint> sortedDataPoints = (from dp in dataSeries.InternalDataPoints orderby dp.InternalXValue select dp).ToList();
+
+            foreach (DataPoint dataPoint in sortedDataPoints)
             {
+                dataPoint.Faces = null;
                 if (dataPoint.Enabled == false)
+                {
                     continue;
+                }
 
                 if (Double.IsNaN(dataPoint.InternalYValue))
                 {   
@@ -537,10 +588,7 @@ namespace Visifire.Charts
                 {   
                     xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
                     yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
-
-                    // Create Marker
-                    dataPoint.Marker = LineChart.GetMarkerForDataPoint(true, chart, yPosition, dataPoint, dataPoint.InternalYValue > 0);
-
+                    
                     if (IsStartPoint)
                     {   
                         IsStartPoint = !IsStartPoint;
@@ -571,10 +619,11 @@ namespace Visifire.Charts
         private static void CreateBevelFor2DArea(Canvas areaCanvas, DataPoint currentDataPoint, DataPoint previusDataPoint, Boolean clipAtStart, Boolean clipAtEnd)
         {
             Line line4Bevel42DArea = new Line(){
-                StrokeThickness = 3,
+                StrokeThickness = 2.4,
                 Stroke = Graphics.GetBevelTopBrush(currentDataPoint.Parent.Color),
                 StrokeEndLineCap = PenLineCap.Round,
-                StrokeStartLineCap = PenLineCap.Triangle
+                StrokeStartLineCap = PenLineCap.Triangle,
+                IsHitTestVisible = false
             };
 
             line4Bevel42DArea.SetValue(Canvas.ZIndexProperty, (Int32) 2);
@@ -583,6 +632,7 @@ namespace Visifire.Charts
             line4Bevel42DArea.X2 = currentDataPoint._visualPosition.X;
             line4Bevel42DArea.Y2 = currentDataPoint._visualPosition.Y;
             currentDataPoint.Faces.BevelLine = line4Bevel42DArea;
+            previusDataPoint.Faces.BevelLine = line4Bevel42DArea;
             areaCanvas.Children.Add(line4Bevel42DArea);
         }
 
@@ -603,39 +653,52 @@ namespace Visifire.Charts
                 return null;
 
             DataSeries series = seriesList[0] as DataSeries;
-            Canvas visual, labelCanvas, areaCanvas;
 
+            Canvas visual, labelCanvas, areaCanvas, areaFaceCanvas;
             RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out areaCanvas, width, height);
+            areaFaceCanvas = new Canvas() { Height = height, Width = width };
 
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[series] + 1);
             
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
-            
-            // labelCanvas.SetValue(Canvas.TopProperty, visualOffset);
-            // labelCanvas.SetValue(Canvas.LeftProperty, -visualOffset);
-            
+
+            labelCanvas.SetValue(Canvas.TopProperty, (Double)0);
+            labelCanvas.SetValue(Canvas.LeftProperty, (Double)0);
+
+            areaFaceCanvas.SetValue(Canvas.TopProperty, (Double)0);
+            areaFaceCanvas.SetValue(Canvas.LeftProperty, (Double)0);
+            //areaFaceCanvas.SetValue(Canvas.ZIndexProperty, (Int32)1);
+            DataSeries currentDataSeries;
+
+            Double minimumXValue = Double.MaxValue;
+            Double maximumXValue = Double.MinValue;
+
             if ((Boolean)series.Enabled)
             {   
                 if (series.Storyboard == null)
                     series.Storyboard = new Storyboard();
 
-                CurrentDataSeries = series;
+                currentDataSeries = series;
 
                 PlotGroup plotGroup = series.PlotGroup;
 
                 Double limitingYValue = plotGroup.GetLimitingYValue();
-                
-                List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
+
+                minimumXValue = Math.Min(minimumXValue, plotGroup.MinimumX);
+                maximumXValue = Math.Max(maximumXValue, plotGroup.MaximumX);
+
+                //List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true select datapoint).ToList();
 
                 Faces dataSeriesFaces = new Faces();
-
-                dataSeriesFaces.Visual = areaCanvas;
+                dataSeriesFaces.FrontFacePaths = new List<Path>();
+                dataSeriesFaces.Visual = areaFaceCanvas;
+                dataSeriesFaces.LabelCanvas = labelCanvas;
                 series.Faces = dataSeriesFaces;
 
                 List<List<DataPoint>> brokenAreaDataPointsCollection = BrokenAreaDataPointsGroup(width, height, series);
-
+                
                 DataPoint currentDataPoint;
                 DataPoint nextDataPoint;
                 DataPoint previusDataPoint;
@@ -664,10 +727,11 @@ namespace Visifire.Charts
                         Faces nextDataPointFaces = new Faces();
 
                         currentDataPoint = dataPointList[i];
+                        currentDataPoint._parsedToolTipText = currentDataPoint.TextParser(currentDataPoint.ToolTipText);
                         nextDataPoint = dataPointList[i + 1];
 
                         if (currentDataPoint.Faces == null)
-                        {
+                        {   
                             dataPointFaces = new Faces();
                             currentDataPoint.Faces = dataPointFaces;
                         }
@@ -699,9 +763,12 @@ namespace Visifire.Charts
                                 currentDataPoint.Faces.Area3DRightTopFace = topFace;
                                 nextDataPointFaces.Area3DLeftTopFace = topFace;
                             }
- 
+
                             // Start creating front face of 3D area
-                            frontFacePath = new Path() { Opacity = 1 };
+                            frontFacePath = new Path() { Opacity = currentDataPoint.Parent.Opacity };
+                            // frontFacePath = new Path() { Opacity = 0.5 };
+                            ApplyBorderProperties(frontFacePath, currentDataPoint.Parent);
+                            dataSeriesFaces.FrontFacePaths.Add(frontFacePath);
                             frontFacePathGeometry = new PathGeometry();
                             frontFacePathFigure = new PathFigure() { StartPoint = new Point(xPosDataPoint, plankYPos), IsClosed = true };
                             frontFacePathGeometry.Figures.Add(frontFacePathFigure);
@@ -726,8 +793,8 @@ namespace Visifire.Charts
                             }
                             else
                             {
-                                // if(currentDataPoint.Parent.Bevel)
-                                CreateBevelFor2DArea(areaCanvas, currentDataPoint, previusDataPoint,false, false); 
+                                if(currentDataPoint.Parent.Bevel)
+                                    CreateBevelFor2DArea(areaFaceCanvas, currentDataPoint, previusDataPoint,false, false); 
                             }
 
                             // Area front face Line path
@@ -738,28 +805,35 @@ namespace Visifire.Charts
 
                         #region Create Marker
 
-                        Marker marker = currentDataPoint.Marker;
+                        if (nextDataPoint.MarkerEnabled == true || nextDataPoint.LabelEnabled == true)
+                        {
+                            Double xPos, yPos;
+                            // Create Marker
+                            Marker marker = LineChart.CreateMarkerAForLineDataPoint(currentDataPoint, width, height, ref labelCanvas, out xPos, out yPos);
 
-                        if (marker != null)
-                        {   
-                            marker.AddToParent(labelCanvas, currentDataPoint._visualPosition.X, currentDataPoint._visualPosition.Y, new Point(0.5, 0.5));
+                            //if (marker != null)
+                            //{
+                            //    //LineChart.ApplyDefaultInteractivityForMarker(dataPoint);
 
-                            // Apply marker animation
-                            if (animationEnabled)
-                            {   
-                                if (currentDataPoint.Parent.Storyboard == null)
-                                    currentDataPoint.Parent.Storyboard = new Storyboard();
+                            //    //marker.AddToParent(labelCanvas, currentDataPoint._visualPosition.X, currentDataPoint._visualPosition.Y, new Point(0.5, 0.5));
 
-                                // Apply marker animation
-                                currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.Opacity * currentDataPoint.Parent.Opacity);
-                            }
+                            //    // Apply marker animation
+                            //    if (animationEnabled)
+                            //    {
+                            //        if (currentDataPoint.Parent.Storyboard == null)
+                            //            currentDataPoint.Parent.Storyboard = new Storyboard();
+
+                            //        // Apply marker animation
+                            //        currentDataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, currentDataPoint.Parent.Storyboard, 1, currentDataPoint.Opacity * currentDataPoint.Parent.Opacity);
+                            //    }
+                            //}
                         }
 
                         #endregion
 
                         if (chart.View3D)
                         {
-                            Int32 zindex = Draw3DArea(areaCanvas, previusDataPoint, currentDataPoint, nextDataPoint, ref dataSeriesFaces, ref dataPointFaces, currentDataPoint.Parent, plankYPos);
+                            Int32 zindex = Draw3DArea(areaFaceCanvas, previusDataPoint, currentDataPoint, nextDataPoint, ref dataSeriesFaces, ref dataPointFaces, currentDataPoint.Parent, plankYPos);
                             maxZIndex = Math.Max(maxZIndex, zindex);
                         }
                         else
@@ -779,8 +853,9 @@ namespace Visifire.Charts
                                 nextDataPoint.Faces.Area3DRightFace = rightFace;
                             }
                             else
-                            {   
-                                CreateBevelFor2DArea(areaCanvas, nextDataPoint, currentDataPoint, false, false); 
+                            {
+                                if (nextDataPoint.Parent.Bevel)
+                                    CreateBevelFor2DArea(areaFaceCanvas, nextDataPoint, currentDataPoint, false, false); 
                             }
 
                             // Front face for 3D and 2D both
@@ -789,21 +864,31 @@ namespace Visifire.Charts
                             nextDataPointFaces.AreaFrontFaceLineSegment = ls;
                             ls = new LineSegment() { Point = new Point(nextDataPoint._visualPosition.X, plankYPos) };
                             frontFacePathFigure.Segments.Add(ls);
-                            
+                            nextDataPointFaces.AreaFrontFaceBaseLineSegment = ls;
+
                             nextDataPointFaces.NextDataPoint = nextDataPoint;
                                                        
                            //  Graphics.DrawPointAt(rightFace.FrontFacePoints[0], areaCanvas, Colors.Yellow);
 
                             if (chart.View3D)
                             {   
-                                Int32 zindex = Draw3DArea(areaCanvas, previusDataPoint, nextDataPoint, nextDataPoint, ref dataSeriesFaces, ref nextDataPointFaces, nextDataPoint.Parent, plankYPos);
+                                Int32 zindex = Draw3DArea(areaFaceCanvas, previusDataPoint, nextDataPoint, nextDataPoint, ref dataSeriesFaces, ref nextDataPointFaces, nextDataPoint.Parent, plankYPos);
                                 maxZIndex = Math.Max(maxZIndex, zindex);
                             }
                             else
                             {
                                 // areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
-                                series.Faces.VisualComponents.Add(visual);
+                               
                             }
+
+                            if (nextDataPoint.MarkerEnabled == true || nextDataPoint.LabelEnabled == true)
+                            {
+                                Double xPos, yPos;
+                                Marker marker = LineChart.CreateMarkerAForLineDataPoint(nextDataPoint, width, height, ref labelCanvas, out xPos, out yPos);
+                            }
+
+                            nextDataPoint._parsedToolTipText = nextDataPoint.TextParser(nextDataPoint.ToolTipText);
+
                         }
 
                         previusDataPoint = currentDataPoint;
@@ -816,16 +901,53 @@ namespace Visifire.Charts
                         else
                             frontFacePath.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPointList[0].Parent.Color, "Linear", null) : dataPointList[0].Parent.Color;
 
+                        series.Faces.VisualComponents.Add(frontFacePath);
+
                         frontFacePath.SetValue(Canvas.ZIndexProperty, maxZIndex);
-                        areaCanvas.Children.Add(frontFacePath);
+                        areaFaceCanvas.Children.Add(frontFacePath);
                     }
                 }
+
+                foreach (FrameworkElement face in dataSeriesFaces.VisualComponents)
+                    VisifireElement.AttachEvents2AreaVisual(series, series, face);
+
+                series.AttachAreaToolTip(chart, dataSeriesFaces.VisualComponents);
+
+                areaFaceCanvas.Tag = null;
+
+                Canvas plank = ColumnChart.CreateOrUpdatePlank(chart, series.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+
+
+                // apply area animation
+                if (animationEnabled)
+                {
+                    if (series.Storyboard == null)
+                        series.Storyboard = new Storyboard();
+
+                    ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
+                    areaFaceCanvas.RenderTransformOrigin = new Point(0.5, (plank == null) ? 1 : (double)plank.GetValue(Canvas.TopProperty) / height);
+                    areaFaceCanvas.RenderTransform = scaleTransform;
+
+                    List<KeySpline> splines = AnimationHelper.GenerateKeySplineList
+                        (
+                        new Point(0, 0), new Point(1, 1),
+                        new Point(0, 1), new Point(0.5, 1)
+                        );
+
+                    // Apply animation to the entire canvas that was used to create the area
+                    series.Storyboard = AnimationHelper.ApplyPropertyAnimation(scaleTransform, "(ScaleTransform.ScaleY)", series, series.Storyboard, 1,
+                        new Double[] { 0, 1 }, new Double[] { 0, 1 }, splines);
+
+                    // Animating plank opacity
+                   // series.Storyboard = AnimationHelper.ApplyOpacityAnimation(plank, series, series.Storyboard, 1.25, 1, 0, 1);
+
+                    // Apply animation for label canvas
+                    series.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, series, series.Storyboard, 1.25, 1, 0, 1);
+                }
             }
-            
 
-            areaCanvas.Tag = null;
 
-            ColumnChart.CreateOrUpdatePlank(chart, series.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+            areaCanvas.Children.Add(areaFaceCanvas);
 
             // Remove old visual and add new visual in to the existing panel
             if (preExistingPanel != null)
@@ -839,9 +961,43 @@ namespace Visifire.Charts
                 visual.Children.Add(labelCanvas);
                 visual.Children.Add(areaCanvas);
             }
-            
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
+            // Clip the label canvas
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
+
+            labelCanvas.Clip = clipRectangle;
             return visual;
+        }
+
+        internal static void GetClipCoordinates(Chart chart, ref Double clipLeft, ref Double clipTop, ref Double clipWidth, ref Double clipHeight, Double minimumXValue, Double maximumXValue)
+        {
+            Double tickLengthOfAxisX = 0, tickLengthOfPrimaryAxisY = 0, tickLengthOfSecondaryAxisY = 0;
+            Axis.CalculateTotalTickLength(chart, ref tickLengthOfAxisX, ref tickLengthOfPrimaryAxisY, ref tickLengthOfSecondaryAxisY);
+
+            if (minimumXValue >= chart.ChartArea.AxisX.InternalAxisMinimum)
+            {
+                clipLeft -= tickLengthOfPrimaryAxisY;
+                clipWidth += tickLengthOfPrimaryAxisY;
+            }
+
+            if (maximumXValue <= chart.ChartArea.AxisX.InternalAxisMaximum)
+            {
+                clipWidth += tickLengthOfSecondaryAxisY;
+            }
         }
 
         /// <summary>
@@ -850,7 +1006,7 @@ namespace Visifire.Charts
         /// <param name="faces">Faces</param>
         /// <param name="areaParams">AreaParams</param>
         /// <returns>Canvas</returns>
-        internal static Canvas Get3DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
+        internal static Canvas Get3DArea(DataSeries currentDataSeries,  ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             Canvas visual = new Canvas();
 
@@ -940,7 +1096,7 @@ namespace Visifire.Charts
             if (areaParams.AnimationEnabled)
             {
                 // apply animation to the entire canvas that was used to create the area
-                areaParams.Storyboard = ApplyAreaAnimation(polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
+                areaParams.Storyboard = ApplyAreaAnimation(currentDataSeries, polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
 
             }
 
@@ -1175,10 +1331,12 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>StackedArea chart canvas</returns>
-        internal static Canvas GetVisualObjectForStackedAreaChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        internal static Canvas GetVisualObjectForStackedAreaChart(Panel preExistingPanel, Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
+
+            DataSeries currentDataSeries;
 
             Boolean plankDrawn = false;
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
@@ -1187,12 +1345,19 @@ namespace Visifire.Charts
             if (Double.IsNaN(visualOffset) || Double.IsInfinity(visualOffset))
                 return null;
 
-            Canvas visual = new Canvas() { Width = width, Height = height };
-            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
-            Canvas areaCanvas = new Canvas() { Width = width, Height = height };
+            Canvas visual, labelCanvas, areaCanvas;
+            RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out areaCanvas, width, height);
+            //labelCanvas.Background = Graphics.GetRandomColor();
+            //Canvas visual = new Canvas() { Width = width, Height = height };
+            //Canvas labelCanvas = new Canvas() { Width = width, Height = height };
+            //Canvas areaCanvas = new Canvas() { Width = width, Height = height };
 
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
+
+            //labelCanvas.SetValue(Canvas.TopProperty, (Double) 0);
+            //labelCanvas.SetValue(Canvas.LeftProperty,(Double)  0);
+            //labelCanvas.SetValue(Canvas.ZIndexProperty, (Int32)1);
 
             var plotgroups = (from series in seriesList where series.PlotGroup != null select series.PlotGroup);
 
@@ -1207,11 +1372,19 @@ namespace Visifire.Charts
 
             Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
 
+            Double minimumXValue = plotGroup.MinimumX;
+            Double maximumXValue = plotGroup.MaximumX;
+
             Double limitingYValue = 0;
             if (plotGroup.AxisY.InternalAxisMinimum > 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
+
+            foreach (DataSeries ds in seriesList)
+            {
+                ds.Faces = null;
+            }
 
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
@@ -1243,33 +1416,37 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
+                    Boolean isTopOfStack = false;
+                    if (index == curYValues.Count - 1)
+                        isTopOfStack = true;
+
+                    marker = GetMarkerForDataPoint(chart, height, isTopOfStack, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {
                         if (curDataPoints[index].Parent.Storyboard == null)
                             curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = curDataPoints[index].Parent;
+                        currentDataSeries = curDataPoints[index].Parent;
 
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
+                        marker = GetMarkerForDataPoint(chart, height, isTopOfStack, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (nextDataPoints[index].Parent.Storyboard == null)
                                 nextDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                            CurrentDataSeries = nextDataPoints[index].Parent;
+                            currentDataSeries = nextDataPoints[index].Parent;
 
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
                         }
                     }
 
@@ -1295,7 +1472,7 @@ namespace Visifire.Charts
                     DataSeries series = curDataPoints[index].Parent;
                     Brush areaBrush = series.Color;
 
-                    CurrentDataSeries = series;
+                    currentDataSeries = series;
 
                     PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
 
@@ -1328,8 +1505,8 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
-                                storyboard = ApplyStackedAreaAnimation(frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         else
@@ -1344,7 +1521,7 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
 
@@ -1358,13 +1535,16 @@ namespace Visifire.Charts
             }
             if (!plankDrawn && chart.View3D && plotGroup.AxisY.InternalAxisMinimum < 0 && plotGroup.AxisY.InternalAxisMaximum > 0)
             {
-                RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-                columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)255, (Byte)255, (Byte)255));
-                columnParams.Lighting = true;
-                columnParams.Size = new Size(width, 1);
-                columnParams.Depth = depth3d;
+                //RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
+                //Brush brush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)255, (Byte)255, (Byte)255));
+                //columnParams.Lighting = true;
+                //columnParams.Size = new Size(width, 1);
+                //columnParams.Depth = depth3d;
 
-                Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
+                Brush frontBrush, topBrush, rightBrush;
+                ExtendedGraphics.GetBrushesForPlank(out frontBrush, out topBrush, out rightBrush);
+
+                Faces zeroPlank = ColumnChart.Get3DPlank(width, 1, depth3d, frontBrush, topBrush, rightBrush);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
@@ -1374,8 +1554,42 @@ namespace Visifire.Charts
                 zeroPlankVisual.Opacity = 0.7;
                 visual.Children.Add(zeroPlankVisual);
             }
-            visual.Children.Add(areaCanvas);
-            visual.Children.Add(labelCanvas);
+
+            //visual.Children.Add(areaCanvas);
+            //visual.Children.Add(labelCanvas);
+
+
+            // Remove old visual and add new visual in to the existing panel
+            if (preExistingPanel != null)
+            {
+                visual.Children.RemoveAt(1);
+                visual.Children.Add(areaCanvas);
+            }
+            else
+            {
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 1);
+                visual.Children.Add(labelCanvas);
+                visual.Children.Add(areaCanvas);
+            }
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
+            // Clip the label canvas
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
+            labelCanvas.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -1390,11 +1604,12 @@ namespace Visifire.Charts
         /// <param name="plankDepth">PlankDepth</param>
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>StackedArea100 chart canvas</returns>
-        internal static Canvas GetVisualObjectForStackedArea100Chart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        internal static Canvas GetVisualObjectForStackedArea100Chart(Panel preExistingPanel,Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0)
                 return null;
 
+            DataSeries currentDataSeries;
             Boolean plankDrawn = false;
             Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1);
@@ -1402,12 +1617,19 @@ namespace Visifire.Charts
             if (Double.IsNaN(visualOffset) || Double.IsInfinity(visualOffset))
                 return null;
 
-            Canvas visual = new Canvas() { Width = width, Height = height };
-            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
-            Canvas areaCanvas = new Canvas() { Width = width, Height = height };
+            Canvas visual, labelCanvas, areaCanvas;
+            RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out areaCanvas, width, height);
+           
+            //Canvas visual = new Canvas() { Width = width, Height = height };
+            //Canvas labelCanvas = new Canvas() { Width = width, Height = height };
+            //Canvas areaCanvas = new Canvas() { Width = width, Height = height };
 
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
+
+            labelCanvas.SetValue(Canvas.TopProperty, (Double)0);
+            labelCanvas.SetValue(Canvas.LeftProperty, (Double)0);
+            labelCanvas.SetValue(Canvas.ZIndexProperty, (Int32)1);
 
             var plotgroups = (from series in seriesList where series.PlotGroup != null select series.PlotGroup);
 
@@ -1422,12 +1644,20 @@ namespace Visifire.Charts
 
             Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
 
+            Double minimumXValue = plotGroup.MinimumX;
+            Double maximumXValue = plotGroup.MaximumX;
+
             Double limitingYValue = 0;
 
             if (plotGroup.AxisY.InternalAxisMinimum > 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
             if (plotGroup.AxisY.InternalAxisMaximum < 0)
                 limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
+
+            foreach (DataSeries ds in seriesList)
+            {
+                ds.Faces = null;
+            }
 
             Double limitingYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
 
@@ -1455,7 +1685,6 @@ namespace Visifire.Charts
 
                 for (Int32 index = 0; index < curYValues.Count; index++)
                 {
-
                     if (index >= nextYValues.Count || index >= curYValues.Count || curDataPoints[index] == null || nextDataPoints[index] == null)
                         continue;
 
@@ -1475,33 +1704,33 @@ namespace Visifire.Charts
                     Point intersect = GetIntersection(new Point(curXPosition, curYBase), new Point(nextXPosition, nextYBase),
                                                 new Point(curXPosition, curYPosition), new Point(nextXPosition, nextYPosition));
 
-                    marker = GetMarkerForDataPoint(chart, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
+                    marker = GetMarkerForDataPoint(chart, height, false, curDataPoints[index], curYPosition, curDataPoints[index].InternalYValue > 0);
                     if (marker != null)
                     {
                         if (curDataPoints[index].Parent.Storyboard == null)
                             curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                        CurrentDataSeries = curDataPoints[index].Parent;
+                        currentDataSeries = curDataPoints[index].Parent;
 
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
                     }
                     if (i + 1 == xValues.Length - 1)
                     {
-                        marker = GetMarkerForDataPoint(chart, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
+                        marker = GetMarkerForDataPoint(chart, height, false, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
                         if (marker != null)
                         {
                             if (curDataPoints[index].Parent.Storyboard == null)
                                 curDataPoints[index].Parent.Storyboard = new Storyboard();
 
-                            CurrentDataSeries = curDataPoints[index].Parent;
+                            currentDataSeries = curDataPoints[index].Parent;
 
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, CurrentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
                         }
                     }
 
@@ -1528,7 +1757,7 @@ namespace Visifire.Charts
                     DataSeries series = curDataPoints[index].Parent;
                     Brush areaBrush = series.Color;
 
-                    CurrentDataSeries = series;
+                    currentDataSeries = series;
 
                     PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
 
@@ -1561,13 +1790,13 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
-                                storyboard = ApplyStackedAreaAnimation(frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, sideface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)) + 0.05, 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, frontface, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         else
                         {
-                            Canvas area2d = Get2DArea(ref faces, areaParams);
+                            Canvas area2d = Get2DArea(currentDataSeries, ref faces, areaParams);
                             areaCanvas.Children.Add(area2d);
                             curDataPoints[index].Parent.Faces.VisualComponents.Add(area2d);
                             if (animationEnabled)
@@ -1577,7 +1806,7 @@ namespace Visifire.Charts
                                 Storyboard storyboard = curDataPoints[index].Parent.Storyboard;
 
                                 // apply animation to the various faces
-                                storyboard = ApplyStackedAreaAnimation(area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
+                                storyboard = ApplyStackedAreaAnimation(currentDataSeries, area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
                         curDataPoints[index].Parent.Faces.Visual = visual;
@@ -1589,13 +1818,16 @@ namespace Visifire.Charts
             }
             if (!plankDrawn && chart.View3D && plotGroup.AxisY.InternalAxisMinimum < 0 && plotGroup.AxisY.InternalAxisMaximum > 0)
             {
-                RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-                columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)255, (Byte)255, (Byte)255));
-                columnParams.Lighting = true;
-                columnParams.Size = new Size(width, 1);
-                columnParams.Depth = depth3d;
+                //RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
+                //columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)255, (Byte)255, (Byte)255));
+                //columnParams.Lighting = true;
+                //columnParams.Size = new Size(width, 1);
+                //columnParams.Depth = depth3d;
 
-                Faces zeroPlank = ColumnChart.Get3DColumn(columnParams);
+                Brush frontBrush, topBrush, rightBrush;
+                ExtendedGraphics.GetBrushesForPlank(out frontBrush, out topBrush, out rightBrush);
+
+                Faces zeroPlank = ColumnChart.Get3DPlank(width, 1, depth3d, frontBrush, topBrush, rightBrush);
                 Panel zeroPlankVisual = zeroPlank.Visual as Panel;
 
                 Double top = height - Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
@@ -1606,8 +1838,40 @@ namespace Visifire.Charts
                 visual.Children.Add(zeroPlankVisual);
             }
 
-            visual.Children.Add(areaCanvas);
-            visual.Children.Add(labelCanvas);
+            //visual.Children.Add(areaCanvas);
+            //visual.Children.Add(labelCanvas);
+
+            // Remove old visual and add new visual in to the existing panel
+            if (preExistingPanel != null)
+            {
+                visual.Children.RemoveAt(1);
+                visual.Children.Add(areaCanvas);
+            }
+            else
+            {
+                labelCanvas.SetValue(Canvas.ZIndexProperty, 1);
+                visual.Children.Add(labelCanvas);
+                visual.Children.Add(areaCanvas);
+            }
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            areaCanvas.Clip = clipRectangle;
+
+            // Clip the label canvas
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
+            labelCanvas.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -1996,7 +2260,7 @@ namespace Visifire.Charts
         /// <param name="faces">Faces</param>
         /// <param name="areaParams">Area parameters</param>
         /// <returns>Canvas</returns>
-        internal static Canvas Get2DArea(ref Faces faces, PolygonalChartShapeParams areaParams)
+        internal static Canvas Get2DArea(DataSeries currentDataSeries, ref Faces faces, PolygonalChartShapeParams areaParams)
         {
             if (faces.Parts == null)
                 faces.Parts = new List<DependencyObject>();
@@ -2029,7 +2293,7 @@ namespace Visifire.Charts
             if (areaParams.AnimationEnabled)
             {
                 // apply animation to the polygon that was used to create the area
-                areaParams.Storyboard = ApplyAreaAnimation(polygon, areaParams.Storyboard, areaParams.IsPositive, 0);
+                areaParams.Storyboard = ApplyAreaAnimation(currentDataSeries, polygon, areaParams.Storyboard, areaParams.IsPositive, 0);
             }
 
             visual.Children.Add(polygon);
@@ -2059,7 +2323,7 @@ namespace Visifire.Charts
 
                     if (areaParams.AnimationEnabled)
                     {
-                        areaParams.Storyboard = CreateOpacityAnimation(areaParams.Storyboard, bevel, 1, 1, 1);
+                        areaParams.Storyboard = CreateOpacityAnimation(currentDataSeries, areaParams.Storyboard, bevel, 1, 1, 1);
                         bevel.Opacity = 0;
                     }
 
@@ -2099,7 +2363,7 @@ namespace Visifire.Charts
                 isNegative2Positive = true;
 
             Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isPositive2Negative);            
-            
+            //dataPointFaces.da
             if (dataPointFaces.Area3DLeftFace != null)
             {   
                 Area3DDataPointFace leftFace = dataPointFaces.Area3DLeftFace;
@@ -2126,28 +2390,33 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = sideBrush;
+                sides.Opacity = dataPoint.Parent.Opacity;
+                ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
                 
                 parentVisual.Children.Add(sides);
 
-                leftFace.LeftFaceHandle = sides;
+                leftFace.LeftFace = sides;
 
-                dataPointFaces.VisualComponents.Add(sides);
-                dataPointFaces.Parts.Add(sides);
-                dataPointFaces.BorderElements.Add(sides);
+                //dataPointFaces.VisualComponents.Add(sides);
+                //dataPointFaces.Parts.Add(sides);
+
+                dataSeriesFaces.VisualComponents.Add(sides);
+
+                //dataPointFaces.BorderElements.Add(sides);
             }
 
             if (dataPointFaces.Area3DLeftTopFace != null)
-            {                 
+            {         
                 Area3DDataPointFace topFace = dataPointFaces.Area3DLeftTopFace;
 
                 if (isPositive2Negative)
                 {
-                    Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
-                    Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+                    //Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
+                    //Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), parentVisual, Colors.Red);
 
-                    Graphics.DrawPointAt(previusDataPoint._visualPosition, parentVisual, Colors.Red);
-                    Graphics.DrawPointAt(dataPoint._visualPosition, parentVisual, Colors.Red);
+                    //Graphics.DrawPointAt(previusDataPoint._visualPosition, parentVisual, Colors.Red);
+                    //Graphics.DrawPointAt(dataPoint._visualPosition, parentVisual, Colors.Red);
 
                     Point midPoint = new Point();
 
@@ -2158,7 +2427,7 @@ namespace Visifire.Charts
                         topFace.FrontFacePoints[1] = midPoint;
                     }
 
-                    Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
+                    //Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
                 }
 
                 //if (isNegative2Positive)
@@ -2205,15 +2474,18 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = topBrush;
+                sides.Opacity = dataPoint.Parent.Opacity;
+                ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126))); //sideBrush;
 
                 parentVisual.Children.Add(sides);
 
-                topFace.TopFaceHandle = sides;
+                topFace.TopFace = sides;
 
-                dataPointFaces.VisualComponents.Add(sides);
-                dataPointFaces.Parts.Add(sides);
-                dataPointFaces.BorderElements.Add(sides);
+                //dataPointFaces.VisualComponents.Add(sides);
+                //dataPointFaces.Parts.Add(sides);
+                dataSeriesFaces.VisualComponents.Add(sides);
+                //dataPointFaces.BorderElements.Add(sides);
 
             }
 
@@ -2246,141 +2518,48 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = sideBrush;
-
+                sides.Opacity = dataPoint.Parent.Opacity;
+                ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
 
                 parentVisual.Children.Add(sides);
 
-                rightFace.RightFaceHandle = sides;
+                rightFace.RightFace = sides;
 
-                dataPointFaces.VisualComponents.Add(sides);
-                dataPointFaces.Parts.Add(sides);
-                dataPointFaces.BorderElements.Add(sides);
+                ApplyBorderProperties(sides, dataSeries);
+
+                //dataPointFaces.VisualComponents.Add(sides);
+                //dataPointFaces.Parts.Add(sides);
+
+                dataSeriesFaces.VisualComponents.Add(sides);
+
+                //dataPointFaces.BorderElements.Add(sides);
             }
-            
+
             return zIndex;
+        }
 
-            /*
-             * 
-            Canvas polygonSet = new Canvas();
-            Rect size = GetBounds(areaParams.Points);
-            polygonSet.Width = size.Width + areaParams.Depth3D;
-            polygonSet.Height = size.Height + areaParams.Depth3D;
-            polygonSet.SetValue(Canvas.TopProperty, size.Top - areaParams.Depth3D);
-            polygonSet.SetValue(Canvas.LeftProperty, size.Left);
-            parentVisual.Children.Add(polygonSet);
-            Random rand = new Random(DateTime.Now.Millisecond);
-
-            for (Int32 i = 0; i < pointIndexLimit; i++)
-            {   
-                Polygon sides = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference }};
-                PointCollection points = new PointCollection();
-                Int32 index1 = i % areaParams.Points.Count;
-                Int32 index2 = (i + 1) % areaParams.Points.Count;
-
-                points.Add(areaParams.Points[index1]);
-                points.Add(areaParams.Points[index2]);
-
-                Point pointAt3DDepth1 = new Point(areaParams.Points[index2].X + areaParams.Depth3D, areaParams.Points[index2].Y - areaParams.Depth3D);
-                Point pointAt3DDepth2 = new Point(areaParams.Points[index1].X + areaParams.Depth3D, areaParams.Points[index1].Y - areaParams.Depth3D);
-
-                points.Add(pointAt3DDepth1);
-                points.Add(pointAt3DDepth2);
-
-                // Testing ----
-                if (index2 != areaParams.Points.Count - 1)
-                {
-                    Point frontMidPoint = Graphics.MidPointOfALine(areaParams.Points[index1], areaParams.Points[index2]);
-                    Point backMidPoint = Graphics.MidPointOfALine(pointAt3DDepth1, pointAt3DDepth2);
-
-                    //Graphics.DrawPointAt(pointAt3DDepth1, visual, Colors.Yellow);
-                    //Graphics.DrawPointAt(backMidPoint, visual, Colors.Yellow);
-
-                    //Graphics.DrawPointAt(areaParams.Points[index1], visual, Colors.Yellow);
-                    //Graphics.DrawPointAt(frontMidPoint, visual, Colors.Yellow);
-                    //Graphics.DrawPointAt(backMidPoint, visual, Colors.Yellow);
-                    //Graphics.DrawPointAt(pointAt3DDepth1, visual, Colors.Yellow);
-
-
-                }
-                
-                
-                sides.Points = points;
-
-                centroid = GetCentroid(points);
-
-                Int32 zindex = GetAreaZIndex(centroid.X, centroid.Y, areaParams.IsPositive);
-                sides.SetValue(Canvas.ZIndexProperty, zindex);
-
-                if (i == (areaParams.Points.Count - 2))
-                {
-                    sides.Fill = new SolidColorBrush(Color.FromArgb(255,(byte) rand.Next(155), (byte)rand.Next(200),(byte) rand.Next(126))); //sideBrush;
-                    (sides.Tag as ElementData).VisualElementName = "Side";
-                }
-                else
-                {   
-                    //sides.Fill = topBrush;
-                    sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
-                    (sides.Tag as ElementData).VisualElementName = "Top";
-                }
-
-                sides.Stroke = areaParams.BorderColor;
-                sides.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
-                sides.StrokeThickness = areaParams.BorderThickness;
-                sides.StrokeMiterLimit = 1;
-
-                Rect sidesBounds = GetBounds(points);
-                sides.Stretch = Stretch.Fill;
-                sides.Width = sidesBounds.Width;
-                sides.Height = sidesBounds.Height;
-                sides.SetValue(Canvas.TopProperty, sidesBounds.Y - (size.Top - areaParams.Depth3D));
-                sides.SetValue(Canvas.LeftProperty, sidesBounds.X - size.X);
-
-                faces.Parts.Add(sides);
-                polygonSet.Children.Add(sides);
-
-            }
-
-            Polygon polygon = new Polygon() { Tag = new ElementData() { Element = areaParams.TagReference, VisualElementName = "AreaBase" } };
-
-            faces.Parts.Add(polygon);
-            centroid = GetCentroid(areaParams.Points);
-
-            polygon.SetValue(Canvas.ZIndexProperty, (Int32)centroid.Y + 1000);
-            //polygon.Fill = areaParams.Lighting ? Graphics.GetBackFaceBrush(areaParams.Background) : areaParams.Background;
-
-            polygon.Stroke = areaParams.BorderColor;
-            polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
-            polygon.StrokeThickness = areaParams.BorderThickness;
-            polygon.StrokeMiterLimit = 1;
-
-            polygon.Points = areaParams.Points;
-
-            polygon.Stretch = Stretch.Fill;
-            polygon.Width = size.Width;
-            polygon.Height = size.Height;
-            polygon.SetValue(Canvas.TopProperty, areaParams.Depth3D);
-            polygon.SetValue(Canvas.LeftProperty, 0.0);
-
-            // apply area animation
-            if (areaParams.AnimationEnabled)
-            {
-                // apply animation to the entire canvas that was used to create the area
-                areaParams.Storyboard = ApplyAreaAnimation(polygonSet, areaParams.Storyboard, areaParams.IsPositive, 0);
-
-            }
-
-            polygonSet.Children.Add(polygon);
-            */
-
-            //return parentVisual;
+        internal static void ApplyBorderProperties(Path path, DataSeries dataSeries)
+        {
+            path.Stroke = dataSeries.BorderColor;
+            path.StrokeDashArray = ExtendedGraphics.GetDashArray(dataSeries.BorderStyle);
+            path.StrokeThickness = dataSeries.BorderThickness.Left;
+            path.StrokeMiterLimit = 1;
         }
 
         internal static void Update(ObservableObject sender, VcProperties property, object newValue, Boolean isAxisChanged)
         {
-            Boolean isDataPoint = sender.GetType().Equals(typeof(DataPoint));
+            Boolean isDataPoint;
 
-            if (isDataPoint)
+            if (property == VcProperties.Bevel)
+            {
+                sender = (sender as DataPoint).Parent;
+                isDataPoint = false;
+            }
+            else
+                isDataPoint = sender.GetType().Equals(typeof(DataPoint));
+
+            if (isDataPoint )
                 UpdateDataPoint(sender as DataPoint, property, newValue, isAxisChanged);
             else
                 UpdateDataSeries(sender as DataSeries, property, newValue);
@@ -2430,167 +2609,194 @@ namespace Visifire.Charts
             PlotGroup plotGroup = dataSeries.PlotGroup;
             Canvas areaVisual = dataSeries.Faces.Visual as Canvas;
             Canvas labelCanvas = ((areaVisual as FrameworkElement).Parent as Panel).Children[0] as Canvas;
+            Double height = chart.ChartArea.ChartVisualCanvas.Height;
+            Double width = chart.ChartArea.ChartVisualCanvas.Width;
+            Double xPosition, yPosition;
+            Faces faces = dataPoint.Faces;
 
             switch (property)
-            {
-               /* case VcProperties.Bevel:
-                    ApplyOrRemoveBevel(dataPoint);
+            {    
+                 case VcProperties.Bevel:
+                     UpdateDataSeries(dataSeries, property, newValue);
+                     break;
 
-                    break;
                 case VcProperties.Color:
-                    Update2DAnd3DColumnColor(dataPoint, (Brush)newValue);
-                    break;
-                */
+                case VcProperties.LightingEnabled:
+                     if (property != VcProperties.LightingEnabled && marker != null && (Boolean)dataPoint.MarkerEnabled)
+                        marker.BorderColor = dataPoint.Color;
 
+                    if (faces != null)
+                    {
+                        if(dataPoint.Faces.BevelLine != null)
+                            dataPoint.Faces.BevelLine.Stroke = Graphics.GetBevelTopBrush(dataPoint.Parent.Color);
+
+                        Brush sideBrush = (Boolean)dataSeries.LightingEnabled ? Graphics.GetRightFaceBrush(dataSeries.Color) : dataSeries.Color;
+                        Brush topBrush = (Boolean)dataSeries.LightingEnabled ? Graphics.GetTopFaceBrush(dataSeries.Color) : dataSeries.Color;
+
+                        if (dataPoint.Faces.Area3DLeftFace != null)
+                            (dataPoint.Faces.Area3DLeftFace.LeftFace as Path).Fill = sideBrush;
+
+                        if (dataPoint.Faces.Area3DRightTopFace != null)
+                            (dataPoint.Faces.Area3DRightTopFace.TopFace as Path).Fill = topBrush;
+
+                        if (dataPoint.Faces.Area3DLeftTopFace != null)
+                            (dataPoint.Faces.Area3DLeftTopFace.TopFace as Path).Fill = topBrush;
+
+                        if (dataPoint.Faces.Area3DRightFace != null)
+                            (dataPoint.Faces.Area3DRightFace.RightFace as Path).Fill = sideBrush;
+                    }
+                    break;
+
+                case VcProperties.Opacity:
+
+                    Double opacity = dataPoint.Opacity * dataSeries.Opacity;
+                    if (marker != null)
+                        marker.Visual.Opacity = opacity;
+
+                    if (faces != null)
+                    {   
+                        if (dataPoint.Faces.BevelLine != null)
+                            dataPoint.Faces.BevelLine.Opacity = opacity;
+
+                        if (dataPoint.Faces.Area3DLeftFace != null)
+                            (dataPoint.Faces.Area3DLeftFace.LeftFace as Path).Opacity = opacity;
+
+                        if (dataPoint.Faces.Area3DRightTopFace != null)
+                            (dataPoint.Faces.Area3DRightTopFace.TopFace as Path).Opacity = opacity;
+
+                        if (dataPoint.Faces.Area3DLeftTopFace != null)
+                            (dataPoint.Faces.Area3DLeftTopFace.TopFace as Path).Opacity = opacity;
+
+                        if (dataPoint.Faces.Area3DRightFace != null)
+                            (dataPoint.Faces.Area3DRightFace.RightFace as Path).Opacity = opacity;
+                    }
+
+                    break;
+                case VcProperties.BorderColor:
+                case VcProperties.BorderStyle:
+                case VcProperties.BorderThickness:
+                    if (faces != null)
+                    {
+                        if (dataPoint.Faces.Area3DLeftFace != null)
+                            ApplyBorderProperties(dataPoint.Faces.Area3DLeftFace.LeftFace as Path, dataSeries);
+
+                        if (dataPoint.Faces.Area3DRightTopFace != null)
+                            ApplyBorderProperties(dataPoint.Faces.Area3DRightTopFace.TopFace as Path, dataSeries);
+
+                        if (dataPoint.Faces.Area3DLeftTopFace != null)
+                            ApplyBorderProperties(dataPoint.Faces.Area3DLeftTopFace.TopFace as Path, dataSeries);
+
+                        if (dataPoint.Faces.Area3DRightFace != null)
+                            ApplyBorderProperties(dataPoint.Faces.Area3DRightFace.RightFace as Path, dataSeries);
+                    }
+
+                    break;
                 case VcProperties.Cursor:
                     dataPoint.SetCursor2DataPointVisualFaces();
                     break;
 
                 case VcProperties.Href:
-                    dataPoint.SetHref2DataPointVisualFaces();
-                    break;
-
                 case VcProperties.HrefTarget:
                     dataPoint.SetHref2DataPointVisualFaces();
                     break;
 
-                    /*
                 case VcProperties.LabelBackground:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.LabelEnabled)
-                        marker.TextBackground = dataPoint.LabelBackground;
-                    else
-                        marker.TextBackground = new SolidColorBrush(Colors.Transparent);
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+                    marker.TextBackground = dataPoint.LabelBackground;
                     break;
 
                 case VcProperties.LabelEnabled:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
-
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
                     break;
 
                 case VcProperties.LabelFontColor:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontColor = dataPoint.LabelFontColor;
-
+                    marker.FontColor = dataPoint.LabelFontColor;
                     break;
 
                 case VcProperties.LabelFontFamily:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontFamily = dataPoint.LabelFontFamily;
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+                    // marker.FontFamily = dataPoint.LabelFontFamily;
                     break;
 
                 case VcProperties.LabelFontStyle:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+
+                    //marker.FontStyle = (FontStyle) dataPoint.LabelFontStyle;
                     break;
 
                 case VcProperties.LabelFontSize:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+
+                    // marker.FontSize = (Double) dataPoint.LabelFontSize;
                     break;
 
                 case VcProperties.LabelFontWeight:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else
-                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
                     break;
 
                 case VcProperties.LabelStyle:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
                     break;
+
                 case VcProperties.LabelText:
-                    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+                    //marker.Text = dataPoint.TextParser(dataPoint.LabelText);
                     break;
 
                 case VcProperties.LegendText:
                     chart.InvokeRender();
                     break;
 
-                case VcProperties.LightingEnabled:
-                    ApplyRemoveLighting(dataPoint);
-                    break;
-
                 case VcProperties.MarkerBorderColor:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.MarkerEnabled)
-                        marker.BorderColor = dataPoint.MarkerBorderColor;
-                    break;
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
 
+                    //marker.BorderColor = dataPoint.MarkerBorderColor;
+                    break;
                 case VcProperties.MarkerBorderThickness:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.MarkerEnabled)
-                        marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+                    //marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
                     break;
 
                 case VcProperties.MarkerColor:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.MarkerEnabled)
-                        marker.FillColor = dataPoint.MarkerColor;
+                    if(marker != null && (Boolean) dataPoint.MarkerEnabled)
+                        marker.MarkerFillColor = dataPoint.MarkerColor;
+                    break;
+
+                case VcProperties.MarkerEnabled:
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+
+                    // if((Boolean)dataPoint.MarkerEnabled)
+                    //    ShowDataPointMarker(dataPoint);
+                    // else
+                    //    HideDataPointMarker(dataPoint);
                     break;
 
                 case VcProperties.MarkerScale:
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
-                    CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    break;
-
-                case VcProperties.MarkerEnabled:
-                    if (marker == null)
-                        CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if ((Boolean)dataPoint.MarkerEnabled)
-                        LineChart.ShowDataPointMarker(dataPoint);
-                    else
-                        LineChart.HideDataPointMarker(dataPoint);
-
-                    break;
-
                 case VcProperties.ShadowEnabled:
-                    ApplyOrRemoveShadow(dataPoint,
-                        (dataSeries.RenderAs == RenderAs.StackedColumn || dataSeries.RenderAs == RenderAs.StackedColumn100
-                        || dataSeries.RenderAs == RenderAs.StackedBar || dataSeries.RenderAs == RenderAs.StackedBar100
-                        ), true);
-
+                    // Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+                    // LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
                     break;
 
-                case VcProperties.Opacity:
-
-                    if (marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
-
-                    if (dataPoint.Faces.Visual != null)
-                        dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
-
-                    break;
+              
 
                 case VcProperties.ShowInLegend:
                     chart.InvokeRender();
                     break;
 
                 case VcProperties.ToolTipText:
+                case VcProperties.XValueFormatString:
+                case VcProperties.YValueFormatString:
                     dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
                     break;
 
                 case VcProperties.XValueType:
                     chart.InvokeRender();
                     break;
-                    */
+
                 case VcProperties.Enabled:
                     UpdateDataSeries(dataSeries, property, newValue);
                     break;
@@ -2604,14 +2810,8 @@ namespace Visifire.Charts
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue);
                     else
-                    {   
-                        if (dataSeries.RenderAs == RenderAs.Area)
-                            UpdateVisualForYValue4AreaChart(chart, dataPoint, isAxisChanged);
-
-                        // else if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                        //    UpdateVisualForYValue4StackedColumnChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
-                        // else
-                        //    UpdateVisualForYValue4StackedBarChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
+                    {
+                        UpdateVisualForYValue4AreaChart(chart, dataPoint, isAxisChanged);
                     }
 
                     // chart.Dispatcher.BeginInvoke(new Action<DataPoint>(UpdateXAndYValue), new object[]{dataPoint});
@@ -2628,45 +2828,78 @@ namespace Visifire.Charts
             Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
             PlotGroup  plotGroup = dataPoint.Parent.PlotGroup;
             Double oldMarkerTop = Double.NaN;
-            Double currentMarkerTop = Double.NaN;
+            Double oldMarkerLeft = Double.NaN;
             Point newPosition, oldPosition;
             Storyboard storyBoardDp = null;
-            Boolean animationEnabled = true;
+            Boolean animationEnabled = chart.AnimatedUpdate;
             Point oldVisualPositionOfDataPoint;
-            Canvas labelCanvas = (areaCanvas.Parent as Canvas).Children[0] as Canvas;
+            Canvas labelCanvas = dataSeries.Faces.LabelCanvas;//(areaCanvas.Parent as Canvas).Children[0] as Canvas;
+            Double height = chart.ChartArea.ChartVisualCanvas.Height;
+            Double width = chart.ChartArea.ChartVisualCanvas.Width;
+
+            ColumnChart.UpdateParentVisualCanvasSize(chart, labelCanvas);
+            ColumnChart.UpdateParentVisualCanvasSize(chart, areaCanvas);
+            ColumnChart.UpdateParentVisualCanvasSize(chart, areaCanvas.Children[0] as Canvas);
 
             // Create new Column with new YValue
             if (dataPoint.Storyboard != null)
-            {   
-                dataPoint.Storyboard.Stop();
-                dataPoint.Storyboard = null;
+            {
+                dataPoint.Storyboard.Stop(); 
             }
 
             if (animationEnabled)
+            {
+                dataPoint.Storyboard = null;
                 storyBoardDp = new Storyboard();
-
-            // Update existing Plank
-            ColumnChart.CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+            }
             
             // Calculate pixel position for DataPoint
-            Double xPosition = Graphics.ValueToPixelPosition(0, areaCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
-            Double yPosition = Graphics.ValueToPixelPosition(areaCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+            Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+            Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
             oldVisualPositionOfDataPoint = dataPoint._visualPosition;
+            
+            // Update existing Plank
+            ColumnChart.CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
+           
 
             if (dataPoint.Marker != null && dataPoint.Marker.Visual != null)
             {
+                Double xMpos, yMpos;
+
+                if (storyBoardDp != null)
+                    storyBoardDp.Pause();
+
                 oldMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.TopProperty);
-                Double markerNEwTop = yPosition - Math.Abs(oldVisualPositionOfDataPoint.Y - oldMarkerTop);
-                dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, markerNEwTop);
+                oldMarkerLeft = (Double)dataPoint.Marker.Visual.GetValue(Canvas.LeftProperty);
+                LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xMpos, out yMpos);
+
+                Point actualPosOfVisual = dataPoint.Marker.CalculateActualPosition(xPosition, yPosition, new Point(0.5, 0.5));
+
+                //Double markerNEwTop = dataPoint.Marker.MarkerActualPosition.Y;//yPosition - Math.Abs(oldVisualPositionOfDataPoint.Y - oldMarkerTop);
+                //Double markerNewLeft = dataPoint.Marker.MarkerActualPosition.X;
+                // dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, markerNEwTop);
 
                 if ((Boolean)dataPoint.MarkerEnabled || (Boolean)dataPoint.LabelEnabled)
-                {   
+                {
                     if (animationEnabled)
+                    {
                         AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, "(Canvas.Top)", dataPoint, storyBoardDp, 0,
-                           new Double[] { 0, 1 }, new Double[] { oldMarkerTop, markerNEwTop }, null);
+                             new Double[] { 0, 1 }, new Double[] { oldMarkerTop, actualPosOfVisual.Y }, null);
+
+                        AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, "(Canvas.Left)", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Double[] { oldMarkerLeft, actualPosOfVisual.X }, null);
+
+                    }
+                    else
+                    {
+                        dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, actualPosOfVisual.Y);
+                        dataPoint.Marker.Visual.SetValue(Canvas.LeftProperty, actualPosOfVisual.X);
+                    }
                 }
             }
+
             
+
             dataPoint._visualPosition.X = xPosition;
             dataPoint._visualPosition.Y = yPosition;
 
@@ -2678,11 +2911,12 @@ namespace Visifire.Charts
             if (dataPoint.Faces.Area3DLeftFace != null)
             {   
                 Area3DDataPointFace leftFace = dataPoint.Faces.Area3DLeftFace;
-                Path path = leftFace.LeftFaceHandle as Path;
+                Path path = leftFace.LeftFace as Path;
 
                 // Update front top line
                 LineSegment ls = Area3DDataPointFace.GetLineSegment(path, 0);
-                newPosition = new Point(ls.Point.X, yPosition);
+                //--newPosition = new Point(ls.Point.X, yPosition);
+                newPosition = new Point(xPosition, yPosition);
                 oldPosition = ls.Point;
                 ls.Point = newPosition;
 
@@ -2692,7 +2926,8 @@ namespace Visifire.Charts
 
                 // Update back top line
                 ls = Area3DDataPointFace.GetLineSegment(path, 1);
-                newPosition = new Point(ls.Point.X, yPosition - leftFace.Depth3d);
+                //--newPosition = new Point(ls.Point.X, yPosition - leftFace.Depth3d);
+                newPosition = new Point(xPosition + leftFace.Depth3d, yPosition - leftFace.Depth3d);
                 oldPosition = ls.Point;
                 ls.Point = newPosition;
 
@@ -2705,12 +2940,13 @@ namespace Visifire.Charts
             if (dataPoint.Faces.Area3DRightTopFace != null)
             {
                 Area3DDataPointFace rightTopFace = dataPoint.Faces.Area3DRightTopFace;
-                Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+                Path rightTopFacePath = rightTopFace.TopFace as Path;
                 // rightTopFacePath.Fill = new SolidColorBrush(Colors.Red);
 
                 // Update front left point
                 PathFigure pf = Area3DDataPointFace.GetPathFigure(rightTopFacePath);
-                newPosition = new Point(pf.StartPoint.X, yPosition);
+                //--newPosition = new Point(pf.StartPoint.X, yPosition);
+                newPosition = new Point(xPosition, yPosition);
                 oldPosition = pf.StartPoint;
                 pf.StartPoint = newPosition;
                 //rightTopFacePath.Fill = new SolidColorBrush(Colors.Red);
@@ -2727,7 +2963,8 @@ namespace Visifire.Charts
 
                 // Update back left point
                 LineSegment ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 2);
-                newPosition = new Point(ls.Point.X, yPosition - rightTopFace.Depth3d);
+                //--newPosition = new Point(ls.Point.X, yPosition - rightTopFace.Depth3d);
+                newPosition = new Point(xPosition + rightTopFace.Depth3d, yPosition - rightTopFace.Depth3d);
                 oldPosition = ls.Point;
                 ls.Point = newPosition;
 
@@ -2758,7 +2995,7 @@ namespace Visifire.Charts
                     isNegative2Negative = true;
                 
                 Area3DDataPointFace leftTopFace = dataPoint.Faces.Area3DLeftTopFace;
-                Path leftTopFacePath = leftTopFace.TopFaceHandle as Path;
+                Path leftTopFacePath = leftTopFace.TopFace as Path;
                 // leftTopFacePath.Fill = new SolidColorBrush(Colors.Green);
 
                 // DataPoint was positive but after YValue update it’s became negative
@@ -2772,9 +3009,9 @@ namespace Visifire.Charts
 
                     // leftTopFacePath.Fill = new SolidColorBrush(Colors.Green);
 
-                    Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
-                    Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
-                    Graphics.DrawPointAt(previusDataPoint._visualPosition, areaCanvas, Colors.Red);
+                    //Graphics.DrawPointAt(new Point(previusDataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
+                    //Graphics.DrawPointAt(new Point(dataPoint._visualPosition.X, plankYPos), areaCanvas, Colors.Red);
+                    //Graphics.DrawPointAt(previusDataPoint._visualPosition, areaCanvas, Colors.Red);
                     
                     // Update right front point
                     LineSegment ls = Area3DDataPointFace.GetLineSegment(leftTopFacePath, 0);
@@ -2834,7 +3071,7 @@ namespace Visifire.Charts
                 {   
                     // Right top face of this DataPoint = left top face of next DataPoint
                     Area3DDataPointFace rightTopFace = nextDataPoint.Faces.Area3DLeftTopFace;
-                    Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+                    Path rightTopFacePath = rightTopFace.TopFace as Path;
                    // rightTopFacePath.Fill = new SolidColorBrush(Colors.Blue);
 
                     Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isNegative2Negative);
@@ -2900,7 +3137,7 @@ namespace Visifire.Charts
 
                     // Right top face of this DataPoint = left top face of next DataPoint
                     Area3DDataPointFace rightTopFace = nextDataPoint.Faces.Area3DLeftTopFace;
-                    Path rightTopFacePath = rightTopFace.TopFaceHandle as Path;
+                    Path rightTopFacePath = rightTopFace.TopFace as Path;
 
                     Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isNegative2Positive);
                     rightTopFacePath.SetValue(Canvas.ZIndexProperty, zIndex);
@@ -3043,12 +3280,13 @@ namespace Visifire.Charts
             if (dataPoint.Faces.Area3DRightFace != null)
             {   
                 Area3DDataPointFace rightFace = dataPoint.Faces.Area3DRightFace;
-                Path rightFacePath = rightFace.RightFaceHandle as Path;
+                Path rightFacePath = rightFace.RightFace as Path;
                 // rightFacePath.Fill = new SolidColorBrush(Colors.Green);
 
                 // Update front point
                 PathFigure pf = Area3DDataPointFace.GetPathFigure(rightFacePath);
-                newPosition = new Point(pf.StartPoint.X, yPosition);
+                //--newPosition = new Point(pf.StartPoint.X, yPosition);
+                newPosition = new Point(xPosition, yPosition);
                 oldPosition = pf.StartPoint;
                 pf.StartPoint = newPosition;
 
@@ -3058,9 +3296,10 @@ namespace Visifire.Charts
                 else
                     pf.StartPoint = newPosition;
 
-                // Update back point
+                // Update top back point
                 LineSegment ls = Area3DDataPointFace.GetLineSegment(rightFacePath, 2);
-                newPosition = new Point(ls.Point.X, yPosition - rightFace.Depth3d);
+                //--newPosition = new Point(ls.Point.X, yPosition - rightFace.Depth3d);
+                newPosition = new Point(xPosition + rightFace.Depth3d, yPosition - rightFace.Depth3d);
                 oldPosition = ls.Point;
                 ls.Point = newPosition;
 
@@ -3069,6 +3308,32 @@ namespace Visifire.Charts
                         new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
                 else
                     ls.Point = newPosition;
+
+
+                // Update zero base line point front point
+                ls = Area3DDataPointFace.GetLineSegment(rightFacePath, 0);
+                //--newPosition = new Point(ls.Point.X, yPosition - rightFace.Depth3d);
+                newPosition = new Point(xPosition, plankYPos);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                //if (animationEnabled)
+                //    AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                //        new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                //else
+                //    ls.Point = newPosition;
+
+                // Update zero base line point back point
+                ls = Area3DDataPointFace.GetLineSegment(rightFacePath, 1);
+                newPosition = new Point(xPosition + rightFace.Depth3d, plankYPos - rightFace.Depth3d);
+                oldPosition = ls.Point;
+                ls.Point = newPosition;
+
+                //if (animationEnabled)
+                //    AnimationHelper.ApplyPointAnimation(ls, "Point", dataPoint, storyBoardDp, 0,
+                //        new Double[] { 0, 1 }, new Point[] { oldPosition, newPosition }, null, Double.NaN);
+                //else
+                //    ls.Point = newPosition;
             }
 
             if (animationEnabled)
@@ -3076,12 +3341,18 @@ namespace Visifire.Charts
                 oldPosition = dataPoint.Faces.AreaFrontFaceLineSegment.Point;
                 dataPoint.Faces.AreaFrontFaceLineSegment.Point = dataPoint._visualPosition;
 
+                // If is the last DataPoint to update
+                if (dataPoint == nextDataPoint)
+                {
+                    dataPoint.Faces.AreaFrontFaceBaseLineSegment.Point = new Point(dataPoint._visualPosition.X, plankYPos);
+                }
+
                 //if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0)
                 //{
 
                 //    Double D1 = Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - plankYPos); // Y distance
                 //    Double timeTaken2TouchPlank = D1 / Math.Abs(dataPoint.Faces.AreaFrontFaceLineSegment.Point.Y - dataPoint._visualPosition.Y);//Time take to traval distance D1
-                    
+
                 //    AnimationHelper.ApplyPointAnimation(dataPoint.Faces.AreaFrontFaceLineSegment, "Point", dataPoint, storyBoardDp, 0,
                 //        new Double[] { 0, timeTaken2TouchPlank, 1 },
                 //        new Point[] { oldPosition, new Point(oldPosition.X, plankYPos),
@@ -3096,32 +3367,41 @@ namespace Visifire.Charts
                 //    //    oldPosition, new Point(dataPoint._visualPosition.X, plankYPos), 0.5, 0.5);
                 //}
                 //else
-                {
-                    AnimationHelper.ApplyPointAnimation(dataPoint.Faces.AreaFrontFaceLineSegment, "Point", dataPoint, storyBoardDp, 0,
-                        new Double[] { 0, 1 }, new Point[] { oldPosition, dataPoint._visualPosition }, null, Double.NaN);
-                }
+                //{
+                AnimationHelper.ApplyPointAnimation(dataPoint.Faces.AreaFrontFaceLineSegment, "Point", dataPoint, storyBoardDp, 0,
+                    new Double[] { 0, 1 }, new Point[] { oldPosition, dataPoint._visualPosition }, null, Double.NaN);
+                //}
+
+                dataPoint.Storyboard = storyBoardDp;
+
+                if (dataSeries.Bevel && !chart.View3D)
+                    AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint, animationEnabled);
 
                 storyBoardDp.Begin();
             }
             else
+            {
                 dataPoint.Faces.AreaFrontFaceLineSegment.Point = dataPoint._visualPosition;
 
+                // If is the last DataPoint to update
+                if (dataPoint == nextDataPoint)
+                {
+                    dataPoint.Faces.AreaFrontFaceBaseLineSegment.Point = new Point(dataPoint._visualPosition.X, plankYPos);
+                }
 
-            #region AnimateBevelLayer
+                if (dataSeries.Bevel && !chart.View3D)
+                    AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint, animationEnabled);
+            }
 
-            if (dataSeries.Bevel && animationEnabled)
-                AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint);
-
-            #endregion
             
-            dataPoint.Storyboard = storyBoardDp;
+
         }
 
         /// <summary>
         /// Animate the Bevel layer
         /// </summary>
         /// <param name="dataPoint"></param>
-        private static void AnimateBevelLayer(DataPoint dataPoint, Point oldVisualPositionOfDataPoint)
+        private static void AnimateBevelLayer(DataPoint dataPoint, Point oldVisualPositionOfDataPoint, Boolean animationEnabled)
         {
             Line bevelLine = dataPoint.Faces.BevelLine;
             DataPoint previousDataPoint = dataPoint.Faces.PreviousDataPoint;
@@ -3132,21 +3412,71 @@ namespace Visifire.Charts
             // If dataPoint is the first DataPoint of the area
             if (dataPoint.Faces.PreviousDataPoint == dataPoint)
             {
-                AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y1", dataPoint, storyBoardDp, 0,
-                       new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
+                if (animationEnabled)
+                {
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y1", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
+
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "X1", dataPoint, storyBoardDp, 0,
+                           new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.X, dataPoint._visualPosition.X }, null);
+                }
+                else
+                {
+                    bevelLine.Y1 = dataPoint._visualPosition.Y;
+                    bevelLine.X1 = dataPoint._visualPosition.X;
+                }
             }
             // dataPoint is the last DataPoint of the area
             else if (dataPoint == nextDataPoint)
             {
-
+                if (animationEnabled)
+                {
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y2", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
+                    
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "X2", dataPoint, storyBoardDp, 0,
+                            new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.X, dataPoint._visualPosition.X }, null);
+                }
+                else
+                {
+                    bevelLine.Y2 = dataPoint._visualPosition.Y;
+                    bevelLine.X2 = dataPoint._visualPosition.X;
+                }
             }
             else
             {
+                if (animationEnabled)
+                {
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y1", dataPoint, storyBoardDp, 0,
+                              new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
 
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "X1", dataPoint, storyBoardDp, 0,
+                             new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.X, dataPoint._visualPosition.X }, null);
+                }
+                else
+                {
+                    bevelLine.Y1 = dataPoint._visualPosition.Y;
+                    bevelLine.X1 = dataPoint._visualPosition.X;
+                }
+
+                bevelLine = dataPoint.Faces.PreviousDataPoint.Faces.BevelLine;
+
+                if (animationEnabled)
+                {
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "Y2", dataPoint, storyBoardDp, 0,
+                         new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.Y, dataPoint._visualPosition.Y }, null);
+
+                    AnimationHelper.ApplyPropertyAnimation(bevelLine, "X2", dataPoint, storyBoardDp, 0,
+                        new Double[] { 0, 1 }, new Double[] { oldVisualPositionOfDataPoint.X, dataPoint._visualPosition.X }, null);
+                }
+                else
+                {
+                    bevelLine.Y2 = dataPoint._visualPosition.Y;
+                    bevelLine.X2 = dataPoint._visualPosition.X;
+                }
             }
         }
-
-
+        
         private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue)
         {
             Chart chart = dataSeries.Chart as Chart;
@@ -3154,59 +3484,94 @@ namespace Visifire.Charts
             Canvas ChartVisualCanvas;
 
             switch (property)
-            {
+            {   
+                case VcProperties.Color:
+                case VcProperties.LightingEnabled:
+                    if(dataSeries.Faces != null)
+                    {
+                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                        {
+                            if (chart.View3D)
+                                path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetFrontFaceBrush(dataSeries.Color) : dataSeries.Color;
+                            else
+                                path.Fill = (Boolean)dataSeries.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataSeries.Color, "Linear", null) : dataSeries.Color;
+                        }
+                    }
+
+                    break;
+                case VcProperties.Opacity:
+                    if (dataSeries.Faces != null)
+                    {
+                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                            path.Opacity = (Double) newValue;
+                    }
+                    break;
+
+                case VcProperties.BorderColor:
+                case VcProperties.BorderStyle:
+                case VcProperties.BorderThickness:
+                    if (dataSeries.Faces != null)
+                    {
+                        foreach (Path path in dataSeries.Faces.FrontFacePaths)
+                            ApplyBorderProperties(path, dataSeries);
+                    }
+
+                    break;
                 case VcProperties.DataPoints:
                 case VcProperties.Enabled:
+                case VcProperties.Bevel:
                 case VcProperties.YValue:
+                case VcProperties.XValue:
 
-                    ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+                    chart.ChartArea.RenderSeries();
+                    //ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
 
-                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
-                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
+                    //Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    //Double height = chart.ChartArea.ChartVisualCanvas.Height;
 
-                    PlotDetails plotDetails = chart.PlotDetails;
-                    PlotGroup plotGroup = dataSeries.PlotGroup;
+                    //PlotDetails plotDetails = chart.PlotDetails;
+                    //PlotGroup plotGroup = dataSeries.PlotGroup;
 
-                    //Double columnWidth = CalculateWidthOfEachColumn(chart, width, dataSeries.PlotGroup.AxisX,RenderAs.Column, Orientation.Horizontal);
+                    ////Double columnWidth = CalculateWidthOfEachColumn(chart, width, dataSeries.PlotGroup.AxisX,RenderAs.Column, Orientation.Horizontal);
 
-                    // Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
-                    // Contains a list of serties as per the drawing order generated in the plotdetails
+                    //// Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(RenderAs.Column);
+                    //// Contains a list of serties as per the drawing order generated in the plotdetails
 
-                    List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
+                    //List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
 
-                    List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
+                    //List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
 
-                    RenderAs currentRenderAs = dataSeries.RenderAs;
+                    //RenderAs currentRenderAs = dataSeries.RenderAs;
 
-                    Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
+                    //Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
 
-                    for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
-                    {
-                        if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
-                            selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
-                    }
+                    //for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
+                    //{
+                    //    if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
+                    //        selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
+                    //}
 
-                    if (selectedDataSeries4Rendering.Count == 0)
-                        return;
+                    //if (selectedDataSeries4Rendering.Count == 0)
+                    //    return;
 
-                    Panel oldPanel = null;
-                    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+                    //Panel oldPanel = null;
+                    //Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
 
-                    if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
-                    {
-                        oldPanel = RenderedCanvasList[currentRenderAs];
-                    }
+                    //if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+                    //{
+                    //    oldPanel = RenderedCanvasList[currentRenderAs];
+                    //}
 
-                    Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
+                    //Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
 
-                    if (oldPanel == null)
-                    {
-                        chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
-                        renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
-                        ChartVisualCanvas.Children.Add(renderedChart);
-                    }
-                    else
-                        chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
+                    //if (oldPanel == null)
+                    //{
+                    //    chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                    //    renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
+                    //    ChartVisualCanvas.Children.Add(renderedChart);
+                    //}
+                    //else
+                    //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
                     break;
             }
         }

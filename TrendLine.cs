@@ -590,7 +590,7 @@ namespace Visifire.Charts
                 throw new Exception("Invalid Input for AxisMaximum");
             }
 
-            trendLine.FirePropertyChanged(VcProperties.Value);
+            trendLine.UpdateVisual(VcProperties.Value, e.NewValue);
         }
 
         /// <summary>
@@ -670,42 +670,37 @@ namespace Visifire.Charts
         {
             if (Line == null || Shadow == null)
                 FirePropertyChanged(propertyName);
+            else if (propertyName == VcProperties.Value)
+            {
+                Chart chart = (Chart as Chart);
+                Axis axis = chart.PlotDetails.GetAxisXFromChart(chart, AxisType);
+                chart.PlotDetails.SetTrendLineValue(this, axis);
+                Canvas visualCanvas = (Chart as Chart).ChartArea.ChartVisualCanvas;
+                PositionTheLine(visualCanvas.Width, visualCanvas.Height);
+            }
             else
                 ApplyProperties();
         }
 
         /// <summary>
-        /// Create visual objects for TrendLine
+        /// Set the position of line
         /// </summary>
-        /// <param name="width">Width of the ChartCanvas</param>
-        /// <param name="height">Height of the ChartCanvas</param>
-        internal void CreateVisualObject(Double width, Double height)
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        private void PositionTheLine(Double width, Double height)
         {
-            if (ReferingAxis == null || !(Boolean)Enabled)
-            {
-                Visual = null;
-                return;
-            }
-
-            Visual = new Canvas();
-            Visual.Opacity = this.Opacity;
-            Visual.Cursor = this.Cursor;
             Double shadowThickness = LineThickness + 2;
-            Line = new Line();
-            Shadow = new Line();
-
-            ApplyProperties();
 
             switch (Orientation)
-            {   
+            {
                 case Orientation.Vertical:
                     Line.Y1 = 0;
                     Line.Y2 = height;
                     Line.X1 = Graphics.ValueToPixelPosition(0,
-                                        width,
-                                        (Double)ReferingAxis.InternalAxisMinimum,
-                                        (Double)ReferingAxis.InternalAxisMaximum,
-                                        InternalNumericValue);
+                    width,
+                    (Double)ReferingAxis.InternalAxisMinimum,
+                    (Double)ReferingAxis.InternalAxisMaximum,
+                    InternalNumericValue);
                     Line.X2 = Line.X1;
                     Visual.Height = height;
                     Visual.Width = shadowThickness;
@@ -714,10 +709,10 @@ namespace Visifire.Charts
                     Line.X1 = 0;
                     Line.X2 = width;
                     Line.Y1 = Graphics.ValueToPixelPosition(height,
-                                        0,
-                                        (Double)ReferingAxis.InternalAxisMinimum,
-                                        (Double)ReferingAxis.InternalAxisMaximum,
-                                        InternalNumericValue);
+                    0,
+                    (Double)ReferingAxis.InternalAxisMinimum,
+                    (Double)ReferingAxis.InternalAxisMaximum,
+                    InternalNumericValue);
                     Line.Y2 = Line.Y1;
                     Visual.Height = shadowThickness;
                     Visual.Width = width;
@@ -739,6 +734,32 @@ namespace Visifire.Charts
                 Shadow.Y1 = Line.Y1 + 3;
                 Shadow.Y2 = Line.Y2;
             }
+        }
+
+        /// <summary>
+        /// Create visual objects for TrendLine
+        /// </summary>
+        /// <param name="width">Width of the ChartCanvas</param>
+        /// <param name="height">Height of the ChartCanvas</param>
+        internal void CreateVisualObject(Double width, Double height)
+        {
+            if (ReferingAxis == null || !(Boolean)Enabled)
+            {
+                Visual = null;
+                return;
+            }
+
+            Visual = new Canvas();
+
+            Visual.Opacity = this.Opacity;
+            Visual.Cursor = this.Cursor;
+            Double shadowThickness = LineThickness + 2;
+            Line = new Line() { Tag = new ElementData() { Element = this } };
+            Shadow = new Line() { IsHitTestVisible = false };
+
+            ApplyProperties();
+
+            PositionTheLine(width, height);
 
             Visual.Children.Add(Shadow);
             Visual.Children.Add(Line);

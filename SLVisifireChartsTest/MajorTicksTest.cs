@@ -383,7 +383,7 @@ namespace SLVisifireChartsTest
         }
 
         #region Private Data
-     
+
         /// <summary>
         /// Number of milliseconds to wait between actions in CreateAsyncTasks or Enqueue callbacks. 
         /// </summary>

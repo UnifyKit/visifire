@@ -51,7 +51,7 @@ namespace Visifire.Charts
         /// Function calculates the max value, min value, interval and number of intervals of the axis.
         /// </summary>
         public void Calculate()
-        {   
+        {
             Int32 loop = 0;                 // No of iteration.
             Int32 maxMagnitude;             // Magnitude of max data value.         
             Int32 minMagnitude;             // Magnitude of min data value.         
@@ -59,7 +59,7 @@ namespace Visifire.Charts
             Decimal nextInterval;           // Next calculated interval size from the old interval size.
             Decimal tempAxisMaximumValue;   // Calculated maximum value of the axis.
             Decimal tempAxisMinimumValue;   // Calculated minimum value of the axis.
-            
+
             // Handle values less than 10 and Greater than 2
             if (AxisRepresentation == AxisRepresentations.AxisX)
             {
@@ -71,10 +71,10 @@ namespace Visifire.Charts
                 if (_max > 2 && this._max < 10 && this._min >= 0)
                     this._maxNoOfInterval = (Int32)(_max + 1);
             }
-            
+
             // Only one value presents to calculate the range.
             if (this._max == this._min)
-            {   
+            {
                 CalculateSingle();  // Calculation for single value.
                 return;
             }
@@ -183,17 +183,25 @@ namespace Visifire.Charts
             }
         }
 
+
+        private Boolean _includeZero;
         /// <summary>
         /// Write-only property used to include zero in the axis range.
         /// </summary>
         public Boolean IncludeZero
         {
+            get
+            {
+                return _includeZero;
+            }
             set
             {
+                _includeZero = true;
                 // If zero is included need to set min value as 0.
                 if (value == true && this._min > 0)
                     this._min = 0;
             }
+
         }
 
         /// <summary>
@@ -304,7 +312,7 @@ namespace Visifire.Charts
                 while ((Int64)(number) != number)
                     number = number * 10;
 
-            return (Int64)(number); 
+            return (Int64)(number);
 
         }
 
@@ -316,7 +324,7 @@ namespace Visifire.Charts
         private Int32 IndexOfDecimalPoint(Decimal number)
         {
             Int32 count = 0;                  // local variable as counter.
-            
+
             // While number is not an integer.
             while ((Int64)(number) != number)
             {
@@ -419,7 +427,7 @@ namespace Visifire.Charts
             axisMaxValue = axisMaxValue / intervalValue;
             axisMaxValue = Decimal.Floor(axisMaxValue);
             axisMaxValue = (axisMaxValue + 1) * intervalValue;
-            
+
             return axisMaxValue;
 
         }
