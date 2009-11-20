@@ -25,7 +25,7 @@ using System.ComponentModel;
 using Visifire.Charts;
 
 #if SL
-    using System.Windows.Browser;
+using System.Windows.Browser;
 #endif
 
 namespace Visifire.Commons
@@ -33,8 +33,8 @@ namespace Visifire.Commons
     /// <summary>
     /// Base class for all Visifire elements including chart
     /// </summary>
-    public abstract class VisifireElement: System.Windows.Controls.Control
-    {   
+    public abstract class VisifireElement : System.Windows.Controls.Control
+    {
         #region Public Methods
 
         /// <summary>
@@ -42,6 +42,7 @@ namespace Visifire.Commons
         /// </summary>
         public VisifireElement()
         {
+
         }
 
 #if SL
@@ -77,7 +78,7 @@ namespace Visifire.Commons
                 return (String)GetValue(NameProperty);
             }
             set
-            {   
+            {
                 SetValue(NameProperty, value);
             }
         }
@@ -147,7 +148,7 @@ namespace Visifire.Commons
         {
             return TextParser(unParsed);
         }
-        
+
         #endregion
 
         #region Public Events
@@ -200,6 +201,49 @@ namespace Visifire.Commons
             }
         }
 
+#if WPF
+        /// <summary>
+        /// Event handler for the MouseRightButtonDown event 
+        /// </summary>
+        public new event MouseButtonEventHandler MouseRightButtonDown
+        {
+            remove
+            {
+                _onMouseRightButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseRightButtonUp event 
+        /// </summary>
+        public new event MouseButtonEventHandler MouseRightButtonUp
+        {
+            remove
+            {
+                _onMouseRightButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+#endif
 
         /// <summary>
         /// Event handler for the MouseEnter event 
@@ -267,7 +311,7 @@ namespace Visifire.Commons
             add
             {
                 _onMouseMove += value;
-                
+
                 if (EventChanged != null)
                     EventChanged(this, null);
             }
@@ -392,8 +436,20 @@ namespace Visifire.Commons
         /// <summary>
         /// Handler for MouseLeftButtonUp event
         /// </summary>
-        private event MouseButtonEventHandler _onMouseLeftButtonUp; 
-        
+        private event MouseButtonEventHandler _onMouseLeftButtonUp;
+
+#if WPF
+        /// <summary>
+        /// Handler for MouseRightButtonDown event
+        /// </summary>
+        private event MouseButtonEventHandler _onMouseRightButtonDown;
+
+        /// <summary>
+        /// Handler for MouseRightButtonUp event
+        /// </summary>
+        private event MouseButtonEventHandler _onMouseRightButtonUp;
+#endif
+
         /// <summary>
         /// Handler for MouseEnter event
         /// </summary>
@@ -402,21 +458,16 @@ namespace Visifire.Commons
         /// <summary>
         /// Handler for MouseLeave event
         /// </summary>
-        private event EventHandler<MouseEventArgs> _onMouseLeave;  
-         
+        private event EventHandler<MouseEventArgs> _onMouseLeave;
+
         /// <summary>
         /// Handler for MouseMove event
         /// </summary>
         private event EventHandler<MouseEventArgs> _onMouseMove;
-        
+
         #endregion
 
         #region Internal Methods
-
-        internal MouseButtonEventHandler GetMouseLeftButtonDownEvent()
-        {
-            return _onMouseLeftButtonDown;
-        }
 
         /// <summary>
         /// Attach events to a visual
@@ -424,11 +475,20 @@ namespace Visifire.Commons
         /// <param name="obj">Object with which event is attached</param>
         /// <param name="visual">FrameworkElement</param>
         internal static void AttachEvents2Visual(VisifireElement obj, FrameworkElement visual)
-        {   
+        {
             if (visual != null)
                 AttachEvents2Visual(obj, obj, visual);
         }
 
+        internal MouseButtonEventHandler GetMouseLeftButtonDownEventHandler()
+        {
+            return _onMouseLeftButtonDown;
+        }
+
+        internal MouseButtonEventHandler GetMouseLeftButtonUpEventHandler()
+        {
+            return _onMouseLeftButtonUp;
+        }
 
         /// <summary>
         /// Attach events to a visual
@@ -462,9 +522,13 @@ namespace Visifire.Commons
             object eventHandler;
 
             if (plotArea != null)
+            {
                 eventHandler = plotArea.GetMouseLeftButtonDownEventHandler();
+            }
             else
+            {
                 eventHandler = obj._onMouseLeftButtonDown;
+            }
 
             if (eventHandler != null)
                 visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
@@ -483,9 +547,13 @@ namespace Visifire.Commons
                 };
 
             if (plotArea != null)
+            {
                 eventHandler = plotArea.GetMouseLeftButtonUpEventHandler();
+            }
             else
+            {
                 eventHandler = obj._onMouseLeftButtonUp;
+            }
 
             if (eventHandler != null)
                 visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
@@ -508,7 +576,7 @@ namespace Visifire.Commons
 
             if (eventHandler != null)
                 visual.MouseMove += delegate(object sender, MouseEventArgs e)
-                {   
+                {
                     if (obj.GetType().Equals(typeof(PlotArea)))
                     {
                         (obj as PlotArea).FireMouseMoveEvent(e);
@@ -519,6 +587,238 @@ namespace Visifire.Commons
                             obj._onMouseMove(senderElement, e);
                     }
                 };
+
+            #region RightMouseButtonEvents4WPF
+#if WPF
+            object eventHandler4RightMouseButton;
+
+            if (plotArea != null)
+            {
+                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonDownEventHandler();
+            }
+            else
+            {
+                eventHandler4RightMouseButton = obj._onMouseRightButtonDown;
+            }
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (plotArea != null)
+                    {
+                        plotArea.FireMouseRightButtonDownEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseRightButtonDown != null)
+                        {
+                            obj._onMouseRightButtonDown(senderElement, e);
+                        }
+                    }
+                };
+
+            if (plotArea != null)
+            {
+                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonUpEventHandler();
+            }
+            else
+            {
+                eventHandler4RightMouseButton = obj._onMouseRightButtonUp;
+            }
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (plotArea != null)
+                    {
+                        plotArea.FireMouseRightButtonUpEvent(e);
+                    }
+                    else
+                    {
+                        if (obj._onMouseRightButtonUp != null)
+                        {
+                            obj._onMouseRightButtonUp(senderElement, e);
+                        }
+                    }
+                };
+#endif
+            #endregion
+        }
+
+        /// <summary>
+        /// Attach events to a Area visual
+        /// </summary>
+        /// <param name="obj">Object with which event is attached</param>
+        /// <param name="senderElement">sender will be passed to the event-handler</param>
+        /// <param name="visual">visual object with which event will be attached</param>
+        internal static void AttachEvents2AreaVisual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
+        {
+            if (visual == null)
+                return;
+
+            if (obj._onMouseEnter != null)
+                visual.MouseEnter += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseEnter != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseEnter != null)
+                                dp._onMouseEnter(dp, e);
+                        }
+                        else
+                            obj._onMouseEnter(dp, e);
+                    }
+                };
+
+            if (obj._onMouseLeave != null)
+                visual.MouseLeave += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseLeave != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseLeave != null)
+                                dp._onMouseLeave(dp, e);
+                        }
+                        else
+                            obj._onMouseLeave(dp, e);
+                    }
+                };
+
+            object eventHandler;
+            eventHandler = obj._onMouseLeftButtonDown;
+
+            if (eventHandler != null)
+                visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseLeftButtonDown != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseLeftButtonDown != null)
+                                dp._onMouseLeftButtonDown(dp, e);
+                        }
+                        else
+                            obj._onMouseLeftButtonDown(dp, e);
+                    }
+                };
+
+            eventHandler = obj._onMouseLeftButtonUp;
+
+            if (eventHandler != null)
+                visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseLeftButtonUp != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseLeftButtonUp != null)
+                                dp._onMouseLeftButtonUp(dp, e);
+                        }
+                        else
+                            obj._onMouseLeftButtonUp(dp, e);
+                    }
+                };
+
+            eventHandler = obj._onMouseMove;
+
+            if (eventHandler != null)
+                visual.MouseMove += delegate(object sender, MouseEventArgs e)
+                {
+                    if (obj._onMouseMove != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseMove != null)
+                                dp._onMouseMove(dp, e);
+                        }
+                        else
+                            obj._onMouseMove(dp, e);
+                    }
+                };
+
+
+            #region RightMouseButtonEvents4WPF
+#if WPF
+            object eventHandler4RightMouseButton;
+            eventHandler4RightMouseButton = obj._onMouseRightButtonDown;
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonDown += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseRightButtonDown != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseRightButtonDown != null)
+                                dp._onMouseRightButtonDown(dp, e);
+                        }
+                        else
+                            obj._onMouseRightButtonDown(dp, e);
+                    }
+                };
+
+            eventHandler4RightMouseButton = obj._onMouseRightButtonUp;
+
+            if (eventHandler4RightMouseButton != null)
+                visual.MouseRightButtonUp += delegate(object sender, MouseButtonEventArgs e)
+                {
+                    if (obj._onMouseRightButtonUp != null)
+                    {
+                        DataPoint dp = null;
+                        if (obj.GetType().Equals(typeof(DataSeries)))
+                            dp = (obj as DataSeries).GetNearestDataPointOnMouseButtonEvent(e);
+                        else
+                            dp = (obj as DataPoint).Parent.GetNearestDataPointOnMouseButtonEvent(e);
+
+                        if (obj.GetType().Equals(typeof(DataPoint)))
+                        {
+                            if ((dp as VisifireElement)._onMouseRightButtonUp != null)
+                                dp._onMouseRightButtonUp(dp, e);
+                        }
+                        else
+                            obj._onMouseRightButtonUp(dp, e);
+                    }
+                };
+#endif
+            #endregion
         }
 
         /// <summary>
@@ -606,8 +906,6 @@ namespace Visifire.Commons
             _element = element;
             _visualObject = visualObject;
 
-            DetachToolTip(visualObject);
-
             visualObject.MouseMove += new MouseEventHandler(VisualObject_MouseMove);
             visualObject.MouseEnter += new MouseEventHandler(VisualObject_MouseEnter);
 
@@ -668,7 +966,7 @@ namespace Visifire.Commons
         /// Temp HrefTarget
         /// </summary>
         internal HrefTargets _tempHrefTarget;
-                
+
         #endregion
     }
 }

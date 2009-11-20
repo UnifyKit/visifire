@@ -2684,7 +2684,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.DataPoints[0].BorderThickness = new Thickness(2);
+            dataSeries.DataPoints[0].InternalBorderThickness = new Thickness(2);
             chart.Series.Add(dataSeries);
 
             EnqueueDelay(_sleepTime);
@@ -2693,8 +2693,8 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
-                        Assert.AreEqual(new Thickness(2), dataSeries.DataPoints[i].BorderThickness);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
+                        Assert.AreEqual(new Thickness(2), dataSeries.DataPoints[i].InternalBorderThickness);
                     }
                 });
 
@@ -2722,7 +2722,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
                         dataSeries.DataPoints[i].BorderColor = new SolidColorBrush(Colors.Magenta);
                         Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Magenta), dataSeries.DataPoints[i].BorderColor);
                     }
@@ -2753,7 +2753,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].BorderThickness = new Thickness(2);
+                        dataSeries.DataPoints[i].InternalBorderThickness = new Thickness(2);
                         dataSeries.DataPoints[i].BorderColor = new SolidColorBrush(Colors.Magenta);
                         dataSeries.DataPoints[i].BorderStyle = BorderStyles.Dashed;
                         Assert.AreEqual(BorderStyles.Dashed, dataSeries.DataPoints[i].BorderStyle);
@@ -2776,7 +2776,7 @@ namespace SLVisifireChartsTest
 
 
             DataSeries dataSeries = CreateDataSeries();
-            dataSeries.BorderThickness = new Thickness(1);
+            dataSeries.InternalBorderThickness = new Thickness(1);
             chart.Series.Add(dataSeries);
 
             EnqueueDelay(_sleepTime);
@@ -2816,8 +2816,8 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        dataSeries.DataPoints[i].Opacity = 0.5;
-                        Assert.AreEqual(0.5, dataSeries.DataPoints[i].Opacity, Common.HighPrecisionDelta);
+                        dataSeries.DataPoints[i].InternalOpacity = 0.5;
+                        Assert.AreEqual(0.5, dataSeries.DataPoints[i].InternalOpacity, Common.HighPrecisionDelta);
                     }
                 });
 
@@ -2956,7 +2956,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual(new Thickness(0), dataSeries.DataPoints[i].BorderThickness);
+                        Assert.AreEqual(new Thickness(0), dataSeries.DataPoints[i].InternalBorderThickness);
                     }
                 });
 
@@ -3100,7 +3100,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual(new FontFamily("Arial"), dataSeries.DataPoints[i].LabelFontFamily);
+                        Assert.AreEqual(new FontFamily("Verdana"), dataSeries.DataPoints[i].LabelFontFamily);
                     }
                 });
 
@@ -3506,7 +3506,7 @@ namespace SLVisifireChartsTest
                 {
                     for (Int32 i = 0; i < 10; i++)
                     {
-                        Assert.AreEqual((dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), dataSeries.DataPoints[i].MarkerSize);
+                        Assert.AreEqual((dataSeries.LineThickness * 2), dataSeries.DataPoints[i].MarkerSize);
                     }
                 });
 
@@ -6625,9 +6625,16 @@ namespace SLVisifireChartsTest
                 timer.Stop();
 
             EnqueueTestComplete();
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-            System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+
+            if (_htmlElement1 != null)
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+
+            if (_htmlElement2 != null)
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+
+            if(_htmlElement3 != null)
+                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
         }
 

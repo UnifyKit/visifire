@@ -226,7 +226,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
+                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -488,8 +488,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -513,8 +513,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();
@@ -886,8 +886,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => chart.Series[0].ShowInLegend = false,
-                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
+                () => chart.Series[0].ShowInLegend = true,
+                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -907,8 +907,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => chart.Series[0].DataPoints[2].ShowInLegend = false,
-                () => Assert.IsFalse((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
+                () => chart.Series[0].DataPoints[2].ShowInLegend = true,
+                () => Assert.IsTrue((Boolean)chart.Series[0].DataPoints[2].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -1212,7 +1212,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsTrue((Boolean)chart.Series[0].ShowInLegend));
+                () => Assert.IsFalse((Boolean)chart.Series[0].ShowInLegend));
             EnqueueTestComplete();
         }
 
@@ -1474,8 +1474,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].Opacity);
+                    chart.Series[0].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].InternalOpacity);
                 });
 
             EnqueueTestComplete();
@@ -1499,8 +1499,8 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                 delegate
                 {
-                    chart.Series[0].DataPoints[2].Opacity = 0.5;
-                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].Opacity, Common.HighPrecisionDelta);
+                    chart.Series[0].DataPoints[2].InternalOpacity = 0.5;
+                    Assert.AreEqual(0.5, chart.Series[0].DataPoints[2].InternalOpacity, Common.HighPrecisionDelta);
                 });
 
             EnqueueTestComplete();
@@ -3362,6 +3362,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
             chart.Series[0].RenderAs = RenderAs.StreamLineFunnel;
+            chart.Series[0].ShowInLegend = true;
 
             EnqueueDelay(_sleepTime);
 
@@ -3451,6 +3452,7 @@ namespace SLVisifireChartsTest
 
             Common.CreateAndAddDefaultDataSeries(chart);
             chart.Series[0].RenderAs = RenderAs.SectionFunnel;
+            chart.Series[0].ShowInLegend = true;
 
             EnqueueDelay(_sleepTime);
 

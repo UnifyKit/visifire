@@ -632,8 +632,8 @@ namespace SLVisifireChartsTest
             CreateAndAddDefaultDataSeries(chart, legend);
 
             CreateAsyncTask(chart,
-                () => legend.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, legend.Opacity, Common.HighPrecisionDelta));
+                () => legend.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, legend.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

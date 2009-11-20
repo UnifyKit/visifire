@@ -28,10 +28,10 @@ using System.ComponentModel;
 using Visifire.Charts;
 using System.Linq;
 using System.Globalization;
-using Visifire.Commons;
+using System.Windows.Data;
 
 namespace Visifire.Commons
-{   
+{
     /// <summary>
     /// ObservableObject Implements INotifyPropertyChanged Interface
     /// </summary>
@@ -43,11 +43,11 @@ namespace Visifire.Commons
         public ObservableObject()
             : base()
         {
-            // Attach event handler with EventChanged event of VisfiireElement
+            // Attach event handler with EventChanged event of VisifireElement
             // But do not attach the event for PlotArea beacuse PlotArea has overridden EventChanged as internal event
             if (!this.GetType().Equals(typeof(PlotArea)))
             {
-                // Attach event handler with EventChanged event of VisfiireElement
+                // Attach event handler with EventChanged event of VisifireElement
                 EventChanged += delegate
                 {
                     FirePropertyChanged(VcProperties.MouseEvent);
@@ -55,6 +55,13 @@ namespace Visifire.Commons
             }
 
             IsNotificationEnable = true;
+
+#if SL
+            Binding binding = new Binding("Style");
+            binding.Source = this;
+            binding.Mode = BindingMode.TwoWay;
+            this.SetBinding(ObservableObject.InternalStyleProperty, binding);
+#endif
         }
 
         #region Public Methods
@@ -72,37 +79,37 @@ namespace Visifire.Commons
             Chart chart = control as Chart;
             if (chart.StyleDictionary != null)
             {
-#if SL
-                if (Style == null)
-                {   
-                    Style myStyle = chart.StyleDictionary[keyName] as Style;
-                    
-                    if (myStyle != null)
-                        Style = myStyle;
-                }
-#else
+                //#if SL
+                //                if (Style == null)
+                //                {   
+                //                    Style myStyle = chart.StyleDictionary[keyName] as Style;
+
+                //                    if (myStyle != null)
+                //                        Style = myStyle;
+                //                }
+                //#else
 
                 Style myStyle = chart.StyleDictionary[keyName] as Style;
 
                 System.Diagnostics.Debug.WriteLine(keyName);
                 if (myStyle != null)
                 {
-                    if((Chart as Chart)._isThemeChanged)
+                    if ((Chart as Chart)._isThemeChanged)
                         Style = myStyle;
-                    else if(Style == null)
-                         Style = myStyle;
+                    else if (Style == null)
+                        Style = myStyle;
                 }
 
-#endif
+                //#endif
             }
 
             IsNotificationEnable = oldIsNotificationEnable;
         }
-                
+
         #endregion
 
         #region Public Properties
-               
+
         /// <summary>
         /// Visifire Control reference
         /// </summary>
@@ -138,12 +145,12 @@ namespace Visifire.Commons
         #endregion
 
         #region Public Event
-            
+
         /// <summary>
         /// Event PropertyChanged will be fired if any property is changed
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-            
+
         #endregion
 
         #region Protected Methods
@@ -157,7 +164,7 @@ namespace Visifire.Commons
         {
 
         }
-        
+
         /// <summary>
         /// Check whether the Property value is changed
         /// </summary>
@@ -185,31 +192,41 @@ namespace Visifire.Commons
             return false;
         }
 
+        public virtual void Bind()
+        {
+
+        }
+
         /// <summary>
         /// Fire property change event
         /// </summary>
         /// <param name="propertyName">Property Name</param>
         internal void FirePropertyChanged(VcProperties propertyName)
-        {   
+        {
             _isPropertyChangedFired = false; // Used for testing
 
+           
             if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
-#if SL          
+                
+#if SL
+
                 if (IsInDesignMode)
                 {
                     this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
                 }
                 else if (Chart != null && (Chart as Chart)._isTemplateApplied)
-                {   
+                {
                     if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
                     {
                         System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
 
-                            if (currentDispatcher.CheckAccess())
-                                (Chart as Chart).InvokeRender();
-                            else
-                                currentDispatcher.BeginInvoke(new Action<VcProperties>(FirePropertyChanged), propertyName);
+                        (Chart as Chart)._forcedRedraw = true;
+
+                        if (currentDispatcher.CheckAccess())
+                            (Chart as Chart).InvokeRender();
+                        else
+                            currentDispatcher.BeginInvoke(new Action<VcProperties>(FirePropertyChanged), propertyName);
                     }
                     else // if we did not get the Dispatcher throw an exception
                     {
@@ -218,10 +235,12 @@ namespace Visifire.Commons
 
                     _isPropertyChangedFired = true;   // Used for testing
                 }
-                
 #else
                 if (Chart != null)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties),propertyName)));
+                {
+                    (Chart as Chart)._forcedRedraw = true;
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
+                }
 #endif
             }
         }
@@ -277,6 +296,50 @@ namespace Visifire.Commons
         }
 #endif
 
+#if SL
+        private static readonly DependencyProperty InternalStyleProperty = DependencyProperty.Register
+           ("Style",
+           typeof(Style),
+           typeof(ObservableObject),
+           new PropertyMetadata(OnInternalStylePropertyChanged));
+
+        private static void OnInternalStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ObservableObject obj = d as ObservableObject;
+            //Style style = (Style)e.NewValue;
+
+            //Boolean is2Break =false;
+
+            //foreach (Setter setter in obj.Style.Setters)
+            //{
+            //    if (setter == null)
+            //        return;
+
+            //    switch (setter.Property.ToString())
+            //    {
+            //        case "FontWeight":
+            //            obj.UpdateVisual("FontWeight", e.NewValue);
+            //            break;
+            //        case "FontStyle":
+            //            obj.UpdateVisual("FontWeight", e.NewValue);
+            //            break;
+
+            //        default:
+            //            is2Break = true;
+            //            obj.FirePropertyChanged("Style");
+            //            break;
+            //    }
+
+            //    if (is2Break)
+            //        break;
+            //}
+
+            obj.Bind();
+
+            // obj.FirePropertyChanged("Style");
+        }
+#endif
+
         #endregion
 
         #region Internal Property
@@ -300,14 +363,36 @@ namespace Visifire.Commons
         /// <param name="chart">Chart</param>
         /// <returns>true - Get entry for PartialUpdate
         /// false - Get entry for PartialUpdate</returns>
-        internal virtual Boolean ValidatePartialUpdate()
-        {
+        internal virtual Boolean ValidatePartialUpdate(RenderAs renderAs, VcProperties property )
+        {   
             Chart chart = Chart as Chart;
 
             if (chart == null || chart.ChartArea == null || chart.ChartArea._isFirstTimeRender)
+            {
                 return false;
+            }
             else
+            {
                 return true;
+            }
+        }
+
+        internal static Boolean NonPartialUpdateChartTypes(RenderAs renderAs)
+        {
+             switch (renderAs)
+                {
+                    case RenderAs.StackedArea:
+                    case RenderAs.StackedArea100:
+                    case RenderAs.Pie:
+                    case RenderAs.Doughnut:
+                    case RenderAs.SectionFunnel:
+                    case RenderAs.StreamLineFunnel:
+                        return true;
+                     break;
+                 default:
+                     return false;
+                     break;
+             }
         }
 
         /// <summary>
@@ -352,7 +437,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Whether the PropertyChanged event is fired
         /// </summary>
-        internal static Boolean _isPropertyChangedFired = false; 
+        internal static Boolean _isPropertyChangedFired = false;
 
         /// <summary>
         /// Whether this object is automatically generated while rendering. 
@@ -360,7 +445,7 @@ namespace Visifire.Commons
         /// </summary>
         internal Boolean _isAutoGenerated;
 
-      
-       #endregion
+
+        #endregion
     }
 }

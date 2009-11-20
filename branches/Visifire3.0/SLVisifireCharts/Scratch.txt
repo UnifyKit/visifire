@@ -271,7 +271,6 @@
         internal static Faces Get2DBar(RectangularChartShapeParams barParams)
         {   
             Faces faces = new Faces();
-            faces.Parts = new List<DependencyObject>();
 
             Grid barVisual = new Grid();
 

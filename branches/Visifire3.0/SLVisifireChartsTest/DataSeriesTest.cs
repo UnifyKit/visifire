@@ -33,6 +33,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.View3D = true;
+            chart.SmartLabelEnabled = true;
 
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -1172,6 +1173,7 @@ namespace SLVisifireChartsTest
             chart.Width = 500;
             chart.Height = 300;
             chart.View3D = true;
+            chart.SmartLabelEnabled = true;
 
             _isLoaded = false;
             chart.Loaded += new RoutedEventHandler(chart_Loaded);
@@ -3864,8 +3866,8 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => dataSeries.Opacity = 0.5,
-                () => Assert.AreEqual(0.5, dataSeries.Opacity, Common.HighPrecisionDelta));
+                () => dataSeries.InternalOpacity = 0.5,
+                () => Assert.AreEqual(0.5, dataSeries.InternalOpacity, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }
@@ -4186,7 +4188,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, dataSeries.LineThickness));
+                () => Assert.AreEqual((((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000) > 4 ? 4 : ((chart.ActualWidth * chart.ActualHeight) + 25000) / 35000, dataSeries.LineThickness));
 
             EnqueueTestComplete();
         }
@@ -4391,7 +4393,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(new FontFamily("Arial"), dataSeries.LabelFontFamily));
+                () => Assert.AreEqual(new FontFamily("Verdana"), dataSeries.LabelFontFamily));
 
             EnqueueTestComplete();
         }
@@ -4715,7 +4717,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual((Double)(dataSeries.LineThickness + (dataSeries.LineThickness * 80 / 100)), (Double)dataSeries.MarkerSize, Common.HighPrecisionDelta));
+                () => Assert.AreEqual((Double)(dataSeries.LineThickness * 2), (Double)dataSeries.MarkerSize, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }

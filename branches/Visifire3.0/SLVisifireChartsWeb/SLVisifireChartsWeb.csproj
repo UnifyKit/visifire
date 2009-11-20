@@ -167,7 +167,7 @@
     <Content Include="TestCases\data2.xml" />
     <Content Include="TestCases\data1.xml" />
     <Content Include="Visifire.htm" />
-    <Content Include="Visifire2.js" />
+    <Content Include="Visifire.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +191,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>2012</DevelopmentServerPort>
+          <DevelopmentServerPort>57812</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

@@ -28,7 +28,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.PlotAreaMouseButtonEventArgs class
     /// </summary>
-    
+
 #if SL
     [System.Windows.Browser.ScriptableType]
 #endif
@@ -39,6 +39,7 @@ namespace Visifire.Charts
         public PlotAreaMouseButtonEventArgs(MouseButtonEventArgs e)
         {
             XValue = Double.NaN;
+            YValue = Double.NaN;
             MouseButtonEventArgs = e;
         }
 
@@ -64,6 +65,15 @@ namespace Visifire.Charts
             internal set;
         }
 
-        #endregion      
+        /// <summary>
+        /// YValue corresponding to mouse position
+        /// </summary>
+        public Double YValue
+        {
+            get;
+            internal set;
+        }
+
+        #endregion
     }
 }

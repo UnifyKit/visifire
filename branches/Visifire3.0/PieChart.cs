@@ -138,6 +138,15 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Whether the label line target point is at the right side of the label
+        /// </summary>
+        public Boolean LabelLineTargetToRight
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// OuterRadius of the pie
         /// </summary>
         public Double OuterRadius
@@ -405,6 +414,8 @@ namespace Visifire.Charts
             set;
         }
 
+        public DataPoint DataPoint;
+
         #endregion
 
         #region Data
@@ -421,6 +432,7 @@ namespace Visifire.Charts
 
         #endregion
     }
+
 
     /// <summary>
     /// Visfiire.Charts.Point3D class
@@ -471,10 +483,50 @@ namespace Visifire.Charts
         #endregion
     }
 
+
+    internal abstract class PieDoughnutPoints
+    {
+        /// <summary>
+        /// LabelLine dateTime position
+        /// </summary>
+        public Point LabelLineStartPoint
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// LabelLine mid position
+        /// </summary>
+        public Point LabelLineMidPoint
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// LabelLine end position
+        /// </summary>
+        public Point LabelLineEndPoint
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// LabelLine position
+        /// </summary>
+        public Point LabelPosition
+        {
+            get;
+            set;
+        }
+    }
+
     /// <summary>
     /// Visifire.Charts.PieDoughnut2DPoints class
     /// </summary>
-    internal class PieDoughnut2DPoints
+    internal class PieDoughnut2DPoints : PieDoughnutPoints
     {
         #region Public Methods
 
@@ -545,164 +597,18 @@ namespace Visifire.Charts
             set;
         }
 
-        /// <summary>
-        /// LabelLine dateTime position
-        /// </summary>
-        public Point LabelLineStartPoint
-        {
-            get;
-            set;
-        }
 
-        /// <summary>
-        /// LabelLine mid position
-        /// </summary>
-        public Point LabelLineMidPoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LabelLine end position
-        /// </summary>
-        public Point LabelLineEndPoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LabelLine position
-        /// </summary>
-        public Point LabelPosition
-        {
-            get;
-            set;
-        }
 
         #endregion
 
-        #region Public Events And Delegates
-
-        #endregion
-
-        #region Protected Methods
-
-        #endregion
-
-        #region Internal Properties
-
-        #endregion
-
-        #region Private Properties
-
-        #endregion
-
-        #region Private Delegates
-
-        #endregion
-
-        #region Private Methods
-
-        #endregion
-
-        #region Internal Methods
-
-        #endregion
-
-        #region Internal Events And Delegates
-
-        #endregion
-
-        #region Data
-
-        #endregion
     }
 
     /// <summary>
     ///  Visifire.Charts.PieDoughnut3DPoints class
     /// </summary>
-    internal class PieDoughnut3DPoints
+    internal class PieDoughnut3DPoints : PieDoughnutPoints
     {
-        #region Public Methods
-
-        #endregion
-
         #region Public Properties
-
-        #endregion
-
-        #region Public Events And Delegates
-
-        #endregion
-
-        #region Protected Methods
-
-        #endregion
-
-        #region Internal Properties
-
-        #endregion
-
-        #region Private Properties
-
-        /// <summary>
-        /// LabelLine dateTime position
-        /// </summary>
-        public Point LabelLineStartPoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LabelLine mid position
-        /// </summary>
-        public Point LabelLineMidPoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LabelLine end position
-        /// </summary>
-        public Point LabelLineEndPoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LabelLine position
-        /// </summary>
-        public Point LabelPosition
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Private Delegates
-
-        #endregion
-
-        #region Private Methods
-
-        #endregion
-
-        #region Internal Methods
-
-        #endregion
-
-        #region Internal Events And Delegates
-
-        #endregion
-
-        #region Data
-
         #endregion
     }
 
@@ -733,24 +639,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Current working DataPoint
-        /// </summary>
-        private static DataPoint CurrentDataPoint
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -765,7 +653,7 @@ namespace Visifire.Charts
         /// <param name="angle">Angle</param>
         /// <returns>Angle as Double</returns>
         private static Double FixAngle(Double angle)
-        {
+        {   
             while (angle > Math.PI * 2) angle -= Math.PI * 2;
             while (angle < 0) angle += Math.PI * 2;
             return angle;
@@ -803,7 +691,7 @@ namespace Visifire.Charts
 
             Canvas visual = new Canvas() { Height = textBlockSize.Height, Width = textBlockSize.Width, Background = dataPoint.LabelBackground, Tag = new ElementData() { Element = dataPoint } };
 
-            visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
 
             visual.Children.Add(textBlock);
 
@@ -824,363 +712,66 @@ namespace Visifire.Charts
         /// <param name="visualCanvasSize">Visual canvas size</param>
         /// <param name="scaleY">Scale Y</param>
         /// <param name="is3D">Whether a 3D chart</param>
-        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Dictionary<DataPoint, Canvas> labels, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
+        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
         {
-            Point plotRadius;
-            Point startPos = new Point(visualCanvasSize.Width / 2, (visualCanvasSize.Height / 2));
+            //Point plotRadius;
+            Double xRadiusLabel = referenceEllipseSize.Width / 2;
+            Double yRadiusLabel = referenceEllipseSize.Height / 2;
+            Double xRadiusChart = pieSize.Width / 2;
+            Double yRadiusChart = pieSize.Height / 2;
+            Point center;
+            Chart chart = null;
+            //if(is3D)
+            //    center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2 - (yRadiusChart * scaleY) / 2);
+            //else
+                center = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
+            
+            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle, meanAngle;
+            //Graphics.DrawPointAt(center, visual, System.Windows.Media.Colors.Red);
 
-            if (is3D)
+            CircularLabel prevousLabel = null;
+            CircularLabel cLabel = null;
+            Rect boundingArea = new Rect(0, 0, visual.Width, visual.Height);
+            // List of CircularLabels
+            List<CircularLabel> circularLabels = new List<CircularLabel>();
+
+            // Creating the LinkList of CircularLabels
+            foreach (DataPoint dp in dataPoints)
             {
-                Double hPieRadius = pieSize.Width / (is3D ? 1 : 2);
-                //Double vPieRadius = (pieSize.Height / (is3D ? 1 : 2)) * scaleY;
-                //Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
-                //Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
-                //Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
-                Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
-                Point pieRadius = new Point(hPieRadius, vOuterEllipseRadius);
-                plotRadius = new Point(pieSize.Width, pieSize.Height);
-                PositionLabels3D(dataPoints, plotRadius, startPos, pieRadius, totalSum, scaleY, visualCanvasSize, pieSize, referenceEllipseSize);
-            }
-            else
-            {
-                plotRadius = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
-                PositionLabels2D(dataPoints, plotRadius, startPos, totalSum, pieSize, referenceEllipseSize);
-            }
-
-        }
-
-        private static void PositionLabels(Double minY, Double maxY, Double gap, Double maxGap, Double labelCount, Dictionary<Double, Point> labelPositions, String side)
-        {
-            Boolean isRight = (side == "Right");
-            Double limit = (isRight) ? minY : maxY;
-            Double sign = (isRight) ? -1 : 1;
-            Int32 iterationCount = 0;
-            Boolean isOverlap = false;
-            Double previousY;
-            Double currentY;
-            Point point;
-
-            Double offsetFactor = sign * ((gap > maxGap) ? maxGap / 2 : gap / 2);
-
-            do
-            {
-                previousY = limit;
-                isOverlap = false;
-
-                for (Int32 i = 0; i < labelCount; i++)
-                {
-                    labelPositions.TryGetValue(i, out point);
-                    currentY = point.Y;
-
-                    if (Math.Abs(previousY - currentY) < gap && i != 0)
-                    {
-
-                        point.Y = previousY - offsetFactor;
-                        if (isRight)
-                        {
-                            if (point.Y > maxY) point.Y = (previousY + maxY - gap) / 2;
-                        }
-                        else
-                        {
-                            if (point.Y < minY)
-                            {
-                                point.Y = (minY + previousY) / 2;
-                                if (point.X - gap < 0)
-                                    point.X = point.X - gap;
-                            }
-                        }
-
-                        currentY = point.Y;
-
-                        labelPositions.Remove(i);
-                        labelPositions.Add(i, new Point(point.X, point.Y));
-
-                        labelPositions.TryGetValue(i - 1, out point);
-                        point.Y = previousY + offsetFactor;
-
-                        if (isRight)
-                        {
-                            if (point.Y < minY) point.Y = (minY + previousY) / 2;
-                        }
-                        else
-                        {
-                            if (point.Y > maxY) point.Y = (previousY + maxY - gap) / 2;
-                        }
-
-                        labelPositions.Remove(i - 1);
-                        labelPositions.Add(i - 1, new Point(point.X, point.Y));
-                        isOverlap = true;
-
-                        if (isRight)
-                        {
-                            if (previousY < currentY) isOverlap = true;
-                        }
-                        else
-                        {
-                            if (previousY > currentY) isOverlap = true;
-                        }
-                        break;
-                    }
-
-                    previousY = currentY;
-                }
-                iterationCount++;
-
-            } while (isOverlap && iterationCount < 128);
-
-            if (isOverlap)
-            {
-                Double stepSize = (maxY - minY) / labelCount;
-                for (Int32 i = 0; i < labelCount; i++)
-                {
-                    labelPositions.TryGetValue(i, out point);
-                    if (isRight)
-                    {
-                        point.Y = stepSize * i;
-                    }
-                    else
-                    {
-                        point.Y = maxY - stepSize * (i + 1);
-                    }
-
-                    labelPositions.Remove(i);
-                    labelPositions.Add(i, new Point(point.X, point.Y));
-                }
-            }
-        }
-
-        private static void PositionLabels3D(List<DataPoint> dataPoints, Point plotRadius, Point startPos, Point pieRadius, Double sum,
-            Double YScale, Size plotSize, Size pieSize, Size referenceEllipseSize)
-        {
-            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
-            Double meanAngle;
-            Double radius = 0;
-            Int32 i = 0;
-
-            Double depth = plotSize.Height * 0.075;
-
-            Double centerX = 0, centerY = 0;
-
-            Double offset = 0;
-            Dictionary<Double, Double> labelOR = new Dictionary<Double, Double>();
-            Dictionary<Double, Point> labelYR = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Point> labeltempYR = new Dictionary<Double, Point>();
-            Dictionary<Double, Rect> labeltempPosR = new Dictionary<Double, Rect>();
-
-
-            Dictionary<Double, Double> labelOL = new Dictionary<Double, Double>();
-            Dictionary<Double, Point> labelYL = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Rect> labelPosL = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosR = new Dictionary<Double, Rect>();
-
-            Dictionary<Double, Point> centers = new Dictionary<Double, Point>();
-            Dictionary<DataPoint, Double> meanAngles = new Dictionary<DataPoint, Double>();
-            //List<DataPoint> labelsAtLeft = new List<DataPoint>();
-            Double GapL = 2, GapR = 2;
-            Double maxGap;
-
-            Int32 lIndex = 0, rIndex = 0, tIndex = 0;
-            Double tempY, tempX;
-            Double pieradius;
-            Double yScalingFactor = pieRadius.Y / pieRadius.X;
-            for (i = 0; i < dataPoints.Count; i++)
-            {
-                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoints[i].InternalYValue) / sum;
+                chart = dp.Chart as Chart;
+                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dp.InternalYValue) / totalSum;
                 meanAngle = (startAngle + stopAngle) / 2;
-                meanAngles.Add(dataPoints[i], meanAngle);
-                if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
 
-                Double explodeOffset = 0;
-
-                pieradius = pieRadius.X;
-                radius = plotRadius.X;
-                if (dataPoints[i].LabelStyle == LabelStyles.Inside)
+                if (dp.LabelStyle == LabelStyles.Inside)
                 {
-                    PlaceLabelInside(dataPoints[i], startPos, meanAngle, pieSize, referenceEllipseSize, YScale, true);
-                    //centerX = startPos.X + pieradius * explodeOffset * Math.Cos(angle);
-                    //centerY = startPos.Y + pieradius * explodeOffset * Math.Sin(angle) * yScalingFactor;
-
-                    //if (DataPoints[i].LabelEnabled == true)
-                    //{
-                    //    tempX = centerX + pieradius * 0.7 * Math.Cos(angle) - DataPoints[i].LabelVisual.ActualWidth / 2;
-                    //    tempY = (centerY - depth / 2) + pieradius * 0.7 * Math.Sin(angle) * yScalingFactor - DataPoints[i].LabelVisual.Height / 2;
-                    //    AttachLabel(DataPoints[i], tempY, tempX, pieradius, angle, new Point(centerX, centerY), yScalingFactor);
-                    //}
-                    //return;
+                    meanAngle = CircularLabel.ResetMeanAngle(meanAngle);
+                    PlaceLabelInside(dp, center, meanAngle, pieSize, referenceEllipseSize, scaleY, is3D);
+                    startAngle = stopAngle; 
+                    continue;
                 }
-                else
-                {
-                    offset = LABEL_LINE_LENGTH;
 
-                    centerX = startPos.X + pieradius * explodeOffset * Math.Cos(meanAngle);
-                    centerY = startPos.Y + pieradius * explodeOffset * Math.Sin(meanAngle) * yScalingFactor;
+                // if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
 
-                    centers.Add(i, new Point(centerX, centerY));
-                    tempY = startPos.Y + (radius + offset) * Math.Sin(meanAngle) * yScalingFactor;
+                cLabel = new CircularLabel(dp.LabelVisual, center, meanAngle, xRadiusLabel, yRadiusLabel, xRadiusChart, yRadiusChart, visual);
+                cLabel.Boundary = boundingArea;
 
-                    tempX = centerX + (radius + offset) * Math.Cos(meanAngle);
+                if (prevousLabel != null)
+                    prevousLabel.NextLabel = cLabel;
 
-                    //if (meanAngle < 5 * (Math.PI / 4) && meanAngle > 3 * (Math.PI / 4))
-                    //{   
-                    //    labelsAtLeft.Add(dataPoints[i]);
-                    //    //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Green);
-                    //}
+                cLabel.PreviusLabel = prevousLabel;
+                prevousLabel = cLabel;
 
-                    if (meanAngle > (Math.PI / 2) && meanAngle < (Math.PI * 3 / 2))
-                    {
-                        labelYL.Add(lIndex, new Point(i, tempY));
-                        labelPosL.Add(lIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                        lIndex++;
-                        if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
-                    }
-                    else if (meanAngle >= 0 && meanAngle <= (Math.PI / 2))
-                    {
-                        labelYR.Add(rIndex, new Point(i, tempY));
-                        labelPosR.Add(rIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                        rIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                    }
-                    else
-                    {
-                        labeltempYR.Add(tIndex, new Point(i, tempY));
-                        labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieradius, meanAngle));
-                        tIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                    }
-                }
+                circularLabels.Add(cLabel);
 
                 startAngle = stopAngle;
             }
 
-            // Regroup split dictionary
-            Point pt;
-            Rect rt;
-
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                labelPosR.TryGetValue(i, out rt);
-                labelPosR.Remove(i);
-
-                labeltempYR.Add(tIndex, new Point(pt.X, pt.Y));
-                labeltempPosR.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
-                tIndex++;
+            if (circularLabels.Count > 0)
+            {   
+                circularLabels[0].PreviusLabel = cLabel;
+                cLabel.NextLabel = circularLabels[0];
+                LabelPlacementHelper.CircularLabelPlacment(boundingArea, circularLabels, (chart != null) ? chart.SmartLabelEnabled : false);
             }
-
-            List<Point> tempList1 = new List<Point>();
-            tempList1.InsertRange(0, labeltempYR.Values);
-            tempList1.Sort(ComparePointY);
-
-            List<Rect> tempList2 = new List<Rect>();
-            tempList2.InsertRange(0, labeltempPosR.Values);
-            tempList2.Sort(CompareRectY);
-
-            for (i = 0, rIndex = 0; i < tIndex; i++)
-            {
-                labelYR.Add(rIndex, new Point(tempList1[i].X, tempList1[i].Y));
-                labelPosR.Add(rIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
-                rIndex++;
-            }
-
-            Double maxY = (dataPoints[0].Chart as Chart).PlotArea.Height;
-            Double minY = 0;
-
-            // For placing between angles 90 to 270
-
-            maxGap = ((maxY - minY) - (GapL * (labelYL.Count))) / (labelYL.Count);
-
-            PositionLabels(minY, maxY, GapL, maxGap, lIndex, labelYL, "Left");
-
-            List<DataPoint> leftTopDataPoints = new List<DataPoint>();
-            // List<DataPoint> leftBottomDataPoints = new List<DataPoint>();
-            Double index = 0;
-            for (i = 0; i < lIndex; i++)
-            {
-                labelYL.TryGetValue(i, out pt);
-                labelYL.Remove(i);
-
-                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                {
-                    labelPosL.TryGetValue(i, out rt);
-
-                    meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                    if (meanAngle >= 5 * Math.PI / 4 && meanAngle < 3 * (Math.PI / 2))
-                    {
-                        //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                        leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        //X -= LABEL_LINE_LENGTH;
-                        //X -= LABEL_LINE_LENGTH * Math.Sign(index);
-                        //index += 0.5;
-                    }
-                    else if (meanAngle > Math.PI / 2 && meanAngle < 3 * Math.PI / 4)
-                    {
-                        rt.X -= LABEL_LINE_LENGTH;
-                        //leftBottomDataPoints.Add(dataPoints[(Int32)pt.X]);
-                    }
-
-                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, rt.X, rt.Width, rt.Height, centers[(Int32)pt.X], yScalingFactor);
-                }
-            }
-
-            leftTopDataPoints.Reverse();
-            index = 0;
-            // move all left top labels to more left 
-            foreach (DataPoint dp in leftTopDataPoints)
-            {
-                Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                X -= LABEL_LINE_LENGTH * index;
-                System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                index += 0.5;
-            }
-
-            //leftBottomDataPoints.Reverse();
-            //index = 0;
-            //// move all left bottom labels to more left 
-            //foreach (DataPoint dp in leftBottomDataPoints)
-            //{
-            //    Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-            //    X -= LABEL_LINE_LENGTH * Math.Sin(index);
-            //    //X -= LABEL_LINE_LENGTH * index;
-            //    System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-            //    dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-            //    index += 0.5;
-            //}
-
-            // For placing between angles 270 to 360 and 0 to 90
-            maxGap = ((maxY - minY) - (GapR * (labelYR.Count))) / (labelYR.Count);
-
-            PositionLabels(minY, maxY, GapR, maxGap, rIndex, labelYR, "Right");
-            index = 0;
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                {
-                    labelPosR.TryGetValue(i, out rt);
-                    Double X = rt.X;
-                    meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                    if (meanAngle < 7 * Math.PI / 4 && meanAngle > 3 * (Math.PI / 2))
-                    {
-                        //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                        //leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        X += LABEL_LINE_LENGTH * index;
-                        index += 0.5;
-                    }
-
-                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], yScalingFactor);
-                }
-            }
-
-            //labelsAtLeft.Reverse();
-            //(labelsAtLeft[0].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
-            //RearrangeLabels(labelsAtLeft, 0, (Double)labelsAtLeft[0].GetValue(Canvas.TopProperty), maxY, plotSize.Width / 2);
         }
 
         private static void RearrangeLabels(List<DataPoint> dataPoints, Double leftOfArea, Double topOfArea, Double areaHeight, Double areaWidth)
@@ -1225,8 +816,10 @@ namespace Visifire.Charts
             Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
             Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
             Double outerRadius = Math.Min(pieSize.Width, pieSize.Height) / (is3D ? 1 : 2);
+
             RenderAs renderAs = dataPoint.Parent.RenderAs;
             Double xPos, yPos;
+
             if (is3D)
             {
                 xPos = center.X + hInnerEllipseRadius * Math.Cos(meanAngle) - dataPoint.LabelVisual.Width;
@@ -1234,8 +827,6 @@ namespace Visifire.Charts
             }
             else
             {
-                // if (!is3D)
-                // {
                 if (renderAs == RenderAs.Doughnut)
                 {
                     xPos = center.X + 1.9 * (outerRadius / 3) * Math.Cos(meanAngle);
@@ -1246,13 +837,6 @@ namespace Visifire.Charts
                     xPos = center.X + 1.7 * (outerRadius / 3) * Math.Cos(meanAngle);
                     yPos = center.Y + 1.7 * (outerRadius / 3) * Math.Sin(meanAngle);
                 }
-
-                // }
-                //else
-                // {   
-                //    xPos = centerX + hInnerEllipseRadius * Math.Cos(meanAngle);
-                //    yPos = centerY + vInnerEllipseRadius * Math.Sin(meanAngle);
-                // }
             }
 
             xPos = xPos - dataPoint.LabelVisual.Width / 2;
@@ -1260,333 +844,6 @@ namespace Visifire.Charts
 
             dataPoint.LabelVisual.SetValue(Canvas.TopProperty, yPos);
             dataPoint.LabelVisual.SetValue(Canvas.LeftProperty, xPos);
-        }
-
-        private static void PositionLabels2D(List<DataPoint> dataPoints, Point plotRadius, Point center, Double sum, Size pieSize, Size referenceEllipseSize)
-        {
-            Double pieRadius = pieSize.Width / 2;
-            Double startAngle = FixAngle(dataPoints[0].Parent.InternalStartAngle), stopAngle;
-            Double meanAngle;
-            Double radius = 0;
-            Int32 i = 0;
-
-            Double offset = 1.1;
-
-            Double centerX, centerY;
-
-            Dictionary<Double, Point> labelYR = new Dictionary<Double, Point>();
-            Dictionary<Double, Point> labelYL = new Dictionary<Double, Point>();
-            Dictionary<Double, Point> labeltempYR = new Dictionary<Double, Point>();
-
-            Dictionary<Double, Rect> labeltempPosR = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosL = new Dictionary<Double, Rect>();
-            Dictionary<Double, Rect> labelPosR = new Dictionary<Double, Rect>();
-
-            Dictionary<Double, Point> centers = new Dictionary<Double, Point>();
-            Dictionary<DataPoint, Double> meanAngles = new Dictionary<DataPoint, Double>();
-            //Dictionary<DataPoint, Double> labelsAtLeft = new Dictionary<DataPoint, Double>();
-
-            Double GapL = 2, GapR = 2;
-            Double maxGap;
-
-            Int32 lIndex = 0, rIndex = 0, tIndex = 0;
-            Double tempY, tempX;
-
-            for (i = 0; i < dataPoints.Count; i++)
-            {
-                stopAngle = startAngle + Math.PI * 2 * Math.Abs(dataPoints[i].InternalYValue) / sum;
-                meanAngle = (startAngle + stopAngle) / 2;
-                meanAngles.Add(dataPoints[i], meanAngle);
-                if (meanAngle > Math.PI * 2) meanAngle -= Math.PI * 2;
-
-                Double explodedOffset = 0;
-
-                if (dataPoints[i].LabelStyle == LabelStyles.Inside)
-                {
-                    PlaceLabelInside(dataPoints[i], center, meanAngle, pieSize, referenceEllipseSize, 1, false);
-                }
-                else
-                {
-                    offset = LABEL_LINE_LENGTH;
-
-                    radius = pieRadius + offset;
-
-                    if (sum == dataPoints[i].InternalYValue)
-                    {
-                        centerX = center.X;
-                        centerY = center.Y;
-                    }
-                    else
-                    {
-                        centerX = center.X + pieRadius * explodedOffset * Math.Cos((startAngle + stopAngle) * 0.5);
-                        centerY = center.Y + pieRadius * explodedOffset * Math.Sin((startAngle + stopAngle) * 0.5);
-                    }
-
-                    tempY = center.Y + radius * Math.Sin(meanAngle);
-
-                    if (explodedOffset > 0)
-                    {
-                        Double maxAngle = (Math.Abs(Math.Sin(meanAngle)) > Math.Abs(Math.Cos(meanAngle))) ? Math.Sin(meanAngle) : Math.Cos(meanAngle);
-
-                        tempX = centerX + radius * maxAngle * (Math.Sign(Math.Cos(meanAngle)));
-                    }
-                    else
-                    {
-                        tempX = centerX + radius * Math.Cos(meanAngle);
-                    }
-
-                    centers.Add(i, new Point(centerX, centerY));
-
-                    if (meanAngle > (Math.PI / 2) && meanAngle < (Math.PI * 3 / 2))
-                    {
-                        labelYL.Add(lIndex, new Point(i, tempY));
-                        labelPosL.Add(lIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        lIndex++;
-                        if (GapL < dataPoints[i].LabelVisual.Height) GapL = dataPoints[i].LabelVisual.Height;
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Green);
-                    }
-                    else if (meanAngle >= 0 && meanAngle <= (Math.PI / 2))
-                    {
-                        labelYR.Add(rIndex, new Point(i, tempY));
-                        labelPosR.Add(rIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        rIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {
-                        labeltempYR.Add(tIndex, new Point(i, tempY));
-                        labeltempPosR.Add(tIndex, new Rect(tempX, tempY, pieRadius, meanAngle));
-                        tIndex++;
-                        if (GapR < dataPoints[i].LabelVisual.Height) GapR = dataPoints[i].LabelVisual.Height;
-                        //(dataPoints[i].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Yellow);
-                    }
-                }
-
-                startAngle = stopAngle;
-            }
-
-            // Regroup split dictionary
-            Point pt;
-            Rect rt;
-
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                labelPosR.TryGetValue(i, out rt);
-                labelPosR.Remove(i);
-
-                labeltempYR.Add(tIndex, new Point(pt.X, pt.Y));
-                labeltempPosR.Add(tIndex, new Rect(rt.X, rt.Y, rt.Width, rt.Height));
-                tIndex++;
-            }
-
-            List<Point> tempList1 = new List<Point>();
-            tempList1.InsertRange(0, labeltempYR.Values);
-            tempList1.Sort(ComparePointY);
-
-            List<Rect> tempList2 = new List<Rect>();
-            tempList2.InsertRange(0, labeltempPosR.Values);
-            tempList2.Sort(CompareRectY);
-
-            for (i = 0, rIndex = 0; i < tIndex; i++)
-            {
-                labelYR.Add(rIndex, new Point(tempList1[i].X, tempList1[i].Y));
-                labelPosR.Add(rIndex, new Rect(tempList2[i].X, tempList2[i].Y, tempList2[i].Width, tempList2[i].Height));
-                rIndex++;
-            }
-
-            Double maxY = (dataPoints[0].Chart as Chart).PlotArea.Height;
-            Double minY = 0;
-
-            // For placing between angles 90 to 270
-            maxGap = ((maxY - minY) - (GapL * (labelYL.Count))) / (labelYL.Count);
-
-            PositionLabels(minY, maxY, GapL, maxGap, lIndex, labelYL, "Left");
-
-            List<DataPoint> leftTopDataPoints = new List<DataPoint>();
-            List<DataPoint> leftBottomDataPoints = new List<DataPoint>();
-
-            for (i = 0; i < lIndex; i++)
-            {
-                if (labelYL.TryGetValue(i, out pt))
-                {
-                    labelYL.Remove(i);
-
-                    if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                    {
-                        Double X;
-                        labelPosL.TryGetValue(i, out rt);
-
-                        Double tempangle = LineSlope(new Point(rt.X, pt.Y), centers[(Int32)pt.X]);
-                        tempangle = Math.Atan(tempangle);
-                        radius = pieRadius + offset;
-                        X = centers[(Int32)pt.X].X - (radius) * Math.Cos(tempangle);
-
-                        meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                        if (meanAngle >= 5 * Math.PI / 4 && meanAngle < 3 * (Math.PI / 2))
-                        {
-                            //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                            leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        }
-                        else if (meanAngle > Math.PI / 2 && meanAngle < 3 * (Math.PI / 4))
-                        {
-                            leftBottomDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        }
-
-                        AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
-                    }
-                }
-            }
-
-            leftTopDataPoints.Reverse();
-            Double index = 0;
-
-            // move all left top labels to more left 
-            foreach (DataPoint dp in leftTopDataPoints)
-            {
-                Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                X -= LABEL_LINE_LENGTH * Math.Sin(index);
-                //X -= LABEL_LINE_LENGTH * index;
-                System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                index += 0.5;
-            }
-
-            leftBottomDataPoints.Reverse();
-            index = 0;
-            // move all left bottom labels to more left 
-            foreach (DataPoint dp in leftBottomDataPoints)
-            {
-                Double X = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                X -= LABEL_LINE_LENGTH * Math.Sin(index);
-                //X -= LABEL_LINE_LENGTH * index;
-                System.Diagnostics.Debug.WriteLine("gap =" + X.ToString());
-                dp.LabelVisual.SetValue(Canvas.LeftProperty, X);
-                index += 0.5;
-            }
-
-
-            maxGap = ((maxY - minY) - (GapR * (labelYR.Count))) / (labelYR.Count);
-
-            PositionLabels(minY, maxY, GapR, maxGap, rIndex, labelYR, "Right");
-
-            index = 0;
-            for (i = 0; i < rIndex; i++)
-            {
-                labelYR.TryGetValue(i, out pt);
-                labelYR.Remove(i);
-
-                if (dataPoints[(Int32)pt.X].LabelEnabled == true)
-                {
-                    Double X;
-                    labelPosR.TryGetValue(i, out rt);
-
-                    Double tempangle = LineSlope(centers[(Int32)pt.X], new Point(rt.X, pt.Y));
-                    tempangle = Math.Atan(tempangle);
-                    radius = pieRadius + offset;
-                    X = centers[(Int32)pt.X].X + (radius) * Math.Cos(tempangle);
-
-                    meanAngle = meanAngles[dataPoints[(Int32)pt.X]];
-                    if (meanAngle < 7 * Math.PI / 4 && meanAngle > 3 * (Math.PI / 2))
-                    {
-                        //(dataPoints[(Int32)pt.X].LabelVisual as Canvas).Background = new SolidColorBrush(Colors.Brown);
-                        //leftTopDataPoints.Add(dataPoints[(Int32)pt.X]);
-                        X += LABEL_LINE_LENGTH * Math.Sin(index);
-                        index += 0.5;
-                    }
-
-                    AttachLabel(dataPoints[(Int32)pt.X], pt.Y, X, rt.Width, rt.Height, centers[(Int32)pt.X], 1);
-                }
-            }
-
-            foreach (DataPoint dp in dataPoints)
-            {
-                Double y = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
-                Double x = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
-                if (y + dp.LabelVisual.Height > maxY)
-                {
-                    if (y > maxY)
-                        offset = y - dp.LabelVisual.Height - maxY;
-                    else
-                        offset = y + dp.LabelVisual.Height - maxY;
-                    dp.LabelVisual.SetValue(Canvas.TopProperty, y - offset);
-
-                    dp.LabelVisual.SetValue(Canvas.LeftProperty, x + 6);
-                }
-            }
-        }
-
-        private static void PositionLabels(Canvas visual, Double totalSum, List<DataPoint> dataPoints, Size pieSize, Size referenceEllipseSize, Size visualCanvasSize, Double scaleY, Boolean is3D)
-        {
-            Point plotRadius;
-            Point startPos = new Point(visualCanvasSize.Width / 2, (visualCanvasSize.Height / 2));
-
-            if (is3D)
-            {
-                Double hPieRadius = pieSize.Width / (is3D ? 1 : 2);
-
-                // Double vPieRadius = (pieSize.Height / (is3D ? 1 : 2)) * scaleY;
-                // Double hInnerEllipseRadius = (pieSize.Width / (is3D ? 1 : 2)) * 0.7;
-                // Double vInnerEllipseRadius = (pieSize.Height / (is3D ? 1 : 2)) * 0.7 * scaleY;
-                // Double hOuterEllipseRadius = referenceEllipseSize.Width / (is3D ? 1 : 2);
-
-                Double vOuterEllipseRadius = referenceEllipseSize.Height / (is3D ? 1 : 2) * scaleY;
-                Point pieRadius = new Point(hPieRadius, vOuterEllipseRadius);
-                plotRadius = new Point(pieSize.Width, pieSize.Height);
-                PositionLabels3D(dataPoints, plotRadius, startPos, pieRadius, totalSum, scaleY, visualCanvasSize, pieSize, referenceEllipseSize);
-            }
-            else
-            {
-                plotRadius = new Point(visualCanvasSize.Width / 2, visualCanvasSize.Height / 2);
-                PositionLabels2D(dataPoints, plotRadius, startPos, totalSum, pieSize, referenceEllipseSize);
-            }
-        }
-
-        private static void AttachLabel(DataPoint dataPioint, Double top, Double left, Double radius, Double angle, Point center, Double yScalingFactor)
-        {
-            Double plotAreaWidth = (dataPioint.Chart as Chart).ChartArea.PlotAreaCanvas.Width;
-            Double plotAreaHeight = (dataPioint.Chart as Chart).ChartArea.PlotAreaCanvas.Width;
-            Double newLeft = left;
-            Double newTop = top;
-            Canvas label = dataPioint.LabelVisual as Canvas;
-
-            if (angle > Math.PI / 2 && angle < Math.PI * 3 / 2)
-                newLeft = left - label.Width - 10;
-            else
-                newLeft = left + 10;
-
-            // this condition places the label such that they do not go outside of the plot area in horizontal direction
-            if (angle > (Math.PI / 2) && angle < (Math.PI * 3 / 2))
-            {
-
-                if (newLeft < 0)
-                    newLeft = 0;
-            }
-            else
-            {
-
-                if ((newLeft + dataPioint.LabelVisual.Width) > (plotAreaWidth))
-                    newLeft = (plotAreaWidth - label.Width);
-            }
-
-            // this condition places the label such that they do not go outside of the plot area in horizontal direction
-            if (angle > Math.PI && angle < Math.PI * 2)
-            {
-                if (newTop < 0)
-                    newTop = 0;
-            }
-            else
-            {
-                if ((newTop + label.Height) > (plotAreaHeight))
-                    newTop = plotAreaHeight - label.Height;
-
-            }
-
-            label.SetValue(Canvas.TopProperty, (Double)newTop);
-            label.SetValue(Canvas.LeftProperty, (Double)newLeft);
         }
 
         private static Int32 ComparePointY(Point a, Point b)
@@ -1629,7 +886,7 @@ namespace Visifire.Charts
         private static Canvas CreateAndPositionLabels(Double totalSum, List<DataPoint> dataPoints, Double width, Double height, Double scaleY, Boolean is3D, ref Size size)
         {
             Canvas visual = new Canvas() { Height = height, Width = width };
-            Dictionary<DataPoint, Canvas> labels = new Dictionary<DataPoint, Canvas>();
+            List<DataPoint> labelsToBePlaced = new List<DataPoint>();
 
             Double labelLineLength = LABEL_LINE_LENGTH;
 
@@ -1657,7 +914,7 @@ namespace Visifire.Charts
                 else
                     label.Visibility = Visibility.Collapsed;
 
-                labels.Add(dataPoint, label);
+                labelsToBePlaced.Add(dataPoint);
 
                 if (isLabelEnabled)
                     visual.Children.Add(label);
@@ -1682,13 +939,24 @@ namespace Visifire.Charts
             {
                 if (isLabelOutside)
                 {
-                    pieCanvasWidth = minLength - labelLineLength * 2;
-                    pieCanvasHeight = pieCanvasWidth;
+                    if (is3D)
+                    {
+                        pieCanvasWidth = minLength - labelLineLength * 2;
+                        pieCanvasHeight = pieCanvasWidth;
 
-                    labelEllipseWidth = minLength;
-                    labelEllipseHeight = labelEllipseWidth;
+                        labelEllipseWidth = pieCanvasWidth * 2 + labelLineLength * 2;
+                        labelEllipseHeight = labelEllipseWidth * scaleY + LABEL_LINE_LENGTH * 2;
+                    }
+                    else
+                    {
+                        pieCanvasWidth = minLength - labelLineLength * 2 - LABEL_LINE_LENGTH * 2;
+                        pieCanvasHeight = pieCanvasWidth;
 
-                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                        labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH * 2;
+                        labelEllipseHeight = labelEllipseWidth;
+                    }
+                                       
+                    PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
                 else
                 {
@@ -1698,7 +966,7 @@ namespace Visifire.Charts
                     labelEllipseWidth = pieCanvasWidth;
                     labelEllipseHeight = pieCanvasHeight;
 
-                    PositionLabels(visual, totalSum, dataPoints, labels, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+                    PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
                 }
             }
             else
@@ -1725,8 +993,10 @@ namespace Visifire.Charts
         /// <param name="labelLinePath">Label line path</param>
         /// <param name="enabledDataPoints">List of enabled dataPoints</param>
         /// <returns>Canvas</returns>
-        private static Canvas GetPie2D(ref Faces faces, SectorChartShapeParams pieParams, ref PieDoughnut2DPoints unExplodedPoints, ref PieDoughnut2DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
+        private static Canvas GetPie2D(DataSeries currentDataSeries, ref Faces faces, SectorChartShapeParams pieParams, ref PieDoughnut2DPoints unExplodedPoints, ref PieDoughnut2DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
         {
+            var noOfNonZeroDataPoint = (from dp in enabledDataPoints where dp.InternalYValue != 0 select dp);
+
             Canvas visual = new Canvas();
 
             Double width = pieParams.OuterRadius * 2;
@@ -1773,9 +1043,9 @@ namespace Visifire.Charts
                 if (pieParams.AnimationEnabled)
                 {
                     // apply animation to the points
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[1], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.MeanAngle);
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[2], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.StopAngle);
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[0], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.StartAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[1], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.MeanAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[2], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.StopAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[0], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.StartAngle);
                 }
 
                 faces.Parts.Add(ellipse);
@@ -1793,7 +1063,7 @@ namespace Visifire.Charts
                 explodedPoints.OuterArcMid = new Point(arcMidPoint.X + xOffset, arcMidPoint.Y + yOffset);
                 explodedPoints.OuterArcEnd = new Point(end.X + xOffset, end.Y + yOffset);
 
-                if (enabledDataPoints.Count == 1)
+                if (enabledDataPoints.Count == 1 || noOfNonZeroDataPoint.Count() == 1)
                 {
                     Ellipse borderEllipse = new Ellipse() { IsHitTestVisible = false, Height = ellipse.Height, Width = ellipse.Width };
                     borderEllipse.SetValue(Canvas.ZIndexProperty, (Int32)10000);
@@ -1806,7 +1076,7 @@ namespace Visifire.Charts
 
             #region Lighting
 
-            if ((pieParams.TagReference as DataPoint).InternalYValue == 0 && pieParams.Lighting && (pieParams.StartAngle != pieParams.StopAngle || !pieParams.IsZero))
+            if ((pieParams.TagReference as DataPoint).InternalYValue != 0 && pieParams.Lighting && (pieParams.StartAngle != pieParams.StopAngle || !pieParams.IsZero))
             {
                 Ellipse lightingEllipse = new Ellipse() { Tag = new ElementData() { Element = pieParams.TagReference } };
                 lightingEllipse.Width = width;
@@ -1840,9 +1110,9 @@ namespace Visifire.Charts
                 if (pieParams.AnimationEnabled)
                 {
                     // apply animation to the points
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[1], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.MeanAngle);
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[2], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.StopAngle);
-                    pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[0], center, pieParams.OuterRadius, CurrentDataSeries.InternalStartAngle, pieParams.StartAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[1], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.MeanAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[2], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.StopAngle);
+                    pieParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[0], center, pieParams.OuterRadius, currentDataSeries.InternalStartAngle, pieParams.StartAngle);
                 }
                 visual.Children.Add(lightingEllipse);
             }
@@ -1855,7 +1125,7 @@ namespace Visifire.Charts
             {
                 Path labelLine = new Path() { Tag = new ElementData() { Element = pieParams.TagReference } };
                 Double meanAngle = pieParams.MeanAngle;
-
+                labelLine.SetValue(Canvas.ZIndexProperty, -100000);
                 Point piePoint = new Point();
                 piePoint.X = center.X + pieParams.OuterRadius * Math.Cos(meanAngle);
                 piePoint.Y = center.Y + pieParams.OuterRadius * Math.Sin(meanAngle);
@@ -1865,8 +1135,14 @@ namespace Visifire.Charts
                 labelPoint.Y = center.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                // midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                if (pieParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
                 midPoint.Y = labelPoint.Y;
+
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
                 labelLinePathGeometry.Add(new LineSegmentParams(pieParams.AnimationEnabled ? piePoint : midPoint));
@@ -1880,8 +1156,8 @@ namespace Visifire.Charts
                 // animate the label lines of the individual pie slices
                 if (pieParams.AnimationEnabled)
                 {
-                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
-                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
+                    pieParams.Storyboard = CreateLabelLineAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[0], piePoint, midPoint);
+                    pieParams.Storyboard = CreateLabelLineAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
                 }
 
                 labelLine.Stroke = pieParams.LabelLineColor;
@@ -1900,7 +1176,14 @@ namespace Visifire.Charts
                     zeroLine.Y2 = piePoint.Y;
                     zeroLine.Stroke = pieParams.LabelLineColor;
                     zeroLine.StrokeThickness = 0.25;
+                    zeroLine.IsHitTestVisible = false;
                     visual.Children.Add(zeroLine);
+
+                    if (pieParams.AnimationEnabled)
+                    {
+                        pieParams.Storyboard = CreateOpacityAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, zeroLine, 2, zeroLine.Opacity, 0.5);
+                        zeroLine.Opacity = 0;
+                    }
                 }
 
                 visual.Children.Add(labelLine);
@@ -1914,6 +1197,9 @@ namespace Visifire.Charts
                 explodedPoints.LabelLineEndPoint = new Point(labelPoint.X, labelPoint.Y - yOffset);
                 explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - yOffset);
                 explodedPoints.LabelLineStartPoint = new Point(piePoint.X + xOffset, piePoint.Y + yOffset);
+
+                if ((pieParams.TagReference as DataPoint).InternalYValue == 0)
+                    labelLine.IsHitTestVisible = false;
             }
 
             #endregion LabelLine
@@ -1934,16 +1220,14 @@ namespace Visifire.Charts
             pathGeometry.Add(new LineSegmentParams(startPoint));
             pathGeometry.Add(new ArcSegmentParams(new Size(pieParams.OuterRadius, pieParams.OuterRadius), 0, pieParams.IsLargerArc, SweepDirection.Clockwise, endPoint));
 
-            Path p = new Path() { IsHitTestVisible = false };
-            p.SetValue(Canvas.ZIndexProperty, (Int32)10000);
-            //p.Stroke = (pieParams.TagReference as DataPoint).BorderColor;
-            //p.StrokeLineJoin = PenLineJoin.Round;
-            //p.StrokeThickness = ((Thickness)(pieParams.TagReference as DataPoint).BorderThickness).Top;
-            //p.StrokeDashArray = Graphics.LineStyleToStrokeDashArray((pieParams.TagReference as DataPoint).BorderStyle.ToString());
-            p.Data = GetPathGeometryFromList(FillRule.Nonzero, center, pathGeometry, true);
-            visual.Children.Add(p);
-            faces.BorderElements.Add(p);
-
+            if ((pieParams.TagReference as DataPoint).InternalYValue != 0)
+            {
+                Path p = new Path() { IsHitTestVisible = false };
+                p.SetValue(Canvas.ZIndexProperty, (Int32)10000);
+                p.Data = GetPathGeometryFromList(FillRule.Nonzero, center, pathGeometry, true);
+                visual.Children.Add(p);
+                faces.BorderElements.Add(p);
+            }
             #endregion
 
             #region Bevel
@@ -1995,7 +1279,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (pieParams.AnimationEnabled)
                 {
-                    pieParams.Storyboard = CreateOpacityAnimation(pieParams.Storyboard, path, 1, 1, 1);
+                    pieParams.Storyboard = CreateOpacityAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, path, 1, 1, 1);
                     path.Opacity = 0;
                 }
 
@@ -2022,7 +1306,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (pieParams.AnimationEnabled)
                 {
-                    pieParams.Storyboard = CreateOpacityAnimation(pieParams.Storyboard, path, 1, 1, 1);
+                    pieParams.Storyboard = CreateOpacityAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, path, 1, 1, 1);
                     path.Opacity = 0;
                 }
 
@@ -2032,7 +1316,7 @@ namespace Visifire.Charts
                 #region "Outer Bevel"
                 Shape outerBevel;
 
-                if (enabledDataPoints.Count == 1)
+                if (enabledDataPoints.Count == 1 || noOfNonZeroDataPoint.Count() == 1)
                 {
                     outerBevel = new Ellipse() { Height = pieParams.OuterRadius * 2, Width = pieParams.OuterRadius * 2, Tag = new ElementData() { Element = pieParams.TagReference } };
                     GeometryGroup gg = new GeometryGroup();
@@ -2064,7 +1348,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (pieParams.AnimationEnabled)
                 {
-                    pieParams.Storyboard = CreateOpacityAnimation(pieParams.Storyboard, outerBevel, 1, 1, 1);
+                    pieParams.Storyboard = CreateOpacityAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, outerBevel, 1, 1, 1);
                     outerBevel.Opacity = 0;
                 }
 
@@ -2095,8 +1379,10 @@ namespace Visifire.Charts
         /// <param name="labelLinePath">Label line path</param>
         /// <param name="enabledDataPoints">List of enabled dataPoints</param>
         /// <returns>Canvas</returns>
-        private static Canvas GetDoughnut2D(ref Faces faces, SectorChartShapeParams doughnutParams, ref PieDoughnut2DPoints unExplodedPoints, ref PieDoughnut2DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
+        private static Canvas GetDoughnut2D(DataSeries currentDataSeries, ref Faces faces, SectorChartShapeParams doughnutParams, ref PieDoughnut2DPoints unExplodedPoints, ref PieDoughnut2DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
         {
+            var noOfNonZeroDataPoint = (from dp in enabledDataPoints where dp.InternalYValue != 0 select dp);
+
             Canvas visual = new Canvas() { Tag = new ElementData() { Element = doughnutParams.TagReference } };
             Canvas PieVisual = new Canvas() { Tag = new ElementData() { Element = doughnutParams.TagReference } };
 
@@ -2178,29 +1464,27 @@ namespace Visifire.Charts
                 pathGeometry.Add(new LineSegmentParams(innerend));
                 pathGeometry.Add(new LineSegmentParams(end));
 
-                Path path4Selection = new Path() { IsHitTestVisible = false };
-                path4Selection.SetValue(Canvas.ZIndexProperty, (Int32)100000);
-                //path4Selection.Stroke = (doughnutParams.TagReference as DataPoint).BorderColor;
-                //path4Selection.StrokeLineJoin = PenLineJoin.Round;
-                //path4Selection.StrokeThickness = ((Thickness)(doughnutParams.TagReference as DataPoint).BorderThickness).Top;
-                //path4Selection.StrokeDashArray = Graphics.LineStyleToStrokeDashArray((doughnutParams.TagReference as DataPoint).BorderStyle.ToString());
-                path4Selection.Data = GetPathGeometryFromList(FillRule.Nonzero, end, pathGeometry, false);
-                visual.Children.Add(path4Selection);
-                faces.BorderElements.Add(path4Selection);
-
+                if ((doughnutParams.TagReference as DataPoint).InternalYValue != 0)
+                {
+                    Path path4Selection = new Path() { IsHitTestVisible = false };
+                    path4Selection.SetValue(Canvas.ZIndexProperty, (Int32)100000);
+                    path4Selection.Data = GetPathGeometryFromList(FillRule.Nonzero, end, pathGeometry, false);
+                    visual.Children.Add(path4Selection);
+                    faces.BorderElements.Add(path4Selection);
+                }
                 #endregion
 
                 // Apply animation to the doughnut slice
                 if (doughnutParams.AnimationEnabled)
                 {
                     // animate the outer points
-                    doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[0], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
-                    doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[1], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.MeanAngle);
-                    doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[2], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
+                    doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[0], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
+                    doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint,doughnutParams.Storyboard, segments[1], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.MeanAngle);
+                    doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries,doughnutParams.DataPoint,doughnutParams.Storyboard, segments[2], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
 
                     // animate the inner points
-                    doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[3], center, doughnutParams.InnerRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
-                    doughnutParams.Storyboard = CreatePathFigureAnimation(doughnutParams.Storyboard, figure, center, doughnutParams.InnerRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
+                    doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[3], center, doughnutParams.InnerRadius, currentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
+                    doughnutParams.Storyboard = CreatePathFigureAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, figure, center, doughnutParams.InnerRadius, currentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
                 }
 
                 faces.Parts.Add(ellipse);
@@ -2224,19 +1508,22 @@ namespace Visifire.Charts
                 explodedPoints.InnerArcMid = new Point(innerArcMidPoint.X + xOffset, innerArcMidPoint.Y + yOffset);
                 explodedPoints.InnerArcEnd = new Point(innerend.X + xOffset, innerend.Y + yOffset);
 
-                if (enabledDataPoints.Count == 1)
+                if (enabledDataPoints.Count == 1 || noOfNonZeroDataPoint.Count() == 1)
                 {
-                    Ellipse borderEllipse = new Ellipse() { IsHitTestVisible = false, Height = ellipse.Height, Width = ellipse.Width };
-                    borderEllipse.SetValue(Canvas.ZIndexProperty, (Int32)10000);
-                    visual.Children.Add(borderEllipse);
-                    faces.BorderElements.Add(borderEllipse);
+                    if ((doughnutParams.TagReference as DataPoint).InternalYValue != 0)
+                    {
+                        Ellipse borderEllipse = new Ellipse() { IsHitTestVisible = false, Height = ellipse.Height, Width = ellipse.Width };
+                        borderEllipse.SetValue(Canvas.ZIndexProperty, (Int32)10000);
+                        visual.Children.Add(borderEllipse);
+                        faces.BorderElements.Add(borderEllipse);
 
-                    Ellipse InnerBorderEllipse = new Ellipse() { IsHitTestVisible = false, Height = doughnutParams.InnerRadius * 2, Width = doughnutParams.InnerRadius * 2 };
-                    InnerBorderEllipse.SetValue(Canvas.ZIndexProperty, (Int32)10000);
-                    InnerBorderEllipse.SetValue(Canvas.TopProperty, InnerBorderEllipse.Height / 2);
-                    InnerBorderEllipse.SetValue(Canvas.LeftProperty, InnerBorderEllipse.Width / 2);
-                    visual.Children.Add(InnerBorderEllipse);
-                    faces.BorderElements.Add(InnerBorderEllipse);
+                        Ellipse InnerBorderEllipse = new Ellipse() { IsHitTestVisible = false, Height = doughnutParams.InnerRadius * 2, Width = doughnutParams.InnerRadius * 2 };
+                        InnerBorderEllipse.SetValue(Canvas.ZIndexProperty, (Int32)10000);
+                        InnerBorderEllipse.SetValue(Canvas.TopProperty, InnerBorderEllipse.Height / 2);
+                        InnerBorderEllipse.SetValue(Canvas.LeftProperty, InnerBorderEllipse.Width / 2);
+                        visual.Children.Add(InnerBorderEllipse);
+                        faces.BorderElements.Add(InnerBorderEllipse);
+                    }
                 }
             }
 
@@ -2296,16 +1583,16 @@ namespace Visifire.Charts
                     if (doughnutParams.AnimationEnabled)
                     {
                         // animate the outer points
-                        doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[0], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
-                        doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[1], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.MeanAngle);
-                        doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[2], center, doughnutParams.OuterRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
+                        doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[0], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
+                        doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[1], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.MeanAngle);
+                        doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[2], center, doughnutParams.OuterRadius, currentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
 
                         // animate the inner points
-                        doughnutParams.Storyboard = CreatePathSegmentAnimation(doughnutParams.Storyboard, segments[3], center, doughnutParams.InnerRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
+                        doughnutParams.Storyboard = CreatePathSegmentAnimation(currentDataSeries, doughnutParams.DataPoint,doughnutParams.Storyboard, segments[3], center, doughnutParams.InnerRadius, currentDataSeries.InternalStartAngle, doughnutParams.StopAngle);
                         // pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[4], center, pieParams.InnerRadius, DataSeriesRef.InternalStartAngle, pieParams.MeanAngle);
                         // pieParams.Storyboard = CreatePathSegmentAnimation(pieParams.Storyboard, segments[5], center, pieParams.InnerRadius, DataSeriesRef.InternalStartAngle, pieParams.StartAngle);
 
-                        doughnutParams.Storyboard = CreatePathFigureAnimation(doughnutParams.Storyboard, figure, center, doughnutParams.InnerRadius, CurrentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
+                        doughnutParams.Storyboard = CreatePathFigureAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, figure, center, doughnutParams.InnerRadius, currentDataSeries.InternalStartAngle, doughnutParams.StartAngle);
                     }
                 }
 
@@ -2330,7 +1617,13 @@ namespace Visifire.Charts
                 labelPoint.Y = center.Y + doughnutParams.LabelPoint.Y - doughnutParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                //midPoint.X = (labelPoint.X < center.X) ? labelPoint.X + 10 : labelPoint.X - 10;            
+                if (doughnutParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
+
                 midPoint.Y = labelPoint.Y;
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
@@ -2345,8 +1638,8 @@ namespace Visifire.Charts
                 // apply animation to the label line
                 if (doughnutParams.AnimationEnabled)
                 {
-                    doughnutParams.Storyboard = CreateLabelLineAnimation(doughnutParams.Storyboard, segments[0], doughnutPoint, midPoint);
-                    doughnutParams.Storyboard = CreateLabelLineAnimation(doughnutParams.Storyboard, segments[1], doughnutPoint, midPoint, labelPoint);
+                    doughnutParams.Storyboard = CreateLabelLineAnimation(currentDataSeries,doughnutParams.DataPoint, doughnutParams.Storyboard, segments[0], doughnutPoint, midPoint);
+                    doughnutParams.Storyboard = CreateLabelLineAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, segments[1], doughnutPoint, midPoint, labelPoint);
                 }
 
                 labelLine.Stroke = doughnutParams.LabelLineColor;
@@ -2363,7 +1656,14 @@ namespace Visifire.Charts
                     zeroLine.Y2 = doughnutPoint.Y;
                     zeroLine.Stroke = doughnutParams.LabelLineColor;
                     zeroLine.StrokeThickness = 0.25;
+                    zeroLine.IsHitTestVisible = false;
                     visual.Children.Add(zeroLine);
+
+                    if (doughnutParams.AnimationEnabled)
+                    {
+                        doughnutParams.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, zeroLine, 2, zeroLine.Opacity, 0.5);
+                        zeroLine.Opacity = 0;
+                    }
                 }
 
                 visual.Children.Add(labelLine);
@@ -2380,6 +1680,8 @@ namespace Visifire.Charts
                 explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - yOffset);
                 explodedPoints.LabelLineStartPoint = new Point(doughnutPoint.X + xOffset, doughnutPoint.Y + yOffset);
 
+                if ((doughnutParams.TagReference as DataPoint).InternalYValue == 0)
+                    labelLine.IsHitTestVisible = false;
             }
 
             #endregion LabelLine
@@ -2450,7 +1752,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (doughnutParams.AnimationEnabled)
                 {
-                    doughnutParams.Storyboard = CreateOpacityAnimation(doughnutParams.Storyboard, path, 1, 1, 1);
+                    doughnutParams.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, path, 1, 1, 1);
                     path.Opacity = 0;
                 }
 
@@ -2477,7 +1779,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (doughnutParams.AnimationEnabled)
                 {
-                    doughnutParams.Storyboard = CreateOpacityAnimation(doughnutParams.Storyboard, path, 1, 1, 1);
+                    doughnutParams.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, path, 1, 1, 1);
                     path.Opacity = 0;
                 }
 
@@ -2487,10 +1789,8 @@ namespace Visifire.Charts
                 #region Outer Beval"
                 Shape outerBevel;
 
-                var noOfNonZeroDataPoint = (from dp in enabledDataPoints where dp.InternalYValue != 0 select dp);
-
                 if (enabledDataPoints.Count == 1 || noOfNonZeroDataPoint.Count() == 1)
-                {   
+                {
                     outerBevel = new Ellipse() { Tag = new ElementData() { Element = doughnutParams.TagReference }, Height = doughnutParams.OuterRadius * 2, Width = doughnutParams.OuterRadius * 2 };
                     GeometryGroup gg = new GeometryGroup();
                     gg.Children.Add(new EllipseGeometry() { Center = new Point(doughnutParams.OuterRadius, doughnutParams.OuterRadius), RadiusX = doughnutParams.OuterRadius, RadiusY = doughnutParams.OuterRadius });
@@ -2521,7 +1821,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (doughnutParams.AnimationEnabled)
                 {
-                    doughnutParams.Storyboard = CreateOpacityAnimation(doughnutParams.Storyboard, outerBevel, 1, 1, 1);
+                    doughnutParams.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, outerBevel, 1, 1, 1);
                     outerBevel.Opacity = 0;
                 }
 
@@ -2574,7 +1874,7 @@ namespace Visifire.Charts
                 // Apply animation to the beveling path
                 if (doughnutParams.AnimationEnabled)
                 {
-                    doughnutParams.Storyboard = CreateOpacityAnimation(doughnutParams.Storyboard, innerBevel, 1, 1, 1);
+                    doughnutParams.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, doughnutParams.Storyboard, innerBevel, 1, 1, 1);
                     innerBevel.Opacity = 0;
                 }
 
@@ -2603,7 +1903,7 @@ namespace Visifire.Charts
         /// <param name="unExplodedPoints">UnExploded dataPoints</param>
         /// <param name="explodedPoints">Exploded dataPoints</param>
         /// <returns>Path</returns>
-        private static Path CreateLabelLine(SectorChartShapeParams pieParams, Point centerOfPie, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints)
+        private static Path CreateLabelLine(DataSeries currentDataSeries, SectorChartShapeParams pieParams, Point centerOfPie, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints)
         {
             Path labelLine = null;
 
@@ -2621,7 +1921,12 @@ namespace Visifire.Charts
                 labelPoint.Y = centerOfPie.Y + pieParams.LabelPoint.Y - pieParams.Height / 2;
 
                 Point midPoint = new Point();
-                midPoint.X = (labelPoint.X < centerOfPie.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                //midPoint.X = (labelPoint.X < centerOfPie.X) ? labelPoint.X + 10 : labelPoint.X - 10;
+                if (pieParams.LabelLineTargetToRight)
+                    midPoint.X = labelPoint.X + 10;
+                else
+                    midPoint.X = labelPoint.X - 10;
+
                 midPoint.Y = labelPoint.Y;
 
                 List<PathGeometryParams> labelLinePathGeometry = new List<PathGeometryParams>();
@@ -2636,8 +1941,8 @@ namespace Visifire.Charts
                 // apply animation to the label line
                 if (pieParams.AnimationEnabled)
                 {
-                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[0], piePoint, midPoint);
-                    pieParams.Storyboard = CreateLabelLineAnimation(pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
+                    pieParams.Storyboard = CreateLabelLineAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[0], piePoint, midPoint);
+                    pieParams.Storyboard = CreateLabelLineAnimation(currentDataSeries, pieParams.DataPoint, pieParams.Storyboard, segments[1], piePoint, midPoint, labelPoint);
                 }
 
                 labelLine.Stroke = pieParams.LabelLineColor;
@@ -2653,6 +1958,10 @@ namespace Visifire.Charts
                 explodedPoints.LabelLineEndPoint = new Point(labelPoint.X, labelPoint.Y - pieParams.OffsetY);
                 explodedPoints.LabelLineMidPoint = new Point(midPoint.X, midPoint.Y - pieParams.OffsetY);
                 explodedPoints.LabelLineStartPoint = new Point(piePoint.X + pieParams.OffsetX, piePoint.Y + pieParams.OffsetY);
+
+                if ((pieParams.TagReference as DataPoint).InternalYValue == 0)
+                    labelLine.IsHitTestVisible = false;
+
             }
 
             return labelLine;
@@ -2665,7 +1974,9 @@ namespace Visifire.Charts
         /// <param name="yOffset">Y offset</param>
         private static void UpdatePositionLabelInsidePie(SectorChartShapeParams pieParams, Double yOffset)
         {
-            if (CurrentDataPoint.LabelStyle == LabelStyles.Inside)
+            DataPoint currentDataPoint = pieParams.DataPoint;
+
+            if (currentDataPoint.LabelStyle == LabelStyles.Inside)
             {
                 Point center = new Point();
                 center.X = pieParams.Width / 2;
@@ -2676,8 +1987,8 @@ namespace Visifire.Charts
                 Double x = center.X + a * Math.Cos(pieParams.MeanAngle);
                 Double y = center.Y + b * Math.Sin(pieParams.MeanAngle) + yOffset;
 
-                CurrentDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, x - CurrentDataPoint.LabelVisual.Width / 2);
-                CurrentDataPoint.LabelVisual.SetValue(Canvas.TopProperty, y - CurrentDataPoint.LabelVisual.Height);
+                currentDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, x - currentDataPoint.LabelVisual.Width / 2);
+                currentDataPoint.LabelVisual.SetValue(Canvas.TopProperty, y - currentDataPoint.LabelVisual.Height);
             }
         }
 
@@ -2692,7 +2003,7 @@ namespace Visifire.Charts
         /// <param name="labelLinePath">Label line path</param>
         /// <param name="enabledDataPoints">List of enabled dataPoints</param>
         /// <returns>List of Shape</returns>
-        private static List<Shape> GetPie3D(ref Faces faces, SectorChartShapeParams pieParams, ref Int32 zindex, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
+        private static List<Shape> GetPie3D(DataSeries currentDataSeries, ref Faces faces, SectorChartShapeParams pieParams, ref Int32 zindex, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
         {
             List<Shape> pieFaces = new List<Shape>();
 
@@ -2782,7 +2093,7 @@ namespace Visifire.Charts
                 faces.Parts.Add(leftFace);
             }
 
-            labelLinePath = CreateLabelLine(pieParams, center, ref unExplodedPoints, ref explodedPoints);
+            labelLinePath = CreateLabelLine(currentDataSeries, pieParams, center, ref unExplodedPoints, ref explodedPoints);
 
             if ((pieParams.TagReference as DataPoint).InternalYValue == 0)
                 return new List<Shape>();
@@ -2826,11 +2137,22 @@ namespace Visifire.Charts
                 else if (pieParams.StartAngle >= 0 && pieParams.StartAngle <= Math.PI && pieParams.StopAngle >= Math.PI && pieParams.StopAngle <= Math.PI * 2)
                 {
                     _elementPositionData.Add(new ElementPositionData(rightFace, pieParams.StartAngle, pieParams.StartAngle));
-                    if (labelLinePath != null)
-                        _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, Math.PI));
+                    
+                    //  if (labelLinePath != null)
+                    //      _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, Math.PI));
 
-                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
+                    //------------
+                    if (labelLinePath != null)
+                    {
+                        if (pieParams.StartAngle >= Math.PI / 2 && pieParams.StopAngle <= Math.PI)
+                            labelLinePath.SetValue(Canvas.ZIndexProperty, 50000);
+                        else
+                            _elementPositionData.Add(new ElementPositionData(labelLinePath, pieParams.StartAngle, Math.PI));
+                    }
+                    //------------
+
                     _elementPositionData.Add(new ElementPositionData(leftFace, pieParams.StopAngle, pieParams.StopAngle));
+                    _elementPositionData.Add(new ElementPositionData(curvedSurface[0], pieParams.StartAngle, Math.PI));
                 }
                 else if (pieParams.StartAngle >= Math.PI && pieParams.StartAngle <= Math.PI * 2 && pieParams.StopAngle >= 0 && pieParams.StopAngle <= Math.PI)
                 {
@@ -2898,7 +2220,7 @@ namespace Visifire.Charts
         /// <param name="labelLinePath">Label line path</param>
         /// <param name="enabledDataPoints">List of enabled dataPoints</param>
         /// <returns>List of Shape</returns>
-        private static List<Shape> GetDoughnut3D(ref Faces faces, SectorChartShapeParams doughnutParams, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
+        private static List<Shape> GetDoughnut3D(DataSeries currentDataSeries, ref Faces faces, SectorChartShapeParams doughnutParams, ref PieDoughnut3DPoints unExplodedPoints, ref PieDoughnut3DPoints explodedPoints, ref Path labelLinePath, List<DataPoint> enabledDataPoints)
         {
             List<Shape> pieFaces = new List<Shape>();
             Shape topFace = null, bottomFace = null, rightFace = null, leftFace = null;
@@ -2965,7 +2287,7 @@ namespace Visifire.Charts
             UpdatePositionLabelInsidePie(doughnutParams, yOffset);
 
             if (doughnutParams.StartAngle == doughnutParams.StopAngle && doughnutParams.IsLargerArc || enabledDataPoints.Count == 1)
-            {   
+            {
                 // draw singleton pie here
                 topFace = new Ellipse() { Tag = new ElementData() { Element = doughnutParams.TagReference } };
                 topFace.Fill = doughnutParams.Lighting ? Graphics.GetLightingEnabledBrush(doughnutParams.Background, "Radial", new Double[] { 0.99, 0.745 }) : doughnutParams.Background;
@@ -3024,7 +2346,7 @@ namespace Visifire.Charts
             foreach (FrameworkElement fe in curvedSurface)
                 faces.Parts.Add(fe);
 
-            labelLinePath = CreateLabelLine(doughnutParams, center, ref unExplodedPoints, ref explodedPoints);
+            labelLinePath = CreateLabelLine(currentDataSeries, doughnutParams, center, ref unExplodedPoints, ref explodedPoints);
 
             if ((doughnutParams.TagReference as DataPoint).InternalYValue == 0)
                 return new List<Shape>();
@@ -3558,15 +2880,15 @@ namespace Visifire.Charts
         /// <param name="values">List of values</param>
         /// <param name="splines">List of animation splines</param>
         /// <returns>PointAnimationUsingKeyFrames</returns>
-        private static PointAnimationUsingKeyFrames CreatePointAnimation(DependencyObject target, String property, Double beginTime, List<Double> frameTimes, List<Point> values, List<KeySpline> splines)
+        private static PointAnimationUsingKeyFrames CreatePointAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, DependencyObject target, String property, Double beginTime, List<Double> frameTimes, List<Point> values, List<KeySpline> splines)
         {
             PointAnimationUsingKeyFrames da = new PointAnimationUsingKeyFrames();
 #if WPF
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name +  Guid.NewGuid().ToString().Replace('-', '_'));
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            CurrentDataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
-            CurrentDataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            currentDataSeries.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            currentDataPoint.Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
             Storyboard.SetTarget(da, target);
 #endif
@@ -3636,7 +2958,7 @@ namespace Visifire.Charts
         /// <param name="startAngle">Start angle</param>
         /// <param name="stopAngle">Stop angle</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreatePathSegmentAnimation(Storyboard storyboard, PathSegment target, Point center, Double radius, Double startAngle, Double stopAngle)
+        private static Storyboard CreatePathSegmentAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, Storyboard storyboard, PathSegment target, Point center, Double radius, Double startAngle, Double stopAngle)
         {
             List<Point> points = GenerateAnimationPoints(center, radius, startAngle, stopAngle);
             List<Double> frames = GenerateAnimationFrames(points.Count, 1);
@@ -3646,11 +2968,11 @@ namespace Visifire.Charts
 
             if (typeof(ArcSegment).IsInstanceOfType(target))
             {
-                pieSliceAnimation = CreatePointAnimation(target, "(ArcSegment.Point)", 0.5, frames, points, splines);
+                pieSliceAnimation = CreatePointAnimation(currentDataSeries, currentDataPoint, target, "(ArcSegment.Point)", 0.5, frames, points, splines);
             }
             else
             {
-                pieSliceAnimation = CreatePointAnimation(target, "(LineSegment.Point)", 0.5, frames, points, splines);
+                pieSliceAnimation = CreatePointAnimation(currentDataSeries, currentDataPoint, target, "(LineSegment.Point)", 0.5, frames, points, splines);
             }
 
             storyboard.Children.Add(pieSliceAnimation);
@@ -3668,13 +2990,13 @@ namespace Visifire.Charts
         /// <param name="startAngle">Start angle</param>
         /// <param name="stopAngle">Stop angle</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreatePathFigureAnimation(Storyboard storyboard, PathFigure target, Point center, Double radius, Double startAngle, Double stopAngle)
+        private static Storyboard CreatePathFigureAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, Storyboard storyboard, PathFigure target, Point center, Double radius, Double startAngle, Double stopAngle)
         {
             List<Point> points = GenerateAnimationPoints(center, radius, startAngle, stopAngle);
             List<Double> frames = GenerateAnimationFrames(points.Count, 1);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(points.Count);
 
-            PointAnimationUsingKeyFrames pieSliceAnimation = CreatePointAnimation(target, "(PathFigure.StartPoint)", 0.5, frames, points, splines);
+            PointAnimationUsingKeyFrames pieSliceAnimation = CreatePointAnimation(currentDataSeries, currentDataPoint, target, "(PathFigure.StartPoint)", 0.5, frames, points, splines);
             storyboard.Children.Add(pieSliceAnimation);
             return storyboard;
         }
@@ -3686,13 +3008,13 @@ namespace Visifire.Charts
         /// <param name="target">Animation target</param>
         /// <param name="points">Array of points</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateLabelLineAnimation(Storyboard storyboard, PathSegment target, params Point[] points)
+        private static Storyboard CreateLabelLineAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, Storyboard storyboard, PathSegment target, params Point[] points)
         {
             List<Point> pointsList = points.ToList();
             List<Double> frames = GenerateAnimationFrames(pointsList.Count, 1);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(pointsList.Count);
 
-            PointAnimationUsingKeyFrames labelLineAnimation = CreatePointAnimation(target, "(LineSegment.Point)", 1 + 0.5, frames, pointsList, splines);
+            PointAnimationUsingKeyFrames labelLineAnimation = CreatePointAnimation(currentDataSeries, currentDataPoint, target, "(LineSegment.Point)", 1 + 0.5, frames, pointsList, splines);
             storyboard.Children.Add(labelLineAnimation);
             return storyboard;
         }
@@ -3744,12 +3066,12 @@ namespace Visifire.Charts
         /// <param name="opacity">Target opacity</param>
         /// <param name="duration">Animation duration</param>
         /// <returns></returns>
-        private static Storyboard CreateOpacityAnimation(Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
+        private static Storyboard CreateOpacityAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, Storyboard storyboard, DependencyObject target, Double beginTime, Double opacity, Double duration)
         {
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, opacity);
             DoubleCollection frames = Graphics.GenerateDoubleCollection(0, duration);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(frames.Count);
-            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
+            DoubleAnimationUsingKeyFrames opacityAnimation = CreateDoubleAnimation(currentDataSeries, currentDataPoint, target, "(UIElement.Opacity)", beginTime + 0.5, frames, values, splines);
             storyboard.Children.Add(opacityAnimation);
             return storyboard;
         }
@@ -3761,13 +3083,13 @@ namespace Visifire.Charts
         /// <param name="target">Target object</param>
         /// <param name="points">Array of Points</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateLabelLineInteractivityAnimation(Storyboard storyboard, PathSegment target, params Point[] points)
+        private static Storyboard CreateLabelLineInteractivityAnimation(DataSeries currentDataSeries, DataPoint currentDataPoint, Storyboard storyboard, PathSegment target, params Point[] points)
         {
             List<Point> pointsList = points.ToList();
             List<Double> frames = GenerateAnimationFrames(pointsList.Count, 0.4);
             List<KeySpline> splines = AnimationHelper.GenerateKeySplineList(pointsList.Count);
 
-            PointAnimationUsingKeyFrames labelLineAnimation = CreatePointAnimation(target, "(LineSegment.Point)", 0, frames, pointsList, splines);
+            PointAnimationUsingKeyFrames labelLineAnimation = CreatePointAnimation(currentDataSeries, currentDataPoint, target, "(LineSegment.Point)", 0, frames, pointsList, splines);
             storyboard.Children.Add(labelLineAnimation);
 
             return storyboard;
@@ -3786,7 +3108,7 @@ namespace Visifire.Charts
         /// <param name="xOffset">X offset</param>
         /// <param name="yOffset">Y offset</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateExplodingOut2DAnimation(DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingOut2DAnimation(DataSeries currentDataSeries, DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             #region Animating Silce
             DoubleCollection values = Graphics.GenerateDoubleCollection(0, xOffset);
@@ -3797,7 +3119,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
             values = Graphics.GenerateDoubleCollection(0, yOffset);
             frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3807,7 +3129,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
             storyboard.Children.Add(sliceXAnimation);
             storyboard.Children.Add(sliceYAnimation);
@@ -3830,7 +3152,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(0, yOffset);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3840,7 +3162,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation);
                     storyboard.Children.Add(labelYAnimation);
@@ -3856,7 +3178,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3867,8 +3189,8 @@ namespace Visifire.Charts
             {
                 PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
                 PathSegmentCollection segments = figure.Segments;
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
             }
 
             #endregion Animating Label Line
@@ -3889,7 +3211,7 @@ namespace Visifire.Charts
         /// <param name="xOffset">X offset</param>
         /// <param name="yOffset">Y offset</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateExplodingIn2DAnimation(DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingIn2DAnimation(DataSeries currentDataSeries, DataPoint dataPoint, Storyboard storyboard, Panel visual, Panel label, Path labelLine, TranslateTransform translateTransform, PieDoughnut2DPoints unExplodedPoints, PieDoughnut2DPoints explodedPoints, Double xOffset, Double yOffset)
         {
 
             #region Animating Silce
@@ -3901,7 +3223,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
             values = Graphics.GenerateDoubleCollection(yOffset, 0);
             frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3911,7 +3233,7 @@ namespace Visifire.Charts
                     new Point(0, 0), new Point(0, 1)
                 );
 
-            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+            DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
             storyboard.Children.Add(sliceXAnimation);
             storyboard.Children.Add(sliceYAnimation);
@@ -3932,7 +3254,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(yOffset, 0);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -3942,7 +3264,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation);
                     storyboard.Children.Add(labelYAnimation);
@@ -3958,7 +3280,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -3970,8 +3292,8 @@ namespace Visifire.Charts
             {
                 PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
                 PathSegmentCollection segments = figure.Segments;
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
             }
 
             #endregion Animating Label Line
@@ -3991,7 +3313,7 @@ namespace Visifire.Charts
         /// <param name="xOffset">X offset</param>
         /// <param name="yOffset">Y offset</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateExplodingOut3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingOut3DAnimation(DataSeries currentDataSeries, DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -4012,7 +3334,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(0, yOffset);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4022,7 +3344,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -4048,7 +3370,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames sliceXAnimation1 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames sliceXAnimation1 = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(0, yOffset);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4058,7 +3380,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames sliceYAnimation2 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames sliceYAnimation2 = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(sliceXAnimation1);
                     storyboard.Children.Add(sliceYAnimation2);
@@ -4074,7 +3396,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -4093,7 +3415,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(0, yOffset);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4103,7 +3425,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -4111,8 +3433,8 @@ namespace Visifire.Charts
 
                 PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
                 PathSegmentCollection segments = figure.Segments;
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[0], unExplodedPoints.LabelLineMidPoint, explodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[1], unExplodedPoints.LabelLineEndPoint, explodedPoints.LabelLineEndPoint);
             }
             #endregion Animating Label Line
 
@@ -4132,7 +3454,7 @@ namespace Visifire.Charts
         /// <param name="xOffset">X offset</param>
         /// <param name="yOffset">Y offset</param>
         /// <returns>Storyboard</returns>
-        private static Storyboard CreateExplodingIn3DAnimation(DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
+        private static Storyboard CreateExplodingIn3DAnimation(DataSeries currentDataSeries, DataPoint dataPoint, Storyboard storyboard, List<Shape> pathElements, Panel label, Path labelLine, PieDoughnut3DPoints unExplodedPoints, PieDoughnut3DPoints explodedPoints, Double xOffset, Double yOffset)
         {
             DoubleCollection values;
             DoubleCollection frames;
@@ -4162,7 +3484,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(yOffset, 0);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4172,7 +3494,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -4196,7 +3518,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelXAnimation1 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelXAnimation1 = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                     values = Graphics.GenerateDoubleCollection(yOffset, 0);
                     frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4206,7 +3528,7 @@ namespace Visifire.Charts
                             new Point(0, 0), new Point(0, 1)
                         );
 
-                    DoubleAnimationUsingKeyFrames labelYAnimation2 = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                    DoubleAnimationUsingKeyFrames labelYAnimation2 = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                     storyboard.Children.Add(labelXAnimation1);
                     storyboard.Children.Add(labelYAnimation2);
@@ -4222,7 +3544,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames labelXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, label, "(Canvas.Left)", 0, frames, values, splines);
                 storyboard.Children.Add(labelXAnimation);
             }
 
@@ -4241,7 +3563,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceXAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.X)", 0, frames, values, splines);
 
                 values = Graphics.GenerateDoubleCollection(yOffset, 0);
                 frames = Graphics.GenerateDoubleCollection(0, 0.4);
@@ -4251,7 +3573,7 @@ namespace Visifire.Charts
                         new Point(0, 0), new Point(0, 1)
                     );
 
-                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(CurrentDataSeries, CurrentDataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
+                DoubleAnimationUsingKeyFrames sliceYAnimation = CreateDoubleAnimation(currentDataSeries, dataPoint, translateTransform, "(TranslateTransform.Y)", 0, frames, values, splines);
 
                 storyboard.Children.Add(sliceXAnimation);
                 storyboard.Children.Add(sliceYAnimation);
@@ -4259,8 +3581,8 @@ namespace Visifire.Charts
 
                 PathFigure figure = (labelLine.Data as PathGeometry).Figures[0];
                 PathSegmentCollection segments = figure.Segments;
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
-                storyboard = CreateLabelLineInteractivityAnimation(storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[0], explodedPoints.LabelLineMidPoint, unExplodedPoints.LabelLineMidPoint);
+                storyboard = CreateLabelLineInteractivityAnimation(currentDataSeries, dataPoint, storyboard, segments[1], explodedPoints.LabelLineEndPoint, unExplodedPoints.LabelLineEndPoint);
             }
             #endregion Animating Label Line
 
@@ -4281,7 +3603,7 @@ namespace Visifire.Charts
         /// <param name="offsetX">X offset</param>
         /// <param name="zindex">Z index of the pie</param>
         /// <param name="isAnimationEnabled">Whether animation is enabled</param>
-        private static void Create3DPie(Double width, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Int32 zindex, Boolean isAnimationEnabled)
+        private static void Create3DPie(DataSeries currentDataSeries, Double widthOfPlotArea, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Int32 zindex, Boolean isAnimationEnabled)
         {
             #region 3D Pie
 
@@ -4289,7 +3611,7 @@ namespace Visifire.Charts
             PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
             pieParams.TagReference = dataPoint;
 
-            List<Shape> pieFaces = GetPie3D(ref faces, pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
+            List<Shape> pieFaces = GetPie3D(currentDataSeries, ref faces, pieParams, ref zindex, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
 
             foreach (Shape path in pieFaces)
             {
@@ -4303,7 +3625,7 @@ namespace Visifire.Charts
                     // apply animation to the 3D sections
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, dataPoint, series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.InternalOpacity, 0.5);
                         path.Opacity = 0;
                     }
                 }
@@ -4323,7 +3645,14 @@ namespace Visifire.Charts
                     zeroLine.Y2 = unExplodedPoints.LabelLineStartPoint.Y;
                     zeroLine.Stroke = pieParams.LabelLineColor;
                     zeroLine.StrokeThickness = 0.25;
+                    zeroLine.IsHitTestVisible = false;
                     visual.Children.Add(zeroLine);
+
+                    if (isAnimationEnabled)
+                    {
+                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, dataPoint, series.Storyboard, zeroLine, 2, zeroLine.Opacity, 0.5);
+                        zeroLine.Opacity = 0;
+                    }
                 }
 
                 visual.Children.Add(dataPoint.LabelLine);
@@ -4332,39 +3661,13 @@ namespace Visifire.Charts
 
             faces.Visual = visual;
 
-            if (dataPoint.LabelVisual != null)
-            {
-                unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-
-                if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                {
-                    if (unExplodedPoints.LabelPosition.X + offsetX < 0)
-                    {
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X + offsetX, explodedPoints.LabelLineEndPoint.Y);
-                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X + offsetX, explodedPoints.LabelLineMidPoint.Y);
-                    }
-                    else
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                }
-                else
-                {
-                    if (unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width > width)
-                    {
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
-                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
-                    }
-                    else
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                }
-            }
+            UpdateExplodedPosition(pieParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
             dataPoint.ExplodeAnimation = new Storyboard();
-            dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+            dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
 
             dataPoint.UnExplodeAnimation = new Storyboard();
-            dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+            dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
 
             #endregion
         }
@@ -4385,7 +3688,7 @@ namespace Visifire.Charts
         /// <param name="zindex">Z index of the pie</param>
         /// <param name="isAnimationEnabled">Whether animation is enabled</param>
         /// <param name="labelStyleCounter">labelStyle count</param>
-        private static void Create2DPie(Double width, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Double offsetY, ref Int32 zindex, Boolean isAnimationEnabled, Int32 labelStateCount)
+        private static void Create2DPie(DataSeries currentDataSeries, Double widthOfPlotArea, Double height, DataSeries series, List<DataPoint> enabledDataPoints, DataPoint dataPoint, ref Canvas visual, ref Faces faces, ref SectorChartShapeParams pieParams, ref Double offsetX, ref Double offsetY, ref Int32 zindex, Boolean isAnimationEnabled, Int32 labelStateCount)
         {
             #region 2D Pie
 
@@ -4397,45 +3700,19 @@ namespace Visifire.Charts
             if (labelStateCount == enabledDataPoints.Count)
                 pieParams.OuterRadius -= pieParams.OuterRadius * pieParams.ExplodeRatio;
 
-            Canvas pieVisual = GetPie2D(ref faces, pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
+            Canvas pieVisual = GetPie2D(currentDataSeries, ref faces, pieParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
 
-            if (dataPoint.LabelVisual != null)
-            {
-                unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-
-                if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                {
-                    if (unExplodedPoints.LabelPosition.X + offsetX < 0)
-                    {
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X + offsetX, explodedPoints.LabelLineEndPoint.Y);
-                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X + offsetX, explodedPoints.LabelLineMidPoint.Y);
-                    }
-                    else
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                }
-                else
-                {
-                    if (unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width > width)
-                    {
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
-                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
-                    }
-                    else
-                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                }
-            }
+            UpdateExplodedPosition(pieParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
             TranslateTransform translateTransform = new TranslateTransform();
             pieVisual.RenderTransform = translateTransform;
             dataPoint.ExplodeAnimation = new Storyboard();
-            dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+            dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
             dataPoint.UnExplodeAnimation = new Storyboard();
-            dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+            dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
 
             pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
-            pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
+            pieVisual.SetValue(Canvas.LeftProperty, widthOfPlotArea / 2 - pieVisual.Width / 2);
             visual.Children.Add(pieVisual);
             faces.VisualComponents.Add(pieVisual);
             faces.Visual = pieVisual;
@@ -4517,6 +3794,8 @@ namespace Visifire.Charts
         {
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
 
+            DataSeries currentDataSeries = null;
+
             // Debug.WriteLine("PieStart: " + DateTime.Now.ToLongTimeString());
 
             Canvas visual = new Canvas() { Width = width, Height = height };
@@ -4528,6 +3807,10 @@ namespace Visifire.Charts
             //  List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
 
             List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
+
+            if ((from dp in enabledDataPoints select dp.InternalYValue).Sum() == 0)
+                enabledDataPoints.Clear();
+
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
 
@@ -4537,9 +3820,9 @@ namespace Visifire.Charts
             Double offsetY = 0;
 
             Boolean IsLabelEnabled;
-            Size pieCanvasSize = new Size();
+            Size pieSize = new Size();
 
-            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvasSize);
+            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieSize);
 
             Debug.WriteLine("Labels Positioning over: " + DateTime.Now.ToLongTimeString());
 
@@ -4552,7 +3835,7 @@ namespace Visifire.Charts
                 labelCanvas.IsHitTestVisible = false;
             }
 
-            Double radius = Math.Min(pieCanvasSize.Width, pieCanvasSize.Height) / (chart.View3D ? 1 : 2);
+            Double radius = Math.Min(pieSize.Width, pieSize.Height) / (chart.View3D ? 1 : 2);
             Double startAngle = series.InternalStartAngle;
             Double endAngle = 0;
             Double angle;
@@ -4566,7 +3849,7 @@ namespace Visifire.Charts
             if (series.Storyboard == null)
                 series.Storyboard = new Storyboard();
 
-            CurrentDataSeries = series;
+            currentDataSeries = series;
 
             SectorChartShapeParams pieParams = null;
 
@@ -4583,8 +3866,6 @@ namespace Visifire.Charts
 
             foreach (DataPoint dataPoint in enabledDataPoints)
             {
-                CurrentDataPoint = dataPoint;
-
                 if (Double.IsNaN(dataPoint.InternalYValue))// || dataPoint.InternalYValue == 0)
                     continue;
 
@@ -4605,6 +3886,7 @@ namespace Visifire.Charts
                 pieParams.ExplodeRatio = chart.View3D ? 0.2 : 0.1;
                 pieParams.InnerRadius = 0;
                 pieParams.OuterRadius = radius;
+                pieParams.DataPoint = dataPoint;
 
                 if (chart.View3D)
                 {
@@ -4640,34 +3922,43 @@ namespace Visifire.Charts
 
                 if (dataPoint.LabelVisual != null)
                 {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    if (dataPoint.LabelVisual.Visibility == Visibility.Collapsed)
+                        pieParams.LabelLineEnabled = false;
+
+                    Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                    if (left < width / 2)
                     {
+                        pieParams.LabelLineTargetToRight = true;
                         // pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        pieParams.LabelPoint = new Point(left + dataPoint.LabelVisual.Width + LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
                     else
                     {
-                        pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        pieParams.LabelLineTargetToRight = false;
+                        pieParams.LabelPoint = new Point(left - LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
 
                     // apply animation to the labels
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, dataPoint.Opacity * dataPoint.Parent.Opacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, dataPoint, series.Storyboard, dataPoint.LabelVisual, 2, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity, 0.5);
                         dataPoint.LabelVisual.Opacity = 0;
                     }
                 }
 
+                if (dataPoint.LabelStyle == LabelStyles.Inside && dataPoint.InternalYValue == 0)
+                    pieParams.LabelLineEnabled = false;
+
                 Faces faces = new Faces();
-                faces.Parts = new List<DependencyObject>();
 
                 if (chart.View3D)
                 {
-                    Create3DPie(width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref zindex, isAnimationEnabled);
+                    Create3DPie(currentDataSeries, width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref zindex, isAnimationEnabled);
                 }
                 else
                 {
-                    Create2DPie(width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref offsetY, ref zindex, isAnimationEnabled, labelStateCounter);
+                    Create2DPie(currentDataSeries, width, height, series, enabledDataPoints, dataPoint, ref visual, ref faces, ref pieParams, ref offsetX, ref offsetY, ref zindex, isAnimationEnabled, labelStateCounter);
                 }
 
                 Debug.WriteLine("Datapoint" + enabledDataPoints.IndexOf(dataPoint) + ": " + DateTime.Now.ToLongTimeString());
@@ -4682,7 +3973,7 @@ namespace Visifire.Charts
                     {
                         foreach (Shape shape in dataPoint.Faces.BorderElements)
                         {
-                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.InternalBorderThickness.Left, dataPoint.BorderColor);
                         }
                     }
                 }
@@ -4705,8 +3996,47 @@ namespace Visifire.Charts
             if (IsLabelEnabled && labelCanvas != null)
                 visual.Children.Add(labelCanvas);
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, 0, width, height);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
+
+        internal static void UpdateExplodedPosition(SectorChartShapeParams pieParams, DataPoint dataPoint, Double offsetX, PieDoughnutPoints unExplodedPoints,
+            PieDoughnutPoints explodedPoints, Double widthOfPlotArea)
+        {
+
+            if (dataPoint.LabelVisual != null)
+            {
+                unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                if (left < widthOfPlotArea / 2)
+                {   
+                    if (unExplodedPoints.LabelPosition.X + offsetX < 0)
+                    {
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
+                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
+                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
+                    }
+                    else
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                }
+                else
+                {
+                    if (unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width > widthOfPlotArea)
+                    {
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
+                        explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
+                        explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
+                    }
+                    else
+                        explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Return visual object for doughnut chart
@@ -4718,12 +4048,14 @@ namespace Visifire.Charts
         /// <param name="chart">Chart reference</param>
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Canvas</returns>
-        internal static Canvas GetVisualObjectForDoughnutChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
+        internal static Canvas GetVisualObjectForDoughnutChart(Double widthOfPlotArea, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, bool animationEnabled)
         {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+            if (Double.IsNaN(widthOfPlotArea) || Double.IsNaN(height) || widthOfPlotArea <= 0 || height <= 0) return null;
+
+            DataSeries currentDataSeries = null;
 
             Canvas visual = new Canvas();
-            visual.Width = width;
+            visual.Width = widthOfPlotArea;
             visual.Height = height;
 
             DataSeries series = seriesList[0];
@@ -4733,18 +4065,22 @@ namespace Visifire.Charts
 
             // List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && datapoint.InternalYValue != 0 && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
             List<DataPoint> enabledDataPoints = (from datapoint in series.InternalDataPoints where datapoint.Enabled == true && !Double.IsNaN(datapoint.InternalYValue) select datapoint).ToList();
+
+            if ((from dp in enabledDataPoints select dp.InternalYValue).Sum() == 0)
+                enabledDataPoints.Clear();
+
             Double absoluteSum = plotDetails.GetAbsoluteSumOfDataPoints(enabledDataPoints);
 
             absoluteSum = (absoluteSum == 0) ? 1 : absoluteSum;
 
-            Double centerX = width / 2;
+            Double centerX = widthOfPlotArea / 2;
             Double centerY = height / 2;
 
             Double offsetX = 0;
             Double offsetY = 0;
 
             Size pieCanvas = new Size();
-            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, width, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
+            Canvas labelCanvas = CreateAndPositionLabels(absoluteSum, enabledDataPoints, widthOfPlotArea, height, ((chart.View3D) ? 0.4 : 1), chart.View3D, ref pieCanvas);
 
             Double radius = Math.Min(pieCanvas.Width, pieCanvas.Height) / (chart.View3D ? 1 : 2);
             Double startAngle = series.InternalStartAngle;
@@ -4771,7 +4107,7 @@ namespace Visifire.Charts
             if (series.Storyboard == null)
                 series.Storyboard = new Storyboard();
 
-            CurrentDataSeries = series;
+            currentDataSeries = series;
 
             SectorChartShapeParams doughnutParams = null;
 
@@ -4788,8 +4124,6 @@ namespace Visifire.Charts
 
             foreach (DataPoint dataPoint in enabledDataPoints)
             {
-                CurrentDataPoint = dataPoint;
-
                 if (Double.IsNaN(dataPoint.InternalYValue))// || dataPoint.InternalYValue == 0)
                     continue;
 
@@ -4807,7 +4141,7 @@ namespace Visifire.Charts
                 doughnutParams.Storyboard = series.Storyboard;
                 doughnutParams.ExplodeRatio = chart.View3D ? 0.2 : 0.1;
                 doughnutParams.Center = new Point(centerX, centerY);
-
+                doughnutParams.DataPoint = dataPoint;
                 doughnutParams.InnerRadius = radius / 2;
                 doughnutParams.OuterRadius = radius;
 
@@ -4826,7 +4160,7 @@ namespace Visifire.Charts
                 doughnutParams.Bevel = series.Bevel;
                 doughnutParams.IsLargerArc = (angle / (Math.PI)) > 1;
                 doughnutParams.Background = dataPoint.Color;
-                doughnutParams.Width = width;
+                doughnutParams.Width = widthOfPlotArea;
                 doughnutParams.Height = height;
                 doughnutParams.TiltAngle = Math.Asin(0.4);
                 doughnutParams.Depth = 20 / doughnutParams.YAxisScaling;
@@ -4844,22 +4178,44 @@ namespace Visifire.Charts
 
                 if (dataPoint.LabelVisual != null)
                 {
-                    if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    if (dataPoint.LabelVisual.Visibility == Visibility.Collapsed)
+                        doughnutParams.LabelLineEnabled = false;
+
+                    Double left = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
+
+                    if (left < widthOfPlotArea / 2)
                     {
-                        doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        doughnutParams.LabelLineTargetToRight = true;
+                        // pieParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.DesiredSize.Width, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.DesiredSize.Height / 2);
+                        doughnutParams.LabelPoint = new Point(left + dataPoint.LabelVisual.Width + LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
                     else
                     {
-                        doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                        doughnutParams.LabelLineTargetToRight = false;
+                        doughnutParams.LabelPoint = new Point(left - LabelPlacementHelper.LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
                     }
+
+                    //if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
+                    //{
+                    //    doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) + dataPoint.LabelVisual.Width + LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                    //}
+                    //else
+                    //{
+                    //    doughnutParams.LabelPoint = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) - LABEL_LINE_GAP, (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty) + dataPoint.LabelVisual.Height / 2);
+                    //}
 
                     // apply animation to the labels
                     if (animationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, series.Storyboard, dataPoint.LabelVisual, 2, 1, 0.5);
                         dataPoint.LabelVisual.Opacity = 0;
                     }
+
+                   
                 }
+
+                if (dataPoint.LabelStyle == LabelStyles.Inside && dataPoint.InternalYValue == 0)
+                    doughnutParams.LabelLineEnabled = false;
 
                 Faces faces = new Faces();
                 faces.Parts = new List<DependencyObject>();
@@ -4870,12 +4226,12 @@ namespace Visifire.Charts
                 {
                     PieDoughnut3DPoints unExplodedPoints = new PieDoughnut3DPoints();
                     PieDoughnut3DPoints explodedPoints = new PieDoughnut3DPoints();
-                    List<Shape> doughnutFaces = GetDoughnut3D(ref faces, doughnutParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
+                    List<Shape> doughnutFaces = GetDoughnut3D(currentDataSeries, ref faces, doughnutParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
 
                     foreach (Shape path in doughnutFaces)
-                    {
+                    {   
                         if (path != null)
-                        {
+                        {   
                             visual.Children.Add(path);
                             faces.VisualComponents.Add(path);
                             faces.BorderElements.Add(path);
@@ -4885,7 +4241,7 @@ namespace Visifire.Charts
                             // apply animation to the 3D sections
                             if (animationEnabled)
                             {
-                                series.Storyboard = CreateOpacityAnimation(series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.Opacity, 0.5);
+                                series.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, series.Storyboard, path, 1.0 / (series.InternalDataPoints.Count) * (series.InternalDataPoints.IndexOf(dataPoint)), dataPoint.InternalOpacity, 0.5);
                                 path.Opacity = 0;
                             }
                         }
@@ -4907,7 +4263,14 @@ namespace Visifire.Charts
                             zeroLine.Y2 = unExplodedPoints.LabelLineStartPoint.Y;
                             zeroLine.Stroke = doughnutParams.LabelLineColor;
                             zeroLine.StrokeThickness = 0.25;
+                            zeroLine.IsHitTestVisible = false;
                             visual.Children.Add(zeroLine);
+
+                            if (animationEnabled)
+                            {
+                                series.Storyboard = CreateOpacityAnimation(currentDataSeries, doughnutParams.DataPoint, series.Storyboard, zeroLine, 2, zeroLine.Opacity, 0.5);
+                                zeroLine.Opacity = 0;
+                            }
                         }
 
                         faces.VisualComponents.Add(dataPoint.LabelLine);
@@ -4915,38 +4278,13 @@ namespace Visifire.Charts
 
                     faces.Visual = visual;
 
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                    UpdateExplodedPosition(doughnutParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            if (unExplodedPoints.LabelPosition.X + offsetX < 0)
-                            {
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                                explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X + offsetX, explodedPoints.LabelLineEndPoint.Y);
-                                explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X + offsetX, explodedPoints.LabelLineMidPoint.Y);
-                            }
-                            else
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            if (unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width > width)
-                            {
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                                explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
-                                explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
-                            }
-                            else
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                    }
-
+                    ///------------------------
                     dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(dataPoint, dataPoint.ExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
+                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
                     dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(dataPoint, dataPoint.UnExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
                 }
                 else
                 {
@@ -4959,46 +4297,19 @@ namespace Visifire.Charts
                         doughnutParams.InnerRadius = doughnutParams.OuterRadius / 2;
                     }
 
-                    Canvas pieVisual = GetDoughnut2D(ref faces, doughnutParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
+                    Canvas pieVisual = GetDoughnut2D(currentDataSeries, ref faces, doughnutParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
 
-                    if (dataPoint.LabelVisual != null)
-                    {
-                        unExplodedPoints.LabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
-
-                        if ((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty) < width / 2)
-                        {
-                            if (unExplodedPoints.LabelPosition.X + offsetX < 0)
-                            {
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                                explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X + offsetX, explodedPoints.LabelLineEndPoint.Y);
-                                explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X + offsetX, explodedPoints.LabelLineMidPoint.Y);
-                            }
-                            else
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-                        }
-                        else
-                        {
-                            if (unExplodedPoints.LabelPosition.X + offsetX + dataPoint.LabelVisual.Width > width)
-                            {
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X, unExplodedPoints.LabelPosition.Y);
-                                explodedPoints.LabelLineEndPoint = new Point(explodedPoints.LabelLineEndPoint.X - offsetX, explodedPoints.LabelLineEndPoint.Y);
-                                explodedPoints.LabelLineMidPoint = new Point(explodedPoints.LabelLineMidPoint.X - offsetX, explodedPoints.LabelLineMidPoint.Y);
-                            }
-                            else
-                                explodedPoints.LabelPosition = new Point(unExplodedPoints.LabelPosition.X + offsetX, unExplodedPoints.LabelPosition.Y);
-
-                        }
-                    }
+                    UpdateExplodedPosition(doughnutParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
                     TranslateTransform translateTransform = new TranslateTransform();
                     pieVisual.RenderTransform = translateTransform;
                     dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
                     dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
 
                     pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
-                    pieVisual.SetValue(Canvas.LeftProperty, width / 2 - pieVisual.Width / 2);
+                    pieVisual.SetValue(Canvas.LeftProperty, widthOfPlotArea / 2 - pieVisual.Width / 2);
                     visual.Children.Add(pieVisual);
                     faces.VisualComponents.Add(pieVisual);
                     faces.Visual = pieVisual;
@@ -5014,7 +4325,7 @@ namespace Visifire.Charts
                     {
                         foreach (Shape shape in dataPoint.Faces.BorderElements)
                         {
-                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderThickness.Left, dataPoint.BorderColor);
+                            InteractivityHelper.ApplyBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, dataPoint.InternalBorderThickness.Left, dataPoint.BorderColor);
                         }
                     }
                 }
@@ -5035,6 +4346,10 @@ namespace Visifire.Charts
             if (labelCanvas != null)
                 visual.Children.Add(labelCanvas);
 
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, 0, widthOfPlotArea, height);
+            visual.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -5046,9 +4361,8 @@ namespace Visifire.Charts
 
         #region Data
 
-        static Double LABEL_LINE_LENGTH = 20;
-        static Double LABEL_LINE_GAP = 3;
-
+        public const Double LABEL_LINE_LENGTH = 18;
+        
         /// <summary>
         /// Visfiire.Charts.PieChart.PathGeometryParams class
         /// </summary>

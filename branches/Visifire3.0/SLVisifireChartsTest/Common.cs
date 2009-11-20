@@ -323,11 +323,13 @@ namespace SLVisifireChartsTest
         /// <returns></returns>
         public static System.Windows.Browser.HtmlElement GetDisplayMessageButton(System.Windows.Browser.HtmlElement htmlElement)
         {
-            htmlElement = System.Windows.Browser.HtmlPage.Document.CreateElement("button");
+            htmlElement = System.Windows.Browser.HtmlPage.Document.CreateElement("input");
             htmlElement.SetProperty("id", "inputText");
+            htmlElement.SetProperty("type", "button");
             htmlElement.SetStyleAttribute("border", "solid 1px black");
             htmlElement.SetStyleAttribute("position", "absolute");
             htmlElement.SetStyleAttribute("width", "900px");
+            htmlElement.SetStyleAttribute("height", "20px");
             htmlElement.SetStyleAttribute("top", "520px");
             htmlElement.SetStyleAttribute("left", "0px");
 

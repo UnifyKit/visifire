@@ -168,10 +168,14 @@ namespace Visifire.Commons
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
 
 #if WPF
-            target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_'));
+            String name = target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_');
+            target.SetValue(FrameworkElement.NameProperty, name);
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            (parentObj as DataSeries).Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            if (parentObj.GetType().Equals(typeof(DataPoint)))
+                parentObj = (parentObj as DataPoint).Parent;
+            
+            (parentObj as ObservableObject).Chart._rootElement.RegisterName(name, target);
 #else
             Storyboard.SetTarget(da, target);
 #endif

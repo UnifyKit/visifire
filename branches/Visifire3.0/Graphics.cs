@@ -125,9 +125,9 @@ namespace Visifire.Charts
         PointCollection _backFacePoints;
         Double _depth3D;
 
-        public DependencyObject TopFaceHandle;
-        public DependencyObject LeftFaceHandle;
-        public DependencyObject RightFaceHandle;
+        public DependencyObject TopFace;
+        public DependencyObject LeftFace;
+        public DependencyObject RightFace;
     }   
 
     /// <summary>
@@ -214,9 +214,15 @@ namespace Visifire.Charts
         public Area3DDataPointFace Area3DRightTopFace;
         public Area3DDataPointFace Area3DRightFace;
         public LineSegment AreaFrontFaceLineSegment;
+        public LineSegment AreaFrontFaceBaseLineSegment; // Zero line segment point for 1st and last DataPoint only
         public Line BevelLine;
         public DataPoint PreviousDataPoint;
         public DataPoint NextDataPoint;
+
+        /// <summary>
+        /// Front faces of area chart(It includes all broken area front faces)
+        /// </summary>
+        public List<Path> FrontFacePaths;
     }
 
     /// <summary>
@@ -232,6 +238,30 @@ namespace Visifire.Charts
         }
 
         #region Static Methods
+
+        internal static void GetBrushesForPlank(out Brush frontBrush, out Brush topBrush, out Brush rightBrush)
+        {
+            List<Color> colors = new List<Color>();
+            colors.Add(Color.FromArgb(125, 134, 134, 134)); // #FF868686
+            colors.Add(Color.FromArgb(255, 210, 210, 210)); // #FFD2D2D2
+            colors.Add(Color.FromArgb(255, 255, 255, 255)); // #FFFFFFFF
+            colors.Add(Color.FromArgb(255, 223, 223, 223)); // #FFDFDFDF
+
+            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1.844, 1, 0.442 });
+
+            colors = new List<Color>();
+            colors.Add(Color.FromArgb(255, 155, 155, 155));  // #FF8E8787
+            colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
+
+            rightBrush = Graphics.CreateLinearGradientBrush(45, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
+
+            colors = new List<Color>();
+            colors.Add(Color.FromArgb(255, 200, 200, 200));  // #FF8E8787
+            colors.Add(Color.FromArgb(255, 245, 245, 245));  // #FFE8E8E8
+            //colors.Add(Color.FromArgb(255, 232, 227, 227));  // #FFE8E3E3
+
+            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 1, 0 });
+        }
 
         /// <summary>
         /// Returns dash array for border
@@ -759,10 +789,36 @@ namespace Visifire.Commons
             return true;
         }
 
+
+        public static Brush GetRandonColor()
+        {
+            return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
+        }
+
         internal static Point MidPointOfALine(Point point1, Point point2)
         {
             return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
         }
+
+        internal static Double DistanceBetweenTwoPoints(Point point1, Point point2)
+        {
+            return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
+        }
+
+        internal static Point IntersectingPointOfTwoLines(Point p1, Point p2, Point p3, Point p4)
+        {
+            Double ua = ((p4.X - p3.X) * (p1.Y - p3.Y) - (p4.Y - p3.Y) * (p1.X - p3.X));
+            ua /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double ub = ((p2.X - p1.X) * (p1.Y - p3.Y) - (p2.Y - p1.Y) * (p1.X - p3.X));
+            ub /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double x = p1.X + ua * (p2.X - p1.X);
+            Double y = p1.X + ub * (p2.Y - p1.Y);
+
+            return new Point(x, y);
+        }
+
 
         /// <summary>
         /// Calculates visual size

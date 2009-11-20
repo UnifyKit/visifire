@@ -67,15 +67,6 @@ namespace Visifire.Charts
 
         #region Private Properties
 
-        /// <summary>
-        /// Current working DataSeries
-        /// </summary>
-        private static DataSeries CurrentDataSeries
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         #region Private Delegates
@@ -106,7 +97,7 @@ namespace Visifire.Charts
         {   
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;
             Faces faces = dataPoint.Faces;
-            Line highLow = faces.VisualComponents[0] as Line;  // HighLowline
+            Line highLowLine = faces.VisualComponents[0] as Line;  // HighLowline
             Line closeLine = faces.VisualComponents[1] as Line;    // Closeline
             Line openLine = faces.VisualComponents[2] as Line;     // Openline
 
@@ -135,10 +126,10 @@ namespace Visifire.Charts
             dataPointVisual.SetValue(Canvas.TopProperty, dataPointTop);
 
             // Set position for high-low line
-            highLow.X1 = dataPointVisual.Width / 2;
-            highLow.X2 = dataPointVisual.Width / 2;
-            highLow.Y1 = 0;
-            highLow.Y2 = dataPointVisual.Height;
+            highLowLine.X1 = dataPointVisual.Width / 2;
+            highLowLine.X2 = dataPointVisual.Width / 2;
+            highLowLine.Y1 = 0;
+            highLowLine.Y2 = dataPointVisual.Height;
 
             // Set position for open line
             openLine.X1 = 0;
@@ -153,7 +144,7 @@ namespace Visifire.Charts
             closeLine.Y2 = closeY;
 
             // Need to apply shadow according to position of DataPoint
-            ApplyOrUpdateShadow(dataPoint, dataPointVisual, highLow, openLine, closeLine, dataPointWidth);
+            ApplyOrUpdateShadow(dataPoint, dataPointVisual, highLowLine, openLine, closeLine, dataPointWidth);
 
             // Place label for the DataPoint
             CandleStick.CreateAndPositionLabel(dataPoint.Parent.Faces.LabelCanvas, dataPoint);
@@ -180,7 +171,7 @@ namespace Visifire.Charts
             closeLine.StrokeDashArray = Graphics.LineStyleToStrokeDashArray(borderStyle);
         }
 
-        private static void ApplyOrUpdateColorForACandleStick(DataPoint dataPoint, Line highLow, Line openLine, Line closeLine)
+        private static void ApplyOrUpdateColorForAStockDp(DataPoint dataPoint, Line highLow, Line openLine, Line closeLine)
         {   
             // Set style for lighlow line
             ReCalculateAndApplyTheNewBrush(highLow, dataPoint.Color, (Boolean)dataPoint.LightingEnabled);
@@ -193,7 +184,7 @@ namespace Visifire.Charts
             #region Apply Shadow
 
             Faces dpFaces = dataPoint.Faces;
-            dataPointVisual.Background = Graphics.GetRandomColor();
+            //dataPointVisual.Background = Graphics.GetRandomColor();
 
             dpFaces.ClearList(ref dpFaces.ShadowElements);
 
@@ -259,7 +250,7 @@ namespace Visifire.Charts
 
             // Remove preexisting dataPoint visual and label visual
             if (dpFaces != null && dpFaces.Visual != null && stockChartCanvas == dpFaces.Visual.Parent)
-            {
+            {   
                 stockChartCanvas.Children.Remove(dataPoint.Faces.Visual);
             }
 
@@ -300,21 +291,22 @@ namespace Visifire.Charts
 
             dataPoint.Faces.Visual = dataPointVisual;
             stockChartCanvas.Children.Add(dataPointVisual);
-
-
+            
             UpdateYValueAndXValuePosition(dataPoint, canvasWidth, canvasHeight, dataPointWidth);
             ApplyBorderProperties(dataPoint, highLow, openLine, closeLine, dataPointWidth);
-            ApplyOrUpdateColorForACandleStick(dataPoint, highLow, openLine, closeLine);
-
-            
+            ApplyOrUpdateColorForAStockDp(dataPoint, highLow, openLine, closeLine);
+                        
             // Add VisualComponents to visual
             dataPointVisual.Children.Add(highLow);
             dataPointVisual.Children.Add(openLine);
             dataPointVisual.Children.Add(closeLine);
 
             // Attach tooltip, events, href etc
+            dataPointVisual.Opacity = dataPoint.Parent.Opacity * dataPoint.Opacity;
             Chart chart = dataPoint.Chart as Chart;
+            dataPoint.SetCursor2DataPointVisualFaces();
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
@@ -382,7 +374,7 @@ namespace Visifire.Charts
             
             stockChartCanvas.Tag = null;
 
-            ColumnChart.CreateOrUpdatePlank(chart, seriesList[0].PlotGroup.AxisY, stockChartCanvas, depth3d, Orientation.Horizontal);
+            // ColumnChart.CreateOrUpdatePlank(chart, seriesList[0].PlotGroup.AxisY, stockChartCanvas, depth3d, Orientation.Horizontal);
 
             // Remove old visual and add new visual in to the existing panel
             if (preExistingPanel != null)
@@ -396,6 +388,10 @@ namespace Visifire.Charts
                 visual.Children.Add(labelCanvas);
                 visual.Children.Add(stockChartCanvas);
             }
+
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH);
+            visual.Clip = clipRectangle;
 
             return visual;
         }
@@ -417,15 +413,29 @@ namespace Visifire.Charts
             PlotGroup plotGroup = dataSeries.PlotGroup;
             Faces dsFaces = dataSeries.Faces;
             Faces dpFaces = dataPoint.Faces;
-
+            
             Double dataPointWidth;
+
+            if (dsFaces != null)
+                ColumnChart.UpdateParentVisualCanvasSize(chart, dsFaces.Visual as Canvas);
 
             if (dpFaces != null && dpFaces.Visual != null)
                 dataPointWidth = dpFaces.Visual.Width;
+            else if (dsFaces == null)
+                return;
             else
                 dataPointWidth = CandleStick.CalculateDataPointWidth(dsFaces.Visual.Width, dsFaces.Visual.Height, chart);
 
-            Canvas dataPointVisual = dpFaces.Visual as Canvas;   // DataPoint visual canvas
+            if (property == VcProperties.Enabled)
+            {
+                CreateOrUpdateAStockDataPoint(dataPoint, dsFaces.Visual as Canvas, dsFaces.LabelCanvas, dsFaces.Visual.Width, dsFaces.Visual.Height, dataPointWidth);
+                return;
+            }
+
+            if (dpFaces == null)
+                return;
+
+            Canvas dataPointVisual = dpFaces.Visual as Canvas;       // DataPoint visual canvas
             Line highLowLine = dpFaces.VisualComponents[0] as Line;  // HighLowline
             Line closeLine = dpFaces.VisualComponents[1] as Line;    // Closeline
             Line openLine = dpFaces.VisualComponents[2] as Line;     // Openline
@@ -433,12 +443,12 @@ namespace Visifire.Charts
             switch (property)
             {   
                 case VcProperties.BorderThickness:
+                case VcProperties.BorderStyle:
                     ApplyBorderProperties(dataPoint, highLowLine, openLine, closeLine, dataPointWidth);
                     break;
-                case VcProperties.BorderColor:
-                    break;
+
                 case VcProperties.Color:
-                    ApplyOrUpdateColorForACandleStick(dataPoint, highLowLine, openLine, closeLine);
+                    ApplyOrUpdateColorForAStockDp(dataPoint, highLowLine, openLine, closeLine);
                     break;
 
                 case VcProperties.Cursor:
@@ -470,17 +480,18 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LightingEnabled:
-                    ApplyOrUpdateColorForACandleStick(dataPoint, highLowLine, openLine, closeLine);
+                    ApplyOrUpdateColorForAStockDp(dataPoint, highLowLine, openLine, closeLine);
                     break;
 
-                case VcProperties.MarkerBorderColor:
-                case VcProperties.MarkerBorderThickness:
-                case VcProperties.MarkerColor:
-                case VcProperties.MarkerEnabled:
-                case VcProperties.MarkerScale:
-                case VcProperties.MarkerSize:
-                case VcProperties.MarkerType:
+                //case VcProperties.MarkerBorderColor:
+                //case VcProperties.MarkerBorderThickness:
+                //case VcProperties.MarkerColor:
+                //case VcProperties.MarkerEnabled:
+                //case VcProperties.MarkerScale:
+                //case VcProperties.MarkerSize:
+                //case VcProperties.MarkerType:
                 case VcProperties.ShadowEnabled:
+                    ApplyOrUpdateShadow(dataPoint, dataPointVisual, highLowLine, openLine, closeLine, dataPointWidth);
                     break;
 
                 case VcProperties.Opacity:
@@ -493,6 +504,12 @@ namespace Visifire.Charts
 
                 case VcProperties.ToolTipText:
                     dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    break;
+
+                case VcProperties.XValueFormatString:
+                case VcProperties.YValueFormatString:
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    CandleStick.CreateAndPositionLabel(dsFaces.LabelCanvas, dataPoint);
                     break;
 
                 case VcProperties.XValueType:
@@ -508,7 +525,17 @@ namespace Visifire.Charts
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue, isAxisChanged);
                     else
+                    {
+                        dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                         UpdateYValueAndXValuePosition(dataPoint, dsFaces.Visual.Width, dsFaces.Visual.Height, dpFaces.Visual.Width);
+
+                        if ((Boolean)dataPoint.LabelEnabled)
+                            CandleStick.CreateAndPositionLabel(dsFaces.LabelCanvas, dataPoint);
+                    }
+
+                    if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                        dataPoint.Select(true);
+
                     break;
             }
         }
@@ -520,51 +547,53 @@ namespace Visifire.Charts
             {   
                 case VcProperties.DataPoints:
                 case VcProperties.YValues:
+                case VcProperties.XValue:
+                    chart.ChartArea.RenderSeries();
+                    //Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
 
-                    Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+                    //Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    //Double height = chart.ChartArea.ChartVisualCanvas.Height;
 
-                    Double width = chart.ChartArea.ChartVisualCanvas.Width;
-                    Double height = chart.ChartArea.ChartVisualCanvas.Height;
+                    //PlotDetails plotDetails = chart.PlotDetails;
+                    //PlotGroup plotGroup = dataSeries.PlotGroup;
 
-                    PlotDetails plotDetails = chart.PlotDetails;
-                    PlotGroup plotGroup = dataSeries.PlotGroup;
+                    //List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
 
-                    List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
+                    //List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
 
-                    List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
+                    //RenderAs currentRenderAs = dataSeries.RenderAs;
 
-                    RenderAs currentRenderAs = dataSeries.RenderAs;
+                    //Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
 
-                    Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
+                    //for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
+                    //{
+                    //    if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
+                    //        selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
+                    //}
 
-                    for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
-                    {
-                        if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
-                            selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
-                    }
+                    //if (selectedDataSeries4Rendering.Count == 0)
+                    //    return;
 
-                    if (selectedDataSeries4Rendering.Count == 0)
-                        return;
+                    //Panel oldPanel = null;
+                    //Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
 
-                    Panel oldPanel = null;
-                    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+                    //if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+                    //{
+                    //    oldPanel = RenderedCanvasList[currentRenderAs];
+                    //}
 
-                    if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
-                    {
-                        oldPanel = RenderedCanvasList[currentRenderAs];
-                    }
+                    //Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
 
-                    Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
+                    //if (oldPanel == null)
+                    //{
+                    //    chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                    //    renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
+                    //    ChartVisualCanvas.Children.Add(renderedChart);
+                    //}
+                    //else
+                    //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
 
-                    if (oldPanel == null)
-                    {
-                        chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
-                        renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
-                        ChartVisualCanvas.Children.Add(renderedChart);
-                    }
-                    else
-                        chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
-
+                    //Visifire.Charts.Chart.SelectDataPoints(chart);
                     break;
 
                 default:
@@ -575,31 +604,31 @@ namespace Visifire.Charts
             }
         }
 
-        internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
-        {
-            Boolean is3D = chart.View3D;
-            ChartArea chartArea = chart.ChartArea;
-            Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+        //internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
+        //{
+        //    Boolean is3D = chart.View3D;
+        //    ChartArea chartArea = chart.ChartArea;
+        //    Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
 
-            // Double width = chart.ChartArea.ChartVisualCanvas.Width;
-            // Double height = chart.ChartArea.ChartVisualCanvas.Height;
+        //    // Double width = chart.ChartArea.ChartVisualCanvas.Width;
+        //    // Double height = chart.ChartArea.ChartVisualCanvas.Height;
 
-            Panel preExistingPanel = null;
-            Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+        //    Panel preExistingPanel = null;
+        //    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
 
-            if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
-            {
-                preExistingPanel = RenderedCanvasList[currentRenderAs];
-            }
+        //    if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+        //    {
+        //        preExistingPanel = RenderedCanvasList[currentRenderAs];
+        //    }
 
-            Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
+        //    Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
 
-            if (preExistingPanel == null)
-            {
-                chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
-                ChartVisualCanvas.Children.Add(renderedChart);
-            }
-        }
+        //    if (preExistingPanel == null)
+        //    {
+        //        chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+        //        ChartVisualCanvas.Children.Add(renderedChart);
+        //    }
+        //}
 
         #endregion
 

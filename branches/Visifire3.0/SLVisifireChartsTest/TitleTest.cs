@@ -156,7 +156,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             CreateAsyncTask(chart,
-                () => Assert.IsNull(chart.Titles[0].FontColor));
+                () => Assert.IsNull(chart.Titles[0].InternalFontColor));
 
             EnqueueTestComplete();
         }
@@ -488,14 +488,14 @@ namespace SLVisifireChartsTest
                         title.FontSize = 11;
                         title.FontStyle = FontStyles.Normal;
                         title.FontWeight = FontWeights.Bold;
-                        title.FontColor = new SolidColorBrush(Colors.White);
+                        title.InternalFontColor = new SolidColorBrush(Colors.White);
                         title.HorizontalAlignment = HorizontalAlignment.Center;
                         title.VerticalAlignment = VerticalAlignment.Top;
                         title.Padding = new Thickness(5);
                         title.Margin = new Thickness(2);
                         title.CornerRadius = new CornerRadius(1, 1, 1, 1);
                         title.ToolTipText = "Title";
-                        title.Opacity = 0.5;
+                        title.InternalOpacity = 0.5;
                         title.Cursor = Cursors.Hand;
                     }
                 });
@@ -516,14 +516,14 @@ namespace SLVisifireChartsTest
                         Assert.AreEqual(11, (Double)title.FontSize, Common.HighPrecisionDelta);
                         Assert.AreEqual(FontStyles.Normal, title.FontStyle);
                         Assert.AreEqual(FontWeights.Bold, title.FontWeight);
-                        Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), title.FontColor);
+                        Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), title.InternalFontColor);
                         Assert.AreEqual(HorizontalAlignment.Center, title.HorizontalAlignment);
                         Assert.AreEqual(VerticalAlignment.Top, title.VerticalAlignment);
                         Assert.AreEqual(new Thickness(5), title.Padding);
                         Assert.AreEqual(new Thickness(2), title.Margin);
                         Assert.AreEqual(new CornerRadius(1, 1, 1, 1), title.CornerRadius);
                         Assert.AreEqual("Title", title.ToolTipText);
-                        Assert.AreEqual(0.5, title.Opacity, Common.HighPrecisionDelta);
+                        Assert.AreEqual(0.5, title.InternalOpacity, Common.HighPrecisionDelta);
                         Assert.AreEqual(Cursors.Hand, title.Cursor);
                     }
                 });
@@ -722,7 +722,7 @@ namespace SLVisifireChartsTest
 
             Title title = TitleToTest;
             title.FontSize = 16;
-            title.FontColor = new SolidColorBrush(Colors.LightGray);
+            title.InternalFontColor = new SolidColorBrush(Colors.LightGray);
             title.HorizontalAlignment = HorizontalAlignment.Center;
             chart.Titles.Add(title);
 

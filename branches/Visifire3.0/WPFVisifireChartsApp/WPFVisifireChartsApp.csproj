@@ -74,16 +74,24 @@
     </Reference>
     <BlendEmbeddedFont Include="Fonts\segoeui.ttf">
       <IsSystemFont>True</IsSystemFont>
-    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
+      <All>True</All>
+      <AutoFill>True</AutoFill>
+    </BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuib.ttf">
       <IsSystemFont>True</IsSystemFont>
-    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
+      <All>True</All>
+      <AutoFill>True</AutoFill>
+    </BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuii.ttf">
       <IsSystemFont>True</IsSystemFont>
-    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
+      <All>True</All>
+      <AutoFill>True</AutoFill>
+    </BlendEmbeddedFont>
     <BlendEmbeddedFont Include="Fonts\segoeuiz.ttf">
       <IsSystemFont>True</IsSystemFont>
-    <All>True</All><AutoFill>True</AutoFill></BlendEmbeddedFont>
+      <All>True</All>
+      <AutoFill>True</AutoFill>
+    </BlendEmbeddedFont>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
