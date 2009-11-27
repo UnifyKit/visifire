@@ -3076,6 +3076,12 @@ namespace Visifire.Charts
 #else
                             this.ExplodeAnimation.Begin();
 #endif
+                            if (!(Chart as Chart).ChartArea._isFirstTimeRender && Parent != null && (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut))
+#if WPF
+                                this.ExplodeAnimation.SkipToFill(Chart._rootElement);
+#else
+                                this.ExplodeAnimation.SkipToFill();
+#endif
                         }
                         catch
                         {
