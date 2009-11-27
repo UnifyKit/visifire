@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="SLVisifireApp.Pie2D2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" BorderBrush="Gray">
+            
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Pie Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Series>
+            <vc:DataSeries RenderAs="Pie" ShowInLegend="False" Bevel="True" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint AxisXLabel="US" YValue="5509" Exploded="True"/>
+                    <vc:DataPoint AxisXLabel="Uk" YValue="7047" Exploded="True"/>
+                    <vc:DataPoint AxisXLabel="China" YValue="10047" Exploded="True"/>
+                    <vc:DataPoint AxisXLabel="Russia" YValue="8508" Exploded="True"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>

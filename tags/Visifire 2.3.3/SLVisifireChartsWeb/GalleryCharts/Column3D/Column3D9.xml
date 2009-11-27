@@ -1,0 +1,28 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme3" ColorSet="Visifire2" View3D="True" Width="500" Height="300">
+  <vc:Chart.Background>
+    <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1" >
+      <GradientStop Color="#000000" Offset="0"/>
+      <GradientStop Color="#5d5d5d" Offset="0.6"/>
+      <GradientStop Color="#ffffff" Offset="1"/>
+    </LinearGradientBrush>
+  </vc:Chart.Background>
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire 3D Column Chart" FontColor="Black"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="3000"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="5500"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="7500"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="6600"/>
+        <vc:DataPoint AxisXLabel="May" YValue="5520"/>
+        <vc:DataPoint AxisXLabel="June" YValue="4200"/>
+        <vc:DataPoint AxisXLabel="July" YValue="8000"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
