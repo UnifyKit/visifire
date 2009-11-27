@@ -77,7 +77,7 @@ namespace Visifire.Charts
         }
 
 
-        public void ReCreate(VisifireElement element, VcProperties property, object newValue)
+        public void ReCreate(VisifireElement element, VcProperties property, object oldValue, object newValue)
         {   
             Type elementType = element.GetType();
             
@@ -98,7 +98,7 @@ namespace Visifire.Charts
                 SetDataPointsNameAndValidateDataPointXValueType();
 
             // Calculate all the required details
-            this.Calculate(element, property, newValue);
+            this.Calculate(element, property, oldValue, newValue);
         }
 
         #endregion
@@ -277,7 +277,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Calculate PlotDetails
         /// </summary>
-        private void Calculate(VisifireElement element, VcProperties property, object newValue)
+        private void Calculate(VisifireElement element, VcProperties property, object oldValue, object newValue)
         {
             Type elementType = element.GetType();
 
@@ -321,18 +321,18 @@ namespace Visifire.Charts
                 CreateListOfDataPoints();
 
             // Identifies the various plot groups and populates the list
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
+            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.None) || (elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
                 || (elementType.Equals(typeof(DataSeries)) && (property == VcProperties.RenderAs || property == VcProperties.Enabled))
                 )
                 PopulatePlotGroups();
 
             else if (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
             {
-                (element as DataSeries).PlotGroup.Update(property, newValue);
+                (element as DataSeries).PlotGroup.Update(property, oldValue, newValue);
             }
             else if (elementType.Equals(typeof(DataPoint)) && (property == VcProperties.XValue || property == VcProperties.YValue || property == VcProperties.YValues))
             {
-                (element as DataPoint).Parent.PlotGroup.Update(property, newValue);
+                (element as DataPoint).Parent.PlotGroup.Update(property, oldValue, newValue);
             }
             
             if(elementType.Equals(typeof(Chart)) && property == VcProperties.TrendLines)
@@ -1430,7 +1430,7 @@ namespace Visifire.Charts
 
             // refresh or update the PlotGroup details
             //plotGroupEntry.Update(ref listOfDataPointsFromAllSeries, VcProperties.None, null);
-            plotGroupEntry.Update(VcProperties.None, null);
+            plotGroupEntry.Update(VcProperties.None, null, null);
 
             // Add the PlotGroup the PlotGroups
             PlotGroups.Add(plotGroupEntry);

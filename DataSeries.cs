@@ -214,7 +214,7 @@ namespace Visifire.Charts
            ("PriceDownColor",
            typeof(Brush),
            typeof(DataSeries),
-           new PropertyMetadata(OnPriceDownColorPropertyChanged));
+           new PropertyMetadata(new SolidColorBrush(System.Windows.Media.Color.FromArgb((byte)255, (byte)221, (byte)0, (byte)0)), OnPriceDownColorPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.LightingEnabled dependency property.
@@ -226,7 +226,7 @@ namespace Visifire.Charts
             ("LightingEnabled",
             typeof(Nullable<Boolean>),
             typeof(DataSeries),
-            new PropertyMetadata(OnLightingEnabledPropertyChanged));
+            new PropertyMetadata(true, OnLightingEnabledPropertyChanged));
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.ShadowEnabled dependency property.
@@ -274,7 +274,7 @@ namespace Visifire.Charts
             ("Bevel",
             typeof(Boolean),
             typeof(DataSeries),
-            new PropertyMetadata(OnBevelPropertyChanged));
+            new PropertyMetadata(true, OnBevelPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.ColorSet dependency property.
@@ -1980,6 +1980,8 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal void PartialUpdateOfColorProperty(Brush value)
         {
+            Brush newValue = Color;
+
             if (RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
             {
                 if (Faces != null && Faces.Parts != null)
@@ -1987,8 +1989,8 @@ namespace Visifire.Charts
 
                     if ((Chart as Chart).View3D)
                     {
-                        Brush sideBrush = (Boolean)LightingEnabled ? Graphics.GetRightFaceBrush((Brush)value) : (Brush)value;
-                        Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)value) : (Brush)value;
+                        Brush sideBrush = (Boolean)LightingEnabled ? Graphics.GetRightFaceBrush((Brush)newValue) : (Brush)newValue;
+                        Brush topBrush = (Boolean)LightingEnabled ? Graphics.GetTopFaceBrush((Brush)newValue) : (Brush)newValue;
 
                         foreach (FrameworkElement fe in Faces.Parts)
                         {
@@ -1997,7 +1999,7 @@ namespace Visifire.Charts
                             if (ed != null)
                             {
                                 if (ed.VisualElementName == "AreaBase")
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)newValue) : (Brush)newValue;
                                 else if (ed.VisualElementName == "Side")
                                     (fe as Shape).Fill = sideBrush;
                                 else if (ed.VisualElementName == "Top")
@@ -2015,24 +2017,24 @@ namespace Visifire.Charts
                             {
                                 if (ed.VisualElementName == "AreaBase")
                                 {
-                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", null) : (Brush)value;
+                                    (fe as Shape).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
                                 }
                                 else if (ed.VisualElementName == "Bevel")
                                 {
-                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)value);
+                                    (fe as Shape).Fill = Graphics.GetBevelTopBrush((Brush)newValue);
                                 }
                             }
                         }
                     }
 
                     foreach (DataPoint dp in InternalDataPoints)
-                        dp.PartialUpdateOfColorProperty();
+                        dp.PartialUpdateOfColorProperty(dp.Color);
                 }
             }
             else
             {
                 foreach (DataPoint dp in InternalDataPoints)
-                    dp.PartialUpdateOfColorProperty();
+                    dp.PartialUpdateOfColorProperty(dp.Color);
             }
 
             UpdateLegendMarker();
@@ -2061,7 +2063,7 @@ namespace Visifire.Charts
             if (!IsNotificationEnable)
                 return;
 
-            if (ValidatePartialUpdate( RenderAs, property))
+            if (ValidatePartialUpdate(RenderAs, property))
             {
                 if (NonPartialUpdateChartTypes(RenderAs))
                 {   
@@ -2108,10 +2110,10 @@ namespace Visifire.Charts
                     {
                         RenderHelper.UpdateVisualObject(RenderAs, this, VcProperties.Color, newValue, renderAxis);
                     }
-                                        
+                    
                     foreach (DataPoint dp in InternalDataPoints)
                     {
-                        RenderHelper.UpdateVisualObject(RenderAs, dp, VcProperties.Color, dp.Color, renderAxis);
+                        RenderHelper.UpdateVisualObject(RenderAs, dp, VcProperties.Color, newValue, renderAxis);
                         
                         if (RenderAs != RenderAs.CandleStick)
                             DataPoint.UpdateLegendMarker(dp, (Brush)newValue);
@@ -2151,7 +2153,7 @@ namespace Visifire.Charts
                     Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
                     Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, true, true, false, AxisRepresentations.AxisX, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
 
                     Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
                     Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
@@ -2172,7 +2174,7 @@ namespace Visifire.Charts
                     }
 
                     // Render Axis if required
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis, axisRepresentation, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
 
                     // Return
                     if (renderAxis)
@@ -2203,7 +2205,7 @@ namespace Visifire.Charts
                     property == VcProperties.AxisXType || property == VcProperties.Enabled)
                 {
                     renderAxis = true;
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, true, true, true, AxisRepresentations.AxisX, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, true, AxisRepresentations.AxisX, true);
                     RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
                 }
                 else
@@ -2563,8 +2565,11 @@ namespace Visifire.Charts
         private static void OnPriceDownColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
+
+            if(dataSeries.RenderAs == RenderAs.CandleStick && !e.NewValue.ToString().Equals(e.OldValue.ToString()))
+                dataSeries.FirePropertyChanged(VcProperties.PriceDownColor);
             //dataSeries.UpdateVisual(VcProperties.PriceDownColor, e.NewValue);
-            dataSeries.FirePropertyChanged(VcProperties.PriceDownColor);
+            
             //DataSeries dataSeries = d as DataSeries;
             //dataSeries.UpdateVisual("PriceDownColor", e.NewValue);
         }
@@ -3228,13 +3233,30 @@ namespace Visifire.Charts
 
             // Validate whether partial is allowed
             if (ValidatePartialUpdate(RenderAs, VcProperties.DataPoints))
-                UpdateVisual(VcProperties.DataPoints, e.NewItems);
+                DataPointRenderManager(VcProperties.DataPoints, e.NewItems);
+                //UpdateVisual(VcProperties.DataPoints, e.NewItems);
 
             //else
             //    FirePropertyChanged(VcProperties.DataPoints");
 
         }
 
+        private void DataPointRenderManager(VcProperties property, object newValue)
+        {
+            Chart chart = Chart as Chart;
+
+            if (!chart.PARTIAL_DS_RENDER_LOCK)
+            {
+                chart.PARTIAL_DS_RENDER_LOCK = true;
+                chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(UpdateVisual), new Object[] { VcProperties.DataPoints, newValue });
+                chart.Dispatcher.BeginInvoke(new Action<Chart>(ActivatePartialUpdateLock), new Object[] { chart });
+            }
+        }
+
+        private void ActivatePartialUpdateLock(Chart chart)
+        {
+            chart.PARTIAL_DS_RENDER_LOCK = false;
+        }
 
         //private static void UpdateSeries(DataSeries dataSeries, DependencyProperty property, Object neWValue)
         //{

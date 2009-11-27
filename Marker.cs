@@ -95,14 +95,19 @@ namespace Visifire.Commons
 
         public void HideLabel()
         {
-            TextBackgroundCanvas.Background = Graphics.TRANSPARENT_BRUSH;
-            TextBlock.Foreground = Graphics.TRANSPARENT_BRUSH;
+            if (TextBackgroundCanvas != null)
+                TextBackgroundCanvas.Background = Graphics.TRANSPARENT_BRUSH;
+
+            if (TextBlock != null)
+                TextBlock.Foreground = Graphics.TRANSPARENT_BRUSH;
         }
 
         public void ShowLabel()
         {   
-            TextBackgroundCanvas.Background = TextBackground;
-            TextBlock.Foreground = FontColor;
+            if(TextBackgroundCanvas != null)
+                TextBackgroundCanvas.Background = TextBackground;
+            if (TextBlock != null)
+                TextBlock.Foreground = FontColor;
         }
 
         /// <summary>

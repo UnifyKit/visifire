@@ -1944,6 +1944,7 @@ namespace Visifire.Charts
                 else
                 {
                     InternalRows = rows;
+                    ParentAxis.SkipOffset = 0;
                 }
             }
             else
@@ -1988,30 +1989,35 @@ namespace Visifire.Charts
                 textBlock.Text = label.Text;
 #if WPF 
                 Size textBlockSize = Graphics.CalculateVisualSize(textBlock);
-                labelHeights.Add(textBlockSize.Height);
+                //labelHeights.Add(textBlockSize.Height);
+                maxHeight = Math.Max(maxHeight, textBlockSize.Height + 2);
 #else
-                labelHeights.Add(textBlock.ActualHeight);
+                //labelHeights.Add(textBlock.ActualHeight);
+                maxHeight = Math.Max(maxHeight, textBlock.ActualHeight + 2);
 #endif
+
             }
 
-            for (Int32 i = 0; i < labelHeights.Count - 1; i++)
-            {
-                maxHeight = Math.Max(maxHeight, (labelHeights[i] + labelHeights[i + 1]) / 2 + 2);
-            }
+            //for (Int32 i = 0; i < labelHeights.Count - 1; i++)
+            //{
+            //    maxHeight = Math.Max(maxHeight, labelHeights[i]);//(labelHeights[i] + labelHeights[i + 1]) / 2 + 2
+            //}
+
+            Double skipInterval = 0;
 
             while (overlap)
             {
-                pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + skipOffset + Minimum);
-#if WPF
+                pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + (skipInterval) + Minimum);
+
                 if (pixelInterval >= maxHeight)
-#else
-                if (pixelInterval >= maxHeight)
-#endif
                 {
                     overlap = false;
                 }
                 else
+                {
                     skipOffset++;
+                    skipInterval = skipInterval + interval;
+                }
             }
 
             return skipOffset;

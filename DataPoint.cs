@@ -1642,7 +1642,7 @@ namespace Visifire.Charts
                 if (GetValue(MarkerColorProperty) == null && _parent != null)
                 {
                     if (_parent.MarkerColor == null)
-                        return new SolidColorBrush(Colors.White);
+                        return Graphics.WHITE_BRUSH;
                     else
                         return _parent.MarkerColor;
                 }
@@ -1926,14 +1926,15 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal void PartialUpdateOfColorProperty()
+        internal void PartialUpdateOfColorProperty(Brush newValue)
         {
              #region Color
 
-                    Brush value = Color;
 
                     if (Faces != null && Faces.Parts != null)
-                    {   
+                    {
+                        Brush value = (newValue != null) ? newValue : Color;
+
                         switch (Parent.RenderAs)
                         {   
                             case RenderAs.Pie:
@@ -1978,7 +1979,7 @@ namespace Visifire.Charts
                         }
                     }
 
-                    UpdateMarkerAndLegend(this, value);
+                    UpdateMarkerAndLegend(this, newValue);
 
                     #endregion
         }
@@ -1988,7 +1989,8 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal void UpdateVisual(VcProperties property, object newValue, Boolean recursive)
+        /// <returns>Is need to update all DataPoints on axis change</returns>
+        internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
         {   
             //if (Parent == null || !ValidatePartialUpdate(Parent.RenderAs, property))
             //    return;
@@ -1996,153 +1998,167 @@ namespace Visifire.Charts
             if (!recursive && NonPartialUpdateChartTypes(Parent.RenderAs))
             {   
                 if (property == VcProperties.Color)
-                    PartialUpdateOfColorProperty();
+                    PartialUpdateOfColorProperty(newValue as Brush);
                 else
                     FirePropertyChanged(property);
 
-                return;
+                return false;
             }
 
             Chart chart = Chart as Chart;
 
-            if (!chart.PARTIAL_RENDER_LOCK || recursive)
-            {   
-                if(Parent.RenderAs != RenderAs.Line)
-                if (!recursive && property == VcProperties.YValue && (Parent.DataPoints.Count > 1000 || !chart.AnimatedUpdate))
-                {   
-                    chart.PARTIAL_RENDER_LOCK = true;
-                    chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
-                    chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
-                    chart._datapoint2UpdatePartially.Add(this, property);
-                }
-                else
-                    chart.PARTIAL_RENDER_LOCK = false;
-
-                Boolean updateInternalLists = false;
+            if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
+            {
+                Boolean updateAllDpsOnAxisChange = false;
                 Boolean renderAxis = false;
-                Boolean calculatePlotDetails = false;
                 PlotGroup plotGroup = Parent.PlotGroup;
                 AxisRepresentations axisRepresentation = AxisRepresentations.AxisX;
 
-                if (Parent.RenderAs == RenderAs.Area)
-                {
-                    if (property == VcProperties.BorderThickness || property == VcProperties.BorderColor || property == VcProperties.BorderStyle)
-                        return;
-                }
-
-                if (property == VcProperties.YValue || property == VcProperties.YValues)
-                {
-                    Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
-                    Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
-
-                    chart.PlotDetails.ReCreate(this, property, newValue);
-
-                    Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
-                    Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
-
-                    System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
-                    System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
-
-                    if (plotGroup.AxisY.AxisMinimum == null && plotGroup.AxisY.AxisMaximum == null)
-                    {
-                        if (NewAxisMaxY != OldAxisMaxY || (Double)NewAxisMinY != OldAxisMinY)
-                        {
-                            renderAxis = true;
-                            axisRepresentation = AxisRepresentations.AxisY;
-                        }
+                /* Line and bubble are first while updating DataPoints one by one. So to take advantage of updating DataPoints one by one
+                 conditions are written below */
+                if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false))
+                {   
+                    if (!recursive && property == VcProperties.YValue && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !chart.AnimatedUpdate))
+                    {   
+                        chart.PARTIAL_DP_RENDER_LOCK = true;
+                        chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
+                        chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
+                        chart._datapoint2UpdatePartially.Add(this, property);
                     }
+                    else
+                        chart.PARTIAL_DP_RENDER_LOCK = false;
                 }
-                else if (property == VcProperties.XValue)
+
+                if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
                 {
-                    Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
-                    Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
-                    Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
-                    Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
-
-                    chart.PlotDetails.ReCreate(this, property, newValue);
-
-                    Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
-                    Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
-                    Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
-                    Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
-
-                    System.Diagnostics.Debug.WriteLine("OldAxisMaxX = " + OldAxisMaxX.ToString() + " OldAxisMinX=" + OldAxisMinX.ToString());
-                    System.Diagnostics.Debug.WriteLine("NewAxisMaxX = " + NewAxisMaxX.ToString() + " NewAxisMinX=" + NewAxisMinX.ToString());
-
-                    if (plotGroup.AxisX.AxisMinimum == null && plotGroup.AxisX.AxisMaximum == null)
+                    if (Parent.RenderAs == RenderAs.Area)
                     {
-                        if (NewAxisMaxX != OldAxisMaxX || (Double)NewAxisMinX != OldAxisMinX)
-                        {
-                            renderAxis = true;
-                            axisRepresentation = AxisRepresentations.AxisX;
-                        }
+                        if (property == VcProperties.BorderThickness || property == VcProperties.BorderColor || property == VcProperties.BorderStyle)
+                            return false;
                     }
 
-                    if (plotGroup.AxisY.AxisMinimum == null && plotGroup.AxisY.AxisMaximum == null)
+                    if (property == VcProperties.YValue || property == VcProperties.YValues)
                     {
-                        if (NewAxisMaxY != OldAxisMaxY || (Double)NewAxisMinY != OldAxisMinY)
+                        Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        Object oldValue = (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock) ? (Object)_oldYValues : _oldYValue;
+
+                        chart.PlotDetails.ReCreate(this, property, oldValue, newValue);
+
+                        Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                        System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+
+                        if (plotGroup.AxisY.AxisMinimum == null && plotGroup.AxisY.AxisMaximum == null)
                         {
-                            renderAxis = true;
-                            axisRepresentation = AxisRepresentations.AxisY;
+                            if (NewAxisMaxY != OldAxisMaxY || (Double)NewAxisMinY != OldAxisMinY)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisY;
+                            }
                         }
-                    }
-                }
-
-                // renderAxis = false;
-                Double oldZeroBaseLineY = 0, oldZeroBaseLineX = 0;
-                if (renderAxis == true)
-                {
-                    if (property == VcProperties.YValue)
-                        oldZeroBaseLineY = plotGroup.AxisY._zeroBaseLinePosition;
-                    else if (property == VcProperties.XValue)
-                        oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePosition;
-
-                    Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisX);
-                    Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisY);
-                    Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisX2);
-                    Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisY2);
-                }
-
-                chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, updateInternalLists, calculatePlotDetails, renderAxis, axisRepresentation, true);
-
-                Boolean animateOnAxisChange = false;
-                if (renderAxis == true)
-                {
-                    if (property == VcProperties.YValue)
-                    {
-                        if (oldZeroBaseLineY == plotGroup.AxisY._zeroBaseLinePosition)
-                            renderAxis = false;
                     }
                     else if (property == VcProperties.XValue)
                     {
-                        if (oldZeroBaseLineX == plotGroup.AxisX._zeroBaseLinePosition)
-                            renderAxis = false;
+                        Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                        Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                        Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        chart.PlotDetails.ReCreate(this, property, null, newValue);
+
+                        Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                        Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                        Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        System.Diagnostics.Debug.WriteLine("OldAxisMaxX = " + OldAxisMaxX.ToString() + " OldAxisMinX=" + OldAxisMinX.ToString());
+                        System.Diagnostics.Debug.WriteLine("NewAxisMaxX = " + NewAxisMaxX.ToString() + " NewAxisMinX=" + NewAxisMinX.ToString());
+
+                        if (plotGroup.AxisX.AxisMinimum == null && plotGroup.AxisX.AxisMaximum == null)
+                        {
+                            if (NewAxisMaxX != OldAxisMaxX || (Double)NewAxisMinX != OldAxisMinX)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisX;
+                            }
+                        }
+
+                        if (plotGroup.AxisY.AxisMinimum == null && plotGroup.AxisY.AxisMaximum == null)
+                        {
+                            if (NewAxisMaxY != OldAxisMaxY || (Double)NewAxisMinY != OldAxisMinY)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisY;
+                            }
+                        }
                     }
 
-                    if (renderAxis == false)
-                        animateOnAxisChange = true;
+                    // renderAxis = false;
+                    Double oldZeroBaseLineY = 0, oldZeroBaseLineX = 0;
+                    if (renderAxis == true)
+                    {
+                        if (property == VcProperties.YValue)
+                            oldZeroBaseLineY = plotGroup.AxisY._zeroBaseLinePosition;
+                        else if (property == VcProperties.XValue)
+                            oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePosition;
+
+                        Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisX);
+                        Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisY);
+                        Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisX2);
+                        Axis.SaveOldValueOfAxisRange(chart.ChartArea.AxisY2);
+                    }
+
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, null, false, false, renderAxis, axisRepresentation, true);
+                    
+                    if (renderAxis == true)
+                    {
+                        if (property == VcProperties.YValue)
+                        {
+                            if (oldZeroBaseLineY == plotGroup.AxisY._zeroBaseLinePosition)
+                                renderAxis = false;
+                        }
+                        else if (property == VcProperties.XValue)
+                        {
+                            if (oldZeroBaseLineX == plotGroup.AxisX._zeroBaseLinePosition)
+                                renderAxis = false;
+                        }
+
+                        if (renderAxis == false)
+                            updateAllDpsOnAxisChange = true;
+                    }
                 }
 
-                if (chart.PARTIAL_RENDER_LOCK)
-                {
+                if (chart.PARTIAL_DP_RENDER_LOCK)
+                {   
                     chart.Dispatcher.BeginInvoke(new Action<Chart, VcProperties, object, Boolean>(RenderHelper.UpdateVisualObject), new object[] { chart, property, newValue , true });
                     chart.Dispatcher.BeginInvoke(new Action(ActivePartialUpdateRenderLock));
 
                     // RenderHelper.UpdateVisualObject(chart, property, newValue);
                 }
-                else if (animateOnAxisChange)
+                else if (updateAllDpsOnAxisChange)
                 {
-                    foreach (DataSeries ds in chart.InternalSeries)
+                    if (recursive && (!chart.AnimatedUpdate || chart.PlotDetails.ListOfAllDataPoints.Count > 1000))
                     {
-                        foreach (DataPoint dp in ds.InternalDataPoints)
-                        {
-                            RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, renderAxis);
+                        return true;
+                    }
+                    else
+                    {   
+                        foreach (DataSeries ds in chart.InternalSeries)
+                        {   
+                            foreach (DataPoint dp in ds.InternalDataPoints)
+                            {   
+                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, renderAxis);
+                            }
                         }
                     }
                 }
                 else
                     RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
-
+                
                 if (property == VcProperties.Color)
                     UpdateLegendMarker(this, (Brush)newValue);
 
@@ -2151,11 +2167,13 @@ namespace Visifire.Charts
             else
             {
                 if (!chart._datapoint2UpdatePartially.Keys.Contains(this))
-                {
+                {   
                     chart._datapoint2UpdatePartially.Add(this, property);
                     chart.PARTIAL_RENDER_BLOCKD_COUNT++;
                 }
             }
+
+            return false;
         }
         
         #endregion
@@ -2163,7 +2181,7 @@ namespace Visifire.Charts
 
         public void ActivePartialUpdateRenderLock()
         {
-            (Chart as Chart).PARTIAL_RENDER_LOCK = false;
+            (Chart as Chart).PARTIAL_DP_RENDER_LOCK = false;
             //Visifire.Profiler.Profiler.End("Render");
             //Visifire.Profiler.Profiler.Report("Render", true, false);
         }
@@ -2458,7 +2476,7 @@ namespace Visifire.Charts
         {
             DataPoint dataPoint = d as DataPoint;
             dataPoint.InvokeUpdateVisual(VcProperties.Opacity, e.NewValue);
-            dataPoint.FirePropertyChanged(VcProperties.Opacity);
+            //dataPoint.FirePropertyChanged(VcProperties.Opacity);
         }
 
         /// <summary>
@@ -2493,10 +2511,9 @@ namespace Visifire.Charts
         private static void OnYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
+            dataPoint._oldYValues = (Double[])e.OldValue;
 
             dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
-
-            //dataPoint.FirePropertyChanged(VcProperties.YValues);
         }
 
         /// <summary>
@@ -3076,11 +3093,11 @@ namespace Visifire.Charts
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(true, true);
 
-                if(InteractivityHelper.SELECTED_MARKER_BORDER_COLOR == null)
-                    InteractivityHelper.SELECTED_MARKER_BORDER_COLOR = new SolidColorBrush(Colors.Red);
+                if (InteractivityHelper.SELECTED_MARKER_BORDER_COLOR == null)
+                    InteractivityHelper.SELECTED_MARKER_BORDER_COLOR = Graphics.RED_BRUSH;
 
                 if (InteractivityHelper.SELECTED_MARKER_FILL_COLOR == null)
-                    InteractivityHelper.SELECTED_MARKER_FILL_COLOR = new SolidColorBrush(Colors.Orange);
+                    InteractivityHelper.SELECTED_MARKER_FILL_COLOR = Graphics.ORANGE_BRUSH;
 
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
@@ -3089,6 +3106,7 @@ namespace Visifire.Charts
                     LineChart.SelectMovingMarker(this);
             }
         }
+
         /// <summary>
         /// Deselect a DataPoint visually
         /// </summary>
@@ -3342,6 +3360,13 @@ namespace Visifire.Charts
                             this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                             this.ExplodeAnimation.Begin();
+                            
+#endif
+                            if (!(Chart as Chart).ChartArea._isFirstTimeRender && Parent != null && (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut))
+#if WPF
+                                this.ExplodeAnimation.SkipToFill(Chart._rootElement);
+#else
+                                this.ExplodeAnimation.SkipToFill();
 #endif
                         }
                         catch
@@ -3432,7 +3457,7 @@ namespace Visifire.Charts
             {   
                 if (dataPoint.Parent.RenderAs == RenderAs.Point)
                 {
-                    marker.MarkerFillColor = (Brush)colorValue;
+                    marker.MarkerFillColor = dataPoint.Color; // (Brush)colorValue;
 
                     if (marker.MarkerType != MarkerTypes.Cross)
                     {
@@ -3440,28 +3465,30 @@ namespace Visifire.Charts
                             marker.BorderColor = dataPoint.BorderColor;
                     }
                     else
-                        marker.BorderColor = (Brush)colorValue;
+                        marker.BorderColor = dataPoint.Color; // (Brush)colorValue;(Brush)colorValue;
 
                     // Marker.UpdateMarker();
                 }
                 else
-                    marker.BorderColor = (Brush)colorValue;
+                    marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((colorValue != null) ? colorValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor; // (Brush)colorValue;
 
                 if (!dataPoint.Selected)
                     marker.UpdateMarker();
             }
 
-            UpdateLegendMarker(dataPoint, (Brush)colorValue);
+            UpdateLegendMarker(dataPoint, colorValue as Brush);
         }
 
         internal static void UpdateLegendMarker(DataPoint dataPoint, Brush colorValue)
-        {   
+        {
+            Brush newValue = (colorValue != null) ? colorValue : dataPoint._internalColor;
+
             // Marker displaied in Marker
             Marker marker = dataPoint.LegendMarker;
 
             if (marker != null && marker.Visual != null)
             {
-                marker.BorderColor = (Brush)colorValue;
+                marker.BorderColor = (Brush)newValue;
                 RenderAs renderAs = dataPoint.Parent.RenderAs;
 
                 switch (renderAs)
@@ -3471,12 +3498,12 @@ namespace Visifire.Charts
                     case RenderAs.Stock:
 
                         if ((marker.Visual as Grid).Parent != null && (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
-                            (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)colorValue;
+                            (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)newValue;
 
                         break;
 
                     default:
-                        marker.MarkerFillColor = (Brush)colorValue;
+                        marker.MarkerFillColor = (Brush)newValue;
                         break;
                 }
 
@@ -3619,15 +3646,27 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea 
+            else if (Parent.RenderAs == RenderAs.StackedArea 
                 || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line)
             {
+                if (Parent.RenderAs != RenderAs.Line)
+                {
+                    if (Parent.Faces != null)
+                    {
+                        if (Object.GetType().Equals(typeof(DataPoint)))
+                        {
+                            foreach (FrameworkElement face in Parent.Faces.VisualComponents)
+                                AttachEvents2AreaVisual(Object, this, face);
+                        }
+                    }
+                }
+
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
             }
             else if (Faces != null)
             {
-                if (Parent.RenderAs == RenderAs.Bubble|| Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
+                if (Parent.RenderAs == RenderAs.Bubble || Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
                 {
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
@@ -3734,6 +3773,7 @@ namespace Visifire.Charts
         #region Data
 
         internal Double _oldYValue = 0;
+        internal Double[] _oldYValues;
 
         internal FrameworkElement _oldVisual;
         internal Point _oldMarkerPosition;
