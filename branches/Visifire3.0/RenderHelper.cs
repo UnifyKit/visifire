@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Visifire.Commons;
 using System.Linq;
+using System.Reflection;
 
 namespace Visifire.Charts
 {
@@ -148,19 +149,31 @@ namespace Visifire.Charts
         }
         
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue, Boolean partialUpdate)
-        {
-            if (partialUpdate && chart._datapoint2UpdatePartially.Count <= 200)
-            {
-                chart.PARTIAL_RENDER_LOCK = false;
+        {   
+            if (partialUpdate && chart._datapoint2UpdatePartially.Count <= 500)
+            {   
+                chart.PARTIAL_DP_RENDER_LOCK = false;
+                Boolean isNeed2UpdateAllSeries = false;
+
                 foreach(KeyValuePair<DataPoint, VcProperties>  dpInfo in chart._datapoint2UpdatePartially)
-                {
-                    dpInfo.Key.UpdateVisual(dpInfo.Value, null, true);
+                {   
+                    DataPoint dp = dpInfo.Key;
+
+                    PropertyInfo pInfo = dp.GetType().GetProperty(property.ToString());
+                    newValue = pInfo.GetValue(dp, null);
+
+                    isNeed2UpdateAllSeries = dpInfo.Key.UpdateVisual(dpInfo.Value, newValue, true);
+
+                    if (isNeed2UpdateAllSeries)
+                        break;
                 }
 
-                return;
-            }    
+                if (!isNeed2UpdateAllSeries)
+                    return;
+            }
 
-
+            chart.ChartArea.PrePartialUpdateConfiguration(chart, VcProperties.None, null, null, false, true, true, AxisRepresentations.AxisY, true);
+            
             //chart.ChartArea.RenderSeries();
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
 
@@ -217,17 +230,32 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.Point:
-                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
-                        //PointChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                        foreach (DataSeries ds in selectedDataSeries4Rendering)
+                        {
+                            foreach (DataPoint dp in ds.InternalDataPoints)
+                            {
+                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                            }
+                        }
 
-                        //renderedCanvas = PointChart.GetVisualObjectForPointChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                        // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+
                         break;
 
                     case RenderAs.Bubble:
-                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
-                        //BubbleChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                        foreach (DataSeries ds in selectedDataSeries4Rendering)
+                        {
+                            foreach (DataPoint dp in ds.InternalDataPoints)
+                            {
+                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                            }
+                        }
+
+                        // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+
+                        // BubbleChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
 
                         //renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
@@ -315,7 +343,7 @@ namespace Visifire.Charts
             }
 
             chart.ChartArea.AttachScrollEvents();
-            
+            Visifire.Charts.Chart.SelectDataPoints(chart);
             //AttachEventsToolTipHref2DataSeries();
         }
 

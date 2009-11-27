@@ -681,8 +681,8 @@ namespace Visifire.Charts
 
                 if (!(Boolean)dataPoint.MarkerEnabled)
                 {
-                    dataPoint.Marker.MarkerFillColor = new SolidColorBrush(Colors.Transparent);
-                    dataPoint.Marker.BorderColor = new SolidColorBrush(Colors.Transparent);
+                    dataPoint.Marker.MarkerFillColor = Graphics.TRANSPARENT_BRUSH;
+                    dataPoint.Marker.BorderColor = Graphics.TRANSPARENT_BRUSH;
                 }
 
                 Point markerPosition = new Point();
@@ -1053,8 +1053,10 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
-            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             dataPoint.SetCursor2DataPointVisualFaces();
         }
 
@@ -1172,7 +1174,7 @@ namespace Visifire.Charts
                     if(plotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         CreateColumnDataPointVisual(columnCanvas, labelCanvas, plotDetails, dataPoint, true, widthOfAcolumn, depth3d, animationEnabled);
                     else
-                        BarChart.CreateColumnDataPointVisual(dataPoint, labelCanvas, columnCanvas, true, widthOfAcolumn, depth3d, animationEnabled);
+                        BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnCanvas, true, widthOfAcolumn, depth3d, animationEnabled);
                 }
 
                 foreach (DataPoint dataPoint in negative)
@@ -1189,7 +1191,7 @@ namespace Visifire.Charts
                     if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         CreateColumnDataPointVisual(columnCanvas, labelCanvas, plotDetails, dataPoint, false, widthOfAcolumn, depth3d, animationEnabled);
                     else
-                        BarChart.CreateColumnDataPointVisual(dataPoint, labelCanvas, columnCanvas, false, widthOfAcolumn, depth3d, animationEnabled);
+                        BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnCanvas, false, widthOfAcolumn, depth3d, animationEnabled);
                 }
             }
 
@@ -1242,6 +1244,7 @@ namespace Visifire.Charts
 
         internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering)
         {
+            
             Boolean is3D = chart.View3D;
             ChartArea chartArea = chart.ChartArea;
             Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
@@ -1254,7 +1257,7 @@ namespace Visifire.Charts
 
             renderedChart.Width = chart.ChartArea.ChartVisualCanvas.Width;
             renderedChart.Height = chart.ChartArea.ChartVisualCanvas.Height;
-            
+
             renderedChart = chartArea.RenderSeriesFromList(renderedChart, selectedDataSeries4Rendering);
 
             foreach (DataSeries ds in selectedDataSeries4Rendering)
@@ -1373,7 +1376,9 @@ namespace Visifire.Charts
         }
 
         private static void Update2DAnd3DColumnColor(DataPoint dataPoint, Brush newValue)
-        {   
+        {
+            Brush colorNewValue = (newValue != null) ? newValue : dataPoint.Color;
+
             Faces faces = dataPoint.Faces;
 
             foreach (FrameworkElement fe in faces.Parts)
@@ -1383,34 +1388,34 @@ namespace Visifire.Charts
                 
                 switch((fe.Tag as ElementData).VisualElementName)
                 {
-                    case "ColumnBase": (fe as Rectangle).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(newValue, "Linear", null) : newValue);
+                    case "ColumnBase": (fe as Rectangle).Fill = ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(colorNewValue, "Linear", null) : colorNewValue);
                     break;
 
-                    case "FrontFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)newValue) : (Brush)newValue; 
+                    case "FrontFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue; 
                     break;
 
-                    case "TopFace":(fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)newValue):(Brush)newValue;
+                    case "TopFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
                     break;
 
-                    case "RightFace":(fe as Rectangle).Fill =(Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)newValue) : (Brush)newValue;
+                    case "RightFace": (fe as Rectangle).Fill = (Boolean)dataPoint.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)colorNewValue) : (Brush)colorNewValue;
                     break;
                 }
             }
 
             foreach(FrameworkElement fe in faces.BevelElements)
-            {
+            {   
                 switch((fe.Tag as ElementData).VisualElementName)
                 {   
                     case "TopBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelTopBrush(newValue);
+                        (fe as Shape).Fill = Graphics.GetBevelTopBrush(colorNewValue);
                         break;
 
                     case "LeftBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -70 : 0), newValue);
+                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -70 : 0), colorNewValue);
                         break;
 
                     case "RightBevel":
-                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -110 : 180), newValue);
+                        (fe as Shape).Fill = Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -110 : 180), colorNewValue);
                         break;
 
                     case "BottomBevel":
@@ -1420,7 +1425,7 @@ namespace Visifire.Charts
             }
 
             if (dataPoint.Marker != null && (Boolean)dataPoint.MarkerEnabled)
-                dataPoint.Marker.BorderColor = dataPoint.Color;
+                dataPoint.Marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((newValue != null) ? newValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor;
         }
 
         private static void CreateOrUpdateMarker(Chart chart, DataPoint dataPoint, Canvas labelCanvas, Canvas columnVisual)
@@ -1509,10 +1514,10 @@ namespace Visifire.Charts
                 case VcProperties.LabelBackground:
                     if (marker == null)
                         CreateOrUpdateMarker(chart, dataPoint, labelCanvas, columnVisual);
-                    else if((Boolean)dataPoint.LabelEnabled)
+                    else if ((Boolean)dataPoint.LabelEnabled)
                         marker.TextBackground = dataPoint.LabelBackground;
                     else
-                        marker.TextBackground = new SolidColorBrush(Colors.Transparent);
+                        marker.TextBackground = Graphics.TRANSPARENT_BRUSH;
                     break;
 
                 case VcProperties.LabelEnabled:              
@@ -1753,10 +1758,10 @@ namespace Visifire.Charts
                 //else
                 {
                     // Set parameters for zero plank
-                    RectangularChartShapeParams plankParms = new RectangularChartShapeParams();
-                    plankParms.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
-                    plankParms.Lighting = true;
-                    plankParms.Depth = depth3d;
+                    //RectangularChartShapeParams plankParms = new RectangularChartShapeParams();
+                    //plankParms.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
+                    //plankParms.Lighting = true;
+                    //plankParms.Depth = depth3d;
 
                     Brush frontBrush, topBrush, rightBrush;
                     ExtendedGraphics.GetBrushesForPlank(out frontBrush, out topBrush, out rightBrush);
@@ -1857,7 +1862,7 @@ namespace Visifire.Charts
                 CreateColumnDataPointVisual(columnCanvas, labelCanvas, chart.PlotDetails, dataPoint,
                 isPositive, oldVisual.Width, depth3d, false);
             else
-                BarChart.CreateColumnDataPointVisual(dataPoint, labelCanvas, columnCanvas, isPositive, oldVisual.Height, depth3d, false);
+                BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnCanvas, isPositive, oldVisual.Height, depth3d, false);
 
            // Visifire.Profiler.Profiler.Start("Remove");
             columnCanvas.Children.Remove(oldVisual);
@@ -2287,7 +2292,7 @@ namespace Visifire.Charts
             top.RenderTransform = skewTransTop;
 
             Rectangle right = ExtendedGraphics.Get2DRectangle(tagRef, Depth, height,
-                borderThickness,strokeDashArray,  borderBrush,
+                borderThickness, strokeDashArray,  borderBrush,
                 rightBrush, new CornerRadius(0), new CornerRadius(0));
 
             right.Tag = new ElementData() { VisualElementName = "RightFace", Element = tagRef };

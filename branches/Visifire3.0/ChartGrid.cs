@@ -229,7 +229,7 @@ namespace Visifire.Charts
        {
            get
            {
-               return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : new SolidColorBrush(Colors.Gray);
+               return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : Graphics.GRAY_BRUSH;
            }
            set
            {

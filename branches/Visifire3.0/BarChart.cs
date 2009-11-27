@@ -600,9 +600,9 @@ namespace Visifire.Charts
                 dataPoint.Marker = marker;
 
                 if (!(Boolean)dataPoint.MarkerEnabled)
-                {   
-                    marker.MarkerFillColor = new SolidColorBrush(Colors.Transparent);
-                    marker.BorderColor = new SolidColorBrush(Colors.Transparent);
+                {
+                    marker.MarkerFillColor = Graphics.TRANSPARENT_BRUSH;
+                    marker.BorderColor = Graphics.TRANSPARENT_BRUSH;
                 }
 
                 Point markerPosition = new Point();
@@ -636,7 +636,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal static void CreateColumnDataPointVisual(DataPoint dataPoint, Canvas labelCanvas, Canvas columnCanvas , Boolean isPositive, Double heightPerBar, Double depth3d, Boolean animationEnabled)
+        internal static void CreateBarDataPointVisual(DataPoint dataPoint, Canvas labelCanvas, Canvas columnCanvas , Boolean isPositive, Double heightPerBar, Double depth3d, Boolean animationEnabled)
         {
             Double xValue = dataPoint.InternalXValue;
             Double width = columnCanvas.Width, height = columnCanvas.Height;
@@ -726,15 +726,18 @@ namespace Visifire.Charts
 
                 // Apply animation to the bars 
                 dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, isPositive);
-
             }
 
             dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
-            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+
             dataPoint.SetCursor2DataPointVisualFaces();
         }
 
@@ -998,7 +1001,6 @@ namespace Visifire.Charts
 
                 // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                 dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, animationBeginTime, 0.5);
-
             }
 
             if (isPositive)
@@ -1010,283 +1012,15 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
-            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            // dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            // dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            
             dataPoint.SetCursor2DataPointVisualFaces();
         }
-
-        /// <summary>
-        /// Get visual object for StackedBar100 chart
-        /// </summary>
-        /// <param name="width">Width of the PlotArea</param>
-        /// <param name="height">Height of the PlotArea</param>
-        /// <param name="plotDetails">PlotDetails</param>
-        /// <param name="chart">Chart</param>
-        /// <param name="plankDepth">PlankDepth</param>
-        /// <param name="animationEnabled">Whether animation is enabled for chart</param>
-        /// <returns>StackedBar100 chart Canvas</returns>
-        internal static Canvas GetVisualObjectForStackedBar100Chart(Double width, Double height, PlotDetails plotDetails, Chart chart, Double plankDepth, Boolean animationEnabled)
-        {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
-
-            List<PlotGroup> plotGroupList = (from plots in plotDetails.PlotGroups where plots.RenderAs == RenderAs.StackedBar100 select plots).ToList();
-
-            Double numberOfDivisions = plotDetails.DrawingDivisionFactor;
-
-            Boolean plankDrawn = false;
-            Canvas visual = new Canvas() { Width = width, Height = height };
-            Canvas labelCanvas = new Canvas() { Width = width, Height = height };
-            Canvas columnCanvas = new Canvas() { Width = width, Height = height };
-
-            Double depth3d = plankDepth / plotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
-            Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[plotGroupList[0].DataSeriesList[0]] + 1);
-            visual.SetValue(Canvas.TopProperty, visualOffset);
-            visual.SetValue(Canvas.LeftProperty, -visualOffset);
-
-            List<DataSeries> seriesList = plotDetails.GetSeriesListByRenderAs(RenderAs.StackedBar100);
-            Dictionary<Axis, Dictionary<Axis, Int32>> seriesIndex = ColumnChart.GetSeriesIndex(seriesList);
-
-            foreach (PlotGroup plotGroup in plotGroupList)
-            {
-                if (!seriesIndex.ContainsKey(plotGroup.AxisY))
-                    continue;
-
-                Int32 drawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
-
-                Double minDiff = plotDetails.GetMinOfMinDifferencesForXValue(RenderAs.Bar, RenderAs.StackedBar, RenderAs.StackedBar100);
-
-                if (Double.IsPositiveInfinity(minDiff))
-                    minDiff = 0;
-
-                //minDiff = (minDiff < (Double)plotGroup.AxisX.InternalInterval) ? minDiff : (Double)plotGroup.AxisX.InternalInterval;
-
-                Double maxBarHeight = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum) * (1 - BAR_GAP_RATIO);
-                Double heightPerBar = maxBarHeight / numberOfDivisions;
-
-                if (minDiff == 0)
-                {
-                    heightPerBar = height * .5;
-                    maxBarHeight = heightPerBar;
-                    heightPerBar /= numberOfDivisions;
-                }
-                else
-                {
-                    heightPerBar = Graphics.ValueToPixelPosition(0, height, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, minDiff + (Double)plotGroup.AxisX.InternalAxisMinimum);
-                    heightPerBar *= (1 - BAR_GAP_RATIO);
-                    maxBarHeight = heightPerBar;
-                    heightPerBar /= numberOfDivisions;
-                }
-
-                if (!Double.IsNaN(chart.DataPointWidth))
-                {
-                    if (chart.DataPointWidth >= 0)
-                    {
-                        heightPerBar = maxBarHeight = chart.DataPointWidth / 100 * chart.PlotArea.Height;
-                        maxBarHeight *= numberOfDivisions;
-                    }
-                }
-
-                List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
-
-                Double limitingYValue = 0;
-                if (plotGroup.AxisY.InternalAxisMinimum > 0)
-                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
-                if (plotGroup.AxisY.InternalAxisMaximum < 0)
-                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-
-                foreach (Double xValue in xValuesList)
-                {
-                    RectangularChartShapeParams barParams = new RectangularChartShapeParams();
-                    barParams.ShadowOffset = 5;
-                    barParams.Depth = depth3d;
-                    barParams.IsStacked = true;
-
-                    Double absoluteSum = plotGroup.XWiseStackedDataList[xValue].AbsoluteYValueSum;
-
-                    if (Double.IsNaN(absoluteSum) || absoluteSum <= 0)
-                        absoluteSum = 1;
-
-                    Double top = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * heightPerBar - (maxBarHeight / 2);
-                    Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-
-                    Double finalHeight = CalculateHeightOfEachColumn(ref top, heightPerBar, height);
-
-                    if (finalHeight < 0)
-                        continue;
-
-                    Double right;
-                    Double barWidth;
-                    Double prevSum = 0;
-                    Double percentYValue;
-
-                    // Plot positive values
-                    foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Positive)
-                    {
-                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
-
-                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
-                            continue;
-
-                        ColumnChart.SetColumnParms(ref barParams, ref chart, dataPoint, true);
-
-                        barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Positive.Last());
-                        if (barParams.IsTopOfStack)
-                        {
-                            barParams.XRadius = new CornerRadius(0, dataPoint.RadiusX.Value.TopRight, dataPoint.RadiusX.Value.BottomRight, 0);
-                            barParams.YRadius = new CornerRadius(0, dataPoint.RadiusY.Value.TopRight, dataPoint.RadiusY.Value.BottomRight, 0);
-                        }
-
-                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
-                        right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
-                        barWidth = Math.Abs(right - left);
-
-                        prevSum += percentYValue;
-
-                        barParams.Size = new Size(barWidth, finalHeight);
-
-                        Faces bar;
-                        Panel barVisual = null;
-
-                        if (chart.View3D)
-                        {
-                            bar = Get3DBar(barParams);
-                            barVisual = bar.Visual as Panel;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
-                        }
-                        else
-                        {
-                            bar = Get2DBar(barParams);
-                            barVisual = bar.Visual as Panel;
-                        }
-
-                        dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
-
-                        barVisual.SetValue(Canvas.LeftProperty, left);
-                        barVisual.SetValue(Canvas.TopProperty, top);
-
-                        columnCanvas.Children.Add(barVisual);
-                        //labelCanvas.Children.Add(GetMarker(chart, barParams, dataPoint, left, top));
-
-                        // Apply animation
-                        if (animationEnabled)
-                        {
-                            if (dataPoint.Parent.Storyboard == null)
-                                dataPoint.Parent.Storyboard = new Storyboard();
-
-                            currentDataSeries = dataPoint.Parent;
-
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
-                            dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
-
-                            // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, currentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
-                        }
-
-                        left = right;
-                    }
-
-                    prevSum = 0;
-                    right = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-
-                    // Plot negative values
-                    foreach (DataPoint dataPoint in plotGroup.XWiseStackedDataList[xValue].Negative)
-                    {
-                        dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
-
-                        if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
-                            continue;
-
-                        ColumnChart.SetColumnParms(ref barParams, ref chart, dataPoint, false);
-
-                        barParams.IsTopOfStack = (dataPoint == plotGroup.XWiseStackedDataList[xValue].Negative.Last());
-                        if (barParams.IsTopOfStack)
-                        {
-                            barParams.XRadius = new CornerRadius(dataPoint.RadiusX.Value.TopLeft, 0, 0, dataPoint.RadiusX.Value.BottomLeft);
-                            barParams.YRadius = new CornerRadius(dataPoint.RadiusY.Value.TopRight, 0, 0, dataPoint.RadiusY.Value.BottomLeft);
-                        }
-
-                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
-
-                        left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
-                        barWidth = Math.Abs(right - left);
-
-                        prevSum += percentYValue;
-                        barParams.Size = new Size(barWidth, finalHeight);
-
-                        Faces bar;
-                        Panel barVisual = null;
-
-                        if (chart.View3D)
-                        {
-                            bar = Get3DBar(barParams);
-                            barVisual = bar.Visual as Panel;
-                            barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, width, height, (dataPoint.InternalYValue > 0)));
-                        }
-                        else
-                        {
-                            bar = Get2DBar(barParams);
-                            barVisual = bar.Visual as Panel;
-                        }
-
-                        dataPoint.Faces = bar;
-                        dataPoint.Faces.LabelCanvas = labelCanvas;
-
-                        barVisual.SetValue(Canvas.LeftProperty, left);
-                        barVisual.SetValue(Canvas.TopProperty, top);
-
-                        columnCanvas.Children.Add(barVisual);
-                        
-                        // labelCanvas.Children.Add(GetMarker(chart, labelCanvas, dataPoint, left, top));
-
-                        // Apply animation
-                        if (animationEnabled)
-                        {   
-                            if (dataPoint.Parent.Storyboard == null)
-                                dataPoint.Parent.Storyboard = new Storyboard();
-
-                            currentDataSeries = dataPoint.Parent;
-
-                            // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
-                            dataPoint.Parent.Storyboard = ApplyStackedBarChartAnimation(barVisual, dataPoint.Parent.Storyboard, (1.0 / seriesList.Count) * (Double)(seriesList.IndexOf(dataPoint.Parent)), 1.0 / seriesList.Count);
-
-                            // Apply animation to the marker and labels
-                            dataPoint.Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker, currentDataSeries, dataPoint.Parent.Storyboard, 1, dataPoint.Opacity * dataPoint.Parent.Opacity);
-                        }
-
-                        right = left;
-                    }
-
-                }
-            }
-
-            if (!plankDrawn && chart.View3D && plotGroupList[0].AxisY.InternalAxisMinimum < 0 && plotGroupList[0].AxisY.InternalAxisMaximum > 0)
-            {   
-                //RectangularChartShapeParams barParams = new RectangularChartShapeParams();
-                //barParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
-                //barParams.Lighting = true;
-                //barParams.Size = new Size(1, height);
-                //barParams.Depth = depth3d;
-
-                Brush frontBrush, topBrush, rightBrush;
-                ExtendedGraphics.GetBrushesForPlank(out frontBrush, out topBrush, out rightBrush);
-
-                Faces zeroPlank = ColumnChart.Get3DPlank(1, height, depth3d, frontBrush, topBrush, rightBrush);
-                Panel zeroPlankVisual = zeroPlank.Visual as Panel;
-
-                Double left = Graphics.ValueToPixelPosition(0, width, (Double)plotGroupList[0].AxisY.InternalAxisMinimum, (Double)plotGroupList[0].AxisY.InternalAxisMaximum, 0);
-                zeroPlankVisual.SetValue(Canvas.LeftProperty, left);
-                zeroPlankVisual.SetValue(Canvas.TopProperty, (Double)0);
-                zeroPlankVisual.SetValue(Canvas.ZIndexProperty, 0);
-                zeroPlankVisual.Opacity = 0.7;
-                columnCanvas.Children.Add(zeroPlankVisual);
-            }
-
-            visual.Children.Add(columnCanvas);
-            visual.Children.Add(labelCanvas);
-            return visual;
-        }
-
+        
         /// <summary>
         /// Create 3D bar for a DataPoint
         /// </summary>

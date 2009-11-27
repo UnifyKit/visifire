@@ -221,6 +221,7 @@ namespace Visifire.Charts
                 }
             }
 
+            //marker.LabelEnabled =(Boolean) dataPoint.LabelEnabled;
             //marker.TextBackground = dataPoint.LabelBackground;
             //marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
             //marker.FontSize = (Double)dataPoint.LabelFontSize;
@@ -493,8 +494,9 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelEnabled:
-                    if (marker != null)
-                        marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+                    CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
+                    //if (marker != null)
+                    //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
                     break;
 
                 case VcProperties.LabelFontColor:

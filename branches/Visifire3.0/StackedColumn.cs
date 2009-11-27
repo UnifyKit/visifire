@@ -129,8 +129,12 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
-            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            
             dataPoint.SetCursor2DataPointVisualFaces();
         }
         
@@ -291,7 +295,7 @@ namespace Visifire.Charts
                     isTopOFStack, left, ref top, ref bottom, widthPerColumn, columnHeight, depth3d,
                     ref positiveIndex, animationEnabled, animationBeginTime);
                 else if (chartType == RenderAs.StackedColumn || chartType == RenderAs.StackedColumn100)
-                    BarChart.CreateColumnDataPointVisual(dataPoint, labelCanvas, columnCanvas, dataPoint.InternalYValue >= 0, widthPerColumn, depth3d, false);
+                    BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnCanvas, dataPoint.InternalYValue >= 0, widthPerColumn, depth3d, false);
                 
                 animationBeginTime += animationTime;
                 positiveIndex++;

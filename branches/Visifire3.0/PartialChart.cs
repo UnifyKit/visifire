@@ -2332,7 +2332,7 @@ namespace Visifire.Charts
                     {
                         if (chart.Background == null)
                         {
-                            returnBrush = new SolidColorBrush(Colors.Black);
+                            returnBrush = Graphics.BLACK_BRUSH;
                         }
                         else
                         {
@@ -2368,9 +2368,9 @@ namespace Visifire.Charts
                 {
                     if (chart != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                        if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
                         {
-                            brush = new SolidColorBrush(Colors.Black);
+                            brush = Graphics.BLACK_BRUSH;
                         }
                         else
                         {
@@ -2383,11 +2383,11 @@ namespace Visifire.Charts
                 {
                     if (chart.PlotArea != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.InternalBackground == null)
+                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, Graphics.TRANSPARENT_BRUSH) || chart.PlotArea.InternalBackground == null)
                         {
-                            if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                            if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
                             {
-                                brush = new SolidColorBrush(Colors.Black);
+                                brush = Graphics.BLACK_BRUSH;
                             }
                             else
                             {
@@ -2418,12 +2418,16 @@ namespace Visifire.Charts
 #endif
 
         #endregion
-
+        
         #region Data
 
-        internal Boolean PARTIAL_RENDER_LOCK = false;
+        internal Boolean PARTIAL_DP_RENDER_LOCK = false;
         internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
         internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
+
+        internal Boolean PARTIAL_DS_RENDER_LOCK = false;
+        // internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
+        // internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
 
         /// <summary>
         /// Set to true before calling forced rerender redraw

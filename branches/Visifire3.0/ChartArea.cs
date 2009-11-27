@@ -217,7 +217,7 @@ namespace Visifire.Charts
         /// Update the axis
         /// </summary>
         /// <param name="isSizeChanged"></param>
-        internal void PrePartialUpdateConfiguration(VisifireElement sender, VcProperties property, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
+        internal void PrePartialUpdateConfiguration(VisifireElement sender, VcProperties property, object oldValue, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             if(updateLists)
                 PopulateInternalSeriesList();
@@ -226,7 +226,7 @@ namespace Visifire.Charts
             {
                 // PlotDetails = new PlotDetails(Chart);
                 
-                PlotDetails.ReCreate(sender, property, newValue);
+                PlotDetails.ReCreate(sender, property, oldValue, newValue);
             }
 
             if (updateLists)
@@ -1206,7 +1206,7 @@ namespace Visifire.Charts
                     totalWidthReduced2 = DrawAxesY(plotAreaSize);
                 }
 
-                if(totalWidthReduced2 == 0)
+                if (totalWidthReduced2 == 0)
                     totalWidthReduced2 = DrawAxesY(plotAreaSize);
 
                 if (totalWidthReduced2 != totalWidthReduced)
@@ -1456,7 +1456,7 @@ namespace Visifire.Charts
                 DataPoint dp = new DataPoint();
                 dp.InternalXValue = i;
                 dp.YValue = 0;
-                dp.Color = new SolidColorBrush(Colors.Transparent);
+                dp.Color = Graphics.TRANSPARENT_BRUSH;
                 dp.AxisXLabel = i.ToString();
                 dp.Chart = Chart;
                 ds.DataPoints.Add(dp);
@@ -1704,8 +1704,10 @@ namespace Visifire.Charts
         /// <param name="styleName">Style</param>
         private void AddGrids(Axis axis, Double width, Double height, Boolean isAnimationEnabled, String styleName)
         {
-            if(Chart._forcedRedraw)
+            if (Chart._forcedRedraw)
+            {
                 CleanUpGrids(axis);
+            }
                 
             foreach (ChartGrid grid in axis.Grids)
             {
@@ -1736,7 +1738,7 @@ namespace Visifire.Charts
             {
                 if (grid.Visual != null)
                 {
-                    ChartVisualCanvas.Children.Remove(grid.Visual);
+                    //ChartVisualCanvas.Children.Remove(grid.Visual);
                     grid.Visual = null;
                 }
             }
@@ -1768,7 +1770,7 @@ namespace Visifire.Charts
         internal void ResizePanels(Size remainingSizeAfterDrawingAxes, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
-            PlotAreaScrollViewer.Background = new SolidColorBrush(Colors.Transparent);
+            PlotAreaScrollViewer.Background = Graphics.TRANSPARENT_BRUSH;
 
             PlotAreaCanvas.Width = remainingSizeAfterDrawingAxes.Width;
             PlotAreaCanvas.Height = remainingSizeAfterDrawingAxes.Height;
@@ -2105,12 +2107,10 @@ namespace Visifire.Charts
                     ChartVisualCanvas.Children.Add(renderedChart);
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
-
                 
-                renderedChart.SetValue(Canvas.ZIndexProperty, zIndex++);
+                if (renderedChart != null)
+                    renderedChart.SetValue(Canvas.ZIndexProperty, zIndex++);
             }
-
-
 
             ApplyOpacity();
             AttachEventsToolTipHref2DataSeries();

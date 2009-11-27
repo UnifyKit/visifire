@@ -749,7 +749,7 @@ namespace Visifire.Charts
                             Double xPosDataPoint = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, currentDataPoint.InternalXValue);
 
                             if (chart.View3D)
-                            {
+                            {   
                                 // Set points for left face
                                 Area3DDataPointFace leftFace = new Area3DDataPointFace(depth3d);
                                 leftFace.FrontFacePoints.Add(new Point(xPosDataPoint, plankYPos)); // Bottom Point
@@ -906,9 +906,12 @@ namespace Visifire.Charts
                         frontFacePath.SetValue(Canvas.ZIndexProperty, maxZIndex);
                         areaFaceCanvas.Children.Add(frontFacePath);
                     }
+
+                    foreach (FrameworkElement face in series.Faces.VisualComponents)
+                        VisifireElement.AttachEvents2AreaVisual(currentDataPoint, currentDataPoint, face);
                 }
 
-                foreach (FrameworkElement face in dataSeriesFaces.VisualComponents)
+                foreach (FrameworkElement face in series.Faces.VisualComponents)
                     VisifireElement.AttachEvents2AreaVisual(series, series, face);
 
                 series.AttachAreaToolTip(chart, dataSeriesFaces.VisualComponents);
@@ -916,7 +919,6 @@ namespace Visifire.Charts
                 areaFaceCanvas.Tag = null;
 
                 Canvas plank = ColumnChart.CreateOrUpdatePlank(chart, series.PlotGroup.AxisY, areaCanvas, depth3d, Orientation.Horizontal);
-
 
                 // apply area animation
                 if (animationEnabled)
@@ -1531,7 +1533,6 @@ namespace Visifire.Charts
                     curBase += curYValues[index];
                     nextBase += nextYValues[index];
                 }
-
             }
             if (!plankDrawn && chart.View3D && plotGroup.AxisY.InternalAxisMinimum < 0 && plotGroup.AxisY.InternalAxisMaximum > 0)
             {
@@ -2623,7 +2624,7 @@ namespace Visifire.Charts
                 case VcProperties.Color:
                 case VcProperties.LightingEnabled:
                      if (property != VcProperties.LightingEnabled && marker != null && (Boolean)dataPoint.MarkerEnabled)
-                        marker.BorderColor = dataPoint.Color;
+                         marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((newValue != null) ? newValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor;
 
                     if (faces != null)
                     {

@@ -371,7 +371,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>
-        public void Update(VcProperties property, object newValue)
+        public void Update(VcProperties property, object oldValue, object newValue)
         {
             // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
             
@@ -415,24 +415,6 @@ namespace Visifire.Charts
                 MinDifferenceX = GetMinDifference(_xValues);
             }
 
-            //if (property == VcProperties.XValue || property == VcProperties.None || property == VcProperties.DataPoints)
-            //{
-            //    switch (RenderAs)
-            //    {
-            //        case RenderAs.StackedArea:
-            //        case RenderAs.StackedBar:
-            //        case RenderAs.StackedColumn:
-            //            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries, RenderAs.StackedColumn, RenderAs.StackedBar, RenderAs.StackedArea);
-            //            break;
-
-            //        case RenderAs.StackedArea100:
-            //        case RenderAs.StackedBar100:
-            //        case RenderAs.StackedColumn100:
-            //            CreateXWiseStackedDataEntry(ref listOfDataPointsFromAllSeries, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
-            //            break;
-            //    }
-            //}
-
             if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.Series || property == VcProperties.ZValue)
             {
                 if (property == VcProperties.ZValue)
@@ -454,24 +436,47 @@ namespace Visifire.Charts
 
             if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.YValues || property == VcProperties.YValue || property == VcProperties.XValue)
             {
-                if (GetDependentVariableTypes().Count == 1 && GetDependentVariableTypes()[0] == typeof(List<Double>))
-                    _yValues = new List<Double>();
-                else
-                    _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+                Double maxY = Double.NaN, minY = Double.NaN;
 
-                List<Double> yValuesList = new List<Double>();
-
-                foreach (DataPoint dp in _dataPointsInCurrentPlotGroup)
+                if (property == VcProperties.None || property == VcProperties.DataPoints)
                 {
-                    if (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock)
+                    List<Type> dependentVariableTypes = GetDependentVariableTypes();
+
+                    if (dependentVariableTypes.Count == 1 && dependentVariableTypes[0] == typeof(List<Double>))
+                        _yValues = new List<Double>();
+                    else
+                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+
+                    //List<Double> yValuesList = new List<Double>();
+
+                    foreach (DataPoint dp in _dataPointsInCurrentPlotGroup)
                     {
-                        if (dp.YValues != null)
-                            yValuesList.AddRange(dp.YValues);
+                        if (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock)
+                        {
+                            if (dp.YValues != null)
+                            {
+                                _yValues.Add(dp.YValues.Max());
+                                _yValues.Add(dp.YValues.Min());
+                            }
+
+                        }
                     }
+
+                    //_yValues.AddRange(yValuesList);
+                }
+                else if (property == VcProperties.YValue)
+                {
+                    _yValues.Remove((Double)oldValue);
+                    _yValues.Add((Double)newValue);
+                }
+                else if (property == VcProperties.YValues)
+                {
+                    _yValues.Remove( ((Double[])oldValue).Max());
+                    _yValues.Remove( ((Double[])oldValue).Min());
+                    _yValues.Add(maxY =((Double[])newValue).Max());
+                    _yValues.Add(minY =((Double[])newValue).Min());
                 }
 
-                _yValues.AddRange(yValuesList);
-               
                 // variables to store the yValuee sum in case of stacked type charts
                 // var positiveYValue;
                 // var negativeYValue;
@@ -492,13 +497,51 @@ namespace Visifire.Charts
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
 
-                        //if (property == VcProperties.YValue)
-                        //{
-                        //    Double value =(Double)newValue;
-                        //    MaximumY = value > MaximumY ? value : MaximumY;
-                        //    MinimumY = value < MinimumY ? value : MinimumY;
-                        //}
-                        //else
+                        if (property == VcProperties.YValue)
+                        {
+                            Double value = (Double)newValue;
+                            
+                            if(value > MaximumY)
+                                MaximumY = value;
+                            else if (value < MinimumY)
+                                MinimumY = value;
+                            else 
+                            {
+                                if (_yValues.Count() > 0)
+                                {
+                                    MaximumY = _yValues.Max();
+                                    MinimumY = _yValues.Min();
+                                }
+                                else
+                                {
+                                    MaximumY = 0;
+                                    MinimumY = 0;
+                                }
+                            }
+
+                        }
+                        else if (property == VcProperties.YValues)
+                        {
+                            if (maxY > MaximumY)
+                                MaximumY = maxY;
+                            else if (minY < MinimumY)
+                                MinimumY = minY;
+                            else
+                            {
+
+                                if (_yValues.Count() > 0)
+                                {
+                                    MaximumY = _yValues.Max();
+                                    MinimumY = _yValues.Min();
+                                }
+                                else
+                                {   
+                                    MaximumY = 0;
+                                    MinimumY = 0;
+                                }
+                            }
+                        }
+                        else
                         {   
                             MaximumY = (_yValues.Count() > 0) ? (_yValues).Max() : 0;
                             MinimumY = (_yValues.Count() > 0) ? (_yValues).Min() : 0;

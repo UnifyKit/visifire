@@ -693,6 +693,7 @@ namespace Visifire.Commons
     /// <summary>
     /// Visifire.Commons.Graphics class
     /// </summary>
+
     public class Graphics
     {
         /// <summary>
@@ -700,6 +701,7 @@ namespace Visifire.Commons
         /// </summary>
         public Graphics()
         {
+
         }
 
         #region Static Methods
@@ -787,12 +789,6 @@ namespace Visifire.Commons
             intersection.Y = line1Point1.Y + (int)(0.5f + r * (line1Point2.Y - line1Point1.Y));
 
             return true;
-        }
-
-
-        public static Brush GetRandonColor()
-        {
-            return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
         }
 
         internal static Point MidPointOfALine(Point point1, Point point2)
@@ -988,16 +984,24 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if(_3dLightingTopBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingTopBrushs[solidBrush.Color];
+                    else
+                    {   
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
+                        stops.Add(1);
 
-                    return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        brush = Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        _3dLightingTopBrushs.Add(solidBrush.Color, brush);
+
+                        return brush;
+                    }
                 }
                 else if (brush is GradientBrush)
                 {
@@ -1026,6 +1030,10 @@ namespace Visifire.Commons
                 return null;
         }
 
+        private static Dictionary<Color, Brush> _3dLightingTopBrushs = new Dictionary<Color, Brush>();
+        private static Dictionary<Color, Brush> _3dLightingRightBrushs = new Dictionary<Color, Brush>();
+        private static Dictionary<Color, Brush> _3dLightingFrontBrushs = new Dictionary<Color, Brush>();
+
         /// <summary>
         /// Creates and returns a right face brush
         /// </summary>
@@ -1039,20 +1047,28 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if (_3dLightingRightBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingRightBrushs[solidBrush.Color];
+                    else
+                    {
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
+                        stops.Add(1);
+                        
+                        brush = Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
 
+                        _3dLightingRightBrushs.Add(solidBrush.Color, brush);
 
-                    return Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        return brush;
+                    }
                 }
                 else if (brush is GradientBrush)
-                {
+                {   
                     GradientBrush gradBrush = brush as GradientBrush;
 
                     List<Color> colors = new List<Color>();
@@ -1091,16 +1107,24 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if (_3dLightingFrontBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingFrontBrushs[solidBrush.Color];
+                    else
+                    {
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
+                        stops.Add(1);
+                        
+                        brush = Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
 
-                    return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        _3dLightingFrontBrushs.Add(solidBrush.Color, brush);
+                        return brush;
+                    }
                 }
                 else
                 {
@@ -1110,6 +1134,8 @@ namespace Visifire.Commons
             else
                 return null;
         }
+
+        
 
         /// <summary>
         /// Creates and returns a left gradient brush
@@ -1325,6 +1351,8 @@ namespace Visifire.Commons
             return GetLightingEnabledBrush(brush, "Linear", new Double[] { 0.65, 0.55 });
         }
 
+        //private static Dictionary<Color, Brush> _lightingColorCache = new Dictionary<Color, Brush>();
+        
         /// <summary>
         /// Creates and returns a lighting brush
         /// </summary>
@@ -1337,26 +1365,37 @@ namespace Visifire.Commons
         {
             if (brush != null)
             {
-                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                SolidColorBrush solidColorBrush = brush as SolidColorBrush;
+
+                if (solidColorBrush != null)
                 {
-                    if (colorIntensies == null)
-                        colorIntensies = new Double[] { 0.745, 0.99 };
 
-                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+                    //if (_lightingColorCache.ContainsKey(solidColorBrush.Color))
+                    //    return _lightingColorCache[solidColorBrush.Color];
+                    //else
+                    //{
+                        if (colorIntensies == null)
+                            colorIntensies = new Double[] { 0.745, 0.99 };
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                        SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[0]));
-                    stops.Add(0);
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[1]));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[0]));
+                        stops.Add(0);
 
-                    if (type == "Radial")
-                        return Graphics.CreateRadialGradientBrush(colors, stops);
-                    else
-                        return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[1]));
+                        stops.Add(1);
+                                                
+                        if (type == "Radial")
+                            brush = Graphics.CreateRadialGradientBrush(colors, stops);
+                        else
+                            brush = Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+
+                       //_lightingColorCache.Add(solidColorBrush.Color, brush);
+                        return brush;
+                    //}
                 }
                 else
                 {   
@@ -1381,6 +1420,7 @@ namespace Visifire.Commons
         {
              return GetLightingEnabledBrush(brush, -90, type, colorIntensies);
         }
+
         
         /// <summary>
         /// Creates and returns a radial gradient brush
@@ -1447,12 +1487,12 @@ namespace Visifire.Commons
             if (intensity < 0.6)
             {
                 //brush = ParseSolidColor("#EFEFEF");
-                brush = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+                brush = AUTO_WHITE_FONT_BRUSH;
             }
             else
             {
                 //brush = ParseSolidColor("#000000");
-                brush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                brush = AUTO_BLACK_FONT_BRUSH;
             }
             return brush;
         }
@@ -1591,7 +1631,7 @@ namespace Visifire.Commons
             Brush brush;
 
             if (lightingEnabled)
-            {   
+            {
                 String xaml = String.Format(@"<LinearGradientBrush EndPoint=""0.5,1"" StartPoint=""0.5,0"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
                                                 <GradientStop Color=""#A0FFFFFF"" Offset=""0""/>
                                                 <GradientStop Color=""#00FFFFFF"" Offset=""1""/>
@@ -1604,7 +1644,7 @@ namespace Visifire.Commons
 #endif
             }
             else
-                brush = new SolidColorBrush(Colors.Transparent);
+                brush = Graphics.TRANSPARENT_BRUSH;
 
             return brush;
         }
@@ -1613,10 +1653,120 @@ namespace Visifire.Commons
 
         #region Constants
 
-        public static Brush BLACK_BRUSH = new SolidColorBrush(Colors.Black);
-        public static Brush RED_BRUSH = new SolidColorBrush(Colors.Red);
-        public static Brush TRANSPARENT_BRUSH = new SolidColorBrush(Colors.Transparent);
-        public static Brush GRAY_BRUSH = new SolidColorBrush(Colors.Gray);
+
+        public static Brush AUTO_WHITE_FONT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _AUTO_WHITE_FONT_BRUSH;
+#else
+                return new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+#endif
+
+             }
+        }
+
+        public static Brush AUTO_BLACK_FONT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _AUTO_BLACK_FONT_BRUSH;
+#else
+                return new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+#endif
+
+             }
+        }
+
+        public static Brush GRAY_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _GRAY_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Gray);
+#endif
+
+             }
+        }
+
+        public static Brush BLACK_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _BLACK_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Black);
+#endif
+
+             }
+        }
+
+        public static Brush RED_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _RED_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Red);
+#endif
+
+             }
+        }
+
+        public static Brush ORANGE_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _ORANGE_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Orange);
+#endif
+
+             }
+        }
+
+        
+        public static Brush WHITE_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _WHITE_BRUSH;
+#else
+                return new SolidColorBrush(Colors.White);
+#endif
+
+             }
+        }
+
+        public static Brush TRANSPARENT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _TRANSPARENT_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Transparent);
+#endif
+
+             }
+        }
+
+        private static Brush _AUTO_WHITE_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+        private static Brush _AUTO_BLACK_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+        private static Brush _GRAY_BRUSH = new SolidColorBrush(Colors.Gray);
+        private static Brush _BLACK_BRUSH = new SolidColorBrush(Colors.Black);
+        private static Brush _RED_BRUSH = new SolidColorBrush(Colors.Red);
+        private static Brush _ORANGE_BRUSH = new SolidColorBrush(Colors.Orange);
+        private static Brush _WHITE_BRUSH = new SolidColorBrush(Colors.White);
+        private static Brush _TRANSPARENT_BRUSH = new SolidColorBrush(Colors.Transparent);
 
         /// <summary>
         /// Array of font sizes

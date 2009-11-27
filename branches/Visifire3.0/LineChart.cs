@@ -497,7 +497,7 @@ namespace Visifire.Charts
         /// <param name="newValue"></param>
         private static void UpdateDataSeries(ObservableObject obj, VcProperties property, object newValue)
         {
-            DataPoint dataPoint= null;
+            DataPoint dataPoint = null;
             DataSeries dataSeries = obj as DataSeries;
             Boolean isDataPoint = false;
             
@@ -537,8 +537,12 @@ namespace Visifire.Charts
             switch (property)
             {   
                 case VcProperties.Color:
-                    if(linePath != null)
-                        linePath.Stroke = ((Boolean)dataSeries.LightingEnabled) ? Graphics.GetLightingEnabledBrush(newValue as Brush, "Linear", new Double[] { 0.65, 0.55 }) : newValue as Brush; //dataPoint.Color;
+                    if (linePath != null)
+                    {
+                        Brush lineColorValue = (newValue != null) ? newValue as Brush : dataSeries.Color;
+
+                        linePath.Stroke = ((Boolean)dataSeries.LightingEnabled) ? Graphics.GetLightingEnabledBrush(lineColorValue, "Linear", new Double[] { 0.65, 0.55 }) : lineColorValue; //dataPoint.Color;
+                    }
                     break;
                 case VcProperties.LightingEnabled:
                     if (linePath != null)
@@ -731,7 +735,7 @@ namespace Visifire.Charts
             {
                 case VcProperties.Color:
                     if(marker != null)
-                        marker.BorderColor = newValue as Brush; //dataPoint.Color;
+                        marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((newValue != null) ? newValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor;
                     break;
                 case VcProperties.Cursor:
                     dataPoint.SetCursor2DataPointVisualFaces();

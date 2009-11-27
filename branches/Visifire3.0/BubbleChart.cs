@@ -660,8 +660,11 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.LabelEnabled:
-                    if (marker != null)
-                        marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+                    CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
+                    CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
+
+                    //if (marker != null)
+                    //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
 
                     break;
 
