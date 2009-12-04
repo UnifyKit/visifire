@@ -802,7 +802,7 @@ namespace Visifire.Commons
         }
 
         internal static Point IntersectingPointOfTwoLines(Point p1, Point p2, Point p3, Point p4)
-        {
+        {   
             Double ua = ((p4.X - p3.X) * (p1.Y - p3.Y) - (p4.Y - p3.Y) * (p1.X - p3.X));
             ua /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
 
@@ -814,8 +814,7 @@ namespace Visifire.Commons
 
             return new Point(x, y);
         }
-
-
+        
         /// <summary>
         /// Calculates visual size
         /// </summary>

@@ -654,6 +654,12 @@ namespace Visifire.Charts
 
             DataSeries series = seriesList[0] as DataSeries;
 
+            if (animationEnabled)
+            {
+                if (series.Storyboard == null)
+                    series.Storyboard = new Storyboard();
+            }
+
             Canvas visual, labelCanvas, areaCanvas, areaFaceCanvas;
             RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelCanvas, out areaCanvas, width, height);
             areaFaceCanvas = new Canvas() { Height = height, Width = width };
@@ -703,6 +709,8 @@ namespace Visifire.Charts
                 DataPoint nextDataPoint;
                 DataPoint previusDataPoint;
 
+                Double plankYPos = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+
                 foreach (List<DataPoint> dataPointList in brokenAreaDataPointsCollection)
                 {   
                     if (dataPointList.Count <= 0)
@@ -713,8 +721,7 @@ namespace Visifire.Charts
                     PointCollection points = new PointCollection();
 
                     List<DataPoint> dataPoints = new List<DataPoint>();
-                    Double plankYPos = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-
+                    
                     Path frontFacePath = null;
                     PathGeometry frontFacePathGeometry;
                     PathFigure frontFacePathFigure = null;
@@ -723,6 +730,7 @@ namespace Visifire.Charts
 
                     for (Int32 i = 0; i < dataPointList.Count - 1; i++)
                     {
+                        Path areaBase = new Path();
                         Faces dataPointFaces;
                         Faces nextDataPointFaces = new Faces();
 
@@ -774,7 +782,7 @@ namespace Visifire.Charts
                             frontFacePathGeometry.Figures.Add(frontFacePathFigure);
                             frontFacePath.Data = frontFacePathGeometry;
                             
-                            // Area front face Line path
+                            // Area front face Line path from end point to first
                             LineSegment ls = new LineSegment() { Point = currentDataPoint._visualPosition };
                             frontFacePathFigure.Segments.Add(ls);
                             dataPointFaces.AreaFrontFaceLineSegment = ls; 
@@ -792,7 +800,7 @@ namespace Visifire.Charts
                                 nextDataPointFaces.Area3DLeftTopFace = topFace;
                             }
                             else
-                            {
+                            {   
                                 if(currentDataPoint.Parent.Bevel)
                                     CreateBevelFor2DArea(areaFaceCanvas, currentDataPoint, previusDataPoint,false, false); 
                             }
@@ -839,21 +847,41 @@ namespace Visifire.Charts
                         else
                         {   
                             //areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
-
-                            
                         }
 
                         if (i == dataPointList.Count - 2) // If next DataPoint is the last DataPoint
-                        {
+                        {   
                             if (chart.View3D)
                             {
+                                DataPoint lastDataPoint = nextDataPoint;
+
                                 Area3DDataPointFace rightFace = new Area3DDataPointFace(depth3d);
                                 rightFace.FrontFacePoints.Add(nextDataPoint._visualPosition); // Front top point
                                 rightFace.FrontFacePoints.Add(new Point(nextDataPoint._visualPosition.X, plankYPos));
                                 nextDataPoint.Faces.Area3DRightFace = rightFace;
+
+                                // Draw base of the 3d area
+                                areaBase = new Path();
+                                areaBase.Fill = (Boolean)dataPointList[0].Parent.LightingEnabled ? Graphics.GetTopFaceBrush(dataPointList[0].Parent.Color) : dataPointList[0].Parent.Color;
+                                PathGeometry pg = new PathGeometry();
+                                PathFigure pf = new PathFigure() { StartPoint = new Point(dataPointList[0]._visualPosition.X, plankYPos) };
+                                pg.Figures.Add(pf);
+                                pf.Segments.Add(new LineSegment() { Point = new Point(dataPointList[0]._visualPosition.X + depth3d, plankYPos - depth3d) });
+                                pf.Segments.Add(new LineSegment() { Point = new Point(lastDataPoint._visualPosition.X + depth3d, plankYPos - depth3d) });
+                                pf.Segments.Add(new LineSegment() { Point = new Point(lastDataPoint._visualPosition.X, plankYPos) });
+                                areaBase.Data = pg;
+                                areaBase.SetValue(Canvas.ZIndexProperty, (Int32) 1);
+                                areaBase.Opacity = lastDataPoint.Parent.Opacity;
+                                areaCanvas.Children.Add(areaBase);
+                                dataSeriesFaces.FrontFacePaths.Add(areaBase);
+                                series.Faces.VisualComponents.Add(areaBase);
+
+                                // Animating AreaBase opacity
+                                if (animationEnabled)
+                                    series.Storyboard = AnimationHelper.ApplyOpacityAnimation(areaBase, series, series.Storyboard, 0.25, 1, 0, 1);
                             }
                             else
-                            {
+                            {   
                                 if (nextDataPoint.Parent.Bevel)
                                     CreateBevelFor2DArea(areaFaceCanvas, nextDataPoint, currentDataPoint, false, false); 
                             }
@@ -867,18 +895,16 @@ namespace Visifire.Charts
                             nextDataPointFaces.AreaFrontFaceBaseLineSegment = ls;
 
                             nextDataPointFaces.NextDataPoint = nextDataPoint;
-                                                       
-                           //  Graphics.DrawPointAt(rightFace.FrontFacePoints[0], areaCanvas, Colors.Yellow);
-
+                            
+                            // Graphics.DrawPointAt(rightFace.FrontFacePoints[0], areaCanvas, Colors.Yellow);
                             if (chart.View3D)
                             {   
                                 Int32 zindex = Draw3DArea(areaFaceCanvas, previusDataPoint, nextDataPoint, nextDataPoint, ref dataSeriesFaces, ref nextDataPointFaces, nextDataPoint.Parent, plankYPos);
                                 maxZIndex = Math.Max(maxZIndex, zindex);
                             }
                             else
-                            {
+                            {   
                                 // areaCanvas.Children.Add(Get2DArea(ref faces, areaParams));
-                               
                             }
 
                             if (nextDataPoint.MarkerEnabled == true || nextDataPoint.LabelEnabled == true)
@@ -922,12 +948,12 @@ namespace Visifire.Charts
 
                 // apply area animation
                 if (animationEnabled)
-                {
-                    if (series.Storyboard == null)
-                        series.Storyboard = new Storyboard();
+                {   
+                    // if (series.Storyboard == null)
+                    //  series.Storyboard = new Storyboard();
 
                     ScaleTransform scaleTransform = new ScaleTransform() { ScaleY = 0 };
-                    areaFaceCanvas.RenderTransformOrigin = new Point(0.5, (plank == null) ? 1 : (double)plank.GetValue(Canvas.TopProperty) / height);
+                    areaFaceCanvas.RenderTransformOrigin = new Point(0.5, plankYPos / height);
                     areaFaceCanvas.RenderTransform = scaleTransform;
 
                     List<KeySpline> splines = AnimationHelper.GenerateKeySplineList
@@ -941,14 +967,14 @@ namespace Visifire.Charts
                         new Double[] { 0, 1 }, new Double[] { 0, 1 }, splines);
 
                     // Animating plank opacity
-                   // series.Storyboard = AnimationHelper.ApplyOpacityAnimation(plank, series, series.Storyboard, 1.25, 1, 0, 1);
+                    //series.Storyboard = AnimationHelper.ApplyOpacityAnimation(areaBase, series, series.Storyboard, 1.25, 1, 0, 1);
 
                     // Apply animation for label canvas
                     series.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, series, series.Storyboard, 1.25, 1, 0, 1);
                 }
             }
 
-
+            areaFaceCanvas.SetValue(Canvas.ZIndexProperty, (Int32)2);
             areaCanvas.Children.Add(areaFaceCanvas);
 
             // Remove old visual and add new visual in to the existing panel
@@ -965,7 +991,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -973,9 +999,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
@@ -1574,7 +1600,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -1582,9 +1608,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
@@ -1856,7 +1882,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -1864,9 +1890,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
@@ -2646,6 +2672,7 @@ namespace Visifire.Charts
                         if (dataPoint.Faces.Area3DRightFace != null)
                             (dataPoint.Faces.Area3DRightFace.RightFace as Path).Fill = sideBrush;
                     }
+
                     break;
 
                 case VcProperties.Opacity:
@@ -2744,6 +2771,11 @@ namespace Visifire.Charts
                     //marker.Text = dataPoint.TextParser(dataPoint.LabelText);
                     break;
 
+                case VcProperties.LabelAngle:
+                    LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
+                    //marker.Text = dataPoint.TextParser(dataPoint.LabelText);
+                    break;
+
                 case VcProperties.LegendText:
                     chart.InvokeRender();
                     break;
@@ -2812,9 +2844,11 @@ namespace Visifire.Charts
                         UpdateDataSeries(dataSeries, property, newValue);
                     else
                     {
+                        dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                         UpdateVisualForYValue4AreaChart(chart, dataPoint, isAxisChanged);
                     }
 
+                    chart._toolTip.Hide();
                     // chart.Dispatcher.BeginInvoke(new Action<DataPoint>(UpdateXAndYValue), new object[]{dataPoint});
 
                     break;
@@ -3374,11 +3408,16 @@ namespace Visifire.Charts
                 //}
 
                 dataPoint.Storyboard = storyBoardDp;
-
+                oldVisualPositionOfDataPoint = oldPosition;
                 if (dataSeries.Bevel && !chart.View3D)
                     AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint, animationEnabled);
 
+                
+#if WPF
+                storyBoardDp.Begin(chart._rootElement, true);
+#else
                 storyBoardDp.Begin();
+#endif
             }
             else
             {

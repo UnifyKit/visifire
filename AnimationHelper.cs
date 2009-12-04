@@ -129,8 +129,10 @@ namespace Visifire.Commons
             target.SetValue(FrameworkElement.NameProperty, target.GetType().Name + Guid.NewGuid().ToString().Replace('-', '_'));
             Storyboard.SetTargetName(da, target.GetValue(FrameworkElement.NameProperty).ToString());
 
-            (parentObj as DataSeries).Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
+            (parentObj as ObservableObject).Chart._rootElement.RegisterName((string)target.GetValue(FrameworkElement.NameProperty), target);
 #else
+
+
             Storyboard.SetTarget(da, target);
 #endif
             Storyboard.SetTargetProperty(da, new PropertyPath(property));

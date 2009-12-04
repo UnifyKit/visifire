@@ -462,7 +462,7 @@ namespace Visifire.Charts
                         }
                         else if (ds.InternalXValueType == ChartValueTypes.Time)
                         {
-                            System.Diagnostics.Debug.WriteLine(dp.InternalXValueAsDateTime.TimeOfDay.ToString());
+                            //System.Diagnostics.Debug.WriteLine(dp.InternalXValueAsDateTime.TimeOfDay.ToString());
                             dp.InternalXValueAsDateTime = DateTime.Parse("12/30/1899 " + dp.InternalXValueAsDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
                             xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
                         }

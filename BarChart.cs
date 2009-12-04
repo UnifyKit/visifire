@@ -585,11 +585,7 @@ namespace Visifire.Charts
 
             Canvas barVisual = dataPoint.Faces.Visual as Canvas;
 
-            if (dataPoint.Marker != null)
-                labelCanvas.Children.Remove(dataPoint.Marker.Visual);
-
-            if (dataPoint.LabelVisual != null)
-                labelCanvas.Children.Remove(dataPoint.LabelVisual);
+            ColumnChart.CleanUpMarkerAndLabel(dataPoint, labelCanvas);
 
             if ((Boolean)dataPoint.MarkerEnabled)
             {   
@@ -775,7 +771,10 @@ namespace Visifire.Charts
                 dataPoint.Parent.Faces = new Faces { Visual = columnCanvas, LabelCanvas = labelCanvas };
 
                 if (!(Boolean)dataPoint.Enabled || Double.IsNaN(dataPoint.InternalYValue))
+                {
+                    ColumnChart.CleanUpMarkerAndLabel(dataPoint, labelCanvas);
                     continue;
+                }
 
                 isTopOFStack = (dataPoint == dataPointAtTopOfStack);
 
@@ -905,7 +904,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH);
+            clipRectangle.Rect = new Rect(-(chart.View3D ? 0 : 5) - chart.ChartArea.PLANK_THICKNESS, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10), height + chart.ChartArea.PLANK_DEPTH);
             visual.Clip = clipRectangle;
 
             return visual;

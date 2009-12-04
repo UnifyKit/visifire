@@ -222,7 +222,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH);
+            clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH - (chart.View3D ? 0 : 5), width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10));
             visual.Clip = clipRectangle;
 
             return visual;
@@ -555,6 +555,8 @@ namespace Visifire.Charts
 
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.Marker.Visual, "(Canvas.Left)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldMarkerPosition.X, markerNewLeft }, null);
+
+                        dp.Marker.Visual.SetValue(Canvas.LeftProperty, dp._oldMarkerPosition.Y);
                     }
 
                     if (dp.LabelVisual != null)
@@ -563,6 +565,8 @@ namespace Visifire.Charts
 
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.LabelVisual, "(Canvas.Left)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldLabelPosition.X, labelNewLeft }, null);
+
+                        dp.LabelVisual.SetValue(Canvas.LeftProperty, dp._oldMarkerPosition.Y);
                     }
 
                     dataPoint.Storyboard.SpeedRatio = 2;
@@ -582,7 +586,7 @@ namespace Visifire.Charts
 #endif
             }
         }
-         
+        
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {   
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
@@ -689,8 +693,8 @@ namespace Visifire.Charts
                     if(Double.IsInfinity(oldScale) || Double.IsNaN(oldScale))
                         oldScale = 0;
 
-                    if (oldScale > 1)
-                        oldScale = 1.1;
+                    // if (oldScale > 1)
+                    //    oldScale = 1.1;
 
                     if (oldScale != 1)
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(newVisual, "(UIElement.RenderTransform).(ScaleTransform.ScaleY)", dataPoint, dataPoint.Storyboard, 0,
@@ -710,14 +714,18 @@ namespace Visifire.Charts
 
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.Marker.Visual, "(Canvas.Top)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldMarkerPosition.Y, markerNewTop }, null);
+
+                        dp.Marker.Visual.SetValue(Canvas.TopProperty, dp._oldMarkerPosition.Y);
                     }
 
                     if (dp.LabelVisual != null)
-                    {
-                        Double labelNewTop = (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty);
+                    {   
+                        Double labelNewTop = (Double)dp.LabelVisual.GetValue(Canvas.TopProperty);
 
-                        dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dataPoint.LabelVisual, "(Canvas.Top)", dataPoint, dataPoint.Storyboard, 0,
+                        dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.LabelVisual, "(Canvas.Top)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldLabelPosition.Y, labelNewTop }, null);
+
+                        dp.LabelVisual.SetValue(Canvas.TopProperty, dp._oldLabelPosition.Y);
                     }
 
                     dataPoint.Storyboard.SpeedRatio = 2;
