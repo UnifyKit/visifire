@@ -335,7 +335,7 @@ namespace Visifire.Charts
                                      select c).Count();
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH, plotAreaWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotAreaHeight + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX);
+            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, plotAreaWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotAreaHeight + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + tickLengthOfAxisX + 4);
             visual.Clip = clipRectangle;
 
 
@@ -521,6 +521,11 @@ namespace Visifire.Charts
                 //    break;
 
                 case VcProperties.LabelFontWeight:
+                    if (marker != null)
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    break;
+
+                case VcProperties.LabelAngle:
                     if (marker != null)
                         marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
                     break;

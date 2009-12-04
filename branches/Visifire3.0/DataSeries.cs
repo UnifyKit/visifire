@@ -2160,8 +2160,8 @@ namespace Visifire.Charts
                     Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
                     Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
-                    System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
-                    System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+                    //System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                    //System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
 
                     if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
                     {
@@ -2214,8 +2214,6 @@ namespace Visifire.Charts
 
                 // FirePropertyChanged(VcProperties.DataPoints);
             }
-
-
         }
 
         #endregion

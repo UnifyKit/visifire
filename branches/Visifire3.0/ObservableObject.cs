@@ -91,7 +91,7 @@ namespace Visifire.Commons
 
                 Style myStyle = chart.StyleDictionary[keyName] as Style;
 
-                System.Diagnostics.Debug.WriteLine(keyName);
+                //System.Diagnostics.Debug.WriteLine(keyName);
                 if (myStyle != null)
                 {
                     if ((Chart as Chart)._isThemeChanged)
@@ -204,8 +204,7 @@ namespace Visifire.Commons
         internal void FirePropertyChanged(VcProperties propertyName)
         {
             _isPropertyChangedFired = false; // Used for testing
-
-           
+                       
             if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
                 

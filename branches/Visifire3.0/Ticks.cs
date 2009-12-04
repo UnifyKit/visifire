@@ -563,7 +563,7 @@ namespace Visifire.Charts
 
                     }
 
-                    System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
+                    //System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
 
                     Visual.Children.Add(line);
 

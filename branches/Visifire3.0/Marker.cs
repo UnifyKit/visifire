@@ -711,7 +711,7 @@ namespace Visifire.Commons
                 return _borderColor;
             }
             set
-            {
+            {   
                 _borderColor = value;
 
                 if (MarkerShape != null)
@@ -741,7 +741,7 @@ namespace Visifire.Commons
         /// Get or set the Marker fill color
         /// </summary>
         public Brush MarkerFillColor
-        {
+        {   
             get
             {   
                 return _markerFillColor;
@@ -1177,7 +1177,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Set alignment for the Marker label
         /// </summary>
-        private void SetAlignment4Label()
+        internal void SetAlignment4Label()
         {
             if (TextBlock != null)
             {

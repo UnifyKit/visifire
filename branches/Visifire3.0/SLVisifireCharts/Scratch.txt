@@ -1,4 +1,50 @@
-﻿private void CalculateMaxAndMinPosition()
+﻿
+ if ((Boolean)dataPoint.LabelEnabled)
+                    {
+                        //Double currXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+                        //Double currYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+
+                        //if (chart.AnimatedUpdate)
+                        //{
+                        //    if(dataPoint.Storyboard != null)
+                        //        dataPoint.Storyboard.Pause();
+                        //    dataPoint._oldLabelPosition = new Point((Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty));
+                        //}
+                        ////dataPoint.LabelVisual.SetValue(Canvas.LeftProperty, oldLabelPosition.X);
+                        ////dataPoint.LabelVisual.SetValue(Canvas.TopProperty, oldLabelPosition.Y);
+
+                        ////dataPoint._oldLabelPosition = new Point(oldLabelPosition.X, oldLabelPosition.Y);
+
+                        //dataPoint._visualPosition = new Point(currXPosition, currYPosition);
+
+                        //if (dataPoint.Faces != null)
+                        //{
+                        //    Double labelLeft = 0;
+                        //    Double labelTop = 0;
+
+                        //    if (dataPoint.Faces.PreviousDataPoint != null)
+                        //    {
+                        //        SetLabelPosition4LineDataPoint(dataPoint.Faces.PreviousDataPoint, width, height, dataPoint.Faces.PreviousDataPoint.YValue >= 0,
+                        //            dataPoint.Faces.PreviousDataPoint._visualPosition.X, dataPoint.Faces.PreviousDataPoint._visualPosition.Y,
+                        //            ref labelLeft, ref labelTop, 6, new Size(dataPoint.Faces.PreviousDataPoint.LabelVisual.ActualWidth, dataPoint.Faces.PreviousDataPoint.LabelVisual.ActualHeight));
+
+                        //        dataPoint.Faces.PreviousDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                        //        dataPoint.Faces.PreviousDataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        //    }
+
+                        //    if (dataPoint.Faces.NextDataPoint != null)
+                        //    {
+                        //        SetLabelPosition4LineDataPoint(dataPoint.Faces.NextDataPoint, width, height, dataPoint.Faces.NextDataPoint.YValue >= 0,
+                        //            dataPoint.Faces.NextDataPoint._visualPosition.X, dataPoint.Faces.NextDataPoint._visualPosition.Y,
+                        //            ref labelLeft, ref labelTop, 6, new Size(dataPoint.Faces.NextDataPoint.LabelVisual.ActualWidth, dataPoint.Faces.NextDataPoint.LabelVisual.ActualHeight));
+
+                        //        dataPoint.Faces.NextDataPoint.LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                        //        dataPoint.Faces.NextDataPoint.LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        //    }
+                        //}
+                    }
+
+private void CalculateMaxAndMinPosition()
         {
             // Calculate MaxPosition
             Double x1 = Center.X + XRadiusLabel * Math.Cos(ResetMeanAngle(BaseMeanAngle + Math.PI / 2));

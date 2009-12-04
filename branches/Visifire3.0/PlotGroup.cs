@@ -445,7 +445,7 @@ namespace Visifire.Charts
                     if (dependentVariableTypes.Count == 1 && dependentVariableTypes[0] == typeof(List<Double>))
                         _yValues = new List<Double>();
                     else
-                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
+                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).ToList();
 
                     //List<Double> yValuesList = new List<Double>();
 
@@ -500,13 +500,23 @@ namespace Visifire.Charts
                         if (property == VcProperties.YValue)
                         {
                             Double value = (Double)newValue;
-                            
-                            if(value > MaximumY)
-                                MaximumY = value;
-                            else if (value < MinimumY)
-                                MinimumY = value;
-                            else 
+
+                            if (value > MaximumY)
                             {
+                                MaximumY = value;
+
+                                if (_yValues.Count() > 0)
+                                    MinimumY = _yValues.Min();
+                            }
+                            else if (value < MinimumY)
+                            {
+                                MinimumY = value;
+
+                                if (_yValues.Count() > 0)
+                                    MaximumY = _yValues.Max();
+                            }
+                            else
+                            {   
                                 if (_yValues.Count() > 0)
                                 {
                                     MaximumY = _yValues.Max();
@@ -517,6 +527,8 @@ namespace Visifire.Charts
                                     MaximumY = 0;
                                     MinimumY = 0;
                                 }
+
+                                MaximumY = MaximumY;
                             }
 
                         }

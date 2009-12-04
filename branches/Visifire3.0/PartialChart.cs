@@ -1342,8 +1342,8 @@ namespace Visifire.Charts
 #else
                         EmbeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
 #endif
-                        if (EmbeddedColorSets == null)
-                            System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
+                        //if (EmbeddedColorSets == null)
+                        //    System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
                         //if (InternalColorSets == null)
                         //    InternalColorSets = new ColorSets();

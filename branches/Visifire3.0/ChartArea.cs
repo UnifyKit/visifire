@@ -89,7 +89,7 @@ namespace Visifire.Charts
         public void Draw(Chart chart)
         {
             isScrollingActive = Chart.IsScrollingActivated;
-            System.Diagnostics.Debug.WriteLine("Draw() > ");
+            //System.Diagnostics.Debug.WriteLine("Draw() > ");
             
             _renderCount = 0;
 
@@ -255,6 +255,8 @@ namespace Visifire.Charts
                     RenderGrids();
                     RenderTrendLines();
                 }
+
+                
             }
 
             AddOrRemovePanels(Chart);
@@ -707,7 +709,7 @@ namespace Visifire.Charts
                     SetBlankSeries();
             }
             else
-                Chart.InternalSeries = Chart.Series.ToList();
+                Chart.InternalSeries = (from ds in Chart.Series orderby ds.ZIndex select ds).ToList();
 
             foreach (DataSeries ds in Chart.InternalSeries)
             {
@@ -1145,6 +1147,12 @@ namespace Visifire.Charts
         /// <returns>Remaining size of the plotArea after drawing axes</returns>
         private Size RenderAxes(Size plotAreaSize)
         {
+
+            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX);
+            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY);
+            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
+            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY2);
+
             if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 #region For vertical chart
@@ -1236,10 +1244,13 @@ namespace Visifire.Charts
                 UpdateLayoutSettings(plotAreaSize);
             }
 
-            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX);
-            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY);
-            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
-            Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY2);
+            //if (_isFirstTimeRender)
+            //{   
+            //    Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX);
+            //    Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY);
+            //    Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
+            //    Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY2);
+            //}
 
             return plotAreaSize;
         }
@@ -1898,7 +1909,7 @@ namespace Visifire.Charts
         private void SaveAxisContentOffsetAndResetMargin(Axis axis, Double scrollBarOffset)
         {
             axis.CurrentScrollScrollBarOffset = scrollBarOffset / axis.ScrollBarElement.Maximum;
-            System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
+            //System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
         }
 
         /// <summary>
@@ -2107,7 +2118,7 @@ namespace Visifire.Charts
                     ChartVisualCanvas.Children.Add(renderedChart);
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
-                
+
                 if (renderedChart != null)
                     renderedChart.SetValue(Canvas.ZIndexProperty, zIndex++);
             }
@@ -3804,7 +3815,7 @@ namespace Visifire.Charts
 
             _isFirstTimeRender = false;
 
-            System.Diagnostics.Debug.WriteLine("Loaded() >");
+            //System.Diagnostics.Debug.WriteLine("Loaded() >");
         }
 
        /// <summary>

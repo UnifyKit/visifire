@@ -159,7 +159,13 @@ namespace Visifire.Charts
                 {   
                     DataPoint dp = dpInfo.Key;
 
-                    PropertyInfo pInfo = dp.GetType().GetProperty(property.ToString());
+                    if (dpInfo.Value == VcProperties.XValue)
+                    {
+                        isNeed2UpdateAllSeries = true;
+                        break;
+                    }
+
+                    PropertyInfo pInfo = dp.GetType().GetProperty(dpInfo.Value.ToString());
                     newValue = pInfo.GetValue(dp, null);
 
                     isNeed2UpdateAllSeries = dpInfo.Key.UpdateVisual(dpInfo.Value, newValue, true);

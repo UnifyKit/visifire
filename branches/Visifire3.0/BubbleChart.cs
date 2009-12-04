@@ -694,6 +694,11 @@ namespace Visifire.Charts
                         marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
                     break;
 
+                case VcProperties.LabelAngle:
+                    if (marker != null)
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    break;
+
                 case VcProperties.LegendText:
                     chart.InvokeRender();
                     break;
