@@ -68,7 +68,7 @@ namespace Visifire.Charts
         /// Initializes a new instance of the Visifire.Charts.Axis class
         /// </summary>
         public Axis()
-        {   
+        {
             // Initialize list of ChartGrid list
             Grids = new ChartGridCollection();
 
@@ -91,7 +91,7 @@ namespace Visifire.Charts
 
         public override void Bind()
         {
-#if SL
+#if SL      
             Binding b = new Binding("Background");
             b.Source = this;
             this.SetBinding(InternalBackgroundProperty, b);
@@ -525,7 +525,7 @@ namespace Visifire.Charts
                 {
                     InternalOpacity = value;
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -547,7 +547,7 @@ namespace Visifire.Charts
                 if (base.Cursor != value)
                 {
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -593,12 +593,12 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL          
+#if SL
                 if (Background != value)
                 {
                     InternalBackground = value;
                     SetValue(BackgroundProperty, value);
-                    FirePropertyChanged("Background");
+                    FirePropertyChanged(VcProperties.Background);
                 }
 #else
                 SetValue(BackgroundProperty, value);
@@ -677,7 +677,7 @@ namespace Visifire.Charts
         /// Get or set the padding of the axis
         /// </summary>
         public new Thickness Padding
-        {   
+        {
             get
             {
                 return (Thickness)GetValue(PaddingProperty);
@@ -689,7 +689,7 @@ namespace Visifire.Charts
 #else
                 InternalPadding = value;
                 SetValue(PaddingProperty, value);
-                FirePropertyChanged("Padding");
+                FirePropertyChanged(VcProperties.Padding);
 #endif
             }
         }
@@ -962,7 +962,8 @@ namespace Visifire.Charts
         public Double ScrollBarScale
         {
             get { return (Double)GetValue(ScrollBarScaleProperty); }
-            set {
+            set
+            {
 
                 if (value <= 0 || value > 1)
                     throw new Exception("Value does not fall under the expected range. ScrollBarScale always varies from 0 to 1.");
@@ -1031,7 +1032,7 @@ namespace Visifire.Charts
             typeof(Thickness),
             typeof(Axis),
             new PropertyMetadata(OnPaddingPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.Opacity dependency property.
         /// </summary>
@@ -1071,7 +1072,7 @@ namespace Visifire.Charts
                 _internalBackground = value;
             }
         }
-        
+
         /// <summary>
         /// Get or set the Padding property of title
         /// </summary>
@@ -1196,6 +1197,9 @@ namespace Visifire.Charts
             get;
             set;
         }
+
+        internal Double _oldInternalAxisMinimum;
+        internal Double _oldInternalAxisMaximum;
 
         /// <summary>
         /// Internal axis maximum is used for internal calculation purpose
@@ -1534,7 +1538,7 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
             axis.InternalPadding = (Thickness)e.NewValue;
-            axis.FirePropertyChanged("Padding");
+            axis.FirePropertyChanged(VcProperties.Padding);
         }
 
         /// <summary>
@@ -1546,7 +1550,7 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
             axis.InternalBackground = (Brush)e.NewValue;
-            axis.FirePropertyChanged("Background");
+            axis.FirePropertyChanged(VcProperties.Background);
         }
 
         /// <summary>
@@ -1557,8 +1561,8 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.InternalOpacity= (Double) e.NewValue;
-            axis.FirePropertyChanged("Opacity");
+            axis.InternalOpacity = (Double)e.NewValue;
+            axis.FirePropertyChanged(VcProperties.Opacity);
         }
 
         /// <summary>
@@ -1575,7 +1579,7 @@ namespace Visifire.Charts
 
             axis.AxisLabels.Parent = axis;
             axis.AxisLabels.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxisLabels_PropertyChanged);
-            axis.FirePropertyChanged("AxisLabels");
+            axis.FirePropertyChanged(VcProperties.AxisLabels);
         }
 
         /// <summary>
@@ -1585,7 +1589,7 @@ namespace Visifire.Charts
         /// <param name="e">PropertyChangedEventArgs</param>
         private static void AxisLabels_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            (sender as AxisLabels).Parent.FirePropertyChanged(e.PropertyName);
+            (sender as AxisLabels).Parent.FirePropertyChanged((VcProperties)Enum.Parse(typeof(VcProperties), e.PropertyName, true));
         }
 
         /// <summary>
@@ -1596,7 +1600,7 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("HrefTarget");
+            axis.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -1607,7 +1611,7 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Href");
+            axis.FirePropertyChanged(VcProperties.Href);
         }
 
         /// <summary>
@@ -1618,7 +1622,7 @@ namespace Visifire.Charts
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Interval");
+            axis.FirePropertyChanged(VcProperties.Interval);
         }
 
         /// <summary>
@@ -1629,7 +1633,7 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("LineColor");
+            axis.FirePropertyChanged(VcProperties.LineColor);
         }
 
         /// <summary>
@@ -1640,7 +1644,7 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("LineThickness");
+            axis.FirePropertyChanged(VcProperties.LineThickness);
         }
 
         /// <summary>
@@ -1651,7 +1655,7 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("LineStyle");
+            axis.FirePropertyChanged(VcProperties.LineStyle);
         }
 
         /// <summary>
@@ -1662,7 +1666,7 @@ namespace Visifire.Charts
         private static void OnTitlePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Title");
+            axis.FirePropertyChanged(VcProperties.Title);
         }
 
         /// <summary>
@@ -1673,7 +1677,7 @@ namespace Visifire.Charts
         private static void OnTitleFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("TitleFontColor");
+            axis.FirePropertyChanged(VcProperties.TitleFontColor);
         }
 
         /// <summary>
@@ -1684,7 +1688,7 @@ namespace Visifire.Charts
         private static void OnTitleFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("TitleFontFamily");
+            axis.FirePropertyChanged(VcProperties.TitleFontFamily);
         }
 
         /// <summary>
@@ -1695,7 +1699,7 @@ namespace Visifire.Charts
         private static void OnTitleFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("TitleFontSize");
+            axis.FirePropertyChanged(VcProperties.TitleFontSize);
         }
 
         /// <summary>
@@ -1706,7 +1710,7 @@ namespace Visifire.Charts
         private static void OnTitleFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("TitleFontStyle");
+            axis.FirePropertyChanged(VcProperties.TitleFontStyle);
         }
 
         /// <summary>
@@ -1717,7 +1721,7 @@ namespace Visifire.Charts
         private static void OnTitleFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("TitleFontWeight");
+            axis.FirePropertyChanged(VcProperties.TitleFontWeight);
         }
 
         /// <summary>
@@ -1728,7 +1732,7 @@ namespace Visifire.Charts
         private static void OnAxisTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("AxisType");
+            axis.FirePropertyChanged(VcProperties.AxisType);
         }
 
         /// <summary>
@@ -1745,8 +1749,8 @@ namespace Visifire.Charts
             Axis.ConvertValueToDateTimeOrNumeric("AxisMaximum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMaximumValueType);
             axis.AxisMaximumNumeric = numericVal;
             axis.AxisMaximumDateTime = dateTimeValue;
-            
-            axis.FirePropertyChanged("AxisMaximum");
+
+            axis.FirePropertyChanged(VcProperties.AxisMaximum);
         }
 
         /// <summary>
@@ -1765,7 +1769,7 @@ namespace Visifire.Charts
             axis.AxisMinimumNumeric = numericVal;
             axis.AxisMinimumDateTime = dateTimeValue;
 
-            axis.FirePropertyChanged("AxisMinimum");
+            axis.FirePropertyChanged(VcProperties.AxisMinimum);
         }
 
         private static void ConvertValueToDateTimeOrNumeric(String propertyName, Object newValue, ref Double numericVal, ref DateTime dateTimeValue, out ChartValueTypes valueType)
@@ -1827,7 +1831,7 @@ namespace Visifire.Charts
         private static void OnIncludeZeroPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("IncludeZero");
+            axis.FirePropertyChanged(VcProperties.IncludeZero);
         }
 
         /// <summary>
@@ -1838,7 +1842,7 @@ namespace Visifire.Charts
         private static void OnStartFromZeroPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("StartFromZero");
+            axis.FirePropertyChanged(VcProperties.StartFromZero);
         }
 
         /// <summary>
@@ -1849,7 +1853,7 @@ namespace Visifire.Charts
         private static void OnPrefixPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Prefix");
+            axis.FirePropertyChanged(VcProperties.Prefix);
         }
 
         /// <summary>
@@ -1860,7 +1864,7 @@ namespace Visifire.Charts
         private static void OnSuffixPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Suffix");
+            axis.FirePropertyChanged(VcProperties.Suffix);
         }
 
         /// <summary>
@@ -1872,7 +1876,7 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
             axis.ParseScalingSets((String)e.NewValue);
-            axis.FirePropertyChanged("ScalingSet");
+            axis.FirePropertyChanged(VcProperties.ScalingSet);
         }
 
         /// <summary>
@@ -1883,7 +1887,7 @@ namespace Visifire.Charts
         private static void OnValueFormatStringPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("ValueFormatString");
+            axis.FirePropertyChanged(VcProperties.ValueFormatString);
         }
 
         /// <summary>
@@ -1906,7 +1910,7 @@ namespace Visifire.Charts
 
             //if (axis._isScrollToOffsetEnabled)
             //    axis.SetScrollBarValueFromOffset((Double)e.NewValue);
-            axis.FirePropertyChanged("ScrollBarScale");
+            axis.FirePropertyChanged(VcProperties.ScrollBarScale);
 
             if (axis.Chart != null && (axis.Chart as Chart).ChartArea != null)
             {
@@ -1929,10 +1933,10 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Axis axis = d as Axis;
-            axis.FirePropertyChanged("Enabled");
+            axis.FirePropertyChanged(VcProperties.Enabled);
         }
 
-        
+
 
         /// <summary>
         /// Event handler manages interval type property change event of axis
@@ -1943,7 +1947,7 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
             axis.InternalIntervalType = (IntervalTypes)e.NewValue;
-            axis.FirePropertyChanged("IntervalType");
+            axis.FirePropertyChanged(VcProperties.IntervalType);
         }
 
         /// <summary>
@@ -2049,14 +2053,17 @@ namespace Visifire.Charts
                     // number of interval in the primary axis
                     Double primaryAxisIntervalCount = ((double)primaryAxisY.InternalAxisMaximum - (double)primaryAxisY.InternalAxisMinimum) / (double)primaryAxisY.InternalInterval;
 
-                    // This will set the internal overriding flag
-                    AxisManager.AxisMinimumValue = AxisManager.AxisMinimumValue;
-                    AxisManager.AxisMaximumValue = AxisManager.AxisMaximumValue;
+                    if (!Double.IsNaN(primaryAxisIntervalCount))
+                    {   
+                        // This will set the internal overriding flag
+                        AxisManager.AxisMinimumValue = AxisManager.AxisMinimumValue;
+                        AxisManager.AxisMaximumValue = AxisManager.AxisMaximumValue;
 
-                    // This interval will reflect the interval in primary axis it is not same as that of primary axis
-                    AxisManager.Interval = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) / primaryAxisIntervalCount;
+                        // This interval will reflect the interval in primary axis it is not same as that of primary axis
+                        AxisManager.Interval = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) / primaryAxisIntervalCount;
 
-                    AxisManager.Calculate();
+                        AxisManager.Calculate();
+                    }
                 }
 
                 InternalAxisMaximum = AxisManager.AxisMaximumValue;
@@ -2103,7 +2110,7 @@ namespace Visifire.Charts
 
             if (this.TitleFontSize != 0)
                 AxisTitleElement.InternalFontSize = this.TitleFontSize;
-                
+
             if (this.TitleFontStyle != null)
                 AxisTitleElement.InternalFontStyle = this.TitleFontStyle;
 
@@ -2114,7 +2121,7 @@ namespace Visifire.Charts
                 AxisTitleElement.Text = GetFormattedMultilineText(this.Title);
 
             AxisTitleElement.InternalFontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), this.TitleFontColor, false);
-            
+
             AxisTitleElement.IsNotificationEnable = true;
 
             #endregion
@@ -2396,7 +2403,7 @@ namespace Visifire.Charts
             Double ticksHeight = 0;
             //AxisLabels.Visual.Background = new SolidColorBrush(Colors.Orange);
             foreach (Ticks tick in Ticks)
-            {
+            {   
                 tick.SetParms(PlacementTypes.Bottom, ScrollableSize, Double.NaN);
 
                 tick.CreateVisualObject();
@@ -2412,7 +2419,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-            
+
             InternalStackPanel.Height += ticksHeight;
 
             if (Width == ScrollableSize)
@@ -2655,7 +2662,7 @@ namespace Visifire.Charts
                 AxisManager.AxisMaximumValue = AxisMaximumNumeric;
                 AxisManager.Calculate();
             }
-            
+
             if (Double.IsNaN((Double)AxisMinimumNumeric) && !(Boolean)StartFromZero)
             {
                 if (PlotDetails.DrawingDivisionFactor != 0)
@@ -2683,7 +2690,7 @@ namespace Visifire.Charts
                     else
                     {
                         Double temp = Math.Floor((start - AxisManager.AxisMinimumValue) / InternalInterval);
-                        
+
                         if (!Double.IsInfinity(temp) && temp >= 1)
                             start = (start - Math.Floor(temp) * InternalInterval);
                     }
@@ -2899,7 +2906,7 @@ namespace Visifire.Charts
             }
 
             if (!isAutoTick)
-                this.FirePropertyChanged("Ticks");
+                this.FirePropertyChanged(VcProperties.Ticks);
         }
 
         /// <summary>
@@ -2928,7 +2935,7 @@ namespace Visifire.Charts
             }
 
             if (!isAutoGrids)
-                this.FirePropertyChanged("Grids");
+                this.FirePropertyChanged(VcProperties.Grids);
         }
 
         /// <summary>
@@ -2938,7 +2945,7 @@ namespace Visifire.Charts
         /// <param name="e">PropertyChangedEventArgs</param>
         private void grid_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            this.FirePropertyChanged(e.PropertyName);
+            this.FirePropertyChanged((VcProperties)Enum.Parse(typeof(VcProperties), e.PropertyName, true));
         }
 
         /// <summary>
@@ -2948,7 +2955,7 @@ namespace Visifire.Charts
         /// <param name="e">PropertyChangedEventArgs</param>
         private void tick_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            this.FirePropertyChanged(e.PropertyName);
+            this.FirePropertyChanged((VcProperties)Enum.Parse(typeof(VcProperties), e.PropertyName, true));
         }
 
         /// <summary>
@@ -3241,10 +3248,14 @@ namespace Visifire.Charts
             {
                 case Orientation.Horizontal:
                     ApplyHorizontalAxisSettings();
+                    _zeroBaseLinePosition = Graphics.ValueToPixelPosition(0, Width, InternalAxisMinimum, InternalAxisMaximum, 0);
+                    
                     break;
 
                 case Orientation.Vertical:
                     ApplyVerticalAxisSettings();
+                    _zeroBaseLinePosition = Height - Graphics.ValueToPixelPosition(0, Height, InternalAxisMinimum, InternalAxisMaximum, 0);
+                    
                     break;
             }
 
@@ -3254,6 +3265,15 @@ namespace Visifire.Charts
             if (!(Boolean)this.Enabled)
             {
                 Visual.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        internal static void SaveOldValueOfAxisRange(Axis axis)
+        {
+            if (axis != null)
+            {
+                axis._oldInternalAxisMaximum = axis.InternalAxisMaximum;
+                axis._oldInternalAxisMinimum = axis.InternalAxisMinimum;
             }
         }
 
@@ -3270,6 +3290,9 @@ namespace Visifire.Charts
 
         #region Data
 
+        // Pixel position of zero line of a axis
+        internal Double _zeroBaseLinePosition;
+
         /// <summary>
         /// Value type of the AxisMinimum Property
         /// </summary>
@@ -3279,7 +3302,7 @@ namespace Visifire.Charts
         /// Value type of the AxisMinimum Property
         /// </summary>
         internal ChartValueTypes _axisMaximumValueType;
-        
+
         /// <summary>
         /// Whether ScrollBar scrolling is enabled due to change of ScrollBarOffset property
         /// </summary>

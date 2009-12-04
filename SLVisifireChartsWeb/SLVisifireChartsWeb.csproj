@@ -40,6 +40,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -64,8 +67,6 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ClientBin\SL.Visifire.Charts.xap" />
-    <Content Include="RealTimeTest.html" />
     <Content Include="TestCases\RealTimeRenderFirstDataXml.htm" />
     <Content Include="TestCases\MultipleChartsInDivs.htm" />
     <Content Include="TestCases\RealTimeRenderChartUsingDataXml.htm" />
@@ -158,6 +159,7 @@
     <Content Include="GalleryCharts\Stacked\StackedColumn2D2.xml" />
     <Content Include="GalleryCharts\Stacked\StackedColumn2D3.xml" />
     <Content Include="FirstChart.htm" />
+    <Content Include="ClientBin\SL.Visifire.Charts.xap" />
     <Content Include="ClientBin\SLVisifireApp.xap" />
     <Content Include="data.xml" />
     <Content Include="LiveUpdate.htm" />
@@ -165,7 +167,7 @@
     <Content Include="TestCases\data2.xml" />
     <Content Include="TestCases\data1.xml" />
     <Content Include="Visifire.htm" />
-    <Content Include="Visifire2.js" />
+    <Content Include="Visifire.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -189,7 +191,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>50399</DevelopmentServerPort>
+          <DevelopmentServerPort>52606</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

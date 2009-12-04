@@ -62,7 +62,13 @@
     <ErrorReport>prompt</ErrorReport>
     <NoConfig>true</NoConfig>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -72,6 +78,7 @@
     <Reference Include="System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
@@ -228,6 +235,18 @@
     </Compile>
     <Compile Include="Combination\Combi6.xaml.cs">
       <DependentUpon>Combi6.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut2D1.xaml.cs">
+      <DependentUpon>Doughnut2D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut2D2.xaml.cs">
+      <DependentUpon>Doughnut2D2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut3D1.xaml.cs">
+      <DependentUpon>Doughnut3D1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Doughnut\Doughnut3D2.xaml.cs">
+      <DependentUpon>Doughnut3D2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Line\Line1.xaml.cs">
       <DependentUpon>Line1.xaml</DependentUpon>
@@ -508,6 +527,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Combination\Combi6.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut2D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut2D2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut3D1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Doughnut\Doughnut3D2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

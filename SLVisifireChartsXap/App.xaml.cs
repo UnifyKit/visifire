@@ -353,7 +353,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim();
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
             version = version.Replace("Version=", "");
             return version;
         }
@@ -416,7 +416,7 @@ namespace SLVisifireChartsXap
                 // chartCanvas.Background = Visifire.Commons.Graphics.GetRandonColor();
             }
             catch (Exception e1)
-            {   
+            {
                 throw new Exception("Error: Invalid chart Data XML found..\n" + CollectWrongPartOfXAML(e1.Message));
             }
 
@@ -474,11 +474,11 @@ namespace SLVisifireChartsXap
             Int32 errorLineNumber;
             Int32 actualErrorLineNumber = 0;
             _skipHighlightValue = 0;
-            
+
             try
             {
                 if (errorMsg.Contains("Line:") || errorMsg.Contains("Position:"))
-                {   
+                {
                     String str = errorMsg.Substring(errorMsg.IndexOf('[') + 1, errorMsg.IndexOf(']') - errorMsg.IndexOf('[') - 1);
 
                     String[] st = str.Split(' ');
@@ -499,8 +499,8 @@ namespace SLVisifireChartsXap
                         //Regex objAlphaPattern = new Regex("(/>[^>]*(" + errorMsg.Substring(index1, index2 - index1) + ")[^<]*<)");
                         //Regex objAlphaPattern = new Regex("<vc\\:Chart[\\s]+.*");
                         Regex objAlphaPattern = new Regex("(>[\\s]*(" + errorMsg.Substring(index1, index2 - index1) + ")[\\s]*<)");
-                        if(objAlphaPattern.IsMatch(_dataXml))
-                        {   
+                        if (objAlphaPattern.IsMatch(_dataXml))
+                        {
                             MatchCollection matchs = objAlphaPattern.Matches(_dataXml);
 
                             foreach (Match match in matchs)
@@ -525,13 +525,13 @@ namespace SLVisifireChartsXap
                                 String token;
 
                                 Int32 index = 0;
-                                
+
                                 if (errorMsg.Contains("AG_E_PARSER_BAD_PROPERTY_VALUE"))
                                 {
                                     index = line.Substring(errorStartCharNumber, line.Length - errorStartCharNumber).IndexOf('"');
                                     token = line.Substring(0, errorStartCharNumber + index).Trim();
 
-                                    if(token.LastIndexOf(' ') != -1)
+                                    if (token.LastIndexOf(' ') != -1)
                                         token = (line.Trim()).Substring(token.LastIndexOf(' '), token.Length - token.LastIndexOf(' ')).Trim();
 
                                 }
@@ -547,14 +547,14 @@ namespace SLVisifireChartsXap
                                     if (index == -1)
                                         index = token.LastIndexOf('<');
                                 }
-                                else if(errorMsg.Contains("wfc: no '<' in attribute value"))
+                                else if (errorMsg.Contains("wfc: no '<' in attribute value"))
                                 {
                                     index = token.LastIndexOf('"');
 
                                     if (index == -1)
                                         index = -7009;
                                 }
-                                else if(errorMsg.Contains("illegal qualified name character"))
+                                else if (errorMsg.Contains("illegal qualified name character"))
                                 {
                                     index = token.LastIndexOf('"');
 
@@ -570,7 +570,7 @@ namespace SLVisifireChartsXap
                                 {
                                     if (errorMsg.Contains("Canvas does not support text content") || errorMsg.Contains("'>' expected") || errorMsg.Contains("'>' expected") || errorMsg.Contains("wfc: element type match"))
                                     {
-                                        Int32 len=0;
+                                        Int32 len = 0;
                                         for (int i = 0; i < errorLineNumber - 1; i++)
                                             len += _xmlLines[i].Length;
 
@@ -581,17 +581,17 @@ namespace SLVisifireChartsXap
                                     {
                                         Int32 length = errorStartCharNumber - index;
                                         token = token.Substring(index, token.Length - index);
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     }
                                 }
                                 // 7009 : wfc: no '<' in attribute value
                                 // 7051 : illegal qualified name character
-                                else if (index == -7009 || index == -7051) 
+                                else if (index == -7009 || index == -7051)
                                 {
-                                    Int32 len =0;
+                                    Int32 len = 0;
                                     Int32 errorCode = index;
 
-                                    for (int i = 0; i < errorLineNumber -1; i++)
+                                    for (int i = 0; i < errorLineNumber - 1; i++)
                                         len += _xmlLines[i].Length;
 
                                     index = len + errorStartCharNumber;
@@ -604,15 +604,15 @@ namespace SLVisifireChartsXap
                                         index = token.LastIndexOf('"');
 
                                     if (index == -1)
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     else
-                                        _string2Highlight=token.Substring(index, token.Length - index);
+                                        _string2Highlight = token.Substring(index, token.Length - index);
 
                                     if (actualErrorLineNumber > 1)
                                     {
                                         actualErrorLineNumber = actualErrorLineNumber - 1;
-                                        line = _xmlLines[actualErrorLineNumber-1];
-                                        Int32 newPosition =line.LastIndexOf(_string2Highlight.Trim());
+                                        line = _xmlLines[actualErrorLineNumber - 1];
+                                        Int32 newPosition = line.LastIndexOf(_string2Highlight.Trim());
                                         errorMsg = errorMsg.Replace("Position: " + errorStartCharNumber.ToString(), "Position: " + newPosition.ToString());
 
                                         errorStartCharNumber = newPosition;
@@ -622,9 +622,9 @@ namespace SLVisifireChartsXap
                                 else
                                 {
                                     if (!String.IsNullOrEmpty(token))
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     else if (!String.IsNullOrEmpty(line))
-                                        _string2Highlight=line;
+                                        _string2Highlight = line;
                                     else
                                         _string2Highlight = null;
                                 }
@@ -646,7 +646,7 @@ namespace SLVisifireChartsXap
             {
                 _string2Highlight = null;
             }
-          
+
             return errorMsg;
         }
 
@@ -685,7 +685,7 @@ namespace SLVisifireChartsXap
                     try
                     {
                         if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
-                        {   
+                        {
                             chartCanvas.Children.Clear();
                             chartCanvas.Resources.Clear();
                             chartCanvas.Loaded -= chartCanv_Loaded;
@@ -738,7 +738,7 @@ namespace SLVisifireChartsXap
             }
             catch
             { }
-            
+
             RemoveOldChartCanvas();
         }
 
@@ -787,7 +787,7 @@ namespace SLVisifireChartsXap
                     Logger.LogLine("InnerException: " + e.ExceptionObject.InnerException.Message + "\n");
 
                 Logger.LogLine("Exception: " + e.ExceptionObject.Message + "\n");
-                
+
                 // _skipHighlightValue = Logger.Text.Length;
 
                 Logger.LogLine("XML:\n" + _dataXml + "\n");

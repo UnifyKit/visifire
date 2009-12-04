@@ -24,7 +24,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Grid x:Name="RootElement" >
-                            
+
                             <!--<vsm:VisualStateManager.VisualStateGroups>
                                 <vsm:VisualStateGroup x:Name="CommonStates">
                                     <vsm:VisualState x:Name="Normal"/>
@@ -89,22 +89,22 @@
             <ColorAnimation Duration="4"  Storyboard.TargetProperty="Background" From="#1c6e6e6e" To="Transparent"></ColorAnimation>
         </Storyboard>
     </UserControl.Resources>
-        
-        <Grid Background="White" x:Name="LayoutRoot"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <ScrollViewer IsTabStop="True" BorderThickness="1" Name="ScrollViewer" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" >
-                <ScrollViewer.Background>
-                    <LinearGradientBrush>
-                        <GradientStop Color="#1c6e6e6e" Offset="0" ></GradientStop>
-                        <GradientStop Color="Transparent" Offset="1" ></GradientStop>
-                    </LinearGradientBrush>
-                </ScrollViewer.Background>
-                <TextBox BorderThickness="0" Background="Transparent" Style="{StaticResource TextBoxStyle1}"  Height="Auto" HorizontalAlignment="Stretch" IsReadOnly="True" Text="" TextWrapping="Wrap" x:Name="logger"/>
-            </ScrollViewer>
+
+    <Grid Background="White" x:Name="LayoutRoot"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <ScrollViewer IsTabStop="True" BorderThickness="1" Name="ScrollViewer" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" VerticalAlignment="Stretch" >
+            <ScrollViewer.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="#1c6e6e6e" Offset="0" ></GradientStop>
+                    <GradientStop Color="Transparent" Offset="1" ></GradientStop>
+                </LinearGradientBrush>
+            </ScrollViewer.Background>
+            <TextBox BorderThickness="0" Background="Transparent" Style="{StaticResource TextBoxStyle1}"  Height="Auto" HorizontalAlignment="Stretch" IsReadOnly="True" Text="" TextWrapping="Wrap" x:Name="logger"/>
+        </ScrollViewer>
         <Border Height="20" Name="DocHelp" CornerRadius="4" Cursor="Hand" Width="20" ToolTipService.Placement="Left" ToolTipService.ToolTip="Click here for more help from Documentation." VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,25,0" Background="Green" >
             <Border.Effect>
                 <DropShadowEffect Color="Gray" ShadowDepth="4"></DropShadowEffect>
             </Border.Effect>
-            <TextBlock HorizontalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="14"> ? </TextBlock>
+            <TextBlock HorizontalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="14"> ?</TextBlock>
         </Border>
     </Grid>
 </UserControl>
