@@ -293,7 +293,7 @@ namespace Visifire.Charts
                                      select c).Count();
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX);
+            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX + 4);
             visual.Clip = clipRectangle;
 
             return visual;

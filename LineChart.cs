@@ -606,15 +606,15 @@ namespace Visifire.Charts
             RectangleGeometry clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             AreaChart.GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
             clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
 
-            visual.Clip = clipRectangle;
+            labelCanvas.Clip = clipRectangle;
 
             // If animation is not enabled or if there are no series in the serieslist the dont apply animation
             if (animationEnabled && seriesList.Count > 0)
@@ -629,7 +629,7 @@ namespace Visifire.Charts
             }
 
             clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + chart.ChartArea.PLANK_DEPTH);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 10);
             lineChartCanvas.Clip = clipRectangle;
 
             return visual;
