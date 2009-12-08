@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="SLVisifireApp.StackedColumn2D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="theme_1" AnimationType="Type2">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Imports of Goods"/>
+            </vc:Chart.Titles>
+            <vc:Chart.AxisX>
+                <vc:Axis Title="Month"/>
+            </vc:Chart.AxisX>
+            <vc:Chart.AxisY>
+                <vc:Axis Title="Total(In millions of dollars)" Prefix="$"/>
+            </vc:Chart.AxisY>
+
+            <vc:Chart.Series>
+            <vc:DataSeries LegendText="Capital Goods" RenderAs="StackedColumn" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint AxisXLabel="Jan" YValue="25987"/>
+                    <vc:DataPoint AxisXLabel="Feb" YValue="24550"/>
+                    <vc:DataPoint AxisXLabel="Mar" YValue="31302"/>
+                    <vc:DataPoint AxisXLabel="Apr" YValue="34406"/>
+                    <vc:DataPoint AxisXLabel="May" YValue="32774"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Consumer Goods" Bevel="True" RenderAs="StackedColumn" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="31243"/>
+                    <vc:DataPoint YValue="29692"/>
+                    <vc:DataPoint YValue="31390"/>
+                    <vc:DataPoint YValue="31080"/>
+                    <vc:DataPoint YValue="31623"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Foods and Beverages" RenderAs="StackedColumn" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="8216"/>
+                    <vc:DataPoint YValue="6483"/>
+                    <vc:DataPoint YValue="9592"/>
+                    <vc:DataPoint YValue="8006"/>
+                    <vc:DataPoint YValue="6291"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+
+            <vc:DataSeries LegendText="Automotive Vehicles" RenderAs="StackedColumn" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint YValue="20725"/>
+                    <vc:DataPoint YValue="22710"/>
+                    <vc:DataPoint YValue="21060"/>
+                    <vc:DataPoint YValue="22581"/>
+                    <vc:DataPoint YValue="19970"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+            </vc:Chart.Series>
+            
+        </vc:Chart>
+    </Grid>
+</UserControl>
