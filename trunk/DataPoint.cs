@@ -3376,6 +3376,9 @@ namespace Visifire.Charts
 
                     if (Marker != null)
                         AttachEvents2Visual(Object, this, Marker.Visual);
+
+                    if (LabelVisual != null)
+                        AttachEvents2Visual(Object, this, LabelVisual);
                 }
             }
         }

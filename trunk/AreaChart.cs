@@ -774,7 +774,7 @@ namespace Visifire.Charts
 
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             visual.Children.Add(areaCanvas);
@@ -784,9 +784,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
@@ -1052,7 +1052,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             visual.Children.Add(areaCanvas);
@@ -1062,9 +1062,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 
@@ -1322,7 +1322,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS);
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
             areaCanvas.Clip = clipRectangle;
 
             visual.Children.Add(areaCanvas);
@@ -1332,9 +1332,9 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
 
             Double clipLeft = 0;
-            Double clipTop = -depth3d;
+            Double clipTop = -depth3d - 4;
             Double clipWidth = width + depth3d;
-            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 6;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
 
             GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, minimumXValue, maximumXValue);
 

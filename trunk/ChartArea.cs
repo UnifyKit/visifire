@@ -629,7 +629,7 @@ namespace Visifire.Charts
                     SetBlankSeries();
             }
             else
-                Chart.InternalSeries = Chart.Series.ToList();
+                Chart.InternalSeries = (from ds in Chart.Series orderby ds.ZIndex select ds).ToList();
 
             foreach (DataSeries ds in Chart.InternalSeries)
             {
@@ -1098,7 +1098,7 @@ namespace Visifire.Charts
                 #endregion
             }
             else if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-            {   
+            {
                 #region For horizontal chart
 
                 Double totalHeightReduced = DrawAxesX(plotAreaSize);
@@ -1118,6 +1118,28 @@ namespace Visifire.Charts
                 Double totalHeightReduced2 = DrawAxesX(plotAreaSize);
                 plotAreaSize.Width += SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
 
+                Double totalWidthReduced2 = 0;
+
+                if (totalHeightReduced2 != totalHeightReduced)
+                {
+                    plotAreaSize.Height += totalHeightReduced;
+                    plotAreaSize.Height -= totalHeightReduced2;
+                    UpdateLayoutSettings(plotAreaSize);
+                    totalWidthReduced2 = DrawAxesY(plotAreaSize);
+                }
+
+                if (totalWidthReduced2 == 0)
+                    totalWidthReduced2 = DrawAxesY(plotAreaSize);
+
+                if (totalWidthReduced2 != totalWidthReduced)
+                {
+                    plotAreaSize.Width += totalWidthReduced;
+                    plotAreaSize.Width -= totalWidthReduced2;
+                    UpdateLayoutSettings(plotAreaSize);
+                    DrawAxesX(plotAreaSize);
+                }
+
+                /*
                 if (totalHeightReduced2 != totalHeightReduced)
                 {
                     plotAreaSize.Height += totalHeightReduced;
@@ -1127,6 +1149,7 @@ namespace Visifire.Charts
                 }
                 else
                     DrawAxesY(plotAreaSize);
+                */
 
                 #endregion Horizontal Render
             }
@@ -3267,6 +3290,9 @@ namespace Visifire.Charts
 
                                 if (dp.Marker != null)
                                     dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+
+                                if (dp.LabelVisual != null)
+                                    dp.AttachToolTip(Chart, dp, dp.LabelVisual);
                             }
                         }
 

@@ -63,7 +63,7 @@ namespace Visifire.Charts
         public DataSeries()
         {
             ToolTipText = "";
-            IsZIndexSet = false;
+            //IsZIndexSet = false;
 
             // Apply default style from generic
 #if WPF
@@ -2918,7 +2918,7 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
             dataSeries.InternalZIndex = (Int32) e.NewValue;
-            dataSeries.IsZIndexSet = true;
+            //dataSeries.IsZIndexSet = true;
             dataSeries.FirePropertyChanged("ZIndex");
         }
 
