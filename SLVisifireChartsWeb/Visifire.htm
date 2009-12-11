@@ -1,45 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>This is my first Visifire Chart</title>
+    <title>Untitled Page</title>
+
     <script type="text/javascript" src="Visifire2.js"></script>
-</head>
+
     
+</head>
 <body>
-    <div id="VisifireChart0" >
+    <div id="Div1">
 
-        <script type="text/javascript" >
+        <script type="text/javascript">
+            //var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300);
 
-            // Create Visifire object
-            var vChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
+            var background = "White";
+            var isWindowless = true;
 
-            // vChart1.setLogLevel(0); // If you want to disable logging.
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300, background, isWindowless);
+            vChart.setDataUri('data.xml');
+            vChart.render("Div1");
 
-            // Chart Data XML
-            var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300">'
-               + '<vc:Chart.TrendLines> '
-               + '  <vc:TrendLine Orientation="Vertical" LineThickness="10"/>'
-               + '</vc:Chart.TrendLines>'
-               + '<vc:Chart.Series>'
-               + '  <vc:DataSeries RenderAs="Column">'
-               + '      <vc:DataSeries.DataPoints>'
-               + '          <vc:DataPoint XValue="1/1/2009" YValue="10"/>'
-               + '              <vc:DataPoint XValue="1/2/2009" YValue="20"/>'
-               + '              <vc:DataPoint XValue="1/6/2009" YValue="30"/>'
-               + '              <vc:DataPoint XValue="1/7/2009" YValue="40"/>'
-               + '              <vc:DataPoint XValue="1/8/2009" YValue="50"/>'
-               + '          </vc:DataSeries.DataPoints>'
-               + '      </vc:DataSeries>'
-               + '  </vc:Chart.Series>'
-               + ' </vc:Chart>';
+        </script>
 
-            // Set Chart Data XML
-            vChart.setDataUri("data.xml");
-            
-            // Render chart
-            vChart.render("VisifireChart0");
-          
-        </script>      
-    </div>    
+    </div>
 </body>
 </html>

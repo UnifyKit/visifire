@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.3.4
+Visifire2.js v2.3.5
 
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -43,6 +43,7 @@ if (!window.Visifire2) {
         this.background = null;                     // Background of the chart container.
         this.preLoad = null;                        // Preload event handler.
         this.loaded = null;                         // Loaded event handler.
+        this.onError = null;                        // OnError event handler.
 
         /*  Array of chart references. Visifire Chart object can contain more than one chart.
             Chart reference can be used for updating them at real-time
@@ -201,6 +202,9 @@ if (!window.Visifire2) {
 
         if (vThisObject.loaded != null)
             window["visifireChartLoaded" + vThisObject.index] = vThisObject.loaded;
+
+        if (vThisObject.onError != null)
+            window["visifireChartOnError" + vThisObject.index] = vThisObject.onError;
     }
      
     /*  Returns current silverlight control reference 
@@ -272,6 +276,10 @@ if (!window.Visifire2) {
 
         html += 'width=' + vWidth + ',' + 'height=' + vHeight + '';
         html += "\"/>";
+
+        if (vThisObject.onError != null)
+            html += '<param name="onError" value="visifireChartOnError' + vThisObject.index + '" />'
+            
         html += '<param name="enableHtmlAccess" value="true" />'
 		        + '<param name="background" value="' + vThisObject.background + '" />'
 		        + '<param name="windowless" value="' + vThisObject.windowless + '" />'
