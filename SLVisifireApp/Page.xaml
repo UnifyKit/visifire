@@ -4,10 +4,10 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 
 >
-    <Grid x:Name="LayoutRoot" Height="Auto" Width="Auto">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1"
-                  x:Name="MyChart" Width="500" Height="300">
-            
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+                  Width="500" Height="300" x:Name="MyChart" Theme="Theme1">
+
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
@@ -23,4 +23,3 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 
     </Grid>
 </UserControl>
-  

@@ -78,7 +78,7 @@ namespace Visifire.Charts
                 return _angle;
             }
             set
-            {   
+            {
                 if (value >= -90 && value <= 90)
                     _angle = value;
                 else if (double.IsNaN(value))
@@ -580,11 +580,11 @@ namespace Visifire.Charts
             ActualTextWidth = TextElement.ActualWidth;
 #endif
         }
-        
+
         #endregion
 
         #region Internal Methods
-        
+
         /// <summary>
         /// Applies properties to the TextBlock
         /// </summary>
@@ -606,7 +606,7 @@ namespace Visifire.Charts
         internal void CreateVisualObject(Boolean positioningAllowed, ElementData tag)
         {
             Visual = new Canvas() { Tag = tag };
-            TextElement = new TextBlock(){ Tag = tag };
+            TextElement = new TextBlock() { Tag = tag };
             Rotation = new RotateTransform();
             TextElement.RenderTransform = Rotation;
             Visual.Children.Add(TextElement);
@@ -614,8 +614,8 @@ namespace Visifire.Charts
             ApplyProperties(this);
 
             CalculateTextElementSize();
-            
-            if(positioningAllowed)
+
+            if (positioningAllowed)
                 SetPosition();
 
             // calculate the actual size of the AxisLabel element
@@ -630,23 +630,23 @@ namespace Visifire.Charts
 
         #region Static Methods
 
-       /// <summary>
-       /// Returns a positive angle. 
-       /// The angle must always be between -90 and 90 
-       /// </summary>
-       /// <param name="angle">Angle</param>
-       /// <returns>Angle as Double</returns>
+        /// <summary>
+        /// Returns a positive angle. 
+        /// The angle must always be between -90 and 90 
+        /// </summary>
+        /// <param name="angle">Angle</param>
+        /// <returns>Angle as Double</returns>
         internal static Double GetAngle(Double angle)
         {
             return (angle >= 0 ? angle : 360 + angle);
         }
 
-       /// <summary>
-       /// Returns the radian for the angle. 
-       /// Internal calls angle to get positive angle value
-       /// </summary>
-       /// <param name="angle">Angle</param>
-       /// <returns>Angle as Double</returns>
+        /// <summary>
+        /// Returns the radian for the angle. 
+        /// Internal calls angle to get positive angle value
+        /// </summary>
+        /// <param name="angle">Angle</param>
+        /// <returns>Angle as Double</returns>
         internal static Double GetRadians(Double angle)
         {
             return Math.PI / 180 * GetAngle(angle);
@@ -658,8 +658,8 @@ namespace Visifire.Charts
         /// <summary>
         /// Identifier for Angle property
         /// </summary>
-        private Double _angle;  
-                
+        private Double _angle;
+
         /// <summary>
         /// Identifier for Position property
         /// </summary>

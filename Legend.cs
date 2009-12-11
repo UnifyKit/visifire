@@ -49,9 +49,9 @@ namespace Visifire.Charts
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(Legend), new FrameworkPropertyMetadata(typeof(Legend)));
                 _defaultStyleKeyApplied = true;
             } 
-#else       
+#else
             DefaultStyleKey = typeof(Legend);
-#endif      
+#endif
 
             Entries = new List<KeyValuePair<String, Marker>>();
         }
@@ -451,7 +451,7 @@ namespace Visifire.Charts
             typeof(Legend),
             new PropertyMetadata(OnVerticalAlignmentPropertyChanged));
 
-         /// <summary>
+        /// <summary>
         /// Identifies the Visifire.Charts.Title.Padding dependency property.
         /// </summary>
         /// <returns>
@@ -706,7 +706,7 @@ namespace Visifire.Charts
                 {
                     InternalOpacity = value;
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -728,7 +728,7 @@ namespace Visifire.Charts
                 if (base.Cursor != value)
                 {
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -765,7 +765,7 @@ namespace Visifire.Charts
 
                 InternalPadding = value;
                 SetValue(PaddingProperty, value);
-                FirePropertyChanged("Padding");
+                FirePropertyChanged(VcProperties.Padding);
 #endif
             }
         }
@@ -786,7 +786,7 @@ namespace Visifire.Charts
                 {
                     InternalHorizontalAlignment = value;
                     SetValue(HorizontalAlignmentProperty, value);
-                    FirePropertyChanged("HorizontalAlignment");
+                    FirePropertyChanged(VcProperties.HorizontalAlignment);
                 }
 #else
                 SetValue(HorizontalAlignmentProperty, value);
@@ -811,7 +811,7 @@ namespace Visifire.Charts
                 {
                     InternalVerticalAlignment = value;
                     SetValue(VerticalAlignmentProperty, value);
-                    FirePropertyChanged("VerticalAlignment");
+                    FirePropertyChanged(VcProperties.VerticalAlignment);
                 }
 #else
                  SetValue(VerticalAlignmentProperty, value);
@@ -850,7 +850,7 @@ namespace Visifire.Charts
                 {
                     InternalBorderThickness = value;
                     SetValue(BorderThicknessProperty, value);
-                    FirePropertyChanged("BorderThickness");
+                    FirePropertyChanged(VcProperties.BorderThickness);
                 }
 #else
                 SetValue(BorderThicknessProperty, value);
@@ -869,12 +869,12 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL          
+#if SL
                 if (Background != value)
                 {
                     InternalBackground = value;
                     SetValue(BackgroundProperty, value);
-                    FirePropertyChanged("Background");
+                    FirePropertyChanged(VcProperties.Background);
                 }
 #else
                 SetValue(BackgroundProperty, value);
@@ -949,10 +949,10 @@ namespace Visifire.Charts
 
 #if SL
                 if (FontFamily != value)
-                {   
+                {
                     InternalFontFamily = value;
                     SetValue(FontFamilyProperty, value);
-                    FirePropertyChanged("FontFamily");
+                    FirePropertyChanged(VcProperties.FontFamily);
                 }
 #else
                 SetValue(FontFamilyProperty, value);
@@ -977,7 +977,7 @@ namespace Visifire.Charts
                 {
                     InternalFontSize = value;
                     SetValue(FontSizeProperty, value);
-                    FirePropertyChanged("FontSize");
+                    FirePropertyChanged(VcProperties.FontSize);
                 }
 #else
                 SetValue(FontSizeProperty, value);
@@ -1001,10 +1001,10 @@ namespace Visifire.Charts
             {
 #if SL
                 if (FontStyle != value)
-                {   
+                {
                     InternalFontStyle = value;
                     SetValue(FontStyleProperty, value);
-                    FirePropertyChanged("FontStyle");
+                    FirePropertyChanged(VcProperties.FontStyle);
                 }
 #else
                 SetValue(FontStyleProperty, value);
@@ -1031,7 +1031,7 @@ namespace Visifire.Charts
                 {
                     InternalFontWeight = value;
                     SetValue(FontWeightProperty, value);
-                    FirePropertyChanged("FontWeight");
+                    FirePropertyChanged(VcProperties.FontWeight);
                 }
 #else           
                 SetValue(FontWeightProperty, value);
@@ -1238,11 +1238,11 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL          
+#if SL
                 if (MaxHeight != value)
                 {
                     SetValue(MaxHeightProperty, value);
-                    FirePropertyChanged("MaxHeight");
+                    FirePropertyChanged(VcProperties.MaxHeight);
                 }
 #else
                 SetValue(MaxHeightProperty, value);
@@ -1266,7 +1266,7 @@ namespace Visifire.Charts
                 {
                     InternalMaxWidth = value;
                     SetValue(MaxWidthProperty, value);
-                    FirePropertyChanged("MaxWidth");
+                    FirePropertyChanged(VcProperties.MaxWidth);
                 }
 #else
                 SetValue(MaxWidthProperty, value);
@@ -1600,7 +1600,7 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend c = d as Legend;
-            c.FirePropertyChanged("HrefTarget");
+            c.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -1611,7 +1611,7 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend c = d as Legend;
-            c.FirePropertyChanged("Href");
+            c.FirePropertyChanged(VcProperties.Href);
         }
 
         /// <summary>
@@ -1622,9 +1622,9 @@ namespace Visifire.Charts
         private static void OnReversedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend c = d as Legend;
-            c.FirePropertyChanged("Reversed");
+            c.FirePropertyChanged(VcProperties.Reversed);
         }
-        
+
         /// <summary>
         /// Event handler attached with LabelMargin property changed event of Legend element
         /// </summary>
@@ -1633,7 +1633,7 @@ namespace Visifire.Charts
         private static void OnLabelMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("LabelMargin");
+            legend.FirePropertyChanged(VcProperties.LabelMargin);
         }
 
         /// <summary>
@@ -1644,7 +1644,7 @@ namespace Visifire.Charts
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("BorderColor");
+            legend.FirePropertyChanged(VcProperties.BorderColor);
         }
 
         /// <summary>
@@ -1655,7 +1655,7 @@ namespace Visifire.Charts
         private static void OnDockInsidePlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("DockInsidePlotArea");
+            legend.FirePropertyChanged(VcProperties.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -1666,9 +1666,9 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("Enabled");
+            legend.FirePropertyChanged(VcProperties.Enabled);
         }
-        
+
         /// <summary>
         /// Event handler attached with FontColor property changed event of Legend element
         /// </summary>
@@ -1677,7 +1677,7 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("FontColor");
+            legend.FirePropertyChanged(VcProperties.FontColor);
         }
 
         //------------------------------------------------------------
@@ -1694,12 +1694,12 @@ namespace Visifire.Charts
             if (e.NewValue == null || e.OldValue == null)
             {
                 legend.InternalFontFamily = (FontFamily)e.NewValue;
-                legend.FirePropertyChanged("FontFamily");
+                legend.FirePropertyChanged(VcProperties.FontFamily);
             }
             else if (e.NewValue.ToString() != e.OldValue.ToString())
             {
                 legend.InternalFontFamily = (FontFamily)e.NewValue;
-                legend.FirePropertyChanged("FontFamily");
+                legend.FirePropertyChanged(VcProperties.FontFamily);
             }
             //legend.FirePropertyChanged("FontFamily");
         }
@@ -1713,7 +1713,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalFontSize = (Double)e.NewValue;
-            legend.FirePropertyChanged("FontSize");
+            legend.FirePropertyChanged(VcProperties.FontSize);
         }
 
         /// <summary>
@@ -1725,9 +1725,9 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalFontStyle = (FontStyle)e.NewValue;
-            legend.FirePropertyChanged("FontStyle");
+            legend.FirePropertyChanged(VcProperties.FontStyle);
         }
-        
+
         /// <summary>
         /// Event handler attached with FontWeight property changed event of Legend element
         /// </summary>
@@ -1737,7 +1737,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalFontWeight = (FontWeight)e.NewValue;
-            legend.FirePropertyChanged("FontWeight");
+            legend.FirePropertyChanged(VcProperties.FontWeight);
         }
 
         /// <summary>
@@ -1749,7 +1749,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalBorderThickness = (Thickness)e.NewValue;
-            legend.FirePropertyChanged("BorderThickness");
+            legend.FirePropertyChanged(VcProperties.BorderThickness);
         }
 
         /// <summary>
@@ -1761,7 +1761,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalBackground = (Brush)e.NewValue;
-            legend.FirePropertyChanged("Background");
+            legend.FirePropertyChanged(VcProperties.Background);
         }
 
         /// <summary>
@@ -1773,7 +1773,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalPadding = (Thickness)e.NewValue;
-            legend.FirePropertyChanged("Padding");
+            legend.FirePropertyChanged(VcProperties.Padding);
         }
 
         /// <summary>
@@ -1785,7 +1785,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalHorizontalAlignment = (HorizontalAlignment)e.NewValue;
-            legend.FirePropertyChanged("HorizontalAlignment");
+            legend.FirePropertyChanged(VcProperties.HorizontalAlignment);
         }
 
         /// <summary>
@@ -1797,7 +1797,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalVerticalAlignment = (VerticalAlignment)e.NewValue;
-            legend.FirePropertyChanged("VerticalAlignment");
+            legend.FirePropertyChanged(VcProperties.VerticalAlignment);
         }
 
         /// <summary>
@@ -1809,7 +1809,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalOpacity = (Double)e.NewValue;
-            legend.FirePropertyChanged("Opacity");
+            legend.FirePropertyChanged(VcProperties.Opacity);
         }
 
         /// <summary>
@@ -1821,7 +1821,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalMaxHeight = (Double)e.NewValue;
-            legend.FirePropertyChanged("MaxHeight");
+            legend.FirePropertyChanged(VcProperties.MaxHeight);
         }
 
         /// <summary>
@@ -1833,7 +1833,7 @@ namespace Visifire.Charts
         {
             Legend legend = d as Legend;
             legend.InternalMaxWidth = (Double)e.NewValue;
-            legend.FirePropertyChanged("MaxWidth");
+            legend.FirePropertyChanged(VcProperties.MaxWidth);
         }
         //----------------------------------------------
 
@@ -1845,7 +1845,7 @@ namespace Visifire.Charts
         private static void OnLightingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("LightingEnabled");
+            legend.FirePropertyChanged(VcProperties.LightingEnabled);
         }
 
         /// <summary>
@@ -1856,7 +1856,7 @@ namespace Visifire.Charts
         private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("CornerRadius");
+            legend.FirePropertyChanged(VcProperties.CornerRadius);
         }
 
         /// <summary>
@@ -1867,7 +1867,7 @@ namespace Visifire.Charts
         private static void OnTitlePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("Title");
+            legend.FirePropertyChanged(VcProperties.Title);
         }
 
         /// <summary>
@@ -1878,7 +1878,7 @@ namespace Visifire.Charts
         private static void OnTitleAlignmentXPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleAlignmentX");
+            legend.FirePropertyChanged(VcProperties.TitleAlignmentX);
         }
 
         /// <summary>
@@ -1889,7 +1889,7 @@ namespace Visifire.Charts
         private static void OnTitleTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleTextAlignment");
+            legend.FirePropertyChanged(VcProperties.TitleTextAlignment);
         }
 
         /// <summary>
@@ -1900,9 +1900,9 @@ namespace Visifire.Charts
         private static void OnTitleBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleBackground");
+            legend.FirePropertyChanged(VcProperties.TitleBackground);
         }
-        
+
         /// <summary>
         /// Event handler attached with TitleFontColor property changed event of Legend element
         /// </summary>
@@ -1911,7 +1911,7 @@ namespace Visifire.Charts
         private static void OnTitleFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleFontColor");
+            legend.FirePropertyChanged(VcProperties.TitleFontColor);
         }
 
         /// <summary>
@@ -1922,7 +1922,7 @@ namespace Visifire.Charts
         private static void OnTitleFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleFontFamily");
+            legend.FirePropertyChanged(VcProperties.TitleFontFamily);
         }
 
         /// <summary>
@@ -1933,7 +1933,7 @@ namespace Visifire.Charts
         private static void OnTitleFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleFontStyle");
+            legend.FirePropertyChanged(VcProperties.TitleFontStyle);
         }
 
         /// <summary>
@@ -1944,7 +1944,7 @@ namespace Visifire.Charts
         private static void OnTitleFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleFontSize");
+            legend.FirePropertyChanged(VcProperties.TitleFontSize);
         }
 
         /// <summary>
@@ -1955,7 +1955,7 @@ namespace Visifire.Charts
         private static void OnTitleFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("TitleFontWeight");
+            legend.FirePropertyChanged(VcProperties.TitleFontWeight);
         }
 
         /// <summary>
@@ -1966,7 +1966,7 @@ namespace Visifire.Charts
         private static void OnEntryMarginPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Legend legend = d as Legend;
-            legend.FirePropertyChanged("EntryMargin");
+            legend.FirePropertyChanged(VcProperties.EntryMargin);
         }
 
 
@@ -2119,7 +2119,7 @@ namespace Visifire.Charts
 
             return entrySize;
         }
-        
+
         /// <summary>
         /// Apply LineStyle to line symbol of a legend entry in Legend
         /// </summary>
@@ -2160,7 +2160,7 @@ namespace Visifire.Charts
 
             line.Margin = new Thickness(EntryMargin);
             line.Stroke = (marker.BorderColor);
-            
+
             Double height = marker.TextBlockSize.Height > marker.MarkerSize.Height ? marker.TextBlockSize.Height : marker.MarkerSize.Height;
             lineMarker.Height = marker.MarkerActualSize.Height;
 
@@ -2171,11 +2171,11 @@ namespace Visifire.Charts
             line.Width = ENTRY_SYMBOL_LINE_WIDTH;
 
             lineMarker.Width = marker.MarkerActualSize.Width + ENTRY_SYMBOL_LINE_WIDTH / 2;
-            
+
             line.StrokeDashArray = ApplyLineStyleForMarkerOfLegendEntry(line, marker.DataSeriesOfLegendMarker.LineStyle.ToString());
 
             lineMarker.Children.Add(line);
-            
+
             lineMarker.Children.Add(marker.Visual);
 
             if (!(InternalVerticalAlignment == VerticalAlignment.Center && (InternalHorizontalAlignment == HorizontalAlignment.Left || InternalHorizontalAlignment == HorizontalAlignment.Right)))
@@ -2189,7 +2189,7 @@ namespace Visifire.Charts
 #else
             line.Height = 8;
             line.SetValue(Canvas.TopProperty, (height / 2) + .4876);
-#endif      
+#endif
 
             line.SetValue(Canvas.LeftProperty, (Double)(-marker.MarkerSize.Width / 2) - .4876);
 
@@ -2211,7 +2211,7 @@ namespace Visifire.Charts
             legendPanel.Height = 0;
 
             foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {   
+            {
                 Marker markerAsSymbol = labelAndSymbol.Value;
                 markerAsSymbol.Margin = EntryMargin;
                 markerAsSymbol.LabelMargin = LabelMargin;
@@ -2222,12 +2222,11 @@ namespace Visifire.Charts
 
                 ApplyFontPropertiesOfMarkerAsSymbol(markerAsSymbol);
 
-                if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
+                if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )
-
-                {   
+                {
                     markerAsSymbol.BorderColor = markerAsSymbol.MarkerFillColor;
                     markerAsSymbol.MarkerFillColor = new SolidColorBrush(Colors.White);
                     markerAsSymbol.BorderThickness = 0.7;
@@ -2365,7 +2364,7 @@ namespace Visifire.Charts
             legendPanel.Children.Add(StackPanelRow());
 
             foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {   
+            {
                 Marker marker = labelAndSymbol.Value;
                 marker.Margin = EntryMargin;
                 marker.LabelMargin = LabelMargin;
@@ -2376,7 +2375,7 @@ namespace Visifire.Charts
                 marker.TextAlignmentX = AlignmentX.Right;
 
 
-                if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line 
+                if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )
@@ -2385,12 +2384,12 @@ namespace Visifire.Charts
                     marker.MarkerFillColor = new SolidColorBrush(Colors.White);
                     marker.BorderThickness = 0.7;
 
-                    marker.LabelMargin += ENTRY_SYMBOL_LINE_WIDTH /2;
+                    marker.LabelMargin += ENTRY_SYMBOL_LINE_WIDTH / 2;
 
-                    marker.CreateVisual();                   
+                    marker.CreateVisual();
 
                     Canvas lineMarker = GetNewMarkerForLineChart(marker);
-                    
+
                     //if (marker.DataSeriesOfLegendMarker.MarkerEnabled == false)
                     //    marker.MarkerShape.Opacity = 0;
 
@@ -2501,7 +2500,7 @@ namespace Visifire.Charts
             legendGrid.ShowGridLines = true;
             legendGrid.HorizontalAlignment = HorizontalAlignment.Center;
             legendGrid.VerticalAlignment = VerticalAlignment.Center;
-            
+
             legendContent.Children.Add(legendGrid);
         }
 
@@ -2585,7 +2584,7 @@ namespace Visifire.Charts
 
                 legendTitle.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-                if(legendTitle.DesiredSize.Width > InternalMaxWidth)
+                if (legendTitle.DesiredSize.Width > InternalMaxWidth)
                     legendTitle.Visual.Width = InternalMaxWidth;
 
                 LegendContainer.Children.Add(legendTitle.Visual);
@@ -2626,7 +2625,7 @@ namespace Visifire.Charts
         #region Data
 
         private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
- 
+
         private Double _internalFontSize = Double.NaN;
         private FontFamily _internalFontFamily = null;
         internal Brush InternalFontColor;

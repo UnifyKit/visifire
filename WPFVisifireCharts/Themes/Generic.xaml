@@ -5,7 +5,7 @@
     <Style TargetType="{x:Type vc:Chart}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vc:Chart}" >
+                <ControlTemplate TargetType="{x:Type vc:Chart}">
                     <Grid x:Name="RootElement" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}" Opacity="{TemplateBinding Opacity}">
 
@@ -189,7 +189,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Setter Property="Padding" Value="6"/>
         <Setter Property="AnimationEnabled" Value="true"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -237,37 +237,37 @@
         <Setter Property="BorderThickness" Value="0"/>
         <!--<Setter Property="BorderColor" Value="Black"/>-->
     </Style>
-    
+
     <Style TargetType="{x:Type vc:Title}" >
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="FontFamily" Value="Verdana"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
-    
+
     <Style TargetType="{x:Type vc:Axis}">
         <Setter Property="LineThickness" Value="0.5"/>
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="TitleFontFamily" Value="Verdana"/>
     </Style>
-    
+
     <Style TargetType="{x:Type vc:DataPoint}">
         <!--<Setter Property="Color" Value="#333333"/>-->
     </Style>
-    
+
     <Style TargetType="{x:Type vc:PlotArea}">
         <!--Do not use background color here. Bcz Color wont refresh in blend <Setter Property="Color" Value="Transparent"/>-->
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Gray"/>
         <Setter Property="Background" Value="Transparent"/>
     </Style>
-    
+
     <Style TargetType="{x:Type vc:ChartGrid}">
         <Setter Property="LineThickness" Value="0.25"/>
         <Setter Property="LineStyle" Value="Solid"/>
         <Setter Property="LineColor" Value="Gray"/>
     </Style>
-    
+
     <Style TargetType="{x:Type vc:AxisLabels}">
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="FontFamily" Value="Verdana"/>
@@ -275,14 +275,14 @@
         <Setter Property="FontWeight" Value="Normal"/>
         <!--<Setter Property="Rows" Value="2"/>-->
     </Style>
-    
+
     <Style TargetType="{x:Type vc:Ticks}">
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="LineThickness" Value="0.5"/>
         <Setter Property="LineStyle" Value="Solid"/>
         <Setter Property="Enabled" Value="true"/>
     </Style>
-    
+
     <Style TargetType="{x:Type vc:Legend}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Padding" Value="4"/>
@@ -293,7 +293,7 @@
         <Setter Property="FontWeight" Value="Normal"/>
         <!--<Setter Property="FontColor" Value="Black"/>-->
         <Setter Property="FontSize" Value="9"/>
-        <Setter Property="BorderThickness" Value="0"/>  
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="Black"/>
         <Setter Property="CornerRadius" Value="1"/>
         <Setter Property="Enabled" Value="true"/>
@@ -305,5 +305,5 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
     </Style>
-    
+
 </ResourceDictionary>

@@ -52,6 +52,7 @@ namespace SLVisifireChartsXap
             HtmlPage.RegisterScriptableObject("App", this);
         }
 
+
         #endregion
 
         #region Public Properties
@@ -107,110 +108,6 @@ namespace SLVisifireChartsXap
         #endregion
 
         #region Private Methods
-
-        /// <summary>
-        /// On wrapper resized
-        /// </summary>
-        /// <param name="sender">sender</param>
-        /// <param name="e">ResizeEventArgs</param>
-        private void Wrapper_OnResize(object sender, ResizeEventArgs e)
-        {
-            _chartWidth = e.Width;
-            _chartHeight = e.Height;
-        }
-
-        /// <summary>
-        /// On Data Xml Added
-        /// </summary>
-        /// <param name="sender">sender</param>
-        /// <param name="e">DataXMLEventArgs</param>
-        private void Wrapper_DataXMLAdded(object sender, DataXMLEventArgs e)
-        {
-            if (e.DataXML != null)
-                _xmlQueue.Enqueue(e.DataXML);
-
-            if (e.DataUri != null)
-            {
-                _uriQueue.Enqueue(e.DataUri);
-
-                if (_webclient == null)
-                    DownloadXML();
-                else if (!_webclient.IsBusy)
-                    DownloadXML();
-            }
-        }
-
-        /// <summary>
-        /// Force wrapper to ReRender the Chart
-        /// </summary>
-        /// <param name="sender">sender</param>
-        /// <param name="e">EventArgs</param>
-        private void Wrapper_ReRender(object sender, EventArgs e)
-        {
-            RenderEngine();
-        }
-
-        /// <summary>
-        /// Handle display of single and multiple charts
-        /// </summary>
-        private void RenderEngine()
-        {
-            if (_firstChart)
-            {
-                _chartCanv = CreateChart();
-
-                //_wrapper.LayoutRoot.Children.Clear();
-                _wrapper.LayoutRoot.Children.Add(_chartCanv);
-
-                _firstChart = false;
-            }
-            else if (_xmlQueue.Count > 0 && _chartReady)
-            {
-                Canvas _oldCanvas = _chartCanv;
-                _chartCanv = CreateChart();
-                _chartCanv.Opacity = 0;
-
-                //_wrapper.LayoutRoot.Children.Clear();
-                _wrapper.LayoutRoot.Children.Add(_chartCanv);
-                _chartCanv.Loaded += new RoutedEventHandler(newChartCanvas_Loaded);
-            }
-        }
-
-        /// <summary>
-        /// New chart canvas loaded event handler applies 
-        /// Applies opacity=1 to new chart canvas and zero for the old chart canvas 
-        /// in order to avoid flickering while real-time update from JavaScript
-        /// </summary>
-        /// <param name="sender">New chart canvas</param>
-        /// <param name="e">RoutedEventArgs</param>
-        void newChartCanvas_Loaded(object sender, RoutedEventArgs e)
-        {
-            (sender as Canvas).Loaded -= newChartCanvas_Loaded;
-            Canvas oldCanvas = _wrapper.LayoutRoot.Children[2] as Canvas;
-
-            oldCanvas.Visibility = Visibility.Collapsed;
-            _chartCanv.Opacity = 1;
-        }
-
-        /// <summary>
-        /// Download chart data xml 
-        /// </summary>
-        private void DownloadXML()
-        {
-            if (_uriQueue.Count > 0)
-            {
-                if (_webclient == null)
-                {
-                    _webclient = new WebClient();
-                    _webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
-                }
-
-                _webclient.BaseAddress = _baseUri;
-
-                _webclient.DownloadStringAsync(new Uri(_uriQueue.Dequeue(), UriKind.RelativeOrAbsolute));
-
-            }
-        }
 
         /// <summary>
         /// Event handler for the startup event attached with Silverlight application
@@ -278,7 +175,7 @@ namespace SLVisifireChartsXap
 
                 if (!String.IsNullOrEmpty(_dataUri))
                 {
-                    _uriQueue.Enqueue(_dataUri);
+                    _uriQueue.Enqueue(new DataXmlUri(_dataUri, false));
 
                     DownloadXML();
                 }
@@ -290,6 +187,125 @@ namespace SLVisifireChartsXap
                 RenderEngine();
             }
         }
+
+        /// <summary>
+        /// On wrapper resized
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">ResizeEventArgs</param>
+        private void Wrapper_OnResize(object sender, ResizeEventArgs e)
+        {
+            _chartWidth = e.Width;
+            _chartHeight = e.Height;
+        }
+
+        /// <summary>
+        /// On Data Xml Added
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">DataXMLEventArgs</param>
+        private void Wrapper_DataXMLAdded(object sender, DataXMLEventArgs e)
+        {
+            if (e.DataXML != null)
+            {
+                _isUriSet = false;
+                _xmlQueue.Enqueue(e.DataXML);
+            }
+
+            if (e.DataUri != null)
+            {
+                _isUriSet = true;
+                _latestAddedUri = new DataXmlUri(e.DataUri, false);
+                _uriQueue.Enqueue(_latestAddedUri);
+
+                if (_webclient == null)
+                    DownloadXML();
+                else if (!_webclient.IsBusy)
+                    DownloadXML();
+            }
+        }
+
+        /// <summary>
+        /// Force wrapper to ReRender the Chart
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">EventArgs</param>
+        private void Wrapper_ReRender(object sender, EventArgs e)
+        {
+            RenderEngine();
+        }
+
+        /// <summary>
+        /// Handle display of single and multiple charts
+        /// </summary>
+        private void RenderEngine()
+        {   
+            if (_firstChart)
+            {   
+                _chartCanv = CreateChart();
+
+                //_wrapper.LayoutRoot.Children.Clear();
+                _wrapper.LayoutRoot.Children.Add(_chartCanv);
+
+                _firstChart = false;
+            }
+            else if (_xmlQueue.Count > 0 )//&& _chartReady)
+            {   
+                Canvas _oldCanvas = _chartCanv;
+                _chartCanv = CreateChart();
+                _chartCanv.Opacity = 0;
+
+                //_wrapper.LayoutRoot.Children.Clear();
+                _wrapper.LayoutRoot.Children.Add(_chartCanv);
+                _chartCanv.Loaded += new RoutedEventHandler(newChartCanvas_Loaded);
+            }
+            else if(_isUriSet)
+            {
+                _latestAddedUri.IsForceRender = true;
+                _isUriSet = false;
+            }
+        }
+
+        /// <summary>
+        /// New chart canvas loaded event handler applies 
+        /// Applies opacity=1 to new chart canvas and zero for the old chart canvas 
+        /// in order to avoid flickering while real-time update from JavaScript
+        /// </summary>
+        /// <param name="sender">New chart canvas</param>
+        /// <param name="e">RoutedEventArgs</param>
+        void newChartCanvas_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Canvas).Loaded -= newChartCanvas_Loaded;
+            Canvas oldCanvas = _wrapper.LayoutRoot.Children[2] as Canvas;
+
+            oldCanvas.Visibility = Visibility.Collapsed;
+            _chartCanv.Opacity = 1;
+        }
+
+        /// <summary>
+        /// Download chart data xml 
+        /// </summary>
+        private void DownloadXML()
+        {
+            if (_uriQueue.Count > 0)
+            {
+                if (_webclient == null)
+                {
+                    _webclient = new WebClient();
+                    _webclient.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(webclient_DownloadStringCompleted);
+                }
+
+                _webclient.BaseAddress = _baseUri;
+                _currentDownloadingUri = _uriQueue.Dequeue();
+
+                _webclient.DownloadStringAsync(new Uri(_currentDownloadingUri.Uri, UriKind.RelativeOrAbsolute));
+            }
+        }
+
+        private DataXmlUri _latestAddedUri = new DataXmlUri("", false);
+
+        private DataXmlUri _currentDownloadingUri = new  DataXmlUri("", false);
+       
 
         /// <summary>
         /// Event handler for the Key pressed event attached with Silverlight application
@@ -324,12 +340,16 @@ namespace SLVisifireChartsXap
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void webclient_DownloadStringCompleted(object sender, System.Net.DownloadStringCompletedEventArgs e)
-        {
+        {   
+            WebClient _webClient = sender as WebClient;
+            String s = _webclient.Headers.Count.ToString();
+            // MessageBox.Show(s);
+
             if (e.Error == null)
-            {
+            {   
                 Enqueue(e.Result);
 
-                if (_firstChart)
+                if (_firstChart || _currentDownloadingUri.IsForceRender)
                 {
                     RenderEngine();
                 }
@@ -353,7 +373,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim();
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 2";
             version = version.Replace("Version=", "");
             return version;
         }
@@ -416,8 +436,8 @@ namespace SLVisifireChartsXap
                 // chartCanvas.Background = Visifire.Commons.Graphics.GetRandonColor();
             }
             catch (Exception e1)
-            {   
-                throw new Exception("Error: Invalid chart Data XML found..\n" + CollectWrongPartOfXAML(e1.Message));
+            {
+                throw new Exception("Error: Invalid chart Data XML found..\n" + CollectErrorPartOfXAML(e1.Message));
             }
 
             List<UIElement> _charts = new List<UIElement>();
@@ -468,17 +488,17 @@ namespace SLVisifireChartsXap
         /// </summary>
         /// <param name="errorMsg"></param>
         /// <returns></returns>
-        private String CollectWrongPartOfXAML(string errorMsg)
+        private String CollectErrorPartOfXAML(string errorMsg)
         {
             Int32 errorStartCharNumber = 0;
             Int32 errorLineNumber;
             Int32 actualErrorLineNumber = 0;
             _skipHighlightValue = 0;
-            
+
             try
             {
                 if (errorMsg.Contains("Line:") || errorMsg.Contains("Position:"))
-                {   
+                {
                     String str = errorMsg.Substring(errorMsg.IndexOf('[') + 1, errorMsg.IndexOf(']') - errorMsg.IndexOf('[') - 1);
 
                     String[] st = str.Split(' ');
@@ -499,8 +519,8 @@ namespace SLVisifireChartsXap
                         //Regex objAlphaPattern = new Regex("(/>[^>]*(" + errorMsg.Substring(index1, index2 - index1) + ")[^<]*<)");
                         //Regex objAlphaPattern = new Regex("<vc\\:Chart[\\s]+.*");
                         Regex objAlphaPattern = new Regex("(>[\\s]*(" + errorMsg.Substring(index1, index2 - index1) + ")[\\s]*<)");
-                        if(objAlphaPattern.IsMatch(_dataXml))
-                        {   
+                        if (objAlphaPattern.IsMatch(_dataXml))
+                        {
                             MatchCollection matchs = objAlphaPattern.Matches(_dataXml);
 
                             foreach (Match match in matchs)
@@ -525,13 +545,13 @@ namespace SLVisifireChartsXap
                                 String token;
 
                                 Int32 index = 0;
-                                
+
                                 if (errorMsg.Contains("AG_E_PARSER_BAD_PROPERTY_VALUE"))
                                 {
                                     index = line.Substring(errorStartCharNumber, line.Length - errorStartCharNumber).IndexOf('"');
                                     token = line.Substring(0, errorStartCharNumber + index).Trim();
 
-                                    if(token.LastIndexOf(' ') != -1)
+                                    if (token.LastIndexOf(' ') != -1)
                                         token = (line.Trim()).Substring(token.LastIndexOf(' '), token.Length - token.LastIndexOf(' ')).Trim();
 
                                 }
@@ -547,14 +567,14 @@ namespace SLVisifireChartsXap
                                     if (index == -1)
                                         index = token.LastIndexOf('<');
                                 }
-                                else if(errorMsg.Contains("wfc: no '<' in attribute value"))
+                                else if (errorMsg.Contains("wfc: no '<' in attribute value"))
                                 {
                                     index = token.LastIndexOf('"');
 
                                     if (index == -1)
                                         index = -7009;
                                 }
-                                else if(errorMsg.Contains("illegal qualified name character"))
+                                else if (errorMsg.Contains("illegal qualified name character"))
                                 {
                                     index = token.LastIndexOf('"');
 
@@ -570,7 +590,7 @@ namespace SLVisifireChartsXap
                                 {
                                     if (errorMsg.Contains("Canvas does not support text content") || errorMsg.Contains("'>' expected") || errorMsg.Contains("'>' expected") || errorMsg.Contains("wfc: element type match"))
                                     {
-                                        Int32 len=0;
+                                        Int32 len = 0;
                                         for (int i = 0; i < errorLineNumber - 1; i++)
                                             len += _xmlLines[i].Length;
 
@@ -581,17 +601,17 @@ namespace SLVisifireChartsXap
                                     {
                                         Int32 length = errorStartCharNumber - index;
                                         token = token.Substring(index, token.Length - index);
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     }
                                 }
                                 // 7009 : wfc: no '<' in attribute value
                                 // 7051 : illegal qualified name character
-                                else if (index == -7009 || index == -7051) 
+                                else if (index == -7009 || index == -7051)
                                 {
-                                    Int32 len =0;
+                                    Int32 len = 0;
                                     Int32 errorCode = index;
 
-                                    for (int i = 0; i < errorLineNumber -1; i++)
+                                    for (int i = 0; i < errorLineNumber - 1; i++)
                                         len += _xmlLines[i].Length;
 
                                     index = len + errorStartCharNumber;
@@ -604,15 +624,15 @@ namespace SLVisifireChartsXap
                                         index = token.LastIndexOf('"');
 
                                     if (index == -1)
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     else
-                                        _string2Highlight=token.Substring(index, token.Length - index);
+                                        _string2Highlight = token.Substring(index, token.Length - index);
 
                                     if (actualErrorLineNumber > 1)
                                     {
                                         actualErrorLineNumber = actualErrorLineNumber - 1;
-                                        line = _xmlLines[actualErrorLineNumber-1];
-                                        Int32 newPosition =line.LastIndexOf(_string2Highlight.Trim());
+                                        line = _xmlLines[actualErrorLineNumber - 1];
+                                        Int32 newPosition = line.LastIndexOf(_string2Highlight.Trim());
                                         errorMsg = errorMsg.Replace("Position: " + errorStartCharNumber.ToString(), "Position: " + newPosition.ToString());
 
                                         errorStartCharNumber = newPosition;
@@ -622,9 +642,9 @@ namespace SLVisifireChartsXap
                                 else
                                 {
                                     if (!String.IsNullOrEmpty(token))
-                                        _string2Highlight=token;
+                                        _string2Highlight = token;
                                     else if (!String.IsNullOrEmpty(line))
-                                        _string2Highlight=line;
+                                        _string2Highlight = line;
                                     else
                                         _string2Highlight = null;
                                 }
@@ -646,7 +666,7 @@ namespace SLVisifireChartsXap
             {
                 _string2Highlight = null;
             }
-          
+
             return errorMsg;
         }
 
@@ -679,13 +699,15 @@ namespace SLVisifireChartsXap
         {
             if (_wrapper.LayoutRoot.Children.Count > 2)
             {
+                // System.Diagnostics.Debug.WriteLine("Nomber of Children ====" + _wrapper.LayoutRoot.Children.Count.ToString());
                 for (Int32 i = 0; i < (_wrapper.LayoutRoot.Children.Count - 2); i++)
                 {
                     Canvas chartCanvas = _wrapper.LayoutRoot.Children[i] as Canvas;
+
                     try
-                    {
+                    {   
                         if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
-                        {   
+                        {
                             chartCanvas.Children.Clear();
                             chartCanvas.Resources.Clear();
                             chartCanvas.Loaded -= chartCanv_Loaded;
@@ -701,6 +723,7 @@ namespace SLVisifireChartsXap
                 }
             }
 
+            // Induces an immediate garbage collection of all generations.
             GC.Collect();
         }
 
@@ -710,7 +733,7 @@ namespace SLVisifireChartsXap
         /// <param name="sender">Object</param>
         /// <param name="e">RoutedEventArgs</param>
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
-        {
+        {   
             _chartReady = true;
 
             if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
@@ -738,7 +761,7 @@ namespace SLVisifireChartsXap
             }
             catch
             { }
-            
+
             RemoveOldChartCanvas();
         }
 
@@ -779,7 +802,7 @@ namespace SLVisifireChartsXap
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
             if (_logLevel == 1)
-            {
+            {   
                 if (Logger == null)
                     AddLogViewer(_wrapper);
 
@@ -787,7 +810,7 @@ namespace SLVisifireChartsXap
                     Logger.LogLine("InnerException: " + e.ExceptionObject.InnerException.Message + "\n");
 
                 Logger.LogLine("Exception: " + e.ExceptionObject.Message + "\n");
-                
+
                 // _skipHighlightValue = Logger.Text.Length;
 
                 Logger.LogLine("XML:\n" + _dataXml + "\n");
@@ -811,10 +834,9 @@ namespace SLVisifireChartsXap
                 Logger.HeighlightText = _string2Highlight;
                 Logger.HelpLink = "http://visifire.com/visifire_charts_documentation.php";
 
+                e.Handled = true;
                 // Logger.Highlight(_string2Highlight);
             }
-
-            e.Handled = true;
         }
 
         #endregion
@@ -877,7 +899,7 @@ namespace SLVisifireChartsXap
         /// <summary>
         /// Queue for storing xml file uri
         /// </summary>
-        private Queue<String> _uriQueue = new Queue<string>();
+        private Queue<DataXmlUri> _uriQueue = new Queue<DataXmlUri>();
 
         /// <summary>
         /// If chart canvas is already rendered
@@ -909,10 +931,40 @@ namespace SLVisifireChartsXap
         /// </summary>
         private String _controlId;
 
+        private Int32 _downloadIndex = -1;
+
         /// <summary>
         /// Webclient is used for downloading chart data xml
         /// </summary>
         WebClient _webclient;
+
+        /// <summary>
+        /// Whether DataUri is set or not
+        /// </summary>
+        Boolean _isUriSet;
+
+        /// <summary>
+        /// DataXmlUri class. It defines the uri address.
+        /// It also defines whether the chart data uri need to be rendered on download completed event.
+        /// </summary>
+        private class DataXmlUri
+        {
+            public DataXmlUri(String uri, Boolean isForceRender)
+            {
+                Uri = uri;
+                IsForceRender = isForceRender;
+            }
+
+            /// <summary>
+            /// Data Uri
+            /// </summary>
+            public String Uri;
+
+            /// <summary>
+            /// Whether the chart data uri need to to rendered on download completed event
+            /// </summary>
+            public Boolean IsForceRender;
+        }
 
         #endregion
     }

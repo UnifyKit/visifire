@@ -228,7 +228,7 @@ namespace Visifire.Charts
                 if (Opacity != value)
                 {
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -250,7 +250,7 @@ namespace Visifire.Charts
                 if (base.Cursor != value)
                 {
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -477,7 +477,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("Enabled");
+            source.FirePropertyChanged(VcProperties.Enabled);
         }
 
 #if WPF
@@ -489,7 +489,7 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("Opacity");
+            source.FirePropertyChanged(VcProperties.Opacity);
         }
 #endif
         
@@ -501,7 +501,7 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.UpdateVisual("LineColor", e.NewValue);
+            source.UpdateVisual(VcProperties.LineColor, e.NewValue);
         }
 
         /// <summary>
@@ -512,8 +512,8 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            //source.FirePropertyChanged("LineThickness");
-            source.UpdateVisual("LineThickness", e.NewValue);
+            //source.FirePropertyChanged(VcProperties.LineThickness");
+            source.UpdateVisual(VcProperties.LineThickness, e.NewValue);
         }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.UpdateVisual("LineStyle", e.NewValue);
+            source.UpdateVisual(VcProperties.LineStyle, e.NewValue);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace Visifire.Charts
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine trendLine = d as TrendLine;
-            trendLine.UpdateVisual("ShadowEnabled", e.NewValue);
+            trendLine.UpdateVisual(VcProperties.ShadowEnabled, e.NewValue);
         }
 
         /// <summary>
@@ -546,6 +546,7 @@ namespace Visifire.Charts
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine trendLine = d as TrendLine;
+
 
             // Double / Int32 value entered in Managed Code
             if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
@@ -589,8 +590,7 @@ namespace Visifire.Charts
                 throw new Exception("Invalid Input for AxisMaximum");
             }
 
-            //trendLine.FirePropertyChanged("Value");
-            trendLine.UpdateVisual("Value", e.NewValue);
+            trendLine.UpdateVisual(VcProperties.Value, e.NewValue);
         }
 
         /// <summary>
@@ -601,7 +601,7 @@ namespace Visifire.Charts
         private static void OnAxisTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("AxisType");
+            source.FirePropertyChanged(VcProperties.AxisType);
         }
 
         /// <summary>
@@ -612,7 +612,7 @@ namespace Visifire.Charts
         private static void OnOrientationPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine source = d as TrendLine;
-            source.FirePropertyChanged("Orientation");
+            source.FirePropertyChanged(VcProperties.Orientation);
         }
 
         /// <summary>
@@ -623,7 +623,7 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine trendLine = d as TrendLine;
-            trendLine.FirePropertyChanged("HrefTarget");
+            trendLine.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -634,7 +634,7 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine trendLine = d as TrendLine;
-            trendLine.FirePropertyChanged("Href");
+            trendLine.FirePropertyChanged(VcProperties.Href);
         }
 
         /// <summary>
@@ -666,11 +666,11 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(string propertyName, object value)
+        internal override void UpdateVisual(VcProperties propertyName, object value)
         {
             if (Line == null || Shadow == null)
                 FirePropertyChanged(propertyName);
-            else if (propertyName == "Value")
+            else if (propertyName == VcProperties.Value)
             {
                 Chart chart = (Chart as Chart);
                 Axis axis = chart.PlotDetails.GetAxisXFromChart(chart, AxisType);
@@ -754,7 +754,7 @@ namespace Visifire.Charts
             Visual.Opacity = this.Opacity;
             Visual.Cursor = this.Cursor;
             Double shadowThickness = LineThickness + 2;
-            Line = new Line() { Tag = new ElementData() { Element = this } }; 
+            Line = new Line() { Tag = new ElementData() { Element = this } };
             Shadow = new Line() { IsHitTestVisible = false };
 
             ApplyProperties();
@@ -767,7 +767,6 @@ namespace Visifire.Charts
             AttachToolTip(ReferingAxis.Chart, this, Line);
             AttachHref(ReferingAxis.Chart, Line, Href, HrefTarget);
         }
-
 
         #endregion
 
