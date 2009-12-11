@@ -1,0 +1,21 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" BorderBrush="Gray" Padding="6" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Area Chart" FontSize="12"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Area" Bevel="False" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="2020"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="1562"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="3282"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="3098"/>
+        <vc:DataPoint AxisXLabel="May" YValue="5000"/>
+        <vc:DataPoint AxisXLabel="June" YValue="2486"/>
+        <vc:DataPoint AxisXLabel="July" YValue="1034"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
