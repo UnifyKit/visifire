@@ -1122,6 +1122,9 @@ namespace Visifire.Charts
                     CreateLabel(chart, columnVisualSize, isPositive, dataPoint.IsTopOfStack, dataPoint, left, top, ref labelCanvas);
                 else
                     CreateLabel(chart, columnVisualSize, isPositive, dataPoint.IsTopOfStack, dataPoint, left, bottom, ref labelCanvas);
+
+                if (dataPoint.LabelVisual != null)
+                    dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
             }
             
             #endregion
@@ -1740,8 +1743,8 @@ namespace Visifire.Charts
                         }
                     }
 
-                    if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
-                        dataPoint.Select(true);
+                    //if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                    //    dataPoint.Select(true);
                     // chart.Dispatcher.BeginInvoke(new Action<DataPoint>(UpdateXAndYValue), new object[]{dataPoint});
 
                     chart._toolTip.Hide();
@@ -1752,10 +1755,14 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Create or update plank
         /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="axis"></param>
         /// <param name="columnCanvas"></param>
-        /// <returns>Plank Canvas</returns>
+        /// <param name="depth3d"></param>
+        /// <param name="orientation"></param>
+        /// <returns></returns>
         internal static Canvas CreateOrUpdatePlank(Chart chart, Axis axis, Canvas columnCanvas, Double depth3d, Orientation orientation)
         {
             Canvas plank = columnCanvas.Tag as Canvas;
@@ -2270,9 +2277,32 @@ namespace Visifire.Charts
 #else
                 storyBoard.Begin();
 #endif
+
             }
             
             #endregion Apply Animation
+
+            if (columnChartCanvas.Parent != null)
+            {
+                Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                {
+                    clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH - (chart.View3D ? 0 : 5), width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10));
+                    (columnChartCanvas.Parent as Canvas).Clip = clipRectangle;
+                }
+                else
+                {
+                    clipRectangle.Rect = new Rect(-(chart.View3D ? 0 : 5) - chart.ChartArea.PLANK_THICKNESS, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10)
+                        , height + chart.ChartArea.PLANK_DEPTH);
+                    (columnChartCanvas.Parent as Canvas).Clip = clipRectangle;
+                }
+            }
+
+            if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                dataPoint.Select(true);
         }
 
         public static void UpdateVisualForYValue4ColumnChart1(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)

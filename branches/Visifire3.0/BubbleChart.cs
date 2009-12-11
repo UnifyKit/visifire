@@ -794,9 +794,15 @@ namespace Visifire.Charts
 
                     break;
             }
+
+
+            if (bubleChartCanvas.Parent != null)
+            {
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(0, -(dataPoint.Chart as Chart).ChartArea.PLANK_DEPTH, plotWidth + (dataPoint.Chart as Chart).ChartArea.PLANK_OFFSET, plotHeight + (dataPoint.Chart as Chart).ChartArea.PLANK_DEPTH);
+                (bubleChartCanvas.Parent as Canvas).Clip = clipRectangle;
+            }
         }
-
-
 
         #endregion
 

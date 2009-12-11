@@ -17,7 +17,7 @@ namespace SLVisifireChartsTest
     /// This class runs the unit tests Visifire.Charts.DataSeries class 
     /// </summary>
     [TestClass]
-    public class AAADataSeriesTest : SilverlightControlTest
+    public class DataSeriesTest : SilverlightControlTest
     {
         #region PieStressChecking
         /// <summary>
@@ -2238,7 +2238,7 @@ namespace SLVisifireChartsTest
         /// </summary>
         [TestMethod]
         [Asynchronous]
-        public void AAAMultiSeriesBarChartCheckingWithSecondaryAxis()
+        public void MultiSeriesBarChartCheckingWithSecondaryAxis()
         {
             System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "500px");
             Chart chart = new Chart();

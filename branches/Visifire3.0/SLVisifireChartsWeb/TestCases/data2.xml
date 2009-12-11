@@ -1,5 +1,5 @@
 ﻿<StackPanel>
-  <vc:Chart Width="500" Height="300" Theme="Theme1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+  <vc:Chart Width="500" Height="300" Theme="Theme2" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
 
     <vc:Chart.Titles>
       <vc:Title Text="Visifire Chart"/>
@@ -18,7 +18,7 @@
     </vc:Chart.Series>
   </vc:Chart>
 
-  <vc:Chart Width="500" Height="300" Theme="Theme1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+  <vc:Chart Width="500" Height="300" Theme="Theme3" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
 
     <vc:Chart.Titles>
       <vc:Title Text="Visifire Chart"/>

@@ -338,7 +338,6 @@ namespace Visifire.Charts
             clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, plotAreaWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotAreaHeight + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + tickLengthOfAxisX + 4);
             visual.Clip = clipRectangle;
 
-
             return visual;
         }
 
@@ -612,6 +611,42 @@ namespace Visifire.Charts
                         }
 
                     break;
+            }
+
+            if (pointChartCanvas.Parent != null)
+            {
+                Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
+                                            where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
+                                            select tick.TickLength).Sum();
+
+                if (tickLengthOfAxisX == 0)
+                    tickLengthOfAxisX = 5;
+
+                Double tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
+                                                   where axis.AxisType == AxisTypes.Primary
+                                                   from tick in axis.Ticks
+                                                   where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                                   select tick.TickLength).Sum();
+
+                if (tickLengthOfPrimaryAxisY == 0)
+                    tickLengthOfPrimaryAxisY = 8;
+
+                Double tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
+                                                     where axis.AxisType == AxisTypes.Secondary
+                                                     from tick in axis.Ticks
+                                                     where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                                     select tick.TickLength).Sum();
+
+                if (tickLengthOfSecondaryAxisY == 0)
+                    tickLengthOfSecondaryAxisY = 8;
+
+                Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
+                                         where c.AxisY.AxisType == AxisTypes.Secondary
+                                         select c).Count();
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, plotWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotHeight + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + tickLengthOfAxisX + 4);
+                (pointChartCanvas.Parent as Canvas).Clip = clipRectangle;
             }
         }
 

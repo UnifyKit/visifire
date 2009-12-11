@@ -2846,6 +2846,8 @@ namespace Visifire.Charts
                     {
                         dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                         UpdateVisualForYValue4AreaChart(chart, dataPoint, isAxisChanged);
+                        //chart.Dispatcher.BeginInvoke(new Action<Chart, DataPoint, Boolean>(UpdateVisualForYValue4AreaChart), new object[] { chart, dataPoint, isAxisChanged});
+
                     }
 
                     chart._toolTip.Hide();
@@ -3379,6 +3381,18 @@ namespace Visifire.Charts
                 // If is the last DataPoint to update
                 if (dataPoint == nextDataPoint)
                 {
+                    if (chart.View3D)
+                    {
+                        if (dataSeries.Faces != null && dataSeries.Faces.FrontFacePaths.Count > 0)
+                        {
+                            LineSegment ls = Area3DDataPointFace.GetLineSegment(dataSeries.Faces.FrontFacePaths[dataSeries.Faces.FrontFacePaths.Count - 1], 1);
+                            ls.Point = new Point(dataPoint._visualPosition.X + depth3d, plankYPos - depth3d);
+
+                            ls = Area3DDataPointFace.GetLineSegment(dataSeries.Faces.FrontFacePaths[dataSeries.Faces.FrontFacePaths.Count - 1], 2);
+                            ls.Point = new Point(dataPoint._visualPosition.X, plankYPos);
+                        }
+                    }
+
                     dataPoint.Faces.AreaFrontFaceBaseLineSegment.Point = new Point(dataPoint._visualPosition.X, plankYPos);
                 }
 
@@ -3426,6 +3440,18 @@ namespace Visifire.Charts
                 // If is the last DataPoint to update
                 if (dataPoint == nextDataPoint)
                 {
+                    if (chart.View3D)
+                    {
+                        if (dataSeries.Faces != null && dataSeries.Faces.FrontFacePaths.Count > 0)
+                        {
+                            LineSegment ls = Area3DDataPointFace.GetLineSegment(dataSeries.Faces.FrontFacePaths[dataSeries.Faces.FrontFacePaths.Count - 1], 1);
+                            ls.Point = new Point(dataPoint._visualPosition.X + depth3d, plankYPos - depth3d);
+
+                            ls = Area3DDataPointFace.GetLineSegment(dataSeries.Faces.FrontFacePaths[dataSeries.Faces.FrontFacePaths.Count - 1], 2);
+                            ls.Point = new Point(dataPoint._visualPosition.X, plankYPos);
+                        }
+                    }
+
                     dataPoint.Faces.AreaFrontFaceBaseLineSegment.Point = new Point(dataPoint._visualPosition.X, plankYPos);
                 }
 
@@ -3433,7 +3459,25 @@ namespace Visifire.Charts
                     AnimateBevelLayer(dataPoint, oldVisualPositionOfDataPoint, animationEnabled);
             }
 
-            
+            RectangleGeometry clipRectangle = new RectangleGeometry();
+            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
+
+            if (areaCanvas.Parent != null)
+                (areaCanvas.Parent as Canvas).Clip = clipRectangle;
+
+            clipRectangle = new RectangleGeometry();
+
+            Double clipLeft = 0;
+            Double clipTop = -depth3d - 4;
+            Double clipWidth = width + depth3d;
+            Double clipHeight = height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
+
+            GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, dataSeries.PlotGroup.MinimumX, dataSeries.PlotGroup.MaximumX);
+
+            clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
+
+            if (labelCanvas.Parent != null)
+                (labelCanvas.Parent as Canvas).Clip = clipRectangle;
 
         }
 

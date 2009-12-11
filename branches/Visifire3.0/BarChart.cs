@@ -629,6 +629,9 @@ namespace Visifire.Charts
             {
                 Double right = left + barVisual.Width;
                 CreateLabel(chart, new Size(barVisual.Width, barVisual.Height), isPositive, dataPoint.IsTopOfStack, dataPoint, left, top, right, labelCanvas);
+
+                if (dataPoint.LabelVisual != null)
+                    dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
             }
         }
 

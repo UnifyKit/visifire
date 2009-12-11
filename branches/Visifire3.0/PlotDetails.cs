@@ -1516,21 +1516,27 @@ namespace Visifire.Charts
         private void SetIncrementalZIndexForSeries()
         {
             Int32 index = 0;
-            Int32 seriesIndex = 0;
 
             foreach (DataSeries dataSeries in Chart.InternalSeries)
             {
-                if (dataSeries.IsZIndexSet)
-                    dataSeries.InternalZIndex = dataSeries.ZIndex - seriesIndex;
-                else
-                    dataSeries.InternalZIndex = dataSeries.ZIndex - Chart.InternalSeries.Count;
-
-                dataSeries.InternalZIndex = dataSeries.InternalZIndex + index++;
-                seriesIndex++;
-
-                //dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
-                //dataSeries.InternalZIndex += index++;
+                dataSeries.InternalZIndex = index++;
             }
+
+            //Int32 seriesIndex = 0;
+
+            //foreach (DataSeries dataSeries in Chart.InternalSeries)
+            //{
+            //    //if (dataSeries.IsZIndexSet)
+            //    //    dataSeries.InternalZIndex = dataSeries.ZIndex - seriesIndex;
+            //    //else
+            //    //    dataSeries.InternalZIndex = dataSeries.ZIndex - Chart.InternalSeries.Count;
+
+            //    //dataSeries.InternalZIndex = dataSeries.InternalZIndex + index++;
+            //    //seriesIndex++;
+
+            //    dataSeries.InternalZIndex = dataSeries.InternalZIndex - Chart.InternalSeries.Count;
+            //    dataSeries.InternalZIndex += index++;
+            //}
         }
 
         /// <summary>

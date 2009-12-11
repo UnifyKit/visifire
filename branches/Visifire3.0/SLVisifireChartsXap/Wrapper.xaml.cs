@@ -17,7 +17,7 @@ namespace SLVisifireChartsXap
     /// SLVisifireChartsXap.Wrapper class
     /// </summary>
     public partial class Wrapper : UserControl
-    {
+    {   
         public Wrapper()
         {
             InitializeComponent();

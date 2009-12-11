@@ -1,5 +1,5 @@
 /*
-Visifire.js v3.0 beta
+Visifire.js v3.0 beta 2
 
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -43,7 +43,8 @@ if (!window.Visifire) {
         this.background = null;                     // Background of the chart container.
         this.preLoad = null;                        // Preload event handler.
         this.loaded = null;                         // Loaded event handler.
-
+        this.onError = null;                        // OnError event handler.
+        
         /*  Array of chart references. Visifire Chart object can contain more than one chart.
         Chart reference can be used for updating them at real-time
         */
@@ -104,7 +105,7 @@ if (!window.Visifire) {
         var slControl = this._getSlControl();
 
         this.dataXml = pDataXml;
-
+        
         if (slControl != null && this.dataXml != null)
             slControl.Content.wrapper.AddDataXML(pDataXml);
     }
@@ -179,14 +180,14 @@ if (!window.Visifire) {
             return false;
         }
     }
-
-    /*  Whether the chart data xml is loaded and chart is displayed
+    
+    /*  Whether the chart data xml is loaded and ready for render
     */
     Visifire.prototype.isDataLoaded = function() {
         var slControl = this._getSlControl();
         return slControl.Content.wrapper.IsDataLoaded;
     }
-
+    
     /*  Attach required events
     */
     Visifire.prototype._attachEvents = function() {
@@ -201,13 +202,16 @@ if (!window.Visifire) {
 
         if (vThisObject.loaded != null)
             window["visifireChartLoaded" + vThisObject.index] = vThisObject.loaded;
-    }
 
+        if (vThisObject.onError != null)
+            window["visifireChartOnError" + vThisObject.index] = vThisObject.onError;
+    }
+    
     /*  Returns current silverlight control reference 
     */
     Visifire.prototype._getSlControl = function() {
         var vThisObject = this; // This Class
-
+        
         if (vThisObject.id != null) {
             var slControl = document.getElementById(vThisObject.id);
             return slControl;
@@ -215,7 +219,7 @@ if (!window.Visifire) {
 
         return null;
     }
-
+    
     /*  Render the chart
         
     pTargetElement  => Target div element
@@ -259,7 +263,7 @@ if (!window.Visifire) {
         else if (vThisObject.dataUri != null) {
             html += 'dataUri=' + vThisObject.dataUri + ',';
         }
-
+            
         if (vThisObject.background == null)
             vThisObject.background = "White";
 
@@ -272,6 +276,10 @@ if (!window.Visifire) {
 
         html += 'width=' + vWidth + ',' + 'height=' + vHeight + '';
         html += "\"/>";
+        
+        if (vThisObject.onError != null)
+            html += '<param name="onError" value="visifireChartOnError' + vThisObject.index + '" />'
+        
         html += '<param name="enableHtmlAccess" value="true" />'
 		        + '<param name="background" value="' + vThisObject.background + '" />'
 		        + '<param name="windowless" value="' + vThisObject.windowless + '" />'

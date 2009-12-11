@@ -66,7 +66,7 @@ namespace Visifire.Charts
         public DataSeries()
         {
             ToolTipText = "";
-            IsZIndexSet = false;
+            //IsZIndexSet = false;
 
 
             // Apply default style from generic

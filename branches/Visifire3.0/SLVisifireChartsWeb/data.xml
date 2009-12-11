@@ -1,6 +1,10 @@
 ﻿<vc:Chart Name="MyChart1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme2"
-        Width="500" Height="300">
+        Width="500" Height="300" AnimatedUpdate="True">
 
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Chart"></vc:Title>
+  </vc:Chart.Titles>
+  
   <vc:Chart.Series>
     <vc:DataSeries RenderAs="Column">
       <vc:DataSeries.DataPoints>
