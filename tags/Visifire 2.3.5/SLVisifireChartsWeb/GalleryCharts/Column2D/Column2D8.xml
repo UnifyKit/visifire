@@ -1,0 +1,28 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" ColorSet="VisiBlue" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="5 Largest Countries in Population"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis ScalingSet="1000000,M;1000,B" Title="Population" TitleFontSize="12">
+      <vc:Axis.Grids>
+        <vc:ChartGrid InterlacedColor="#f5f9fa"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Bevel="False" RadiusX="6" RadiusY="6" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="China" YValue="1321851888"/>
+        <vc:DataPoint AxisXLabel="India" YValue="1129866154"/>
+        <vc:DataPoint AxisXLabel="USA" YValue="301139947"/>
+        <vc:DataPoint AxisXLabel="Indonesia" YValue="234693997"/>
+        <vc:DataPoint AxisXLabel="Brazil" YValue="190010647"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+
+</vc:Chart>

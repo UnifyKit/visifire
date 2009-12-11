@@ -1,0 +1,28 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme3" Padding="8" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire 2D Column Chart"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis>
+      <vc:Axis.Grids>
+        <vc:ChartGrid LineThickness="0.50"/>
+      </vc:Axis.Grids>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Bevel="False" Cursor="Hand" LightingEnabled="False">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="9/07" YValue="60"/>
+        <vc:DataPoint AxisXLabel="10/07" YValue="30"/>
+        <vc:DataPoint AxisXLabel="11/07" YValue="68"/>
+        <vc:DataPoint AxisXLabel="12/08" YValue="75"/>
+        <vc:DataPoint AxisXLabel="1/08" YValue="90"/>
+        <vc:DataPoint AxisXLabel="2/08" YValue="50"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

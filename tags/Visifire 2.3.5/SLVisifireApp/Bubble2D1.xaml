@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="SLVisifireApp.Bubble2D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="theme_1" AnimationType="Type4">
+    
+            <vc:Chart.Titles>
+                <vc:Title Text="Largest Oil Producers"/>
+                <vc:Title Text="Bubble size indicates oil reserves" FontSize="9" HorizontalAlignment="Left"
+                          VerticalAlignment="Bottom"/>
+            </vc:Chart.Titles>
+            <vc:Chart.AxisX>
+                <vc:Axis Interval="1" Title="Country">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid LineThickness="0.25"/>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxisX>
+            <vc:Chart.AxisY>
+                <vc:Axis Title="Production (billion barrels per day)"/>
+            </vc:Chart.AxisY>
+
+            <vc:Chart.Series>
+            <vc:DataSeries LegendText="2006" RenderAs="Bubble" ZValueFormatString="#0.##" ToolTipText="Production: #YValue, Reserves: #ZValue" Cursor="Hand">
+                <vc:DataSeries.DataPoints>
+                    <vc:DataPoint AxisXLabel="S.Arabia" YValue="10.2" ZValue="250"/>
+                    <vc:DataPoint AxisXLabel="Russia" YValue="9.1" ZValue="110"/>
+                    <vc:DataPoint AxisXLabel="USA" YValue="8.4" ZValue="80"/>
+                    <vc:DataPoint AxisXLabel="Iran" YValue="4.2" ZValue="132"/>
+                    <vc:DataPoint AxisXLabel="Mexico" YValue="3.9" ZValue="80"/>
+                    <vc:DataPoint AxisXLabel="China" YValue="3.3" ZValue="70"/>
+                    <vc:DataPoint AxisXLabel="Norway" YValue="3.6" ZValue="50"/>
+                    <vc:DataPoint AxisXLabel="Canada" YValue="3.8" ZValue="179"/>
+                    <vc:DataPoint AxisXLabel="Venezuela" YValue="2.7" ZValue="79"/>
+                    <vc:DataPoint AxisXLabel="UAE" YValue="2.5" ZValue="98"/>
+                </vc:DataSeries.DataPoints>
+            </vc:DataSeries>
+            </vc:Chart.Series>
+
+        </vc:Chart>
+
+    </Grid>
+</UserControl>
