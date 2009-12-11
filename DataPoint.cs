@@ -2180,7 +2180,7 @@ namespace Visifire.Charts
                 }
                 else
                     RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
-                
+
                 if (property == VcProperties.Color)
                     UpdateLegendMarker(this, (Brush)newValue);
 
@@ -3701,6 +3701,10 @@ namespace Visifire.Charts
 
                     if (Marker != null)
                         AttachEvents2Visual(Object, this, Marker.Visual);
+
+                    if (LabelVisual != null)
+                        AttachEvents2Visual(Object, this, LabelVisual);
+
                 }
             }
         }

@@ -442,7 +442,7 @@ namespace Visifire.Charts
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
             Canvas labelCanvas = dataPoint.Faces.LabelCanvas;  // Parent canvas of Datapoint label
-            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas; ;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
+            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
 
             UpdateParentVisualCanvasSize(chart, columnCanvas);
             UpdateParentVisualCanvasSize(chart, labelCanvas);
@@ -585,6 +585,21 @@ namespace Visifire.Charts
                 dataPoint.Storyboard.Begin();
 #endif
             }
+
+            if (columnCanvas.Parent != null)
+            {
+                Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+              
+                clipRectangle.Rect = new Rect(-(chart.View3D ? 0 : 5) - chart.ChartArea.PLANK_THICKNESS, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10)
+                    , height + chart.ChartArea.PLANK_DEPTH);
+                (columnCanvas.Parent as Canvas).Clip = clipRectangle;
+            }
+
+            if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                dataPoint.Select(true);
         }
         
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
@@ -744,6 +759,19 @@ namespace Visifire.Charts
                 dataPoint.Storyboard.Begin();
 #endif
             }
+
+            if (columnCanvas.Parent != null)
+            {
+                width = chart.ChartArea.ChartVisualCanvas.Width;
+                height = chart.ChartArea.ChartVisualCanvas.Height;
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH - (chart.View3D ? 0 : 5), width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10));
+                (columnCanvas.Parent as Canvas).Clip = clipRectangle;
+            }
+
+            if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                dataPoint.Select(true);
         }
     }
 }

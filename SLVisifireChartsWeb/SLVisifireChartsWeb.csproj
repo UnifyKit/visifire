@@ -67,6 +67,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data2.xml" />
     <Content Include="TestCases\RealTimeRenderFirstDataXml.htm" />
     <Content Include="TestCases\MultipleChartsInDivs.htm" />
     <Content Include="TestCases\RealTimeRenderChartUsingDataXml.htm" />

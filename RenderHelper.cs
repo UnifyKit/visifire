@@ -459,7 +459,7 @@ namespace Visifire.Charts
                     break;
             }
 
-
+            chart.ChartArea.AttachScrollEvents();
         }
 
    }
