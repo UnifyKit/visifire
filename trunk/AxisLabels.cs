@@ -96,6 +96,22 @@ namespace Visifire.Charts
             b = new Binding("Opacity");
             b.Source = this;
             this.SetBinding(InternalOpacityProperty, b);
+
+            b = new Binding("MaxWidth");
+            b.Source = this;
+            this.SetBinding(InternalMaxWidthProperty, b);
+
+            b = new Binding("MaxHeight");
+            b.Source = this;
+            this.SetBinding(InternalMaxHeightProperty, b);
+
+            b = new Binding("MinWidth");
+            b.Source = this;
+            this.SetBinding(InternalMinWidthProperty, b);
+
+            b = new Binding("MinHeight");
+            b.Source = this;
+            this.SetBinding(InternalMinHeightProperty, b);
 #endif
         }
 
@@ -150,8 +166,58 @@ namespace Visifire.Charts
             typeof(TextAlignment),
             typeof(AxisLabels),
             new PropertyMetadata(TextAlignment.Left, OnTextAlignmentPropertyChanged));
+
         
 #if WPF
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Register
+            ("MaxHeight",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MinHeightProperty = DependencyProperty.Register
+            ("MinHeight",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnMinHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MinWidthProperty = DependencyProperty.Register
+            ("MinWidth",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(OnMinWidthPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Register
+            ("MaxWidth",
+            typeof(Double),
+            typeof(AxisLabels),
+            new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.AxisLabels.FontFamily dependency property.
         /// </summary>
@@ -266,6 +332,102 @@ namespace Visifire.Charts
             set
             {
                 throw new NotImplementedException("ToolTipText property for AxisLabels is not implemented");
+            }
+        }
+
+        /// <summary>
+        /// MaxHeight of the AxisLabels
+        /// </summary>
+        public new Double MaxHeight
+        {
+            get
+            {
+                return (Double)GetValue(MaxHeightProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxHeight != value)
+                {
+                    InternalMaxHeight = value;
+                    SetValue(MaxHeightProperty, value);
+                    FirePropertyChanged("MaxHeight");
+                }
+#else
+                SetValue(MaxHeightProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MaxWidth of the AxisLabels
+        /// </summary>
+        public new Double MaxWidth
+        {
+            get
+            {
+                return (Double)GetValue(MaxWidthProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxWidth != value)
+                {
+                    InternalMaxWidth = value;
+                    SetValue(MaxWidthProperty, value);
+                    FirePropertyChanged("MaxWidth");
+                }
+#else
+                SetValue(MaxWidthProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MinHeight of the AxisLabels
+        /// </summary>
+        public new Double MinHeight
+        {
+            get
+            {
+                return (Double)GetValue(MinHeightProperty);
+            }
+            set
+            {
+#if SL
+                if (MinHeight != value)
+                {
+                    InternalMinHeight = value;
+                    SetValue(MinHeightProperty, value);
+                    FirePropertyChanged("MinHeight");
+                }
+#else
+                SetValue(MinHeightProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MinWidth of the AxisLabels
+        /// </summary>
+        public new Double MinWidth
+        {
+            get
+            {
+                return (Double)GetValue(MinWidthProperty);
+            }
+            set
+            {
+#if SL
+                if (MinWidth != value)
+                {
+                    InternalMinWidth = value;
+                    SetValue(MinWidthProperty, value);
+                    FirePropertyChanged("MinWidth");
+                }
+#else
+                SetValue(MinWidthProperty, value);
+#endif
             }
         }
 
@@ -602,7 +764,116 @@ namespace Visifire.Charts
             typeof(AxisLabels),
             new PropertyMetadata(1.0, OnOpacityPropertyChanged));
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.MaxHeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxHeightProperty = DependencyProperty.Register
+           ("InternalMaxHeight",
+           typeof(Double),
+           typeof(AxisLabels),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.MaxWidth dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxWidthProperty = DependencyProperty.Register
+           ("InternalMaxWidth",
+           typeof(Double),
+           typeof(AxisLabels),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.MinHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.MinHeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMinHeightProperty = DependencyProperty.Register
+           ("InternalMinHeight",
+           typeof(Double),
+           typeof(AxisLabels),
+           new PropertyMetadata(OnMinHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.AxisLabels.MinWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.AxisLabels.MinWidth dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMinWidthProperty = DependencyProperty.Register
+           ("InternalMinWidth",
+           typeof(Double),
+           typeof(AxisLabels),
+           new PropertyMetadata(OnMinWidthPropertyChanged));
+
 #endif
+
+        /// <summary>
+        /// MaxHeight of the Axis
+        /// </summary>
+        internal Double InternalMaxHeight
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxHeight) ? GetValue(MaxHeightProperty) : _internalMaxHeight);
+            }
+            set
+            {
+                _internalMaxHeight = value;
+            }
+        }
+
+        /// <summary>
+        /// MaxWidth of the Axis
+        /// </summary>
+        internal Double InternalMaxWidth
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxWidth) ? GetValue(MaxWidthProperty) : _internalMaxWidth);
+            }
+            set
+            {
+                _internalMaxWidth = value;
+            }
+        }
+
+        /// <summary>
+        /// MinHeight of the Axis
+        /// </summary>
+        internal Double InternalMinHeight
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMinHeight) ? GetValue(MinHeightProperty) : _internalMinHeight);
+            }
+            set
+            {
+                _internalMinHeight = value;
+            }
+        }
+
+        /// <summary>
+        /// MinWidth of the Axis
+        /// </summary>
+        internal Double InternalMinWidth
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMinWidth) ? GetValue(MinWidthProperty) : _internalMinWidth);
+            }
+            set
+            {
+                _internalMinWidth = value;
+            }
+        }
+
         /// <summary>
         /// Get or set the FontFamily property of title
         /// </summary>
@@ -1012,6 +1283,53 @@ namespace Visifire.Charts
             axisLabels.FirePropertyChanged("Opacity");
         }
 
+        /// <summary>
+        /// Event handler manages MaxHeight property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalMaxHeight = (Double)e.NewValue;
+            axisLabels.FirePropertyChanged("MaxHeight");
+        }
+
+        /// <summary>
+        /// Event handler manages MinHeight property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalMinHeight = (Double)e.NewValue;
+            axisLabels.FirePropertyChanged("MinHeight");
+        }
+
+        /// <summary>
+        /// Event handler manages MaxWidth property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalMaxWidth = (Double)e.NewValue;
+            axisLabels.FirePropertyChanged("MaxWidth");
+        }
+
+        /// <summary>
+        /// Event handler manages MinWidth property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AxisLabels axisLabels = d as AxisLabels;
+            axisLabels.InternalMinWidth = (Double)e.NewValue;
+            axisLabels.FirePropertyChanged("MinWidth");
+        }
 
         /// <summary>
         /// Event handler attached with TextWrap property changed event of axislabels element
@@ -1415,9 +1733,26 @@ namespace Visifire.Charts
                 // create the label visual element
                 label.CreateVisualObject(false, null);
 
-                // get the max height of the labels
-                height = Math.Max(Math.Max(height, label.ActualHeight), _maxRowHeight);
+                Double totalAxisLabelHeight = 0;
+                if (InternalMinHeight != 0 && InternalMinHeight > label.ActualHeight)
+                    totalAxisLabelHeight = InternalMinHeight;
+                else
+                    totalAxisLabelHeight = label.ActualHeight;
 
+                if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < totalAxisLabelHeight)
+                {
+                    label.ActualHeight = InternalMaxHeight;
+                }
+                else
+                    label.ActualHeight = totalAxisLabelHeight;
+
+                // get the max height of the labels
+                height = Math.Max(height, label.ActualHeight);
+
+                if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight >= label.ActualHeight && InternalMaxHeight > _maxRowHeight)
+                {
+                    height = Math.Max(height, _maxRowHeight);
+                }
             }
 
             for (Int32 i = 0; i < AxisLabelList.Count; i++)
@@ -1488,7 +1823,20 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(false, null); 
+                label.CreateVisualObject(false, null);
+
+                Double totalAxisLabelWidth = 0;
+                if (InternalMinWidth != 0 && InternalMinWidth > label.ActualWidth)
+                    totalAxisLabelWidth = InternalMinWidth;
+                else
+                    totalAxisLabelWidth = label.ActualWidth;
+
+                if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < totalAxisLabelWidth)
+                {
+                    label.ActualWidth = InternalMaxWidth;
+                }
+                else
+                    label.ActualWidth = totalAxisLabelWidth;
 
                 // get the max width of the labels
                 width = Math.Max(width, label.ActualWidth);
@@ -1580,6 +1928,19 @@ namespace Visifire.Charts
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
 
+                Double totalAxisLabelWidth = 0;
+                if (InternalMinWidth != 0 && InternalMinWidth > label.ActualWidth)
+                    totalAxisLabelWidth = InternalMinWidth;
+                else
+                    totalAxisLabelWidth = label.ActualWidth;
+
+                if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < totalAxisLabelWidth)
+                {
+                    label.ActualWidth = InternalMaxWidth;
+                }
+                else
+                    label.ActualWidth = totalAxisLabelWidth;
+
                 // get the max width of the labels
                 width = Math.Max(width, label.ActualWidth);
             }
@@ -1650,6 +2011,27 @@ namespace Visifire.Charts
                     top = Math.Abs((label.ActualTextHeight / 2) * Math.Sin(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
                 }
 
+                Double totalAxisLabelHeight = 0;
+                if (InternalMinHeight != 0 && InternalMinHeight > label.ActualHeight)
+                    totalAxisLabelHeight = InternalMinHeight;
+                else
+                    totalAxisLabelHeight = label.ActualHeight;
+
+                if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < totalAxisLabelHeight)
+                {
+                    label.ActualHeight = InternalMaxHeight;
+                }
+                else
+                    label.ActualHeight = totalAxisLabelHeight;
+
+                // get the max height of the labels
+                height = Math.Max(height, label.ActualHeight);
+
+                if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight >= label.ActualHeight && InternalMaxHeight > _maxRowHeight)
+                {
+                    height = Math.Max(height, _maxRowHeight);
+                }
+
                 // Set the new position
                 label.Position = new Point(position, top + ((i % (Int32)InternalRows) * _maxRowHeight));
 
@@ -1658,9 +2040,6 @@ namespace Visifire.Charts
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
-
-                // get the max height of the labels
-                height = Math.Max(Math.Max(height, label.ActualHeight), _maxRowHeight);
             }
 
             // set the height of the visual canvas
@@ -2179,6 +2558,11 @@ namespace Visifire.Charts
         Nullable<FontStyle> _internalFontStyle = null;
         Nullable<FontWeight> _internalFontWeight = null;
         Double _internalOpacity = Double.NaN;
+
+        Double _internalMaxHeight = Double.NaN;
+        Double _internalMaxWidth = Double.NaN;
+        Double _internalMinHeight = Double.NaN;
+        Double _internalMinWidth = Double.NaN;
 
         ElementData _tag;
 
