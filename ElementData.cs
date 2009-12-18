@@ -15,7 +15,7 @@ namespace Visifire.Charts
         public String VisualElementName
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
@@ -24,8 +24,7 @@ namespace Visifire.Charts
         public object Element
         {
             get;
-            set;
+            internal set;
         }
-
     }
 }

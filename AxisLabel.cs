@@ -178,7 +178,7 @@ namespace Visifire.Charts
             {
                 return _actualHeight;
             }
-            private set
+            set
             {
                 _actualHeight = value;
             }
@@ -193,7 +193,7 @@ namespace Visifire.Charts
             {
                 return _actualWidth;
             }
-            private set
+            set
             {
                 _actualWidth = value;
             }
@@ -604,7 +604,7 @@ namespace Visifire.Charts
         /// Create visual for AxisLabel
         /// </summary>
         internal void CreateVisualObject(Boolean positioningAllowed, ElementData tag)
-        {
+        {   
             Visual = new Canvas() { Tag = tag };
             TextElement = new TextBlock(){ Tag = tag };
             Rotation = new RotateTransform();

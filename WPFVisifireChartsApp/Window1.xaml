@@ -1,12 +1,10 @@
 ﻿<Window x:Class="WPFVisifireChartsApp.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Window1" x:Name="win"
-    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-    WindowState="Normal">
+     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+     WindowState="Maximized"   >
 
-    <Grid>
-
+    <Grid x:Name="LayoutRoot">
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" Theme="Theme1"
                   x:Name="MyChart" Width="500" Height="300">
 
@@ -22,6 +20,5 @@
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </Window>

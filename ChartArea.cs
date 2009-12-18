@@ -97,7 +97,7 @@ namespace Visifire.Charts
 
             if (PlotDetails != null)
                 PlotDetails = null;
-
+                
             PlotDetails = new PlotDetails(chart);
        
             SetLegendStyleFromTheme();
@@ -1037,7 +1037,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Reset all storyboards associated with dataseries to null 
         /// </summary>
-        public void ResetStoryboards()
+        private void ResetStoryboards()
         {
             if (Chart._internalAnimationEnabled)
             {
@@ -2962,7 +2962,7 @@ namespace Visifire.Charts
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.TopOverflow);
 
-            if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            if (AxisX2 != null && AxisX2.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX2.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisX2.Visual.DesiredSize.Height < overflow)
@@ -2970,7 +2970,7 @@ namespace Visifire.Charts
                 else
                     return 0;
             }
-            else if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            else if (AxisY2 != null && AxisY2.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisY2.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisY2.Visual.DesiredSize.Height < overflow)
@@ -3000,7 +3000,7 @@ namespace Visifire.Charts
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.BottomOverflow);
 
-            if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            if (AxisX != null && AxisX.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisX.Visual.DesiredSize.Height < overflow)
@@ -3008,7 +3008,7 @@ namespace Visifire.Charts
                 else
                     return 0;
             }
-            else if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            else if (AxisY != null && AxisY.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisY.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisY.Visual.DesiredSize.Height < overflow)
@@ -3038,7 +3038,7 @@ namespace Visifire.Charts
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.RightOverflow);
 
-            if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            if (AxisY2 != null && AxisY2.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisY2.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisY2.Visual.DesiredSize.Width < overflow)
@@ -3046,7 +3046,7 @@ namespace Visifire.Charts
                 else
                     return 0;
             }
-            else if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            else if (AxisX2 != null && AxisX2.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX2.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisX2.Visual.DesiredSize.Width < overflow)
@@ -3076,7 +3076,7 @@ namespace Visifire.Charts
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.LeftOverflow);
 
-            if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            if (AxisY != null && AxisY.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisY.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisY.Visual.DesiredSize.Width < overflow)
@@ -3084,7 +3084,7 @@ namespace Visifire.Charts
                 else
                     return 0;
             }
-            else if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            else if (AxisX != null && AxisX.Visual != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX.Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 if (AxisX.Visual.DesiredSize.Width < overflow)

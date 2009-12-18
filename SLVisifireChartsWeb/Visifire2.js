@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.3.5
+Visifire2.js v2.3.6 beta
 
 Copyright (C) 2008 Webyog Softworks Private Limited
 

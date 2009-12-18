@@ -103,6 +103,22 @@ namespace Visifire.Charts
             b = new Binding("Opacity");
             b.Source = this;
             this.SetBinding(InternalOpacityProperty, b);
+
+            b = new Binding("MaxWidth");
+            b.Source = this;
+            this.SetBinding(InternalMaxWidthProperty, b);
+
+            b = new Binding("MaxHeight");
+            b.Source = this;
+            this.SetBinding(InternalMaxHeightProperty, b);
+
+            b = new Binding("MinWidth");
+            b.Source = this;
+            this.SetBinding(InternalMinWidthProperty, b);
+
+            b = new Binding("MinHeight");
+            b.Source = this;
+            this.SetBinding(InternalMinHeightProperty, b);
 #endif
         }
 
@@ -147,6 +163,55 @@ namespace Visifire.Charts
             new PropertyMetadata(OnHrefChanged));
 
 #if WPF
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Register
+            ("MaxHeight",
+            typeof(Double),
+            typeof(Axis),
+            new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MinHeightProperty = DependencyProperty.Register
+            ("MinHeight",
+            typeof(Double),
+            typeof(Axis),
+            new PropertyMetadata(OnMinHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MinWidthProperty = DependencyProperty.Register
+            ("MinWidth",
+            typeof(Double),
+            typeof(Axis),
+            new PropertyMetadata(OnMinWidthPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Register
+            ("MaxWidth",
+            typeof(Double),
+            typeof(Axis),
+            new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.Padding dependency property.
         /// </summary>
@@ -477,6 +542,102 @@ namespace Visifire.Charts
         {
             get;
             internal set;
+        }
+
+        /// <summary>
+        /// MaxHeight of the Axis
+        /// </summary>
+        public new Double MaxHeight
+        {
+            get
+            {
+                return (Double)GetValue(MaxHeightProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxHeight != value)
+                {
+                    InternalMaxHeight = value;
+                    SetValue(MaxHeightProperty, value);
+                    FirePropertyChanged("MaxHeight");
+                }
+#else
+                SetValue(MaxHeightProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MaxWidth of the Axis
+        /// </summary>
+        public new Double MaxWidth
+        {
+            get
+            {
+                return (Double)GetValue(MaxWidthProperty);
+            }
+            set
+            {
+#if SL
+                if (MaxWidth != value)
+                {
+                    InternalMaxWidth = value;
+                    SetValue(MaxWidthProperty, value);
+                    FirePropertyChanged("MaxWidth");
+                }
+#else
+                SetValue(MaxWidthProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MinHeight of the Axis
+        /// </summary>
+        public new Double MinHeight
+        {
+            get
+            {
+                return (Double)GetValue(MinHeightProperty);
+            }
+            set
+            {
+#if SL
+                if (MinHeight != value)
+                {
+                    InternalMinHeight = value;
+                    SetValue(MinHeightProperty, value);
+                    FirePropertyChanged("MinHeight");
+                }
+#else
+                SetValue(MinHeightProperty, value);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// MinWidth of the Axis
+        /// </summary>
+        public new Double MinWidth
+        {
+            get
+            {
+                return (Double)GetValue(MinWidthProperty);
+            }
+            set
+            {
+#if SL
+                if (MinWidth != value)
+                {
+                    InternalMinWidth = value;
+                    SetValue(MinWidthProperty, value);
+                    FirePropertyChanged("MinWidth");
+                }
+#else
+                SetValue(MinWidthProperty, value);
+#endif
+            }
         }
 
         /// <summary>
@@ -1055,6 +1216,54 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(Axis),
             new PropertyMetadata(OnBackgroundPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxHeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxHeightProperty = DependencyProperty.Register
+           ("InternalMaxHeight",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MaxWidth dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMaxWidthProperty = DependencyProperty.Register
+           ("InternalMaxWidth",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(Double.PositiveInfinity, OnMaxWidthPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinHeight dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMinHeightProperty = DependencyProperty.Register
+           ("InternalMinHeight",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(OnMinHeightPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.MinWidth dependency property.
+        /// </returns>
+        private static readonly DependencyProperty InternalMinWidthProperty = DependencyProperty.Register
+           ("InternalMinWidth",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(OnMinWidthPropertyChanged));
 #endif
 
         /// <summary>
@@ -1075,7 +1284,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the Padding property of title
         /// </summary>
-        public Thickness InternalPadding
+        internal Thickness InternalPadding
         {
             get
             {
@@ -1174,6 +1383,15 @@ namespace Visifire.Charts
         }
 
         internal TimeSpan MaxDateRange
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Returns the visual element for the Axis
+        /// </summary>
+        internal StackPanel AxisElementsContainer
         {
             get;
             set;
@@ -1312,6 +1530,66 @@ namespace Visifire.Charts
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// MaxHeight of the Axis
+        /// </summary>
+        internal Double InternalMaxHeight
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxHeight) ? GetValue(MaxHeightProperty) : _internalMaxHeight);
+            }
+            set
+            {
+                _internalMaxHeight = value;
+            }
+        }
+
+        /// <summary>
+        /// MaxWidth of the Axis
+        /// </summary>
+        internal Double InternalMaxWidth
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMaxWidth) ? GetValue(MaxWidthProperty) : _internalMaxWidth);
+            }
+            set
+            {
+                _internalMaxWidth = value;
+            }
+        }
+
+        /// <summary>
+        /// MinHeight of the Axis
+        /// </summary>
+        internal Double InternalMinHeight
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMinHeight) ? GetValue(MinHeightProperty) : _internalMinHeight);
+            }
+            set
+            {
+                _internalMinHeight = value;
+            }
+        }
+
+        /// <summary>
+        /// MinWidth of the Axis
+        /// </summary>
+        internal Double InternalMinWidth
+        {
+            get
+            {
+                return (Double)(Double.IsNaN(_internalMinWidth) ? GetValue(MinWidthProperty) : _internalMinWidth);
+            }
+            set
+            {
+                _internalMinWidth = value;
+            }
         }
 
         /// <summary>
@@ -1732,6 +2010,54 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Event handler manages MaxHeight property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.InternalMaxHeight = (Double)e.NewValue;
+            axis.FirePropertyChanged("MaxHeight");
+        }
+
+        /// <summary>
+        /// Event handler manages MinHeight property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.InternalMinHeight = (Double)e.NewValue;
+            axis.FirePropertyChanged("MinHeight");
+        }
+
+        /// <summary>
+        /// Event handler manages MaxWidth property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMaxWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.InternalMaxWidth = (Double)e.NewValue;
+            axis.FirePropertyChanged("MaxWidth");
+        }
+
+        /// <summary>
+        /// Event handler manages MinWidth property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnMinWidthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.InternalMinWidth = (Double)e.NewValue;
+            axis.FirePropertyChanged("MinWidth");
+        }
+
+        /// <summary>
         /// Event handler manages axis maximum property change event of axis
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2143,7 +2469,7 @@ namespace Visifire.Charts
         /// <param name="ticksWidth">Ticks width</param>
         private void ClipVerticalAxis(Double ticksWidth)
         {
-            // Clip at top or bottom of the scrallable axis in order to avoid axislabel clip 
+            // Clip at top or bottom of the scrollable axis in order to avoid axislabel clip 
             if (Height != ScrollableSize)
             {
                 // clip addition value at top or bottom of the scrallable axis in order to avoid axislabel clip 
@@ -2179,9 +2505,13 @@ namespace Visifire.Charts
         {
             // Set the parameters fo the Axis Stack panel
             Visual.Children.Add(new Border() { Width = this.InternalPadding.Left });
+
             Visual.HorizontalAlignment = HorizontalAlignment.Left;
             Visual.VerticalAlignment = VerticalAlignment.Stretch;
-            Visual.Orientation = Orientation.Horizontal;
+
+            AxisElementsContainer.HorizontalAlignment = HorizontalAlignment.Right;
+            AxisElementsContainer.VerticalAlignment = VerticalAlignment.Stretch;
+            AxisElementsContainer.Orientation = Orientation.Horizontal;
 
             InternalStackPanel.Width = 0;
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Left;
@@ -2214,8 +2544,39 @@ namespace Visifire.Charts
             // Place the visual elements in the axis stack panel
             if (!String.IsNullOrEmpty(Title))
             {
-                Visual.Children.Add(AxisTitleElement.Visual);
+                AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
+
+            #region Set AxisLabels Width
+
+            Double topOverflow = 0;
+            Double bottomOverflow = 0;
+
+            if (AxisLabels.Visual != null)
+            {
+                Double totalAxisLabelsWidth = 0;
+
+                if (AxisLabels.InternalMinWidth != 0 && AxisLabels.InternalMinWidth > AxisLabels.Visual.Width)
+                    totalAxisLabelsWidth = AxisLabels.InternalMinWidth;
+                else
+                    totalAxisLabelsWidth = AxisLabels.Visual.Width;
+
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxWidth) && AxisLabels.InternalMaxWidth < totalAxisLabelsWidth)
+                {
+                    AxisLabels.Visual.Width = AxisLabels.InternalMaxWidth;
+                }
+                else
+                    AxisLabels.Visual.Width = totalAxisLabelsWidth;
+
+                topOverflow = Math.Max(topOverflow, AxisLabels.TopOverflow);
+                bottomOverflow = Math.Max(bottomOverflow, AxisLabels.BottomOverflow);
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-1, -4 - topOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + topOverflow + bottomOverflow + 8);
+                AxisLabels.Visual.Clip = clipRectangle;
+            }
+
+            #endregion
 
             if (AxisLabels.Visual != null)
             {
@@ -2224,7 +2585,7 @@ namespace Visifire.Charts
                 if (Height == ScrollableSize)
                 {
                     if (AxisLabels.Visual != null)
-                        Visual.Children.Add(AxisLabels.Visual);
+                        AxisElementsContainer.Children.Add(AxisLabels.Visual);
                 }
                 else
                 {
@@ -2245,7 +2606,7 @@ namespace Visifire.Charts
                 if (tick.Visual != null)
                 {
                     if (Height == ScrollableSize)
-                        Visual.Children.Add(tick.Visual);
+                        AxisElementsContainer.Children.Add(tick.Visual);
                     else
                     {
                         InternalStackPanel.Children.Add(tick.Visual);
@@ -2260,16 +2621,58 @@ namespace Visifire.Charts
             if (Height != ScrollableSize)
             {
                 ScrollViewerElement.Children.Add(InternalStackPanel);
-                Visual.Children.Add(ScrollViewerElement);
+                AxisElementsContainer.Children.Add(ScrollViewerElement);
             }
 
-            Visual.Children.Add(AxisLine);
+            AxisElementsContainer.Children.Add(AxisLine);
 
             InternalStackPanel.Width += AxisLine.Width;
 
             ScrollViewerElement.Width = InternalStackPanel.Width;
 
             ClipVerticalAxis(ticksWidth);
+
+            #region Set Axis Width
+
+            Double totalVisualWidth = 0;
+
+            Size size = Graphics.CalculateVisualSize(AxisElementsContainer);
+
+            if (InternalMinWidth != 0 && InternalMinWidth > size.Width)
+                totalVisualWidth = InternalMinWidth;
+            else
+                totalVisualWidth = size.Width;
+
+            if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < totalVisualWidth)
+            {
+                totalVisualWidth = InternalMaxWidth;
+            }
+            //else
+            //    AxisElementsContainer.Width = totalVisualWidth;
+
+            Canvas axisContainer = new Canvas();
+            axisContainer.HorizontalAlignment = HorizontalAlignment.Right;
+            axisContainer.VerticalAlignment = VerticalAlignment.Stretch;
+            axisContainer.Width = totalVisualWidth;
+            axisContainer.Height = Height;
+
+            axisContainer.Children.Add(AxisElementsContainer);
+            AxisElementsContainer.SetValue(Canvas.LeftProperty, (Double)totalVisualWidth - size.Width);
+
+            RectangleGeometry clipVisual = new RectangleGeometry();
+            clipVisual.Rect = new Rect(-1, -4 - topOverflow, axisContainer.Width + 2, size.Height + topOverflow + bottomOverflow + 8);
+            axisContainer.Clip = clipVisual;
+
+            #endregion
+
+            Size visualSize = Graphics.CalculateVisualSize(Visual);
+
+            Visual.Children.Add(axisContainer);
+
+            visualSize.Width += axisContainer.Width;
+
+            Visual.Width = visualSize.Width;
+            //Visual.Children.Add(AxisElementsContainer);
         }
 
         /// <summary>
@@ -2278,9 +2681,9 @@ namespace Visifire.Charts
         private void ApplyVerticalSecondaryAxisSettings()
         {
             // Set the parameters fo the Axis Stack panel
-            Visual.HorizontalAlignment = HorizontalAlignment.Right;
-            Visual.VerticalAlignment = VerticalAlignment.Stretch;
-            Visual.Orientation = Orientation.Horizontal;
+            AxisElementsContainer.HorizontalAlignment = HorizontalAlignment.Left;
+            AxisElementsContainer.VerticalAlignment = VerticalAlignment.Stretch;
+            AxisElementsContainer.Orientation = Orientation.Horizontal;
 
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Right;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Stretch;
@@ -2314,7 +2717,7 @@ namespace Visifire.Charts
             AxisLabels.CreateVisualObject();
 
             // Place the visual elements in the axis stack panel
-            Visual.Children.Add(AxisLine);
+            AxisElementsContainer.Children.Add(AxisLine);
 
             foreach (Ticks tick in Ticks)
             {
@@ -2324,17 +2727,47 @@ namespace Visifire.Charts
                 if (tick.Visual != null)
                 {
                     if (Height == ScrollableSize)
-                        Visual.Children.Add(tick.Visual);
+                        AxisElementsContainer.Children.Add(tick.Visual);
                     else
                         InternalStackPanel.Children.Add(tick.Visual);
 
                 }
             }
 
+            #region Set AxisLabels Width
+
+            if (AxisLabels.Visual != null)
+            {
+                Double totalAxisLabelsWidth = 0;
+
+                if (AxisLabels.InternalMinHeight != 0 && AxisLabels.InternalMinWidth > AxisLabels.Visual.Width)
+                    totalAxisLabelsWidth = AxisLabels.InternalMinWidth;
+                else
+                    totalAxisLabelsWidth = AxisLabels.Visual.Width;
+
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxWidth) && AxisLabels.InternalMaxWidth < totalAxisLabelsWidth)
+                {
+                    AxisLabels.Visual.Width = AxisLabels.InternalMaxWidth;
+                }
+                else
+                    AxisLabels.Visual.Width = totalAxisLabelsWidth;
+
+                Double topOverflow = 0;
+                Double bottomOverflow = 0;
+                topOverflow = Math.Max(topOverflow, AxisLabels.TopOverflow);
+                bottomOverflow = Math.Max(bottomOverflow, AxisLabels.BottomOverflow);
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-1, -4 - topOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + topOverflow + bottomOverflow + 8);
+                AxisLabels.Visual.Clip = clipRectangle;
+            }
+
+            #endregion
+
             if (Height == ScrollableSize)
             {
                 if (AxisLabels.Visual != null)
-                    Visual.Children.Add(AxisLabels.Visual);
+                    AxisElementsContainer.Children.Add(AxisLabels.Visual);
             }
             else
             {
@@ -2342,16 +2775,44 @@ namespace Visifire.Charts
 
                 ScrollViewerElement.Children.Add(InternalStackPanel);
 
-                Visual.Children.Add(ScrollViewerElement);
+                AxisElementsContainer.Children.Add(ScrollViewerElement);
             }
 
             CreateAxisTitleVisual(new Thickness(INNER_MARGIN, 0, INNER_MARGIN, 0));
             if (!String.IsNullOrEmpty(Title))
             {
-                Visual.Children.Add(AxisTitleElement.Visual);
+                AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
 
+            #region Set Axis Width
+
+            Double totalVisualWidth = 0;
+
+            Size size = Graphics.CalculateVisualSize(AxisElementsContainer);
+
+            if (InternalMinWidth != 0 && InternalMinWidth > size.Width)
+                totalVisualWidth = InternalMinWidth;
+            else
+                totalVisualWidth = size.Width;
+
+            if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < totalVisualWidth)
+            {
+                AxisElementsContainer.Width = InternalMaxWidth;
+            }
+            else
+                AxisElementsContainer.Width = totalVisualWidth;
+
+            #endregion
+
+            Visual.Children.Add(AxisElementsContainer);
+
+            Size visualSize = Graphics.CalculateVisualSize(Visual);
+
             Visual.Children.Add(new Border() { Width = this.InternalPadding.Right });
+
+            visualSize.Width += this.InternalPadding.Right;
+
+            Visual.Width = visualSize.Width;
         }
 
         /// <summary>
@@ -2359,10 +2820,10 @@ namespace Visifire.Charts
         /// </summary>
         private void ApplyHorizontalPrimaryAxisSettings()
         {
-            // Set the parameters fo the Axis Stack panel
-            Visual.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Visual.VerticalAlignment = VerticalAlignment.Bottom;
-            Visual.Orientation = Orientation.Vertical;
+            // Set the parameters for the Axis Stack panel
+            AxisElementsContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
+            AxisElementsContainer.VerticalAlignment = VerticalAlignment.Bottom;
+            AxisElementsContainer.Orientation = Orientation.Vertical;
             InternalStackPanel.Height = 0;
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Bottom;
@@ -2391,7 +2852,7 @@ namespace Visifire.Charts
             AxisLabels.CreateVisualObject();
 
             // Place the visual elements in the axis stack panel
-            Visual.Children.Add(AxisLine);
+            AxisElementsContainer.Children.Add(AxisLine);
 
             Double ticksHeight = 0;
             //AxisLabels.Visual.Background = new SolidColorBrush(Colors.Orange);
@@ -2403,7 +2864,7 @@ namespace Visifire.Charts
                 if (tick.Visual != null)
                 {
                     if (Width == ScrollableSize)
-                        Visual.Children.Add(tick.Visual);
+                        AxisElementsContainer.Children.Add(tick.Visual);
                     else
                     {
                         InternalStackPanel.Children.Add(tick.Visual);
@@ -2415,10 +2876,40 @@ namespace Visifire.Charts
             
             InternalStackPanel.Height += ticksHeight;
 
+            #region Set AxisLabels Height
+
+            if (AxisLabels.Visual != null)
+            {
+                Double totalAxisLabelsHeight = 0;
+
+                if (AxisLabels.InternalMinHeight != 0 && AxisLabels.InternalMinHeight > AxisLabels.Visual.Height)
+                    totalAxisLabelsHeight = AxisLabels.InternalMinHeight;
+                else
+                    totalAxisLabelsHeight = AxisLabels.Visual.Height;
+
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxHeight) && AxisLabels.InternalMaxHeight < totalAxisLabelsHeight)
+                {
+                    AxisLabels.Visual.Height = AxisLabels.InternalMaxHeight;
+                }
+                else
+                    AxisLabels.Visual.Height = totalAxisLabelsHeight;
+
+                Double leftOverflow = 0;
+                Double rightOverflow = 0;
+                leftOverflow = Math.Max(leftOverflow, AxisLabels.LeftOverflow);
+                rightOverflow = Math.Max(rightOverflow, AxisLabels.RightOverflow);
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-4 - leftOverflow, 0, AxisLabels.Visual.Width + leftOverflow + rightOverflow + 8, AxisLabels.Visual.Height);
+                AxisLabels.Visual.Clip = clipRectangle;
+            }
+
+            #endregion
+
             if (Width == ScrollableSize)
             {
                 if (AxisLabels.Visual != null)
-                    Visual.Children.Add(AxisLabels.Visual);
+                    AxisElementsContainer.Children.Add(AxisLabels.Visual);
             }
             else
             {
@@ -2431,7 +2922,7 @@ namespace Visifire.Charts
                 }
 
                 ScrollViewerElement.Children.Add(InternalStackPanel);
-                Visual.Children.Add(ScrollViewerElement);
+                AxisElementsContainer.Children.Add(ScrollViewerElement);
             }
 
             ScrollViewerElement.Height = InternalStackPanel.Height;
@@ -2442,8 +2933,30 @@ namespace Visifire.Charts
 
             if (!String.IsNullOrEmpty(Title))
             {
-                Visual.Children.Add(AxisTitleElement.Visual);
+                AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
+
+            #region Set Axis Height
+
+            Double totalVisualHeight = 0;
+
+            Size size = Graphics.CalculateVisualSize(AxisElementsContainer);
+
+            if (InternalMinHeight != 0 && InternalMinHeight > size.Height)
+                totalVisualHeight = InternalMinHeight;
+            else
+                totalVisualHeight = size.Height;
+
+            if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < totalVisualHeight)
+            {
+                AxisElementsContainer.Height = InternalMaxHeight;
+            }
+            else
+                AxisElementsContainer.Height = totalVisualHeight;
+
+            #endregion
+
+            Visual.Children.Add(AxisElementsContainer);
 
             Visual.Children.Add(new Border() { Height = this.InternalPadding.Bottom });
         }
@@ -2490,9 +3003,9 @@ namespace Visifire.Charts
         {
             // Set the parameters fo the Axis Stack panel
             Visual.Children.Add(new Border() { Height = this.InternalPadding.Top });
-            Visual.HorizontalAlignment = HorizontalAlignment.Stretch;
-            Visual.VerticalAlignment = VerticalAlignment.Top;
-            Visual.Orientation = Orientation.Vertical;
+            AxisElementsContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
+            AxisElementsContainer.VerticalAlignment = VerticalAlignment.Top;
+            AxisElementsContainer.Orientation = Orientation.Vertical;
 
             InternalStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             InternalStackPanel.VerticalAlignment = VerticalAlignment.Top;
@@ -2529,13 +3042,44 @@ namespace Visifire.Charts
             // Place the visual elements in the axis stack panel
             if (!String.IsNullOrEmpty(Title))
             {
-                Visual.Children.Add(AxisTitleElement.Visual);
+                AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
+
+            #region Set AxisLabels Height
+
+            Double leftOverflow = 0;
+            Double rightOverflow = 0;
+
+            if (AxisLabels.Visual != null)
+            {
+                Double totalAxisLabelsHeight = 0;
+
+                if (AxisLabels.InternalMinHeight != 0 && AxisLabels.InternalMinHeight > AxisLabels.Visual.Height)
+                    totalAxisLabelsHeight = AxisLabels.InternalMinHeight;
+                else
+                    totalAxisLabelsHeight = AxisLabels.Visual.Height;
+
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxHeight) && AxisLabels.InternalMaxHeight < totalAxisLabelsHeight)
+                {
+                    AxisLabels.Visual.Height = AxisLabels.InternalMaxHeight;
+                }
+                else
+                    AxisLabels.Visual.Height = totalAxisLabelsHeight;
+
+                leftOverflow = Math.Max(leftOverflow, AxisLabels.LeftOverflow);
+                rightOverflow = Math.Max(rightOverflow, AxisLabels.RightOverflow);
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-4 - leftOverflow, 0, AxisLabels.Visual.Width + leftOverflow + rightOverflow + 8, AxisLabels.Visual.Height);
+                AxisLabels.Visual.Clip = clipRectangle;
+            }
+
+            #endregion
 
             if (AxisLabels.Visual != null)
             {
                 if (Width == ScrollableSize)
-                    Visual.Children.Add(AxisLabels.Visual);
+                    AxisElementsContainer.Children.Add(AxisLabels.Visual);
                 else
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
             }
@@ -2550,7 +3094,7 @@ namespace Visifire.Charts
                 if (tick.Visual != null)
                 {
                     if (Width == ScrollableSize)
-                        Visual.Children.Add(tick.Visual);
+                        AxisElementsContainer.Children.Add(tick.Visual);
                     else
                         InternalStackPanel.Children.Add(tick.Visual);
                 }
@@ -2560,10 +3104,45 @@ namespace Visifire.Charts
             {
                 ScrollViewerElement.Children.Add(InternalStackPanel);
 
-                Visual.Children.Add(ScrollViewerElement);
+                AxisElementsContainer.Children.Add(ScrollViewerElement);
             }
 
-            Visual.Children.Add(AxisLine);
+            AxisElementsContainer.Children.Add(AxisLine);
+
+            #region Set Axis Height
+
+            Double totalVisualHeight = 0;
+
+            Size size = Graphics.CalculateVisualSize(AxisElementsContainer);
+
+            if (InternalMinHeight != 0 && InternalMinHeight > size.Height)
+                totalVisualHeight = InternalMinHeight;
+            else
+                totalVisualHeight = size.Height;
+
+            if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < totalVisualHeight)
+            {
+                totalVisualHeight = InternalMaxHeight;
+            }
+            //else
+            //    AxisElementsContainer.Height = totalVisualHeight;
+
+            Canvas axisContainer = new Canvas();
+            axisContainer.Height = totalVisualHeight;
+            axisContainer.Width = Width;
+
+            axisContainer.Children.Add(AxisElementsContainer);
+            AxisElementsContainer.SetValue(Canvas.TopProperty, (Double)totalVisualHeight - size.Height);
+
+            RectangleGeometry clipVisual = new RectangleGeometry();
+            clipVisual.Rect = new Rect(-4 - leftOverflow, 0, axisContainer.Width + leftOverflow + rightOverflow + 8, size.Height);
+            axisContainer.Clip = clipVisual;
+
+            #endregion
+
+            Visual.Children.Add(axisContainer);
+
+            //Visual.Children.Add(AxisElementsContainer);
         }
 
         /// <summary>
@@ -3223,7 +3802,10 @@ namespace Visifire.Charts
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
 
             // Create visual elements
+
             Visual = new StackPanel() { Background = InternalBackground };
+            
+            AxisElementsContainer = new StackPanel();
             InternalStackPanel = new Canvas();
             ScrollViewerElement = new Canvas();
             AxisTitleElement = new Title();
@@ -3323,6 +3905,11 @@ namespace Visifire.Charts
         Double _internalOpacity = Double.NaN;
         Brush _internalBackground = null;
         Nullable<Thickness> _internalPadding = null;
+
+        Double _internalMaxHeight = Double.NaN;
+        Double _internalMaxWidth = Double.NaN;
+        Double _internalMinHeight = Double.NaN;
+        Double _internalMinWidth = Double.NaN;
 
         #endregion
     }
