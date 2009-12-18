@@ -413,7 +413,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks tick = d as Ticks;
-            tick.FirePropertyChanged("Enabled");
+            tick.FirePropertyChanged(VcProperties.Enabled);
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace Visifire.Charts
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.FirePropertyChanged("Interval");
+            ticks.FirePropertyChanged(VcProperties.Interval);
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.UpdateVisual("LineColor", e.NewValue);
+            ticks.UpdateVisual(VcProperties.LineColor, e.NewValue);
         }
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.UpdateVisual("LineThickness", e.NewValue);
+            ticks.UpdateVisual(VcProperties.LineThickness, e.NewValue);
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.UpdateVisual("LineStyle", e.NewValue);
+            ticks.UpdateVisual(VcProperties.LineStyle, e.NewValue);
         }
 
         /// <summary>
@@ -468,7 +468,7 @@ namespace Visifire.Charts
         private static void OnTickLengthPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Ticks ticks = d as Ticks;
-            ticks.FirePropertyChanged("TickLength");
+            ticks.FirePropertyChanged(VcProperties.TickLength);
         }
 
         /// <summary>
@@ -563,7 +563,7 @@ namespace Visifire.Charts
 
                     }
 
-                    // System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
+                    //System.Diagnostics.Debug.WriteLine("XValue=" + xValue.ToString());
 
                     Visual.Children.Add(line);
 
@@ -656,7 +656,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(string propertyName, object value)
+        internal override void UpdateVisual(VcProperties property, object value)
         {   
             if (Visual != null)
                 foreach (Line line in Visual.Children)
@@ -666,7 +666,7 @@ namespace Visifire.Charts
                     line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
                 }
             else
-                FirePropertyChanged(propertyName);
+                FirePropertyChanged(property);
         }
 
         #endregion

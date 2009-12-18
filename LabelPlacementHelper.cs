@@ -915,45 +915,6 @@ namespace Visifire.Commons
 
             return retValue;
         }
-        
-        private void CalculateMaxAndMinPosition()
-        {
-            // Calculate MaxPosition
-            Double x1 = Center.X + XRadiusLabel * Math.Cos(ResetMeanAngle(BaseMeanAngle + Math.PI / 2));
-            Double y1 = Center.Y + YRadiusLabel * Math.Sin(ResetMeanAngle(BaseMeanAngle + Math.PI / 2));
-
-            Line l = new Line();
-            l.X1 = Center.X;
-            l.Y1 = Center.Y;
-            l.X2 = x1;
-            l.Y2 = y1;
-
-            Brush color = Graphics.GetRandonColor();
-            color.Opacity = 0.7;
-            l.Stroke = color;
-            l.StrokeThickness = 2;
-            Visual.Children.Add(l);
-            (LabelVisual as Canvas).Background = color;
-
-            // Calculate MaxPosition
-            Double x2 = Center.X + XRadiusLabel * Math.Cos(ResetMeanAngle(BaseMeanAngle - Math.PI / 2));
-            Double y2 = Center.Y + YRadiusLabel * Math.Sin(ResetMeanAngle(BaseMeanAngle - Math.PI / 2));
-
-            l = new Line();
-            l.X1 = Center.X;
-            l.Y1 = Center.Y;
-            l.X2 = x2;
-            l.Y2 = y2;
-            
-            //l.Stroke = color;
-            l.StrokeThickness = 1;
-            Visual.Children.Add(l);
-
-            MaxXPosition = Math.Max(x1, x2);
-            MaxYPosition = Math.Max(y1, y2);
-            MinXPosition = Math.Min(x1, x2);
-            MinYPosition = Math.Min(y1, y2);
-        }
 
         /// <summary>
         /// Reset the mean angle to 0 to 360

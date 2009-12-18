@@ -19,6 +19,7 @@ using System.Collections.Generic;
 
 #endif
 using Visifire.Commons;
+using Visifire.Charts;
 
 namespace Visifire.Charts
 {
@@ -228,7 +229,7 @@ namespace Visifire.Charts
        {
            get
            {
-               return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : new SolidColorBrush(Colors.Gray);
+               return (GetValue(LineColorProperty) != null) ? (Brush)GetValue(LineColorProperty) : Graphics.GRAY_BRUSH;
            }
            set
            {
@@ -254,7 +255,7 @@ namespace Visifire.Charts
         internal Canvas Visual
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -667,7 +668,7 @@ namespace Visifire.Charts
         private static void OnIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("Interval");
+            chartGrid.FirePropertyChanged(VcProperties.Interval);
         }
 
         /// <summary>
@@ -678,7 +679,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.FirePropertyChanged("Enabled");
+            chartGrid.FirePropertyChanged(VcProperties.Enabled);
         }
 
         /// <summary>
@@ -689,7 +690,7 @@ namespace Visifire.Charts
         private static void OnLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.UpdateVisual("LineColor", e.NewValue);
+            chartGrid.UpdateVisual(VcProperties.LineColor, e.NewValue);
         }
 
         /// <summary>
@@ -700,7 +701,7 @@ namespace Visifire.Charts
         private static void OnLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.UpdateVisual("LineStyle", e.NewValue);
+            chartGrid.UpdateVisual(VcProperties.LineStyle, e.NewValue);
         }
 
         /// <summary>
@@ -711,7 +712,7 @@ namespace Visifire.Charts
         private static void OnLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.UpdateVisual("LineThickness", e.NewValue);
+            chartGrid.UpdateVisual(VcProperties.LineThickness, e.NewValue);
         }
 
         /// <summary>
@@ -722,7 +723,7 @@ namespace Visifire.Charts
         private static void OnInterlacedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ChartGrid chartGrid = d as ChartGrid;
-            chartGrid.UpdateVisual("InterlacedColor", e.NewValue);
+            chartGrid.UpdateVisual(VcProperties.InterlacedColor, e.NewValue);
         }
                 
         #endregion
@@ -778,7 +779,10 @@ namespace Visifire.Charts
                 return;
             }
 
-            Visual = new Canvas();
+            if (Visual == null)
+                Visual = new Canvas();
+            else
+                Visual.Children.Clear();
 
             Width = width;
             Height = height;
@@ -807,7 +811,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(string propertyName, object value)
+        internal override void UpdateVisual(VcProperties propertyName, object value)
         {
             if (Visual != null)
             {

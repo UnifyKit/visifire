@@ -222,8 +222,15 @@ namespace Visifire.Charts
         /// </summary>
         private void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Render the chart with new size
-            InvokeRender();
+            // This is done because of unexpacted fire of SizeChanged event 
+            if (_height != e.NewSize.Height || _width != e.NewSize.Width)
+            {
+                _height = e.NewSize.Height;
+                _width = e.NewSize.Width;
+
+                // Render the chart with new size
+                InvokeRender();
+            }
         }
 
         #endregion
@@ -260,7 +267,7 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
-
+        Double _height, _width;
         #endregion
     }
 }

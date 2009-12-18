@@ -225,7 +225,7 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Chart),
             new PropertyMetadata(OnSmartLabelEnabledPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.DataPointWidth dependency property.  
         /// </summary>
@@ -233,8 +233,8 @@ namespace Visifire.Charts
             DependencyProperty.Register("DataPointWidth",
             typeof(Double),
             typeof(Chart),
-            new PropertyMetadata(Double.NaN, OnDataPointWidthPropertyChanged));
-            
+            new PropertyMetadata(Double.NaN,OnDataPointWidthPropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.UniqueColors dependency property.
         /// </summary>
@@ -318,6 +318,17 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Chart),
             null);
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Chart.AnimationEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty AnimatedUpdateProperty = DependencyProperty.Register
+            ("AnimatedUpdate",
+            typeof(Boolean),
+            typeof(Chart), new PropertyMetadata(false));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.InternalBorderThickness dependency property.
@@ -614,6 +625,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(AnimationEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Enables or disables animation
+        /// </summary>
+        public Boolean AnimatedUpdate
+        {
+            get
+            {
+                return (Boolean)GetValue(AnimatedUpdateProperty);
+            }
+            set
+            {
+                SetValue(AnimatedUpdateProperty, value);
             }
         }
 
@@ -1191,11 +1217,11 @@ namespace Visifire.Charts
             {
                 if (e.NewItems != null)
                     foreach (DataSeries ds in e.NewItems)
-                    {
+                    {   
                         ds.Chart = this;
 
                         foreach (DataPoint dp in ds.DataPoints)
-                        {
+                        {   
                             dp.Chart = this;
                         }
 
@@ -1204,10 +1230,9 @@ namespace Visifire.Charts
 
                         if (String.IsNullOrEmpty((String)ds.GetValue(NameProperty)))
                         {
-                            //ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
-
                             ds.Name = "DataSeries" + (this.Series.Count - 1).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_');
 
+                            // ds.SetValue(NameProperty, ds.GetType().Name + this.Series.IndexOf(ds).ToString() + "_" + Guid.NewGuid().ToString().Replace('-', '_'));
                             ds._isAutoName = true;
                         }
                         else
@@ -1218,7 +1243,49 @@ namespace Visifire.Charts
                     }
                  
             }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            {
+                if (e.OldItems != null)
+                {
+                    foreach (DataSeries ds in e.OldItems)
+                    {
+                        if(ds.PlotGroup.DataSeriesList.Count == 1 || (View3D && ds.RenderAs == RenderAs.Area))
+                        {   
+                            Panel seriesVisual = ds.Visual;
 
+                            // remove pre existing parent panel for the series visual 
+                            if (seriesVisual != null && seriesVisual.Parent != null)
+                            {   
+                                Panel parent = seriesVisual.Parent as Panel;
+                                parent.Children.Remove(seriesVisual);
+                            }
+                        }
+
+                        ds.Visual = null;
+                    }
+                }
+            }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
+                if (this.InternalSeries != null)
+                {
+                    foreach (DataSeries ds in InternalSeries)
+                    {   
+                        Panel seriesVisual = ds.Visual;
+
+                        // remove pre existing parent panel for the series visual 
+                        if (seriesVisual != null && seriesVisual.Parent != null)
+                        {
+                            Panel parent = seriesVisual.Parent as Panel;
+                            parent.Children.Remove(seriesVisual);
+                        }
+                    }
+
+                    InternalSeries.Clear();
+                }
+            }
+
+            _datapoint2UpdatePartially = null;
             InvokeRender();
         }
               
@@ -1275,8 +1342,8 @@ namespace Visifire.Charts
 #else
                         EmbeddedColorSets = System.Windows.Markup.XamlReader.Load(xaml) as ColorSets;
 #endif
-                        if (EmbeddedColorSets == null)
-                            System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
+                        //if (EmbeddedColorSets == null)
+                        //    System.Diagnostics.Debug.WriteLine("Unable to load embedded ColorSets. Reload project and try again.");
 
                         //if (InternalColorSets == null)
                         //    InternalColorSets = new ColorSets();
@@ -1433,13 +1500,13 @@ namespace Visifire.Charts
         /// <param name="Height">Chart width</param>
         /// <param name="Width">Chart height</param>
         private void ApplyChartShadow(Double width, Double height)
-        {
+        {   
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
-            {
+            {   
                 _shadowGrid.Children.Clear();
 
                 if (_rootElement != null)
-                {
+                {   
                     // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
                     ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                     ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
@@ -1506,7 +1573,7 @@ namespace Visifire.Charts
                         throw new Exception(fooResourceName + " Theme file not found as application resources.");
 
                     using (System.IO.Stream s1 = srif.Stream)
-                    {
+                    {   
                         if (s1 != null)
                         {
                             System.IO.StreamReader reader = new System.IO.StreamReader(s1);
@@ -1592,7 +1659,7 @@ namespace Visifire.Charts
         {   
             if (!String.IsNullOrEmpty(ToolTipText))
                 AttachToolTip(this, this, this);
-
+           
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
@@ -1650,6 +1717,7 @@ namespace Visifire.Charts
         private static void OnView3DPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
+            c._forcedRedraw = true;
             c.InvokeRender();
         }
 
@@ -2186,6 +2254,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void InvokeRender()
         {
+
             if (_isTemplateApplied)
             {
                 if (_renderLock)
@@ -2220,7 +2289,7 @@ namespace Visifire.Charts
                 _renderLock = true;
 
                 try
-                {
+                {   
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
@@ -2263,7 +2332,7 @@ namespace Visifire.Charts
                     {
                         if (chart.Background == null)
                         {
-                            returnBrush = new SolidColorBrush(Colors.Black);
+                            returnBrush = Graphics.BLACK_BRUSH;
                         }
                         else
                         {
@@ -2299,9 +2368,9 @@ namespace Visifire.Charts
                 {
                     if (chart != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                        if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
                         {
-                            brush = new SolidColorBrush(Colors.Black);
+                            brush = Graphics.BLACK_BRUSH;
                         }
                         else
                         {
@@ -2311,14 +2380,14 @@ namespace Visifire.Charts
                     }
                 }
                 else
-                {   
+                {
                     if (chart.PlotArea != null)
                     {
-                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, new SolidColorBrush(Colors.Transparent)) || chart.PlotArea.InternalBackground == null)
+                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, Graphics.TRANSPARENT_BRUSH) || chart.PlotArea.InternalBackground == null)
                         {
-                            if (Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)) || chart.Background == null)
+                            if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
                             {
-                                brush = new SolidColorBrush(Colors.Black);
+                                brush = Graphics.BLACK_BRUSH;
                             }
                             else
                             {
@@ -2349,9 +2418,21 @@ namespace Visifire.Charts
 #endif
 
         #endregion
-
+        
         #region Data
 
+        internal Boolean PARTIAL_DP_RENDER_LOCK = false;
+        internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
+        internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
+
+        internal Boolean PARTIAL_DS_RENDER_LOCK = false;
+        // internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
+        // internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
+
+        /// <summary>
+        /// Set to true before calling forced rerender redraw
+        /// </summary>
+        internal Boolean _forcedRedraw;
         
         private EventHandler _rendered;
 
@@ -2390,13 +2471,12 @@ namespace Visifire.Charts
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
 
-//#if WPF
+
         /// <summary>
         /// Whether Theme is changed by the user
         /// </summary>
         internal Boolean _isThemeChanged = false;
-//#endif
-
+        
         #endregion
     }
 }

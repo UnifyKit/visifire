@@ -28,7 +28,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.PlotAreaMouseButtonEventArgs class
     /// </summary>
-    
+
 #if SL
     [System.Windows.Browser.ScriptableType]
 #endif
@@ -74,6 +74,6 @@ namespace Visifire.Charts
             internal set;
         }
 
-        #endregion      
+        #endregion
     }
 }

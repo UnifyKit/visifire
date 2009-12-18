@@ -17,14 +17,14 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             BorderBrush="{TemplateBinding BorderBrush}">
-                            
+
                             <Grid x:Name="ChartAreaGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                
+
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition/>
@@ -59,9 +59,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                                     <StackPanel x:Name="RightOuterLegendPanel" Orientation="Horizontal" ></StackPanel>
                                     <StackPanel x:Name="RightOuterTitlePanel" Orientation="Horizontal" ></StackPanel>
                                 </StackPanel>
-                                
+
                                 <!-- Margin="{TemplateBinding Padding}" -->
-                                
+
                                 <Grid x:Name="CenterOuterGrid" Margin="0" Grid.Row="1" Grid.Column="1" Canvas.ZIndex="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -129,15 +129,15 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                                             <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <ScrollViewer BorderThickness="0" IsTabStop="False" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
                                                     <Canvas x:Name="PlotCanvas">
-                                                        
+
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
-                                                        
+
                                                         <!-- <Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
-                                                        
+
                                                     </Canvas>
                                                 </ScrollViewer>
                                             </Grid>
-                                            
+
                                             <Grid x:Name="InnerGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                                                 <Grid.ColumnDefinitions>
@@ -188,7 +188,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Setter Property="Padding" Value="0"/>
         <Setter Property="AnimationEnabled" Value="true"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -204,7 +204,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    
+
     <Style TargetType="vc:ToolTip">
         <Setter Property="IsHitTestVisible" Value="False"/>
         <Setter Property="Visibility" Value="Collapsed"/>
@@ -236,9 +236,9 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="vc:DataPoint">
-        
+
     </Style>
 
     <Style TargetType="vc:Title">

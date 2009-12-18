@@ -20,6 +20,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+
     </Grid>
 </UserControl>
   
