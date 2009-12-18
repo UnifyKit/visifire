@@ -3217,8 +3217,8 @@ namespace Visifire.Charts
                  return;
             }
 
-            if(Chart != null)
-                (Chart as Chart)._datapoint2UpdatePartially = null;
+            //if(Chart != null)
+            //    (Chart as Chart)._datapoint2UpdatePartially = null;
 
             if (Chart != null)
             {
