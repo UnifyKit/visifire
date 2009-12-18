@@ -178,7 +178,7 @@ namespace Visifire.Charts
             {
                 return _actualHeight;
             }
-            private set
+            set
             {
                 _actualHeight = value;
             }
@@ -193,7 +193,7 @@ namespace Visifire.Charts
             {
                 return _actualWidth;
             }
-            private set
+            set
             {
                 _actualWidth = value;
             }

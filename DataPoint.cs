@@ -2509,23 +2509,15 @@ namespace Visifire.Charts
         private static void OnYValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-#if SL
-            if (dataPoint.Chart == null)
-                dataPoint._oldYValue = (Double)e.NewValue;
-#else
+
             if (dataPoint.Chart == null || (dataPoint.Chart as Chart).ChartArea == null)
                 dataPoint._oldYValue = (Double)e.NewValue;
-#endif
             else
             {
-                dataPoint._oldYValue = (Double)e.OldValue;
+                dataPoint._oldYValue = Double.IsNaN((Double)e.OldValue) ? dataPoint._oldYValue : (Double)e.OldValue;
+                dataPoint._oldYValue = Double.IsNaN(dataPoint._oldYValue) ? 0 : dataPoint._oldYValue;
                 dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
             }
-
-            // dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
-
-            // else
-              // dataPoint.FirePropertyChanged(VcProperties.YValue");
         }
 
         // private static 

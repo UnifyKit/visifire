@@ -1659,7 +1659,7 @@ namespace Visifire.Charts
         {   
             if (!String.IsNullOrEmpty(ToolTipText))
                 AttachToolTip(this, this, this);
-
+           
             AttachEvents2Visual(this, this, this._rootElement);
 
             AttachEvents2Visual4MouseDownEvent(this, this, this._plotCanvas);
@@ -2476,8 +2476,7 @@ namespace Visifire.Charts
         /// Whether Theme is changed by the user
         /// </summary>
         internal Boolean _isThemeChanged = false;
-
-
+        
         #endregion
     }
 }

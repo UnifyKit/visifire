@@ -2858,7 +2858,10 @@ namespace Visifire.Charts
         }
 
         public static void UpdateVisualForYValue4AreaChart(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
-        {   
+        {
+            if (dataPoint.Faces == null)
+                return;
+
             DataSeries dataSeries = dataPoint.Parent;               // parent of the current DataPoint
             Canvas areaCanvas = dataSeries.Faces.Visual as Canvas;  // Existing parent area of column
             Boolean isPositive = (dataPoint.InternalYValue >= 0);   // Whether YValue is positive

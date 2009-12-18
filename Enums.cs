@@ -302,6 +302,8 @@ namespace Visifire.Charts
         MarkerType,
         MaxWidth,
         MaxHeight,
+        MinWidth,
+        MinHeight,
         MinPointHeight,
         MouseEvent,
         MovingMarkerEnabled,

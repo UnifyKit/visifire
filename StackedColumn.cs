@@ -437,7 +437,10 @@ namespace Visifire.Charts
         }
 
         public static void UpdateVisualForYValue4StackedBarChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
-        {   
+        {
+            if (dataPoint.Faces == null)
+                return;
+
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
@@ -603,7 +606,10 @@ namespace Visifire.Charts
         }
         
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
-        {   
+        {
+            if (dataPoint.Faces == null)
+                return;
+
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column

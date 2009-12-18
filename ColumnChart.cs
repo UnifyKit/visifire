@@ -816,7 +816,8 @@ namespace Visifire.Charts
             
             String property2Animate;
 
-            storyboard.Pause();
+            // storyboard.Pause();
+
             if(renderAs == RenderAs.Column)
             {
                 property2Animate ="(ScaleTransform.ScaleY)";
@@ -1042,6 +1043,7 @@ namespace Visifire.Charts
                     dataPoint.Parent.Storyboard = new Storyboard();
 
                 currentDataSeries = dataPoint.Parent;
+                //dataPoint.Parent.Storyboard.Stop();
 
                 // Apply animation to the data points dataSeriesIndex.e to the rectangles that form the columns
                 dataPoint.Parent.Storyboard = ApplyColumnChartAnimation(currentDataSeries, columnVisual, dataPoint.Parent.Storyboard, isPositive, 1, new Double[] { 0, 1 }, new Double[] { 0, 1 }, dataPoint.Parent.RenderAs);
@@ -1856,8 +1858,10 @@ namespace Visifire.Charts
 
         public static void UpdateVisualForYValue4ColumnChart(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
-            DataSeries currentDataSeries;
+            if (dataPoint.Faces == null)
+                return;
 
+            DataSeries currentDataSeries;
             DataSeries dataSeries = dataPoint.Parent;             // parent of the current DataPoint
             Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
             Canvas columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
@@ -1937,8 +1941,8 @@ namespace Visifire.Charts
             // animationEnabled = false;
             if (animationEnabled)
             {
-                if (dataPoint._oldYValue == dataPoint.InternalYValue)
-                    return;
+                //if (dataPoint._oldYValue == dataPoint.InternalYValue)
+                //    return;
 
                 if (dataPoint.Storyboard != null)
                     dataPoint.Storyboard.Stop();

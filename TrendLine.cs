@@ -749,7 +749,10 @@ namespace Visifire.Charts
                 return;
             }
 
-            Visual = new Canvas();
+            if (Visual == null)
+                Visual = new Canvas();
+            else
+                Visual.Children.Clear();
 
             Visual.Opacity = this.Opacity;
             Visual.Cursor = this.Cursor;
