@@ -47,6 +47,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -100,6 +103,9 @@
     <Compile Include="..\BarChart.cs">
       <Link>BarChart.cs</Link>
     </Compile>
+    <Compile Include="..\Bubble.cs">
+      <Link>Bubble.cs</Link>
+    </Compile>
     <Compile Include="..\BubbleChart.cs">
       <Link>BubbleChart.cs</Link>
     </Compile>
@@ -144,6 +150,9 @@
     </Compile>
     <Compile Include="..\FunnelChart.cs">
       <Link>FunnelChart.cs</Link>
+    </Compile>
+    <Compile Include="..\Graph.cs">
+      <Link>Graph.cs</Link>
     </Compile>
     <Compile Include="..\Graphics.cs">
       <Link>Graphics.cs</Link>
@@ -192,6 +201,12 @@
     </Compile>
     <Compile Include="..\RenderHelper.cs">
       <Link>RenderHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\StackedColumn.cs">
+      <Link>StackedColumn.cs</Link>
+    </Compile>
+    <Compile Include="..\StackedColumn100.cs">
+      <Link>StackedColumn100.cs</Link>
     </Compile>
     <Compile Include="..\StockChart.cs">
       <Link>StockChart.cs</Link>

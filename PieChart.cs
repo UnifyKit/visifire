@@ -3951,7 +3951,6 @@ namespace Visifire.Charts
                     pieParams.LabelLineEnabled = false;
 
                 Faces faces = new Faces();
-                faces.Parts = new List<FrameworkElement>();
 
                 if (chart.View3D)
                 {
@@ -4219,7 +4218,7 @@ namespace Visifire.Charts
                     doughnutParams.LabelLineEnabled = false;
 
                 Faces faces = new Faces();
-                faces.Parts = new List<FrameworkElement>();
+                faces.Parts = new List<DependencyObject>();
 
                 doughnutParams.TagReference = dataPoint;
 
@@ -4230,7 +4229,7 @@ namespace Visifire.Charts
                     List<Shape> doughnutFaces = GetDoughnut3D(currentDataSeries, ref faces, doughnutParams, ref unExplodedPoints, ref explodedPoints, ref dataPoint.LabelLine, enabledDataPoints);
 
                     foreach (Shape path in doughnutFaces)
-                    {
+                    {   
                         if (path != null)
                         {   
                             visual.Children.Add(path);

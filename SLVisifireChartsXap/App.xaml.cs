@@ -239,9 +239,9 @@ namespace SLVisifireChartsXap
         /// Handle display of single and multiple charts
         /// </summary>
         private void RenderEngine()
-        {
+        {   
             if (_firstChart)
-            {
+            {   
                 _chartCanv = CreateChart();
 
                 //_wrapper.LayoutRoot.Children.Clear();
@@ -249,8 +249,8 @@ namespace SLVisifireChartsXap
 
                 _firstChart = false;
             }
-            else if (_xmlQueue.Count > 0)//&& _chartReady)
-            {
+            else if (_xmlQueue.Count > 0 )//&& _chartReady)
+            {   
                 Canvas _oldCanvas = _chartCanv;
                 _chartCanv = CreateChart();
                 _chartCanv.Opacity = 0;
@@ -259,7 +259,7 @@ namespace SLVisifireChartsXap
                 _wrapper.LayoutRoot.Children.Add(_chartCanv);
                 _chartCanv.Loaded += new RoutedEventHandler(newChartCanvas_Loaded);
             }
-            else if (_isUriSet)
+            else if(_isUriSet)
             {
                 _latestAddedUri.IsForceRender = true;
                 _isUriSet = false;
@@ -304,8 +304,8 @@ namespace SLVisifireChartsXap
 
         private DataXmlUri _latestAddedUri = new DataXmlUri("", false);
 
-        private DataXmlUri _currentDownloadingUri = new DataXmlUri("", false);
-
+        private DataXmlUri _currentDownloadingUri = new  DataXmlUri("", false);
+       
 
         /// <summary>
         /// Event handler for the Key pressed event attached with Silverlight application
@@ -340,13 +340,13 @@ namespace SLVisifireChartsXap
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void webclient_DownloadStringCompleted(object sender, System.Net.DownloadStringCompletedEventArgs e)
-        {
+        {   
             WebClient _webClient = sender as WebClient;
             String s = _webclient.Headers.Count.ToString();
             // MessageBox.Show(s);
 
             if (e.Error == null)
-            {
+            {   
                 Enqueue(e.Result);
 
                 if (_firstChart || _currentDownloadingUri.IsForceRender)
@@ -373,7 +373,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 2";
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta 4";
             version = version.Replace("Version=", "");
             return version;
         }
@@ -705,7 +705,7 @@ namespace SLVisifireChartsXap
                     Canvas chartCanvas = _wrapper.LayoutRoot.Children[i] as Canvas;
 
                     try
-                    {
+                    {   
                         if (chartCanvas != null && chartCanvas.Tag.ToString() == "Chart")
                         {
                             chartCanvas.Children.Clear();
@@ -733,7 +733,7 @@ namespace SLVisifireChartsXap
         /// <param name="sender">Object</param>
         /// <param name="e">RoutedEventArgs</param>
         private void chartCanv_Loaded(object sender, RoutedEventArgs e)
-        {
+        {   
             _chartReady = true;
 
             if (!String.IsNullOrEmpty(_onChartLoadedFunctionName))
@@ -802,7 +802,7 @@ namespace SLVisifireChartsXap
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
             if (_logLevel == 1)
-            {
+            {   
                 if (Logger == null)
                     AddLogViewer(_wrapper);
 

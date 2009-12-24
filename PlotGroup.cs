@@ -22,17 +22,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Documents;
-
-
 #else
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 #endif
-
+using System.Linq;
 namespace Visifire.Charts
 {
     /// <summary>
@@ -47,7 +42,7 @@ namespace Visifire.Charts
         /// <param name="renderAs">RenderAs</param>
         /// <param name="axisX">axisX</param>
         /// <param name="axisY">AxisY</param>
-        public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY, Chart chart)
+        public PlotGroup(RenderAs renderAs, Axis axisX, Axis axisY)
         {
             DataSeriesList = new List<DataSeries>();
             
@@ -56,7 +51,22 @@ namespace Visifire.Charts
             RenderAs = renderAs;
             AxisX = axisX;
             AxisY = axisY;
-            Chart = chart;
+        }
+
+        public Double GetLimitingYValue()
+        {
+            Double limitingYValue = 0;
+
+            if (AxisY != null)
+            {
+                if (AxisY.InternalAxisMinimum > 0)
+                    limitingYValue = (Double)AxisY.InternalAxisMinimum;
+
+                if (AxisY.InternalAxisMaximum < 0)
+                    limitingYValue = (Double)AxisY.InternalAxisMaximum;
+            }
+
+            return limitingYValue;
         }
 
         #endregion
@@ -74,12 +84,6 @@ namespace Visifire.Charts
         #endregion
         
         #region Internal Properties
-
-        internal Chart Chart
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// PlotGroup is enabled if atleast one dataSeries in DataSeriesList is enabled
@@ -214,6 +218,10 @@ namespace Visifire.Charts
 #endif
         }
 
+
+        
+        internal Double DrawingIndex;
+
         #endregion
 
         #region Private Delegates
@@ -272,8 +280,6 @@ namespace Visifire.Charts
                 minDiff = Math.Min(minDiff, Math.Abs(distinctValues[i] - distinctValues[i + 1]));
             }
 
-            
-
             return minDiff;
         }
 
@@ -281,6 +287,40 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+
+
+        private void CreateXWiseStackedDataEntry(ref List<DataPoint> dataPointsInCurrentPlotGroup, params RenderAs[] chartTypes)
+        {
+            XWiseStackedDataList.Clear();
+
+            // variable to temporarily store the stacked Data content
+            XWiseStackedData xWiseData;
+
+            // Populates the Xwise sorted Stacked data list with entries from 
+            // all the datapoints from all DataSeries from this group
+            foreach (DataPoint dataPoint in dataPointsInCurrentPlotGroup)
+            {
+                // Check whether the DataPoint is under the list of RenderAs
+                if (!chartTypes.Any(w => w == dataPoint.Parent.RenderAs))
+                    continue;
+                
+                if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
+                {   
+                    // gets the existing  node
+                    xWiseData = XWiseStackedDataList[dataPoint.InternalXValue];
+                }
+                else
+                {   
+                    // Creates a new node
+                    xWiseData = new XWiseStackedData();
+                    XWiseStackedDataList.Add(dataPoint.InternalXValue, xWiseData);
+                }
+
+                // add the datapoint to a node
+                AddXWiseStackedDataEntry(ref xWiseData, dataPoint);
+            }
+        } 
+        
         /// <summary>
         /// This function will find the dependent variable types from the current PlotGroup.
         /// </summary>
@@ -299,8 +339,8 @@ namespace Visifire.Charts
             {
                 types.Add(typeof(Double));
                 var bubbleSeriesCount = (from dataSeries in DataSeriesList
-                                       where dataSeries.RenderAs == RenderAs.Bubble
-                                       select dataSeries).Count();
+                                         where dataSeries.RenderAs == RenderAs.Bubble
+                                         select dataSeries).Count();
                 if (bubbleSeriesCount > 0)
                     types.Add(typeof(Double));
             }
@@ -308,152 +348,285 @@ namespace Visifire.Charts
             return types;
         }
 
+        public void LoadYValues(List<DataSeries> DataSeriesList)
+        {
+            foreach (DataSeries dataSeries in DataSeriesList)
+            {
+                dataSeries.PlotGroup = this;
+
+                if (dataSeries.RenderAs == RenderAs.Stock || dataSeries.RenderAs == RenderAs.CandleStick)
+                {
+                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                    {
+                        if (dp.YValues != null)
+                        {
+                            _yValues.AddRange(dp.YValues);
+                        }
+
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>
-        internal void Update()
+        public void Update(VcProperties property, object oldValue, object newValue)
         {
             // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
-            List<DataPoint> dataPoints = new List<DataPoint>();
+            
 
             // Populates the list with InternalDataPoints with all availabel InternalDataPoints from all DataSeries
-            // Also set the plotGropu reference to the current plot group
-            foreach (DataSeries dataSeries in DataSeriesList)
+            // Also set the plotGroup reference to the current plot group
+            
+            //List<DataPoint> _dataPointsInCurrentPlotGroup = new List<DataPoint>();
+            if (property == VcProperties.None || property == VcProperties.DataPoints)
             {
-                // check if data series is enabled
-                // if (dataSeries.Enabled == true)
+                _dataPointsInCurrentPlotGroup = new List<DataPoint>();
+                foreach (DataSeries dataSeries in DataSeriesList)
                 {
-                    List<DataPoint> enabledDataPoints = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
+                    // check if data series is enabled
+                    // if (dataSeries.Enabled == true)
+                    {
+                       // List<DataPoint>  = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
 
-                    // Concatenate the lists of InternalDataPoints
-                    dataPoints.InsertRange(dataPoints.Count, enabledDataPoints);
+                        // Concatinate the lists of InternalDataPoints
+                        _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataSeries.InternalDataPoints);
 
-                    // set the plot group reference
-                    dataSeries.PlotGroup = this;
+                        // set the plot group reference
+                        dataSeries.PlotGroup = this;
+                    }
                 }
-            }
-
-            // variable to temporarily store the stacked Data content
-            XWiseStackedData xWiseData;
-
-            // Populates the Xwise sorted Stacked data list with entries from 
-            // all the datapoints from all DataSeries from this group
-            foreach (DataPoint dataPoint in dataPoints)
-            {
-                if (XWiseStackedDataList.ContainsKey(dataPoint.InternalXValue))
-                {   
-                    // gets the existing  node
-                    xWiseData = XWiseStackedDataList[dataPoint.InternalXValue];
-                }
-                else
-                {   
-                    // Creates a new node
-                    xWiseData = new XWiseStackedData();
-                    XWiseStackedDataList.Add(dataPoint.InternalXValue, xWiseData);
-                }
-
-                // add the datapoint to a node
-                AddXWiseStackedDataEntry(ref xWiseData, dataPoint);
             }
 
             // Get a list of all XValues,YValues and ZValues from all InternalDataPoints from all the DataSeries in this Group
-            var xValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct();
-            
-            List<Double> yValues = null;
-            List<Double> zValues = null;
 
-            if(GetDependentVariableTypes().Count == 1 && GetDependentVariableTypes()[0] == typeof(List<Double>))
-                yValues = new List<Double>();
-            else if (GetDependentVariableTypes().Count == 2)
+            if (property == VcProperties.None || property == VcProperties.XValue || property == VcProperties.DataPoints || property == VcProperties.Series)
             {
-                yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
-                zValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct().ToList();
+                _xValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
+
+                // Calculate max XValue
+                MaximumX = (_xValues.Count() > 0) ? (_xValues).Max() : 0;
+
+                // Calculate min XValue
+                MinimumX = (_xValues.Count() > 0) ? (_xValues).Min() : 0;
+
+                // Calculates and sets the min difference for XValues
+                MinDifferenceX = GetMinDifference(_xValues);
             }
-            else
-                yValues = (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Distinct().ToList();
 
-            List<Double> yValuesList = new List<Double>();
-
-            foreach (DataPoint dp in dataPoints)
+            if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.Series || property == VcProperties.ZValue)
             {
-                if (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock)
+                if (property == VcProperties.ZValue)
                 {
-                    if (dp.YValues != null)
-                        yValuesList.AddRange(dp.YValues);
+                    Double value = (Double)newValue;
+
+                    MaximumZ = value > MaximumZ ? value : MaximumZ;
+                    MinimumZ = value < MinimumZ ? value : MinimumZ;
+                }
+                else //if (listOfDataPointsFromAllSeries.Count > 0 && listOfDataPointsFromAllSeries[0].Parent.RenderAs == RenderAs.Bubble)
+                {
+                    if(GetDependentVariableTypes().Count == 2)
+                        _zValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.ZValue) select dataPoint.ZValue).Distinct().ToArray();
+
+                    MaximumZ = (_zValues != null && _zValues.Count() > 0) ? (_zValues).Max() : 0;
+                    MinimumZ = (_zValues != null && _zValues.Count() > 0) ? (_zValues).Min() : 0;
                 }
             }
 
-            yValues.AddRange(yValuesList);
-
-            // Calculate max value
-            MaximumX = (xValues.Count() > 0) ? (xValues).Max() : 0;
-            MaximumZ = (zValues != null && zValues.Count() > 0) ? (zValues).Max() : 0;
-
-            // Calculate min value
-            MinimumX = (xValues.Count() > 0) ? (xValues).Min() : 0;
-            MinimumZ = (zValues != null && zValues.Count() > 0) ? (zValues).Min() : 0;
-
-            // variables to store the yValuee sum in case of stacked type charts
-            // var positiveYValue;
-            // var negativeYValue;
-
-            // Calculating Max and Min YValue based on chart type
-            switch (RenderAs)
+            if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.YValues || property == VcProperties.YValue || property == VcProperties.XValue)
             {
-                case RenderAs.Area:
-                case RenderAs.Bar:
-                case RenderAs.Bubble:
-                case RenderAs.Column:
-                case RenderAs.Doughnut:
-                case RenderAs.Line:
-                case RenderAs.Pie:
-                case RenderAs.Point:
-                case RenderAs.Stock:
-                case RenderAs.CandleStick:
-                case RenderAs.SectionFunnel:
-                case RenderAs.StreamLineFunnel:
-                    MaximumY = (yValues.Count() > 0) ? (yValues).Max() : 0;
-                    MinimumY = (yValues.Count() > 0) ? (yValues).Min() : 0;
-                    break;
+                Double maxY = Double.NaN, minY = Double.NaN;
 
-                case RenderAs.StackedArea:
-                case RenderAs.StackedBar:
-                case RenderAs.StackedColumn:
+                if (property == VcProperties.None || property == VcProperties.DataPoints)
+                {
+                    List<Type> dependentVariableTypes = GetDependentVariableTypes();
+
+                    if (dependentVariableTypes.Count == 1 && dependentVariableTypes[0] == typeof(List<Double>))
+                        _yValues = new List<Double>();
+                    else
+                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).ToList();
+
+                    //List<Double> yValuesList = new List<Double>();
+
+                    foreach (DataPoint dp in _dataPointsInCurrentPlotGroup)
                     {
-                        var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
-                        var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
-                        MaximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
-                        MinimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Min() : 0;
+                        if (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock)
+                        {
+                            if (dp.YValues != null)
+                            {
+                                _yValues.Add(dp.YValues.Max());
+                                _yValues.Add(dp.YValues.Min());
+                            }
+
+                        }
                     }
-                    break;
 
-                case RenderAs.StackedArea100:
-                case RenderAs.StackedBar100:
-                case RenderAs.StackedColumn100:
-                    {
-                        var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
-                        var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
-                        MaximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
-                        MinimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Min() : 0;
-                    }
-                    // Since for stacked chart the Maximum can't be greater than 100 or less then 0
-                    // Check and set appropriate limit
-                    if (MaximumY > 0) MaximumY = 100;
-                    else MaximumY = 0;
+                    //_yValues.AddRange(yValuesList);
+                }
+                else if (property == VcProperties.YValue)
+                {
+                    _yValues.Remove((Double)oldValue);
+                    _yValues.Add((Double)newValue);
+                }
+                else if (property == VcProperties.YValues)
+                {
+                    _yValues.Remove( ((Double[])oldValue).Max());
+                    _yValues.Remove( ((Double[])oldValue).Min());
+                    _yValues.Add(maxY =((Double[])newValue).Max());
+                    _yValues.Add(minY =((Double[])newValue).Min());
+                }
 
-                    // Since for stacked chart the Minimum can't be greater than 0 or less then -100
-                    // Check and set appropriate limit
-                    if (MinimumY >= 0) MinimumY = 0;
-                    else MinimumY = -100;
+                // variables to store the yValuee sum in case of stacked type charts
+                // var positiveYValue;
+                // var negativeYValue;
 
-                    break;
+                // Calculating Max and Min YValue based on chart type
+                switch (RenderAs)
+                {   
+                    case RenderAs.Area:
+                    case RenderAs.Bar:
+                    case RenderAs.Bubble:
+                    case RenderAs.Column:
+                    case RenderAs.Doughnut:
+                    case RenderAs.Line:
+                    case RenderAs.Pie:
+                    case RenderAs.Point:
+                    case RenderAs.Stock:
+                    case RenderAs.CandleStick:
+                    case RenderAs.SectionFunnel:
+                    case RenderAs.StreamLineFunnel:
+
+                        if (property == VcProperties.YValue)
+                        {
+                            Double value = (Double)newValue;
+
+                            if (value > MaximumY)
+                            {
+                                MaximumY = value;
+
+                                if (_yValues.Count() > 0)
+                                    MinimumY = _yValues.Min();
+                            }
+                            else if (value < MinimumY)
+                            {
+                                MinimumY = value;
+
+                                if (_yValues.Count() > 0)
+                                    MaximumY = _yValues.Max();
+                            }
+                            else
+                            {   
+                                if (_yValues.Count() > 0)
+                                {
+                                    MaximumY = _yValues.Max();
+                                    MinimumY = _yValues.Min();
+                                }
+                                else
+                                {
+                                    MaximumY = 0;
+                                    MinimumY = 0;
+                                }
+
+                                MaximumY = MaximumY;
+                            }
+
+                        }
+                        else if (property == VcProperties.YValues)
+                        {
+                            if (maxY > MaximumY)
+                                MaximumY = maxY;
+                            else if (minY < MinimumY)
+                                MinimumY = minY;
+                            else
+                            {
+
+                                if (_yValues.Count() > 0)
+                                {
+                                    MaximumY = _yValues.Max();
+                                    MinimumY = _yValues.Min();
+                                }
+                                else
+                                {   
+                                    MaximumY = 0;
+                                    MinimumY = 0;
+                                }
+                            }
+                        }
+                        else
+                        {   
+                            MaximumY = (_yValues.Count() > 0) ? (_yValues).Max() : 0;
+                            MinimumY = (_yValues.Count() > 0) ? (_yValues).Min() : 0;
+                        }
+
+                        break;
+
+                    case RenderAs.StackedArea:
+                    case RenderAs.StackedBar:
+                    case RenderAs.StackedColumn:
+                        {
+                            CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn, RenderAs.StackedBar, RenderAs.StackedArea);
+
+                            //if (property == VcProperties.YValue)
+                            //{
+                            //    Double value = (Double)newValue;
+                            //    MaximumY = value > MaximumY ? value : MaximumY;
+                            //    MinimumY = value < MinimumY ? value : MinimumY;
+                            //}
+                            //else
+                            {
+                                var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
+                                var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
+
+                                MaximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
+                                MinimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Min() : 0;
+                            }
+                        }
+                        break;
+
+                    case RenderAs.StackedArea100:
+                    case RenderAs.StackedBar100:
+                    case RenderAs.StackedColumn100:
+                        {
+                            CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
+                            
+                            //if (property == VcProperties.YValue)
+                            //{   
+                            //    Double value = (Double)newValue;
+                            //    MaximumY = value > MaximumY ? value : MaximumY;
+                            //    MinimumY = value < MinimumY ? value : MinimumY;
+                            //}
+                            //else
+                            {
+                                var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
+                                var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
+
+                                MaximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
+                                MinimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Min() : 0;
+                            }
+
+                            // Since for stacked chart the Maximum can't be greater than 100 or less then 0
+                            // Check and set appropriate limit
+                            MaximumY = (MaximumY > 0) ? 100 : 0;
+
+                            // Since for stacked chart the Minimum can't be greater than 0 or less then -100
+                            // Check and set appropriate limit
+                            MinimumY = (MinimumY >= 0) ? 0 : -100;
+                        }
+
+                        break;
+                }
             }
 
-            // Calculates and sets the min difference for XValues
-            MinDifferenceX = GetMinDifference(xValues.ToArray());
         }
+
+
         #endregion
 
+        Double[] _xValues;
+        Double[] _zValues;
+        List<Double> _yValues;
+        List<DataPoint> _dataPointsInCurrentPlotGroup;
     }
 
 }
