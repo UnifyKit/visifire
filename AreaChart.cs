@@ -3479,8 +3479,8 @@ namespace Visifire.Charts
 
             clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
 
-            if (labelCanvas.Parent != null)
-                (labelCanvas.Parent as Canvas).Clip = clipRectangle;
+            if (labelCanvas != null)
+                (labelCanvas as Canvas).Clip = clipRectangle;
 
         }
 

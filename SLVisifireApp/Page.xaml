@@ -5,9 +5,10 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 
 >
     <Grid x:Name="LayoutRoot" Height="Auto" Width="Auto">
+
         <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1"
                   x:Name="MyChart" Width="500" Height="300">
-
+            
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
@@ -15,12 +16,12 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
                         <vc:DataPoint YValue="20"/>
                         <vc:DataPoint YValue="30"/>
                         <vc:DataPoint YValue="40"/>
-                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint YValue="80"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
+               
     </Grid>
 </UserControl>
   
