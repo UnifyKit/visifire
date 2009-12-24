@@ -3624,7 +3624,7 @@ namespace Visifire.Charts
         /// <param name="value">Double value</param>
         /// <returns>String</returns>
         internal String GetFormattedString(Double value)
-        {
+        {   
             String str = value.ToString();
             if (ScaleValues != null && ScaleUnits != null)
             {
@@ -3639,12 +3639,18 @@ namespace Visifire.Charts
                     sValue = ScaleValues[i];
                     sUnit = ScaleUnits[i];
                 }
-                str = (value / sValue).ToString(ValueFormatString) + sUnit;
+
+                if (IsDateTimeAxis)
+                    str = (value / sValue).ToString() + sUnit;
+                else
+                    str = (value / sValue).ToString(ValueFormatString) + sUnit;
             }
             else
             {
-                str = value.ToString(ValueFormatString);
-
+                if (IsDateTimeAxis)
+                    str = value.ToString();
+                else
+                    str = value.ToString(ValueFormatString);
             }
 
             str = AddPrefixAndSuffix(str);

@@ -1578,7 +1578,10 @@ namespace Visifire.Charts
                         LabelValues.Add((Double)index);
                     }
 
+                    Double lastIndex = (Double) index;
+
                     //create and save the last label
+
                     label = CreateLabel(GetFormattedString(Maximum));
                     AxisLabelList.Add(label);
                     LabelValues.Add(Maximum);
