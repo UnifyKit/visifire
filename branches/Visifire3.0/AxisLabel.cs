@@ -51,6 +51,7 @@ namespace Visifire.Charts
         /// </summary>
         public AxisLabel()
         {
+            
         }
 
         #endregion

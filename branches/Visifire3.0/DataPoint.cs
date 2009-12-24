@@ -3494,7 +3494,7 @@ namespace Visifire.Charts
         }
 
         internal static void UpdateLegendMarker(DataPoint dataPoint, Brush colorValue)
-        {
+        {   
             Brush newValue = (colorValue != null) ? colorValue : dataPoint._internalColor;
 
             // Marker displaied in Marker

@@ -994,11 +994,11 @@ namespace Visifire.Charts
             if (isPositive)
             {   
                 bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-                top = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+                top = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
             }
             else
-            {   
-                bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+            {
+                bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, Double.IsNaN(dataPoint.InternalYValue) ? 0 : dataPoint.InternalYValue);
                 top = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
             }
 
@@ -1059,6 +1059,7 @@ namespace Visifire.Charts
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             dataPoint.SetCursor2DataPointVisualFaces();
+            chart._toolTip.Hide();
         }
 
         internal static void CleanUpMarkerAndLabel(DataPoint dataPoint, Canvas labelCanvas)
@@ -1177,10 +1178,11 @@ namespace Visifire.Charts
 
                 foreach (DataPoint dataPoint in positive)
                 {
+                    dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
+                    dataPoint.Faces = null;
+
                     if (!(Boolean)dataPoint.Enabled)
                     {
-                        dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
-                        dataPoint.Faces = null;
                         continue;
                     }
 
@@ -1194,10 +1196,11 @@ namespace Visifire.Charts
 
                 foreach (DataPoint dataPoint in negative)
                 {
+                    dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
+                    dataPoint.Faces = null;
+
                     if (!(Boolean)dataPoint.Enabled)
                     {
-                        dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
-                        dataPoint.Faces = null;
                         continue;
                     }
 
@@ -1500,8 +1503,8 @@ namespace Visifire.Charts
             if(dataPoint.Faces != null)
                 columnVisual = dataPoint.Faces.Visual as Canvas;
 
-            if (labelCanvas == null)
-                return;
+            //if (labelCanvas == null)
+            //    return;
             
             switch (property)
             {
@@ -1858,17 +1861,36 @@ namespace Visifire.Charts
 
         public static void UpdateVisualForYValue4ColumnChart(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
-            if (dataPoint.Faces == null)
-                return;
-
             DataSeries currentDataSeries;
-            DataSeries dataSeries = dataPoint.Parent;             // parent of the current DataPoint
-            Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
-            Canvas columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
-
-            Boolean isPositive = (dataPoint.InternalYValue >= 0); // Whether YValue is positive
+            DataSeries dataSeries = dataPoint.Parent;
+            Canvas columnChartCanvas, labelCanvas;
             Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
 
+            if (dataPoint.Faces == null)
+            {
+                // When datapoint faces is null and dataSeries faces is null we need to create atleast once DataPoint 
+                // inorder to generate columnChartCanvas and labelCanvas
+                if (dataSeries != null && dataSeries.Faces != null)
+                {
+                    labelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
+                    columnChartCanvas = dataSeries.Faces.Visual as Canvas;
+
+                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
+                        CreateColumnDataPointVisual(columnChartCanvas, labelCanvas, chart.PlotDetails, dataPoint,
+                        true, 0, depth3d, false);
+                    else
+                        BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, true, 0, depth3d, false);
+                }
+                else
+                    UpdateDataSeries(dataSeries, VcProperties.YValue, null);
+            }
+            
+            // parent of the current DataPoint
+            Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
+            columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
+
+            Boolean isPositive = (dataPoint.InternalYValue >= 0); // Whether YValue is positive
+           
             Double oldMarkerTop = Double.NaN;
             Double currentMarkerTop = Double.NaN;
             Double oldLabelTop = Double.NaN;
@@ -1908,7 +1930,7 @@ namespace Visifire.Charts
                 oldColumnHeight = oldVisual.Width;
             }
 
-            Canvas labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;
+            labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;
 
             UpdateParentVisualCanvasSize(chart, columnChartCanvas);
             UpdateParentVisualCanvasSize(chart, labelCanvas);
@@ -2013,10 +2035,17 @@ namespace Visifire.Charts
                 Double oldScaleFactor = oldColumnHeight / ((dataPoint.Parent.RenderAs == RenderAs.Column) ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width);
 
                 if (Double.IsInfinity(oldScaleFactor))
+                {
                     oldScaleFactor = 0;
+                    oldMarkerTop = plankYPos;
+                }
 
                 if (Double.IsNaN(oldScaleFactor))
+                {
                     oldScaleFactor = 1;
+
+                }
+
                 //else if (oldScaleFactor > 1)
                 //    oldScaleFactor = oldColumnHeight / ((dataPoint.Parent.RenderAs == RenderAs.Column) ? columnChartCanvas.Height : columnChartCanvas.Width);
 
@@ -2048,9 +2077,6 @@ namespace Visifire.Charts
 
                 String property2Animate1 = (dataPoint.Parent.RenderAs == RenderAs.Column) ? "(Canvas.Top)" : "(Canvas.Left)";
                 String property2Animate2 = (dataPoint.Parent.RenderAs == RenderAs.Column) ? "Height" : "Width";
-
-
-               
 
                 if (chart.View3D)
                 {
@@ -2101,7 +2127,6 @@ namespace Visifire.Charts
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate1, dataPoint, storyBoard, 0,
                                 new Double[] { 0, 1 }, new Double[] { oldMarkerTop, currentMarkerTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
-
 
                             if (chartType == RenderAs.Column)
                                 dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, oldMarkerTop);
@@ -2194,12 +2219,14 @@ namespace Visifire.Charts
                     {
                         currentDataSeries = dataPoint.Parent;
                         storyBoard = ApplyColumnChartAnimation(currentDataSeries, dataPoint.Faces.Visual as Panel, storyBoard, isPositive, 0, new Double[] { 0, 1 }, new Double[] { oldScaleFactor, 1 }, dataPoint.Parent.RenderAs);
-
+                        
                         if ((Boolean)dataPoint.MarkerEnabled && !Double.IsNaN(oldMarkerTop))
                         {
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate1, dataPoint, storyBoard, 0,
                                 new Double[] { 0, 1 }, new Double[] { oldMarkerTop, currentMarkerTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+
+                            storyBoard = AnimationHelper.ApplyOpacityAnimation(dataPoint.Marker.Visual, dataPoint, storyBoard, 0,0.2, 0.98, 1);
                             
                             if (chartType == RenderAs.Column)
                                 dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, oldMarkerTop);

@@ -1203,6 +1203,7 @@ namespace Visifire.Charts
 
             }
 
+            _forcedRedraw = true;
             InvokeRender();
         }
 

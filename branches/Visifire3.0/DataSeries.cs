@@ -2064,21 +2064,22 @@ namespace Visifire.Charts
                 return;
 
             if (ValidatePartialUpdate(RenderAs, property))
-            {
+            {   
                 if (NonPartialUpdateChartTypes(RenderAs))
                 {   
                     if (property == VcProperties.Color)
                         PartialUpdateOfColorProperty((Brush)newValue);
                     else
                         FirePropertyChanged(property);
-
+                    
                     return;
                 }
 
                 Chart chart = Chart as Chart;
                 Boolean renderAxis = false;
+
                 if (property == VcProperties.ColorSet)
-                {
+                {   
                     Brush brush = null;
                     (Chart as Chart).ChartArea.LoadSeriesColorSet4SingleSeries(this);
 
@@ -2549,10 +2550,10 @@ namespace Visifire.Charts
         private static void OnPriceUpColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataSeries dataSeries = d as DataSeries;
-            //dataSeries.UpdateVisual(VcProperties.PriceUpColor, e.NewValue);
+            // dataSeries.UpdateVisual(VcProperties.PriceUpColor, e.NewValue);
             dataSeries.FirePropertyChanged(VcProperties.PriceUpColor);
-            //DataSeries dataSeries = d as DataSeries;
-            //dataSeries.UpdateVisual("PriceUpColor", e.NewValue);
+            // DataSeries dataSeries = d as DataSeries;
+            // dataSeries.UpdateVisual("PriceUpColor", e.NewValue);
         }
 
         /// <summary>
@@ -3323,9 +3324,9 @@ namespace Visifire.Charts
         /// Attach events to each and every visual face in Faces
         /// </summary>
         internal void AttachEvent2DataSeriesVisualFaces()
-        {
+        {   
             if (RenderAs == RenderAs.StackedArea || RenderAs == RenderAs.StackedArea100)
-            {
+            {   
                 AttachEvent2AreaVisualFaces(this);
             }
             else

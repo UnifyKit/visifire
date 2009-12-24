@@ -6,7 +6,7 @@
   </vc:Chart.Titles>
   
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column">
+    <vc:DataSeries RenderAs="Line">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint XValue="1" YValue="10"/>
         <vc:DataPoint XValue="2" YValue="22"/>

@@ -1166,7 +1166,6 @@ namespace Visifire.Charts
         /// <returns>Remaining size of the plotArea after drawing axes</returns>
         private Size RenderAxes(Size plotAreaSize)
         {
-
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX);
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY);
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
@@ -1655,34 +1654,35 @@ namespace Visifire.Charts
         /// <param name="axis">Axis</param>
         /// <param name="trendLinesReferingToAAxes">List of trendLine</param>
         private void AddTrendLines(Axis axis, List<TrendLine> trendLinesReferingToAAxes, Canvas trendLineCanvas)
-        {
-            if (Chart._forcedRedraw)
-            {
-                CleanUpTrendLines(trendLineCanvas);
-            }
-
+        {   
             if (axis != null)
             {   
                 foreach (TrendLine trendLine in trendLinesReferingToAAxes)
-                {
+                {   
                     trendLine.ReferingAxis = axis;
 
                     if (trendLine.Visual == null)
                     {
                         trendLine.CreateVisualObject(trendLineCanvas.Width, trendLineCanvas.Height);
 
-                        trendLineCanvas.Children.Add(trendLine.Visual);
-
-                        RectangleGeometry clipRectangle = new RectangleGeometry();
-                        clipRectangle.Rect = new Rect(0, 0, trendLineCanvas.Width, trendLineCanvas.Height);
-                        trendLineCanvas.Clip = clipRectangle;
+                        if (trendLine.Visual != null)
+                            trendLineCanvas.Children.Add(trendLine.Visual);
                     }
                     else
                         trendLine.CreateVisualObject(trendLineCanvas.Width, trendLineCanvas.Height);
 
                     if (trendLine.Visual != null)
                     {
-                        trendLine.Visual.SetValue(Canvas.ZIndexProperty, (Int32)(-999));
+                        RectangleGeometry clipRectangle = new RectangleGeometry();
+                        clipRectangle.Rect = new Rect(0, 0, trendLineCanvas.Width, trendLineCanvas.Height);
+                        trendLine.Visual.Clip = clipRectangle;
+
+                        Int32 zIndex = (Int32)trendLine.GetValue(Canvas.ZIndexProperty);
+
+                        if (zIndex == 0)
+                            trendLine.Visual.SetValue(Canvas.ZIndexProperty, (Int32)(-999));
+                        else
+                            trendLine.Visual.SetValue(Canvas.ZIndexProperty, zIndex);
                     }
                 }
             }
@@ -1706,13 +1706,18 @@ namespace Visifire.Charts
         /// </summary>
         private void RenderTrendLines()
         {
+            if (Chart._forcedRedraw)
+            {
+                CleanUpTrendLines(ChartVisualCanvas);
+            }
+
             List<TrendLine> trendLinesReferingToPrimaryAxesX;
             List<TrendLine> trendLinesReferingToPrimaryAxisY;
             List<TrendLine> trendLinesReferingToSecondaryAxesX;
             List<TrendLine> trendLinesReferingToSecondaryAxisY;
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {
+            {   
                 trendLinesReferingToPrimaryAxesX = (from trendline in Chart.TrendLines
                                                     where (trendline.Orientation == Orientation.Vertical) && (trendline.AxisType == AxisTypes.Primary)
                                                     select trendline).ToList();
@@ -1742,17 +1747,17 @@ namespace Visifire.Charts
                                                       select trendline).ToList();
             }
 
-            Canvas trendLineCanvas = new Canvas() { Height = ChartVisualCanvas.Height, Width = ChartVisualCanvas.Width };
+            // Canvas trendLineCanvas = new Canvas() { Height = ChartVisualCanvas.Height, Width = ChartVisualCanvas.Width };
 
-            AddTrendLines(AxisX, trendLinesReferingToPrimaryAxesX, trendLineCanvas);
+            AddTrendLines(AxisX, trendLinesReferingToPrimaryAxesX, ChartVisualCanvas);
 
-            AddTrendLines(AxisY, trendLinesReferingToPrimaryAxisY, trendLineCanvas);
+            AddTrendLines(AxisY, trendLinesReferingToPrimaryAxisY, ChartVisualCanvas);
 
-            AddTrendLines(AxisX2, trendLinesReferingToSecondaryAxesX, trendLineCanvas);
+            AddTrendLines(AxisX2, trendLinesReferingToSecondaryAxesX, ChartVisualCanvas);
 
-            AddTrendLines(AxisY2, trendLinesReferingToSecondaryAxisY, trendLineCanvas);
+            AddTrendLines(AxisY2, trendLinesReferingToSecondaryAxisY, ChartVisualCanvas);
 
-            ChartVisualCanvas.Children.Add(trendLineCanvas);
+            //ChartVisualCanvas.Children.Add(trendLineCanvas);
         }
 
         /// <summary>
@@ -1764,7 +1769,7 @@ namespace Visifire.Charts
         /// <param name="isAnimationEnabled">Whether animation is enabled</param>
         /// <param name="styleName">Style</param>
         private void AddGrids(Axis axis, Double width, Double height, Boolean isAnimationEnabled, String styleName)
-        {
+        {   
             if (Chart._forcedRedraw)
             {
                 CleanUpGrids(axis);
@@ -1879,7 +1884,7 @@ namespace Visifire.Charts
 
             // Create the various region required for drawing charts
             switch (PlotDetails.ChartOrientation)
-            {
+            {   
                 case ChartOrientationType.Vertical:
                     chartCanvasSize = CreateRegionsForVerticalCharts(ScrollableLength, remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
                     // set chart Canvas position
@@ -1935,7 +1940,6 @@ namespace Visifire.Charts
             {
                 Chart._forcedRedraw = true;
                 ClearPlotAreaChildren();
-
             }
 
             ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
@@ -2110,7 +2114,6 @@ namespace Visifire.Charts
             // This loop will select series for rendering and it will repeat until all series have been rendered
             while (renderedSeriesCount < Chart.InternalSeries.Count)
             {
-
                 selectedDataSeries4Rendering = new List<DataSeries>();
 
                 currentRenderAs = dataSeriesListInDrawingOrder[renderedSeriesCount].RenderAs;
@@ -2130,9 +2133,10 @@ namespace Visifire.Charts
                 renderedChart = selectedDataSeries4Rendering[0].Visual as Panel;
 
                 if (renderedChart == null && !(Chart.View3D && selectedDataSeries4Rendering[0].RenderAs == RenderAs.Area))
-                {   // Check  for pre existing series Visual
+                {   
+                    // Check  for pre existing series Visual
                     foreach (DataSeries ds in selectedDataSeries4Rendering)
-                    {
+                    {   
                         if (ds.Visual != null)
                         {
                             renderedChart = ds.Visual;
@@ -2160,7 +2164,7 @@ namespace Visifire.Charts
                     renderedChart = null;
                     isVisualExist = false;
                 }
-
+                
                 renderedChart = RenderSeriesFromList(renderedChart, selectedDataSeries4Rendering);
 
                 foreach (DataSeries ds in selectedDataSeries4Rendering)
@@ -2169,6 +2173,7 @@ namespace Visifire.Charts
                 if (renderedChart != null && !isVisualExist)
                     ChartVisualCanvas.Children.Add(renderedChart);
 
+                //renderedChart.Background = new SolidColorBrush(Colors.Yellow);
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
 
                 if (renderedChart != null)
@@ -3640,11 +3645,12 @@ namespace Visifire.Charts
 
                             if (dp.Faces != null)
                             {
-                                if (((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.StreamLineFunnel))
-                                    || ds.RenderAs == RenderAs.StreamLineFunnel || ds.RenderAs == RenderAs.SectionFunnel)
+                                if ((Chart as Chart).View3D && (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel))
                                 {
                                     dp.AttachToolTip(Chart, dp, dp.Faces.VisualComponents);
                                 }
+                                else if (ds.RenderAs != RenderAs.StackedArea && ds.RenderAs != RenderAs.StackedArea100)
+                                    dp.AttachToolTip(Chart, dp, dp.Faces.Visual);
                             }
 
                             if (ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
