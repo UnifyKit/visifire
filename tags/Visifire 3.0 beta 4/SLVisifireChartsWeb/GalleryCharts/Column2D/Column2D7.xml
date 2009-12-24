@@ -1,0 +1,40 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme2" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire 2D Column Chart"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesY>
+    <vc:Axis>
+      <vc:Axis.Ticks>
+        <vc:Ticks LineColor="Black"/>
+      </vc:Axis.Ticks>
+    </vc:Axis>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column" Bevel="False" RadiusX="6" RadiusY="6" Cursor="Hand">
+      <vc:DataSeries.Color>
+        <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
+          <GradientStop Color="#72d0d0" Offset="0.1"/>
+          <GradientStop Color="#14a0a0" Offset="0.4"/>
+          <GradientStop Color="#15aeae" Offset="1"/>
+          <GradientStop Color="#3fb7b7" Offset="0.2"/>
+          <GradientStop Color="#30adad" Offset="0.7"/>
+          <GradientStop Color="#50cdcd" Offset="0.9"/>
+          <GradientStop Color="#76e9e9" Offset="1"/>
+          <GradientStop Color="#27aeae" Offset="1"/>
+        </LinearGradientBrush>
+      </vc:DataSeries.Color>
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="60"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="30"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="68"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="75"/>
+        <vc:DataPoint AxisXLabel="May" YValue="90"/>
+        <vc:DataPoint AxisXLabel="Jun" YValue="50"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
