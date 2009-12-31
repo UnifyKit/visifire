@@ -1,0 +1,26 @@
+﻿<Window x:Class="WPFVisifireChartsApp.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+     WindowState="Maximized"   >
+
+    <Grid x:Name="LayoutRoot">
+
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+                  Width="500" Height="300" Theme="Theme1">
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Column">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="9"/>
+                        <vc:DataPoint YValue="2"/>
+                        <vc:DataPoint YValue="4"/>
+                        <vc:DataPoint YValue="5"/>
+                        <vc:DataPoint YValue="6"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</Window>
