@@ -31,7 +31,7 @@ using System.Globalization;
 using System.Windows.Data;
 
 namespace Visifire.Commons
-{   
+{
     /// <summary>
     /// ObservableObject Implements INotifyPropertyChanged Interface
     /// </summary>
@@ -50,7 +50,7 @@ namespace Visifire.Commons
                 // Attach event handler with EventChanged event of VisifireElement
                 EventChanged += delegate
                 {
-                    FirePropertyChanged("MouseEvent");
+                    FirePropertyChanged(VcProperties.MouseEvent);
                 };
             }
 
@@ -79,37 +79,37 @@ namespace Visifire.Commons
             Chart chart = control as Chart;
             if (chart.StyleDictionary != null)
             {
-//#if SL
-//                if (Style == null)
-//                {   
-//                    Style myStyle = chart.StyleDictionary[keyName] as Style;
-                    
-//                    if (myStyle != null)
-//                        Style = myStyle;
-//                }
-//#else
+                //#if SL
+                //                if (Style == null)
+                //                {   
+                //                    Style myStyle = chart.StyleDictionary[keyName] as Style;
+
+                //                    if (myStyle != null)
+                //                        Style = myStyle;
+                //                }
+                //#else
 
                 Style myStyle = chart.StyleDictionary[keyName] as Style;
 
-                System.Diagnostics.Debug.WriteLine(keyName);
+                //System.Diagnostics.Debug.WriteLine(keyName);
                 if (myStyle != null)
                 {
-                    if((Chart as Chart)._isThemeChanged)
+                    if ((Chart as Chart)._isThemeChanged)
                         Style = myStyle;
-                    else if(Style == null)
-                         Style = myStyle;
+                    else if (Style == null)
+                        Style = myStyle;
                 }
 
-//#endif
+                //#endif
             }
 
             IsNotificationEnable = oldIsNotificationEnable;
         }
-                
+
         #endregion
 
         #region Public Properties
-               
+
         /// <summary>
         /// Visifire Control reference
         /// </summary>
@@ -145,12 +145,12 @@ namespace Visifire.Commons
         #endregion
 
         #region Public Event
-            
+
         /// <summary>
         /// Event PropertyChanged will be fired if any property is changed
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-            
+
         #endregion
 
         #region Protected Methods
@@ -160,11 +160,11 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal virtual void UpdateVisual(String propertyName, object value)
+        internal virtual void UpdateVisual(VcProperties propertyName, object value)
         {
 
         }
-        
+
         /// <summary>
         /// Check whether the Property value is changed
         /// </summary>
@@ -173,7 +173,7 @@ namespace Visifire.Commons
         /// <param name="oldValue">Old property value</param>
         /// <param name="newValue">New property value</param>
         /// <returns></returns>
-        protected bool CheckPropertyChanged<T>(string propertyName, ref T oldValue, ref T newValue)
+        protected bool CheckPropertyChanged<T>(VcProperties propertyName, ref T oldValue, ref T newValue)
         {
             if (oldValue == null && newValue == null)
             {
@@ -201,27 +201,31 @@ namespace Visifire.Commons
         /// Fire property change event
         /// </summary>
         /// <param name="propertyName">Property Name</param>
-        internal void FirePropertyChanged(string propertyName)
+        internal void FirePropertyChanged(VcProperties propertyName)
         {
             _isPropertyChangedFired = false; // Used for testing
-
+                       
             if (this.PropertyChanged != null && this.IsNotificationEnable)
             {
-#if SL          
+                
+#if SL
+
                 if (IsInDesignMode)
-                {   
-                    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
                 }
                 else if (Chart != null && (Chart as Chart)._isTemplateApplied)
-                {   
+                {
                     if (Application.Current != null && Application.Current.RootVisual != null && Application.Current.RootVisual.Dispatcher != null)
                     {
                         System.Windows.Threading.Dispatcher currentDispatcher = Application.Current.RootVisual.Dispatcher;
 
-                            if (currentDispatcher.CheckAccess())
-                                (Chart as Chart).InvokeRender();
-                            else
-                                currentDispatcher.BeginInvoke(new Action<String>(FirePropertyChanged), propertyName);
+                        (Chart as Chart)._forcedRedraw = true;
+
+                        if (currentDispatcher.CheckAccess())
+                            (Chart as Chart).InvokeRender();
+                        else
+                            currentDispatcher.BeginInvoke(new Action<VcProperties>(FirePropertyChanged), propertyName);
                     }
                     else // if we did not get the Dispatcher throw an exception
                     {
@@ -232,7 +236,10 @@ namespace Visifire.Commons
                 }
 #else
                 if (Chart != null)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                {
+                    (Chart as Chart)._forcedRedraw = true;
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
+                }
 #endif
             }
         }
@@ -327,7 +334,7 @@ namespace Visifire.Commons
             //}
 
             obj.Bind();
-            
+
             // obj.FirePropertyChanged("Style");
         }
 #endif
@@ -348,6 +355,44 @@ namespace Visifire.Commons
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Validates PartialUpdate
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <returns>true - Get entry for PartialUpdate
+        /// false - Get entry for PartialUpdate</returns>
+        internal virtual Boolean ValidatePartialUpdate(RenderAs renderAs, VcProperties property )
+        {   
+            Chart chart = Chart as Chart;
+
+            if (chart == null || chart.ChartArea == null || chart.ChartArea._isFirstTimeRender)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        internal static Boolean NonPartialUpdateChartTypes(RenderAs renderAs)
+        {
+             switch (renderAs)
+                {
+                    case RenderAs.StackedArea:
+                    case RenderAs.StackedArea100:
+                    case RenderAs.Pie:
+                    case RenderAs.Doughnut:
+                    case RenderAs.SectionFunnel:
+                    case RenderAs.StreamLineFunnel:
+                        return true;
+                     break;
+                 default:
+                     return false;
+                     break;
+             }
+        }
 
         /// <summary>
         /// Formats newline character
@@ -391,7 +436,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Whether the PropertyChanged event is fired
         /// </summary>
-        internal static Boolean _isPropertyChangedFired = false; 
+        internal static Boolean _isPropertyChangedFired = false;
 
         /// <summary>
         /// Whether this object is automatically generated while rendering. 
@@ -399,7 +444,7 @@ namespace Visifire.Commons
         /// </summary>
         internal Boolean _isAutoGenerated;
 
-      
-       #endregion
+
+        #endregion
     }
 }

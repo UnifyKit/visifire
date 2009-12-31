@@ -67,17 +67,19 @@ namespace Visifire.Charts
             InternalXValue = Double.NaN;
             XValueType = ChartValueTypes.Numeric;
             //YValues = new DoubleCollection();
-
+            
             // Apply default style from generic
 #if WPF
             if (!_defaultStyleKeyApplied)
             {
                 DefaultStyleKeyProperty.OverrideMetadata(typeof(DataPoint), new FrameworkPropertyMetadata(typeof(DataPoint)));
                 _defaultStyleKeyApplied = true;
-            } 
-
+            }
 #else
+            
             DefaultStyleKey = typeof(DataPoint);
+
+
 #endif
         }
 
@@ -87,7 +89,7 @@ namespace Visifire.Charts
             Binding b = new Binding("BorderThickness");
             b.Source = this;
             this.SetBinding(InternalBorderThicknessProperty, b);
-            
+
             b = new Binding("Opacity");
             b.Source = this;
             this.SetBinding(InternalOpacityProperty, b);
@@ -130,7 +132,7 @@ namespace Visifire.Charts
                 _parsedToolTipText = TextParser(newValue);
             }
         }
-
+        
         /// <summary>
         /// Already parsed content
         /// </summary>
@@ -332,7 +334,7 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(DataPoint),
             new PropertyMetadata(OnSelectedChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.HrefTarget dependency property.
         /// </summary>
@@ -344,7 +346,7 @@ namespace Visifire.Charts
             typeof(Nullable<HrefTargets>),
             typeof(DataPoint),
             new PropertyMetadata(OnHrefTargetChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.Href dependency property.
         /// </summary>
@@ -394,7 +396,7 @@ namespace Visifire.Charts
            typeof(Double[]),
            typeof(DataPoint),
            new PropertyMetadata(null, OnYValuesPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.XValue dependency property.
         /// </summary>
@@ -406,7 +408,7 @@ namespace Visifire.Charts
             typeof(Object),
             typeof(DataPoint),
             new PropertyMetadata(OnXValuePropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.ZValue dependency property.
         /// </summary>
@@ -418,7 +420,7 @@ namespace Visifire.Charts
             typeof(Double),
             typeof(DataPoint),
             new PropertyMetadata(Double.NaN, OnZValuePropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.AxisXLabel dependency property.
         /// </summary>
@@ -442,7 +444,7 @@ namespace Visifire.Charts
              typeof(Brush),
              typeof(DataPoint),
              new PropertyMetadata(OnColorPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.Enabled dependency property.
         /// </summary>
@@ -466,7 +468,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnExplodedPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LightingEnabled dependency property.
         /// </summary>
@@ -478,7 +480,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnLightingEnabledPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.ShadowEnabled dependency property.
         /// </summary>
@@ -490,7 +492,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnShadowEnabledPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.ShowInLegend dependency property.
         /// </summary>
@@ -502,7 +504,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnShowInLegendPropertychanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LegendText dependency property.
         /// </summary>
@@ -514,7 +516,7 @@ namespace Visifire.Charts
             typeof(String),
             typeof(DataPoint),
             new PropertyMetadata(OnLegendTextPropertychanged));
-
+        
 #if WPF
 
         /// <summary>
@@ -541,7 +543,7 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(DataPoint),
             new PropertyMetadata(OnBorderColorPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.BorderStyle dependency property.
         /// </summary>
@@ -565,7 +567,7 @@ namespace Visifire.Charts
             typeof(Nullable<CornerRadius>),
             typeof(DataPoint),
             new PropertyMetadata(OnRadiusXPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.RadiusY dependency property.
         /// </summary>
@@ -577,7 +579,7 @@ namespace Visifire.Charts
             typeof(Nullable<CornerRadius>),
             typeof(DataPoint),
             new PropertyMetadata(OnRadiusYPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelEnabled dependency property.
         /// </summary>
@@ -589,7 +591,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelEnabledPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelText dependency property.
         /// </summary>
@@ -601,7 +603,7 @@ namespace Visifire.Charts
             typeof(String),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelTextPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelFontFamily dependency property.
         /// </summary>
@@ -613,7 +615,7 @@ namespace Visifire.Charts
             typeof(FontFamily),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelFontFamilyPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelFontSize dependency property.
         /// </summary>
@@ -625,7 +627,7 @@ namespace Visifire.Charts
              typeof(Nullable<Double>),
              typeof(DataPoint),
              new PropertyMetadata(OnLabelFontSizePropertyChanged));
-
+            
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelFontColor dependency property.
         /// </summary>
@@ -637,7 +639,7 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelFontColorPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelFontWeight dependency property.
         /// </summary>
@@ -649,7 +651,7 @@ namespace Visifire.Charts
             typeof(Nullable<FontWeight>),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelFontWeightPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelFontStyle dependency property.
         /// </summary>
@@ -661,7 +663,7 @@ namespace Visifire.Charts
             typeof(Nullable<FontStyle>),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelFontStylePropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelBackground dependency property.
         /// </summary>
@@ -673,7 +675,7 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelBackgroundPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelStyle dependency property.
         /// </summary>
@@ -685,54 +687,6 @@ namespace Visifire.Charts
             typeof(Nullable<LabelStyles>),
             typeof(DataPoint),
             new PropertyMetadata(OnLabelStylePropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.DataPoint.LabelLineEnabled dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.DataPoint.LabelLineEnabled dependency property.
-        /// </returns>
-        public static readonly DependencyProperty LabelLineEnabledProperty = DependencyProperty.Register
-            ("LabelLineEnabled",
-            typeof(Nullable<Boolean>),
-            typeof(DataPoint),
-            new PropertyMetadata(OnLabelLineEnabledPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.DataPoint.LabelLineColor dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.DataPoint.LabelLineColor dependency property.
-        /// </returns>
-        public static readonly DependencyProperty LabelLineColorProperty = DependencyProperty.Register
-            ("LabelLineColor",
-            typeof(Brush),
-            typeof(DataPoint),
-            new PropertyMetadata(OnLabelLineColorPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.DataPoint.LabelLineThickness dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.DataPoint.LabelLineThickness dependency property.
-        /// </returns>
-        public static readonly DependencyProperty LabelLineThicknessProperty = DependencyProperty.Register
-            ("LabelLineThickness",
-            typeof(Nullable<Double>),
-            typeof(DataPoint),
-            new PropertyMetadata(OnLabelLineThicknessPropertyChanged));
-
-        /// <summary>
-        /// Identifies the Visifire.Charts.DataPoint.LabelLineStyle dependency property.
-        /// </summary>
-        /// <returns>
-        /// The identifier for the Visifire.Charts.DataPoint.LabelLineStyle dependency property.
-        /// </returns>
-        public static readonly DependencyProperty LabelLineStyleProperty = DependencyProperty.Register
-            ("LabelLineStyle",
-            typeof(Nullable<LineStyles>),
-            typeof(DataPoint),
-            new PropertyMetadata(OnLabelLineStylePropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.LabelAngle dependency property.
@@ -747,6 +701,54 @@ namespace Visifire.Charts
             new PropertyMetadata(Double.NaN, OnLabelAnglePropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelLineEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelLineEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelLineEnabledProperty = DependencyProperty.Register
+            ("LabelLineEnabled",
+            typeof(Nullable<Boolean>),
+            typeof(DataPoint),
+            new PropertyMetadata(OnLabelLineEnabledPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelLineColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelLineColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelLineColorProperty = DependencyProperty.Register
+            ("LabelLineColor",
+            typeof(Brush),
+            typeof(DataPoint),
+            new PropertyMetadata(OnLabelLineColorPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelLineThickness dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelLineThickness dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelLineThicknessProperty = DependencyProperty.Register
+            ("LabelLineThickness",
+            typeof(Nullable<Double>),
+            typeof(DataPoint),
+            new PropertyMetadata(OnLabelLineThicknessPropertyChanged));
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.LabelLineStyle dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.LabelLineStyle dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LabelLineStyleProperty = DependencyProperty.Register
+            ("LabelLineStyle",
+            typeof(Nullable<LineStyles>),
+            typeof(DataPoint),
+            new PropertyMetadata(OnLabelLineStylePropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerEnabled dependency property.
         /// </summary>
         /// <returns>
@@ -757,7 +759,7 @@ namespace Visifire.Charts
             typeof(Nullable<Boolean>),
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerEnabledPropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerType dependency property.
         /// </summary>
@@ -769,7 +771,7 @@ namespace Visifire.Charts
             typeof(Nullable<MarkerTypes>),
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerTypePropertyChanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerBorderThickness dependency property.
         /// </summary>
@@ -781,7 +783,7 @@ namespace Visifire.Charts
             typeof(Nullable<Thickness>),
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerBorderThicknessPropertychanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerBorderColor dependency property.
         /// </summary>
@@ -793,7 +795,7 @@ namespace Visifire.Charts
            typeof(Brush),
            typeof(DataPoint),
            new PropertyMetadata(OnMarkerBorderColorPropertychanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerSize dependency property.
         /// </summary>
@@ -805,7 +807,7 @@ namespace Visifire.Charts
             typeof(Nullable<Double>),
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerSizePropertychanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerColor dependency property.
         /// </summary>
@@ -817,7 +819,7 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(DataPoint),
             new PropertyMetadata(OnMarkerColorPropertychanged));
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.MarkerScale dependency property.
         /// </summary>
@@ -837,7 +839,7 @@ namespace Visifire.Charts
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableHrefTargetsConverter))]
 #endif
         public Nullable<HrefTargets> HrefTarget
-        {
+        {   
             get
             {
                 if ((Nullable<HrefTargets>)GetValue(HrefTargetProperty) == null && _parent != null)
@@ -893,7 +895,7 @@ namespace Visifire.Charts
         public new Double Opacity
         {
             get
-            {   
+            {
                 return (Double)GetValue(OpacityProperty);
             }
             set
@@ -903,7 +905,8 @@ namespace Visifire.Charts
                 {
                     InternalOpacity = value;
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    InvokeUpdateVisual(VcProperties.Opacity, value);
+                    // FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -932,7 +935,8 @@ namespace Visifire.Charts
                     if (Faces != null || (this.Parent != null && this.Parent.Faces != null) || this.Marker != null)
                         SetCursor2DataPointVisualFaces();
                     else
-                        FirePropertyChanged("Cursor");
+                        InvokeUpdateVisual(VcProperties.Cursor, value);
+                        //FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
@@ -943,30 +947,31 @@ namespace Visifire.Charts
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         public Double YValue
-        {
+        {   
             get
             {
-                return (Double)GetValue(YValueProperty);
+               return (Double)GetValue(YValueProperty);
             }
             set
             {
+                _oldYValue = (Double)GetValue(YValueProperty);
                 SetValue(YValueProperty, value);
             }
         }
 
         [System.ComponentModel.TypeConverter(typeof(Converters.DoubleArrayConverter))]
         public Double[] YValues
-        {
+        {   
             get
-            {
-                return (Double[])GetValue(YValuesProperty);
+            {   
+                return (Double[]) GetValue(YValuesProperty);
             }
             set
-            {
+            {   
                 SetValue(YValuesProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get the YValue that will be used for Internal purpose.
         /// </summary>
@@ -975,21 +980,21 @@ namespace Visifire.Charts
         {
             get
             {
-                if ((Double.IsNaN(YValue) || Enabled == false) && Parent != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedArea))
-                {
-                    return 0;
-                }
-                else
+                //if (( Double.IsNaN(YValue) || Enabled == false) && Parent != null)// && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedArea))
+                //{
+                //   return 0;
+                //}
+                //else
                     return YValue;
             }
         }
-
+        
         /// <summary>
         /// Get or set the value that will appear on X-Axis for all charts. 
         /// </summary>
         // [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         public Object XValue
-        {
+        {   
             get
             {
                 return GetValue(XValueProperty);
@@ -1024,29 +1029,7 @@ namespace Visifire.Charts
                 SetValue(ZValueProperty, value);
             }
         }
-
-        /// <summary>
-        /// Get or set the LabelAngle property
-        /// </summary>
-        public Double LabelAngle
-        {
-            get
-            {
-                if (Double.IsNaN((Double)GetValue(LabelAngleProperty)) && _parent != null)
-                    return _parent.LabelAngle;
-                else
-                    return (Double)GetValue(LabelAngleProperty);
-            }
-            set
-            {
-
-                if (value > 90 || value < -90)
-                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
-
-                SetValue(LabelAngleProperty, value);
-            }
-        }
-
+        
         /// <summary>
         /// Label to be placed for the corresponding XValue in the AxisX
         /// </summary>
@@ -1061,7 +1044,7 @@ namespace Visifire.Charts
                 SetValue(AxisXLabelProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the color of the DataPoint
         /// </summary>
@@ -1071,6 +1054,8 @@ namespace Visifire.Charts
             {
                 if ((Brush)GetValue(ColorProperty) == null)
                 {
+                    Chart chart =(Chart as Chart);
+
                     if (_parent == null)
                         return _internalColor;
                     else
@@ -1084,13 +1069,13 @@ namespace Visifire.Charts
                 SetValue(ColorProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Enables or disables the DataPoint
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
-        {
+        {   
             get
             {
                 if ((Nullable<Boolean>)GetValue(EnabledProperty) == null && _parent != null)
@@ -1103,7 +1088,7 @@ namespace Visifire.Charts
                 SetValue(EnabledProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the Exploded property. This is used in Pie/Doughnut charts.
         /// </summary>
@@ -1142,7 +1127,7 @@ namespace Visifire.Charts
                 SetValue(LightingEnabledProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the ShadowEnabled property
         /// </summary>
@@ -1160,14 +1145,14 @@ namespace Visifire.Charts
                 {
                     return (Nullable<Boolean>)GetValue(ShadowEnabledProperty);
                 }
-
+                
             }
             set
             {
                 SetValue(ShadowEnabledProperty, value);
             }
         }
-
+        
         #region Label Properties
 
         /// <summary>
@@ -1188,7 +1173,7 @@ namespace Visifire.Charts
                 SetValue(LabelEnabledProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelText property
         /// </summary>
@@ -1202,11 +1187,11 @@ namespace Visifire.Charts
                     return (String)GetValue(LabelTextProperty);
             }
             set
-            {
+            {   
                 SetValue(LabelTextProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelFontFamily property
         /// </summary>
@@ -1224,12 +1209,12 @@ namespace Visifire.Charts
                 SetValue(LabelFontFamilyProperty, value);
             }
         }
-
+        
         /// <summary>
         /// GEt or set the LabelFontSize property
         /// </summary>
 #if SL
-        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
+       [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
 #endif
         public Nullable<Double> LabelFontSize
         {
@@ -1238,7 +1223,7 @@ namespace Visifire.Charts
                 if ((Nullable<Double>)GetValue(LabelFontSizeProperty) != null)
                     return (Nullable<Double>)GetValue(LabelFontSizeProperty);
                 else if (_parent != null && _parent.LabelFontSize != 0)
-                    return _parent.LabelFontSize;
+                        return _parent.LabelFontSize;
                 else
                     return 10;
             }
@@ -1247,7 +1232,7 @@ namespace Visifire.Charts
                 SetValue(LabelFontSizeProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelFontColor property
         /// </summary>
@@ -1259,7 +1244,7 @@ namespace Visifire.Charts
                     return _parent.LabelFontColor;
                 else
                     return (Brush)GetValue(LabelFontColorProperty);
-
+                    
             }
             set
             {
@@ -1272,23 +1257,23 @@ namespace Visifire.Charts
         /// </summary>
 #if SL
         [System.ComponentModel.TypeConverter(typeof(Visifire.Commons.Converters.FontWeightConverter))]
-#endif
+#endif 
         public Nullable<FontWeight> LabelFontWeight
         {
             get
             {
                 if ((Nullable<FontWeight>)GetValue(LabelFontWeightProperty) == null && _parent != null)
-                    return _parent.LabelFontWeight;
+                   return _parent.LabelFontWeight;
                 else
                     return (Nullable<FontWeight>)GetValue(LabelFontWeightProperty);
-
+                    
             }
             set
             {
                 SetValue(LabelFontWeightProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelFontStyle property
         /// </summary>
@@ -1303,7 +1288,7 @@ namespace Visifire.Charts
                     return _parent.LabelFontStyle;
                 else
                     return (Nullable<FontStyle>)GetValue(LabelFontStyleProperty);
-
+                    
             }
             set
             {
@@ -1322,11 +1307,33 @@ namespace Visifire.Charts
                     return _parent.LabelBackground;
                 else
                     return (Brush)GetValue(LabelBackgroundProperty);
-
+                    
             }
             set
             {
                 SetValue(LabelBackgroundProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the LabelAngle property
+        /// </summary>
+        public Double LabelAngle
+        {
+            get
+            {
+                if (Double.IsNaN((Double)GetValue(LabelAngleProperty)) && _parent != null)
+                    return _parent.LabelAngle;
+                else
+                    return (Double)GetValue(LabelAngleProperty);
+            }
+            set
+            {
+
+                if (value > 90 || value < -90)
+                    throw (new Exception("Invalid property value:: LabelAngle should be greater than -90 and less than 90."));
+
+                SetValue(LabelAngleProperty, value);
             }
         }
 
@@ -1357,7 +1364,7 @@ namespace Visifire.Charts
                 SetValue(LabelStyleProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelLineEnabled property
         /// </summary>
@@ -1433,14 +1440,14 @@ namespace Visifire.Charts
         //    }
         //}
 
-
+        
         /// <summary>
         /// Get or set the LabelLineColor property
         /// </summary>
         public Brush LabelLineColor
         {
             get
-            {
+            {   
                 if (GetValue(LabelLineColorProperty) == null && _parent != null)
                     return _parent.LabelLineColor;
                 else
@@ -1474,7 +1481,7 @@ namespace Visifire.Charts
                 SetValue(LabelLineThicknessProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LabelLineStyle property
         /// </summary>
@@ -1495,7 +1502,7 @@ namespace Visifire.Charts
                 SetValue(LabelLineStyleProperty, value);
             }
         }
-
+        
         #endregion
 
         #region Marker Properties
@@ -1514,11 +1521,11 @@ namespace Visifire.Charts
                     return (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
             }
             set
-            {
+            {   
                 SetValue(MarkerEnabledProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerStyle property
         /// </summary>
@@ -1532,14 +1539,14 @@ namespace Visifire.Charts
                 if ((Nullable<MarkerTypes>)GetValue(MarkerTypeProperty) == null && _parent != null)
                     return _parent.MarkerType;
                 else
-                    return (Nullable<MarkerTypes>)GetValue(MarkerTypeProperty);
+                   return (Nullable<MarkerTypes>)GetValue(MarkerTypeProperty);
             }
             set
             {
                 SetValue(MarkerTypeProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerBorderThickness property
         /// </summary>
@@ -1576,7 +1583,7 @@ namespace Visifire.Charts
                 SetValue(MarkerBorderThicknessProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerBorderColor property
         /// </summary>
@@ -1600,11 +1607,11 @@ namespace Visifire.Charts
                 }
             }
             set
-            {
+            {   
                 SetValue(MarkerBorderColorProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerSize property
         /// </summary>
@@ -1621,11 +1628,11 @@ namespace Visifire.Charts
                     return (Nullable<Double>)GetValue(MarkerSizeProperty);
             }
             set
-            {
+            {   
                 SetValue(MarkerSizeProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerColor property
         /// </summary>
@@ -1636,7 +1643,7 @@ namespace Visifire.Charts
                 if (GetValue(MarkerColorProperty) == null && _parent != null)
                 {
                     if (_parent.MarkerColor == null)
-                        return new SolidColorBrush(Colors.White);
+                        return Graphics.WHITE_BRUSH;
                     else
                         return _parent.MarkerColor;
                 }
@@ -1648,7 +1655,7 @@ namespace Visifire.Charts
                 SetValue(MarkerColorProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the MarkerScale property
         /// </summary>
@@ -1669,16 +1676,16 @@ namespace Visifire.Charts
                 SetValue(MarkerScaleProperty, value);
             }
         }
-
+        
         #endregion Marker Properties
 
         /// <summary>
         /// Get or set the ToolTipText for the DataPoint
         /// </summary>
         public override String ToolTipText
-        {
+        {   
             get
-            {
+            {   
                 if ((Chart != null && !String.IsNullOrEmpty((Chart as Chart).ToolTipText)))
                     return null;
 
@@ -1715,14 +1722,14 @@ namespace Visifire.Charts
                 SetValue(ShowInLegendProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the LegendText
         /// </summary>
         public String LegendText
-        {
+        {   
             get
-            {
+            {   
                 if (String.IsNullOrEmpty((String)GetValue(LegendTextProperty)) && _parent != null)
                 {
                     if (String.IsNullOrEmpty(_parent.LegendText))
@@ -1734,13 +1741,13 @@ namespace Visifire.Charts
                                 return this.TextParser("#AxisXLabel");
                         }
                         else
-                        {
-                            if (_isAutoName)
+                        {   
+                            if(_isAutoName)
                             {
                                 String[] s = this.Name.Split('_');
                                 return s[0];
                             }
-                            else
+                            else 
                                 return this.Name;
                         }
                     else
@@ -1756,14 +1763,14 @@ namespace Visifire.Charts
                 SetValue(LegendTextProperty, value);
             }
         }
-
+        
         /// <summary>
         /// Get or set the BorderThickness property
         /// </summary>
         public new Thickness BorderThickness
         {
             get
-            {   
+            {
                 Thickness retVal = (Thickness)GetValue(BorderThicknessProperty);
 
                 if (retVal == new Thickness(0, 0, 0, 0))
@@ -1773,26 +1780,27 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL          
+#if SL
                 if (BorderThickness != value)
                 {   
                     InternalBorderThickness = value;
                     SetValue(BorderThicknessProperty, value);
-                    FirePropertyChanged("BorderThickness");
+                    InvokeUpdateVisual(VcProperties.BorderThickness, value);
+                    // FirePropertyChanged(VcProperties.BorderThickness);
                 }
 #else           
                 SetValue(BorderThicknessProperty, value);
 #endif
             }
         }
-
+        
         /// <summary>
         /// Get or set the BorderColor property
         /// </summary>
         public Brush BorderColor
         {
             get
-            {
+            {   
                 if (GetValue(BorderColorProperty) == null && _parent != null)
                 {
                     return _parent.BorderColor;
@@ -1811,11 +1819,11 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the BorderStyle property
         /// </summary>
-#if SL
+#if SL  
         [System.ComponentModel.TypeConverter(typeof(Converters.NullableBorderStylesConverter))]
 #endif
         public Nullable<BorderStyles> BorderStyle
-        {
+        {   
             get
             {
                 if ((Nullable<BorderStyles>)GetValue(BorderStyleProperty) == null && _parent != null)
@@ -1824,7 +1832,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    return (Nullable<BorderStyles>)GetValue(BorderStyleProperty);
+                    return (Nullable<BorderStyles>)GetValue(BorderStyleProperty); 
                 }
             }
             set
@@ -1846,7 +1854,7 @@ namespace Visifire.Charts
             get
             {
                 if ((Nullable<CornerRadius>)GetValue(RadiusXProperty) == null && _parent != null)
-                    return _parent.RadiusX;
+                   return _parent.RadiusX; 
                 else
                     return (Nullable<CornerRadius>)GetValue(RadiusXProperty);
             }
@@ -1878,19 +1886,19 @@ namespace Visifire.Charts
                 SetValue(RadiusYProperty, value);
             }
         }
-
+        
         /// <summary>
-        /// Parent of InternalDataPoints 
+        /// Parent of InternalDataPoints
         /// </summary>
         public new DataSeries Parent
         {
             get
-            {
+            {   
                 return _parent;
             }
             internal set
-            {   
-                System.Diagnostics.Debug.Assert(typeof(DataSeries).Equals(value.GetType()), "Unknown Parent", "DataPoint should have DataSeries as Parent");
+            {
+                System.Diagnostics.Debug.Assert(typeof(DataSeries).Equals(value.GetType()), "Unknown Parent", "DataPoint should have DataSeries as Parent"); 
                 _parent = value;
             }
         }
@@ -1903,56 +1911,33 @@ namespace Visifire.Charts
 
         #region Protected Methods
 
+        internal void InvokeUpdateVisual(VcProperties property, object newValue)
+        {
+            if (IsNotificationEnable)
+            {
+                if (Parent == null || !ValidatePartialUpdate(Parent.RenderAs, property))
+                    return;
+                UpdateVisual(property, newValue, false);
+               // Chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(UpdateVisual), new object[] { property, newValue });
+            }
+        }
+
         /// <summary>
-        /// UpdateVisual is used for partial rendering
+        /// Partial update of color property for not supported partial update tchart type
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(String propertyName, object value)
+        internal void PartialUpdateOfColorProperty(Brush newValue)
         {
-            switch (propertyName)
-            {
-                case "Color":
+             #region Color
 
-                    #region Color
-
-                    value = Color;
 
                     if (Faces != null && Faces.Parts != null)
                     {
+                        Brush value = (newValue != null) ? newValue : Color;
+
                         switch (Parent.RenderAs)
-                        {
-                            case RenderAs.Column:
-                            case RenderAs.Bar:
-                            case RenderAs.StackedBar:
-                            case RenderAs.StackedBar100:
-                            case RenderAs.StackedColumn:
-                            case RenderAs.StackedColumn100:
-
-                                if (!(Parent.Chart as Chart).View3D)
-                                {
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Path).Fill = (((Boolean)Parent.LightingEnabled) ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.745, 0.99 }) : (Brush)value);
-                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Polygon).Fill = Graphics.GetBevelTopBrush((Brush)value);
-                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -70 : 0), (Brush)value);
-                                    if (Faces.Parts[3] != null) (Faces.Parts[3] as Polygon).Fill = Graphics.GetBevelSideBrush(((Boolean)Parent.LightingEnabled ? -110 : 180), (Brush)value);
-                                    if (Faces.Parts[4] != null) (Faces.Parts[4] as Polygon).Fill = null;
-                                    if (Faces.Parts[5] != null) (Faces.Parts[5] as Shape).Fill = Graphics.GetLeftGradianceBrush(63);
-                                    if (Faces.Parts[6] != null) (Faces.Parts[6] as Shape).Fill = ((Parent.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Graphics.GetRightGradianceBrush(63) : Graphics.GetLeftGradianceBrush(63);
-                                }
-                                else
-                                {
-                                    if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetFrontFaceBrush((Brush)value) : (Brush)value;   // Front brush
-                                    if (Faces.Parts[1] != null) (Faces.Parts[1] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetTopFaceBrush((Brush)value) : (Brush)value;      // Top brush
-                                    if (Faces.Parts[2] != null) (Faces.Parts[2] as Shape).Fill = (Boolean)Parent.LightingEnabled ? Graphics.GetRightFaceBrush((Brush)value) : (Brush)value;    // Right
-                                }
-
-                                break;
-
-                            case RenderAs.Bubble:
-                                if (Faces.Parts[0] != null) (Faces.Parts[0] as Shape).Fill = ((Parent.Chart as Chart).View3D ? Graphics.GetLightingEnabledBrush3D((Brush)value) : ((Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)value, "Linear", new Double[] { 0.99, 0.745 }) : (Brush)value));
-
-                                break;
-
+                        {   
                             case RenderAs.Pie:
                             case RenderAs.Doughnut:
 
@@ -1980,7 +1965,7 @@ namespace Visifire.Charts
                                     foreach (FrameworkElement fe in Faces.Parts)
                                         if (fe != null) (fe as Shape).Fill = pieParams.Lighting ? Graphics.GetLightingEnabledBrush(pieParams.Background, "Radial", null) : pieParams.Background;
                                 }
-    
+
                                 break;
 
                             case RenderAs.SectionFunnel:
@@ -1992,43 +1977,238 @@ namespace Visifire.Charts
                                     FunnelChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D, funnelSliceParms);
                                 }
                                 break;
-
-                            case RenderAs.CandleStick:
-                                foreach (Shape path in Faces.Parts)
-                                {
-                                    CandleStick.ReCalculateAndApplyTheNewBrush(this, path, (Brush)value, (Boolean)LightingEnabled, (Parent.Chart as Chart).View3D);
-                                }
-
-                                break;
-
-                            case RenderAs.Stock:
-                                foreach (Shape path in Faces.Parts)
-                                {
-                                    StockChart.ReCalculateAndApplyTheNewBrush(path, (Brush)value, (Boolean)LightingEnabled);
-                                }
-
-                                break;
                         }
                     }
 
-                    UpdateMarkerAndLegend(value);
+                    UpdateMarkerAndLegend(this, newValue);
 
                     #endregion
-
-                    break;
-
-                default:
-
-                    FirePropertyChanged(propertyName);
-
-                    break;
-            }
         }
+        
+        /// <summary>
+        /// UpdateVisual is used for partial rendering
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        /// <param name="value">Value of the property</param>
+        /// <returns>Is need to update all DataPoints on axis change</returns>
+        internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
+        {   
+            // if (Parent == null || !ValidatePartialUpdate(Parent.RenderAs, property))
+            //    return;
 
+            if (!recursive && NonPartialUpdateChartTypes(Parent.RenderAs))
+            {   
+                if (property == VcProperties.Color)
+                    PartialUpdateOfColorProperty(newValue as Brush);
+                else
+                    FirePropertyChanged(property);
+
+                return false;
+            }
+
+            Chart chart = Chart as Chart;
+
+            if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
+            {   
+                Boolean updateAllDpsOnAxisChange = false;
+                Boolean renderAxis = false;
+                PlotGroup plotGroup = Parent.PlotGroup;
+                AxisRepresentations axisRepresentation = AxisRepresentations.AxisX;
+
+                /* Line and bubble are first while updating DataPoints one by one. So to take advantage of updating DataPoints one by one
+                conditions are written below */
+                if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false))
+                {
+                    if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !chart.AnimatedUpdate))
+                    {
+                        chart.PARTIAL_DP_RENDER_LOCK = true;
+                        chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
+                        chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
+                        chart._datapoint2UpdatePartially.Add(this, property);
+                    }
+                    else if (!recursive && property == VcProperties.XValue && (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point))
+                    {   
+                        chart.PARTIAL_DP_RENDER_LOCK = true;
+                        chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
+                        chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
+                        chart._datapoint2UpdatePartially.Add(this, property);
+                    }
+                    else
+                        chart.PARTIAL_DP_RENDER_LOCK = false;
+
+                }
+
+
+                if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
+                {
+                    if (Parent.RenderAs == RenderAs.Area)
+                    {
+                        if (property == VcProperties.BorderThickness || property == VcProperties.BorderColor || property == VcProperties.BorderStyle)
+                            return false;
+                    }
+
+                    if (property == VcProperties.YValue || property == VcProperties.YValues)
+                    {
+                        Double OldMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double OldMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        Object oldValue = (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock) ? (Object)_oldYValues : _oldYValue;
+
+                        chart.PlotDetails.ReCreate(this, property, oldValue, newValue);
+
+                        Double NewMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double NewMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldMaxYValue.ToString() + " OldAxisMinY=" + OldMinYValue.ToString());
+                        System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewMaxYValue.ToString() + " NewAxisMinY=" + NewMinYValue.ToString());
+
+                        if (plotGroup.AxisY.AxisMinimum == null || plotGroup.AxisY.AxisMaximum == null)
+                        {
+                            if (NewMaxYValue != OldMaxYValue || (Double)NewMinYValue != OldMinYValue)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisY;
+                                System.Diagnostics.Debug.WriteLine("RenderAxis1 =" + renderAxis.ToString());
+                            }
+                        }
+                    }
+                    else if (property == VcProperties.XValue)
+                    {
+                        Double OldMaxXValue = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                        Double OldMinXValue = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                        Double OldMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double OldMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        chart.PlotDetails.ReCreate(this, property, null, newValue);
+
+                        Double NewMaxXValue = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
+                        Double NewMinXValue = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
+                        Double NewMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
+                        Double NewMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
+
+                        //System.Diagnostics.Debug.WriteLine("OldAxisMaxX = " + OldAxisMaxX.ToString() + " OldAxisMinX=" + OldAxisMinX.ToString());
+                        //System.Diagnostics.Debug.WriteLine("NewAxisMaxX = " + NewAxisMaxX.ToString() + " NewAxisMinX=" + NewAxisMinX.ToString());
+
+                        if (plotGroup.AxisX.AxisMinimum == null || plotGroup.AxisX.AxisMaximum == null)
+                        {
+                            if (NewMaxXValue != OldMaxXValue || (Double)NewMinXValue != OldMinXValue)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisX;
+                            }
+                        }
+
+                        if (plotGroup.AxisY.AxisMinimum == null || plotGroup.AxisY.AxisMaximum == null)
+                        {
+                            if (NewMaxYValue != OldMaxYValue || (Double)NewMinYValue != OldMinYValue)
+                            {
+                                renderAxis = true;
+                                axisRepresentation = AxisRepresentations.AxisY;
+                            }
+                        }
+                    }
+
+                    // renderAxis = false;
+                    Double oldZeroBaseLineY = 0, oldZeroBaseLineX = 0;
+                    if (renderAxis == true)
+                    {
+                        if (property == VcProperties.YValue)
+                            oldZeroBaseLineY = plotGroup.AxisY._zeroBaseLinePosition;
+                        else if (property == VcProperties.XValue)
+                            oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePosition;
+                    }
+                    System.Diagnostics.Debug.WriteLine("RenderAxis2 =" + renderAxis.ToString());
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, null, false, false, renderAxis, axisRepresentation, true);
+
+                    if (property == VcProperties.YValue)
+                    {
+                        if (plotGroup.AxisY._oldInternalAxisMinimum == plotGroup.AxisY.InternalAxisMinimum &&
+                            plotGroup.AxisY._oldInternalAxisMaximum == plotGroup.AxisY.InternalAxisMaximum)
+                            renderAxis = false;
+                    }
+                    else if (property == VcProperties.XValue)
+                    {
+                        if (plotGroup.AxisX._oldInternalAxisMinimum == plotGroup.AxisX.InternalAxisMinimum &&
+                            plotGroup.AxisX._oldInternalAxisMaximum == plotGroup.AxisX.InternalAxisMaximum)
+                            renderAxis = false;
+                    }
+
+                    if (renderAxis == true)
+                    {   
+                        if (property == VcProperties.YValue)
+                        {   
+                            if (oldZeroBaseLineY == plotGroup.AxisY._zeroBaseLinePosition)
+                                renderAxis = false;
+
+                        }
+                        else if (property == VcProperties.XValue)
+                        {
+                            if (oldZeroBaseLineX == plotGroup.AxisX._zeroBaseLinePosition)
+                                renderAxis = false;
+                        }
+
+                        if (renderAxis == false)
+                            updateAllDpsOnAxisChange = true;
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("RenderAxis3 =" + renderAxis.ToString());
+                System.Diagnostics.Debug.WriteLine("updateAllDpsOnAxisChange =" + updateAllDpsOnAxisChange.ToString());
+                if (chart.PARTIAL_DP_RENDER_LOCK)
+                {   
+                    chart.Dispatcher.BeginInvoke(new Action<Chart, VcProperties, object, Boolean>(RenderHelper.UpdateVisualObject), new object[] { chart, property, newValue , true });
+                    chart.Dispatcher.BeginInvoke(new Action(ActivePartialUpdateRenderLock));
+
+                    // RenderHelper.UpdateVisualObject(chart, property, newValue);
+                }
+                else if (updateAllDpsOnAxisChange)
+                {
+                    if (recursive && (!chart.AnimatedUpdate || chart.PlotDetails.ListOfAllDataPoints.Count > 1000))
+                    {
+                        return true;
+                    }
+                    else
+                    {   
+                        foreach (DataSeries ds in chart.InternalSeries)
+                        {   
+                            foreach (DataPoint dp in ds.InternalDataPoints)
+                            {
+                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, !updateAllDpsOnAxisChange);
+                            }
+                        }
+                    }
+                }
+                else
+                    RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
+
+                if (property == VcProperties.Color)
+                    UpdateLegendMarker(this, (Brush)newValue);
+
+                // chart._renderLock = false;
+            }
+            else
+            {
+                if (!chart._datapoint2UpdatePartially.Keys.Contains(this))
+                {   
+                    chart._datapoint2UpdatePartially.Add(this, property);
+                    chart.PARTIAL_RENDER_BLOCKD_COUNT++;
+                }
+            }
+
+            return false;
+        }
+        
         #endregion
 
-        #region Internal Properties
 
+        public void ActivePartialUpdateRenderLock()
+        {
+            (Chart as Chart).PARTIAL_DP_RENDER_LOCK = false;
+            //Visifire.Profiler.Profiler.End("Render");
+            //Visifire.Profiler.Profiler.Report("Render", true, false);
+        }
+
+        #region Internal Properties
 
 #if SL
         /// <summary>
@@ -2078,7 +2258,6 @@ namespace Visifire.Charts
             }
         }
 
-
         /// <summary>
         /// Get or set the Opacity property
         /// </summary>
@@ -2094,12 +2273,25 @@ namespace Visifire.Charts
             }
         }
 
-        internal Boolean IsLabelStyleSet
+        /// <summary>
+        /// StoryBoard attached with the DataPoint for animation
+        /// </summary>
+        internal Storyboard Storyboard
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// StoryBoard attached with the DataPoint for animation
+        /// </summary>
+        internal Storyboard StoryboardZValueAni
+        {
+            get;
+            set;
+        } 
+        
+        
         /// <summary>
         /// InternalXValue used for internally generated XValue of type double
         /// </summary>
@@ -2137,6 +2329,15 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get or set geometric faces of DataPoint
+        /// </summary>
+        internal Faces ShadowFaces
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Get or set label visual of the DataPoint
         /// </summary>
         internal FrameworkElement LabelVisual
@@ -2154,12 +2355,18 @@ namespace Visifire.Charts
             set;
         }
 
+        internal Boolean IsTopOfStack
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Get or set Line for label
         /// (For Pie / Doughnut)
         /// </summary>
         internal Path LabelLine;
-
+        
         /// <summary>
         /// Get or set Storyboard for explode animation
         /// </summary>
@@ -2182,6 +2389,12 @@ namespace Visifire.Charts
         /// Get or set current visual parameters
         /// </summary>
         internal object VisualParams
+        {
+            get;
+            set;
+        }
+
+        internal Boolean IsLabelStyleSet
         {
             get;
             set;
@@ -2228,11 +2441,11 @@ namespace Visifire.Charts
             {
                 dataPoint.Select(true);
 
-                if (dataPoint.Parent.SelectionMode == SelectionModes.Single || dataPoint.Parent.RenderAs == RenderAs.SectionFunnel || dataPoint.Parent.RenderAs == RenderAs.StreamLineFunnel)
-                    dataPoint.DeSelectOthers();
+                if(dataPoint.Parent.SelectionMode == SelectionModes.Single ||  dataPoint.Parent.RenderAs == RenderAs.SectionFunnel || dataPoint.Parent.RenderAs == RenderAs.StreamLineFunnel)
+                   dataPoint.DeSelectOthers();
             }
             else
-                dataPoint.DeSelect(dataPoint, true, true);
+                dataPoint.DeSelect(dataPoint , true, true);
         }
 
         /// <summary>
@@ -2243,7 +2456,8 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("HrefTarget");
+            dataPoint.InvokeUpdateVisual(VcProperties.HrefTarget, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -2254,8 +2468,26 @@ namespace Visifire.Charts
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("Href");
+
+            dataPoint.InvokeUpdateVisual(VcProperties.Href, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.Href);
         }
+
+//#if WPF
+//        /// <summary>
+//        /// OpacityProperty changed call back function
+//        /// </summary>
+//        /// <param name="d">DependencyObject</param>
+//        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+//        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+//        {
+//            DataPoint dataPoint = d as DataPoint;
+
+//            dataPoint.InvokeUpdateVisual(VcProperties.Opacity, e.NewValue);
+            
+//            // dataPoint.FirePropertyChanged(VcProperties.Opacity);
+//        }
+//#endif
 
         /// <summary>
         /// OpacityProperty changed call back function
@@ -2265,8 +2497,8 @@ namespace Visifire.Charts
         private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.InternalOpacity = (Double)e.NewValue;
-            dataPoint.FirePropertyChanged("Opacity");
+            dataPoint.InvokeUpdateVisual(VcProperties.Opacity, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.Opacity);
         }
 
         /// <summary>
@@ -2277,13 +2509,33 @@ namespace Visifire.Charts
         private static void OnYValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("YValue");
+
+            if (dataPoint.Chart == null || (dataPoint.Chart as Chart).ChartArea == null)
+                dataPoint._oldYValue = (Double)e.NewValue;
+            else
+            {
+                dataPoint._oldYValue = Double.IsNaN((Double)e.OldValue) ? dataPoint._oldYValue : (Double)e.OldValue;
+                dataPoint._oldYValue = Double.IsNaN(dataPoint._oldYValue) ? 0 : dataPoint._oldYValue;
+
+                if (!(dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock)))
+                    dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
+            }
         }
+
+        // private static 
 
         private static void OnYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("YValues");
+            dataPoint._oldYValues = (Double[])e.OldValue;
+
+            if (dataPoint.Parent != null)
+            {   
+                if (dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock))
+                    dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
+            }
+            else
+                dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
         }
 
         /// <summary>
@@ -2294,7 +2546,7 @@ namespace Visifire.Charts
         private static void OnXValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-
+            
             // Double / Int32 value entered in Managed Code
             if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
             {
@@ -2342,9 +2594,12 @@ namespace Visifire.Charts
                 throw new Exception("Invalid Input for XValue");
             }
 
-            dataPoint.FirePropertyChanged("XValue");
-        }
+            dataPoint.InvokeUpdateVisual(VcProperties.XValue, e.NewValue);
 
+            // dataPoint.InvokeUpdateVisual("XValue", e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.XValue");
+        }
+        
         /// <summary>
         /// ZValueProperty changed call back function
         /// </summary>
@@ -2353,9 +2608,10 @@ namespace Visifire.Charts
         private static void OnZValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("ZValue");
+            dataPoint.InvokeUpdateVisual(VcProperties.ZValue, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.ZValue);
         }
-
+        
         /// <summary>
         /// AxisXLabelProperty changed call back function
         /// </summary>
@@ -2364,9 +2620,10 @@ namespace Visifire.Charts
         private static void OnAxisXLabelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("AxisXLabel");
+            // dataPoint.InvokeUpdateVisual(VcProperties.AxisXLabel, e.NewValue);
+            dataPoint.FirePropertyChanged(VcProperties.AxisXLabel);
         }
-
+        
         /// <summary>
         /// ColorProperty changed call back function
         /// </summary>
@@ -2375,9 +2632,9 @@ namespace Visifire.Charts
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.UpdateVisual("Color", e.NewValue);
+            dataPoint.InvokeUpdateVisual(VcProperties.Color, e.NewValue);
         }
-
+        
         /// <summary>
         /// EnabledProperty changed call back function
         /// </summary>
@@ -2386,16 +2643,17 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("Enabled");
+            dataPoint.InvokeUpdateVisual(VcProperties.Enabled, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.Enabled);
         }
-
+        
         /// <summary>
         /// ExplodedProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnExplodedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             DataPoint dataPoint = d as DataPoint;
             DataSeries dataSeries = dataPoint.Parent;
 
@@ -2429,9 +2687,10 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnLightingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LightingEnabled");
+            dataPoint.InvokeUpdateVisual(VcProperties.LightingEnabled, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LightingEnabled);
         }
 
         /// <summary>
@@ -2442,9 +2701,10 @@ namespace Visifire.Charts
         private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("ShadowEnabled");
+            dataPoint.InvokeUpdateVisual(VcProperties.ShadowEnabled, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.ShadowEnabled);
         }
-
+        
         /// <summary>
         /// LabelEnabledProperty changed call back function
         /// </summary>
@@ -2453,9 +2713,10 @@ namespace Visifire.Charts
         private static void OnLabelEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelEnabled");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelEnabled, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelEnabled);
         }
-
+        
         /// <summary>
         /// LabelTextProperty changed call back function
         /// </summary>
@@ -2464,7 +2725,8 @@ namespace Visifire.Charts
         private static void OnLabelTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelText");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelText, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.LabelText);
         }
 
         /// <summary>
@@ -2475,9 +2737,10 @@ namespace Visifire.Charts
         private static void OnLabelFontFamilyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelFontFamily");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelFontFamily, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.LabelFontFamily);
         }
-
+        
         /// <summary>
         /// LabelFontSizeProperty changed call back function
         /// </summary>
@@ -2486,9 +2749,10 @@ namespace Visifire.Charts
         private static void OnLabelFontSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelFontSize");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelFontSize, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelFontSize);
         }
-
+        
         /// <summary>
         /// LabelFontColorProperty changed call back function
         /// </summary>
@@ -2497,9 +2761,10 @@ namespace Visifire.Charts
         private static void OnLabelFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelFontColor");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelFontColor, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.LabelFontColor);
         }
-
+        
         /// <summary>
         /// LabelFontWeightProperty changed call back function
         /// </summary>
@@ -2508,9 +2773,10 @@ namespace Visifire.Charts
         private static void OnLabelFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelFontWeight");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelFontWeight, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelFontWeight);
         }
-
+        
         /// <summary>
         /// LabelFontStyleProperty changed call back function
         /// </summary>
@@ -2519,7 +2785,8 @@ namespace Visifire.Charts
         private static void OnLabelFontStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelFontStyle");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelFontStyle, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelFontStyle);
         }
 
         /// <summary>
@@ -2530,7 +2797,8 @@ namespace Visifire.Charts
         private static void OnLabelBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelBackground");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelBackground, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelBackground);
         }
 
         /// <summary>
@@ -2541,51 +2809,8 @@ namespace Visifire.Charts
         private static void OnLabelStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelStyle");
-        }
-
-        /// <summary>
-        /// LabelLineEnabledProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnLabelLineEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelLineEnabled");
-        }
-
-        /// <summary>
-        /// LabelLineColorProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnLabelLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelLineColor");
-        }
-
-        /// <summary>
-        /// LabelLineThicknessProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnLabelLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelLineThickness");
-        }
-
-        /// <summary>
-        /// LabelLineStyleProperty changed call back function
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        private static void OnLabelLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelLineStyle");
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelStyle, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelStyle);
         }
 
         /// <summary>
@@ -2596,7 +2821,55 @@ namespace Visifire.Charts
         private static void OnLabelAnglePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LabelAngle");
+            dataPoint.FirePropertyChanged(VcProperties.LabelAngle);
+        }
+
+        /// <summary>
+        /// LabelLineEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelLineEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelLineEnabled, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelLineEnabled);
+        }
+
+        /// <summary>
+        /// LabelLineColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelLineColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelLineColor, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelLineColor);
+        }
+
+        /// <summary>
+        /// LabelLineThicknessProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelLineThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelLineThickness, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelLineThickness);
+        }
+
+        /// <summary>
+        /// LabelLineStyleProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLabelLineStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.InvokeUpdateVisual(VcProperties.LabelLineStyle, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LabelLineStyle);
         }
 
         /// <summary>
@@ -2607,7 +2880,8 @@ namespace Visifire.Charts
         private static void OnMarkerEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerEnabled");
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerEnabled, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.MarkerEnabled);
         }
 
         /// <summary>
@@ -2618,9 +2892,10 @@ namespace Visifire.Charts
         private static void OnMarkerTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerType");
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerType, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.MarkerType);
         }
-
+        
         /// <summary>
         /// MarkerBorderThicknessProperty changed call back function
         /// </summary>
@@ -2629,9 +2904,10 @@ namespace Visifire.Charts
         private static void OnMarkerBorderThicknessPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.UpdateMarker();
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerBorderThickness, e.NewValue);
+            //dataPoint.UpdateMarker();
         }
-
+        
         /// <summary>
         /// MarkerBorderColorProperty changed call back function
         /// </summary>
@@ -2640,9 +2916,10 @@ namespace Visifire.Charts
         private static void OnMarkerBorderColorPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.UpdateMarker();
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerBorderColor, e.NewValue);
+            //dataPoint.UpdateMarker();
         }
-
+        
         /// <summary>
         /// MarkerSizeProperty changed call back function
         /// </summary>
@@ -2651,7 +2928,8 @@ namespace Visifire.Charts
         private static void OnMarkerSizePropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerSize");
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerSize, e.NewValue);
+            //dataPoint.FirePropertyChanged(VcProperties.MarkerSize);
         }
 
         /// <summary>
@@ -2662,7 +2940,8 @@ namespace Visifire.Charts
         private static void OnMarkerColorPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.UpdateMarker();
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerColor, e.NewValue);
+            // dataPoint.UpdateMarker();
         }
 
         /// <summary>
@@ -2673,9 +2952,10 @@ namespace Visifire.Charts
         private static void OnMarkerScalePropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("MarkerScale");
+            dataPoint.InvokeUpdateVisual(VcProperties.MarkerScale, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.MarkerScale);
         }
-
+        
         /// <summary>
         /// ShowInLegendProperty changed call back function
         /// </summary>
@@ -2684,9 +2964,10 @@ namespace Visifire.Charts
         private static void OnShowInLegendPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("ShowInLegend");
+            //dataPoint.InvokeUpdateVisual(VcProperties.ShowInLegend, e.NewValue);
+            dataPoint.FirePropertyChanged(VcProperties.ShowInLegend);
         }
-
+        
         /// <summary>
         /// LegendTextProperty changed call back function
         /// </summary>
@@ -2695,8 +2976,25 @@ namespace Visifire.Charts
         private static void OnLegendTextPropertychanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("LegendText");
+            dataPoint.InvokeUpdateVisual(VcProperties.LegendText, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.LegendText);
         }
+        
+//#if WPF
+
+//        /// <summary>
+//        /// BorderThicknessProperty changed call back function
+//        /// </summary>
+//        /// <param name="d">DependencyObject</param>
+//        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+//        private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+//        {
+//            DataPoint dataPoint = d as DataPoint;
+//            dataPoint.InvokeUpdateVisual(VcProperties.BorderThickness, e.NewValue);
+//            // dataPoint.FirePropertyChanged(VcProperties.BorderThickness);
+//        }
+
+//#endif
 
         /// <summary>
         /// BorderThicknessProperty changed call back function
@@ -2706,8 +3004,8 @@ namespace Visifire.Charts
         private static void OnBorderThicknessPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.InternalBorderThickness = (Thickness)e.NewValue;
-            dataPoint.FirePropertyChanged("BorderThickness");
+            dataPoint.InvokeUpdateVisual(VcProperties.BorderThickness, e.NewValue);
+            dataPoint.FirePropertyChanged(VcProperties.BorderThickness);
         }
 
         /// <summary>
@@ -2718,9 +3016,10 @@ namespace Visifire.Charts
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("BorderColor");
+            dataPoint.InvokeUpdateVisual(VcProperties.BorderColor, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.BorderColor);
         }
-
+        
         /// <summary>
         /// BorderStyleProperty changed call back function
         /// </summary>
@@ -2729,7 +3028,8 @@ namespace Visifire.Charts
         private static void OnBorderStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("BorderStyle");
+            dataPoint.InvokeUpdateVisual(VcProperties.BorderStyle, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.BorderStyle);
         }
 
         /// <summary>
@@ -2740,9 +3040,10 @@ namespace Visifire.Charts
         private static void OnRadiusXPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("RadiusX");
+            dataPoint.InvokeUpdateVisual(VcProperties.RadiusX, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.RadiusX);
         }
-
+        
         /// <summary>
         /// RadiusYProperty changed call back function
         /// </summary>
@@ -2751,7 +3052,8 @@ namespace Visifire.Charts
         private static void OnRadiusYPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint.FirePropertyChanged("RadiusY");
+            dataPoint.InvokeUpdateVisual(VcProperties.RadiusY, e.NewValue);
+            // dataPoint.FirePropertyChanged(VcProperties.RadiusY);
         }
 
         internal void DeSelectOthers()
@@ -2774,18 +3076,18 @@ namespace Visifire.Charts
         {
             if (Faces != null)
             {
-                if (allowPropertyChange)
+                if(allowPropertyChange)
                     UpdateExplodedPropertyForSelection(true, true);
 
                 foreach (Shape shape in Faces.BorderElements)
-                {
+                {   
                     BorderStyles borderStyle = BorderStyles.Dashed;
                     Double borderThickness = 1.5;
 
-                    if (Parent != null)
-                    {
-                        if ((Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut) && (Chart as Chart).View3D)
-                        {
+                    if(Parent != null)
+                    {   
+                        if((Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut) && (Chart as Chart).View3D)
+                        {   
                             borderStyle = BorderStyles.Dotted;
                         }
 
@@ -2794,7 +3096,7 @@ namespace Visifire.Charts
                             borderThickness = 1.5;
                         }
                     }
-
+                    
                     Brush borderColor;
 
                     if (Parent.RenderAs == RenderAs.Stock)
@@ -2804,28 +3106,29 @@ namespace Visifire.Charts
                     else
                         borderColor = Visifire.Charts.Chart.CalculateDataPointLabelFontColor(Chart as Chart, this, null, LabelStyles.OutSide);
 
-                    InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);
+                    InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);            
                 }
             }
-
+            
             if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
-            {
+            {               
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(true, true);
 
                 if (InteractivityHelper.SELECTED_MARKER_BORDER_COLOR == null)
-                    InteractivityHelper.SELECTED_MARKER_BORDER_COLOR = new SolidColorBrush(Colors.Red);
+                    InteractivityHelper.SELECTED_MARKER_BORDER_COLOR = Graphics.RED_BRUSH;
 
                 if (InteractivityHelper.SELECTED_MARKER_FILL_COLOR == null)
-                    InteractivityHelper.SELECTED_MARKER_FILL_COLOR = new SolidColorBrush(Colors.Orange);
+                    InteractivityHelper.SELECTED_MARKER_FILL_COLOR = Graphics.ORANGE_BRUSH;
 
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
-                Marker.MarkerShape.Margin = new Thickness(-1.2, -1.2, 0, 0);
+                Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
 
-                if (Parent.RenderAs == RenderAs.Line)
+                if(Parent.RenderAs == RenderAs.Line)
                     LineChart.SelectMovingMarker(this);
             }
         }
+
         /// <summary>
         /// Deselect a DataPoint visually
         /// </summary>
@@ -2837,7 +3140,7 @@ namespace Visifire.Charts
             if (Faces != null)
             {
                 if (allowPropertyChange)
-                    UpdateExplodedPropertyForSelection(false, selfDeSelect);
+                   UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
                 foreach (Shape shape in Faces.BorderElements)
                 {
@@ -2848,29 +3151,33 @@ namespace Visifire.Charts
                         Brush borderColor;
 
                         if (Parent.RenderAs == RenderAs.Stock)
-                            borderColor = StockChart.ReCalculateAndApplyTheNewBrush(shape, dataPoint.Color, (Boolean)dataPoint.LightingEnabled);
+                            borderColor = StockChart.ReCalculateAndApplyTheNewBrush(shape, dataPoint.Color, (Boolean) dataPoint.LightingEnabled);
                         else
                             borderColor = BorderColor;
 
                         InteractivityHelper.RemoveBorderEffect(shape, (BorderStyles)dataPoint.BorderStyle, ((Thickness)InternalBorderThickness).Left, borderColor);
                     }
-
+                    
                     if (allowPropertyChange)
-                    {
+                    {   
                         IsNotificationEnable = false;
                         Selected = false;
                         IsNotificationEnable = true;
                     }
                 }
             }
-
+            
             if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {
+               
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
-                InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
-                Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                if (MarkerEnabled == true)
+                {
+                    InteractivityHelper.RemoveBorderEffect(Marker.MarkerShape, (BorderStyles)dataPoint.BorderStyle, Marker.BorderThickness, Marker.BorderColor, Marker.MarkerFillColor, Marker.MarkerSize.Width * Marker.ScaleFactor, Marker.MarkerSize.Height * Marker.ScaleFactor);
+                    Marker.MarkerShape.Margin = new Thickness(0, 0, 0, 0);
+                }
 
                 if (allowPropertyChange)
                 {
@@ -2887,7 +3194,7 @@ namespace Visifire.Charts
         /// <param name="exploded">Exploded</param>
         /// <param name="selfAction">Whether the action taken by the selected or deselected DataPoint to update its own Exploded property</param>
         private void UpdateExplodedPropertyForSelection(Boolean exploded, Boolean selfAction)
-        {
+        {   
             // if (Parent != null && Parent.Chart != null && (Parent.Chart as Chart).ChartArea != null && (Parent.Chart as Chart).ChartArea.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
             {
                 if (Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
@@ -2895,15 +3202,15 @@ namespace Visifire.Charts
                     if (Exploded != exploded)
                     {
                         // For self action we need to update Exploded property 
-                        if (selfAction)
+                        if (selfAction) 
                             Exploded = exploded;
                         else // If it is not a self action we need to update Exploded property with out firing any event 
                         {
                             IsNotificationEnable = false;
                             Exploded = exploded;
                             IsNotificationEnable = true;
-                        }
-                    }
+                        }                           
+                   }
                 }
                 else
                 {
@@ -3069,12 +3376,13 @@ namespace Visifire.Charts
                     if (this.ExplodeAnimation != null)
                     {
                         try
-                        {
+                        {   
                             _isAlreadyExploded = true;
 #if WPF             
                             this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
                             this.ExplodeAnimation.Begin();
+                            
 #endif
                             if (!(Chart as Chart).ChartArea._isFirstTimeRender && Parent != null && (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut))
 #if WPF
@@ -3090,13 +3398,13 @@ namespace Visifire.Charts
                     }
                 }
                 else if (_isAlreadyExploded == true)
-                {
+                {   
                     UnExplodeFunnelSlices();
 
                     if (this.ExplodeAnimation != null)
                         this.ExplodeAnimation.Stop();
 
-                    if (this.UnExplodeAnimation != null)
+                    if (this.UnExplodeAnimation != null )
                     {
                         _isAlreadyExploded = false;
 #if WPF                 
@@ -3135,8 +3443,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <returns>Double</returns>
         private Double Percentage()
-        {
+        {   
             Double percentage = 0;
+
             if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel)
             {
                 if ((Parent.Chart as Chart).PlotDetails != null)
@@ -3154,6 +3463,7 @@ namespace Visifire.Charts
             {
                 percentage = InternalYValue / Parent.PlotGroup.XWiseStackedDataList[InternalXValue].AbsoluteYValueSum * 100;// _stackSum[XValue].Y Contains Absolute sum
             }
+
             return percentage;
         }
 
@@ -3161,48 +3471,65 @@ namespace Visifire.Charts
         /// Update marker and legend for dataPoint
         /// </summary>
         /// <param name="Value">Color value</param>
-        private void UpdateMarkerAndLegend(object colorValue)
-        {
-            // Double markerThickness;
+        internal static void UpdateMarkerAndLegend(DataPoint dataPoint, object colorValue)
+        {   
+            Marker marker = dataPoint.Marker;
 
-            if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
-            {
-                if (Parent.RenderAs == RenderAs.Point)
+            if (marker != null && marker.Visual != null && (Boolean)dataPoint.MarkerEnabled)
+            {   
+                if (dataPoint.Parent.RenderAs == RenderAs.Point)
                 {
-                    Marker.MarkerFillColor = (Brush)colorValue;
-                    if (Marker.MarkerType != MarkerTypes.Cross)
+                    marker.MarkerFillColor = dataPoint.Color; // (Brush)colorValue;
+
+                    if (marker.MarkerType != MarkerTypes.Cross)
                     {
-                        if (BorderColor != null)
-                            Marker.BorderColor = BorderColor;
+                        if (dataPoint.BorderColor != null)
+                            marker.BorderColor = dataPoint.BorderColor;
                     }
                     else
-                        Marker.BorderColor = (Brush)colorValue;
+                        marker.BorderColor = dataPoint.Color; // (Brush)colorValue;(Brush)colorValue;
 
                     // Marker.UpdateMarker();
                 }
                 else
-                    Marker.BorderColor = (Brush)colorValue;
+                    marker.BorderColor = (dataPoint.GetValue(DataPoint.MarkerBorderColorProperty) as Brush == null) ? ((colorValue != null) ? colorValue as Brush : dataPoint.MarkerBorderColor) : dataPoint.MarkerBorderColor; // (Brush)colorValue;
 
-                //markerThickness = Marker.MarkerShape.StrokeThickness;
-
-                if (!Selected)
-                    Marker.UpdateMarker();
+                if (!dataPoint.Selected)
+                    marker.UpdateMarker();
             }
 
-            if (LegendMarker != null && LegendMarker.Visual != null)
+            UpdateLegendMarker(dataPoint, colorValue as Brush);
+        }
+
+        internal static void UpdateLegendMarker(DataPoint dataPoint, Brush colorValue)
+        {   
+            Brush newValue = (colorValue != null) ? colorValue : dataPoint._internalColor;
+
+            // Marker displaied in Marker
+            Marker marker = dataPoint.LegendMarker;
+
+            if (marker != null && marker.Visual != null)
             {
-                LegendMarker.BorderColor = (Brush)colorValue;
-                //LegendMarker.MarkerFillColor = (Brush)colorValue;
+                marker.BorderColor = (Brush)newValue;
+                RenderAs renderAs = dataPoint.Parent.RenderAs;
 
-                if (Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+                switch (renderAs)
                 {
-                    if ((LegendMarker.Visual as Grid).Parent != null && (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
-                        (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)colorValue;
-                }
-                else
-                    LegendMarker.MarkerFillColor = (Brush)colorValue;
+                    case RenderAs.Line:
+                    case RenderAs.CandleStick:
+                    case RenderAs.Stock:
 
-                LegendMarker.UpdateMarker();
+                        if ((marker.Visual as Grid).Parent != null && (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
+                            (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)newValue;
+
+                        break;
+
+                    default:
+                        marker.MarkerFillColor = (Brush)newValue;
+                        break;
+                }
+
+                marker.UpdateMarker();
             }
         }
 
@@ -3214,10 +3541,9 @@ namespace Visifire.Charts
         /// Start interactive animation
         /// </summary>
         internal void InteractiveAnimation(Boolean isFirstTimeAnimation)
-        {
+        {   
             // If interactivity animation is not running already and the slice is not exploded
             // then explode the slice
-
             if (Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
             {
                 if (!Parent.Exploded)
@@ -3248,14 +3574,14 @@ namespace Visifire.Charts
                 }
             }
             else
-            {
+            {   
                 if (!_interativityAnimationState)
                 {
                     if (false == _interactiveExplodeState)
                     {
                         _interativityAnimationState = true;
 
-                        System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
+                        //System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
 
                         Exploded = true;
 
@@ -3279,7 +3605,7 @@ namespace Visifire.Charts
 
                         UnExplodeFunnelSlices();
 
-                        System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
+                        //System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
 
                         if (this.UnExplodeAnimation != null)
                         {
@@ -3300,7 +3626,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Object">Object where events to be attached</param>
         internal void AttachEvent2DataPointVisualFaces(ObservableObject Object)
-        {
+        {   
             if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
             {
                 if (Faces != null)
@@ -3311,7 +3637,7 @@ namespace Visifire.Charts
                         {
                             AttachEvents2Visual(Object, this, element);
 
-                            if((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
+                            if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
                             {
                                 element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
                                 element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
@@ -3319,7 +3645,7 @@ namespace Visifire.Charts
                         }
                     }
                     else
-                    {
+                    {   
                         AttachEvents2Visual(Object, this, Faces.Visual);
 
                         if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
@@ -3330,7 +3656,7 @@ namespace Visifire.Charts
                     }
 
                     if (this.ExplodeAnimation != null)
-                    {
+                    {   
                         this.ExplodeAnimation.Completed -= new EventHandler(ExplodeAnimation_Completed);
                         this.ExplodeAnimation.Completed += new EventHandler(ExplodeAnimation_Completed);
                     }
@@ -3342,7 +3668,7 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea
+            else if (Parent.RenderAs == RenderAs.StackedArea 
                 || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line)
             {
                 if (Parent.RenderAs != RenderAs.Line)
@@ -3356,14 +3682,13 @@ namespace Visifire.Charts
                         }
                     }
                 }
-                
+
                 if (Marker != null)
                     AttachEvents2Visual(Object, this, Marker.Visual);
-                
             }
             else if (Faces != null)
             {
-                if (Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
+                if (Parent.RenderAs == RenderAs.Bubble || Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
                 {
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
@@ -3379,6 +3704,7 @@ namespace Visifire.Charts
 
                     if (LabelVisual != null)
                         AttachEvents2Visual(Object, this, LabelVisual);
+
                 }
             }
         }
@@ -3399,20 +3725,20 @@ namespace Visifire.Charts
                 else
                     AttachHref(Chart, Faces.Visual, Href, (HrefTargets)HrefTarget);
 
-            if (this.Parent.Faces != null)
-                if (this.Parent.Faces.VisualComponents.Count != 0)
-                {
-                    foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
-                    {
-                        if (Parent.RenderAs != RenderAs.Area && Parent.RenderAs != RenderAs.StackedArea && Parent.RenderAs != RenderAs.StackedArea100)
-                            AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
-                    }
-                }
-                else
-                    AttachHref(Chart, this.Parent.Faces.Visual, Href, (HrefTargets)HrefTarget);
+            //if (this.Parent.Faces != null)
+            //    if (this.Parent.Faces.VisualComponents.Count != 0)
+            //    {
+            //        foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+            //        {
+            //            if (Parent.RenderAs != RenderAs.Area && Parent.RenderAs != RenderAs.StackedArea && Parent.RenderAs != RenderAs.StackedArea100)
+            //                AttachHref(Chart, face, Href, (HrefTargets)HrefTarget);
+            //        }
+            //    }
+            //    else
+            //        AttachHref(Chart, this.Parent.Faces.Visual, Href, (HrefTargets)HrefTarget);
 
             if (this.Marker != null)
-            {
+            {   
                 AttachHref(Chart, Marker.Visual, Href, (HrefTargets)HrefTarget);
             }
         }
@@ -3421,7 +3747,7 @@ namespace Visifire.Charts
         /// Set Cursor property for DataPoint visual faces
         /// </summary>
         internal void SetCursor2DataPointVisualFaces()
-        {
+        {   
             if (Faces != null)
                 if (Faces.VisualComponents.Count != 0)
                 {
@@ -3430,39 +3756,39 @@ namespace Visifire.Charts
                         face.Cursor = GetCursor();
                     }
                 }
-                else
+                else if(Faces.Visual != null)
                     Faces.Visual.Cursor = GetCursor();
 
-            if (this.Parent.Faces != null)
-                if (this.Parent.Faces.VisualComponents.Count != 0)
-                {
-                    foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
-                    {
-                        face.Cursor = GetCursor();
-                    }
-                }
-                else
-                    this.Parent.Faces.Visual.Cursor = GetCursor();
+            //if (this.Parent.Faces != null)
+            //    if (this.Parent.Faces.VisualComponents.Count != 0)
+            //    {
+            //        foreach (FrameworkElement face in this.Parent.Faces.VisualComponents)
+            //        {
+            //            face.Cursor = GetCursor();
+            //        }
+            //    }
+            //    else
+            //        this.Parent.Faces.Visual.Cursor = GetCursor();
 
-            if (this.Marker != null)
+            if (this.Marker != null && this.Marker.Visual != null)
             {
                 Marker.Visual.Cursor = GetCursor();
             }
         }
 
-        /// <summary>
-        /// Update marker associated with DataPoint
-        /// </summary>
-        internal void UpdateMarker()
-        {
-            if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
-            {
-                Marker.BorderThickness = ((Thickness)(MarkerBorderThickness as Nullable<Thickness>)).Left;
-                Marker.BorderColor = MarkerBorderColor;
-                Marker.MarkerFillColor = MarkerColor;
-                Marker.UpdateMarker();
-            }
-        }
+        ///// <summary>
+        ///// Update marker associated with DataPoint
+        ///// </summary>
+        //internal void UpdateMarker()
+        //{
+        //    if (Marker != null && Marker.Visual != null && (Boolean)MarkerEnabled)
+        //    {
+        //        Marker.BorderThickness = ((Thickness)(MarkerBorderThickness as Nullable<Thickness>)).Left;
+        //        Marker.BorderColor = MarkerBorderColor;
+        //        Marker.MarkerFillColor = MarkerColor;
+        //        Marker.UpdateMarker();
+        //    }
+        //}
 
         #endregion
 
@@ -3472,11 +3798,18 @@ namespace Visifire.Charts
 
         #region Data
 
+        internal Double _oldYValue = 0;
+        internal Double[] _oldYValues;
+
+        internal FrameworkElement _oldVisual;
+        internal Point _oldMarkerPosition;
+        internal Point _oldLabelPosition;
+
         /// <summary>
         /// Parent of this DataPoint 
         /// </summary>
-        private DataSeries _parent;
-
+        private DataSeries _parent;      
+       
         /// <summary>
         /// Whether the DataPoint is exploded (used for Pie / Doughnut)
         /// </summary>
@@ -3512,10 +3845,16 @@ namespace Visifire.Charts
         /// </summary>
         internal Boolean _isPriceUp;
 
+        /// <summary>
+        /// Visual target render point of the visual
+        /// </summary>
+        internal Point _visualPosition;
+
+        internal Double _targetBubleSize;
+
         Nullable<Thickness> _borderThickness = null;
         Double _internalOpacity = Double.NaN;
 
-       
 #if WPF
         /// <summary>
         /// Whether the default style is applied

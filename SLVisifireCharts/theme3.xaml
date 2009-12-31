@@ -49,7 +49,7 @@
     <Style x:Key="AxisYLabels" TargetType="vc:AxisLabels">
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="FontFamily" Value="Verdana"/>
-    </Style>    
+    </Style>
     <Style x:Key="AxisXTicks" TargetType="vc:Ticks">
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="LineThickness" Value="0.5"/>

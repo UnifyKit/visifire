@@ -1,8 +1,12 @@
 ﻿<vc:Chart Name="MyChart1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme2"
-        Width="500" Height="300">
+        Width="500" Height="300" AnimatedUpdate="True">
 
+  <vc:Chart.Titles>
+    <vc:Title Text="Visifire Chart"></vc:Title>
+  </vc:Chart.Titles>
+  
   <vc:Chart.Series>
-    <vc:DataSeries RenderAs="Column">
+    <vc:DataSeries RenderAs="Line">
       <vc:DataSeries.DataPoints>
         <vc:DataPoint XValue="1" YValue="10"/>
         <vc:DataPoint XValue="2" YValue="22"/>

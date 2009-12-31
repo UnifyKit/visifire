@@ -141,6 +141,14 @@ namespace Visifire.Charts
             Render();
         }
 
+        
+        public object Containt
+        {
+            get;
+            set;
+
+        }
+
         #endregion
 
         #region Public Properties

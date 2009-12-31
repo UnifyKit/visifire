@@ -58,7 +58,7 @@ namespace Visifire.Charts
         public Title()
         {
             SetDefaultStyle();
-            
+
             //Bind();
         }
 
@@ -161,7 +161,7 @@ namespace Visifire.Charts
             typeof(String),
             typeof(Title),
             new PropertyMetadata(OnHrefChanged));
-        
+
         /// <summary>
         /// FontSizeProperty changed call back function
         /// </summary>
@@ -171,7 +171,7 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalFontSize = (Double)e.NewValue;
-            title.FirePropertyChanged("FontSize");
+            title.FirePropertyChanged(VcProperties.FontSize);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(Title),
             new PropertyMetadata(OnFontColorPropertyChanged));
-         
+
 #if SL
         /// <summary>
         /// Identifies the Visifire.Charts.Title.FontSize dependency property.
@@ -524,7 +524,7 @@ namespace Visifire.Charts
         /// </summary>
         [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
         public Nullable<Boolean> Enabled
-        {   
+        {
             get
             {
                 if ((Nullable<Boolean>)GetValue(EnabledProperty) == null)
@@ -543,7 +543,7 @@ namespace Visifire.Charts
         /// Get or set the HrefTarget property of title
         /// </summary>
         public HrefTargets HrefTarget
-        {   
+        {
             get
             {
                 return (HrefTargets)GetValue(HrefTargetProperty);
@@ -561,7 +561,7 @@ namespace Visifire.Charts
         {
             get
             {
-                return (String) GetValue(HrefProperty);
+                return (String)GetValue(HrefProperty);
             }
             set
             {
@@ -575,17 +575,17 @@ namespace Visifire.Charts
         public new Double Opacity
         {
             get
-            {   
+            {
                 return (Double)GetValue(OpacityProperty);
             }
             set
-            {   
+            {
 #if SL
                 if (Opacity != value)
                 {
                     InternalOpacity = value;
                     SetValue(OpacityProperty, value);
-                    FirePropertyChanged("Opacity");
+                    FirePropertyChanged(VcProperties.Opacity);
                 }
 #else
                 SetValue(OpacityProperty, value);
@@ -599,7 +599,7 @@ namespace Visifire.Charts
         internal Double InternalOpacity
         {
             get
-            {   
+            {
                 return (Double)(Double.IsNaN(_internalOpacity) ? GetValue(OpacityProperty) : _internalOpacity);
             }
             set
@@ -622,13 +622,13 @@ namespace Visifire.Charts
             set
             {
                 if (base.Cursor != value)
-                {   
+                {
                     base.Cursor = value;
-                    FirePropertyChanged("Cursor");
+                    FirePropertyChanged(VcProperties.Cursor);
                 }
             }
         }
-                
+
         #region Font Properties
 
         /// <summary>
@@ -640,34 +640,34 @@ namespace Visifire.Charts
             {
                 FontFamily retVal;
                 if (_internalFontFamily == null)
-                   retVal = (FontFamily)GetValue(FontFamilyProperty);
+                    retVal = (FontFamily)GetValue(FontFamilyProperty);
                 else
-                   retVal =_internalFontFamily;
+                    retVal = _internalFontFamily;
 
-                return(retVal == null)? new FontFamily("Verdana") : (FontFamily)GetValue(FontFamilyProperty);
+                return (retVal == null) ? new FontFamily("Verdana") : (FontFamily)GetValue(FontFamilyProperty);
             }
             set
             {
-#if SL          
+#if SL
                 if (InternalFontFamily != value)
                 {
                     _internalFontFamily = value;
                     SetValue(FontFamilyProperty, value);
-                    FirePropertyChanged("FontFamily");
+                    FirePropertyChanged(VcProperties.FontFamily);
                 }
 #else           
                 SetValue(FontFamilyProperty, value);
-#endif          
+#endif
             }
         }
-        
+
         /// <summary>
         /// Get or set the FontFamily property of title
         /// </summary>
         internal FontFamily InternalFontFamily
         {
             get
-            {   
+            {
                 FontFamily retVal;
 
                 if (_internalFontFamily == null)
@@ -695,16 +695,16 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL          
+#if SL
                 if (FontSize != value)
                 {
                     InternalFontSize = value;
                     SetValue(FontSizeProperty, value);
-                    FirePropertyChanged("FontSize");
+                    FirePropertyChanged(VcProperties.FontSize);
                 }
 #else           
                 SetValue(FontSizeProperty, value);
-#endif          
+#endif
             }
         }
 
@@ -712,20 +712,20 @@ namespace Visifire.Charts
         /// Get or set the FontSize property of title
         /// </summary>
         internal Double InternalFontSize
-        {   
+        {
             get
-            {   
+            {
                 if (Double.IsNaN(_internalFontSize))
                     return ((Double)GetValue(FontSizeProperty) == 0) ? 10 : (Double)GetValue(FontSizeProperty);
                 else
-                   return (_internalFontSize == 0) ? 10 : _internalFontSize;
+                    return (_internalFontSize == 0) ? 10 : _internalFontSize;
             }
             set
-            {   
+            {
                 _internalFontSize = value;
             }
         }
-        
+
         private Double _internalFontSize = Double.NaN;
         private FontFamily _internalFontFamily = null;
 
@@ -762,10 +762,10 @@ namespace Visifire.Charts
             {
 #if SL
                 if (InternalFontStyle != value)
-                {   
+                {
                     _internalFontStyle = value;
                     SetValue(FontStyleProperty, value);
-                    UpdateVisual("FontStyle", value);
+                    UpdateVisual(VcProperties.FontStyle, value);
                 }
 #else           
                 SetValue(FontStyleProperty, value);
@@ -778,7 +778,7 @@ namespace Visifire.Charts
         /// </summary>
 #if WPF
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
-#endif  
+#endif
         internal FontStyle InternalFontStyle
         {
             get
@@ -813,7 +813,7 @@ namespace Visifire.Charts
                 {
                     _internalFontWeight = value;
                     SetValue(FontWeightProperty, value);
-                    UpdateVisual("FontWeight", value);
+                    UpdateVisual(VcProperties.FontWeight, value);
                 }
 #else
                 SetValue(FontWeightProperty, value);
@@ -831,7 +831,7 @@ namespace Visifire.Charts
         {
             get
             {
-                return(FontWeight)((_internalFontWeight == null) ? GetValue(FontWeightProperty):_internalFontWeight);
+                return (FontWeight)((_internalFontWeight == null) ? GetValue(FontWeightProperty) : _internalFontWeight);
             }
             set
             {
@@ -848,14 +848,14 @@ namespace Visifire.Charts
         {
             get
             {
-                return (GetValue(TextProperty) == null) ? "": (String)GetValue(TextProperty);
+                return (GetValue(TextProperty) == null) ? "" : (String)GetValue(TextProperty);
             }
             set
             {
                 SetValue(TextProperty, value);
             }
         }
-        
+
         #endregion
 
         #region Border Properties
@@ -891,14 +891,14 @@ namespace Visifire.Charts
                 {
                     _borderThickness = value;
                     SetValue(BorderThicknessProperty, value);
-                    FirePropertyChanged("BorderThickness");
+                    FirePropertyChanged(VcProperties.BorderThickness);
                 }
 #else           
                 SetValue(BorderThicknessProperty, value);
 #endif
             }
         }
-        
+
         /// <summary>
         /// Get or set the BorderThickness of title
         /// </summary>
@@ -915,7 +915,7 @@ namespace Visifire.Charts
         }
 
         Nullable<Thickness> _borderThickness = null;
-        
+
         /// <summary>
         /// Get or set the CornerRadius property of title
         /// </summary>
@@ -954,7 +954,7 @@ namespace Visifire.Charts
                 {
                     _internalBackground = value;
                     SetValue(BackgroundProperty, value);
-                    UpdateVisual("Background", value);
+                    UpdateVisual(VcProperties.Background, value);
                     // FirePropertyChanged("Background");
                 }
 #else           
@@ -988,17 +988,17 @@ namespace Visifire.Charts
         public new HorizontalAlignment HorizontalAlignment
         {
             get
-            {   
+            {
                 return (HorizontalAlignment)GetValue(HorizontalAlignmentProperty);
             }
             set
             {
-#if SL          
+#if SL
                 if (HorizontalAlignment != value)
                 {
                     InternalHorizontalAlignment = value;
                     SetValue(HorizontalAlignmentProperty, value);
-                    FirePropertyChanged("HorizontalAlignment");
+                    FirePropertyChanged(VcProperties.HorizontalAlignment);
                 }
 #else           
                 SetValue(HorizontalAlignmentProperty, value);
@@ -1016,7 +1016,7 @@ namespace Visifire.Charts
                 return (HorizontalAlignment)((_internalHorizontalAlignment == null) ? GetValue(HorizontalAlignmentProperty) : _internalHorizontalAlignment);
             }
             set
-            {   
+            {
                 _internalHorizontalAlignment = value;
             }
         }
@@ -1039,7 +1039,7 @@ namespace Visifire.Charts
                 {
                     InternalVerticalAlignment = value;
                     SetValue(VerticalAlignmentProperty, value);
-                    FirePropertyChanged("VerticalAlignment");
+                    FirePropertyChanged(VcProperties.VerticalAlignment);
                 }
 #else
                  SetValue(VerticalAlignmentProperty, value);
@@ -1053,7 +1053,7 @@ namespace Visifire.Charts
         internal VerticalAlignment InternalVerticalAlignment
         {
             get
-            {   
+            {
                 return (VerticalAlignment)((_internalVerticalAlignment == null) ? GetValue(VerticalAlignmentProperty) : _internalVerticalAlignment);
             }
             set
@@ -1083,7 +1083,7 @@ namespace Visifire.Charts
                 {
                     InternalMargin = value;
                     SetValue(MarginProperty, value);
-                    FirePropertyChanged("Margin");
+                    FirePropertyChanged(VcProperties.Margin);
                 }
 #else
                 SetValue(MarginProperty, value);
@@ -1095,7 +1095,7 @@ namespace Visifire.Charts
         /// Get or set the Margin property of title
         /// </summary>
         internal Thickness InternalMargin
-        {   
+        {
             get
             {
                 return (Thickness)((_internalMargin == null) ? GetValue(MarginProperty) : _internalMargin);
@@ -1121,10 +1121,10 @@ namespace Visifire.Charts
             {
 #if SL
                 if (Padding != value)
-                {   
+                {
                     InternalPadding = value;
                     SetValue(PaddingProperty, value);
-                    FirePropertyChanged("Padding");
+                    FirePropertyChanged(VcProperties.Padding);
                 }
 #else
                 SetValue(PaddingProperty, value);
@@ -1142,7 +1142,7 @@ namespace Visifire.Charts
                 return (Thickness)((_internalPadding == null) ? GetValue(PaddingProperty) : _internalPadding);
             }
             set
-            {   
+            {
                 _internalPadding = value;
             }
         }
@@ -1231,7 +1231,7 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
         private new Brush Foreground
         {
             get;
@@ -1270,7 +1270,7 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("Enabled");
+            title.FirePropertyChanged(VcProperties.Enabled);
         }
 
         /// <summary>
@@ -1281,7 +1281,7 @@ namespace Visifire.Charts
         private static void OnHrefTargetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("HrefTarget");
+            title.FirePropertyChanged(VcProperties.HrefTarget);
         }
 
         /// <summary>
@@ -1290,9 +1290,9 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnHrefChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Title title = d as Title;
-            title.FirePropertyChanged("Href");
+            title.FirePropertyChanged(VcProperties.Href);
         }
 
 
@@ -1308,12 +1308,12 @@ namespace Visifire.Charts
             if (e.NewValue == null || e.OldValue == null)
             {
                 title.InternalFontFamily = (FontFamily)e.NewValue;
-                title.FirePropertyChanged("FontFamily");
+                title.FirePropertyChanged(VcProperties.FontFamily);
             }
             else if (e.NewValue.ToString() != e.OldValue.ToString())
             {
                 title.InternalFontFamily = (FontFamily)e.NewValue;
-                title.FirePropertyChanged("FontFamily");
+                title.FirePropertyChanged(VcProperties.FontFamily);
             }
         }
 
@@ -1326,9 +1326,9 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalOpacity = (Double)e.NewValue;
-            title.FirePropertyChanged("Opacity");
+            title.FirePropertyChanged(VcProperties.Opacity);
         }
-        
+
         /// <summary>
         /// FontColorProperty changed call back function
         /// </summary>
@@ -1337,8 +1337,8 @@ namespace Visifire.Charts
         private static void OnFontColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.InternalFontColor = (Brush) e.NewValue;
-            title.UpdateVisual("FontColor", e.NewValue);
+            title.InternalFontColor = (Brush)e.NewValue;
+            title.UpdateVisual(VcProperties.FontColor, e.NewValue);
         }
 
         /// <summary>
@@ -1350,7 +1350,7 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalFontStyle = (FontStyle)e.NewValue;
-            title.UpdateVisual("FontStyle",  e.NewValue);
+            title.UpdateVisual(VcProperties.FontStyle, e.NewValue);
         }
 
         /// <summary>
@@ -1362,7 +1362,7 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalFontWeight = (FontWeight)e.NewValue;
-            title.UpdateVisual("FontWeight", e.NewValue);
+            title.UpdateVisual(VcProperties.FontWeight, e.NewValue);
         }
 
 #if WPF
@@ -1376,21 +1376,21 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Title title = d as Title;
-            title.FirePropertyChanged("Text");
+            title.FirePropertyChanged(VcProperties.Text);
         }
-        
+
         /// <summary>
         /// BorderColorProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {   
+        {
             Title title = d as Title;
             // title.FirePropertyChanged("BorderColor");
-            title.UpdateVisual("BorderColor", e.NewValue);
+            title.UpdateVisual(VcProperties.BorderColor, e.NewValue);
         }
 
         /// <summary>
@@ -1402,9 +1402,9 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalBorderThickness = (Thickness)e.NewValue;
-            title.FirePropertyChanged("BorderThickness");
+            title.FirePropertyChanged(VcProperties.BorderThickness);
         }
-        
+
         /// <summary>
         /// CornerRadiusProperty changed call back function
         /// </summary>
@@ -1413,7 +1413,7 @@ namespace Visifire.Charts
         private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("CornerRadius");
+            title.FirePropertyChanged(VcProperties.CornerRadius);
         }
 
         /// <summary>
@@ -1425,7 +1425,7 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title._internalBackground = (Brush)e.NewValue;
-            title.UpdateVisual("Background", e.NewValue);
+            title.UpdateVisual(VcProperties.Background, e.NewValue);
         }
 
         /// <summary>
@@ -1436,8 +1436,8 @@ namespace Visifire.Charts
         private static void OnHorizontalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.InternalHorizontalAlignment = (HorizontalAlignment) e.NewValue;
-            title.FirePropertyChanged("HorizontalAlignment");
+            title.InternalHorizontalAlignment = (HorizontalAlignment)e.NewValue;
+            title.FirePropertyChanged(VcProperties.HorizontalAlignment);
         }
         /// <summary>
         /// VerticalAlignmentProperty changed call back function
@@ -1447,8 +1447,8 @@ namespace Visifire.Charts
         private static void OnVerticalAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.InternalVerticalAlignment = (VerticalAlignment) e.NewValue;
-            title.FirePropertyChanged("VerticalAlignment");
+            title.InternalVerticalAlignment = (VerticalAlignment)e.NewValue;
+            title.FirePropertyChanged(VcProperties.VerticalAlignment);
         }
 
         /// <summary>
@@ -1460,7 +1460,7 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalMargin = (Thickness)e.NewValue;
-            title.FirePropertyChanged("Margin");
+            title.FirePropertyChanged(VcProperties.Margin);
         }
         /// <summary>
         /// PaddingProperty changed call back function
@@ -1471,9 +1471,9 @@ namespace Visifire.Charts
         {
             Title title = d as Title;
             title.InternalPadding = (Thickness)e.NewValue;
-            title.FirePropertyChanged("Padding");
+            title.FirePropertyChanged(VcProperties.Padding);
         }
-       
+
         /// <summary>
         /// TextAlignmentProperty changed call back function
         /// </summary>
@@ -1482,9 +1482,9 @@ namespace Visifire.Charts
         private static void OnTextAlignmentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("TextAlignment");
+            title.FirePropertyChanged(VcProperties.TextAlignment);
         }
-        
+
         /// <summary>
         /// DockInsidePlotAreaProperty changed call back function
         /// </summary>
@@ -1493,7 +1493,7 @@ namespace Visifire.Charts
         private static void OnDockInsidePlotAreaPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Title title = d as Title;
-            title.FirePropertyChanged("DockInsidePlotArea");
+            title.FirePropertyChanged(VcProperties.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -1522,13 +1522,13 @@ namespace Visifire.Charts
         /// <param name="title">Title</param>
         /// <returns>Boolean</returns>
         private static Boolean ApplyProperties(Title title)
-        {   
+        {
             if (title.Visual != null)
             {
                 // Set TextElement properties 
 #if WPF
                 title.Visual.FlowDirection = FlowDirection.LeftToRight;
-#endif          
+#endif
                 title.TextElement.FontFamily = title.InternalFontFamily;
 
                 title.TextElement.FontSize = title.InternalFontSize;
@@ -1537,7 +1537,7 @@ namespace Visifire.Charts
                 //fbinding.Source = title;
                 //fbinding.Mode = BindingMode.TwoWay;
                 //title.TextElement.SetBinding(TextBlock.FontSizeProperty, fbinding);
-                
+
                 title.TextElement.FontStyle = title.InternalFontStyle;
                 title.TextElement.FontWeight = title.InternalFontWeight;
                 title.TextElement.Text = GetFormattedMultilineText(title.Text);
@@ -1560,7 +1560,7 @@ namespace Visifire.Charts
                 title.Visual.Margin = title.InternalMargin;
                 title.Visual.Padding = title.InternalPadding;
                 title.Visual.CornerRadius = title.CornerRadius;
-                title.Visual.Cursor = (title.Cursor == null)? Cursors.Arrow : title.Cursor;
+                title.Visual.Cursor = (title.Cursor == null) ? Cursors.Arrow : title.Cursor;
                 title.Visual.SetValue(Canvas.ZIndexProperty, title.GetValue(Canvas.ZIndexProperty));
 
                 title.AttachToolTip(title.Chart, title, title.TextElement);
@@ -1581,9 +1581,9 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
         /// <param name="value">Value of the property</param>
-        internal override void UpdateVisual(String propertyName, Object value)
+        internal override void UpdateVisual(VcProperties propertyName, Object value)
         {
-            if (propertyName == "Background")
+            if (propertyName == VcProperties.Background)
             {
                 if (Visual != null)
                 {
@@ -1595,7 +1595,7 @@ namespace Visifire.Charts
                 else
                     this.FirePropertyChanged(propertyName);
             }
-            else if (propertyName == "BorderColor")
+            else if (propertyName == VcProperties.BorderColor)
             {
                 if (Visual != null)
                 {
@@ -1631,18 +1631,18 @@ namespace Visifire.Charts
         internal void SetTextAlignment4TopAndBottom()
         {
             switch (TextAlignment)
-            {   
+            {
                 case TextAlignment.Left: InnerCanvas.HorizontalAlignment = HorizontalAlignment.Left; break;
                 case TextAlignment.Center: InnerCanvas.HorizontalAlignment = HorizontalAlignment.Center; break;
                 case TextAlignment.Right: InnerCanvas.HorizontalAlignment = HorizontalAlignment.Right; break;
             }
         }
-        
+
         /// <summary>
         /// Creates the Title visual object
         /// </summary>
         internal void CreateVisualObject(ElementData tag)
-        {   
+        {
             if (!(Boolean)Enabled)
                 return;
 
@@ -1668,13 +1668,13 @@ namespace Visifire.Charts
             if (InternalVerticalAlignment == VerticalAlignment.Center || InternalVerticalAlignment == VerticalAlignment.Stretch)
             {
                 if (InternalHorizontalAlignment == HorizontalAlignment.Left || InternalHorizontalAlignment == HorizontalAlignment.Right)
-                {   
+                {
                     RotateTransform rt = new RotateTransform();
 
                     rt.Angle = 270;
                     TextElement.RenderTransformOrigin = new Point(0, 0);
                     TextElement.RenderTransform = rt;
-                    
+
                     InnerCanvas.Height = TextBlockDesiredSize.Width;
                     InnerCanvas.Width = TextBlockDesiredSize.Height;
 
@@ -1720,7 +1720,7 @@ namespace Visifire.Charts
         /// Whether the default style is applied
         /// </summary>
         private static Boolean _defaultStyleKeyApplied;
-#endif 
+#endif
         #endregion Data
     }
 }

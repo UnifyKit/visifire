@@ -35,11 +35,11 @@ using System.Windows.Media.Animation;
 using System.Collections.Generic;
 #endif
 
-using System.Linq;
 using Visifire.Commons;
+using System.Linq;
 
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Visifire.Charts.PointChart class
     /// </summary>
@@ -84,7 +84,7 @@ namespace Visifire.Charts
         /// <param name="height">Height of the chart canvas</param>
         /// <returns>Storyboard</returns>
         private static Storyboard ApplyPointChartAnimation(DataSeries currentDataSeries, Panel pointGrid, Storyboard storyboard, Double width, Double height)
-        {
+        {   
 #if WPF
             if (storyboard != null && storyboard.GetValue(System.Windows.Media.Animation.Storyboard.TargetProperty) != null)
                 storyboard.Stop();
@@ -132,6 +132,132 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        // Canvas bubleChartCanvas, DataPoint dataPoint, Double minimumZVal, Double maximumZVal, Double plotWidth, Double plotHeight
+        private static void CreateOrUpdateAPointDataPoint(Canvas pointChartCanvas, DataPoint dataPoint, Double plotAreaWidth, Double plotAreaHeight)
+        {   
+            Faces dpFaces = dataPoint.Faces;
+
+            // Remove preexisting dataPoint visual and label visual
+            if (dpFaces != null && dpFaces.Visual != null && pointChartCanvas == dpFaces.Visual.Parent)
+            {
+                pointChartCanvas.Children.Remove(dataPoint.Faces.Visual);
+                //dpFaces = null;
+            }
+
+            dataPoint.Faces = null;
+            dpFaces = new Faces();
+
+            if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
+                return;
+            
+            Chart chart = dataPoint.Chart as Chart;
+            PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
+
+            Double xPosition = Graphics.ValueToPixelPosition(0, plotAreaWidth, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+            Double yPosition = Graphics.ValueToPixelPosition(plotAreaHeight, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
+
+            Brush markerColor = dataPoint.Color;
+            //markerColor = (chart.View3D ? Graphics.GetLightingEnabledBrush3D(markerColor) :
+            //    ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));
+            
+            markerColor = (chart.View3D ? Graphics.Get3DBrushLighting(dataPoint.Color, (Boolean)dataPoint.LightingEnabled) :
+                ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));
+
+            Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
+            Boolean markerBevel = false;
+            String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
+            Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
+
+            marker.Tag = new ElementData() { Element = dataPoint };
+
+            marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
+            marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
+
+            if (marker.MarkerType != MarkerTypes.Cross)
+            {
+                if (dataPoint.BorderColor != null)
+                    marker.BorderColor = dataPoint.BorderColor;
+            }
+            else
+                marker.BorderColor = markerColor;
+            marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
+
+            if (!String.IsNullOrEmpty(labelText))
+            {
+                marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+                marker.FontSize = (Double)dataPoint.LabelFontSize;
+                marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                marker.FontFamily = dataPoint.LabelFontFamily;
+                marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                marker.TextBackground = dataPoint.LabelBackground;
+
+                marker.TextAlignmentX = AlignmentX.Center;
+                marker.TextAlignmentY = AlignmentY.Center;
+
+                if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
+                {
+                    marker.LabelAngle = dataPoint.LabelAngle;
+                    marker.TextOrientation = Orientation.Vertical;
+
+                    marker.TextAlignmentX = AlignmentX.Center;
+                    marker.TextAlignmentY = AlignmentY.Center;
+
+                    marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
+                }
+
+                marker.CreateVisual();
+
+                if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
+                {
+                    if ((yPosition - marker.TextBlockSize.Height / 2) < 0)
+                        marker.TextAlignmentY = AlignmentY.Bottom;
+                    else if ((yPosition + marker.TextBlockSize.Height / 2) > plotAreaHeight)
+                        marker.TextAlignmentY = AlignmentY.Top;
+
+                    if ((xPosition - marker.TextBlockSize.Width / 2) < 0)
+                        marker.TextAlignmentX = AlignmentX.Right;
+                    else if ((xPosition + marker.TextBlockSize.Width / 2) > plotAreaWidth)
+                        marker.TextAlignmentX = AlignmentX.Left;
+                }
+            }
+
+            //marker.LabelEnabled =(Boolean) dataPoint.LabelEnabled;
+            //marker.TextBackground = dataPoint.LabelBackground;
+            //marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+            //marker.FontSize = (Double)dataPoint.LabelFontSize;
+            //marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+            //marker.FontFamily = dataPoint.LabelFontFamily;
+            //marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+
+            //marker.TextAlignmentX = AlignmentX.Center;
+            //marker.TextAlignmentY = AlignmentY.Center;
+
+            marker.CreateVisual();
+
+            marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+
+            marker.AddToParent(pointChartCanvas, xPosition, yPosition, new Point(0.5, 0.5));
+                        
+            dpFaces.VisualComponents.Add(marker.Visual);
+            dpFaces.Visual = marker.Visual;
+
+            dpFaces.BorderElements.Add(marker.MarkerShape);
+
+            dataPoint.Marker = marker;
+            dataPoint.Faces = dpFaces;
+            
+            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
+            dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
+            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
+            dataPoint.SetCursor2DataPointVisualFaces();
+
+            if (dataPoint.Parent.SelectionEnabled && dataPoint.Selected)
+                dataPoint.Select(true);
+        }
+
         /// <summary>
         /// Get visual object for point chart
         /// </summary>
@@ -143,14 +269,14 @@ namespace Visifire.Charts
         /// <param name="plankDepth">Plank depth</param>
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <returns>Point chart canvas</returns>
-        internal static Canvas GetVisualObjectForPointChart(Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
+        internal static Canvas GetVisualObjectForPointChart(Panel preExistingPanel, Double plotAreaWidth, Double plotAreaHeight, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
         {
-            if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) return null;
+            if (Double.IsNaN(plotAreaWidth) || Double.IsNaN(plotAreaHeight) || plotAreaWidth <= 0 || plotAreaHeight <= 0) return null;
 
-            DataSeries currentDataSeries = null;
+            Canvas visual, pointChartCanvas; // pointChartCanvas holds all points for all series
 
-            Canvas visual = new Canvas() { Width = width, Height = height };
-
+            RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out pointChartCanvas, plotAreaWidth, plotAreaHeight);
+            
             Double depth3d = plankDepth / (plotDetails.Layer3DCount == 0 ? 1 : plotDetails.Layer3DCount) * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1 - (plotDetails.Layer3DCount == 0 ? 0 : 1));
             visual.SetValue(Canvas.TopProperty, visualOffset);
@@ -158,111 +284,27 @@ namespace Visifire.Charts
 
             foreach (DataSeries series in seriesList)
             {
+                series.Faces = new Faces() { Visual = pointChartCanvas };
+
                 if (series.Enabled == false)
                     continue;
-
-                PlotGroup plotGroup = series.PlotGroup;
-
+                
                 foreach (DataPoint dataPoint in series.InternalDataPoints)
                 {
-                    if (Double.IsNaN(dataPoint.InternalYValue) || (dataPoint.Enabled == false))
-                    {
-                        continue;
-                    }
+                    CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotAreaWidth, plotAreaHeight);
 
-                    Double xPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
-                    Double yPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
-
-                    Brush markerColor = dataPoint.Color;
-                    markerColor = (chart.View3D ? Graphics.GetLightingEnabledBrush3D(markerColor) :
-                        ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(markerColor, "Linear", null) : markerColor));
-
-                    Size markerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
-                    Boolean markerBevel = false;
-                    String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
-                    Marker marker = new Marker((MarkerTypes)dataPoint.MarkerType, (Double)dataPoint.MarkerScale, markerSize, markerBevel, markerColor, labelText);
-
-                    marker.Tag = new ElementData() { Element = dataPoint };
-
-                    marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
-                    marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
-                    if (marker.MarkerType != MarkerTypes.Cross)
-                    {
-                        if (dataPoint.BorderColor != null)
-                            marker.BorderColor = dataPoint.BorderColor;
-                    }
-                    else
-                        marker.BorderColor = markerColor;
-                    marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
-
-                    if (!String.IsNullOrEmpty(labelText))
-                    {
-                        marker.FontColor = Chart.CalculateDataPointLabelFontColor(chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
-                        marker.FontSize = (Double)dataPoint.LabelFontSize;
-                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-                        marker.FontFamily = dataPoint.LabelFontFamily;
-                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                        marker.TextBackground = dataPoint.LabelBackground;
-
-                        marker.TextAlignmentX = AlignmentX.Center;
-                        marker.TextAlignmentY = AlignmentY.Center;
-
-                        if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
-                        {
-                            marker.LabelAngle = dataPoint.LabelAngle;
-                            marker.TextOrientation = Orientation.Vertical;
-
-                            marker.TextAlignmentX = AlignmentX.Center;
-                            marker.TextAlignmentY = AlignmentY.Center;
-
-                            marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
-                        }
-
-                        marker.CreateVisual();
-
-                        if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
-                        {
-                            if ((yPosition - marker.TextBlockSize.Height / 2) < 0)
-                                marker.TextAlignmentY = AlignmentY.Bottom;
-                            else if ((yPosition + marker.TextBlockSize.Height / 2) > height)
-                                marker.TextAlignmentY = AlignmentY.Top;
-
-                            if ((xPosition - marker.TextBlockSize.Width / 2) < 0)
-                                marker.TextAlignmentX = AlignmentX.Right;
-                            else if ((xPosition + marker.TextBlockSize.Width / 2) > width)
-                                marker.TextAlignmentX = AlignmentX.Left;
-                        }
-                    }
-
-                    marker.CreateVisual();
-
-                    marker.Visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
-
-                    marker.AddToParent(visual, xPosition, yPosition, new Point(0.5, 0.5));
-
-                    // Apply animation
-                    if (animationEnabled)
-                    {
+                    // Apply initial animation
+                    if (animationEnabled && dataPoint.Marker != null)
+                    {   
                         if (dataPoint.Parent.Storyboard == null)
                             dataPoint.Parent.Storyboard = new Storyboard();
 
-                        currentDataSeries = dataPoint.Parent;
-
                         // Apply animation to the points
-                        dataPoint.Parent.Storyboard = ApplyPointChartAnimation(currentDataSeries, marker.Visual, dataPoint.Parent.Storyboard, width, height);
+                        dataPoint.Parent.Storyboard = ApplyPointChartAnimation(dataPoint.Parent, dataPoint.Marker.Visual, dataPoint.Parent.Storyboard, plotAreaWidth, plotAreaHeight);
                     }
-
-                    Faces point = new Faces();
-                    point.VisualComponents.Add(marker.Visual);
-                    point.Visual = marker.Visual;
-
-                    point.BorderElements.Add(marker.MarkerShape);
-
-                    dataPoint.Marker = marker;
-                    dataPoint.Faces = point;
                 }
             }
-            
+
             Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
                                         where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
                                         select tick.TickLength).Sum();
@@ -293,10 +335,319 @@ namespace Visifire.Charts
                                      select c).Count();
 
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, width + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, height + chart.ChartArea.PLANK_DEPTH + tickLengthOfAxisX + 4);
+            clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, plotAreaWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotAreaHeight + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + tickLengthOfAxisX + 4);
             visual.Clip = clipRectangle;
 
             return visual;
+        }
+
+
+        public static void Update(ObservableObject sender, VcProperties property, object newValue, Boolean isAxisChanged)
+        {
+            Boolean isDataPoint = sender.GetType().Equals(typeof(DataPoint));
+
+            if (isDataPoint)
+                UpdateDataPoint(sender as DataPoint, property, newValue, isAxisChanged);
+            else
+                UpdateDataSeries(sender as DataSeries, property, newValue, isAxisChanged);
+        }
+
+        private static void UpdateDataSeries(DataSeries dataSeries, VcProperties property, object newValue, Boolean isAxisChanged)
+        {
+            Chart chart = dataSeries.Chart as Chart;
+            switch (property)
+            {
+                case VcProperties.DataPoints:
+                    //case VcProperties.YValues:
+                    chart.ChartArea.RenderSeries();
+                    //Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+
+                    //Double width = chart.ChartArea.ChartVisualCanvas.Width;
+                    //Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+                    //PlotDetails plotDetails = chart.PlotDetails;
+                    //PlotGroup plotGroup = dataSeries.PlotGroup;
+
+                    //List<DataSeries> dataSeriesListInDrawingOrder = plotDetails.SeriesDrawingIndex.Keys.ToList();
+
+                    //List<DataSeries> selectedDataSeries4Rendering = new List<DataSeries>();
+
+                    //RenderAs currentRenderAs = dataSeries.RenderAs;
+
+                    //Int32 currentDrawingIndex = plotDetails.SeriesDrawingIndex[dataSeries];
+
+                    //for (Int32 i = 0; i < chart.InternalSeries.Count; i++)
+                    //{
+                    //    if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == plotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
+                    //        selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
+                    //}
+
+                    //if (selectedDataSeries4Rendering.Count == 0)
+                    //    return;
+
+                    //Panel oldPanel = null;
+                    //Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+
+                    //if (chart.ChartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+                    //{   
+                    //    oldPanel = RenderedCanvasList[currentRenderAs];
+                    //}
+
+                    //Panel renderedChart = chart.ChartArea.RenderSeriesFromList(oldPanel, selectedDataSeries4Rendering);
+
+                    //if (oldPanel == null)
+                    //{
+                    //    chart.ChartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+                    //    renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
+                    //    ChartVisualCanvas.Children.Add(renderedChart);
+                    //}
+                    //else
+                    //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
+
+                    break;
+
+                default:
+                    // case VcProperties.Enabled:
+                    foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+                        UpdateDataPoint(dataPoint, property, newValue, isAxisChanged);
+                    break;
+            }
+        }
+
+        //internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
+        //{
+        //    Boolean is3D = chart.View3D;
+        //    ChartArea chartArea = chart.ChartArea;
+        //    Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
+
+        //    // Double width = chart.ChartArea.ChartVisualCanvas.Width;
+        //    // Double height = chart.ChartArea.ChartVisualCanvas.Height;
+
+        //    Panel preExistingPanel = null;
+        //    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
+
+        //    if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
+        //    {
+        //        preExistingPanel = RenderedCanvasList[currentRenderAs];
+        //    }
+
+        //    Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
+
+        //    if (preExistingPanel == null)
+        //    {
+        //        chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
+        //        ChartVisualCanvas.Children.Add(renderedChart);
+        //    }
+        //}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataPoint"></param>
+        /// <param name="property"></param>
+        /// <param name="newValue"></param>
+        /// <param name="isAxisChanged"></param>
+        private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue, Boolean isAxisChanged)
+        {
+            Chart chart = dataPoint.Chart as Chart;
+            PlotDetails plotDetails = chart.PlotDetails;
+            Marker marker = dataPoint.Marker;
+            DataSeries dataSeries = dataPoint.Parent;
+
+            Canvas pointChartCanvas = dataSeries.Faces.Visual as Canvas;
+
+            Double plotHeight = chart.ChartArea.ChartVisualCanvas.Height;
+            Double plotWidth = chart.ChartArea.ChartVisualCanvas.Width;
+            ColumnChart.UpdateParentVisualCanvasSize(chart, pointChartCanvas);
+
+            if (property == VcProperties.Enabled)
+            {
+                CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
+                return;
+            }
+
+            if (dataPoint.Faces == null)
+                return;
+
+            Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
+            
+            switch (property)
+            {
+                case VcProperties.Bevel:
+                    break;
+
+                case VcProperties.Cursor:
+                    break;
+
+                case VcProperties.Href:
+                    dataPoint.SetHref2DataPointVisualFaces();
+                    break;
+
+                case VcProperties.HrefTarget:
+                    dataPoint.SetHref2DataPointVisualFaces();
+                    break;
+
+                case VcProperties.LabelBackground:
+                    if (marker != null)
+                        marker.TextBackground = dataPoint.LabelBackground;
+                    break;
+
+                case VcProperties.LabelEnabled:
+                    CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
+                    //if (marker != null)
+                    //    marker.LabelEnabled = (Boolean)dataPoint.LabelEnabled;
+                    break;
+
+                case VcProperties.LabelFontColor:
+                    if (marker != null)
+                        marker.FontColor = dataPoint.LabelFontColor;
+
+                    break;
+
+                case VcProperties.LabelFontFamily:
+                    if (marker != null)
+                        marker.FontFamily = dataPoint.LabelFontFamily;
+                    break;
+
+                case VcProperties.LabelFontStyle:
+                    if (marker != null)
+                        marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+                    break;
+
+                //case VcProperties.LabelFontSize:
+                //    if (marker != null)
+                //        marker.FontSize = (Double)dataPoint.LabelFontSize;
+                //    break;
+
+                case VcProperties.LabelFontWeight:
+                    if (marker != null)
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    break;
+
+                case VcProperties.LabelAngle:
+                    if (marker != null)
+                        marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+                    break;
+
+                case VcProperties.LegendText:
+                    chart.InvokeRender();
+                    break;
+
+                case VcProperties.Color:
+                case VcProperties.LightingEnabled:
+                    if (marker != null)
+                        marker.MarkerShape.Fill = (chart.View3D ? Graphics.Get3DBrushLighting(dataPoint.Color, (Boolean)dataPoint.LightingEnabled) : ((Boolean)dataPoint.LightingEnabled ? Graphics.GetLightingEnabledBrush(dataPoint.Color, "Linear", null) : dataPoint.Color));
+                    break;
+
+                case VcProperties.MarkerBorderColor:
+                    if (marker != null)
+                        marker.BorderColor = dataPoint.MarkerBorderColor;
+                    break;
+
+                case VcProperties.MarkerBorderThickness:
+                    if (marker != null)
+                        marker.BorderThickness = dataPoint.MarkerBorderThickness.Value.Left;
+                    break;
+
+                case VcProperties.MarkerColor:
+                    if (marker != null)
+                        marker.MarkerFillColor = dataPoint.MarkerColor;
+                    break;
+
+                case VcProperties.LabelFontSize:
+                case VcProperties.LabelStyle:
+                case VcProperties.LabelText:
+                case VcProperties.MarkerScale:
+                case VcProperties.MarkerSize:
+                case VcProperties.MarkerType:
+                    CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
+                    break;
+
+                case VcProperties.ShadowEnabled:
+                    if (marker != null)
+                    {
+                        marker.ShadowEnabled = (Boolean)dataPoint.ShadowEnabled;
+                        marker.ApplyRemoveShadow();
+                    }
+
+                    break;
+
+                case VcProperties.Opacity:
+                    if (marker != null)
+                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                    break;
+
+                case VcProperties.ShowInLegend:
+                    chart.InvokeRender();
+                    break;
+
+                case VcProperties.ToolTipText:
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    break;
+
+                case VcProperties.XValueFormatString:
+                case VcProperties.YValueFormatString:
+                    dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                    CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
+                    break;
+
+                case VcProperties.XValueType:
+                    chart.InvokeRender();
+                    break;
+                    
+                case VcProperties.XValue:
+                case VcProperties.YValue:
+                    if (isAxisChanged)
+                        UpdateDataSeries(dataSeries, property, newValue, false);
+                    else
+                        if (marker != null)
+                        {   
+                            dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
+                            
+                            if((Boolean)dataPoint.LabelEnabled)
+                                marker.Text = dataPoint.TextParser(dataPoint.LabelText);
+                            
+                            BubbleChart.UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
+                        }
+
+                    break;
+            }
+
+            if (pointChartCanvas.Parent != null)
+            {
+                Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
+                                            where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
+                                            select tick.TickLength).Sum();
+
+                if (tickLengthOfAxisX == 0)
+                    tickLengthOfAxisX = 5;
+
+                Double tickLengthOfPrimaryAxisY = (from axis in chart.AxesY
+                                                   where axis.AxisType == AxisTypes.Primary
+                                                   from tick in axis.Ticks
+                                                   where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                                   select tick.TickLength).Sum();
+
+                if (tickLengthOfPrimaryAxisY == 0)
+                    tickLengthOfPrimaryAxisY = 8;
+
+                Double tickLengthOfSecondaryAxisY = (from axis in chart.AxesY
+                                                     where axis.AxisType == AxisTypes.Secondary
+                                                     from tick in axis.Ticks
+                                                     where (Boolean)axis.Enabled && (Boolean)tick.Enabled
+                                                     select tick.TickLength).Sum();
+
+                if (tickLengthOfSecondaryAxisY == 0)
+                    tickLengthOfSecondaryAxisY = 8;
+
+                Double plotGroupCount = (from c in chart.PlotDetails.PlotGroups
+                                         where c.AxisY.AxisType == AxisTypes.Secondary
+                                         select c).Count();
+
+                RectangleGeometry clipRectangle = new RectangleGeometry();
+                clipRectangle.Rect = new Rect(-tickLengthOfPrimaryAxisY, -chart.ChartArea.PLANK_DEPTH - 4, plotWidth + tickLengthOfSecondaryAxisY + (plotGroupCount > 0 ? tickLengthOfPrimaryAxisY : 8) + chart.ChartArea.PLANK_OFFSET, plotHeight + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + tickLengthOfAxisX + 4);
+                (pointChartCanvas.Parent as Canvas).Clip = clipRectangle;
+            }
         }
 
         #endregion
@@ -309,4 +660,4 @@ namespace Visifire.Charts
 
         #endregion
     }
-    }
+}

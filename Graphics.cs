@@ -29,6 +29,107 @@ using Visifire.Commons;
 
 namespace Visifire.Charts
 {
+    public enum Face3DType
+    {
+        FrontFace,
+        BackFace,
+        LeftFace,
+        RightFace,
+        BottomFace
+    }
+
+    public class Area3DDataPointFace
+    {
+        public Area3DDataPointFace(Double depth3D)
+        {   
+            _depth3D = depth3D;
+            _frontFacePoints = new PointCollection();
+        }
+
+        /// <summary>
+        /// 3D depth
+        /// </summary>
+        public Double Depth3d
+        {
+            get
+            {   
+                return _depth3D;
+            }
+        }
+
+        /// <summary>
+        /// Set or get points for front face
+        /// </summary>
+        public PointCollection FrontFacePoints
+        {
+            get
+            {   
+                return _frontFacePoints;
+            }
+            set
+            {   
+                _frontFacePoints = value;
+            }
+        }
+        
+        /// <summary>
+        /// Calculates the points for back face
+        /// </summary>
+        public void CalculateBackFacePoints()
+        {
+            _backFacePoints = new PointCollection();
+
+            foreach(Point point in _frontFacePoints)
+                _backFacePoints.Add(new Point(point.X + _depth3D, point.Y - _depth3D));
+        }
+
+        /// <summary>
+        /// Returns points present in at the back face.
+        /// You must call CalculateBackFacePoints() befor you access BackFacePoints property
+        /// </summary>
+        public PointCollection BackFacePoints
+        {
+            get
+            {   
+                return _backFacePoints;
+            }
+        }
+
+        // Returns points to draw a Face returns except the first point of the FrontFacePoints
+        public PointCollection GetFacePoints()
+        {   
+            PointCollection collection = new PointCollection();
+            
+            for(int i = 1; i < _frontFacePoints.Count; i++)
+                collection.Add(_frontFacePoints[i]);
+
+            for(int i = _backFacePoints.Count -1; i >= 0; i--)
+                collection.Add(_backFacePoints[i]);
+
+            return collection;
+        }
+
+        public static PathFigure GetPathFigure(Path path)
+        {   
+            PathGeometry pg = path.Data as PathGeometry;
+            return pg.Figures[0];
+        }
+
+        public static LineSegment GetLineSegment(Path path, Int32 index)
+        {   
+            PathGeometry pg = path.Data as PathGeometry;
+            return (pg.Figures[0].Segments[index] as LineSegment);
+        }
+        
+        PointCollection _frontFacePoints;
+        PointCollection _backFacePoints;
+        Double _depth3D;
+
+        public DependencyObject TopFace;
+        public DependencyObject LeftFace;
+        public DependencyObject RightFace;
+    }   
+
     /// <summary>
     /// Visifire.Charts.Faces class
     /// </summary>
@@ -38,56 +139,90 @@ namespace Visifire.Charts
         /// Initializes a new instance of Visifire.Charts.Faces class
         /// </summary>
         public Faces()
-        {
+        {   
             VisualComponents = new List<FrameworkElement>();
             BorderElements = new List<Shape>();
+            BevelElements = new List<FrameworkElement>();
+            LightingElements = new List<FrameworkElement>();
+            ShadowElements = new List<FrameworkElement>();
+            Parts = new List<DependencyObject>();
         }
-
+        
         /// <summary>
         /// Contains references to individual components of the border elements in the visual
         /// </summary>
-        public List<Shape> BorderElements
-        {
-            get;
-            set;
-        }
+        public List<Shape> BorderElements;
+
+        public List<FrameworkElement> BevelElements;
+
+        public List<FrameworkElement> LightingElements;
+
+        public List<FrameworkElement> ShadowElements;
 
         /// <summary>
         /// Contains references to individual components of the elements in the visual
         /// </summary>
-        public List<FrameworkElement> VisualComponents
-        {
-            get;
-            set;
-        }
+        public List<FrameworkElement> VisualComponents;
 
         /// <summary>
         /// Different parts of Visuals. Parts are used while doing partial update
         /// </summary>
-        public List<FrameworkElement> Parts
-        {
-            get;
-            set;
-        }
+        public List<DependencyObject> Parts;
 
         /// <summary>
         /// Visual of faces
         /// </summary>
-        public FrameworkElement Visual
-        {
-            get;
-            set;
-        }
+        public FrameworkElement Visual;
 
         /// <summary>
         /// Label canvas reference for faces
         /// </summary>
-        public Canvas LabelCanvas
+        public Canvas LabelCanvas;
+
+        internal void ClearList(ref List<DependencyObject> listReference)
         {
-            get;
-            set;
+            foreach (FrameworkElement fe in listReference)
+            {
+                Panel parent = fe.Parent as Panel;
+                parent.Children.Remove(fe);
+            }
+
+            listReference.Clear();
         }
 
+        internal void ClearList(ref List<FrameworkElement> listReference)
+        {
+            foreach (FrameworkElement fe in listReference)
+            {
+                Panel parent = fe.Parent  as Panel;
+                parent.Children.Remove(fe);
+            }
+
+            listReference.Clear();
+        }
+
+        public void ClearFronta3DFaces()
+        {
+            Area3DLeftFace = null;
+            Area3DLeftTopFace = null;
+            Area3DRightTopFace = null;
+            Area3DRightFace = null;
+        }
+
+        public Area3DDataPointFace Area3DLeftFace;
+        public Area3DDataPointFace Area3DLeftTopFace;
+        public Area3DDataPointFace Area3DRightTopFace;
+        public Area3DDataPointFace Area3DRightFace;
+        public LineSegment AreaFrontFaceLineSegment;
+        public LineSegment AreaFrontFaceBaseLineSegment; // Zero line segment point for 1st and last DataPoint only
+        public Line BevelLine;
+        public DataPoint PreviousDataPoint;
+        public DataPoint NextDataPoint;
+
+        /// <summary>
+        /// Front faces of area chart(It includes all broken area front faces)
+        /// </summary>
+        public List<Path> FrontFacePaths;
     }
 
     /// <summary>
@@ -103,6 +238,30 @@ namespace Visifire.Charts
         }
 
         #region Static Methods
+
+        internal static void GetBrushesForPlank(out Brush frontBrush, out Brush topBrush, out Brush rightBrush)
+        {
+            List<Color> colors = new List<Color>();
+            colors.Add(Color.FromArgb(125, 134, 134, 134)); // #FF868686
+            colors.Add(Color.FromArgb(255, 210, 210, 210)); // #FFD2D2D2
+            colors.Add(Color.FromArgb(255, 255, 255, 255)); // #FFFFFFFF
+            colors.Add(Color.FromArgb(255, 223, 223, 223)); // #FFDFDFDF
+
+            frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1.844, 1, 0.442 });
+
+            colors = new List<Color>();
+            colors.Add(Color.FromArgb(255, 155, 155, 155));  // #FF8E8787
+            colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
+
+            rightBrush = Graphics.CreateLinearGradientBrush(45, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
+
+            colors = new List<Color>();
+            colors.Add(Color.FromArgb(255, 200, 200, 200));  // #FF8E8787
+            colors.Add(Color.FromArgb(255, 245, 245, 245));  // #FFE8E8E8
+            //colors.Add(Color.FromArgb(255, 232, 227, 227));  // #FFE8E3E3
+
+            topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 1, 0 });
+        }
 
         /// <summary>
         /// Returns dash array for border
@@ -247,6 +406,9 @@ namespace Visifire.Charts
         /// <returns>DoubleCollection</returns>
         public static DoubleCollection CloneCollection(DoubleCollection collection)
         {
+            if (collection == null)
+                return null;
+
             DoubleCollection newCollection = new DoubleCollection();
             foreach (Double value in collection)
                 newCollection.Add(value);
@@ -266,43 +428,42 @@ namespace Visifire.Charts
         /// <param name="xRadius">XRadius as CornerRadius</param>
         /// <param name="yRadius">YRadius as CornerRadius</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
+        public static Rectangle Get2DRectangle(FrameworkElement tagReference, Double width, Double height, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, Brush fill, CornerRadius xRadius, CornerRadius yRadius)
         {
-            Canvas canvas = new Canvas();
+            // Canvas canvas = new Canvas() { Width = width, Height = height };
 
-            Path rectangle = new Path() { Tag = new ElementData() { Element = tagReference } };
-
-            canvas.Width = width;
-            canvas.Height = height;
-
-            rectangle.StrokeThickness = strokeThickness;
-            rectangle.StrokeDashArray = strokeDashArray != null ? CloneCollection(strokeDashArray) : strokeDashArray;
+            Rectangle rectangle = new Rectangle() { Width = width, Height = height, Tag = new ElementData() { Element = tagReference } };
             rectangle.StrokeDashCap = PenLineCap.Flat;
             rectangle.StrokeEndLineCap = PenLineCap.Flat;
             rectangle.StrokeMiterLimit = 1;
             rectangle.StrokeStartLineCap = PenLineCap.Flat;
             rectangle.StrokeLineJoin = PenLineJoin.Bevel;
-
-            if(strokeThickness > 0)
-                rectangle.Stroke = stroke;
-
+            UpdateBorderOf2DRectangle(ref rectangle, strokeThickness, CloneCollection(strokeDashArray), stroke, xRadius, yRadius);
             rectangle.Fill = fill;
 
-            rectangle.Data = GetRectanglePathGeometry(
-                width,
-                height,
-                GetCorrectedRadius(xRadius, width),
-                GetCorrectedRadius(yRadius, height)
-                );
+            // rectangle.Data = GetRectanglePathGeometry(
+            //    width,
+            //    height,
+            //    GetCorrectedRadius(xRadius, width),
+            //    GetCorrectedRadius(yRadius, height)
+            //    );
 
-            rectangle.SetValue(Canvas.TopProperty, (Double)0);
-            rectangle.SetValue(Canvas.LeftProperty, (Double)0);
+            //rectangle.SetValue(Canvas.TopProperty, (Double)0);
+            //rectangle.SetValue(Canvas.LeftProperty, (Double)0);
 
-            canvas.Children.Add(rectangle);
+            //canvas.Children.Add(rectangle);
 
-            return canvas;
+            return rectangle;
         }
 
+        public static void UpdateBorderOf2DRectangle(ref Rectangle rectangle, Double strokeThickness, DoubleCollection strokeDashArray, Brush stroke, CornerRadius xRadius, CornerRadius yRadius)
+        {
+            rectangle.RadiusX = xRadius.TopLeft;
+            rectangle.RadiusY = xRadius.BottomLeft;
+            rectangle.StrokeThickness = strokeThickness;
+            rectangle.StrokeDashArray = strokeDashArray != null ? strokeDashArray : strokeDashArray;
+            rectangle.Stroke = stroke;
+        }
         /// <summary>
         /// Creates and returns a rectangle bevel layer based on the given params
         /// </summary>
@@ -317,7 +478,7 @@ namespace Visifire.Charts
         /// <returns>Canvas</returns>
         public static Canvas Get2DRectangleBevel(FrameworkElement tagReference, Double width, Double height, Double bevelX,Double bevelY, Brush topBrush, Brush leftBrush, Brush rightBrush, Brush bottomBrush)
         {
-            Canvas canvas = new Canvas();
+            Canvas canvas = new Canvas() {IsHitTestVisible = false, Tag = new ElementData() { Element = tagReference, VisualElementName = "Bevel" } };
 
             canvas.Width = width;
             canvas.Height = height;
@@ -370,16 +531,16 @@ namespace Visifire.Charts
         /// <param name="brush2">Brush2</param>
         /// <param name="orientation">Orientation</param>
         /// <returns>Canvas</returns>
-        public static Canvas Get2DRectangleGradiance(FrameworkElement tagReference, Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
+        public static Canvas Get2DRectangleGradiance(Double width, Double height, Brush brush1, Brush brush2, Orientation orientation)
         {
-            Canvas canvas = new Canvas();
+            Canvas canvas = new Canvas() { IsHitTestVisible = false, Tag = new ElementData() { VisualElementName = "LightingCanvas" } };
 
             canvas.Width = width;
             canvas.Height = height;
 
             if (orientation == Orientation.Vertical)
-            {
-                Rectangle rectLeft = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceLeft" } };
+            {   
+                Rectangle rectLeft = new Rectangle();
                 rectLeft.Width = width / 2 ;
                 rectLeft.Height = height;
                 rectLeft.SetValue(Canvas.TopProperty, (Double)0);
@@ -387,7 +548,7 @@ namespace Visifire.Charts
                 rectLeft.Fill = brush1;
                 canvas.Children.Add(rectLeft);
 
-                Rectangle rectRight = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName="GradianceRight" } };
+                Rectangle rectRight = new Rectangle();
                 rectRight.Width = width / 2;
                 rectRight.Height = height;
                 rectRight.SetValue(Canvas.TopProperty, (Double)0);
@@ -397,7 +558,7 @@ namespace Visifire.Charts
             }
             else
             {
-                Rectangle rectTop = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceTop" } };
+                Rectangle rectTop = new Rectangle();
                 rectTop.Width = width;
                 rectTop.Height = height / 2;
                 rectTop.SetValue(Canvas.TopProperty, (Double)0);
@@ -405,7 +566,7 @@ namespace Visifire.Charts
                 rectTop.Fill = brush1;
                 canvas.Children.Add(rectTop);
 
-                Rectangle rectBottom = new Rectangle() { Tag = new ElementData() { Element = tagReference, VisualElementName = "GradianceBottom" } };
+                Rectangle rectBottom = new Rectangle();
                 rectBottom.Width = width;
                 rectBottom.Height = height / 2;
                 rectBottom.SetValue(Canvas.TopProperty, (Double)height / 2);
@@ -449,6 +610,18 @@ namespace Visifire.Charts
             return path;
         }
 
+        public static System.Windows.Media.Effects.DropShadowEffect GetShadowEffect()
+        {
+            return new System.Windows.Media.Effects.DropShadowEffect()
+            {
+                BlurRadius = 5,
+                Direction = -45,
+                ShadowDepth = Chart.SHADOW_DEPTH,
+                Opacity = 0.94,
+                Color = Colors.Gray
+            };
+        }
+
         /// <summary>
         /// Creates and returns a rectangle shadow based on the given params
         /// </summary>
@@ -466,7 +639,7 @@ namespace Visifire.Charts
             CornerRadius radiusX = GetCorrectedRadius(tempXRadius, width/2);
             CornerRadius radiusY = GetCorrectedRadius(tempYRadius, height/2);
 
-            Grid visual = new Grid();
+            Grid visual = new Grid() {IsHitTestVisible = false };
             visual.Height = height;
             visual.Width = width;
 
@@ -520,6 +693,7 @@ namespace Visifire.Commons
     /// <summary>
     /// Visifire.Commons.Graphics class
     /// </summary>
+
     public class Graphics
     {
         /// <summary>
@@ -527,39 +701,15 @@ namespace Visifire.Commons
         /// </summary>
         public Graphics()
         {
+
         }
 
         #region Static Methods
 
         internal static Random RAND = new Random(DateTime.Now.Millisecond);
-
-        public static Brush GetRandonColor()
+        public static Brush GetRandomColor()
         {
             return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
-        }
-
-        internal static Point MidPointOfALine(Point point1, Point point2)
-        {
-            return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
-        }
-
-        internal static Double DistanceBetweenTwoPoints(Point point1, Point point2)
-        {
-            return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
-        }
-
-        internal static Point IntersectingPointOfTwoLines(Point p1, Point p2, Point p3, Point p4)
-        {
-            Double ua = ((p4.X - p3.X) * (p1.Y - p3.Y) - (p4.Y - p3.Y) * (p1.X - p3.X));
-            ua /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
-
-            Double ub = ((p2.X - p1.X) * (p1.Y - p3.Y) - (p2.Y - p1.Y) * (p1.X - p3.X));
-            ub /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
-
-            Double x = p1.X + ua * (p2.X - p1.X);
-            Double y = p1.X + ub * (p2.Y - p1.Y);
-
-            return new Point(x, y);
         }
 
         internal static void DrawPointAt(Point point, Canvas visual, Color fillColor)
@@ -573,45 +723,159 @@ namespace Visifire.Commons
             visual.Children.Add(e);
         }
 
-        internal static Point SecondPointOfIntersectionOfCord(Point center,  Double xRadius, Double yRadius, Point linePointOutSidePie)
-        {
-            Double x = Math.Sqrt(xRadius * xRadius - Math.Pow((linePointOutSidePie.Y + center.Y), 2)) - center.X;
-            Double y = Math.Sqrt(yRadius * yRadius - Math.Pow((linePointOutSidePie.X + center.X), 2)) - center.Y;
-            return  new Point(x,y);
-        }
 
-        internal static Boolean IsPointInside(Point center, Double radius, Point point)
+        internal static bool IntersectionOfTwoStraightLines(Point line1Point1, Point line1Point2,
+            Point line2Point1, Point line2Point2, ref Point intersection)
         {
-            Double distance = Graphics.DistanceBetweenTwoPoints(center, point);
+            // Based on the 2d line intersection method from "comp.graphics.algorithms Frequently Asked Questions"
 
-            if (!Double.IsNaN(distance))
+            /*
+                   (Ay-Cy)(Dx-Cx)-(Ax-Cx)(Dy-Cy)
+               r = -----------------------------  (eqn 1)
+                   (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+            */
+
+            Double q = (line1Point1.Y - line2Point1.Y) * (line2Point2.X -
+          line2Point1.X) - (line1Point1.X - line2Point1.X) * (line2Point2.Y -
+          line2Point1.Y);
+            Double d = (line1Point2.X - line1Point1.X) * (line2Point2.Y -
+          line2Point1.Y) - (line1Point2.Y - line1Point1.Y) * (line2Point2.X -
+          line2Point1.X);
+
+            if (d == 0) // parallel lines so no intersection anywhere in space (in curved space, maybe, but not here in Euclidian space.)
             {
-                if (distance <= radius)
-                    return true;
-                else
-                    return false;
-            }
-            else
                 return false;
+            }
+
+            Double r = q / d;
+
+            /*
+                   (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)
+               s = -----------------------------  (eqn 2)
+                   (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+            */
+
+            q = (line1Point1.Y - line2Point1.Y) * (line1Point2.X - line1Point1.X) -
+          (line1Point1.X - line2Point1.X) * (line1Point2.Y - line1Point1.Y);
+            Double s = q / d;
+
+            /*
+                   If r>1, P is located on extension of AB
+                   If r<0, P is located on extension of BA
+                   If s>1, P is located on extension of CD
+                   If s<0, P is located on extension of DC
+
+                   The above basically checks if the intersection is located at an
+            extrapolated
+                   point outside of the line segments. To ensure the intersection is
+            only within
+                   the line segments then the above must all be false, ie r between 0
+            and 1
+                   and s between 0 and 1.
+            */
+
+            if (r < 0 || r > 1 || s < 0 || s > 1)
+            {
+                return false;
+            }
+
+            /*
+                   Px=Ax+r(Bx-Ax)
+                   Py=Ay+r(By-Ay)
+            */
+
+            intersection.X = line1Point1.X + (int)(0.5f + r * (line1Point2.X - line1Point1.X));
+
+            intersection.Y = line1Point1.Y + (int)(0.5f + r * (line1Point2.Y - line1Point1.Y));
+
+            return true;
         }
 
+        internal static Point MidPointOfALine(Point point1, Point point2)
+        {
+            return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
+        }
+
+        internal static Double DistanceBetweenTwoPoints(Point point1, Point point2)
+        {
+            return (Math.Sqrt(Math.Pow((point1.X - point2.X), 2) + Math.Pow((point1.Y - point2.Y), 2)));
+        }
+
+        internal static Point IntersectingPointOfTwoLines(Point p1, Point p2, Point p3, Point p4)
+        {   
+            Double ua = ((p4.X - p3.X) * (p1.Y - p3.Y) - (p4.Y - p3.Y) * (p1.X - p3.X));
+            ua /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double ub = ((p2.X - p1.X) * (p1.Y - p3.Y) - (p2.Y - p1.Y) * (p1.X - p3.X));
+            ub /= ((p4.Y - p3.Y) * (p2.X - p1.X) - (p4.X - p3.X) * (p2.Y - p1.Y));
+
+            Double x = p1.X + ua * (p2.X - p1.X);
+            Double y = p1.X + ub * (p2.Y - p1.Y);
+
+            return new Point(x, y);
+        }
+        
         /// <summary>
         /// Calculates visual size
         /// </summary>
         /// <param name="visual">Visual as FrameworkElement</param>
         /// <returns>Visual size</returns>
-        internal static Size CalculateVisualSize(FrameworkElement visual)
+        public static Size CalculateVisualSize(FrameworkElement visual)
         {
             Size retVal = new Size(0,0);
 
             if (visual != null)
-            {
+            {   
                 visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 retVal = visual.DesiredSize;
             }
 
             return retVal;
         }
+
+        /// <summary>
+        /// Get 3dBrush with or without lighting for bubble
+        /// </summary>
+        internal static Brush Get3DBrushLighting(Brush solidColorBrush, Boolean lightingEnabled)
+        {   
+            if (solidColorBrush.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                Color color = (solidColorBrush as SolidColorBrush).Color;
+
+                RadialGradientBrush rgb = new RadialGradientBrush()
+                {   
+                    Center = new Point(0.3, 0.3),
+                    RadiusX = 0.93,
+                    RadiusY = 1,
+                    GradientOrigin = new Point(0.2, 0.2)
+                };
+
+                if (color == Colors.Black)
+                {
+                    if(lightingEnabled)
+                        rgb.GradientStops.Add(new GradientStop() { Color = Colors.White, Offset = 0 });
+
+                    rgb.GradientStops.Add(new GradientStop() { Color = Colors.Gray, Offset = 0.1 });
+                    rgb.GradientStops.Add(new GradientStop() { Color = Colors.Black, Offset = 1 });
+                }
+                else
+                {
+                    Color darkerColor = Graphics.GetDarkerColor(color, 0.2);
+
+                    if (lightingEnabled)
+                        rgb.GradientStops.Add(new GradientStop() { Color = Colors.White, Offset = 0 });
+
+                    rgb.GradientStops.Add(new GradientStop() { Color = color, Offset = 0.1 });
+                    rgb.GradientStops.Add(new GradientStop() { Color = darkerColor, Offset = 1 });
+                }
+
+                return rgb;
+            }
+            else
+                return solidColorBrush;
+
+        }
+
 
         /// <summary>
         /// Calculates textblock size
@@ -672,6 +936,21 @@ namespace Visifire.Commons
         }
 
         /// <summary>
+        /// Generate double collection
+        /// </summary>
+        /// <param name="values">Array of double values</param>
+        /// <returns>DoubleCollection</returns>
+        internal static PointCollection GeneratePointCollection(params Point[] points)
+        {
+            PointCollection collection = new PointCollection();
+
+            foreach (Point point in points)
+                collection.Add(point);
+
+            return collection;
+        }
+
+        /// <summary>
         /// Creates and returns a right gradient brush
         /// </summary>
         /// <param name="alpha">Alpha as Int32</param>
@@ -704,16 +983,24 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if(_3dLightingTopBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingTopBrushs[solidBrush.Color];
+                    else
+                    {   
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.85));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.35));
+                        stops.Add(1);
 
-                    return Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        brush = Graphics.CreateLinearGradientBrush(-45, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        _3dLightingTopBrushs.Add(solidBrush.Color, brush);
+
+                        return brush;
+                    }
                 }
                 else if (brush is GradientBrush)
                 {
@@ -742,6 +1029,10 @@ namespace Visifire.Commons
                 return null;
         }
 
+        private static Dictionary<Color, Brush> _3dLightingTopBrushs = new Dictionary<Color, Brush>();
+        private static Dictionary<Color, Brush> _3dLightingRightBrushs = new Dictionary<Color, Brush>();
+        private static Dictionary<Color, Brush> _3dLightingFrontBrushs = new Dictionary<Color, Brush>();
+
         /// <summary>
         /// Creates and returns a right face brush
         /// </summary>
@@ -755,20 +1046,28 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if (_3dLightingRightBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingRightBrushs[solidBrush.Color];
+                    else
+                    {
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.35));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.75));
+                        stops.Add(1);
+                        
+                        brush = Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
 
+                        _3dLightingRightBrushs.Add(solidBrush.Color, brush);
 
-                    return Graphics.CreateLinearGradientBrush(-120, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        return brush;
+                    }
                 }
                 else if (brush is GradientBrush)
-                {
+                {   
                     GradientBrush gradBrush = brush as GradientBrush;
 
                     List<Color> colors = new List<Color>();
@@ -795,7 +1094,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Creates and returns a front face brush
+        /// Creates and returns a Back face brush
         /// </summary>
         /// <param name="brush">Brush</param>
         /// <returns>Brush</returns>
@@ -807,16 +1106,24 @@ namespace Visifire.Commons
                 {
                     SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                    if (_3dLightingFrontBrushs.ContainsKey(solidBrush.Color))
+                        return _3dLightingFrontBrushs[solidBrush.Color];
+                    else
+                    {
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
-                    stops.Add(0);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, 0.65));
+                        stops.Add(0);
 
-                    colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetLighterColor(solidBrush.Color, 0.55));
+                        stops.Add(1);
+                        
+                        brush = Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
 
-                    return Graphics.CreateLinearGradientBrush(-90, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        _3dLightingFrontBrushs.Add(solidBrush.Color, brush);
+                        return brush;
+                    }
                 }
                 else
                 {
@@ -826,6 +1133,8 @@ namespace Visifire.Commons
             else
                 return null;
         }
+
+        
 
         /// <summary>
         /// Creates and returns a left gradient brush
@@ -1041,6 +1350,8 @@ namespace Visifire.Commons
             return GetLightingEnabledBrush(brush, "Linear", new Double[] { 0.65, 0.55 });
         }
 
+        //private static Dictionary<Color, Brush> _lightingColorCache = new Dictionary<Color, Brush>();
+        
         /// <summary>
         /// Creates and returns a lighting brush
         /// </summary>
@@ -1053,26 +1364,37 @@ namespace Visifire.Commons
         {
             if (brush != null)
             {
-                if (typeof(SolidColorBrush).Equals(brush.GetType()))
+                SolidColorBrush solidColorBrush = brush as SolidColorBrush;
+
+                if (solidColorBrush != null)
                 {
-                    if (colorIntensies == null)
-                        colorIntensies = new Double[] { 0.745, 0.99 };
 
-                    SolidColorBrush solidBrush = brush as SolidColorBrush;
+                    //if (_lightingColorCache.ContainsKey(solidColorBrush.Color))
+                    //    return _lightingColorCache[solidColorBrush.Color];
+                    //else
+                    //{
+                        if (colorIntensies == null)
+                            colorIntensies = new Double[] { 0.745, 0.99 };
 
-                    List<Color> colors = new List<Color>();
-                    List<Double> stops = new List<Double>();
+                        SolidColorBrush solidBrush = brush as SolidColorBrush;
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[0]));
-                    stops.Add(0);
+                        List<Color> colors = new List<Color>();
+                        List<Double> stops = new List<Double>();
 
-                    colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[1]));
-                    stops.Add(1);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[0]));
+                        stops.Add(0);
 
-                    if (type == "Radial")
-                        return Graphics.CreateRadialGradientBrush(colors, stops);
-                    else
-                        return Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+                        colors.Add(Graphics.GetDarkerColor(solidBrush.Color, colorIntensies[1]));
+                        stops.Add(1);
+                                                
+                        if (type == "Radial")
+                            brush = Graphics.CreateRadialGradientBrush(colors, stops);
+                        else
+                            brush = Graphics.CreateLinearGradientBrush(angle, new Point(0, 0.5), new Point(1, 0.5), colors, stops);
+
+                       //_lightingColorCache.Add(solidColorBrush.Color, brush);
+                        return brush;
+                    //}
                 }
                 else
                 {   
@@ -1097,6 +1419,7 @@ namespace Visifire.Commons
         {
              return GetLightingEnabledBrush(brush, -90, type, colorIntensies);
         }
+
         
         /// <summary>
         /// Creates and returns a radial gradient brush
@@ -1163,12 +1486,12 @@ namespace Visifire.Commons
             if (intensity < 0.6)
             {
                 //brush = ParseSolidColor("#EFEFEF");
-                brush = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+                brush = AUTO_WHITE_FONT_BRUSH;
             }
             else
             {
                 //brush = ParseSolidColor("#000000");
-                brush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                brush = AUTO_BLACK_FONT_BRUSH;
             }
             return brush;
         }
@@ -1307,7 +1630,7 @@ namespace Visifire.Commons
             Brush brush;
 
             if (lightingEnabled)
-            {   
+            {
                 String xaml = String.Format(@"<LinearGradientBrush EndPoint=""0.5,1"" StartPoint=""0.5,0"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
                                                 <GradientStop Color=""#A0FFFFFF"" Offset=""0""/>
                                                 <GradientStop Color=""#00FFFFFF"" Offset=""1""/>
@@ -1320,8 +1643,8 @@ namespace Visifire.Commons
 #endif
             }
             else
-                brush = new SolidColorBrush(Colors.Transparent);
-            
+                brush = Graphics.TRANSPARENT_BRUSH;
+
             return brush;
         }
 
@@ -1329,8 +1652,120 @@ namespace Visifire.Commons
 
         #region Constants
 
-        public static Brush BLACK_BRUSH = new SolidColorBrush(Colors.Black);
-        public static Brush RED_BRUSH = new SolidColorBrush(Colors.Red);
+
+        public static Brush AUTO_WHITE_FONT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _AUTO_WHITE_FONT_BRUSH;
+#else
+                return new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+#endif
+
+             }
+        }
+
+        public static Brush AUTO_BLACK_FONT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _AUTO_BLACK_FONT_BRUSH;
+#else
+                return new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+#endif
+
+             }
+        }
+
+        public static Brush GRAY_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _GRAY_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Gray);
+#endif
+
+             }
+        }
+
+        public static Brush BLACK_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _BLACK_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Black);
+#endif
+
+             }
+        }
+
+        public static Brush RED_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _RED_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Red);
+#endif
+
+             }
+        }
+
+        public static Brush ORANGE_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _ORANGE_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Orange);
+#endif
+
+             }
+        }
+
+        
+        public static Brush WHITE_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _WHITE_BRUSH;
+#else
+                return new SolidColorBrush(Colors.White);
+#endif
+
+             }
+        }
+
+        public static Brush TRANSPARENT_BRUSH
+        {
+             get
+             {
+#if SL
+                 return _TRANSPARENT_BRUSH;
+#else
+                return new SolidColorBrush(Colors.Transparent);
+#endif
+
+             }
+        }
+
+        private static Brush _AUTO_WHITE_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 239, 239, 239));
+        private static Brush _AUTO_BLACK_FONT_BRUSH = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+        private static Brush _GRAY_BRUSH = new SolidColorBrush(Colors.Gray);
+        private static Brush _BLACK_BRUSH = new SolidColorBrush(Colors.Black);
+        private static Brush _RED_BRUSH = new SolidColorBrush(Colors.Red);
+        private static Brush _ORANGE_BRUSH = new SolidColorBrush(Colors.Orange);
+        private static Brush _WHITE_BRUSH = new SolidColorBrush(Colors.White);
+        private static Brush _TRANSPARENT_BRUSH = new SolidColorBrush(Colors.Transparent);
 
         /// <summary>
         /// Array of font sizes
@@ -1340,3 +1775,6 @@ namespace Visifire.Commons
         #endregion
     }
 }
+
+
+

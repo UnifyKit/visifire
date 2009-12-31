@@ -57,7 +57,7 @@ Width="215" Opacity="1" Height="75" HorizontalAlignment="Center" VerticalAlignme
         <Button x:Name="CloseButton" Height="16.667" Width="58" Content="Close" BorderBrush="#FF7D7D7D" BorderThickness="0,0,1,1" FontSize="8" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Canvas.Left="77.372" Canvas.Top="53.36" />
         <TextBlock FontSize="6" Foreground="#FF575656" Text="www.visifire.com" TextWrapping="Wrap" Height="Auto" Width="Auto" Cursor="Hand" Canvas.Left="81.342" Canvas.Top="41.331" />
 			<StackPanel Height="11.334" HorizontalAlignment="Stretch" Margin="0,0,0,0" Width="213.498" Canvas.Top="24.8" >
-				<TextBlock x:Name="Info" FontSize="10" Foreground="#FF000000" Text="Visifire" TextWrapping="Wrap" Height="Auto" Width="Auto" HorizontalAlignment="Center"/>
+				<TextBlock x:Name="Info" FontSize="10" Foreground="#FF000000" Text="Visifire 2.0 Beta" TextWrapping="Wrap" Height="Auto" Width="Auto" HorizontalAlignment="Center"/>
 			</StackPanel>
 		</Canvas>
 </Grid>
