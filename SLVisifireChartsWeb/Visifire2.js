@@ -1,5 +1,5 @@
 /*
-Visifire2.js v2.3.6 beta 2
+Visifire2.js v2.3.6 beta 3
 
 Copyright (C) 2008 Webyog Softworks Private Limited
 
@@ -33,7 +33,7 @@ if (!window.Visifire2) {
     window.Visifire2 = function(pXapPath, pId, pWidth, pHeight, pBackground, pWindowless) {
         this.id = null;                             // Silverlight object id.
         this.logLevel = 1;                          // Determines whether to log or not.
-        this.xapPath = "SL.Visifire.Charts.xap";    // xap file path (default is taken as Visifire.xap in the same directory).
+        this.xapPath = "SL.Visifire.Charts.xap";    // xap file path (default is taken as SL.Visifire.Charts.xap in the same directory).
         this.targetElement = null;                  // Target div element name.
         this.dataXml = null;                        // Chart Xml string.
         this.dataUri = null;                        // Chart xml file uri path.
