@@ -367,11 +367,12 @@ namespace Visifire.Charts
         private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
         {
             Double interval = (Double)Interval; // Interval  for the chart grid
-            Decimal index =0;// = (Decimal)Minimum;   // starting point for the loop that generates grids
+            Decimal index = 0;// = (Decimal)Minimum;   // starting point for the loop that generates grids
             Decimal minVal = (Decimal)Minimum;  // smallest value from where the grid must be drawn
             Decimal maxVal = (Decimal)Maximum;  // largest value from where the grid must be drawn
 
             // gap between two intervals
+            
             Decimal gap = (Decimal)interval;// +(((Nullable<Double>)GetValue(IntervalProperty) == null) ? ParentAxis.SkipOffset : 0); 
             
             //Int32 count = 0;                    // counts the number of lines required for alternate colored bands

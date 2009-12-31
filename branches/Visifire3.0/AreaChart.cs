@@ -774,7 +774,7 @@ namespace Visifire.Charts
 
                             // Start creating front face of 3D area
                             frontFacePath = new Path() { Opacity = currentDataPoint.Parent.Opacity };
-                            // frontFacePath = new Path() { Opacity = 0.5 };
+                            //frontFacePath = new Path() { Opacity = 0.5 };
                             ApplyBorderProperties(frontFacePath, currentDataPoint.Parent);
                             dataSeriesFaces.FrontFacePaths.Add(frontFacePath);
                             frontFacePathGeometry = new PathGeometry();
@@ -2447,12 +2447,19 @@ namespace Visifire.Charts
 
                     Point midPoint = new Point();
 
-                    if (Graphics.IntersectionOfTwoStraightLines(new Point(previusDataPoint._visualPosition.X, plankYPos),
-                        new Point(dataPoint._visualPosition.X, plankYPos),
-                        previusDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint))
+                    if (dataPointFaces.Area3DRightFace == null)
                     {
-                        topFace.FrontFacePoints[1] = midPoint;
+                        if (Graphics.IntersectionOfTwoStraightLines(new Point(previusDataPoint._visualPosition.X, plankYPos),
+                            new Point(dataPoint._visualPosition.X, plankYPos),
+                            previusDataPoint._visualPosition, dataPoint._visualPosition, ref midPoint))
+                        {
+
+                            topFace.FrontFacePoints[1] = midPoint;
+
+                            //Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
+                        }
                     }
+
 
                     //Graphics.DrawPointAt(midPoint, parentVisual, Colors.Green);
                 }
@@ -2508,7 +2515,7 @@ namespace Visifire.Charts
                 parentVisual.Children.Add(sides);
 
                 topFace.TopFace = sides;
-
+                // sides.Fill = new SolidColorBrush(Colors.Red);
                 //dataPointFaces.VisualComponents.Add(sides);
                 //dataPointFaces.Parts.Add(sides);
                 dataSeriesFaces.VisualComponents.Add(sides);
@@ -2552,7 +2559,7 @@ namespace Visifire.Charts
                 parentVisual.Children.Add(sides);
 
                 rightFace.RightFace = sides;
-
+                
                 ApplyBorderProperties(sides, dataSeries);
 
                 //dataPointFaces.VisualComponents.Add(sides);
@@ -2840,7 +2847,7 @@ namespace Visifire.Charts
 
                 case VcProperties.YValue:
 
-                    if (isAxisChanged)
+                    if (isAxisChanged || dataPoint._oldYValue > 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0)
                         UpdateDataSeries(dataSeries, property, newValue);
                     else
                     {
@@ -3115,7 +3122,7 @@ namespace Visifire.Charts
                    // rightTopFacePath.Fill = new SolidColorBrush(Colors.Blue);
 
                     Int32 zIndex = GetAreaZIndex(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, dataPoint.InternalYValue > 0 || isNegative2Negative);
-                    rightTopFacePath.SetValue(Canvas.ZIndexProperty, zIndex);
+                    //rightTopFacePath.SetValue(Canvas.ZIndexProperty, zIndex);
 
                     LineSegment ls = Area3DDataPointFace.GetLineSegment(rightTopFacePath, 0);
                     newPosition = new Point(nextDataPoint._visualPosition.X, nextDataPoint._visualPosition.Y);

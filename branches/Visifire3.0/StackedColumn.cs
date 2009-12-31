@@ -479,7 +479,7 @@ namespace Visifire.Charts
                     dp._oldLabelPosition = new Point((Double)dp.LabelVisual.GetValue(Canvas.LeftProperty), (Double)dp.LabelVisual.GetValue(Canvas.TopProperty));
                     
                 if (dp.Faces != null)
-                {
+                {   
                     dp._oldVisual = dp.Faces.Visual;
                     columnCanvas.Children.Remove(dp._oldVisual);
                 }
@@ -494,7 +494,7 @@ namespace Visifire.Charts
             Boolean isPositive;
 
             if (animationEnabled)
-            {
+            {   
                 // Create new Storyboard for animation
                 if (dataPoint.Storyboard != null)
                 {
@@ -509,26 +509,26 @@ namespace Visifire.Charts
 
                 // Loop through all Datapoints under the PlotGroup of the current DataPoint and apply animation
                 foreach (DataPoint dp in listOfDataPoint)
-                {
+                {   
                     if (dp.Faces == null || dp._oldVisual == null)
                         continue;
 
-                    FrameworkElement newVisual = dp.Faces.Visual;                       // New StackedColumn visual reference of DataPoint
-                    Double oldLeft = (Double)dp._oldVisual.GetValue(Canvas.LeftProperty); // Left of the old visual of the DataPoint
-                    Double newLeft = (Double)newVisual.GetValue(Canvas.LeftProperty);     // Left of the new visual of the DataPoint
-                    Double oldWidth = dp._oldVisual.Width;                            // Width of the old visual of the DataPoint
-                    Double newWidth = newVisual.Width;                                // Width of the new visual of the DataPoint
-                    Double oldScale = oldWidth / newWidth;                            // Scale value for the old DataPoint                       
+                    FrameworkElement newVisual = dp.Faces.Visual;                          // New StackedColumn visual reference of DataPoint
+                    Double oldLeft = (Double)dp._oldVisual.GetValue(Canvas.LeftProperty);  // Left of the old visual of the DataPoint
+                    Double newLeft = (Double)newVisual.GetValue(Canvas.LeftProperty);      // Left of the new visual of the DataPoint
+                    Double oldWidth = dp._oldVisual.Width;                                 // Width of the old visual of the DataPoint
+                    Double newWidth = newVisual.Width;                                     // Width of the new visual of the DataPoint
+                    Double oldScale = oldWidth / newWidth;                                 // Scale value for the old DataPoint                       
 
                     if (dp == dataPoint)
-                    {
+                    {   
                         isPositive = (dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0) ? true :
                             (dataPoint._oldYValue > 0 && dataPoint.InternalYValue < 0) ? false :
                             dp._oldYValue >= 0 ? true : false;
                     }
                     else
                         isPositive = dp.InternalYValue >= 0 ? true : false;
-
+                        
                     if (isPositive)
                         newVisual.RenderTransformOrigin = new Point(0, 0.5);
                     else
@@ -539,14 +539,18 @@ namespace Visifire.Charts
 
                     if (Double.IsInfinity(oldScale) || Double.IsNaN(oldScale))
                         oldScale = 0;
-
+                        
                     if (oldScale != 1)
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(newVisual, "(UIElement.RenderTransform).(ScaleTransform.ScaleX)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { oldScale, 1 }, null);
+                        
+                    if ((isAnimateLeft && oldLeft != newLeft) || dp._oldYValue == dp.InternalYValue && oldLeft != newLeft)
+                    {   
+                        newVisual.SetValue(Canvas.LeftProperty, oldLeft);
 
-                    if (isAnimateLeft && oldLeft != newLeft)
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(newVisual, "(Canvas.Left)", dataPoint, dataPoint.Storyboard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldLeft, newLeft }, null);
+                               new Double[] { 0, 1 }, new Double[] { oldLeft, newLeft }, null);
+                    }
 
                     if (dp == dataPoint)
                         isAnimateLeft = true;
@@ -556,20 +560,21 @@ namespace Visifire.Charts
                     {   
                         Double markerNewLeft = (Double)dp.Marker.Visual.GetValue(Canvas.LeftProperty);
 
+                        dp.Marker.Visual.SetValue(Canvas.LeftProperty, dp._oldMarkerPosition.X);
+
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.Marker.Visual, "(Canvas.Left)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldMarkerPosition.X, markerNewLeft }, null);
-
-                        dp.Marker.Visual.SetValue(Canvas.LeftProperty, dp._oldMarkerPosition.Y);
                     }
 
                     if (dp.LabelVisual != null)
                     {
                         Double labelNewLeft = (Double)dp.LabelVisual.GetValue(Canvas.LeftProperty);
+                        System.Diagnostics.Debug.WriteLine("oldPos=" + dp._oldLabelPosition.X.ToString() + " NewPos=" + labelNewLeft.ToString());
+                        dp.LabelVisual.SetValue(Canvas.LeftProperty, dp._oldLabelPosition.X);
 
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(dp.LabelVisual, "(Canvas.Left)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { dp._oldLabelPosition.X, labelNewLeft }, null);
 
-                        dp.LabelVisual.SetValue(Canvas.LeftProperty, dp._oldMarkerPosition.Y);
                     }
 
                     dataPoint.Storyboard.SpeedRatio = 2;
@@ -610,6 +615,8 @@ namespace Visifire.Charts
             if (dataPoint.Faces == null)
                 return;
 
+            System.Diagnostics.Debug.WriteLine("Animate--YValue" + dataPoint.YValue.ToString() + " IsAxisChange=" + isAxisChanged.ToString());
+            
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
@@ -693,6 +700,8 @@ namespace Visifire.Charts
                     Double newHeight = newVisual.Height;                                // Height of the new visual of the DataPoint
                     Double oldScale = oldHeight / newHeight;                            // Scale value for the old DataPoint                       
 
+                    System.Diagnostics.Debug.WriteLine("DataPoint--oldTop =" + oldTop.ToString() + " newTop=" + newTop.ToString() + "oldYValue=" + dp._oldYValue.ToString() + " newYValue=" + dp.InternalYValue.ToString());
+
                     if (dp == dataPoint)
                     {   
                         isPositive = (dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0) ? true : 
@@ -721,9 +730,13 @@ namespace Visifire.Charts
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(newVisual, "(UIElement.RenderTransform).(ScaleTransform.ScaleY)", dataPoint, dataPoint.Storyboard, 0,
                             new Double[] { 0, 1 }, new Double[] { oldScale, 1 }, null);
 
-                    if (isAnimateTop && oldTop != newTop)
+                    if ((isAnimateTop && oldTop != newTop) || (dp._oldYValue == dp.InternalYValue && oldTop != newTop))
+                    {   
+                        System.Diagnostics.Debug.WriteLine("Animate Top ----");
+                        newVisual.SetValue(Canvas.TopProperty, oldTop);
                         dataPoint.Storyboard = AnimationHelper.ApplyPropertyAnimation(newVisual, "(Canvas.Top)", dataPoint, dataPoint.Storyboard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldTop, newTop }, null);
+                              new Double[] { 0, 1 }, new Double[] { oldTop, newTop }, null);
+                    }
 
                     if (dp == dataPoint)
                         isAnimateTop = true;

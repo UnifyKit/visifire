@@ -1110,7 +1110,7 @@ namespace Visifire.Charts
         internal Double TopOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1119,7 +1119,7 @@ namespace Visifire.Charts
         internal Double BottomOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1128,7 +1128,7 @@ namespace Visifire.Charts
         internal Double LeftOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1137,7 +1137,7 @@ namespace Visifire.Charts
         internal Double RightOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1581,9 +1581,12 @@ namespace Visifire.Charts
                     Double lastIndex = (Double)index;
 
                     // Create and save the last label
-                    label = CreateLabel(GetFormattedString(Maximum));
-                    AxisLabelList.Add(label);
-                    LabelValues.Add(Maximum);
+                    if (lastIndex <= Maximum)
+                    {
+                        label = CreateLabel(GetFormattedString(lastIndex));
+                        AxisLabelList.Add(label);
+                        LabelValues.Add(lastIndex);
+                    }
                 }
                 else
                 {

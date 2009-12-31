@@ -2306,6 +2306,11 @@ namespace Visifire.Charts
             }
         }
         
+        internal void UnlockRender()
+        {   
+            _renderLock = false;
+        }
+
         /// <summary>
         /// Calculate font color of DataPoint labels depending upon chart background
         /// </summary>
