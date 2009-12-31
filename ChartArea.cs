@@ -178,7 +178,8 @@ namespace Visifire.Charts
             {
                 AttachScrollEvents();
                 Visifire.Charts.Chart.SelectDataPoints(Chart);
-                Chart._renderLock = false;
+
+                chart.Dispatcher.BeginInvoke(new Action(chart.UnlockRender));
             }
 
             chart._forcedRedraw = false;
@@ -1520,6 +1521,13 @@ namespace Visifire.Charts
             {   
                 //  Update with new size
                 ColumnChart.Update3DPlank(ScrollableLength - plankDepth, plankThickness, plankDepth, _horizontalPlank);
+#if SL
+                _horizontalPlank.Visual.SetValue(Canvas.TopProperty, position - plankThickness);
+#else
+                PlottingCanvas.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                _horizontalPlank.Visual.SetValue(Canvas.TopProperty, PlottingCanvas.DesiredSize.Height - plankThickness);
+#endif
+
                 return;
             }
 
@@ -2173,80 +2181,11 @@ namespace Visifire.Charts
                 if (renderedChart != null && !isVisualExist)
                     ChartVisualCanvas.Children.Add(renderedChart);
 
-                //renderedChart.Background = new SolidColorBrush(Colors.Yellow);
+                // renderedChart.Background = new SolidColorBrush(Colors.Yellow);
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
 
                 if (renderedChart != null)
                     renderedChart.SetValue(Canvas.ZIndexProperty, zIndex++);
-            }
-
-            ApplyOpacity();
-            AttachEventsToolTipHref2DataSeries();
-        }
-
-        /// <summary>
-        /// Render DataSeries to visual. 
-        /// (Render each plotgroup from the plotgroup list of plotdetails)
-        /// </summary>
-        internal void RenderSeries1()
-        {   
-            Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
-            
-            // Contains a list of serties as per the drawing order generated in the plotdetails
-            List<DataSeries> dataSeriesListInDrawingOrder = PlotDetails.SeriesDrawingIndex.Keys.ToList();
-
-            List<DataSeries> selectedDataSeries4Rendering;          // Contains a list of serries to be rendered in a rendering cycle
-            Int32 currentDrawingIndex;                              // Drawing index of the selected series 
-            RenderAs currentRenderAs;                               // Rendereas type of the selected series
-            Panel renderedChart = null;                                   // A canvas that contains the chart rendered using the selected series
-
-            // This loop will select series for rendering and it will repeat until all series have been rendered
-            while (renderedSeriesCount < Chart.InternalSeries.Count)
-            {   
-                selectedDataSeries4Rendering = new List<DataSeries>();
-                
-                currentRenderAs = dataSeriesListInDrawingOrder[renderedSeriesCount].RenderAs;
-
-                currentDrawingIndex = PlotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[renderedSeriesCount]];
-                
-                for (Int32 i = renderedSeriesCount; i < Chart.InternalSeries.Count; i++)
-                {   
-                    if (currentRenderAs == dataSeriesListInDrawingOrder[i].RenderAs && currentDrawingIndex == PlotDetails.SeriesDrawingIndex[dataSeriesListInDrawingOrder[i]])
-                        selectedDataSeries4Rendering.Add(dataSeriesListInDrawingOrder[i]);
-                }
-
-                if (selectedDataSeries4Rendering.Count == 0)
-                    break;
-
-                Boolean isAlreadyPresent = false;
-                renderedChart = null;       
-
-                if (RenderedCanvasList.ContainsKey(currentRenderAs))
-                {
-                    if (!Chart._forcedRedraw)
-                    {   
-                        renderedChart = RenderedCanvasList[currentRenderAs];
-                        isAlreadyPresent = true;
-                    }
-                    else
-                        RenderedCanvasList.Remove(currentRenderAs);
-                }
-
-                renderedChart = RenderSeriesFromList(renderedChart as Panel, selectedDataSeries4Rendering);
-
-                if (renderedChart != null && (isAlreadyPresent == false || Chart._forcedRedraw))
-                    ChartVisualCanvas.Children.Add(renderedChart);
-
-                if (!Chart._forcedRedraw && isAlreadyPresent)
-                {
-                    RenderedCanvasList[currentRenderAs] = renderedChart;
-                }
-                else
-                    RenderedCanvasList.Add(currentRenderAs, renderedChart);
-                
-                renderedChart.SetValue(Canvas.ZIndexProperty, currentDrawingIndex);
-
-                renderedSeriesCount += selectedDataSeries4Rendering.Count;
             }
 
             ApplyOpacity();

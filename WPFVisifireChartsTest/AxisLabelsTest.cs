@@ -17,6 +17,7 @@ namespace WPFVisifireChartsTest
     [TestClass]
     public class AxisLabelsTest
     {
+        
         #region CheckDefaultPropertyValue
         /// <summary>
         /// Check the default value of Angle. 

@@ -2558,6 +2558,8 @@ namespace Visifire.Charts
 
             Double topOverflow = 0;
             Double bottomOverflow = 0;
+            Double newTopOverflow = 0;
+            Double newBottomOverflow = 0;
 
             if (AxisLabels.Visual != null)
             {
@@ -2578,8 +2580,18 @@ namespace Visifire.Charts
                 topOverflow = Math.Max(topOverflow, AxisLabels.TopOverflow);
                 bottomOverflow = Math.Max(bottomOverflow, AxisLabels.BottomOverflow);
 
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxWidth) && AxisLabels.InternalMaxWidth <= totalAxisLabelsWidth)
+                {
+                    GetNewOverflow4LeftLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, AxisLabels.Visual.Width);
+                }
+                else
+                {
+                    newBottomOverflow = bottomOverflow;
+                    newTopOverflow = topOverflow;
+                }
+
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(-1, -4 - topOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + topOverflow + bottomOverflow + 8);
+                clipRectangle.Rect = new Rect(-1, -4 - newTopOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + newTopOverflow + newBottomOverflow + 8);
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
@@ -2666,8 +2678,14 @@ namespace Visifire.Charts
             axisContainer.Children.Add(AxisElementsContainer);
             AxisElementsContainer.SetValue(Canvas.LeftProperty, (Double)totalVisualWidth - size.Width);
 
+            if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth <= totalVisualWidth)
+            {
+                if (AxisLabels.Visual != null)
+                    GetNewOverflow4LeftLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, axisContainer.Width);
+            }
+
             RectangleGeometry clipVisual = new RectangleGeometry();
-            clipVisual.Rect = new Rect(-1, -4 - topOverflow, axisContainer.Width + 2, size.Height + topOverflow + bottomOverflow + 8);
+            clipVisual.Rect = new Rect(-1, -4 - newTopOverflow, axisContainer.Width + 2, size.Height + newTopOverflow + newBottomOverflow + 8);
             axisContainer.Clip = clipVisual;
 
             #endregion
@@ -2680,6 +2698,52 @@ namespace Visifire.Charts
 
             Visual.Width = visualSize.Width;
             //Visual.Children.Add(AxisElementsContainer);
+        }
+
+        private void GetNewOverflow4LeftLabels(Double topOverflow, Double bottomOverflow, ref Double newTopOverflow, ref Double newBottomOverflow, Double visualWidth)
+        {
+            if ((Double)AxisLabels.InternalAngle > 0)
+            {
+                Double maxYPos = AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y;
+                Point lastLabelPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualTopPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualLeft - AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualWidth, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualTop);
+                Point topOffsetPosition = new Point(lastLabelPosition.X, actualTopPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, actualTopPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                topOverflow = (width / Math.Tan(theta));
+                topOverflow = topOverflow - maxYPos;
+
+                newTopOverflow = topOverflow;
+
+                AxisLabels.TopOverflow = newTopOverflow;
+            }
+            else if ((Double)AxisLabels.InternalAngle < 0)
+            {
+                Double maxYPos = AxisLabels.AxisLabelList[0].Position.Y;
+                Point firstLabelPosition = new Point(AxisLabels.AxisLabelList[0].Position.X, AxisLabels.AxisLabelList[0].Position.Y);
+                Point actualBottomPosition = new Point(AxisLabels.AxisLabelList[0].ActualLeft, AxisLabels.AxisLabelList[0].ActualTop + AxisLabels.AxisLabelList[0].ActualHeight);
+                Point bottomOffsetPosition = new Point(firstLabelPosition.X, actualBottomPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, actualBottomPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                bottomOverflow = (width / Math.Tan(theta));
+                bottomOverflow = bottomOverflow + maxYPos;
+
+                newBottomOverflow = bottomOverflow - Height;
+
+                AxisLabels.BottomOverflow = newBottomOverflow;
+            }
         }
 
         /// <summary>
@@ -2743,6 +2807,11 @@ namespace Visifire.Charts
 
             #region Set AxisLabels Width
 
+            Double topOverflow = 0;
+            Double bottomOverflow = 0;
+            Double newTopOverflow = 0;
+            Double newBottomOverflow = 0;
+
             if (AxisLabels.Visual != null)
             {
                 Double totalAxisLabelsWidth = 0;
@@ -2759,13 +2828,21 @@ namespace Visifire.Charts
                 else
                     AxisLabels.Visual.Width = totalAxisLabelsWidth;
 
-                Double topOverflow = 0;
-                Double bottomOverflow = 0;
                 topOverflow = Math.Max(topOverflow, AxisLabels.TopOverflow);
                 bottomOverflow = Math.Max(bottomOverflow, AxisLabels.BottomOverflow);
 
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxWidth) && AxisLabels.InternalMaxWidth <= totalAxisLabelsWidth)
+                {
+                    GetNewOverflow4RightLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, AxisLabels.Visual.Width);
+                }
+                else
+                {
+                    newBottomOverflow = bottomOverflow;
+                    newTopOverflow = topOverflow;
+                }
+
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(-1, -4 - topOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + topOverflow + bottomOverflow + 8);
+                clipRectangle.Rect = new Rect(-1, -4 - newTopOverflow, AxisLabels.Visual.Width + 2, AxisLabels.Visual.Height + newTopOverflow + newBottomOverflow + 8);
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
@@ -2804,14 +2881,33 @@ namespace Visifire.Charts
 
             if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < totalVisualWidth)
             {
-                AxisElementsContainer.Width = InternalMaxWidth;
+                totalVisualWidth = InternalMaxWidth;
             }
-            else
-                AxisElementsContainer.Width = totalVisualWidth;
+            //else
+            //    AxisElementsContainer.Width = totalVisualWidth;
 
             #endregion
 
-            Visual.Children.Add(AxisElementsContainer);
+            Canvas axisContainer = new Canvas();
+            axisContainer.HorizontalAlignment = HorizontalAlignment.Left;
+            axisContainer.VerticalAlignment = VerticalAlignment.Stretch;
+            axisContainer.Width = totalVisualWidth;
+            axisContainer.Height = Height;
+
+            axisContainer.Children.Add(AxisElementsContainer);
+            //AxisElementsContainer.SetValue(Canvas.LeftProperty, (Double)totalVisualWidth - size.Width);
+
+            if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth <= totalVisualWidth)
+            {
+                if (AxisLabels.Visual != null)
+                    GetNewOverflow4RightLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, axisContainer.Width);
+            }
+
+            RectangleGeometry clipVisual = new RectangleGeometry();
+            clipVisual.Rect = new Rect(-1, -4 - topOverflow, axisContainer.Width + 2, size.Height + topOverflow + bottomOverflow + 8);
+            axisContainer.Clip = clipVisual;
+
+            Visual.Children.Add(axisContainer);
 
             Size visualSize = Graphics.CalculateVisualSize(Visual);
 
@@ -2820,6 +2916,52 @@ namespace Visifire.Charts
             visualSize.Width += this.InternalPadding.Right;
 
             Visual.Width = visualSize.Width;
+        }
+
+        private void GetNewOverflow4RightLabels(Double topOverflow, Double bottomOverflow, ref Double newTopOverflow, ref Double newBottomOverflow, Double visualWidth)
+        {
+            if ((Double)AxisLabels.InternalAngle < 0)
+            {
+                Double maxYPos = AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y;
+                Point lastLabelPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualTopPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualLeft - AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualWidth, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualTop);
+                Point topOffsetPosition = new Point(lastLabelPosition.X, actualTopPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, actualTopPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                topOverflow = (width / Math.Tan(theta));
+                topOverflow = topOverflow - maxYPos;
+
+                newTopOverflow = topOverflow;
+
+                AxisLabels.TopOverflow = newTopOverflow;
+            }
+            else if ((Double)AxisLabels.InternalAngle > 0)
+            {
+                Double maxYPos = AxisLabels.AxisLabelList[0].Position.Y;
+                Point firstLabelPosition = new Point(AxisLabels.AxisLabelList[0].Position.X, AxisLabels.AxisLabelList[0].Position.Y);
+                Point actualBottomPosition = new Point(AxisLabels.AxisLabelList[0].ActualLeft, AxisLabels.AxisLabelList[0].ActualTop + AxisLabels.AxisLabelList[0].ActualHeight);
+                Point bottomOffsetPosition = new Point(firstLabelPosition.X, actualBottomPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, actualBottomPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                bottomOverflow = (width / Math.Tan(theta));
+                bottomOverflow = bottomOverflow + maxYPos;
+
+                newBottomOverflow = bottomOverflow - Height;
+
+                AxisLabels.BottomOverflow = newBottomOverflow;
+            }
         }
 
         /// <summary>
@@ -2885,6 +3027,11 @@ namespace Visifire.Charts
 
             #region Set AxisLabels Height
 
+            Double newLeftOverflow = 0;
+            Double newRightOverflow = 0;
+            Double leftOverflow = 0;
+            Double rightOverflow = 0;
+
             if (AxisLabels.Visual != null)
             {
                 Double totalAxisLabelsHeight = 0;
@@ -2901,14 +3048,23 @@ namespace Visifire.Charts
                 else
                     AxisLabels.Visual.Height = totalAxisLabelsHeight;
 
-                Double leftOverflow = 0;
-                Double rightOverflow = 0;
                 leftOverflow = Math.Max(leftOverflow, AxisLabels.LeftOverflow);
                 rightOverflow = Math.Max(rightOverflow, AxisLabels.RightOverflow);
 
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxHeight) && AxisLabels.InternalMaxHeight <= totalAxisLabelsHeight)
+                {
+                    GetNewOverflow4BottomLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, AxisLabels.Visual.Height);
+                }
+                else
+                {
+                    newLeftOverflow = leftOverflow;
+                    newRightOverflow = rightOverflow;
+                }
+
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(-4 - leftOverflow, 0, AxisLabels.Visual.Width + leftOverflow + rightOverflow + 8, AxisLabels.Visual.Height);
+                clipRectangle.Rect = new Rect(-4 - newLeftOverflow, 0, AxisLabels.Visual.Width + newLeftOverflow + newRightOverflow + 8, AxisLabels.Visual.Height);
                 AxisLabels.Visual.Clip = clipRectangle;
+
             }
 
             #endregion
@@ -2956,16 +3112,85 @@ namespace Visifire.Charts
 
             if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < totalVisualHeight)
             {
-                AxisElementsContainer.Height = InternalMaxHeight;
+                totalVisualHeight = InternalMaxHeight;
+            }
+
+            Canvas axisContainer = new Canvas();
+            axisContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
+            axisContainer.VerticalAlignment = VerticalAlignment.Bottom;
+            axisContainer.Height = totalVisualHeight;
+            axisContainer.Width = Width;
+
+            axisContainer.Children.Add(AxisElementsContainer);
+
+            if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight <= totalVisualHeight)
+            {
+                if (AxisLabels.Visual != null)
+                    GetNewOverflow4BottomLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, axisContainer.Height);
             }
             else
-                AxisElementsContainer.Height = totalVisualHeight;
+            {
+                newLeftOverflow = leftOverflow;
+                newRightOverflow = rightOverflow;
+            }
+
+            RectangleGeometry clipVisual = new RectangleGeometry();
+            clipVisual.Rect = new Rect(-4 - newLeftOverflow, 0, axisContainer.Width + newLeftOverflow + newRightOverflow + 8, axisContainer.Height);
+            axisContainer.Clip = clipVisual;
 
             #endregion
 
-            Visual.Children.Add(AxisElementsContainer);
+            Visual.Children.Add(axisContainer);
 
             Visual.Children.Add(new Border() { Height = this.InternalPadding.Bottom });
+        }
+
+        private void GetNewOverflow4BottomLabels(Double leftOverflow, Double rightOverflow, ref Double newLeftOverflow, ref Double newRightOverflow, Double visualHeight)
+        {
+            if ((Double)AxisLabels.InternalAngle < 0)
+            {
+                Double maxXPos = AxisLabels.AxisLabelList[0].Position.X;
+                Point firstLabelPosition = new Point(AxisLabels.AxisLabelList[0].Position.X, AxisLabels.AxisLabelList[0].Position.Y);
+                Point actualLeftPosition = new Point(AxisLabels.AxisLabelList[0].ActualLeft, AxisLabels.AxisLabelList[0].ActualHeight);
+                Point leftOffsetPosition = new Point(actualLeftPosition.X, firstLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, actualLeftPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                leftOverflow = (height / Math.Tan(theta));
+                leftOverflow = leftOverflow - maxXPos;
+
+                newLeftOverflow = leftOverflow;
+
+                AxisLabels.LeftOverflow = newLeftOverflow;
+            }
+            else if ((Double)AxisLabels.InternalAngle > 0)
+            {
+                Double maxXPos = AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X;
+                Point lastLabelPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualRightPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualLeft + AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualWidth, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualHeight);
+                Point rightOffsetPosition = new Point(actualRightPosition.X, lastLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, actualRightPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                rightOverflow = (height / Math.Tan(theta));
+                rightOverflow = rightOverflow + maxXPos;
+
+                rightOverflow = rightOverflow - Width;
+
+                newRightOverflow = rightOverflow;
+
+                AxisLabels.RightOverflow = newRightOverflow;
+            }
         }
 
         /// <summary>
@@ -3056,6 +3281,8 @@ namespace Visifire.Charts
 
             Double leftOverflow = 0;
             Double rightOverflow = 0;
+            Double newLeftOverflow = 0;
+            Double newRightOverflow = 0;
 
             if (AxisLabels.Visual != null)
             {
@@ -3076,8 +3303,18 @@ namespace Visifire.Charts
                 leftOverflow = Math.Max(leftOverflow, AxisLabels.LeftOverflow);
                 rightOverflow = Math.Max(rightOverflow, AxisLabels.RightOverflow);
 
+                if (!Double.IsPositiveInfinity(AxisLabels.InternalMaxHeight) && AxisLabels.InternalMaxHeight <= totalAxisLabelsHeight)
+                {
+                    GetNewOverflow4TopLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, AxisLabels.Visual.Height);
+                }
+                else
+                {
+                    newLeftOverflow = leftOverflow;
+                    newRightOverflow = rightOverflow;
+                }
+
                 RectangleGeometry clipRectangle = new RectangleGeometry();
-                clipRectangle.Rect = new Rect(-4 - leftOverflow, 0, AxisLabels.Visual.Width + leftOverflow + rightOverflow + 8, AxisLabels.Visual.Height);
+                clipRectangle.Rect = new Rect(-4 - newLeftOverflow, 0, AxisLabels.Visual.Width + newLeftOverflow + newRightOverflow + 8, AxisLabels.Visual.Height);
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
@@ -3141,8 +3378,19 @@ namespace Visifire.Charts
             axisContainer.Children.Add(AxisElementsContainer);
             AxisElementsContainer.SetValue(Canvas.TopProperty, (Double)totalVisualHeight - size.Height);
 
+            if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight <= totalVisualHeight)
+            {
+                if (AxisLabels.Visual != null)
+                    GetNewOverflow4TopLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, axisContainer.Height);
+            }
+            else
+            {
+                newLeftOverflow = leftOverflow;
+                newRightOverflow = rightOverflow;
+            }
+
             RectangleGeometry clipVisual = new RectangleGeometry();
-            clipVisual.Rect = new Rect(-4 - leftOverflow, 0, axisContainer.Width + leftOverflow + rightOverflow + 8, size.Height);
+            clipVisual.Rect = new Rect(-4 - newLeftOverflow, 0, axisContainer.Width + newLeftOverflow + newRightOverflow + 8, size.Height);
             axisContainer.Clip = clipVisual;
 
             #endregion
@@ -3150,6 +3398,54 @@ namespace Visifire.Charts
             Visual.Children.Add(axisContainer);
 
             //Visual.Children.Add(AxisElementsContainer);
+        }
+
+        private void GetNewOverflow4TopLabels(Double leftOverflow, Double rightOverflow, ref Double newLeftOverflow, ref Double newRightOverflow, Double visualHeight)
+        {
+            if ((Double)AxisLabels.InternalAngle > 0)
+            {
+                Double maxXPos = AxisLabels.AxisLabelList[0].Position.X;
+                Point firstLabelPosition = new Point(AxisLabels.AxisLabelList[0].Position.X, AxisLabels.AxisLabelList[0].Position.Y);
+                Point actualLeftPosition = new Point(AxisLabels.AxisLabelList[0].ActualLeft - AxisLabels.AxisLabelList[0].ActualWidth, AxisLabels.AxisLabelList[0].ActualTop);
+                Point leftOffsetPosition = new Point(actualLeftPosition.X, firstLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, actualLeftPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                leftOverflow = (height / Math.Tan(theta));
+                leftOverflow = leftOverflow - maxXPos;
+
+                newLeftOverflow = leftOverflow;
+
+                AxisLabels.LeftOverflow = newLeftOverflow;
+            }
+            else if ((Double)AxisLabels.InternalAngle < 0)
+            {
+                Double maxXPos = AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X;
+                Point lastLabelPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.X, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualRightPosition = new Point(AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualLeft + AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualWidth, AxisLabels.AxisLabelList[AxisLabels.AxisLabelList.Count - 1].ActualHeight);
+                Point rightOffsetPosition = new Point(actualRightPosition.X, lastLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, actualRightPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                rightOverflow = (height / Math.Tan(theta));
+                rightOverflow = rightOverflow + maxXPos;
+
+                rightOverflow = rightOverflow - Width;
+
+                newRightOverflow = rightOverflow;
+
+                AxisLabels.RightOverflow = newRightOverflow;
+            }
         }
 
         /// <summary>

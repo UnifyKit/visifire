@@ -2516,7 +2516,9 @@ namespace Visifire.Charts
             {
                 dataPoint._oldYValue = Double.IsNaN((Double)e.OldValue) ? dataPoint._oldYValue : (Double)e.OldValue;
                 dataPoint._oldYValue = Double.IsNaN(dataPoint._oldYValue) ? 0 : dataPoint._oldYValue;
-                dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
+
+                if (!(dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock)))
+                    dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
             }
         }
 
@@ -2527,7 +2529,13 @@ namespace Visifire.Charts
             DataPoint dataPoint = d as DataPoint;
             dataPoint._oldYValues = (Double[])e.OldValue;
 
-            dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
+            if (dataPoint.Parent != null)
+            {   
+                if (dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock))
+                    dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
+            }
+            else
+                dataPoint.InvokeUpdateVisual(VcProperties.YValues, e.NewValue);
         }
 
         /// <summary>
@@ -2612,7 +2620,7 @@ namespace Visifire.Charts
         private static void OnAxisXLabelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            //dataPoint.InvokeUpdateVisual(VcProperties.AxisXLabel, e.NewValue);
+            // dataPoint.InvokeUpdateVisual(VcProperties.AxisXLabel, e.NewValue);
             dataPoint.FirePropertyChanged(VcProperties.AxisXLabel);
         }
         

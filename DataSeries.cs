@@ -2464,23 +2464,9 @@ namespace Visifire.Charts
         private static void OnEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
             DataSeries dataSeries = d as DataSeries;
-            dataSeries.UpdateVisual(VcProperties.Enabled, e.NewValue);
-            //dataSeries.FirePropertyChanged(VcProperties.Enabled);
+            // dataSeries.UpdateVisual(VcProperties.Enabled, e.NewValue);
+            dataSeries.FirePropertyChanged(VcProperties.Enabled);
         }
-
-//#if WPF
-//        /// <summary>
-//        /// OpacityProperty changed call back function
-//        /// </summary>
-//        /// <param name="d">DependencyObject</param>
-//        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-//        private static void OnOpacityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-//        {
-//            DataSeries dataSeries = d as DataSeries;
-//            dataSeries.UpdateVisual(VcProperties.Opacity, e.NewValue);
-//            //dataSeries.FirePropertyChanged(VcProperties.Opacity);
-//        }
-//#endif
 
         /// <summary>
         /// OpacityProperty changed call back function
@@ -2492,7 +2478,7 @@ namespace Visifire.Charts
             DataSeries dataSeries = d as DataSeries;
             dataSeries.InternalOpacity = (Double)e.NewValue;
             dataSeries.UpdateVisual(VcProperties.Opacity, e.NewValue);
-            //dataSeries.FirePropertyChanged(VcProperties.Opacity);
+            // dataSeries.FirePropertyChanged(VcProperties.Opacity);
         }
 
         /// <summary>
