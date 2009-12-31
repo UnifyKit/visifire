@@ -443,7 +443,7 @@ namespace Visifire.Charts
                 // If the angle is <= 90 this means the title will be slanting downwards towards left of the point specified in position
                 // Hence the actual top of the axis label element does not change
                 ActualTop = (Double)Visual.GetValue(Canvas.TopProperty);
-                ActualLeft = (Double)Visual.GetValue(Canvas.LeftProperty) + left - ((ActualTextHeight / 2) * Math.Cos(GetRadians(90 - Angle))); ;
+                ActualLeft = (Double)Visual.GetValue(Canvas.LeftProperty) + left - ((ActualTextHeight / 2) * Math.Cos(GetRadians(90 - Angle)));
             }
         }
         /// <summary>

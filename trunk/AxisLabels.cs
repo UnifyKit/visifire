@@ -1111,7 +1111,7 @@ namespace Visifire.Charts
         internal Double TopOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1120,7 +1120,7 @@ namespace Visifire.Charts
         internal Double BottomOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1129,7 +1129,7 @@ namespace Visifire.Charts
         internal Double LeftOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1138,7 +1138,7 @@ namespace Visifire.Charts
         internal Double RightOverflow
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -1582,9 +1582,12 @@ namespace Visifire.Charts
 
                     //create and save the last label
 
-                    label = CreateLabel(GetFormattedString(Maximum));
-                    AxisLabelList.Add(label);
-                    LabelValues.Add(Maximum);
+                    if (lastIndex <= Maximum)
+                    {
+                        label = CreateLabel(GetFormattedString(lastIndex));
+                        AxisLabelList.Add(label);
+                        LabelValues.Add(lastIndex);
+                    }
                 }
                 else
                 {
@@ -2056,7 +2059,8 @@ namespace Visifire.Charts
         /// This is for axis with placement setting as top or bottom
         /// </summary>
         private void CalculateHorizontalOverflow()
-        {   
+        {
+           
             // Check if the label list contains any labels or not (if not then set the overflow to 0)
             if (AxisLabelList.Count > 0)
             {
