@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="SLVisifireApp.StackedArea3D1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme2" View3D="True" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire 3D Stacked Area Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesX>
+                <vc:Axis LineThickness="0"/>
+            </vc:Chart.AxesX>
+            
+            <vc:Chart.AxesY>
+                <vc:Axis Title="Production (million tonnes)" LineThickness="0"/>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries LegendText="Product A" RenderAs="StackedArea" Opacity=".8" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="2000" YValue="7.2"/>
+                        <vc:DataPoint AxisXLabel="2001" YValue="6.5"/>
+                        <vc:DataPoint AxisXLabel="2002" YValue="7.7"/>
+                        <vc:DataPoint AxisXLabel="2003" YValue="5.7"/>
+                        <vc:DataPoint AxisXLabel="2004" YValue="7.9"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Product B" RenderAs="StackedArea" Opacity=".8" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="6.1"/>
+                        <vc:DataPoint YValue="5.0"/>
+                        <vc:DataPoint YValue="7.5"/>
+                        <vc:DataPoint YValue="5.8"/>
+                        <vc:DataPoint YValue="6.4"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Product C" RenderAs="StackedArea" Opacity=".8" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="11.7"/>
+                        <vc:DataPoint YValue="12.6"/>
+                        <vc:DataPoint YValue="15.6"/>
+                        <vc:DataPoint YValue="13.4"/>
+                        <vc:DataPoint YValue="17.2"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries LegendText="Product D" RenderAs="StackedArea" Opacity=".8" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="14.9"/>
+                        <vc:DataPoint YValue="14.3"/>
+                        <vc:DataPoint YValue="16.6"/>
+                        <vc:DataPoint YValue="14.7"/>
+                        <vc:DataPoint YValue="17.1"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>
