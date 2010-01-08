@@ -1,0 +1,36 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" View3D="True" BorderBrush="Gray" Width="450" Height="475">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Top 10 Emerging Mobile Market Carriers" HorizontalAlignment="Left" Padding="2"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.AxesX>
+    <vc:Axis Interval="1" Title="Company" LineThickness="0">
+      <vc:Axis.Ticks>
+        <vc:Ticks Enabled="False"/>
+      </vc:Axis.Ticks>
+    </vc:Axis>
+  </vc:Chart.AxesX>
+
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Subscriber (millions)"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Bar" LabelEnabled="True" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="China Mobile" YValue="349.76" />
+        <vc:DataPoint AxisXLabel="America Movil" YValue="147.32" />
+        <vc:DataPoint AxisXLabel="China Telecom" YValue="223.54" />
+        <vc:DataPoint AxisXLabel="China Unicom" YValue="115.88" />
+        <vc:DataPoint AxisXLabel="MTN" YValue="54.18" />
+        <vc:DataPoint AxisXLabel="Saudi Telecom" YValue="19.12" />
+        <vc:DataPoint AxisXLabel="MTS" YValue="77.92" />
+        <vc:DataPoint AxisXLabel="TelKom SA" YValue="36.14" />
+        <vc:DataPoint AxisXLabel="VimpleCom" YValue="47.20" />
+        <vc:DataPoint AxisXLabel="Bharti" YValue="50.22" />
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>
