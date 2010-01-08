@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO8859-1" />
+
+    <script type="text/javascript" src="./Visifire2.js"></script>
+
+</head>
+<body>
+    <form name="FORM1">
+
+    <div id="myChart" style="width: 500;">
+    </div>
+
+    <script language="javascript" type="text/javascript">
+            var chartXmlString = ''
+            +'<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" Theme="Theme1">'
+            +'<vc:Chart.Series>'
+            +'<vc:DataSeries RenderAs="Column">'
+            +'<vc:DataSeries.DataPoints>'
+            +'<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
+            +'<vc:DataPoint AxisXLabel="Q2" YValue="60" />'
+            +'<vc:DataPoint AxisXLabel="Q3" YValue="80" />'
+            +'<vc:DataPoint AxisXLabel="Q4" YValue="70" />'
+            +'</vc:DataSeries.DataPoints>'
+            +'</vc:DataSeries>'
+            +'</vc:Chart.Series>'
+            +'</vc:Chart>';
+
+        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="550" Height="450" Theme="Theme1" BorderBrush="Gray" Padding="8" View3D="True"> <vc:Chart.Titles>    <vc:Title Text="Product Sales - 2008"/> </vc:Chart.Titles> <vc:Chart.Series>     <vc:DataSeries RenderAs="Pie" LabelText="#AxisXLabel, #YValue" >            <vc:DataSeries.DataPoints><vc:DataPoint AxisXLabel="China" YValue="3000"/><vc:DataPoint AxisXLabel="Japan" YValue="1286"/><vc:DataPoint AxisXLabel="Australia" YValue="464"/><vc:DataPoint AxisXLabel="US" YValue="2800"/><vc:DataPoint AxisXLabel="France" YValue="2500"/><vc:DataPoint AxisXLabel="UK" YValue="1900"/><vc:DataPoint AxisXLabel="Italy" YValue="2800"/><vc:DataPoint AxisXLabel="Russia" YValue="1800"/><vc:DataPoint AxisXLabel="Others" YValue="4000"/>             </vc:DataSeries.DataPoints>     </vc:DataSeries>  </vc:Chart.Series></vc:Chart>';
+        
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 550, 450);
+            vChart.setDataXml(chartXml);
+            vChart.render("myChart");
+
+    </script>
+
+    </form>
+</body>
+</html>

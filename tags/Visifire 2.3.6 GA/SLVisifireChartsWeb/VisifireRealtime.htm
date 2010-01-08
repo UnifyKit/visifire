@@ -1,0 +1,264 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Untitled Page</title>
+
+    <script type="text/javascript" src="./Visifire2.js"></script>
+
+    <style type="text/css">
+        #Div1
+        {
+            height: 599px;
+            width: 515px;
+        }
+        #Text1
+        {
+            width: 501px;
+            height: 50px;
+        }
+    </style>
+
+
+        <script type="text/javascript">
+            
+        // Create the required charts and fix their size
+            var columnChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', 'MyChart1', 50, 80);
+            var lineChart = new Visifire2('ClientBin/SL.Visifire.Charts.xap', "MyChart2", 150, 80);
+
+        var isLineChartLoaded = false;
+        var noOfDataPoint = 20;        
+        // Array to store data
+        var data = new Array(noOfDataPoint);
+        
+        var chart1;
+        var chart2;
+        
+        var oddState = false;
+        
+        // Sets the default values for the data array for both charts
+        function initializeData() {
+            // Set all data points to zero
+            for (var i = 0; i < noOfDataPoint; i++)
+            {
+                data[i] = 0;
+            }
+        }
+        
+        // Generates random data for use with both charts
+        function updateData() {
+            var i;
+            // Move all data points two indices to the left
+            for (i = 0; i < data.length-1; i++) {
+                data[i] = data[i + 1];
+            }
+
+            // Update the last two dataPoints            
+            if (!oddState) {
+                oddState = true;
+                data[i] = Math.random() * 100;
+            }
+            else {
+                oddState = false;
+                data[i] = -data[i];
+            }
+        }
+
+        // Function retrives updated data and displays the updated chart
+        function updateColumnChart() {
+         
+            // Get updated data
+            updateData();
+
+            chart1.Series[0].DataPoints[0].SetPropertyFromJs("YValue", Math.abs(data[data.length-1]));
+            chart1.Titles[0].SetPropertyFromJs("Text", Math.round(Math.abs(data[data.length-1])) + "%");
+            
+            // Update after every 1 second
+            setTimeout(updateColumnChart, 1000);
+        }
+
+        // Function retrives updated data and displays the updated chart
+        function updateLineChart()
+        {   
+
+            // Get updated data
+            updateData();
+
+            for (var i = 0; i < data.length; i++)
+                chart2.Series[0].DataPoints[i].SetPropertyFromJs("YValue", data[i]);
+                
+//            for (var i = 0; i < data.length; i++)
+//                chart2.Series[1].DataPoints[i].SetPropertyFromJs("YValue", data[i]);
+                
+            // Update after every 1 second
+            setTimeout(updateLineChart, 1000);
+        }
+
+        function Button1_onclick() {
+            updateChart();
+        }
+        
+         // Generates XML for the column chart
+        function getColumnChartXML()
+        {
+            var chartXMLBegin;  // Initial part of the XML
+            var chartXMLend;    // Final part of the XML
+
+            chartXMLBegin = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="50" Height="80"'
+                          + ' AnimationEnabled="False" ToolTipEnabled="False" Background="White" BorderThickness="0" Padding="2" Watermark="False">'
+                          + '<vc:Chart.AxesX>'
+                          + '<vc:Axis Enabled="False"/>'
+                          + '</vc:Chart.AxesX>'
+                          + '<vc:Chart.AxesY>'
+                          + '<vc:Axis AxisMinimum="0" AxisMaximum="100" Enabled="False">'
+                          + '<vc:Axis.Grids>'
+                          + '<vc:ChartGrid Enabled="False"/>'
+                          + '</vc:Axis.Grids>'
+                          + '</vc:Axis>'
+                          + '</vc:Chart.AxesY>'
+                          + '<vc:Chart.Titles>'
+                          + '<vc:Title VerticalAlignment="Bottom"/>'
+                          + '</vc:Chart.Titles>'
+                          + '<vc:Chart.Series>'
+                          + '<vc:DataSeries RenderAs="Column" Color="#a3b4bb" Bevel="False">'
+                          + '<vc:DataSeries.DataPoints>';
+                          
+           chartXMLend    =   '</vc:DataSeries.DataPoints>'
+                          +   '</vc:DataSeries>'           
+                          +   '</vc:Chart.Series>'  
+                          +   '</vc:Chart>';
+                                           
+            var chartXML = chartXMLBegin; // Stores the chart XML
+            
+            // Set the datapoint value
+            chartXML += '<vc:DataPoint/>'; 
+            
+            // Add the final part of the XML
+            chartXML += chartXMLend;
+            
+            return chartXML;
+        }
+        
+        // Generates XML for Line Chart
+        function getLineChartXML()
+        {
+            var chartXMLBegin;  // Initial part of the XML
+            var chartXMLend;    // Final part of the XML
+
+            chartXMLBegin = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="150" Height="80"'
+                          +   ' AnimationEnabled="False" ToolTipEnabled="False" Background="White" BorderThickness="0" Padding="2" Watermark="False" ScrollingEnabled="False">'
+                          +   '<vc:Chart.PlotArea>'
+			              +   '<vc:PlotArea BorderColor="#a3b4bb" BorderThickness="0.25"/>'	
+			              +   '</vc:Chart.PlotArea>'
+			              +   '<vc:Chart.AxesX>'
+                          +   '<vc:Axis Enabled="False">'
+                          +   '<vc:Axis.Grids>'
+                          +   '<vc:ChartGrid LineColor="#b6dff1" LineThickness="0.5"/>'
+                          +   '</vc:Axis.Grids>'
+                          +   '<vc:Axis.Ticks>'
+                          +   '<vc:Ticks Enabled="False" />'
+                          +   '</vc:Axis.Ticks>'
+                          +   '</vc:Axis>'
+                          +   '</vc:Chart.AxesX>'
+                          +   '<vc:Chart.AxesY>'
+                          +   '<vc:Axis AxisMinimum="-100" AxisMaximum="100" LineColor="Transparent">'
+                          +   '<vc:Axis.AxisLabels>'
+                          +   '<vc:AxisLabels Enabled="False"/>'
+                          +   '</vc:Axis.AxisLabels>'
+                          +   '<vc:Axis.Grids>'
+                          +   '<vc:ChartGrid LineColor="#b6dff1" LineThickness="0.5"/>'
+                          +   '</vc:Axis.Grids>'
+                          +   '<vc:Axis.Ticks>'
+                          +   '<vc:Ticks Enabled="False"/>'
+                          +   '</vc:Axis.Ticks>'
+                          +   '</vc:Axis>'
+                          +   '</vc:Chart.AxesY>'
+                          +   '<vc:Chart.Series>'
+                          +   '<vc:DataSeries RenderAs="Line" Color="#0077a4" MarkerEnabled="False" LineThickness="1">'
+                          +   '<vc:DataSeries.DataPoints>';
+                          
+            chartXMLend   =   '</vc:DataSeries.DataPoints>'   
+                          +   '</vc:DataSeries>'           
+                          +   '</vc:Chart.Series>'  
+                          +   '</vc:Chart>';
+            
+            var chartXML = chartXMLBegin; // Stores the chart XML
+
+            for (var i = 0; i < noOfDataPoint; i++)
+            {
+                // Generate DataPoint XML
+                chartXML += '<vc:DataPoint/>';
+            }
+            
+            // Add the final part of the XML
+            chartXML += chartXMLend;
+
+            return chartXML;
+        }
+
+        columnChart.preLoad = function(args){
+         chart1 = args[0];
+        };
+
+        columnChart.loaded = function(args){
+            chart1 = args[0];
+            updateColumnChart(); 
+        };
+        
+        lineChart.preLoad = function(args) {
+            chart2 = args[0];          
+        };
+
+        lineChart.loaded = function(args){
+            chart2 = args[0]; 
+            updateLineChart();
+        };
+        
+        // Function to be called after page is loaded
+        function onPageLoad() {
+
+            initializeData();
+            
+            // Get updated XML
+            var columnChartXML = getColumnChartXML();
+
+            // Set the chart XML
+            columnChart.setDataXml(columnChartXML);
+	
+	    columnChart.setWindowlessState("True");
+
+            // Display the updated chart
+            columnChart.render("VisifireChart0");
+            
+            // Get updated XML
+            var lineChartXML = getLineChartXML();
+
+            // Set the chart XML
+            lineChart.setDataXml(lineChartXML);
+
+	    lineChart.setWindowlessState("True");
+
+            // Display the updated chart
+            lineChart.render("VisifireChart1");
+
+        }
+
+            
+        </script>
+
+</head>
+<body onload='onPageLoad()'>
+<table cellspacing="0" cellpadding="0" >
+    <tr>
+        <td>
+            <div id="VisifireChart0" ></div>
+        </td>
+        
+        <td>
+            <div id="VisifireChart1"></div>
+        </td>
+        
+    </tr>
+</table>
+</body>
+</html>
+

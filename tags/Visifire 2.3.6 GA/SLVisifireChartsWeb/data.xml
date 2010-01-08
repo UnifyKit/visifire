@@ -1,0 +1,18 @@
+﻿<vc:Chart Name="MyChart1" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme2"
+        Width="500" Height="300">
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Column">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint XValue="1" YValue="10"/>
+        <vc:DataPoint XValue="2" YValue="22"/>
+        <vc:DataPoint XValue="3" YValue="20"/>
+        <vc:DataPoint XValue="4" YValue="30"/>
+        <vc:DataPoint XValue="5" YValue="8"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+
+</vc:Chart>
+
+
