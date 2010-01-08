@@ -7,7 +7,7 @@
 
 </head>
 <body>
-    <form name="FORM1" method="post">
+    <form name="FORM1">
 
     <div id="myChart" style="width: 500;">
     </div>
@@ -27,8 +27,10 @@
             +'</vc:Chart.Series>'
             +'</vc:Chart>';
 
-            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 500, 300);
-            vChart.setDataXml(chartXmlString);
+        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="550" Height="450" Theme="Theme1" BorderBrush="Gray" Padding="8" View3D="True"> <vc:Chart.Titles>    <vc:Title Text="Product Sales - 2008"/> </vc:Chart.Titles> <vc:Chart.Series>     <vc:DataSeries RenderAs="Pie" LabelText="#AxisXLabel, #YValue" >            <vc:DataSeries.DataPoints><vc:DataPoint AxisXLabel="China" YValue="3000"/><vc:DataPoint AxisXLabel="Japan" YValue="1286"/><vc:DataPoint AxisXLabel="Australia" YValue="464"/><vc:DataPoint AxisXLabel="US" YValue="2800"/><vc:DataPoint AxisXLabel="France" YValue="2500"/><vc:DataPoint AxisXLabel="UK" YValue="1900"/><vc:DataPoint AxisXLabel="Italy" YValue="2800"/><vc:DataPoint AxisXLabel="Russia" YValue="1800"/><vc:DataPoint AxisXLabel="Others" YValue="4000"/>             </vc:DataSeries.DataPoints>     </vc:DataSeries>  </vc:Chart.Series></vc:Chart>';
+        
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", 550, 450);
+            vChart.setDataXml(chartXml);
             vChart.render("myChart");
 
     </script>

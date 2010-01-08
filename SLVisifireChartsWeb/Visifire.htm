@@ -11,12 +11,8 @@
     <div id="Div1">
 
         <script type="text/javascript">
-            //var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300);
 
-            var background = "White";
-            var isWindowless = true;
-
-            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300, background, isWindowless);
+            var vChart = new Visifire2("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300);
             vChart.setDataUri('data.xml');
             vChart.render("Div1");
 
