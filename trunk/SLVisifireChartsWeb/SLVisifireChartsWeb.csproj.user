@@ -5,8 +5,8 @@
         <WebProjectProperties>
           <StartPageUrl>Visifire.htm</StartPageUrl>
           <StartAction>SpecificPage</StartAction>
-          <AspNetDebugging>True</AspNetDebugging>
-          <SilverlightDebugging>False</SilverlightDebugging>
+          <AspNetDebugging>False</AspNetDebugging>
+          <SilverlightDebugging>True</SilverlightDebugging>
           <NativeDebugging>False</NativeDebugging>
           <SQLDebugging>False</SQLDebugging>
           <PublishCopyOption>RunFiles</PublishCopyOption>

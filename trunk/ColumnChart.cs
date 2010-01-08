@@ -206,6 +206,9 @@ namespace Visifire.Charts
                         {
                             labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
                             labelTop = canvasTop - tb.TextBlockDesiredSize.Height + columnParams.Size.Height + insideGap;
+
+                            if (labelTop < 0)
+                                labelTop = 0;
                         }
                         else
                         {
@@ -224,8 +227,25 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
-                        labelTop = canvasTop - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
+                        if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn100 && isView3D
+                        && columnParams.IsTopOfStack)
+                        {
+                            if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet && !isVertical && tb.TextBlockDesiredSize.Height >= columnParams.Size.Height)
+                            {
+                                labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                                labelTop = canvasTop - outsideGap;// -tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
+                            }
+                            else
+                            {
+                                labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                                labelTop = canvasTop - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
+                            }
+                        }
+                        else
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
+                        }
                     }
                 }
             }
@@ -259,6 +279,10 @@ namespace Visifire.Charts
                         {
                             labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
                             labelTop = canvasTop - columnParams.Size.Height+ insideGap;
+
+                            if (labelTop + tb.TextBlockDesiredSize.Height > (dataPoint.Chart as Chart).ChartArea.ChartVisualCanvas.Height - (dataPoint.Chart as Chart).ChartArea.PLANK_THICKNESS)
+                                labelTop = (dataPoint.Chart as Chart).ChartArea.ChartVisualCanvas.Height - (dataPoint.Chart as Chart).ChartArea.PLANK_THICKNESS - tb.TextBlockDesiredSize.Height;
+
                             angle = 0;
                         }
                         else
@@ -284,8 +308,25 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
-                        labelTop = canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale + outsideGap + 3);
+                        if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn100 && isView3D
+                        && columnParams.IsTopOfStack)
+                        {
+                            if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet && !isVertical && tb.TextBlockDesiredSize.Height >= columnParams.Size.Height)
+                            {
+                                labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                                labelTop = canvasTop - outsideGap;
+                            }
+                            else
+                            {
+                                labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                                labelTop = canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale + outsideGap + 3);
+                            }
+                        }
+                        else
+                        {
+                            labelLeft = canvasLeft + columnParams.Size.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
+                            labelTop = canvasTop + (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale + outsideGap + 3);
+                        }   
                     }
                 }
             }
@@ -363,6 +404,13 @@ namespace Visifire.Charts
                         autoLabelStyle = LabelStyles.Inside;
                     }
 
+                    if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn100 && chart.View3D
+                        && columnParams.IsTopOfStack)
+                    {
+                        if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet && !isVertical && tb.TextBlockDesiredSize.Height >= columnParams.Size.Height)
+                            autoLabelStyle = LabelStyles.OutSide;
+                    }
+                
                     CalculateAutoPlacement(chart.View3D, dataPoint, columnParams, isPositive, autoLabelStyle, ref labelLeft, ref labelTop, ref angle,
                         canvasLeft, canvasTop, isVertical, insideGap, outsideGap, tb);
 

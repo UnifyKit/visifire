@@ -157,7 +157,6 @@
     <Content Include="GalleryCharts\Stacked\StackedColumn2D1.xml" />
     <Content Include="GalleryCharts\Stacked\StackedColumn2D2.xml" />
     <Content Include="GalleryCharts\Stacked\StackedColumn2D3.xml" />
-    <Content Include="FirstChart.htm" />
     <Content Include="ClientBin\SLVisifireApp.xap" />
     <Content Include="data.xml" />
     <Content Include="LiveUpdate.htm" />
