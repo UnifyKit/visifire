@@ -93,6 +93,9 @@
     <Compile Include="..\..\Common\AxisManager.cs">
       <Link>AxisManager.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\AxisScrollEventArgs.cs">
+      <Link>AxisScrollEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\BarChart.cs">
       <Link>BarChart.cs</Link>
     </Compile>

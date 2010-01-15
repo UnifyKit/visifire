@@ -1854,7 +1854,7 @@ namespace Visifire.Charts
         }
 
         public static void UpdateVisualForYValue4ColumnChart(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
-        {
+        {   
             DataSeries currentDataSeries;
             DataSeries dataSeries = dataPoint.Parent;
             Canvas columnChartCanvas, labelCanvas;
@@ -1865,7 +1865,7 @@ namespace Visifire.Charts
                 // When datapoint faces is null and dataSeries faces is null we need to create atleast once DataPoint 
                 // inorder to generate columnChartCanvas and labelCanvas
                 if (dataSeries != null && dataSeries.Faces != null)
-                {
+                {   
                     labelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
                     columnChartCanvas = dataSeries.Faces.Visual as Canvas;
 
@@ -1879,7 +1879,7 @@ namespace Visifire.Charts
                     UpdateDataSeries(dataSeries, VcProperties.YValue, null);
             }
             
-            // parent of the current DataPoint
+            // Parent of the current DataPoint
             Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
             columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
 
@@ -1924,6 +1924,9 @@ namespace Visifire.Charts
                 oldColumnHeight = oldVisual.Width;
             }
 
+            if (columnChartCanvas.Parent == null && Double.IsNaN(dataPoint.InternalYValue))
+                return;
+
             labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;
 
             UpdateParentVisualCanvasSize(chart, columnChartCanvas);
@@ -1945,12 +1948,6 @@ namespace Visifire.Charts
                 dataPoint.Parent.RenderAs == RenderAs.Column ? Orientation.Horizontal : Orientation.Vertical);
 
             Boolean animationEnabled = chart.AnimatedUpdate;
-
-            if (animationEnabled && dataPoint.Storyboard != null)
-            {
-                //dataPoint.Storyboard.SkipToFill();
-                //dataPoint.Storyboard.Stop();
-            }
 
             #region Animate Column
 
@@ -2030,7 +2027,9 @@ namespace Visifire.Charts
                 if (Double.IsInfinity(oldScaleFactor))
                 {
                     oldScaleFactor = 0;
-                    oldMarkerTop = plankYPos;
+
+                    if(dataPoint.Marker != null && dataPoint.Marker.Visual != null)
+                        oldMarkerTop = plankYPos;
                 }
 
                 if (Double.IsNaN(oldScaleFactor))
@@ -2095,30 +2094,30 @@ namespace Visifire.Charts
                         if (chartType == RenderAs.Column)
                         {
                              storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+                            new Double[] { 0, 1.5 }, new Double[] { oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
                         }
                         else
                         {   
                             if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue < 0)
                             {
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 1 }, new Double[] { oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 1.5 }, new Double[] { oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
                             }
 
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(topFace, property2Animate1, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldColumnHeight, frontFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+                            new Double[] { 0, 1.5 }, new Double[] { oldColumnHeight, frontFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
                         }
 
                         storyBoard = AnimationHelper.ApplyPropertyAnimation(frontFace, property2Animate2, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldColumnHeight, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+                            new Double[] { 0, 1.5 }, new Double[] { oldColumnHeight, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
 
                         storyBoard = AnimationHelper.ApplyPropertyAnimation(rightFace, property2Animate2, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldColumnHeight, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
+                            new Double[] { 0, 1.5 }, new Double[] { oldColumnHeight, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
 
                         if ((Boolean)dataPoint.MarkerEnabled && !Double.IsNaN(oldMarkerTop))
                         {
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 1 }, new Double[] { oldMarkerTop, currentMarkerTop },
+                                new Double[] { 0, 1.5 }, new Double[] { oldMarkerTop, currentMarkerTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
 
                             if (chartType == RenderAs.Column)
@@ -2130,7 +2129,7 @@ namespace Visifire.Charts
                         if ((Boolean)dataPoint.LabelEnabled && !Double.IsNaN(oldLabelTop))
                         {   
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.LabelVisual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 1 }, new Double[] { oldLabelTop, currentLabelTop },
+                                new Double[] { 0, 1.5 }, new Double[] { oldLabelTop, currentLabelTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
                             
                             if (chartType == RenderAs.Column)
@@ -2146,61 +2145,74 @@ namespace Visifire.Charts
                             if (chartType == RenderAs.Column)
                             {
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldTop, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldTop, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                             }
                             else
                             {
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { plankYPos, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { plankYPos, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
 
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(topFace, property2Animate1, dataPoint, storyBoard, 0,
-                                    new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                    new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                             }
                             
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(frontFace, property2Animate2, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
 
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(rightFace, property2Animate2, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width}, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                         }
-                        else if (dataPoint._oldYValue < 0 && dataPoint.InternalYValue >= 0)
+                        else if (dataPoint._oldYValue <= 0 && dataPoint.InternalYValue >= 0)
                         {
                             if (chartType == RenderAs.Column)
                             {   
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldTop, oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldTop, oldTop, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                             }
                             else
                             {
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldTop, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldTop, plankYPos, currentTop }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                                 
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(topFace, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                             }
 
                             // plankYPos, plankYPos, currentTop
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(frontFace, property2Animate2, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width}, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
 
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(rightFace, property2Animate2, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldColumnHeight, 0, chartType == RenderAs.Column ? rightFace.Height : rightFace.Width }, AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
                         }
 
-                        plankYPos = Graphics.ValueToPixelPosition(0, axisSize, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
-
+                        if (chartType == RenderAs.Column)
+                            plankYPos = Math.Abs(axisSize - Graphics.ValueToPixelPosition(0, axisSize, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, limitingYValue));
+                        else
+                            plankYPos = Graphics.ValueToPixelPosition(0, axisSize, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
+                            
                         if ((Boolean)dataPoint.MarkerEnabled && !Double.IsNaN(oldMarkerTop))
                         {
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldMarkerTop, plankYPos, currentMarkerTop },
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldMarkerTop, plankYPos, currentMarkerTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+
+                            if (chartType == RenderAs.Column)
+                                dataPoint.Marker.Visual.SetValue(Canvas.TopProperty, oldMarkerTop);
+                            else
+                                dataPoint.Marker.Visual.SetValue(Canvas.LeftProperty, oldMarkerTop);
                         }
 
                         if ((Boolean)dataPoint.LabelEnabled && !Double.IsNaN(oldLabelTop))
                         {
                             storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.LabelVisual, property2Animate1, dataPoint, storyBoard, 0,
-                                new Double[] { 0, 0.5, 1 }, new Double[] { oldLabelTop, plankYPos, currentLabelTop },
+                                new Double[] { 0, 0.75, 1.5 }, new Double[] { oldLabelTop, plankYPos, currentLabelTop },
                                 AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 0.5), new Point(0.5, 0.5), new Point(0, 1), new Point(0.5, 1)));
+
+                            if (chartType == RenderAs.Column)
+                                dataPoint.LabelVisual.SetValue(Canvas.TopProperty, oldLabelTop);
+                            else
+                                dataPoint.LabelVisual.SetValue(Canvas.LeftProperty, oldLabelTop);
                         }
                     }
                     

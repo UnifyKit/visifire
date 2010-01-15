@@ -11,13 +11,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Visifire.Charts;
 using Visifire.Commons;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Text;
-using System.Windows.Data;
-using System.Windows.Threading;
-using System.Windows.Media.Imaging;
-using System.IO;
 
 namespace SLVisifireApp
 {

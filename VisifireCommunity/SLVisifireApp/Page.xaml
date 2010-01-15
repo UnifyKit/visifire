@@ -6,22 +6,21 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 >
     <Grid x:Name="LayoutRoot" Height="Auto" Width="Auto">
 
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Theme="Theme1"
-                  x:Name="MyChart" Width="500" Height="300" Watermark="true">
-            
+
+        <vc:Chart Watermark="True" Name="MyChart" Width="500" Height="300" Theme="Theme1" BorderThickness="0.5" BorderBrush="Gray" AnimatedUpdate="true" >
+
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="10"/>
-                        <vc:DataPoint YValue="20"/>
-                        <vc:DataPoint YValue="30"/>
-                        <vc:DataPoint YValue="40"/>
-                        <vc:DataPoint YValue="80"/>
+                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint YValue="35"/>
+                        <vc:DataPoint YValue="27"/>
+                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint YValue="35"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-               
     </Grid>
 </UserControl>
   

@@ -1080,9 +1080,9 @@ namespace Visifire.Charts
                 if (AxisX2.Height >= AxisX2.ScrollableSize || AxisX2.ScrollBarElement.Maximum == 0)
                     AxisX2.ScrollBarElement.Visibility = Visibility.Collapsed;
                 else
-                {
+                {   
                     AxisX2.ScrollBarElement.Visibility = Visibility.Visible;
-                }
+                }   
 
                 Chart._rightAxisPanel.Children.Add(AxisX2.Visual);
 
@@ -1986,23 +1986,23 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 Double offset = e.NewValue;
-
 #if SL
                 AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
                 AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
-#else
+#else           
                 AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
                 AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
-
+                
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
+                Double offsetInPixel = offset;
+
                 PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
 
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                     (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -offset);
-
-
+                
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
 
                 AxisX._isScrollToOffsetEnabled = false;
@@ -2012,6 +2012,8 @@ namespace Visifire.Charts
                     AxisX.ScrollBarOffset = (offset > 1) ? 1 : (offset < 0) ? 0 : offset;
 
                 AxisX._isScrollToOffsetEnabled = true;
+
+                AxisX.FireScrollEvent(e, offsetInPixel);
             }
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
@@ -2027,6 +2029,8 @@ namespace Visifire.Charts
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
+                Double offsetInPixel = offset;
+
                 PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
 
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
@@ -2042,10 +2046,13 @@ namespace Visifire.Charts
                     AxisX.ScrollBarOffset = (offset > 1) ? 1 : (offset < 0) ? 0 : offset;
 
                 AxisX._isScrollToOffsetEnabled = true;
+                AxisX.FireScrollEvent(e, offsetInPixel);
 
             }
             if (AxisX2 != null)
+            {
                 AxisX2.ScrollBarElement.Value = e.NewValue;
+            }
         }
 
         /// <summary>
@@ -2069,12 +2076,15 @@ namespace Visifire.Charts
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX2.ScrollBarElement.Maximum;
 #endif
+                Double offsetInPixel = offset;
+
                 PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(offset, 0, 0, 0);
 
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
+                AxisX2.FireScrollEvent(e, offsetInPixel);
             }
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
@@ -2089,16 +2099,21 @@ namespace Visifire.Charts
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX2.ScrollBarElement.Maximum;
 #endif
+                Double offsetInPixel = offset;
                 PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(0, offset, 0, 0);
                 
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
+
+                AxisX2.FireScrollEvent(e, offsetInPixel);
             }
 
             if (AxisX != null)
+            {
                 AxisX.ScrollBarElement.Value = e.NewValue;
+            }
         }
 
         /// <summary>
@@ -2583,6 +2598,9 @@ namespace Visifire.Charts
                 {
                     if (!FLAG_UNIQUE_COLOR_4_EACH_DP || dataSeries.RenderAs == RenderAs.Line)
                         seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
+
+                    if (dataSeries.RenderAs == RenderAs.Line)
+                        dataSeries._internalColor = seriesColor;
 
                     foreach (DataPoint dp in dataSeries.DataPoints)
                     {   
@@ -3761,26 +3779,26 @@ namespace Visifire.Charts
         {
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
-                AxisX.Scroll -= AxesXScrollBarElement_Scroll;
-                AxisX.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
+                AxisX.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
                 AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
             }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
-                AxisX2.Scroll -= AxesXScrollBarElement_Scroll;
-                AxisX2.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX2.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
+                AxisX2.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
                 AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
             }
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
-                AxisX.Scroll -= AxesXScrollBarElement_Scroll;
-                AxisX.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
+                AxisX.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
                 AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
             }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
-                AxisX2.Scroll -= AxesXScrollBarElement_Scroll;
-                AxisX2.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                AxisX2.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
+                AxisX2.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
                 AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
             }
         }
