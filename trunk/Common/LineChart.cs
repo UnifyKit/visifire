@@ -2516,6 +2516,12 @@ namespace Visifire.Charts
 
                     Ellipse movingMarker = ds._movingMarker;
 
+                    if (nearestDataPoint == null)
+                    {
+                        ds._movingMarker.Visibility = Visibility.Collapsed;
+                        return;
+                    }
+
                     if (nearestDataPoint.Selected)
                     {
                         SelectMovingMarker(nearestDataPoint);

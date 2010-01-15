@@ -1112,7 +1112,7 @@ namespace Visifire.Charts
         /// <param name="e">MouseButtonEventArgs</param>
         /// <returns>PlotAreaMouseButtonEventArgs</returns>
         internal PlotAreaMouseEventArgs CreatePlotAreaMouseEventArgs(MouseEventArgs e)
-        {
+        {   
             Chart chart = Chart as Chart;
             PlotAreaMouseEventArgs eventArgs = new PlotAreaMouseEventArgs(e);
 

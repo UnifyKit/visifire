@@ -1,46 +1,23 @@
 ﻿<Window x:Class="WPFVisifireChartsApp.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
-     WindowState="Maximized"   >
-
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+    Title="PerfMon" Height="703" Width="800">
+  
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="500" Height="300" Name="MyChart"  Theme="Theme1" View3D="True" BorderBrush="Gray">
-
-            <vc:Chart.Titles>
-                <vc:Title Text="Global Fortune 5 Companies 2007"/>
-            </vc:Chart.Titles>
-            <vc:Chart.AxesX>
-                <vc:Axis Title="Companies" LineThickness="0">
-                    <vc:Axis.Ticks>
-                        <vc:Ticks Enabled="False"/>
-                    </vc:Axis.Ticks>
-                </vc:Axis>
-            </vc:Chart.AxesX>
-            <vc:Chart.AxesY>
-                <vc:Axis Title="Revenue (millions)" Prefix="$" LineThickness="0">
-                    <vc:Axis.Ticks>
-                        <vc:Ticks Enabled="False"/>
-                    </vc:Axis.Ticks>
-                </vc:Axis>
-            </vc:Chart.AxesY>
-
-            <vc:Chart.TrendLines>
-                <vc:TrendLine Enabled="True" Orientation="Horizontal" Value="350000" LineThickness="1.5" LineColor="CadetBlue"/>
-            </vc:Chart.TrendLines>
+        <vc:Chart Watermark="True" Name="MyChart" Width="500" Height="300" Theme="Theme1" BorderThickness="0.5" BorderBrush="Gray" AnimatedUpdate="true" >
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="SectionFunnel" LabelEnabled="True" LabelFontSize="11">
+                <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="WallMart" YValue="351139"/>
-                        <vc:DataPoint AxisXLabel="Exxon Mobil" YValue="347254"/>
-                        <vc:DataPoint AxisXLabel="Shell" YValue="318845"/>
-                        <vc:DataPoint AxisXLabel="BP" YValue="274316"/>
-                        <vc:DataPoint AxisXLabel="General Motors" YValue="207349"/>
+                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint YValue="35"/>
+                        <vc:DataPoint YValue="27"/>
+                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint YValue="35"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </Window>
