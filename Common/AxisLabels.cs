@@ -2082,6 +2082,12 @@ namespace Visifire.Charts
             // For top or bottom these will remain zero
             TopOverflow = 0;
             BottomOverflow = 0;
+
+            if ((Boolean)(Chart as Chart).ScrollingEnabled && Width > ParentAxis.Width)
+            {
+                LeftOverflow = 0;
+                RightOverflow = 0;
+            }
         }
 
         /// <summary>
@@ -2110,6 +2116,12 @@ namespace Visifire.Charts
             // For left or right these will remain zero
             LeftOverflow = 0;
             RightOverflow = 0;
+
+            if ((Boolean)(Chart as Chart).ScrollingEnabled && Height > ParentAxis.Height)
+            {
+                TopOverflow = 0;
+                BottomOverflow = 0;
+            }
         }
 
         /// <summary>

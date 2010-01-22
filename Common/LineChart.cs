@@ -959,7 +959,7 @@ namespace Visifire.Charts
                     dataPoint.Marker.MarkerShape.MouseEnter += delegate(object sender, MouseEventArgs e)
                     {   
                         if (!dataPoint.Selected)
-                        {
+                        {   
                             Shape shape = sender as Shape;
                             shape.Stroke = new SolidColorBrush(Colors.Red);
                             shape.StrokeThickness = dataPoint.Marker.BorderThickness;
@@ -988,15 +988,17 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPoint"></param>
         internal static void HideDataPointMarker(DataPoint dataPoint)
-        {
+        {   
             Brush tarnsparentColor = new SolidColorBrush(Colors.Transparent);
             dataPoint.Marker.MarkerShape.Fill = tarnsparentColor;
-            dataPoint.Marker.MarkerShape.Stroke = tarnsparentColor;
+
+            SolidColorBrush stroke = dataPoint.Marker.MarkerShape.Stroke as SolidColorBrush;
+
+            if(!(stroke != null && stroke.Color.ToString().Equals(tarnsparentColor.ToString())))
+                dataPoint.Marker.MarkerShape.Stroke = tarnsparentColor;
 
             if (dataPoint.Marker.MarkerShadow != null)
-            {   
                 dataPoint.Marker.MarkerShadow.Visibility = Visibility.Collapsed;
-            }
 
             if (dataPoint.Marker.BevelLayer != null)
                 dataPoint.Marker.BevelLayer.Visibility = Visibility.Collapsed;
@@ -2033,7 +2035,12 @@ namespace Visifire.Charts
             Marker marker = dataPoint.Marker;
             marker.ScaleFactor = (Double) dataPoint.MarkerScale;
             marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
-            marker.BorderColor = dataPoint.MarkerBorderColor;
+
+            if ((Boolean)dataPoint.MarkerEnabled)
+                marker.BorderColor = dataPoint.MarkerBorderColor;
+            else
+                marker.BorderColor = new SolidColorBrush(Colors.Transparent);
+            
             marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
             marker.ShadowEnabled = (Boolean) dataPoint.ShadowEnabled;
             marker.MarkerFillColor = dataPoint.MarkerColor;

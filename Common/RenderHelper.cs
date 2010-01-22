@@ -242,7 +242,7 @@ namespace Visifire.Charts
                                 RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
                             }
                         }
-
+                       
                         // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
                         break;

@@ -13,8 +13,10 @@ using System.Windows.Shapes;
 
 #endif
 using System.Windows.Media;
-
+using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.IO;
 
 namespace Visifire.Commons
 {
@@ -172,6 +174,24 @@ namespace Visifire.Commons
             typeof(VisifireControl),
             new PropertyMetadata(true, OnWatermarkPropertyChanged));
 
+        /// <summary>
+        /// Enable/Disable the save icon
+        /// </summary>
+        public Boolean ToolBarEnabled
+        {   
+            get { return (Boolean)GetValue(ToolBarEnabledProperty); }
+            set { SetValue(ToolBarEnabledProperty, value); }
+        }
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.Chart.SaveIconEnabled dependency property.  
+        /// </summary>
+        public static readonly DependencyProperty ToolBarEnabledProperty =
+            DependencyProperty.Register("ToolBarEnabled",
+            typeof(Boolean),
+            typeof(VisifireControl),
+            new PropertyMetadata(false, OnSaveIconEnabledPropertyChanged));
+
         #endregion
 
         #region Public Events And Delegates
@@ -201,6 +221,295 @@ namespace Visifire.Commons
         }
 
         /// <summary>
+        /// Load ToolBar at the top-right side corner of the chart.
+        /// </summary>
+        protected void LoadToolBar()
+        {
+            _toolbarContainer = new StackPanel();
+            _toolbarContainer.Orientation = Orientation.Horizontal;
+            _toolbarContainer.HorizontalAlignment = HorizontalAlignment.Right;
+            _toolbarContainer.VerticalAlignment = VerticalAlignment.Top;
+            _toolbarContainer.Margin = new Thickness(0, 3, 5, 0);
+            _toolbarContainer.SetValue(Canvas.ZIndexProperty, 90000);
+ 
+            LoadWatermark();
+            LoadSaveIcon();
+            
+            _rootElement.Children.Add(_toolbarContainer);
+        }
+
+        /// <summary>
+        /// Update position of the tooltip according to mouse position
+        /// </summary>
+        /// <param name="sender">FrameworkElement</param>
+        /// <param name="e">MouseEventArgs</param>
+        internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
+        {
+            if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
+            {
+                Double actualX = e.GetPosition(this).X;
+                Double x = actualX;
+                Double y = e.GetPosition(this).Y;
+
+                #region Set position of ToolTip
+
+                _toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                _toolTip.UpdateLayout();
+
+                Size toolTipSize = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
+
+                y = y - (toolTipSize.Height + 5);
+
+                x = x - toolTipSize.Width / 2;
+
+                if (x <= 0)
+                {
+                    x = e.GetPosition(this).X + 10;
+                    y = e.GetPosition(this).Y + 20;
+
+                    if ((y + toolTipSize.Height) >= this.ActualHeight)
+                        y = this.ActualHeight - toolTipSize.Height;
+                }
+
+                if ((x + toolTipSize.Width) >= this.ActualWidth)
+                {
+                    x = e.GetPosition(this).X - toolTipSize.Width;
+                    y = e.GetPosition(this).Y - toolTipSize.Height;
+                }
+
+                if (y < 0)
+                    y = e.GetPosition(this).Y + 20;
+
+                if (x + toolTipSize.Width > this.ActualWidth)
+                    x = x + toolTipSize.Width - this.ActualWidth;
+
+                if (toolTipSize.Width == _toolTip.MaxWidth)
+                    x = 0;
+
+                if (x < 0)
+                    x = 0;
+
+                // If tooltip still goes out of towards y
+                if (!Double.IsNaN(this.ActualHeight) && y + toolTipSize.Height > this.ActualHeight)
+                {
+                    y = 0;
+                    x = actualX + 10;
+                    if (x <= 0)
+                        x = e.GetPosition(this).X + 10;
+
+                    if ((x + toolTipSize.Width) >= this.ActualWidth)
+                        x = e.GetPosition(this).X - toolTipSize.Width;
+
+                    if (x + toolTipSize.Width > this.ActualWidth)
+                        x = x + toolTipSize.Width - this.ActualWidth;
+
+                    if (toolTipSize.Width == _toolTip.MaxWidth)
+                        x = 0;
+
+                    if (x < 0)
+                        x = 0;
+
+                }
+
+                _toolTip.SetValue(Canvas.LeftProperty, x);
+                _toolTip.SetValue(Canvas.TopProperty, y);
+
+                #endregion
+            }
+            else
+            {
+                _toolTip.Hide();
+            }
+        }
+
+        private void LoadSaveIcon()
+        {   
+            _saveIconImage = new System.Windows.Controls.Image();
+            _saveIconImage.HorizontalAlignment = HorizontalAlignment.Right;
+            _saveIconImage.VerticalAlignment = VerticalAlignment.Center;
+            _saveIconImage.Margin = new Thickness(2, 0, 0, 0);
+            _saveIconImage.Width = _saveIconImage.Height = 14;
+            _saveIconImage.Cursor = Cursors.Hand;
+
+            _saveIconImage.MouseMove += delegate(Object sender, MouseEventArgs e)
+            {
+                _toolTip.Text = "Save as image";
+                _toolTip.Show();
+                UpdateToolTipPosition(sender, e);
+            };
+
+            _saveIconImage.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _toolTip.Text = "";
+                _toolTip.Hide();
+            };
+
+            _saveIconImage.MouseLeftButtonUp += delegate { Save(null, Visifire.Charts.ExportType.Jpg, true); };
+            Graphics.SetImageSource(_saveIconImage , "Visifire.Charts." + "save_icon.png");
+            _saveIconImage.Visibility = ToolBarEnabled ? Visibility.Visible : Visibility.Collapsed;
+            _toolbarContainer.Children.Add(_saveIconImage);
+        }
+
+        protected virtual void Save(String path, Visifire.Charts.ExportType exportType, Boolean showDilog)
+        {   
+            if (_saveIconImage != null)
+            {   
+                _saveIconImage.Visibility = Visibility.Collapsed;
+                _toolTip.Hide();
+                _toolbarContainer.UpdateLayout();
+            }
+#if SL      
+            try
+            {   
+                WriteableBitmap bitmap = new WriteableBitmap(this, null);
+
+                if (bitmap != null)
+                {   
+                    SaveFileDialog saveDlg = new SaveFileDialog();
+
+                    saveDlg.Filter = "JPEG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp";
+                    saveDlg.DefaultExt = ".jpg";
+                    
+                    if ((bool)saveDlg.ShowDialog())
+                    {
+                        using (Stream fs = saveDlg.OpenFile())
+                        {   
+                            String[] filename = saveDlg.SafeFileName.Split('.');
+                            String fileExt;
+
+                            if (filename.Length >= 2)
+                            {
+                                fileExt = filename[filename.Length - 1];
+                                exportType = (Visifire.Charts.ExportType)Enum.Parse(typeof(Visifire.Charts.ExportType), fileExt, true);
+                            }
+                            else
+                                exportType = Visifire.Charts.ExportType.Jpg;
+
+                            MemoryStream stream = Graphics.GetImageStream(bitmap, exportType);
+
+                            // Get Bytes from memory stream and write into IO stream
+                            byte[] binaryData = new Byte[stream.Length];
+                            long bytesRead = stream.Read(binaryData, 0, (int)stream.Length);
+                            fs.Write(binaryData, 0, binaryData.Length);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_saveIconImage != null)
+                {
+                    _saveIconImage.Visibility = Visibility.Visible;
+                }
+                System.Diagnostics.Debug.WriteLine("Note: Please make sure that Height and Width of the chart is set properly.");
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+#else       
+            // Matrix m = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+            // double dx = m.M11* 96;
+            // double dy = m.M22 * 96;
+
+            // Save current canvas transform
+            Transform transform = this.LayoutTransform;
+            
+            // reset current transform (in case it is scaled or rotated)
+            _rootElement.LayoutTransform = null;
+
+            // Create a render bitmap and push the surface to it
+            RenderTargetBitmap renderBitmap =
+              new RenderTargetBitmap(
+                    (int)(this.ActualWidth),
+                    (int)(this.ActualHeight),
+                    96d,
+                    96d,
+                    PixelFormats.Pbgra32);
+            renderBitmap.Render(_rootElement);
+
+            if (showDilog)
+            {   
+                Microsoft.Win32.SaveFileDialog saveDlg = new Microsoft.Win32.SaveFileDialog();
+
+                saveDlg.Filter = "Jpg Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp";
+                saveDlg.DefaultExt = ".jpg";
+                
+                if ((bool)saveDlg.ShowDialog())
+                {   
+                    BitmapEncoder encoder;
+               
+                    if (saveDlg.FilterIndex == 2)
+                        encoder = new BmpBitmapEncoder();
+                    else
+                        encoder = new JpegBitmapEncoder();
+
+                    using (Stream fs = saveDlg.OpenFile())
+                    {
+                        encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                        // save the data to the stream
+                        encoder.Save(fs);
+                    }
+                }
+            }
+            else
+            {
+                path = System.IO.Path.GetFullPath(path.Trim());
+                String fileName = System.IO.Path.GetFileName(path);
+
+                if (String.IsNullOrEmpty(fileName))
+                {
+                    fileName = "VisifireChart";
+                    path += fileName;
+                }
+
+                switch (exportType)
+                {
+                    case Visifire.Charts.ExportType.Bmp:
+                        path += ".bmp";
+                        break;
+
+                    default:
+                        path += ".jpg";
+                        break;
+                }
+
+                FileStream outStream;
+
+                // Create a file stream for saving image
+                using (outStream = new FileStream(path, FileMode.Create))
+                {   
+                    BitmapEncoder encoder;
+
+                    switch (exportType)
+                    {   
+                        case Visifire.Charts.ExportType.Bmp:
+                            encoder = new BmpBitmapEncoder();
+                            break;
+                            
+                        default:
+                            encoder = new JpegBitmapEncoder();
+                            break;
+                    }
+
+                    // push the rendered bitmap to it
+                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+                    // save the data to the stream
+                    encoder.Save(outStream);
+                }
+
+                if (outStream == null)
+                    throw new System.IO.IOException("Unable to export the chart to an image as the specified path is invalid.");
+            }
+
+            // Restore previously saved layout
+            _rootElement.LayoutTransform = transform;
+
+#endif
+
+            if (_saveIconImage != null && ToolBarEnabled)
+                _saveIconImage.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
         /// Load watermark for www.visifire.com, present at the right and top side corner of the chart.
         /// </summary>
         protected virtual void LoadWatermark()
@@ -214,8 +523,8 @@ namespace Visifire.Commons
             {   
                 _waterMarkElement = new TextBlock();
                 _waterMarkElement.HorizontalAlignment = HorizontalAlignment.Right;
-                _waterMarkElement.VerticalAlignment = VerticalAlignment.Top;
-                _waterMarkElement.Margin = new Thickness(0, 3, 5, 0);
+                _waterMarkElement.VerticalAlignment = VerticalAlignment.Center;
+                _waterMarkElement.Margin = new Thickness(0, 0, 0, 0);
                 _waterMarkElement.SetValue(Canvas.ZIndexProperty, 90000);
                 _waterMarkElement.Text = text;
 
@@ -225,7 +534,7 @@ namespace Visifire.Commons
                 _waterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
                 _waterMarkElement.FontSize = 9;
                 AttachHref(this, _waterMarkElement, href, HrefTargets._blank);
-                _rootElement.Children.Add(_waterMarkElement);
+                _toolbarContainer.Children.Add(_waterMarkElement);
             }
         }
 
@@ -240,6 +549,18 @@ namespace Visifire.Commons
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// SaveIconEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnSaveIconEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            VisifireControl c = d as VisifireControl;
+            if (c._saveIconImage != null)
+                c._saveIconImage.Visibility = ((Boolean)e.NewValue) ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         #endregion
 
@@ -450,6 +771,10 @@ namespace Visifire.Commons
         internal const string ToolTipCanvasName = "ToolTipCanvas";
 
         internal Visifire.Charts.ToolTip _toolTip;
+
+        private StackPanel _toolbarContainer;
+
+        private System.Windows.Controls.Image _saveIconImage;
 
         #endregion
 

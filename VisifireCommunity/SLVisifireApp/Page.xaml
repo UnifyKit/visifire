@@ -2,21 +2,20 @@
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-
+              Width="800" Height="600"
 >
-    <Grid x:Name="LayoutRoot" Height="Auto" Width="Auto">
-
-
-        <vc:Chart Watermark="True" Name="MyChart" Width="500" Height="300" Theme="Theme1" BorderThickness="0.5" BorderBrush="Gray" AnimatedUpdate="true" >
+    <Grid x:Name="LayoutRoot">
+        
+        <vc:Chart Name="MyChart" ToolBarEnabled="True" Theme="Theme1" Width="400" Height="300">
 
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="50"/>
-                        <vc:DataPoint YValue="35"/>
-                        <vc:DataPoint YValue="27"/>
-                        <vc:DataPoint YValue="50"/>
-                        <vc:DataPoint YValue="35"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="15"/>
+                        <vc:DataPoint YValue="20"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="18"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

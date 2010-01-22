@@ -486,15 +486,34 @@ namespace Visifire.Charts
         /// <param name="top">Actual Height of chart canvas</param>
         /// <param name="isPositive">Whether DataPoint value is negative or positive</param>
         /// <returns>Zindex as Int32</returns>
-        private static Int32 GetStackedBarZIndex(Double left, Double top, Double width, Double height, Boolean isPositive)
+        private static Int32 GetStackedBarZIndex(Double plotAreaCanvasHeight, Double left, Double top, Double width, Double height, Boolean isPositive, Int32 index)
         {
+            //Double zOffset = Math.Pow(10, (Int32)(Math.Log10(width) - 1));
+            //Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
+            //Int32 zindex = (Int32)((top) * zOffset) + iOffset;
+            //if (isPositive)
+            //    return zindex;
+            //else
+            //    return Int32.MinValue + zindex;
+
             Double zOffset = Math.Pow(10, (Int32)(Math.Log10(width) - 1));
             Int32 iOffset = (Int32)(left / (zOffset < 1 ? 1 : zOffset));
-            Int32 zindex = (Int32)((top) * zOffset) + iOffset;
-            if (isPositive)
-                return zindex;
+
+            Int32 zindex = 0;
+
+            if (top < plotAreaCanvasHeight)
+                zindex = (Int32)((plotAreaCanvasHeight - top) * zOffset) + iOffset;
             else
-                return Int32.MinValue + zindex;
+                zindex = (Int32)((height - top) * zOffset) + iOffset;
+
+            zindex = zindex / 2;
+
+            if (isPositive)
+            {
+                return zindex + index;
+            }
+            else
+                return Int32.MinValue + zindex + index;
         }
 
         /// <summary>
@@ -747,6 +766,7 @@ namespace Visifire.Charts
             barParams.IsStacked = true;
             Boolean isTopOFStack;
             DataPoint dataPointAtTopOfStack = null;
+            Int32 positiveIndex = 1, negativeIndex = 1;
 
             Double top = Graphics.ValueToPixelPosition(columnCanvas.Height, 0, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValue) + drawingIndex * heightPerBar - (maxBarHeight / 2);
             Double left = Graphics.ValueToPixelPosition(0, columnCanvas.Width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
@@ -782,9 +802,10 @@ namespace Visifire.Charts
 
                  CreateStackedBarVisual(dataPoint.Parent.RenderAs, dataPoint.InternalYValue >= 0, columnCanvas, labelCanvas, dataPoint,
                      top, ref left, ref right, columnHeight, ref prevSum, absoluteSum, depth3d, animationEnabled,
-                     animationBeginTime, isTopOFStack);
+                     animationBeginTime, isTopOFStack, positiveIndex);
 
                  animationBeginTime += animationTime;
+                 positiveIndex++;
             }
 
             prevSum = 0;
@@ -811,9 +832,10 @@ namespace Visifire.Charts
 
                 CreateStackedBarVisual(dataPoint.Parent.RenderAs, dataPoint.InternalYValue >= 0, columnCanvas, labelCanvas, dataPoint, 
                     top, ref left, ref right, columnHeight, ref prevSum, absoluteSum, depth3d, animationEnabled, 
-                    animationBeginTime, isTopOFStack);
+                    animationBeginTime, isTopOFStack, negativeIndex);
 
                 animationBeginTime += animationTime;
+                negativeIndex--;
             }
         }
 
@@ -932,7 +954,7 @@ namespace Visifire.Charts
         private static void CreateStackedBarVisual(RenderAs chartType, Boolean isPositive, Canvas columnCanvas, Canvas labelCanvas,
             DataPoint dataPoint, Double top, ref Double left, ref Double right, Double finalHeight,
             ref Double prevSum, Double absoluteSum, Double depth3d, Boolean animationEnabled,
-            Double animationBeginTime, Boolean isTopOFStack)
+            Double animationBeginTime, Boolean isTopOFStack, Int32 PositiveOrNegativeZIndex)
         {
             PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
             Chart chart = dataPoint.Chart as Chart;
@@ -967,7 +989,7 @@ namespace Visifire.Charts
                     (BorderStyles)dataPoint.BorderStyle, dataPoint.BorderColor, dataPoint.BorderThickness.Left);
                
                 barVisual = bar.Visual as Panel;
-                barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(left, top, columnCanvas.Width, columnCanvas.Height, (dataPoint.InternalYValue > 0)));
+                barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(chart.ChartArea.PlotAreaCanvas.Height, left, top, columnCanvas.Width, columnCanvas.Height, (dataPoint.InternalYValue > 0), PositiveOrNegativeZIndex));
 
                 dataPoint.Faces = bar;
                 ColumnChart.ApplyOrRemoveShadow(dataPoint, true, false);

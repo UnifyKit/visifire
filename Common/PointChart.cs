@@ -460,7 +460,7 @@ namespace Visifire.Charts
             Double plotWidth = chart.ChartArea.ChartVisualCanvas.Width;
             ColumnChart.UpdateParentVisualCanvasSize(chart, pointChartCanvas);
 
-            if (property == VcProperties.Enabled)
+            if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {
                 CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
                 return;
@@ -469,7 +469,7 @@ namespace Visifire.Charts
             if (dataPoint.Faces == null)
                 return;
 
-            Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
+            //Grid bubbleVisual = dataPoint.Faces.Visual as Grid;
             
             switch (property)
             {

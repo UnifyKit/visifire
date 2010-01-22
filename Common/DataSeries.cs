@@ -115,9 +115,9 @@ namespace Visifire.Charts
         /// </returns>
         private static readonly DependencyProperty FillTypeProperty = DependencyProperty.Register
             ("FillType",
-            typeof(FillTypes),
+            typeof(FillType),
             typeof(DataSeries),
-            new PropertyMetadata(FillTypes.Hollow, OnFillTypePropertyChanged));
+            new PropertyMetadata(FillType.Hollow, OnFillTypePropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.MinPointHeight dependency property.
@@ -790,11 +790,11 @@ namespace Visifire.Charts
         /// <summary>
         /// FillType for funnel
         /// </summary>
-        internal FillTypes FillType
+        internal FillType FillType
         {   
             get
             {
-                return (FillTypes)GetValue(FillTypeProperty);
+                return (FillType)GetValue(FillTypeProperty);
             }
             set
             {

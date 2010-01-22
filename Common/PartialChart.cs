@@ -47,7 +47,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 #endif
-
+using System.ComponentModel;
 using Visifire.Commons;
 using System.Windows.Controls.Primitives;
 
@@ -184,7 +184,7 @@ namespace Visifire.Charts
 
             LoadControlsFromTemplate();
 
-            LoadWatermark();
+            LoadToolBar();
 
             if (StyleDictionary == null)
                 LoadTheme("Theme1", false);
@@ -212,6 +212,32 @@ namespace Visifire.Charts
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
         }
+
+
+       
+        /// <summary>
+        /// Export Visifire chart 
+        /// </summary>
+        /// <param name="Chart">Visifire.Charts.Chart</param>
+#if SL
+        [System.Windows.Browser.ScriptableMember()]
+#endif
+        public void Export()
+        {   
+            // User will be able to select the image format type while saving
+            base.Save(null, ExportType.Jpg , true);
+        }
+
+#if WPF
+        /// <summary>
+        /// Export Visifire chart 
+        /// </summary>
+        /// <param name="Chart">Visifire.Charts.Chart</param>
+        public void Export(String path, ExportType exportType)
+        {   
+            base.Save(path, exportType, false);
+        }
+#endif
 
         #endregion
 
@@ -867,7 +893,7 @@ namespace Visifire.Charts
         #region Protected Methods
 
         #endregion
-             
+
         #region Private Delegates
 
         #endregion
@@ -1225,21 +1251,32 @@ namespace Visifire.Charts
             {
                 if (e.OldItems != null)
                 {
+
+                    List<DataSeries> dataSeriesListExceptOldItems = (from x in Series where !e.OldItems.Contains(x) select x).ToList();
+                    List<Panel> preExistingCanvases = (from can in dataSeriesListExceptOldItems select can.Visual).ToList();
+
                     foreach (DataSeries ds in e.OldItems)
                     {
-                        if(ds.PlotGroup.DataSeriesList.Count == 1 || (View3D && ds.RenderAs == RenderAs.Area))
-                        {   
-                            Panel seriesVisual = ds.Visual;
+                        if (ds.Visual != null)
+                        {
+                            if(preExistingCanvases.Contains(ds.Visual))
+                                continue;
+                            
+                            if ((ds.PlotGroup != null && ds.PlotGroup.DataSeriesList.Count == 1) || (ds.RenderAs == RenderAs.Area))
+                            {
+                                Panel seriesVisual = ds.Visual;
 
-                            // remove pre existing parent panel for the series visual 
-                            if (seriesVisual != null && seriesVisual.Parent != null)
-                            {   
-                                Panel parent = seriesVisual.Parent as Panel;
-                                parent.Children.Remove(seriesVisual);
+                                // remove pre existing parent panel for the series visual 
+                                if (seriesVisual != null && seriesVisual.Parent != null)
+                                {
+                                    Panel parent = seriesVisual.Parent as Panel;
+                                    parent.Children.Remove(seriesVisual);
+                                }
+
+                                ds.Visual = null;
                             }
-                        }
 
-                        ds.Visual = null;
+                        }
                     }
                 }
             }
@@ -2057,91 +2094,7 @@ namespace Visifire.Charts
             if (!String.IsNullOrEmpty(newValue))
                 AttachToolTip(this, this, this);
         }
-
-        /// <summary>
-        /// Update position of the tooltip according to mouse position
-        /// </summary>
-        /// <param name="sender">FrameworkElement</param>
-        /// <param name="e">MouseEventArgs</param>
-        internal void UpdateToolTipPosition(object sender, MouseEventArgs e)
-        {
-            if (ToolTipEnabled && (Boolean)_toolTip.Enabled)
-            {
-                Double actualX = e.GetPosition(this).X;
-                Double x = actualX;
-                Double y = e.GetPosition(this).Y;
-
-                #region Set position of ToolTip
-
-                _toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
-                _toolTip.UpdateLayout();
-
-                Size toolTipSize = Visifire.Commons.Graphics.CalculateVisualSize(_toolTip._borderElement);
-
-                y = y - (toolTipSize.Height + 5);
-
-                x = x - toolTipSize.Width / 2;
-
-                if (x <= 0)
-                {
-                    x = e.GetPosition(this).X + 10;
-                    y = e.GetPosition(this).Y + 20;
-
-                    if ((y + toolTipSize.Height) >= this.ActualHeight)
-                        y = this.ActualHeight - toolTipSize.Height;
-                }
-
-                if ((x + toolTipSize.Width) >= this.ActualWidth)
-                {
-                    x = e.GetPosition(this).X - toolTipSize.Width;
-                    y = e.GetPosition(this).Y - toolTipSize.Height;
-                }
-
-                if (y < 0)
-                    y = e.GetPosition(this).Y + 20;
-
-                if (x + toolTipSize.Width > this.ActualWidth)
-                    x = x + toolTipSize.Width - this.ActualWidth;
-
-                if (toolTipSize.Width == _toolTip.MaxWidth)
-                    x = 0;
-
-                if (x < 0)
-                    x = 0;
-
-                // If tooltip still goes out of towards y
-                if (!Double.IsNaN(this.ActualHeight) && y + toolTipSize.Height > this.ActualHeight)
-                {
-                    y = 0;
-                    x = actualX + 10;
-                    if (x <= 0)
-                        x = e.GetPosition(this).X + 10;
-
-                    if ((x + toolTipSize.Width) >= this.ActualWidth)
-                        x = e.GetPosition(this).X - toolTipSize.Width;
-
-                    if (x + toolTipSize.Width > this.ActualWidth)
-                        x = x + toolTipSize.Width - this.ActualWidth;
-
-                    if (toolTipSize.Width == _toolTip.MaxWidth)
-                        x = 0;
-
-                    if (x < 0)
-                        x = 0;
-
-                }
-
-                _toolTip.SetValue(Canvas.LeftProperty, x);
-                _toolTip.SetValue(Canvas.TopProperty, y);
-
-                #endregion
-            }
-            else
-            {
-                _toolTip.Hide();
-            }
-        }
-
+        
         /// <summary>
         /// Get collection of titles which are docked inside PlotArea
         /// using LINQ

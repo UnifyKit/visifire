@@ -1001,7 +1001,7 @@ namespace Visifire.Charts
         {
             Double SOLID_FUNNEL_EDGE_THICKNESS = 3;
 
-            if (funnelSlice.Index == 0 && is3D && isLightingGradientLayer && (funnelSlice.FillType == FillTypes.Solid))
+            if (funnelSlice.Index == 0 && is3D && isLightingGradientLayer && (funnelSlice.FillType == FillType.Solid))
             {   
                 funnelSlice.Height += SOLID_FUNNEL_EDGE_THICKNESS;
             }
@@ -1156,7 +1156,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (funnelSlice.FillType == FillTypes.Solid && funnelSlice.Index == 0)
+                    if (funnelSlice.FillType == FillType.Solid && funnelSlice.Index == 0)
                     {
                         path4Slice.SetValue(Canvas.ZIndexProperty, 1);
                         path4Slice.SetValue(Canvas.TopProperty, (-SOLID_FUNNEL_EDGE_THICKNESS));
@@ -1473,7 +1473,7 @@ namespace Visifire.Charts
 
                 LinearGradientBrush gb = null;
 
-                if (funnelSlice.FillType == FillTypes.Solid)
+                if (funnelSlice.FillType == FillType.Solid)
                 {
                     gb = new LinearGradientBrush() { StartPoint = new Point(0, 0), EndPoint = new Point(1, 1) };
                     gb.GradientStops.Add(new GradientStop() { Color = Graphics.GetLighterColor(solidBrush.Color, 1 - r, 1 - g, 1 - b), Offset = 0 });
@@ -1482,7 +1482,7 @@ namespace Visifire.Charts
                     gb.Opacity = 1;
 
                 }
-                else if (funnelSlice.FillType == FillTypes.Hollow)
+                else if (funnelSlice.FillType == FillType.Hollow)
                 {   
                     gb = new LinearGradientBrush()
                     {
@@ -1600,7 +1600,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Fill types
         /// </summary>
-        public FillTypes FillType;
+        public FillType FillType;
 
         /// <summary>
         /// Holds the DataPoint visual position if a other DataPoints (funnel slices)

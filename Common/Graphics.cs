@@ -10,7 +10,6 @@ using System.Xml;
 using System.Globalization;
 using System.Linq;
 
-
 #else
 
 using System;
@@ -21,11 +20,14 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Windows.Markup;
 using System.Globalization;
+using FluxJpeg.Core;
+using FluxJpeg.Core.Encoder;
+
 #endif
 using System.ComponentModel;
 using Visifire.Charts;
 using Visifire.Commons;
-
+using System.Windows.Media.Imaging;
 
 namespace Visifire.Charts
 {
@@ -229,7 +231,7 @@ namespace Visifire.Charts
     /// Visifire.Charts.ExtendedGraphics class
     /// </summary>
     internal class ExtendedGraphics
-    {
+    {   
         /// <summary>
         /// Initializes a new instance of Visifire.Charts.ExtendedGraphics class
         /// </summary>
@@ -717,7 +719,190 @@ namespace Visifire.Commons
 
         #region Static Methods
 
+#if SL
+
+        /// <summary>
+        /// Get image MemoryStream from WriteableBitmap
+        /// </summary>
+        /// <param name="bitmap">WriteableBitmap</param>
+        /// <returns>MemoryStream</returns>
+        public static System.IO.MemoryStream GetImageStream(WriteableBitmap bitmap, Visifire.Charts.ExportType exportTypes)
+        {   
+            byte[][,] raster = ReadRasterInformation(bitmap);
+
+            if (exportTypes == ExportType.Jpg)
+            {
+                return EncodeRasterInformationToStream(raster, ColorSpace.RGB);
+            }
+            else
+            {   
+                int width = bitmap.PixelWidth;
+                int height = bitmap.PixelHeight;
+
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+
+                // http://en.wikipedia.org/wiki/BMP_file_format
+                #region BMP File Header(14 bytes)
+
+                // Magic number(2 bytes):BM
+                ms.WriteByte(0x42); ms.WriteByte(0x4D);
+
+                // Size of the BMP file in bytes(4 bytes)
+                long len = bitmap.Pixels.Length * 4 + 0x36;
+
+                ms.WriteByte((byte)len);
+                ms.WriteByte((byte)(len >> 8));
+                ms.WriteByte((byte)(len >> 16));
+                ms.WriteByte((byte)(len >> 24));
+
+                // Reserved(2 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Reserved(2 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Offset(4 bytes)
+                ms.WriteByte(0x36); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                #endregion
+
+                // http://en.wikipedia.org/wiki/BMP_file_format
+                #region Bitmap Information(40 bytes:Windows V3)
+
+                // Size of this header(4 bytes)
+                ms.WriteByte(0x28); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Bitmap width in pixels(4 bytes)
+                ms.WriteByte((byte)width); ms.WriteByte((byte)(width >> 8)); ms.WriteByte((byte)(width >> 16));
+                ms.WriteByte((byte)(width >> 24));
+
+                // Bitmap height in pixels(4 bytes)
+                ms.WriteByte((byte)height); ms.WriteByte((byte)(height >> 8)); ms.WriteByte((byte)(height >> 16)); ms.WriteByte((byte)(height >> 24));
+
+                // Bumber of color planes(2 bytes)
+                ms.WriteByte(0x01); ms.WriteByte(0x00);
+
+                // Number of bits per pixel(2 bytes)
+                ms.WriteByte(0x20); ms.WriteByte(0x00);
+
+                // Compression method(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+                
+                // Image size(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Horizontal resolution of the image(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+                
+                // Vertical resolution of the image(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Number of colors in the color palette(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+
+                // Number of important colors(4 bytes)
+                ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00); ms.WriteByte(0x00);
+                
+                #endregion
+
+                // Write Bitmap data
+                for (int columnId = height - 1; columnId >= 0; columnId--)
+                {
+                    for (int rowId = 0; rowId < width; rowId++)
+                    {
+                        int pixel = bitmap.Pixels[width * columnId + rowId];
+
+                        ms.WriteByte((byte)(pixel & 0xff)); //B
+                        ms.WriteByte((byte)((pixel >> 8) & 0xff)); //G
+                        ms.WriteByte((byte)((pixel >> 0x10) & 0xff)); //R
+                        ms.WriteByte(0x00); //reserved
+                    }
+                }
+
+                return new System.IO.MemoryStream(ms.GetBuffer(), true);
+            }
+        }
+
+        /// <summary>
+        /// Reads raster information from WriteableBitmap
+        /// </summary>
+        /// <param name="bitmap">WriteableBitmap</param>
+        /// <returns>Array of bytes</returns>
+        public static byte[][,] ReadRasterInformation(WriteableBitmap bitmap)
+        {
+            int width = bitmap.PixelWidth;
+            int height = bitmap.PixelHeight;
+            int bands = 3;
+            byte[][,] raster = new byte[bands][,];
+
+            for (int i = 0; i < bands; i++)
+            {
+                raster[i] = new byte[width, height];
+            }
+
+            for (int row = 0; row < height; row++)
+            {   
+                for (int column = 0; column < width; column++)
+                {
+                    int pixel = bitmap.Pixels[width * row + column];
+                    raster[0][column, row] = (byte)(pixel >> 16);
+                    raster[1][column, row] = (byte)(pixel >> 8);
+                    raster[2][column, row] = (byte)pixel;
+                }
+            }
+
+            return raster;
+        }
+
+        /// <summary>
+        /// Encode raster information to MemoryStream
+        /// </summary>
+        /// <param name="raster">Raster information (Array of bytes)</param>
+        /// <param name="colorSpace">ColorSpace used</param>
+        /// <returns>MemoryStream</returns>
+        public static System.IO.MemoryStream EncodeRasterInformationToStream(byte[][,] raster, ColorSpace colorSpace)
+        {
+            ColorModel model = new ColorModel { colorspace = ColorSpace.RGB };
+            FluxJpeg.Core.Image img = new FluxJpeg.Core.Image(model, raster);
+
+            //Encode the Image as a JPEG
+            System.IO.MemoryStream stream = new System.IO.MemoryStream();
+            FluxJpeg.Core.Encoder.JpegEncoder encoder = new FluxJpeg.Core.Encoder.JpegEncoder(img, 100, stream);
+            encoder.Encode();
+            
+            // Back to the start
+            stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+            return stream;
+        }
+#endif
+
+        /// <summary>
+        /// Set soruce of an image from assembly resource
+        /// </summary>
+        /// <param name="image">Image</param>
+        /// <param name="imageResourcePath">imageResourcePath</param>
+        public static void SetImageSource(System.Windows.Controls.Image image, String imageResourcePath)
+        {   
+            using (System.IO.Stream imageStream = typeof(Chart).Assembly.GetManifestResourceStream(imageResourcePath))
+            {
+                if (imageStream != null)
+                {
+                    BitmapImage bmp = new BitmapImage();
+#if SL
+                    bmp.SetSource(imageStream);
+#else               
+                    bmp.BeginInit();
+                    bmp.StreamSource = imageStream;
+                    bmp.EndInit();
+#endif
+                    image.Source = bmp;
+                }
+            }
+        }
+
         internal static Random RAND = new Random(DateTime.Now.Millisecond);
+
         public static Brush GetRandomColor()
         {
             return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));

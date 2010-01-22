@@ -5,7 +5,7 @@
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
     >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
+        <vc:Chart Name="MyChart"  Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
             
             <vc:Chart.Titles>
                 <vc:Title Text="Addmission Process"/>

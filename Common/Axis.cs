@@ -4120,6 +4120,11 @@ namespace Visifire.Charts
 
         internal void FireScrollEvent(ScrollEventArgs e, Double offsetInPixel)
         {
+            if (_oldScrollBarOffsetInPixel == offsetInPixel)
+                return;
+
+            _oldScrollBarOffsetInPixel = offsetInPixel;
+
             if (AxisRepresentation == AxisRepresentations.AxisX)
             {
                 Chart chart = Chart as Chart;
@@ -4311,6 +4316,10 @@ namespace Visifire.Charts
         /// </summary>
         private Double _axisIntervalOverride;
 
+        /// <summary>
+        /// Old ScrollBar offset value in pixel
+        /// </summary>
+        private Double _oldScrollBarOffsetInPixel = Double.NaN;
 
         /// <summary>
         /// Handler for MouseLeftButtonUp event

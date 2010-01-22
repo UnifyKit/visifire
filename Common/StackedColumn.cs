@@ -438,17 +438,12 @@ namespace Visifire.Charts
 
         public static void UpdateVisualForYValue4StackedBarChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
-            if (dataPoint.Faces == null)
-                return;
+            //if (dataPoint.Faces == null)
+            //    return;
 
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
-            Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
-            Canvas labelCanvas = dataPoint.Faces.LabelCanvas;  // Parent canvas of Datapoint label
-            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
-
-            UpdateParentVisualCanvasSize(chart, columnCanvas);
-            UpdateParentVisualCanvasSize(chart, labelCanvas);
+            Canvas columnCanvas, labelCanvas;
 
             PlotGroup plotGroup = dataSeries.PlotGroup;                                 // PlotGroup reference
 
@@ -457,7 +452,40 @@ namespace Visifire.Charts
 
             // Calculate required parameters for Creating new Stacked Columns
             Double minDiff, heightPerBar, maxBarHeight;
+
+            // Calculate limiting value
+            Double limitingYValue = (plotGroup.AxisY.InternalAxisMinimum > 0) ? plotGroup.AxisY.InternalAxisMinimum : (plotGroup.AxisY.InternalAxisMaximum < 0) ? plotGroup.AxisY.InternalAxisMaximum : 0;
+
+            if (dataPoint.Faces == null)
+            {
+                if (dataSeries != null && dataSeries.Faces != null)
+                {
+                    labelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
+                    columnCanvas = dataSeries.Faces.Visual as Canvas;
+
+                    heightPerBar = CalculateWidthOfEachStackedColumn(chart, plotGroup, columnCanvas.Height, out minDiff, out  maxBarHeight);
+
+                    if (dataPoint.Parent.RenderAs == RenderAs.StackedBar || dataPoint.Parent.RenderAs == RenderAs.StackedBar100)
+                    {
+                        // Create new Column with new YValue
+                        BarChart.DrawStackedBarsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, heightPerBar, maxBarHeight, limitingYValue, depth3d, false);
+                    }
+                }
+                else
+                {
+                    UpdateDataSeries(dataSeries, VcProperties.YValue, null);
+                    return;
+                }
+            }
+
+            Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
+            labelCanvas = dataPoint.Faces.LabelCanvas;  // Parent canvas of Datapoint label
+            columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;//dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
+
             heightPerBar = CalculateWidthOfEachStackedColumn(chart, plotGroup, columnCanvas.Height, out minDiff, out  maxBarHeight);
+
+            UpdateParentVisualCanvasSize(chart, columnCanvas);
+            UpdateParentVisualCanvasSize(chart, labelCanvas);
 
             // List of effected DataPoints for the current update of YValue property of the DataPoint
             XWiseStackedData effectedDataPoints = plotGroup.XWiseStackedDataList[dataPoint.InternalXValue];
@@ -484,9 +512,6 @@ namespace Visifire.Charts
                     columnCanvas.Children.Remove(dp._oldVisual);
                 }
             }
-
-            // Calculate limiting value
-            Double limitingYValue = (plotGroup.AxisY.InternalAxisMinimum > 0) ? plotGroup.AxisY.InternalAxisMinimum : (plotGroup.AxisY.InternalAxisMaximum < 0) ? plotGroup.AxisY.InternalAxisMaximum : 0;
 
             // Create new Column with new YValue
             BarChart.DrawStackedBarsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, dataPointVisual.Height, maxBarHeight, limitingYValue, depth3d, false);
@@ -612,32 +637,64 @@ namespace Visifire.Charts
         
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
-            if (dataPoint.Faces == null)
-                return;
-
             System.Diagnostics.Debug.WriteLine("Animate--YValue" + dataPoint.YValue.ToString() + " IsAxisChange=" + isAxisChanged.ToString());
             
             Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
-            Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
-            Canvas labelCanvas = dataPoint.Faces.LabelCanvas;// (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
-            Canvas columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas; 
-                //dataSeries.Faces.Visual as Canvas;// dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
+            //dataSeries.Faces.Visual as Canvas;// dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
 
-            UpdateParentVisualCanvasSize(chart, columnCanvas);
-            UpdateParentVisualCanvasSize(chart, labelCanvas);
-
-            Double height = labelCanvas.Height;
-            Double width = labelCanvas.Width;
-
-            PlotGroup plotGroup = dataSeries.PlotGroup;                                 // PlotGroup reference
+            Canvas columnCanvas, labelCanvas;
 
             // Calculate 3d depth for the DataPoints
             Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
 
+            PlotGroup plotGroup = dataSeries.PlotGroup;                                 // PlotGroup reference
+
+            Double width, height;
+
             // Calculate required parameters for Creating new Stacked Columns
             Double minDiff, widthPerColumn, maxColumnWidth;
+
+            // Calculate limiting value
+            Double limitingYValue = (plotGroup.AxisY.InternalAxisMinimum > 0) ? plotGroup.AxisY.InternalAxisMinimum : (plotGroup.AxisY.InternalAxisMaximum < 0) ? plotGroup.AxisY.InternalAxisMaximum : 0;
+
+            if (dataPoint.Faces == null)
+            {
+                if (dataSeries != null && dataSeries.Faces != null)
+                {
+                    labelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
+                    columnCanvas = dataSeries.Faces.Visual as Canvas;
+
+                    height = labelCanvas.Height;
+                    width = labelCanvas.Width;
+
+                    widthPerColumn = CalculateWidthOfEachStackedColumn(chart, plotGroup, width, out minDiff, out  maxColumnWidth);
+
+                    if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn || dataPoint.Parent.RenderAs == RenderAs.StackedColumn100)
+                    {
+                        // Create new Column with new YValue
+                        DrawStackedColumnsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, widthPerColumn, maxColumnWidth, limitingYValue, depth3d, false);
+                    }
+                }
+                else
+                {
+                    UpdateDataSeries(dataSeries, VcProperties.YValue, null);
+                    return;
+                }
+            }
+
+            labelCanvas = dataPoint.Faces.LabelCanvas;// (columnCanvas.Parent as Canvas).Children[0] as Canvas; // Parent canvas of Datapoint label
+            columnCanvas = (labelCanvas.Parent as Canvas).Children[1] as Canvas;
+
+            height = labelCanvas.Height;
+            width = labelCanvas.Width;
+
             widthPerColumn = CalculateWidthOfEachStackedColumn(chart, plotGroup, width, out minDiff, out  maxColumnWidth);
+
+            Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;                  // Old visual for the column
+
+            UpdateParentVisualCanvasSize(chart, columnCanvas);
+            UpdateParentVisualCanvasSize(chart, labelCanvas);
 
             // List of effected DataPoints for the current update of YValue property of the DataPoint
             XWiseStackedData effectedDataPoints = plotGroup.XWiseStackedDataList[dataPoint.InternalXValue];
@@ -664,9 +721,6 @@ namespace Visifire.Charts
                     columnCanvas.Children.Remove(dp._oldVisual);
                 }
             }
-
-            // Calculate limiting value
-            Double limitingYValue = (plotGroup.AxisY.InternalAxisMinimum > 0)? plotGroup.AxisY.InternalAxisMinimum : (plotGroup.AxisY.InternalAxisMaximum < 0)? plotGroup.AxisY.InternalAxisMaximum : 0;
 
             // Create new Column with new YValue
             DrawStackedColumnsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, dataPointVisual.Width, maxColumnWidth, limitingYValue, depth3d, false);
