@@ -191,11 +191,15 @@ namespace Visifire.Charts
         {
             if (isScrollingActive && Chart.IsScrollingActivated)
             {
+                chart._centerInnerGrid.Children.Remove(PlotAreaCanvas);
+
                 if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
                     chart._drawingCanvas.Children.Add(PlotAreaCanvas);
             }
             else if (!isScrollingActive && !Chart.IsScrollingActivated)
             {
+                chart._drawingCanvas.Children.Remove(PlotAreaCanvas);
+
                 if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
                     chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
             }
@@ -1484,7 +1488,7 @@ namespace Visifire.Charts
             for (Int32 i = 1; i <= 5; i++)
             {
                 DataPoint dp = new DataPoint();
-                dp.InternalXValue = i;
+                dp.XValue = i;
                 dp.YValue = 0;
                 dp.Color = Graphics.TRANSPARENT_BRUSH;
                 dp.AxisXLabel = i.ToString();
@@ -1492,8 +1496,9 @@ namespace Visifire.Charts
                 ds.DataPoints.Add(dp);
             }
 
+            ds.IsNotificationEnable = false;
             Chart.InternalSeries.Add(ds);
-            ds.IsNotificationEnable = true;
+            
         }
 
         /// <summary>
@@ -2155,7 +2160,7 @@ namespace Visifire.Charts
                 Boolean isVisualExist = false;
                 renderedChart = selectedDataSeries4Rendering[0].Visual as Panel;
 
-                if (renderedChart == null && !(Chart.View3D && selectedDataSeries4Rendering[0].RenderAs == RenderAs.Area))
+                if (renderedChart == null && !(selectedDataSeries4Rendering[0].RenderAs == RenderAs.Area))
                 {   
                     // Check  for pre existing series Visual
                     foreach (DataSeries ds in selectedDataSeries4Rendering)

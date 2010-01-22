@@ -20,19 +20,20 @@
 
 namespace Visifire.Charts
 {
-    public enum Signs
-    {
-        Undefined,
-        Positive, 
-        Negative
+    /// <summary>
+    /// Export file types
+    /// </summary>
+    public enum ExportType
+    {   
+        Jpg = 0,
+        Bmp = 1
     }
-
-
+    
     /// <summary>
     /// Fill types
     /// </summary>
-    public enum FillTypes
-    {
+    public enum FillType
+    {   
         Solid, Hollow
     }
 

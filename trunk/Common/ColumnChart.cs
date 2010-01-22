@@ -1402,6 +1402,9 @@ namespace Visifire.Charts
 
             Faces faces = dataPoint.Faces;
 
+            if (faces == null)
+                return;
+
             foreach (FrameworkElement fe in faces.Parts)
             {   
                 if(fe.Tag == null)
@@ -1865,18 +1868,29 @@ namespace Visifire.Charts
                 // When datapoint faces is null and dataSeries faces is null we need to create atleast once DataPoint 
                 // inorder to generate columnChartCanvas and labelCanvas
                 if (dataSeries != null && dataSeries.Faces != null)
-                {   
+                {
                     labelCanvas = dataSeries.Faces.LabelCanvas as Canvas;
                     columnChartCanvas = dataSeries.Faces.Visual as Canvas;
 
+                    Double sizeOfColumnOrBar;
+
                     if (dataPoint.Parent.RenderAs == RenderAs.Column)
+                    {
+                        sizeOfColumnOrBar = CalculateWidthOfEachColumn(chart, chart.ChartArea.ChartVisualCanvas.Width, dataSeries.PlotGroup.AxisX, RenderAs.Column, Orientation.Horizontal);
                         CreateColumnDataPointVisual(columnChartCanvas, labelCanvas, chart.PlotDetails, dataPoint,
-                        true, 0, depth3d, false);
+                        true, sizeOfColumnOrBar, depth3d, false);
+                    }
                     else
-                        BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, true, 0, depth3d, false);
+                    {
+                        sizeOfColumnOrBar = CalculateWidthOfEachColumn(chart, chart.ChartArea.ChartVisualCanvas.Height, dataSeries.PlotGroup.AxisX, RenderAs.Bar, Orientation.Vertical);
+                        BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, true, sizeOfColumnOrBar, depth3d, false);
+                    }
                 }
                 else
+                {
                     UpdateDataSeries(dataSeries, VcProperties.YValue, null);
+                    return;
+                }
             }
             
             // Parent of the current DataPoint

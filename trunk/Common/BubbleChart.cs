@@ -625,7 +625,7 @@ namespace Visifire.Charts
 
             ColumnChart.UpdateParentVisualCanvasSize(chart, bubleChartCanvas);
             
-            if (property == VcProperties.Enabled)
+            if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {   
                 dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                 CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);

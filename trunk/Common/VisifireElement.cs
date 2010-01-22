@@ -399,7 +399,7 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="sender">FrameworkElement</param>
         /// <param name="e">MouseEventArgs</param>
-        private void UpdateToolTip(object sender, MouseEventArgs e)
+        protected void UpdateToolTip(object sender, MouseEventArgs e)
         {
             if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
                 return;
