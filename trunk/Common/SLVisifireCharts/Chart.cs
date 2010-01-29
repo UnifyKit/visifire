@@ -222,14 +222,19 @@ namespace Visifire.Charts
         /// </summary>
         private void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // This is done because of unexpacted fire of SizeChanged event 
+            // This is done because of unexpected fire of SizeChanged event 
             if (_height != e.NewSize.Height || _width != e.NewSize.Width)
-            {
+            {   
                 _height = e.NewSize.Height;
                 _width = e.NewSize.Width;
 
+                _renderLock = false;
+
                 // Render the chart with new size
-                InvokeRender();
+                if (IsInDesignMode)
+                    Render();
+                else
+                    InvokeRender();
             }
         }
 

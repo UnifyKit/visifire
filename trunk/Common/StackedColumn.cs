@@ -524,10 +524,12 @@ namespace Visifire.Charts
                 if (dataPoint.Storyboard != null)
                 {
                     dataPoint.Storyboard.Stop();
-                    dataPoint.Storyboard = null;
+                    //dataPoint.Storyboard = null;
+                    dataPoint.Storyboard.Children.Clear();
                 }
 
-                dataPoint.Storyboard = new Storyboard();
+                if (dataPoint.Storyboard == null)
+                    dataPoint.Storyboard = new Storyboard();
 
                 // Whether to animate the top of DataPoint Visual
                 Boolean isAnimateLeft = false;
@@ -733,10 +735,12 @@ namespace Visifire.Charts
                 if (dataPoint.Storyboard != null)
                 {
                     dataPoint.Storyboard.Stop();
-                    dataPoint.Storyboard = null;
+                    //dataPoint.Storyboard = null;
+                    dataPoint.Storyboard.Children.Clear();
                 }
 
-                dataPoint.Storyboard = new Storyboard();
+                if (dataPoint.Storyboard == null)
+                    dataPoint.Storyboard = new Storyboard();
 
                 // Whether to animate the top of DataPoint Visual
                 Boolean isAnimateTop = false;

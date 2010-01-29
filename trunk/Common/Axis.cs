@@ -495,6 +495,17 @@ namespace Visifire.Charts
         public static readonly DependencyProperty ScrollBarScaleProperty =
             DependencyProperty.Register("ScrollBarScale", typeof(double), typeof(Axis), new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
 
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ScrollBarSize dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ScrollBarSize dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ScrollBarSizeProperty = DependencyProperty.Register
+           ("ScrollBarSize",
+           typeof(Double),
+           typeof(Axis),
+           new PropertyMetadata(Double.NaN, OnScrollBarSizeChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.Enabled dependency property.
@@ -1154,6 +1165,23 @@ namespace Visifire.Charts
                     throw new Exception("Value does not fall under the expected range. ScrollBarScale always varies from 0 to 1.");
 
                 SetValue(ScrollBarScaleProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// ScrollBarSize sets the size of ScrollBar.
+        /// For AxisX, setting the ScrollBarSize will set the Height of ScrollBar.
+        /// For AxisY, setting the ScrollBarSize will set the Width of ScrollBar.
+        /// </summary>
+        public Double ScrollBarSize
+        {
+            get
+            {
+                return (Double)GetValue(ScrollBarSizeProperty);
+            }
+            set
+            {
+                SetValue(ScrollBarSizeProperty, value);
             }
         }
 
@@ -2251,6 +2279,16 @@ namespace Visifire.Charts
                 axis.SetScrollBarValueFromOffset((Double)e.NewValue);
         }
 
+        /// <summary>
+        /// Event handler manages scrollbar size property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnScrollBarSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.FirePropertyChanged(VcProperties.ScrollBarSize);
+        }
 
         private static void OnScrollBarScalePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -2549,7 +2587,18 @@ namespace Visifire.Charts
 
             // Set the parameters for the scroll bar
             ScrollBarElement.Orientation = Orientation.Vertical;
-            ScrollBarElement.Width = 10;
+            //ScrollBarElement.Width = 10;
+
+            if (Double.IsNaN(ScrollBarSize))
+            {
+                IsNotificationEnable = false;
+                ScrollBarSize = ScrollBarElement.Width;
+                IsNotificationEnable = true;
+            }
+            else
+            {
+                ScrollBarElement.Width = ScrollBarSize;
+            }
 
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Left;
@@ -2790,7 +2839,18 @@ namespace Visifire.Charts
 
             // Set the parameters for the scroll bar
             ScrollBarElement.Orientation = Orientation.Vertical;
-            ScrollBarElement.Width = 10;
+            //ScrollBarElement.Width = 10;
+
+            if (Double.IsNaN(ScrollBarSize))
+            {
+                IsNotificationEnable = false;
+                ScrollBarSize = ScrollBarElement.Width;
+                IsNotificationEnable = true;
+            }
+            else
+            {
+                ScrollBarElement.Width = ScrollBarSize;
+            }
 
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Right;
@@ -3003,7 +3063,18 @@ namespace Visifire.Charts
 
             // Set the parameters for the scroll bar
             ScrollBarElement.Orientation = Orientation.Horizontal;
-            ScrollBarElement.Height = 10;
+            //ScrollBarElement.Height = 10;
+
+            if (Double.IsNaN(ScrollBarSize))
+            {
+                IsNotificationEnable = false;
+                ScrollBarSize = ScrollBarElement.Height;
+                IsNotificationEnable = true;
+            }
+            else
+            {
+                ScrollBarElement.Height = ScrollBarSize;
+            }
 
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Bottom;
@@ -3273,7 +3344,18 @@ namespace Visifire.Charts
 
             // Set the parameters for the scroll bar
             ScrollBarElement.Orientation = Orientation.Horizontal;
-            ScrollBarElement.Height = 10;
+            //ScrollBarElement.Height = 10;
+
+            if (Double.IsNaN(ScrollBarSize))
+            {
+                IsNotificationEnable = false;
+                ScrollBarSize = ScrollBarElement.Height;
+                IsNotificationEnable = true;
+            }
+            else
+            {
+                ScrollBarElement.Height = ScrollBarSize;
+            }
 
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Top;

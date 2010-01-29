@@ -374,7 +374,7 @@ namespace Visifire.Charts
                 //ClockState cs = dataPoint.Storyboard.GetCurrentState();
                 //if (cs == ClockState.Active)
                 //    dataPoint.Storyboard.SkipToFill();
-                
+                //dataPoint.Storyboard.Stop();
                 dataPoint.Storyboard.Pause();
                 //ClockState cs = dataPoint.Storyboard.GetCurrentState();
                 
@@ -382,7 +382,9 @@ namespace Visifire.Charts
                 oldMarkerTop = (Double)marker.Visual.GetValue(Canvas.TopProperty);
                 dataPoint.Storyboard.Resume();
 
+
                 dataPoint.Storyboard = null;
+                //dataPoint.Storyboard.Children.Clear();
             }
             else
             {
@@ -391,8 +393,13 @@ namespace Visifire.Charts
             }
                
             Point oldPosition = new Point(oldMarkerLeft, oldMarkerTop);
-            
+
             Storyboard storyboard = new Storyboard();
+
+            //if (dataPoint.Storyboard != null)
+            //    storyboard = dataPoint.Storyboard;
+            //else
+                //storyboard = new Storyboard();
 
             if (oldPosition.X != newPosition.X)
             {

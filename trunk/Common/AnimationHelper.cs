@@ -151,6 +151,16 @@ namespace Visifire.Commons
                 da.KeyFrames.Add(keyFrame);
             }
 
+#if WPF
+            da.Completed += delegate(object sender, EventArgs e)
+            {
+                Object element = (parentObj as ObservableObject).Chart._rootElement.FindName((string)target.GetValue(FrameworkElement.NameProperty));
+                if (element != null)
+                    (parentObj as ObservableObject).Chart._rootElement.UnregisterName((string)target.GetValue(FrameworkElement.NameProperty));
+            };
+#endif
+
+
             return da;
         }
 
@@ -196,6 +206,15 @@ namespace Visifire.Commons
                 keyFrame.Value = values[index];
                 da.KeyFrames.Add(keyFrame);
             }
+
+#if WPF
+            da.Completed += delegate(object sender, EventArgs e)
+            {
+                Object element = (parentObj as ObservableObject).Chart._rootElement.FindName(name);
+                if (element != null)
+                    (parentObj as ObservableObject).Chart._rootElement.UnregisterName(name);
+            };
+#endif
 
             return da;
         }

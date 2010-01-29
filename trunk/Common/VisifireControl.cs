@@ -333,7 +333,7 @@ namespace Visifire.Commons
 
             _saveIconImage.MouseMove += delegate(Object sender, MouseEventArgs e)
             {
-                _toolTip.Text = "Save as image";
+                _toolTip.Text = "Export as image";
                 _toolTip.Show();
                 UpdateToolTipPosition(sender, e);
             };
@@ -373,7 +373,7 @@ namespace Visifire.Commons
                     if ((bool)saveDlg.ShowDialog())
                     {
                         using (Stream fs = saveDlg.OpenFile())
-                        {   
+                        {
                             String[] filename = saveDlg.SafeFileName.Split('.');
                             String fileExt;
 
