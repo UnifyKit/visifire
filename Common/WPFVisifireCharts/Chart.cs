@@ -141,7 +141,6 @@ namespace Visifire.Charts
             Render();
         }
 
-        
         public object Containt
         {
             get;

@@ -97,27 +97,27 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                                         <Grid x:Name="TopAxisGrid" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="TopAxisContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <StackPanel x:Name="TopAxisPanel"></StackPanel>
-                                                <ScrollBar x:Name="TopAxisScrollBar" Orientation="Horizontal" Visibility="Collapsed"></ScrollBar>
+                                                <ScrollBar x:Name="TopAxisScrollBar" MinHeight="0" Height="17" Orientation="Horizontal" Visibility="Collapsed"></ScrollBar>
                                             </StackPanel>
                                         </Grid>
 
                                         <Grid x:Name="LeftAxisGrid" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="LeftAxisContainer" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <StackPanel x:Name="LeftAxisPanel"></StackPanel>
-                                                <ScrollBar x:Name="LeftAxisScrollBar" Height="1" VerticalAlignment="Top" Orientation="Vertical" Visibility="Collapsed"></ScrollBar>
+                                                <ScrollBar x:Name="LeftAxisScrollBar" MinWidth="0" Width="17" VerticalAlignment="Top" Orientation="Vertical" Visibility="Collapsed"></ScrollBar>
                                             </StackPanel>
                                         </Grid>
 
                                         <Grid x:Name="RightAxisGrid" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="RightAxisContainer" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollBar x:Name="RightAxisScrollBar" VerticalAlignment="Top" Height="0" Orientation="Vertical" Visibility="Collapsed" ></ScrollBar>
+                                                <ScrollBar x:Name="RightAxisScrollBar" VerticalAlignment="Top" MinWidth="0" Width="17" Orientation="Vertical" Visibility="Collapsed" ></ScrollBar>
                                                 <StackPanel x:Name="RightAxisPanel" ></StackPanel>
                                             </StackPanel>
                                         </Grid>
 
                                         <Grid x:Name="BottomAxisGrid" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="BottomAxisContainer" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <ScrollBar x:Name="BottomAxisScrollBar" Height="10" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
+                                                <ScrollBar x:Name="BottomAxisScrollBar" MinHeight="0" Height="17" Orientation="Horizontal" Visibility="Collapsed" ></ScrollBar>
                                                 <StackPanel x:Name="BottomAxisPanel" ></StackPanel>
                                             </StackPanel>
                                         </Grid>

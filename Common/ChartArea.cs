@@ -1176,19 +1176,21 @@ namespace Visifire.Charts
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY2);
 
+            Double top = 0, left = 0, right = 0, bottom = 0;
+
             if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 #region For vertical chart
 
-                Double totalWidthReduced = DrawAxesY(plotAreaSize);
-                plotAreaSize.Width -= totalWidthReduced;
+                Double totalWidthReduced1 = DrawAxesY(plotAreaSize);
+                plotAreaSize.Width -= totalWidthReduced1;
 
                 UpdateLayoutSettings(plotAreaSize);
 
                 Double totalHeightReduced1 = DrawAxesX(plotAreaSize);
                 plotAreaSize.Height -= totalHeightReduced1;
 
-                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize);
+                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
 
                 UpdateLayoutSettings(plotAreaSize);
 
@@ -1198,10 +1200,12 @@ namespace Visifire.Charts
 
                 if (totalHeightReduced2 != totalHeightReduced1)
                 {
+                    plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
                     plotAreaSize.Height += totalHeightReduced1;
                     plotAreaSize.Height -= totalHeightReduced2;
                     UpdateLayoutSettings(plotAreaSize);
                     DrawAxesY(plotAreaSize);
+                    DrawAxesX(plotAreaSize);
                 }
 
                 #endregion
@@ -1219,7 +1223,7 @@ namespace Visifire.Charts
 
                 plotAreaSize.Width -= totalWidthReduced;
 
-                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize);
+                plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
 
                 UpdateLayoutSettings(plotAreaSize);
 
@@ -3408,12 +3412,17 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="NewSize">NewSize</param>
         /// <returns>NewSize</returns>
-        private Size SetChartAreaCenterGridMargin(Size newSize)
+        private Size SetChartAreaCenterGridMargin(Size newSize, ref Double left, ref Double bottom, ref Double right, ref Double top)
         {
-            Double left = GetChartAreaCenterGridLeftMargin();
-            Double right = GetChartAreaCenterGridRightMargin() + ((Chart.PlotArea.ShadowEnabled) ? Chart.SHADOW_DEPTH : 0);
-            Double top = GetChartAreaCenterGridTopMargin();
-            Double bottom = GetChartAreaCenterGridBottomMargin();
+            newSize.Height += top;
+            newSize.Height += bottom;
+            newSize.Width += left;
+            newSize.Width += right;
+
+            left = GetChartAreaCenterGridLeftMargin();
+            right = GetChartAreaCenterGridRightMargin() + ((Chart.PlotArea.ShadowEnabled) ? Chart.SHADOW_DEPTH : 0);
+            top = GetChartAreaCenterGridTopMargin();
+            bottom = GetChartAreaCenterGridBottomMargin();
 
             Chart._topOffsetGrid.Height = top;
             Chart._bottomOffsetGrid.Height = bottom;

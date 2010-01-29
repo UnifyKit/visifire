@@ -1972,7 +1972,11 @@ namespace Visifire.Charts
                 //    return;
 
                 if (dataPoint.Storyboard != null)
+                {
                     dataPoint.Storyboard.Stop();
+
+                    dataPoint.Storyboard.Children.Clear();
+                }
 
                 Storyboard storyBoard;
 
@@ -2057,7 +2061,10 @@ namespace Visifire.Charts
 
                 // End Calculate scale factor from the old value YValue of the DataPoint
 
-                storyBoard = new Storyboard();
+                if (dataPoint.Storyboard != null)
+                    storyBoard = dataPoint.Storyboard;
+                else
+                    storyBoard = new Storyboard();
 
                 if (!Double.IsNaN(oldMarkerTop))
                 {

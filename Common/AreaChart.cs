@@ -2891,13 +2891,17 @@ namespace Visifire.Charts
             // Create new Column with new YValue
             if (dataPoint.Storyboard != null)
             {
-                dataPoint.Storyboard.Stop(); 
+                dataPoint.Storyboard.Stop();
+
+                dataPoint.Storyboard.Children.Clear();
             }
 
             if (animationEnabled)
             {
-                dataPoint.Storyboard = null;
-                storyBoardDp = new Storyboard();
+                if (dataPoint.Storyboard != null)
+                    storyBoardDp = dataPoint.Storyboard;
+                else
+                    storyBoardDp = new Storyboard();
             }
             
             // Calculate pixel position for DataPoint
