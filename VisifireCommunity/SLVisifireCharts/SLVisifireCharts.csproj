@@ -70,6 +70,10 @@
       <HintPath>..\..\Common\FJ.Core.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="SLVisifireProfiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e6a4d3cd20908de8, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VisifireProfiler\Build\SLVisifireProfiler.dll</HintPath>
+    </Reference>
     <Reference Include="system" />
     <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217" />
     <Reference Include="System.Core" />

@@ -2489,26 +2489,29 @@ namespace Visifire.Charts
         {
             #region Apply AxisTitle Properties
 
-            AxisTitleElement.IsNotificationEnable = false;
+            if (AxisTitleElement != null)
+            {
+                AxisTitleElement.IsNotificationEnable = false;
 
-            if (this.TitleFontFamily != null)
-                AxisTitleElement.InternalFontFamily = this.TitleFontFamily;
+                if (this.TitleFontFamily != null)
+                    AxisTitleElement.InternalFontFamily = this.TitleFontFamily;
 
-            if (this.TitleFontSize != 0)
-                AxisTitleElement.InternalFontSize = this.TitleFontSize;
+                if (this.TitleFontSize != 0)
+                    AxisTitleElement.InternalFontSize = this.TitleFontSize;
 
-            if (this.TitleFontStyle != null)
-                AxisTitleElement.InternalFontStyle = this.TitleFontStyle;
+                if (this.TitleFontStyle != null)
+                    AxisTitleElement.InternalFontStyle = this.TitleFontStyle;
 
-            if (this.TitleFontWeight != null)
-                AxisTitleElement.InternalFontWeight = this.TitleFontWeight;
+                if (this.TitleFontWeight != null)
+                    AxisTitleElement.InternalFontWeight = this.TitleFontWeight;
 
-            if (!String.IsNullOrEmpty(this.Title) && String.IsNullOrEmpty(AxisTitleElement.Text))
+                // if (!String.IsNullOrEmpty(this.Title) && String.IsNullOrEmpty(AxisTitleElement.Text))
                 AxisTitleElement.Text = GetFormattedMultilineText(this.Title);
 
-            AxisTitleElement.InternalFontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), this.TitleFontColor, false);
+                AxisTitleElement.InternalFontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), this.TitleFontColor, false);
 
-            AxisTitleElement.IsNotificationEnable = true;
+                AxisTitleElement.IsNotificationEnable = true;
+            }
 
             #endregion
         }
@@ -2569,7 +2572,7 @@ namespace Visifire.Charts
         /// Applies setting for primary vertical axis (Primary axis Y or Primary axis X in Bar)
         /// </summary>
         private void ApplyVerticalPrimaryAxisSettings()
-        {
+        {   
             // Set the parameters fo the Axis Stack panel
             Visual.Children.Add(new Border() { Width = this.InternalPadding.Left });
 
@@ -2603,7 +2606,7 @@ namespace Visifire.Charts
             // Set the parameters for the axis labels
             AxisLabels.Placement = PlacementTypes.Left;
             AxisLabels.Height = ScrollableSize;
-
+            
             CreateAxisLine(StartOffset, Height - EndOffset, LineThickness / 2, LineThickness / 2, LineThickness, this.Height);
 
             // Set parameters for the Major Grids
@@ -2614,13 +2617,16 @@ namespace Visifire.Charts
             AxisLabels.CreateVisualObject();
 
             // Set the alignement for the axis Title
-            AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Left;
-            AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Center;
+            if (AxisTitleElement != null)
+            {   
+                AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Left;
+                AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Center;
+            }
 
             CreateAxisTitleVisual(new Thickness(INNER_MARGIN, 0, INNER_MARGIN, 0));
 
             // Place the visual elements in the axis stack panel
-            if (!String.IsNullOrEmpty(Title))
+            if (AxisTitleElement != null)
             {
                 AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
@@ -2863,8 +2869,11 @@ namespace Visifire.Charts
                 grid.Placement = PlacementTypes.Right;
 
             // Set the alignement for the axis Title
-            AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Right;
-            AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Center;
+            if (AxisTitleElement != null)
+            {
+                AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Right;
+                AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Center;
+            }
 
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
@@ -2931,12 +2940,12 @@ namespace Visifire.Charts
             #endregion
 
             if (Height == ScrollableSize)
-            {
+            {   
                 if (AxisLabels.Visual != null)
                     AxisElementsContainer.Children.Add(AxisLabels.Visual);
             }
             else
-            {
+            {   
                 InternalStackPanel.Children.Add(AxisLabels.Visual);
 
                 ScrollViewerElement.Children.Add(InternalStackPanel);
@@ -2945,7 +2954,8 @@ namespace Visifire.Charts
             }
 
             CreateAxisTitleVisual(new Thickness(INNER_MARGIN, 0, INNER_MARGIN, 0));
-            if (!String.IsNullOrEmpty(Title))
+
+            if (AxisTitleElement != null)
             {
                 AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
@@ -3087,8 +3097,11 @@ namespace Visifire.Charts
                 grid.Placement = PlacementTypes.Bottom;
 
             // Set the alignement for the axis Title
-            AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Center;
-            AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Bottom;
+            if (AxisTitleElement != null)
+            {
+                AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Center;
+                AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Bottom;
+            }
 
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
@@ -3187,8 +3200,8 @@ namespace Visifire.Charts
 
             CreateAxisTitleVisual(new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN));
 
-            if (!String.IsNullOrEmpty(Title))
-            {
+            if (AxisTitleElement != null)
+            {   
                 AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
 
@@ -3368,15 +3381,18 @@ namespace Visifire.Charts
                 grid.Placement = PlacementTypes.Top;
 
             // Set the alignement for the axis Title
-            AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Center;
-            AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Top;
+            if (AxisTitleElement != null)
+            {
+                AxisTitleElement.InternalHorizontalAlignment = HorizontalAlignment.Center;
+                AxisTitleElement.InternalVerticalAlignment = VerticalAlignment.Top;
+            }
 
             AxisLabels.CreateVisualObject();
 
             CreateAxisTitleVisual(new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN));
 
             // Place the visual elements in the axis stack panel
-            if (!String.IsNullOrEmpty(Title))
+            if (AxisTitleElement != null)
             {
                 AxisElementsContainer.Children.Add(AxisTitleElement.Visual);
             }
@@ -3558,45 +3574,48 @@ namespace Visifire.Charts
         /// <param name="margin">Margin between axis title and axis scale</param>
         private void CreateAxisTitleVisual(Thickness margin)
         {
-            AxisTitleElement.InternalMargin = margin;
+            if (AxisTitleElement != null)
+            {
+                AxisTitleElement.InternalMargin = margin;
 
-            AxisTitleElement.IsNotificationEnable = false;
+                AxisTitleElement.IsNotificationEnable = false;
 
-        RECAL:
+            RECAL:
 
-            AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
+                AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
 #if WPF
-            AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
+                AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
 #endif
-            Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
+                Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
-            if (AxisOrientation == Orientation.Horizontal)
-            {
-                if (size.Width > Width && Width != 0)
+                if (AxisOrientation == Orientation.Horizontal)
                 {
-                    if (AxisTitleElement.InternalFontSize == 0.2)
-                        goto RETURN;
+                    if (size.Width > Width && Width != 0)
+                    {
+                        if (AxisTitleElement.InternalFontSize == 0.2)
+                            goto RETURN;
 
-                    AxisTitleElement.InternalFontSize -= 0.2;
+                        AxisTitleElement.InternalFontSize -= 0.2;
 
-                    goto RECAL;
+                        goto RECAL;
+                    }
                 }
-            }
-            else
-            {
-                if (size.Height > Height && Height != 0)
+                else
                 {
-                    if (AxisTitleElement.InternalFontSize == 0.2)
-                        goto RETURN;
+                    if (size.Height > Height && Height != 0)
+                    {
+                        if (AxisTitleElement.InternalFontSize == 0.2)
+                            goto RETURN;
 
-                    AxisTitleElement.InternalFontSize -= 0.2;
-                    goto RECAL;
+                        AxisTitleElement.InternalFontSize -= 0.2;
+                        goto RECAL;
+                    }
                 }
+
+            RETURN:
+
+                AxisTitleElement.IsNotificationEnable = true;
             }
-
-        RETURN:
-
-            AxisTitleElement.IsNotificationEnable = true;
         }
 
         /// <summary>
@@ -4273,10 +4292,16 @@ namespace Visifire.Charts
             AxisElementsContainer = new StackPanel();
             InternalStackPanel = new Canvas();
             ScrollViewerElement = new Canvas();
-            AxisTitleElement = new Title();
+
+            if (!String.IsNullOrEmpty(this.Title))
+            {
+                AxisTitleElement = new Title();
+                ApplyTitleProperties();
+            }
+            else
+                AxisTitleElement = null;
 
             ApplyVisualProperty();
-            ApplyTitleProperties();
 
             SetUpAxisManager();
             SetUpTicks();
@@ -4288,13 +4313,13 @@ namespace Visifire.Charts
             {
                 case Orientation.Horizontal:
                     ApplyHorizontalAxisSettings();
-                    _zeroBaseLinePosition = Graphics.ValueToPixelPosition(0, Width, InternalAxisMinimum, InternalAxisMaximum, 0);
+                    _zeroBaseLinePixPosition = Graphics.ValueToPixelPosition(0, Width, InternalAxisMinimum, InternalAxisMaximum, 0);
                     
                     break;
 
                 case Orientation.Vertical:
                     ApplyVerticalAxisSettings();
-                    _zeroBaseLinePosition = Height - Graphics.ValueToPixelPosition(0, Height, InternalAxisMinimum, InternalAxisMaximum, 0);
+                    _zeroBaseLinePixPosition = Height - Graphics.ValueToPixelPosition(0, Height, InternalAxisMinimum, InternalAxisMaximum, 0);
                     
                     break;
             }
@@ -4351,7 +4376,7 @@ namespace Visifire.Charts
         #region Data
 
         // Pixel position of zero line of a axis
-        internal Double _zeroBaseLinePosition;
+        internal Double _zeroBaseLinePixPosition;
 
         /// <summary>
         /// Value type of the AxisMinimum Property

@@ -1362,7 +1362,7 @@ namespace Visifire.Charts
         /// <param name="text">Text as string</param>
         /// <returns>AxisLabel</returns>
         private AxisLabel CreateLabel(String text)
-        {
+        {   
             AxisLabel label = new AxisLabel();
             label.Text = text;
             label.Placement = this.Placement;
@@ -1725,7 +1725,7 @@ namespace Visifire.Charts
 
             // Calculate the height of the labels
             for (Int32 i = 0; i < AxisLabelList.Count; i++)
-            {
+            {   
                 AxisLabel label = AxisLabelList[i];
 
                 //Set size affecting font properties
@@ -1735,7 +1735,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(false, null);
+                label.CreateVisualObject(false, _tag);
 
                 Double totalAxisLabelHeight = 0;
                 if (InternalMinHeight != 0 && InternalMinHeight > label.ActualHeight)
@@ -1767,7 +1767,7 @@ namespace Visifire.Charts
                 Double position = Graphics.ValueToPixelPosition(startOffset, Width - endOffset, Minimum, Maximum, LabelValues[i]);
 
                 // Create the visual element again
-                label.CreateVisualObject(false, null);
+                //label.CreateVisualObject(false, null);
 
                 //Calculate vertical Position
                 Double top = 0;
@@ -1780,7 +1780,8 @@ namespace Visifire.Charts
                 label.Position = new Point(position, height * (Int32)InternalRows - top - ((i % (Int32)InternalRows) * _maxRowHeight) + Padding.Top);
 
                 // Create the visual element again
-                label.CreateVisualObject(true, _tag);
+                //label.CreateVisualObject(true, _tag);
+                label.SetPosition();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1817,7 +1818,7 @@ namespace Visifire.Charts
 
             // Calculate the width of the labels
             for (Int32 i = 0; i < AxisLabelList.Count; i++)
-            {
+            {   
                 AxisLabel label = AxisLabelList[i];
 
                 // set size affecting pararameters
@@ -1827,7 +1828,7 @@ namespace Visifire.Charts
                 label.Position = new Point(0, 0);
 
                 // create the label visual element
-                label.CreateVisualObject(false, null);
+                label.CreateVisualObject(false, _tag);
 
                 Double totalAxisLabelWidth = 0;
                 if (InternalMinWidth != 0 && InternalMinWidth > label.ActualWidth)
@@ -1854,10 +1855,11 @@ namespace Visifire.Charts
                 Double position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, LabelValues[i]);
 
                 // Create the visual element again
-                label.CreateVisualObject(false, null);
+                //label.CreateVisualObject(false, null);
 
                 //Calculate horizontal Position
                 Double left = 1;
+
                 if (GetAngle() != 0)
                 {
                     left = Math.Abs((label.ActualTextHeight / 2) * Math.Cos(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
@@ -1867,7 +1869,8 @@ namespace Visifire.Charts
                 label.Position = new Point(width - left + Padding.Left, position);
 
                 // Create the visual element again
-                label.CreateVisualObject(true, _tag);
+                //label.CreateVisualObject(true, _tag);
+                label.SetPosition();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1914,7 +1917,7 @@ namespace Visifire.Charts
                 Double position = Graphics.ValueToPixelPosition(Height - endOffset, startOffset, Minimum, Maximum, LabelValues[i]);
 
                 // Create the visual element again
-                label.CreateVisualObject(false, null);
+                label.CreateVisualObject(false, _tag);
 
                 //Calculate horizontal Position
                 Double left = 1;
@@ -1927,7 +1930,8 @@ namespace Visifire.Charts
                 label.Position = new Point(left, position);
 
                 // Create the visual element again
-                label.CreateVisualObject(true, _tag);
+                //label.CreateVisualObject(true, _tag);
+                label.SetPosition();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -1977,6 +1981,7 @@ namespace Visifire.Charts
         /// </summary>
         private void PositionLabelsBottom()
         {
+
             Double startOffset = Double.IsNaN(ParentAxis.StartOffset) ? 0 : ParentAxis.StartOffset;
             Double endOffset = Double.IsNaN(ParentAxis.EndOffset) ? 0 : ParentAxis.EndOffset;
 
@@ -1989,6 +1994,7 @@ namespace Visifire.Charts
 
             // Variable to calculate the height of the visual canvas
             Double height = 0;
+
 
             // Calculate Default placement values
             CalculateHorizontalDefaults();
@@ -2008,10 +2014,10 @@ namespace Visifire.Charts
                 Double top = 0;
 
                 // Create the visual element again
-                label.CreateVisualObject(false, null);
+                label.CreateVisualObject(false, _tag);
 
                 if (GetAngle() != 0)
-                {
+                {   
                     top = Math.Abs((label.ActualTextHeight / 2) * Math.Sin(Math.PI / 2 - AxisLabel.GetRadians(GetAngle())));
                 }
 
@@ -2040,7 +2046,8 @@ namespace Visifire.Charts
                 label.Position = new Point(position, top + ((i % (Int32)InternalRows) * _maxRowHeight));
 
                 // Create the visual element again
-                label.CreateVisualObject(true, _tag);
+                // label.CreateVisualObject(true, _tag);
+                label.SetPosition();
 
                 // add the element to the visual canvas
                 Visual.Children.Add(label.Visual);
@@ -2167,7 +2174,7 @@ namespace Visifire.Charts
                 labelsWidth = 0;
 
                 foreach (AxisLabel label in AxisLabelList)
-                {
+                {   
                     textBlock.Text = " " + label.Text + " ";
                     textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
                     labelsWidth += textBlockSize.Width;
@@ -2192,21 +2199,32 @@ namespace Visifire.Charts
             Double pixelInterval = Graphics.ValueToPixelPosition(0, Width, Minimum, Maximum, interval + Minimum);
             List<Double> labelWidths = new List<Double>();
             Double maxRowHeight = 0;
-            Size textBlockSize;
+            Size textBlockSize = new Size();
 
             foreach (AxisLabel label in AxisLabelList)
-            {
+            {   
                 textBlock.Text = " " + label.Text + " ";
-                textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                //textBlockSize = Graphics.CalculateAngularSize(AxisLabel.GetRadians(GetAngle()), label.ActualTextWidth, label.ActualTextHeight);
+                Double angle =AxisLabel.GetRadians(GetAngle());
+                textBlockSize = Graphics.CalculateTextBlockSize(angle, textBlock);
 
                 if (!Double.IsNaN((Double)this.InternalAngle))
                 {
 #if WPF
+                    
+                    textBlockSize = Graphics.CalculateTextBlockSize(angle, textBlock);
                     textBlockSize.Width = (Math.Cos(AxisLabel.GetRadians(GetAngle())) * textBlock.DesiredSize.Height) + textBlock.DesiredSize.Height / 2;
-#else
+#else                      
+
                     textBlockSize.Width = (Math.Cos(AxisLabel.GetRadians(GetAngle())) * textBlock.ActualHeight) + textBlock.ActualHeight / 2;
 #endif
+
+
                 }
+
+                label.ActualTextWidth = textBlockSize.Width;
+                label.ActualTextHeight = textBlockSize.Height;
+
                 maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
 
                 labelWidths.Add(textBlockSize.Width);
@@ -2274,6 +2292,26 @@ namespace Visifire.Charts
         private Double GetMaxHeight()
         {
             TextBlock textBlock = new TextBlock();
+            textBlock = SetFontProperties(textBlock);
+
+            Double maxRowHeight = 0;
+
+            for (Int32 labelIndex = 0; labelIndex < AxisLabelList.Count; labelIndex += (ParentAxis.SkipOffset + 1))
+            {   
+                AxisLabel label = AxisLabelList[labelIndex];
+
+                if (label.ActualTextHeight == 0)
+                {   
+                    textBlock.Text = label.Text;
+                    Size textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                    label.ActualTextHeight = textBlockSize.Height;
+                    label.ActualTextWidth = textBlockSize.Width;
+                }
+
+                maxRowHeight = Math.Max(maxRowHeight, label.ActualTextHeight);
+            }
+            
+            /* TextBlock textBlock = new TextBlock();
 
             textBlock = SetFontProperties(textBlock);
 
@@ -2288,7 +2326,7 @@ namespace Visifire.Charts
                 textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
                 maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
             }
-
+            */
             return maxRowHeight;
         }
 
@@ -2303,7 +2341,7 @@ namespace Visifire.Charts
             Double height = Double.IsNaN(Height) ? 0 : Height;
             Double max = Math.Max(width, height);
             if (Double.IsNaN(InternalFontSize) || InternalFontSize <= 0)
-            {
+            {   
                 Double initialFontSize = CalculateFontSize(max);
                 InternalFontSize = initialFontSize;
             }
@@ -2485,7 +2523,7 @@ namespace Visifire.Charts
         /// Creates a visual object for the element
         /// </summary>
         internal void CreateVisualObject()
-        {
+        {   
             // Create a new 
             Visual = new Canvas();
 

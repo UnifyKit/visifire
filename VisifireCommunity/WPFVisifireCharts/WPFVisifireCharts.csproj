@@ -75,6 +75,10 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WPFVisifireProfiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=87430e68403e4b39, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VisifireProfiler\Build\WPFVisifireProfiler.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Common\AnimationHelper.cs">

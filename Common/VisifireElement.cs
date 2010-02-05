@@ -28,6 +28,12 @@ using Visifire.Charts;
 using System.Windows.Browser;
 #endif
 
+using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
 namespace Visifire.Commons
 {
     /// <summary>
@@ -379,6 +385,8 @@ namespace Visifire.Commons
             if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
                 return;
 
+            _control._toolTip.CallOutVisiblity = Visibility.Collapsed;
+
             UpdateToolTip(sender, e);
         }
 
@@ -391,6 +399,9 @@ namespace Visifire.Commons
         {
             if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
                 return;
+
+            _control._toolTip.CallOutVisiblity = Visibility.Collapsed;
+
             UpdateToolTip(sender, e);
         }
 

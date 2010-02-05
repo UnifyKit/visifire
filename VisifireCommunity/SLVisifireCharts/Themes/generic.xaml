@@ -227,11 +227,26 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="vc:ToolTip" >
-                    <Border  Name="ToolTipBorder" Opacity="{TemplateBinding Opacity}" IsHitTestVisible="false"  Visibility="{TemplateBinding Visibility}" CornerRadius="{TemplateBinding CornerRadius}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"  Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
-                        <Border.Child>
-                            <TextBlock Name="ToolTipTextBlock" LineHeight="{TemplateBinding FontSize}" LineStackingStrategy="BlockLineHeight" TextWrapping="Wrap" Text="{TemplateBinding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding FontColor}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"/>
-                        </Border.Child>
-                    </Border>
+                    <Grid IsHitTestVisible="False" >
+                        <Canvas Margin="0" Canvas.ZIndex="2">
+                            <Path Name="CallOut" StrokeThickness="0" Stroke="Black" Fill="Brown">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathFigure IsClosed="False"  StartPoint="0,6">
+                                            <LineSegment Point="-15,15"/>
+                                            <LineSegment Point="0,20"/>
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+                        
+                        <Border Name="ToolTipBorder" Opacity="{TemplateBinding Opacity}" IsHitTestVisible="false" Visibility="{TemplateBinding Visibility}" CornerRadius="{TemplateBinding CornerRadius}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"  Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                            <Border.Child>
+                              <TextBlock Name="ToolTipTextBlock" LineHeight="{TemplateBinding FontSize}" LineStackingStrategy="BlockLineHeight" TextWrapping="Wrap" Text="{TemplateBinding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding FontColor}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}"/>
+                            </Border.Child>
+                        </Border>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

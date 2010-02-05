@@ -372,7 +372,7 @@ namespace SLVisifireChartsXap
 
             String version = fullName.Split(',')[1];
 
-            version = (version.Substring(0, version.LastIndexOf('.'))).Trim();
+            version = (version.Substring(0, version.LastIndexOf('.'))).Trim() + " beta";
             version = version.Replace("Version=", "");
             return version;
         }
@@ -813,8 +813,10 @@ namespace SLVisifireChartsXap
                 // _skipHighlightValue = Logger.Text.Length;
 
                 Logger.LogLine("XML:\n" + _dataXml + "\n");
-
-                Logger.LogLine("Copy & Paste the contents of this log in www.visifire.com/forums for support.\n");
+                
+                Logger.LogLine("In case you are an Enterprise Customer, please create a ticket for priority support directly from Visifire Developers.\n    Otherwise, please copy-paste the contents of this log in forum and our community members will help you.\n");
+                Logger.Log("    Ticket: http://visifire.com/support\n");
+                Logger.Log("    Forum: http://visifire.com/forums\n");
 
                 Logger.LogLine("StackTrace: \n" + e.ExceptionObject.StackTrace + "\n");
                 Logger.Visibility = Visibility.Visible;

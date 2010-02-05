@@ -258,7 +258,9 @@ namespace Visifire.Charts
                 LoggerWindow.Visibility = Visibility.Collapsed;
                 LoggerWindow.SetValue(Canvas.ZIndexProperty, 6);
 
-                LoggerWindow.Log("Copy & Paste the contents of this log in www.visifire.com/forums for support.");
+                LoggerWindow.Log("In case you are an Enterprise Customer, please create a ticket for priority support directly from Visifire Developers. Otherwise, please copy-paste the contents of this log in forum and our community members will help you.");
+                LoggerWindow.Log("Ticket: http://visifire.com/support");
+                LoggerWindow.Log("Forum: http://visifire.com/forums");
 
                 // Add Logger to root element
                 _rootElement.Children.Add(LoggerWindow);

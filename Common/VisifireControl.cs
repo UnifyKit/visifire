@@ -335,6 +335,10 @@ namespace Visifire.Commons
             {
                 _toolTip.Text = "Export as image";
                 _toolTip.Show();
+
+                if (_toolTip._callOutPath != null)
+                    _toolTip.CallOutVisiblity = Visibility.Collapsed;
+
                 UpdateToolTipPosition(sender, e);
             };
 

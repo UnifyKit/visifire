@@ -2126,9 +2126,9 @@ namespace Visifire.Charts
                     if (renderAxis == true)
                     {
                         if (property == VcProperties.YValue)
-                            oldZeroBaseLineY = plotGroup.AxisY._zeroBaseLinePosition;
+                            oldZeroBaseLineY = plotGroup.AxisY._zeroBaseLinePixPosition;
                         else if (property == VcProperties.XValue)
-                            oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePosition;
+                            oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePixPosition;
                     }
                     System.Diagnostics.Debug.WriteLine("RenderAxis2 =" + renderAxis.ToString());
                     chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, null, false, false, renderAxis, axisRepresentation, true);
@@ -2150,13 +2150,13 @@ namespace Visifire.Charts
                     {   
                         if (property == VcProperties.YValue)
                         {   
-                            if (oldZeroBaseLineY == plotGroup.AxisY._zeroBaseLinePosition)
+                            if (oldZeroBaseLineY == plotGroup.AxisY._zeroBaseLinePixPosition)
                                 renderAxis = false;
 
                         }
                         else if (property == VcProperties.XValue)
                         {
-                            if (oldZeroBaseLineX == plotGroup.AxisX._zeroBaseLinePosition)
+                            if (oldZeroBaseLineX == plotGroup.AxisX._zeroBaseLinePixPosition)
                                 renderAxis = false;
                         }
 
