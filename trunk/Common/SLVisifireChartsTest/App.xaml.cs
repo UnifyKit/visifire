@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Controls;
 
 namespace SLVisifireChartsTest
 {
@@ -13,7 +14,7 @@ namespace SLVisifireChartsTest
             this.Startup += this.Application_Startup;
             this.Exit += this.Application_Exit;
             this.UnhandledException += this.Application_UnhandledException;
-
+            
             InitializeComponent();
         }
 
@@ -23,7 +24,10 @@ namespace SLVisifireChartsTest
             // For details: http://www.jeff.wilcox.name/fwlink/?0e0slb2
             UnitTestSettings settings = UnitTestSystem.CreateDefaultSettings();
             settings.TestService = null;
-            this.RootVisual = UnitTestSystem.CreateTestPage(settings);
+
+            FrameworkElement p = UnitTestSystem.CreateTestPage(settings) as FrameworkElement;
+            p.Width = 600;
+            this.RootVisual = p;
         }
 
         private void Application_Exit(object sender, EventArgs e)

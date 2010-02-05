@@ -23,11 +23,8 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Diagnostics;
-
 
 #else
 using System;
@@ -45,14 +42,6 @@ namespace Visifire.Charts
     internal class AxisLabel
     {
         #region Public Methods
-
-        /// <summary>
-        /// Initializes a new instance of the Visifire.Charts.AxisLabel class
-        /// </summary>
-        public AxisLabel()
-        {
-            
-        }
 
         #endregion
 
@@ -134,7 +123,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Visual label element
         /// </summary>
-        internal Canvas Visual
+        internal TextBlock Visual
         {
             get;
             set;
@@ -209,7 +198,7 @@ namespace Visifire.Charts
             {
                 return _actualTextWidth;
             }
-            private set
+            set
             {
                 _actualTextWidth = value;
             }
@@ -224,7 +213,7 @@ namespace Visifire.Charts
             {
                 return _actualTextHeight;
             }
-            private set
+            set
             {
                 _actualTextHeight = value;
             }
@@ -320,7 +309,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Set the position of the label based on the angle and the Position Property
         /// </summary>
-        private void SetPosition()
+        internal void SetPosition()
         {
             // Depending on the placement type call the method for positioning of he labels
             switch (Placement)
@@ -350,10 +339,6 @@ namespace Visifire.Charts
         /// <param name="newPos"></param>
         private void SetPositionRight(Point newPos)
         {
-            // Stores the top and left of the textblock
-            Double top;
-            Double left;
-
             // The angle made by the diagonal (passing from the top left corner to center right) with the horizontal
             Double relativeAngle = Math.Atan(ActualTextHeight / (2 * ActualTextWidth));
 
@@ -370,15 +355,15 @@ namespace Visifire.Charts
             Rotation.CenterX = 0;
             Rotation.CenterY = 0.5;
 
-            // calculate the top and left for the TextBlock
-            top = (ActualTextHeight / 2) * Math.Cos(GetRadians(angle));
-            left = -(ActualTextHeight / 2) * Math.Sin(GetRadians(angle));
+            // calculate the top and left for the TextBlock 
+            // Stores the top and left of the textblock
+            Double top = (ActualTextHeight / 2) * Math.Cos(GetRadians(angle));
+            Double left = -(ActualTextHeight / 2) * Math.Sin(GetRadians(angle));
 
             // set the top and left for the AxisLabel element
             Visual.SetValue(Canvas.LeftProperty, newPos.X - left);
             Visual.SetValue(Canvas.TopProperty, newPos.Y - top);
-
-
+            
             if (angle > 90)
             {
                 // If the angle is > 90 this means the title will be slanting downward towards right of the point specified in position
@@ -573,7 +558,9 @@ namespace Visifire.Charts
         {
             // Get the visual size of the text block
 #if WPF
-            TextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            if(!TextElement.IsMeasureValid)
+                TextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
             ActualTextHeight = TextElement.DesiredSize.Height;
             ActualTextWidth = TextElement.DesiredSize.Width;
 #else
@@ -592,6 +579,9 @@ namespace Visifire.Charts
         /// <param name="axisLabel"></param>
         internal void ApplyProperties(AxisLabel axisLabel)
         {
+#if WPF
+            TextElement.FlowDirection = FlowDirection.LeftToRight;
+#endif
             TextElement.Text = axisLabel.Text;
             TextElement.Foreground = FontColor;
             TextElement.FontSize = FontSize;
@@ -606,18 +596,17 @@ namespace Visifire.Charts
         /// </summary>
         internal void CreateVisualObject(Boolean positioningAllowed, ElementData tag)
         {
-            Visual = new Canvas() { Tag = tag };
             TextElement = new TextBlock() { Tag = tag };
             Rotation = new RotateTransform();
             TextElement.RenderTransform = Rotation;
-            Visual.Children.Add(TextElement);
+            Visual = TextElement;
 
             ApplyProperties(this);
 
             CalculateTextElementSize();
 
-            if (positioningAllowed)
-                SetPosition();
+            //if (positioningAllowed)
+            //    SetPosition();
 
             // calculate the actual size of the AxisLabel element
             CalculateSize(GetRadians(Angle));

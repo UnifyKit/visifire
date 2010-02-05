@@ -244,6 +244,15 @@ namespace Visifire.Charts
         #region Public Properties
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Chart.IndicatorEnabled dependency property.  
+        /// </summary>
+        public static readonly DependencyProperty IndicatorEnabledProperty =
+            DependencyProperty.Register("IndicatorEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(OnIndicatorEnabledPropertyChanged));
+
+        /// <summary>
         /// Identifies the Visifire.Charts.Chart.SmartLabelEnabled dependency property.  
         /// </summary>
         public static readonly DependencyProperty SmartLabelEnabledProperty =
@@ -494,6 +503,15 @@ namespace Visifire.Charts
             {
                 SetValue(UniqueColorsProperty, value);
             }
+        }
+
+        /// <summary>
+        /// Enables indicator. Currently this property is applicable for Line DataSeries only.
+        /// </summary>
+        public Boolean IndicatorEnabled
+        {
+            get { return (Boolean)GetValue(IndicatorEnabledProperty); }
+            set { SetValue(IndicatorEnabledProperty, value); }
         }
 
         /// <summary>
@@ -1256,9 +1274,11 @@ namespace Visifire.Charts
                     List<Panel> preExistingCanvases = (from can in dataSeriesListExceptOldItems select can.Visual).ToList();
 
                     foreach (DataSeries ds in e.OldItems)
-                    {
+                    {   
+                        ds.RemoveToolTip();
+
                         if (ds.Visual != null)
-                        {
+                        {   
                             if(preExistingCanvases.Contains(ds.Visual))
                                 continue;
                             
@@ -1275,15 +1295,14 @@ namespace Visifire.Charts
 
                                 ds.Visual = null;
                             }
-
                         }
                     }
                 }
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            {
+            {   
                 if (this.InternalSeries != null)
-                {
+                {   
                     foreach (DataSeries ds in InternalSeries)
                     {   
                         Panel seriesVisual = ds.Visual;
@@ -1644,7 +1663,7 @@ namespace Visifire.Charts
             // Attach events to the root element of the chart to track mouse movement over chart.
             this._rootElement.MouseLeave += new MouseEventHandler(Chart_MouseLeave);
         }
-
+        
         /// <summary>
         /// Attach events and tooltip to chart
         /// </summary>
@@ -1664,6 +1683,17 @@ namespace Visifire.Charts
         /// <param name="d">Chart</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnSmartLabelEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
+
+        /// <summary>
+        /// IndicatorEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">Chart</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnIndicatorEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
             c.InvokeRender();
@@ -2175,20 +2205,20 @@ namespace Visifire.Charts
 
                 _renderLock = true;
 
-                try
+                //try
                 {   
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
                 }
-                catch (Exception e)
-                {
-                    _renderLock = false;
-                    if (CheckSizeError(e as ArgumentException))
-                        return;
-                    else
-                        throw new Exception(e.Message, e);
-                }
+                //catch (Exception e)
+                //{
+                //    _renderLock = false;
+                //    if (CheckSizeError(e as ArgumentException))
+                //        return;
+                //    else
+                //        throw new Exception(e.Message, e);
+                //}
             }
         }
         

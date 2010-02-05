@@ -1069,29 +1069,11 @@ namespace Visifire.Commons
             }
             else
                 return solidColorBrush;
-
         }
 
 
-        /// <summary>
-        /// Calculates textblock size
-        /// </summary>
-        /// <param name="radianAngle">RadianAngle as Double</param>
-        /// <param name="textBlock">TextBlock</param>
-        /// <returns>TextBlock size</returns>
-        internal static Size CalculateTextBlockSize(Double radianAngle, TextBlock textBlock)
+        internal static Size CalculateAngularSize(Double radianAngle, Double actualWidth, Double actualHeight)
         {
-            Double actualHeight;
-            Double actualWidth;
-
-#if WPF
-            textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            actualHeight = textBlock.DesiredSize.Height;
-            actualWidth = textBlock.DesiredSize.Width;
-#else
-            actualHeight = textBlock.ActualHeight;
-            actualWidth = textBlock.ActualWidth;
-#endif
             if (radianAngle != 0)
             {
                 // length of the diagonal from top left to bottom right
@@ -1114,6 +1096,30 @@ namespace Visifire.Commons
             }
 
             return new Size(actualWidth, actualHeight);
+        }
+
+        /// <summary>
+        /// Calculates textblock size
+        /// </summary>
+        /// <param name="radianAngle">RadianAngle as Double</param>
+        /// <param name="textBlock">TextBlock</param>
+        /// <returns>TextBlock size</returns>
+        internal static Size CalculateTextBlockSize(Double radianAngle, TextBlock textBlock)
+        {
+            Double actualHeight;
+            Double actualWidth;
+
+#if WPF
+            if(!textBlock.IsMeasureValid)
+                textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            actualHeight = textBlock.DesiredSize.Height;
+            actualWidth = textBlock.DesiredSize.Width;
+#else       
+            actualHeight = textBlock.ActualHeight;
+            actualWidth = textBlock.ActualWidth;
+#endif      
+
+            return CalculateAngularSize(radianAngle, actualWidth, actualHeight);
         }
 
         /// <summary>
