@@ -148,6 +148,8 @@ namespace Visifire.Charts
 
             // Place label for the DataPoint
             CandleStick.CreateAndPositionLabel(dataPoint.Parent.Faces.LabelCanvas, dataPoint);
+
+            dataPoint._visualPosition = new Point((Double)dataPointVisual.GetValue(Canvas.LeftProperty) + dataPointVisual.Width / 2, (Double)dataPointVisual.GetValue(Canvas.TopProperty));
         }
 
         private static void ApplyBorderProperties(DataPoint dataPoint, Line highLow, Line openLine, Line closeLine, Double dataPointWidth)
@@ -308,7 +310,8 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
         }
 

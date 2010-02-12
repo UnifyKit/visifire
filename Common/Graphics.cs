@@ -151,7 +151,7 @@ namespace Visifire.Charts
         }
         
         /// <summary>
-        /// Contains references to individual components of the border elements in the visual
+        /// Contains references to individual components of the _axisIndicatorBorderElement elements in the visual
         /// </summary>
         public List<Shape> BorderElements;
 
@@ -277,7 +277,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Returns dash array for border
+        /// Returns dash array for _axisIndicatorBorderElement
         /// </summary>
         /// <param name="borderStyle">BorderStyle as BorderStyles</param>
         /// <returns>DashArray as DoubleCollection</returns>

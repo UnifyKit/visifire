@@ -2140,7 +2140,7 @@ namespace Visifire.Charts
 
                 foreach (DataPoint dp in ds.DataPoints)
                 {
-                    if (dp.Marker != null)
+                    if (chart.ChartArea.AxisX.AxisOrientation == Orientation.Horizontal)
                     {
                         dp._distance = Math.Abs(pixelPosition - dp._visualPosition.X);
 
@@ -2153,7 +2153,27 @@ namespace Visifire.Charts
                         if (dp._distance < nearestDataPoint._distance)
                             nearestDataPoint = dp;
 
-                        if (xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue)
+                        if (pixelPosition > chart.ChartArea.PlottingCanvas.Width)
+                        {
+                            nearestDataPoint = null;
+                            ds.ToolTipElement.Hide();
+                            break;
+                        }
+                    }
+                    else
+                    {
+                         dp._distance = Math.Abs(pixelPosition - dp._visualPosition.Y);
+
+                        if (nearestDataPoint == null)
+                        {
+                            nearestDataPoint = dp;
+                            continue;
+                        }
+
+                        if (dp._distance < nearestDataPoint._distance)
+                            nearestDataPoint = dp;
+
+                        if (pixelPosition > chart.ChartArea.PlottingCanvas.Height)
                         {
                             nearestDataPoint = null;
                             ds.ToolTipElement.Hide();

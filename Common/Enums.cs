@@ -389,7 +389,7 @@ namespace Visifire.Commons
     }
     
     /// <summary>
-    /// Style of border
+    /// Style of _axisIndicatorBorderElement
     /// </summary>
     public enum BorderStyles
     {   

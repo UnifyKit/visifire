@@ -2032,7 +2032,7 @@ namespace Visifire.Charts
                 conditions are written below */
                 if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false))
                 {
-                    if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !chart.AnimatedUpdate))
+                    if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
                     {
                         chart.PARTIAL_DP_RENDER_LOCK = true;
                         chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
@@ -2176,7 +2176,7 @@ namespace Visifire.Charts
                 }
                 else if (updateAllDpsOnAxisChange)
                 {
-                    if (recursive && (!chart.AnimatedUpdate || chart.PlotDetails.ListOfAllDataPoints.Count > 1000))
+                    if (recursive && (!(Boolean)chart.AnimatedUpdate || chart.PlotDetails.ListOfAllDataPoints.Count > 1000))
                     {
                         return true;
                     }
@@ -3587,51 +3587,212 @@ namespace Visifire.Charts
                 }
             }
             else
-            {   
-                if (!_interativityAnimationState)
+            {
+                if ((Boolean)(Chart as Chart).AnimatedUpdate)
                 {
-                    if (false == _interactiveExplodeState)
+                    if (!_interativityAnimationState)
                     {
-                        _interativityAnimationState = true;
-
-                        //System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
-
-                        Exploded = true;
-
-                        if (this.ExplodeAnimation != null)
+                        if (false == _interactiveExplodeState)
                         {
+                            _interativityAnimationState = true;
+
+
+                            //System.Diagnostics.Debug.WriteLine("Intractivity-- Exploded");
+
+                            Exploded = true;
+
+                            if (this.ExplodeAnimation != null)
+                            {
 #if WPF
-                        this.ExplodeAnimation.Begin(Chart._rootElement, true);
+                                this.ExplodeAnimation.Begin(Chart._rootElement, true);
 #else
-                            this.ExplodeAnimation.Begin();
+                                this.ExplodeAnimation.Begin();
 #endif
 
-                            _isAlreadyExploded = true;
+                                _isAlreadyExploded = true;
+                            }
                         }
-                    }
 
-                    if (true == _interactiveExplodeState)
-                    {
-                        _interativityAnimationState = true;
-
-                        Exploded = false;
-
-                        UnExplodeFunnelSlices();
-
-                        //System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
-
-                        if (this.UnExplodeAnimation != null)
+                        if (true == _interactiveExplodeState)
                         {
+                            _interativityAnimationState = true;
+
+                            Exploded = false;
+
+                            UnExplodeFunnelSlices();
+
+                            //System.Diagnostics.Debug.WriteLine("Intractivity-- UnExploded");
+
+                            if (this.UnExplodeAnimation != null)
+                            {
 #if WPF                 
-                        this.UnExplodeAnimation.Begin(Chart._rootElement, true);
+                                this.UnExplodeAnimation.Begin(Chart._rootElement, true);
 #else
-                            this.UnExplodeAnimation.Begin();
+                                this.UnExplodeAnimation.Begin();
 #endif
+                            }
                         }
                     }
                 }
+                else
+                {
+                    ExplodeOrUnExplodeWithoutAnimation();
+                }
             }
 
+        }
+
+        internal void ExplodeOrUnExplodeWithoutAnimation()
+        {
+            if (Faces.Visual != null)
+            {
+                if (_interactiveExplodeState)
+                {
+                    if (!(Chart as Chart).View3D)
+                    {
+                        (Faces.Visual.RenderTransform as TranslateTransform).X = 0;
+                        (Faces.Visual.RenderTransform as TranslateTransform).Y = 0;
+
+                        if (LabelVisual != null)
+                        {
+                            if (LabelStyle == LabelStyles.Inside)
+                            {
+                                TranslateTransform translateTransform = new TranslateTransform();
+                                (LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = 0;
+                                translateTransform.Y = 0;
+                            }
+                            else
+                            {
+                                (LabelVisual as Canvas).SetValue(Canvas.LeftProperty, (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (LabelLine != null)
+                        {
+                            PathFigure figure = (LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelLineEndPoint;
+                        }
+
+
+                        _interactiveExplodeState = false;
+                    }
+                    else
+                    {
+                        foreach (Shape path in Faces.VisualComponents)
+                        {
+                            if (path == null) continue;
+                            (path.RenderTransform as TranslateTransform).X = 0;
+                            (path.RenderTransform as TranslateTransform).Y = 0;
+                        }
+
+                        if (LabelVisual != null)
+                        {
+                            if (LabelStyle == LabelStyles.Inside)
+                            {
+                                TranslateTransform translateTransform = new TranslateTransform();
+                                (LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = 0;
+                                translateTransform.Y = 0;
+                            }
+                            else
+                            {
+                                (LabelVisual as Canvas).SetValue(Canvas.LeftProperty, (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (LabelLine != null)
+                        {
+                            (LabelLine.RenderTransform as TranslateTransform).X = 0;
+                            (LabelLine.RenderTransform as TranslateTransform).Y = 0;
+
+                            PathFigure figure = (LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = (VisualParams as SectorChartShapeParams).UnExplodedPoints.LabelLineEndPoint;
+                        }
+
+                        _interactiveExplodeState = false;
+                    }
+                }
+                else
+                {
+                    if (!(Chart as Chart).View3D)
+                    {
+                        (Faces.Visual.RenderTransform as TranslateTransform).X = (VisualParams as SectorChartShapeParams).OffsetX;
+                        (Faces.Visual.RenderTransform as TranslateTransform).Y = (VisualParams as SectorChartShapeParams).OffsetY;
+
+                        if (LabelVisual != null)
+                        {
+                            if (LabelStyle == LabelStyles.Inside)
+                            {
+                                TranslateTransform translateTransform = new TranslateTransform();
+                                (LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = (VisualParams as SectorChartShapeParams).OffsetX;
+                                translateTransform.Y = (VisualParams as SectorChartShapeParams).OffsetY;
+                            }
+                            else
+                            {
+                                (LabelVisual as Canvas).SetValue(Canvas.LeftProperty, (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (LabelLine != null)
+                        {
+                            PathFigure figure = (LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelLineEndPoint;
+                        }
+
+                        _interactiveExplodeState = true;
+                    }
+                    else
+                    {
+                        foreach (Shape path in Faces.VisualComponents)
+                        {
+                            if (path == null) continue;
+                            (path.RenderTransform as TranslateTransform).X = (VisualParams as SectorChartShapeParams).OffsetX;
+                            (path.RenderTransform as TranslateTransform).Y = (VisualParams as SectorChartShapeParams).OffsetY;
+                        }
+
+                        if (LabelVisual != null)
+                        {
+                            if (LabelStyle == LabelStyles.Inside)
+                            {
+                                TranslateTransform translateTransform = new TranslateTransform();
+                                (LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = (VisualParams as SectorChartShapeParams).OffsetX;
+                                translateTransform.Y = (VisualParams as SectorChartShapeParams).OffsetY;
+                            }
+                            else
+                            {
+                                (LabelVisual as Canvas).SetValue(Canvas.LeftProperty, (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (LabelLine != null)
+                        {
+                            (LabelLine.RenderTransform as TranslateTransform).X = (VisualParams as SectorChartShapeParams).OffsetX;
+                            (LabelLine.RenderTransform as TranslateTransform).Y = (VisualParams as SectorChartShapeParams).OffsetY;
+
+                            PathFigure figure = (LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = (VisualParams as SectorChartShapeParams).ExplodedPoints.LabelLineEndPoint;
+                        }
+
+                        _interactiveExplodeState = true;
+
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -3826,7 +3987,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether the DataPoint is exploded (used for Pie / Doughnut)
         /// </summary>
-        private Boolean _interactiveExplodeState = false;
+        internal Boolean _interactiveExplodeState = false;
 
         /// <summary>
         /// Whether the animation is going on for the datapoint

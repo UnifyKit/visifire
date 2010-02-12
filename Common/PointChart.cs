@@ -237,7 +237,9 @@ namespace Visifire.Charts
             marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
 
             marker.AddToParent(pointChartCanvas, xPosition, yPosition, new Point(0.5, 0.5));
-                        
+
+            dataPoint._visualPosition = new Point(xPosition, yPosition);
+
             dpFaces.VisualComponents.Add(marker.Visual);
             dpFaces.Visual = marker.Visual;
 
@@ -250,7 +252,8 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             dataPoint.SetCursor2DataPointVisualFaces();
 
@@ -606,8 +609,8 @@ namespace Visifire.Charts
                             
                             if((Boolean)dataPoint.LabelEnabled)
                                 marker.Text = dataPoint.TextParser(dataPoint.LabelText);
-                            
-                            BubbleChart.UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
+
+                            BubbleChart.UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, (Boolean)chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
                         }
 
                     break;

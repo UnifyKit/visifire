@@ -20,7 +20,7 @@ internal class InteractivityHelper
     public static Brush SELECTED_MARKER_FILL_COLOR;
     
     /// <summary>
-    /// Apply border effect
+    /// Apply _axisIndicatorBorderElement effect
     /// </summary>
     /// <param name="shape">Shape</param>
     /// <param name="borderStyles">BorderStyles</param>
@@ -39,7 +39,7 @@ internal class InteractivityHelper
     }
 
     /// <summary>
-    /// Apply border effect
+    /// Apply _axisIndicatorBorderElement effect
     /// </summary>
     public static void ApplyBorderEffect(Shape shape, BorderStyles borderStyles, Brush fillColor, Double scaleFactor, Double borderThickness, Brush borderColor)
     {
@@ -53,7 +53,7 @@ internal class InteractivityHelper
     }
 
     /// <summary>
-    /// Remove border effect
+    /// Remove _axisIndicatorBorderElement effect
     /// </summary>
     public static void RemoveBorderEffect(Shape shape, BorderStyles borderStyle, Double borderThickness, Brush lineColor)
     {   
@@ -67,7 +67,7 @@ internal class InteractivityHelper
     }
 
     /// <summary>
-    /// Remove border effect
+    /// Remove _axisIndicatorBorderElement effect
     /// </summary>
     public static void RemoveBorderEffect(Shape shape, BorderStyles borderStyle, Double borderThickness, Brush lineColor, Brush fillColor, Double width, Double height)
     {

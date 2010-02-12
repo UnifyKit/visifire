@@ -1039,6 +1039,8 @@ namespace Visifire.Charts
             left = Graphics.ValueToPixelPosition(0, parentCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
             left = left + ((Double)drawingIndex - (Double)indexSeriesList.Count() / (Double)2) * widthOfAcolumn;
 
+//            Double midPosition = Graphics.ValueToPixelPosition(0, parentCanvas.Width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);
+
             if (isPositive)
             {   
                 bottom = Graphics.ValueToPixelPosition(parentCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, limitingYValue);
@@ -1084,6 +1086,11 @@ namespace Visifire.Charts
 
             CreateOrUpdateMarker4VerticalChart(dataPoint, labelCanvas, columnVisualSize, left, top);
 
+            if(isPositive)
+                dataPoint._visualPosition = new Point(left + columnVisualSize.Width / 2, top);
+            else
+                dataPoint._visualPosition = new Point(left + columnVisualSize.Width / 2, bottom);
+
             // Apply animation
             if (animationEnabled)
             {
@@ -1102,7 +1109,8 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
             //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
@@ -1215,6 +1223,8 @@ namespace Visifire.Charts
                 widthOfAcolumn = CalculateWidthOfEachColumn(chart, width, dataSeriesList4Rendering[0].PlotGroup.AxisX, RenderAs.Column, Orientation.Horizontal);
             else
                 widthOfAcolumn = CalculateWidthOfEachColumn(chart, height, dataSeriesList4Rendering[0].PlotGroup.AxisX, RenderAs.Bar, Orientation.Vertical);
+
+
 
             Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(plotDetails.ChartOrientation == ChartOrientationType.Vertical ? RenderAs.Column : RenderAs.Bar);
             Double[] xValues = sortedDataPoints.Keys.ToArray();
@@ -1732,14 +1742,14 @@ namespace Visifire.Charts
                         }
                         else if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         {
-                            if (chart.AnimatedUpdate)
+                            if ((Boolean)chart.AnimatedUpdate)
                                 chart.Dispatcher.BeginInvoke(new Action<RenderAs, Chart, DataPoint, Boolean>(UpdateVisualForYValue4StackedColumnChart), new object[] { dataSeries.RenderAs, chart, dataPoint, isAxisChanged });
                             else
                                 UpdateVisualForYValue4StackedColumnChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
                         }
                         else
-                        {   
-                            if (chart.AnimatedUpdate)
+                        {
+                            if ((Boolean)chart.AnimatedUpdate)
                                 chart.Dispatcher.BeginInvoke(new Action<RenderAs, Chart, DataPoint, Boolean>(UpdateVisualForYValue4StackedBarChart), new object[] { dataSeries.RenderAs, chart, dataPoint, isAxisChanged });
                             else
                                 UpdateVisualForYValue4StackedBarChart(dataSeries.RenderAs, chart, dataPoint, isAxisChanged);
@@ -1961,7 +1971,7 @@ namespace Visifire.Charts
             CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnChartCanvas, depth3d,
                 dataPoint.Parent.RenderAs == RenderAs.Column ? Orientation.Horizontal : Orientation.Vertical);
 
-            Boolean animationEnabled = chart.AnimatedUpdate;
+            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;
 
             #region Animate Column
 
@@ -2001,7 +2011,9 @@ namespace Visifire.Charts
                                 
                 Double axisYMin = (isAxisChanged || Double.IsNaN(plotGroup.AxisY._oldInternalAxisMinimum)) ? plotGroup.AxisY.InternalAxisMinimum : plotGroup.AxisY._oldInternalAxisMinimum;
                 Double axisYMax = (isAxisChanged || Double.IsNaN(plotGroup.AxisY._oldInternalAxisMaximum)) ? plotGroup.AxisY.InternalAxisMaximum : plotGroup.AxisY._oldInternalAxisMaximum;
-
+                
+                System.Diagnostics.Debug.WriteLine("OldAxisMaximum : " + plotGroup.AxisY._oldInternalAxisMaximum + " NewAxisMaximum : " + plotGroup.AxisY.InternalAxisMaximum);
+                
                 plankYPos = Graphics.ValueToPixelPosition(axisSize, 0, axisYMin, axisYMax, limitingYValue);
                 
                 // Double axisYMin = isAxisChanged ? plotGroup.AxisY.InternalAxisMinimum : plotGroup.AxisY.InternalAxisMinimum;
@@ -2414,7 +2426,7 @@ namespace Visifire.Charts
             CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnChartCanvas, depth3d, 
                 dataPoint.Parent.RenderAs == RenderAs.Column ? Orientation.Horizontal : Orientation.Vertical);
 
-            Boolean animationEnabled = chart.AnimatedUpdate;
+            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;
 
             if (animationEnabled && dataPoint.Storyboard != null)
             {

@@ -331,7 +331,8 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             dataPoint.SetCursor2DataPointVisualFaces();
 
@@ -360,6 +361,8 @@ namespace Visifire.Charts
             }
             else
                 marker.SetPosition(xPosition, yPosition, new Point(0.5, 0.5));
+
+            dataPoint._visualPosition = new Point(xPosition, yPosition);
         }
 
         private static void ApplyAnimation4XYZUpdate(DataPoint dataPoint, Point newPosition, Double oldSize, Double newSize)
@@ -776,8 +779,8 @@ namespace Visifire.Charts
 
                             if ((Boolean)dataPoint.LabelEnabled)
                                 marker.Text = dataPoint.TextParser(dataPoint.LabelText);
-                            
-                            UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
+
+                            UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, (Boolean)chart.AnimatedUpdate, marker.MarkerShape.Width, marker.MarkerShape.Width);
                         }
 
                     break;

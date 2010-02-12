@@ -731,6 +731,11 @@ namespace Visifire.Charts
 
             CreateOrUpdateMarker4HorizontalChart(chart, labelCanvas, dataPoint, left, top, isPositive, depth3d);
 
+            if (isPositive)
+                dataPoint._visualPosition = new Point(right, top + columnHeight / 2);
+            else
+                dataPoint._visualPosition = new Point(left, top + columnHeight / 2);
+
             dataPoint.Faces.LabelCanvas = labelCanvas;
 
             // Apply animation
@@ -751,8 +756,8 @@ namespace Visifire.Charts
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
-
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
 
             dataPoint.SetCursor2DataPointVisualFaces();
@@ -1031,14 +1036,19 @@ namespace Visifire.Charts
             else
                 right = left;
 
+            if (isPositive)
+                dataPoint._visualPosition = new Point(right, top + finalHeight / 2);
+            else
+                dataPoint._visualPosition = new Point(left, top + finalHeight / 2);
+
             dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             // dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             // dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
-
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             
             dataPoint.SetCursor2DataPointVisualFaces();
