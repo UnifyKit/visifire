@@ -196,11 +196,14 @@ namespace Visifire.Charts
         /// <param name="chart"></param>
         private void CreateDefaultToolTipsForSeries(Chart chart)
         {
+            DisableIndicators();
+
             if (Chart.InternalSeries.Count > 0)
             {
                 foreach (DataSeries ds in Chart.InternalSeries)
                 {
-                    if (Chart.IndicatorEnabled && ds.RenderAs == RenderAs.Line)
+                    if (Chart.IndicatorEnabled && (ds.RenderAs != RenderAs.Pie || ds.RenderAs != RenderAs.Doughnut
+                        || ds.RenderAs != RenderAs.SectionFunnel || ds.RenderAs != RenderAs.StreamLineFunnel))
                     {
                         if (ds.ToolTipElement == null)
                         {
@@ -208,8 +211,7 @@ namespace Visifire.Charts
                             Chart.ToolTips.Add(toolTip);
 
                             ds.ToolTipElement = toolTip;
-                            ds.ToolTipElement.Background = (Boolean)ds.LightingEnabled ? Graphics.GetLightingEnabledBrush(ds.Color, "Linear", new Double[] { 0.80, 0.55 }) : ds.Color;
-
+                           
                             Chart._toolTipCanvas.Children.Add(toolTip);
                         }
                     }
@@ -247,12 +249,15 @@ namespace Visifire.Charts
             Double xPlotOffset = xPlotCanvasOffset; 
             Double yPlotOffset = yPlotCanvasOffset + (Chart.View3D ? PLANK_DEPTH : 0);
 
+            if(AxisX.AxisOrientation == Orientation.Vertical)
+                xPlotOffset += (Chart.View3D ? PLANK_THICKNESS : 0);
+
             Double plotWidth = PlotAreaCanvas.Width;
             Double plotHeight = PlotAreaCanvas.Height;
 
             Rect[] toolTipsPositionInfo = new Rect[nearestDataPointList.Count];
             Int32 index = 0;
-            List<Double> listOfActualXPos = new List<Double>();
+            List<Point> listOfActualPos = new List<Point>();
             String axisIndicatorText = "";
 
             foreach (DataPoint dp in nearestDataPointList)
@@ -263,10 +268,13 @@ namespace Visifire.Charts
                 ToolTip toolTip = dp.Parent.ToolTipElement;
                 Point toolTipPosition = positionOfDp;
 
-                listOfActualXPos.Add(toolTipPosition.X);
+                listOfActualPos.Add(new Point(toolTipPosition.X, toolTipPosition.Y));
 
                 // Calculate position with respect to ScrollViewer
-                toolTipPosition.X -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                if(AxisX.AxisOrientation == Orientation.Horizontal)
+                    toolTipPosition.X -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                else
+                    toolTipPosition.Y -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
 
                 #region Set initial position of ToolTip
 
@@ -275,19 +283,83 @@ namespace Visifire.Charts
 
                 Size toolTipSize = Visifire.Commons.Graphics.CalculateVisualSize(toolTip);
 
-                if (toolTipPosition.X + toolTip._borderElement.ActualWidth < plotWidth)
+                if (toolTipPosition.X + toolTipSize.Width < plotWidth)
                 {
-                    toolTipPosition.X = toolTipPosition.X + 10;
-                    toolTipPosition.Y = toolTipPosition.Y - toolTip._borderElement.ActualHeight / 2;
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.Bubble || dp.Parent.RenderAs == RenderAs.Point)
+                    {
+                        toolTipPosition.X = toolTipPosition.X + 10;
+                        toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2;
+                        if (toolTipPosition.Y < 0)
+                            toolTipPosition.Y = toolTipPosition.Y + 10;
+                    }
+                    else
+                    {
 
+                        if (dp.Parent.RenderAs == RenderAs.Bar || dp.Parent.RenderAs == RenderAs.StackedBar || dp.Parent.RenderAs == RenderAs.StackedBar100)
+                        {
+                            if (dp.YValue >= 0)
+                            {
+                                toolTipPosition.X = toolTipPosition.X + 10;
+                                if (toolTipPosition.X > plotWidth)
+                                    toolTipPosition.X = positionOfDp.X - toolTipSize.Width - 10;
+
+                                toolTipPosition.Y = toolTipPosition.Y + 5;
+                            }
+                            else
+                            {
+                                toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
+                                if (toolTipPosition.X < 0)
+                                    toolTipPosition.X = positionOfDp.X + 10;
+
+                                toolTipPosition.Y = toolTipPosition.Y + 5;
+                            }
+                        }
+                        else
+                        {
+                            toolTipPosition.X = toolTipPosition.X + 10;
+
+                            if (dp.YValue >= 0 || (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock))
+                                toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2 - 10;
+                            else
+                                toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2 + 10;
+                        }
+
+                        if(toolTipPosition.Y < 0)
+                            toolTipPosition.Y = toolTipPosition.Y + 20;
+                    }
                     toolTip.SetValue(Canvas.LeftProperty, toolTipPosition.X);
                     toolTip.SetValue(Canvas.TopProperty, toolTipPosition.Y);
                 }
                 else
                 {
-                    toolTipPosition.X = toolTipPosition.X - toolTip._borderElement.ActualWidth - 10;
-                    toolTipPosition.Y = toolTipPosition.Y - toolTip._borderElement.ActualHeight / 2;
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area)
+                    {
+                        toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
+                        toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2;
+                        if (toolTipPosition.Y < 0)
+                            toolTipPosition.Y = toolTipPosition.Y + 10;
+                    }
+                    else
+                    {
+                        if (dp.Parent.RenderAs == RenderAs.Bar || dp.Parent.RenderAs == RenderAs.StackedBar || dp.Parent.RenderAs == RenderAs.StackedBar100)
+                        {
+                            toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
 
+                            toolTipPosition.Y = toolTipPosition.Y + 5;
+
+                        }
+                        else
+                        {
+                            toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
+                            if (dp.YValue >= 0 || (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock))
+                                toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2 - 10;
+                            else
+                                toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2 + 10;
+                        }
+
+                        if (toolTipPosition.Y < 0)
+                            toolTipPosition.Y = toolTipPosition.Y + 20;
+                    }
                     toolTip.SetValue(Canvas.LeftProperty, toolTipPosition.X);
                     toolTip.SetValue(Canvas.TopProperty, toolTipPosition.Y);
                 }
@@ -306,28 +378,71 @@ namespace Visifire.Charts
             {
                 DataPoint dp = nearestDataPointList[index];
 
-                dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
+                if(dp.Parent.RenderAs == RenderAs.CandleStick)
+                {
+                    dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
+                    dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
+                }
+                else
+                {
+                    dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
+                    dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
+
+                }
+
+                if (dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
+                    dp.Parent.ToolTipElement._callOutPath.Fill = Chart._toolTip.Background;
+
+                if (dp.Parent.ToolTipElement.Background == null && Chart._toolTip != null)
+                    dp.Parent.ToolTipElement.Background = Chart._toolTip.Background;
 
                 dp.Parent.ToolTipElement.SetValue(Canvas.LeftProperty, toolTipsPositionInfo[index].Left);
                 dp.Parent.ToolTipElement.SetValue(Canvas.TopProperty, toolTipsPositionInfo[index].Top);
 
                 Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset), dp._visualPosition.Y + yPlotOffset);
-
-                if (listOfActualXPos[index] - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) + dp.Parent.ToolTipElement._borderElement.ActualWidth < plotWidth)
+                if (AxisX.AxisOrientation == Orientation.Vertical)
                 {
-                    dp.Parent.ToolTipElement.CallOutStartPoint = new Point(1, 6);
-                    dp.Parent.ToolTipElement.CallOutMidPoint = new Point(positionOfDp.X - toolTipsPositionInfo[index].Left, positionOfDp.Y - toolTipsPositionInfo[index].Top);
-                    dp.Parent.ToolTipElement.CallOutEndPoint = new Point(1, 20);
+                    positionOfDp.X += AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                    positionOfDp.Y -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                }
 
-                    dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0, 0.25, 0.25, 1);
+                if (dp.Parent.RenderAs == RenderAs.Bar || dp.Parent.RenderAs == RenderAs.StackedBar || dp.Parent.RenderAs == RenderAs.StackedBar100)
+                {
+                    if (toolTipsPositionInfo[index].Left + dp.Parent.ToolTipElement._borderElement.ActualWidth < dp._visualPosition.X + xPlotOffset)
+                    {
+                        dp.Parent.ToolTipElement.CallOutStartPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+                        dp.Parent.ToolTipElement.CallOutMidPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth + (positionOfDp.X - (toolTipsPositionInfo[index].Left + dp.Parent.ToolTipElement._borderElement.ActualWidth)), positionOfDp.Y - toolTipsPositionInfo[index].Top);
+                        dp.Parent.ToolTipElement.CallOutEndPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, dp.Parent.ToolTipElement._borderElement.ActualHeight - dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+
+                        dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0.25, 0.25, 0, 1);
+                    }
+                    else
+                    {
+                        dp.Parent.ToolTipElement.CallOutStartPoint = new Point(1, dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+                        dp.Parent.ToolTipElement.CallOutMidPoint = new Point(positionOfDp.X - toolTipsPositionInfo[index].Left, positionOfDp.Y - toolTipsPositionInfo[index].Top);
+                        dp.Parent.ToolTipElement.CallOutEndPoint = new Point(1, dp.Parent.ToolTipElement._borderElement.ActualHeight - dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+
+                        dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0, 0.25, 0.25, 1);
+                    }
                 }
                 else
                 {
-                    dp.Parent.ToolTipElement.CallOutStartPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, 6);
-                    dp.Parent.ToolTipElement.CallOutMidPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth + (positionOfDp.X - (toolTipsPositionInfo[index].Left + dp.Parent.ToolTipElement._borderElement.ActualWidth)), positionOfDp.Y - toolTipsPositionInfo[index].Top);
-                    dp.Parent.ToolTipElement.CallOutEndPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, 20);
+                    if (listOfActualPos[index].X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) + dp.Parent.ToolTipElement._borderElement.ActualWidth < plotWidth)
+                    {
+                        dp.Parent.ToolTipElement.CallOutStartPoint = new Point(1, dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+                        dp.Parent.ToolTipElement.CallOutMidPoint = new Point(positionOfDp.X - toolTipsPositionInfo[index].Left, positionOfDp.Y - toolTipsPositionInfo[index].Top);
+                        dp.Parent.ToolTipElement.CallOutEndPoint = new Point(1, dp.Parent.ToolTipElement._borderElement.ActualHeight - dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
 
-                    dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0.25, 0.25, 0, 1);
+                        dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0, 0.25, 0.25, 1);
+                    }
+                    else
+                    {
+                        dp.Parent.ToolTipElement.CallOutStartPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+                        dp.Parent.ToolTipElement.CallOutMidPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth + (positionOfDp.X - (toolTipsPositionInfo[index].Left + dp.Parent.ToolTipElement._borderElement.ActualWidth)), positionOfDp.Y - toolTipsPositionInfo[index].Top);
+                        dp.Parent.ToolTipElement.CallOutEndPoint = new Point(dp.Parent.ToolTipElement._borderElement.ActualWidth - 1, dp.Parent.ToolTipElement._borderElement.ActualHeight - dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
+
+                        dp.Parent.ToolTipElement._borderElement.BorderThickness = new Thickness(0.25, 0.25, 0, 1);
+                    }
                 }
 
                 if (Chart.Series.IndexOf(dp.Parent) == 0)
@@ -339,10 +454,10 @@ namespace Visifire.Charts
                     DataPoint nearsestDPOfFirstDS = null;
                     foreach (DataPoint dp1 in Chart.Series[0].DataPoints)
                     {
-                        if(dp1.Faces.Visual != null)
-                            dp1._distance = Math.Abs(dp._visualPosition.X - (Double)((Double)dp1.Faces.Visual.GetValue(Canvas.LeftProperty) + dp1.Faces.Visual.Width / 2));
-                        else
-                            dp1._distance = Math.Abs(dp._visualPosition.X - dp1._visualPosition.X);
+                        //if(dp1.Faces != null && dp1.Faces.Visual != null)
+                        //    dp1._distance = Math.Abs(dp._visualPosition.X - (Double)((Double)dp1.Faces.Visual.GetValue(Canvas.LeftProperty) + dp1.Faces.Visual.Width / 2));
+                        //else
+                        dp1._distance = Math.Abs(dp._visualPosition.X - dp1._visualPosition.X);
 
                         if (nearsestDPOfFirstDS == null)
                         {
@@ -354,7 +469,8 @@ namespace Visifire.Charts
                             nearsestDPOfFirstDS = dp1;
                     }
 
-                    dpOfFirstDataSeries = nearsestDPOfFirstDS;
+                    if(dpOfFirstDataSeries == null)
+                        dpOfFirstDataSeries = nearsestDPOfFirstDS;
                 }
 
                 if (!AxisX.IsDateTimeAxis)
@@ -377,8 +493,84 @@ namespace Visifire.Charts
                 }
             }
 
-            if(listOfActualXPos.Count > 0)
-                SetPositon4Indicators(AxisX, listOfActualXPos[0], axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
+            if (listOfActualPos.Count > 0)
+            {
+                Double newPos = 0;
+
+                // Find out the middle position of an XValue in case of multiseries chart so that
+                // indicator can be displayed in the middle. Please note that for multiseries chart
+                // one XValue can have more than one DataPoint so we need to find out the middle position
+                // in order to place indicator.
+                DataPoint dpAtIndexZero = null;
+                if (PlotDetails.DrawingDivisionFactor > 1)
+                {
+                    var dps = (from dp1 in nearestDataPointList
+                                    where (dp1.Parent.RenderAs == RenderAs.Column
+                                    || dp1.Parent.RenderAs == RenderAs.StackedColumn
+                                    || dp1.Parent.RenderAs == RenderAs.StackedColumn100
+                                    || dp1.Parent.RenderAs == RenderAs.Bar
+                                    || dp1.Parent.RenderAs == RenderAs.StackedBar
+                                    || dp1.Parent.RenderAs == RenderAs.StackedBar100)
+                                    select dp1);
+
+                    List<DataSeries> indexSeriesList = null;
+
+                    foreach (DataPoint dp in dps)
+                    {
+                        indexSeriesList = PlotDetails.GetSeriesFromDataPoint(dp);
+                        if (indexSeriesList != null && indexSeriesList.Count > 1)
+                        {
+                            Int32 drawingIndex = indexSeriesList.IndexOf(dp.Parent);
+                            if (drawingIndex == 0)
+                            {
+                                dpAtIndexZero = dp;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (dpAtIndexZero != null && dpAtIndexZero.Faces != null && dpAtIndexZero.Faces.Visual != null)
+                    {
+                        Double visualSize = 0;
+                        if (dpAtIndexZero.Parent.RenderAs == RenderAs.Bar || dpAtIndexZero.Parent.RenderAs == RenderAs.StackedBar
+                            || dpAtIndexZero.Parent.RenderAs == RenderAs.StackedBar100)
+                        {
+                            newPos = (dpAtIndexZero._visualPosition.Y + yPlotOffset - dpAtIndexZero.Faces.Visual.Height / 2);
+                            visualSize = dpAtIndexZero.Faces.Visual.Height;
+                        }
+                        else
+                        {
+                            newPos = (dpAtIndexZero._visualPosition.X + xPlotOffset - dpAtIndexZero.Faces.Visual.Width / 2);
+                            visualSize = dpAtIndexZero.Faces.Visual.Width;
+                        }
+
+                        if(indexSeriesList != null && indexSeriesList.Count > 0)
+                            newPos += ((visualSize * indexSeriesList.Count) / 2);
+                    }
+                    else
+                        if (AxisX.AxisOrientation == Orientation.Horizontal)
+                            newPos = listOfActualPos[0].X;
+                        else
+                            newPos = listOfActualPos[0].Y;
+                }
+                else
+                    newPos = Double.NaN;
+
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                {
+                    if(!Double.IsNaN(newPos))
+                        SetPositon4Indicators(AxisX, newPos, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
+                    else
+                        SetPositon4Indicators(AxisX, listOfActualPos[0].X, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
+                }
+                else
+                {
+                    if (!Double.IsNaN(newPos))
+                        SetPositon4Indicators(AxisX, newPos, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
+                    else
+                        SetPositon4Indicators(AxisX, listOfActualPos[0].Y, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
+                }
+            }
 
             System.Diagnostics.Debug.WriteLine("Called..." + new Random().Next().ToString());
 
@@ -857,22 +1049,66 @@ namespace Visifire.Charts
                 {
                     List<DataPoint> listOfNearestDataPoints = new List<DataPoint>();
 
+                    // Find out the first nearest DataPoint from mouse position
                     foreach (DataSeries ds in Chart.Series)
                     {
-                        if (ds.RenderAs == RenderAs.Line)
+                        if (ds.RenderAs != RenderAs.Pie && ds.RenderAs != RenderAs.Doughnut
+                             && ds.RenderAs != RenderAs.SectionFunnel && ds.RenderAs != RenderAs.StreamLineFunnel)
                         {
                             DataPoint nearestDataPoint = ds.GetNearestDataPoint(sender, e, ds);
 
                             if (nearestDataPoint != null)
                             {
                                 nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
-                                listOfNearestDataPoints.Add(nearestDataPoint);
+
+                                if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                {
+                                    listOfNearestDataPoints.Add(nearestDataPoint);
+                                    _lastNearestDataPoint = nearestDataPoint;
+                                    break;
+                                }
                             }
                         }
                     }
 
+                    // Now find out the other nearest DataPoints from the last nearest DataPoint found above.
+                    // This is done for multiseries Column and Bar charts. If mouse pointer is at the center of 
+                    // two DataPoints of a DataSeries then ToolTip should appear for those DataPoints which have 
+                    // same XValue.
+                    foreach (DataSeries ds in Chart.Series)
+                    {
+                        if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut
+                             || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
+                            continue;
+
+                        var otherNearestDP = (from dp in ds.DataPoints
+                                  where dp.InternalXValue == _lastNearestDataPoint.InternalXValue
+                                  select dp);
+
+                        if (otherNearestDP != null)
+                        {
+                            foreach (DataPoint dp in otherNearestDP)
+                            {
+                                if (!listOfNearestDataPoints.Contains(dp))
+                                {
+                                    dp.Parent.SetToolTipProperties(dp);
+
+                                    if (ds.ToolTipElement != null)
+                                    {
+                                        if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                        {
+                                            listOfNearestDataPoints.Add(dp);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("NearestDataPoints Count : " + listOfNearestDataPoints.Count);
+
                     var nearestDataPointList = (from dataPoint in listOfNearestDataPoints
-                                                orderby dataPoint.YValue descending
+                                                orderby dataPoint._visualPosition.Y ascending
                                                 select dataPoint);
 
                     if (nearestDataPointList.Count() > 0)
@@ -891,6 +1127,16 @@ namespace Visifire.Charts
                     }
                 }
             }
+        }
+
+        private void CreateVerticalLineIndicator()
+        {
+            _verticalLineIndicator = new Line();
+            _verticalLineIndicator.Stroke = new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
+            _verticalLineIndicator.StrokeThickness = 1;
+            _verticalLineIndicator.IsHitTestVisible = false;
+
+            Chart._toolTipCanvas.Children.Add(_verticalLineIndicator);
         }
 
         /// <summary>
@@ -915,6 +1161,7 @@ namespace Visifire.Charts
                 _callOutPath4AxisIndicator.Data = pathGeometry;
 
                 PathFigure pathFigure = new PathFigure();
+
                 pathFigure.StartPoint = new Point(-6, 8);
 
                 pathGeometry.Figures.Add(pathFigure);
@@ -928,32 +1175,27 @@ namespace Visifire.Charts
                 lineSegment.Point = new Point(6, 8);
 
                 pathFigure.Segments.Add(lineSegment);
-
+               
                 _axisCallOutContainer.Children.Add(_callOutPath4AxisIndicator);
 
-                Border border = new Border();
-                border.CornerRadius = new CornerRadius(3);
-                border.MinWidth = 25;
-                border.HorizontalAlignment = HorizontalAlignment.Center;
-                border.Padding = new Thickness(5, 0, 5, 0);
-                border.Background = new SolidColorBrush(Colors.LightGray); // new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
+                _axisIndicatorBorderElement = new Border();
+                _axisIndicatorBorderElement.CornerRadius = new CornerRadius(3);
+                _axisIndicatorBorderElement.MinWidth = 25;
+                _axisIndicatorBorderElement.HorizontalAlignment = HorizontalAlignment.Center;
+                _axisIndicatorBorderElement.Padding = new Thickness(5, 0, 5, 0);
+                _axisIndicatorBorderElement.Background = new SolidColorBrush(Colors.LightGray); // new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
 
                 _axisIndicatorTextBlock = new TextBlock();
                 _axisIndicatorTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 
-                border.Child = _axisIndicatorTextBlock;
+                _axisIndicatorBorderElement.Child = _axisIndicatorTextBlock;
                 
                 _axisIndicatorElement.Children.Add(_axisCallOutContainer);
-                _axisIndicatorElement.Children.Add(border);
+                _axisIndicatorElement.Children.Add(_axisIndicatorBorderElement);
 
                 Chart._toolTipCanvas.Children.Add(_axisIndicatorElement);
 
-                _verticalLineIndicator = new Line();
-                _verticalLineIndicator.Stroke = new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
-                _verticalLineIndicator.StrokeThickness = 1;
-                _verticalLineIndicator.IsHitTestVisible = false;
-
-                Chart._toolTipCanvas.Children.Add(_verticalLineIndicator);
+                CreateVerticalLineIndicator();
             }
         }
 
@@ -961,32 +1203,138 @@ namespace Visifire.Charts
         /// Set position of Indicators
         /// </summary>
         /// <param name="axis"></param>
-        /// <param name="actualXPos"></param>
+        /// <param name="actualPos"></param>
         /// <param name="axisIndicatorText"></param>
         /// <param name="xPlotCanvasOffset"></param>
         /// <param name="yPlotCanvasOffset"></param>
         /// <param name="plotWidth"></param>
         /// <param name="plotHeight"></param>
-        private void SetPositon4Indicators(Axis axis, Double actualXPos, String axisIndicatorText, Double xPlotCanvasOffset, Double yPlotCanvasOffset, Double plotWidth, Double plotHeight)
+        private void SetPositon4Indicators(Axis axis, Double actualPos, String axisIndicatorText, Double xPlotCanvasOffset, Double yPlotCanvasOffset, Double plotWidth, Double plotHeight)
         {
             // Set position of indicator line
             _axisIndicatorTextBlock.Text = axisIndicatorText;
 
-            _verticalLineIndicator.SetValue(Canvas.LeftProperty, actualXPos - xPlotCanvasOffset - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset));
+            Double leftOfIndicator = 0;
 
-            _verticalLineIndicator.X1 = xPlotCanvasOffset;
-            _verticalLineIndicator.Y1 = yPlotCanvasOffset;
+            if (axis.AxisOrientation == Orientation.Horizontal)
+            {
+                _axisIndicatorElement.Children.Clear();
+                _axisIndicatorElement.Orientation = Orientation.Vertical;
+                _axisIndicatorBorderElement.MinWidth = 25;
+                _axisIndicatorElement.Children.Add(_axisCallOutContainer);
+                _axisIndicatorElement.Children.Add(_axisIndicatorBorderElement);
+                _axisCallOutContainer.Height = 8;
+                _axisCallOutContainer.Width = Double.NaN;
+                
+                if(Chart._toolTipCanvas.Children.Contains(_verticalLineIndicator))
+                {
+                    Chart._toolTipCanvas.Children.Remove(_verticalLineIndicator);
+                    CreateVerticalLineIndicator();
+                }
 
-            _verticalLineIndicator.X2 = xPlotCanvasOffset;
-            _verticalLineIndicator.Y2 = plotHeight + yPlotCanvasOffset;
-            
-            //  Set position of indicator over Axis
-            Double leftOfIndicator = actualXPos - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset) - _axisIndicatorElement.ActualWidth / 2;
-            Double topOfIndicator = plotHeight + yPlotCanvasOffset;
-            topOfIndicator += (axis.ScrollBarElement.Visibility == Visibility.Visible) ? axis.ScrollBarElement.Height : 0;
+                if (_axisIndicatorBorderElement.RenderTransform.GetType() == typeof(RotateTransform))
+                {
+                    (_axisIndicatorBorderElement.RenderTransform as RotateTransform).Angle = 0;
+                    _axisIndicatorBorderElement.RenderTransformOrigin = new Point(0, 0);
+                }
 
-            _axisIndicatorElement.SetValue(Canvas.LeftProperty, leftOfIndicator);
-            _axisIndicatorElement.SetValue(Canvas.TopProperty, topOfIndicator);
+                ((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).StartPoint = new Point(-6, 8);
+                (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[0] as LineSegment).Point = new Point(0, 0);
+                (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[1] as LineSegment).Point = new Point(6, 8);
+
+                _verticalLineIndicator.SetValue(Canvas.LeftProperty, actualPos - xPlotCanvasOffset - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset));
+
+                _verticalLineIndicator.X1 = xPlotCanvasOffset;
+                _verticalLineIndicator.Y1 = yPlotCanvasOffset;
+
+                _verticalLineIndicator.X2 = xPlotCanvasOffset;
+                _verticalLineIndicator.Y2 = plotHeight + yPlotCanvasOffset;
+
+                //  Set position of indicator over Axis
+                leftOfIndicator = actualPos - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset) - _axisIndicatorElement.ActualWidth / 2;
+                Double topOfIndicator = plotHeight + yPlotCanvasOffset;
+                topOfIndicator += (axis.ScrollBarElement.Visibility == Visibility.Visible) ? axis.ScrollBarElement.Height : 0;
+
+                _axisIndicatorElement.SetValue(Canvas.LeftProperty, leftOfIndicator);
+                _axisIndicatorElement.SetValue(Canvas.TopProperty, topOfIndicator);
+            }
+            else
+            {
+                if (_axisIndicatorBorderElement.ActualWidth + _axisCallOutContainer.Width > axis.Width)
+                {
+                    _axisIndicatorElement.Children.Clear();
+                    _axisIndicatorElement.Orientation = Orientation.Vertical;
+                    _axisIndicatorBorderElement.MinWidth = 25;
+                    _axisIndicatorBorderElement.MinHeight = 0;
+                    _axisIndicatorElement.Children.Add(_axisIndicatorBorderElement);
+                    _axisIndicatorElement.Children.Add(_axisCallOutContainer);
+                    _axisCallOutContainer.Width = 8;
+
+                    if (Chart._toolTipCanvas.Children.Contains(_verticalLineIndicator))
+                    {
+                        Chart._toolTipCanvas.Children.Remove(_verticalLineIndicator);
+                        CreateVerticalLineIndicator();
+                    }
+
+                    RotateTransform transform = new RotateTransform();
+                    transform.Angle = 90;
+                    _axisIndicatorBorderElement.RenderTransformOrigin = new Point(0.5, 0.5);
+                    _axisIndicatorBorderElement.RenderTransform = transform;
+
+                    ((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).StartPoint = new Point(10, -10);
+                    (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[0] as LineSegment).Point = new Point(20, -5);
+                    (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[1] as LineSegment).Point = new Point(10, 0);
+
+                    leftOfIndicator -= _axisIndicatorElement.ActualWidth / 2 + (_axisIndicatorElement.ActualHeight - _axisCallOutContainer.Width);
+                }
+                else
+                {
+                    _axisIndicatorElement.Orientation = Orientation.Horizontal;
+
+                    _axisIndicatorElement.Children.Clear();
+                    _axisIndicatorBorderElement.MinWidth = 0;
+                    _axisIndicatorBorderElement.MinHeight = 0;
+                    _axisCallOutContainer.Width = 8;
+
+                    if (_axisIndicatorBorderElement.RenderTransform.GetType() == typeof(RotateTransform))
+                    {
+                        (_axisIndicatorBorderElement.RenderTransform as RotateTransform).Angle = 0;
+                        _axisIndicatorBorderElement.RenderTransformOrigin = new Point(0, 0);
+                    }
+
+                    if (Chart._toolTipCanvas.Children.Contains(_verticalLineIndicator))
+                    {
+                        Chart._toolTipCanvas.Children.Remove(_verticalLineIndicator);
+                        CreateVerticalLineIndicator();
+                    }
+
+                    _axisIndicatorElement.Children.Add(_axisIndicatorBorderElement);
+                    _axisIndicatorElement.Children.Add(_axisCallOutContainer);
+
+                    ((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).StartPoint = new Point(0, 0);
+                    (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[0] as LineSegment).Point = new Point(8, 4);
+                    (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[1] as LineSegment).Point = new Point(0, 8);
+
+                    leftOfIndicator -= _axisIndicatorElement.ActualWidth;
+                }
+
+                _verticalLineIndicator.SetValue(Canvas.TopProperty, actualPos - yPlotCanvasOffset - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset));
+
+                _verticalLineIndicator.X1 = xPlotCanvasOffset;
+                _verticalLineIndicator.Y1 = yPlotCanvasOffset;
+
+                _verticalLineIndicator.X2 = xPlotCanvasOffset + plotWidth;
+                _verticalLineIndicator.Y2 = yPlotCanvasOffset;
+
+                //  Set position of indicator over Axis
+                leftOfIndicator += xPlotCanvasOffset;
+                Double topOfIndicator = actualPos - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset) - _axisIndicatorElement.ActualHeight / 2;
+                leftOfIndicator -= (axis.ScrollBarElement.Visibility == Visibility.Visible) ? axis.ScrollBarElement.Width : 0;
+
+                _axisIndicatorElement.SetValue(Canvas.LeftProperty, leftOfIndicator);
+                _axisIndicatorElement.SetValue(Canvas.TopProperty, topOfIndicator);
+            }
+    
 
             // Graphics.DrawPointAt(new Point(leftOfIndicator, topOfIndicator), Chart._toolTipCanvas, Colors.Purple);
         }
@@ -2686,7 +3034,7 @@ namespace Visifire.Charts
                     }
 
                     Boolean isAnyActiveStoryboard = false;
-                    
+
                     foreach (DataSeries series in Chart.InternalSeries)
                     {
                         if (series.Storyboard != null)
@@ -2751,7 +3099,7 @@ namespace Visifire.Charts
 #endif
                         }
 
-                        
+
                     }
 
                     if (!isAnyActiveStoryboard)
@@ -2766,6 +3114,21 @@ namespace Visifire.Charts
                     System.Diagnostics.Debug.WriteLine("Animation Error. " + e.Message);
                 }
             }
+            else
+            {
+                if (!Chart._internalAnimationEnabled && (Boolean)Chart.AnimatedUpdate)
+                {
+                    if (PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                    {
+                        foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
+                        {
+                            if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
+                                dataPoint.ExplodeOrUnExplodeWithoutAnimation();
+                        }
+                    }
+                }
+            }
+
         }
 
         /// <summary>
@@ -4036,7 +4399,10 @@ namespace Visifire.Charts
                             if (ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
                             {
                                 if (dp.Marker != null)
-                                    dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+                                {
+                                    if (!Chart.IndicatorEnabled)
+                                        dp.AttachToolTip(Chart, dp, dp.Marker.Visual);
+                                }
                             }
 
                             #endregion
@@ -4056,7 +4422,8 @@ namespace Visifire.Charts
                         {
                             if (ds.Faces != null)
                             {
-                                ds.AttachAreaToolTip(Chart, ds.Faces.VisualComponents);
+                                if(!Chart.IndicatorEnabled)
+                                    ds.AttachAreaToolTip(Chart, ds.Faces.VisualComponents);
                             }
                         }
 
@@ -4390,6 +4757,8 @@ namespace Visifire.Charts
 
         internal System.Windows.Shapes.Path _callOutPath4AxisIndicator;
 
+        internal Border _axisIndicatorBorderElement;
+
         internal Line _verticalLineIndicator;
 
         /// <summary>
@@ -4414,6 +4783,8 @@ namespace Visifire.Charts
         /// </summary>
         private const Double DEFAULT_INDICATOR_GAP = 6;
         private const Double DEFAULT_TOOLTIP_OPACITY = 0.9;
+
+        private DataPoint _lastNearestDataPoint;
 
         /// <summary>
         /// Whether default interactivity is allowed for Pie/Doughnut/Funnel chart

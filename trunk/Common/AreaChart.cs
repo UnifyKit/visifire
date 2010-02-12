@@ -940,7 +940,8 @@ namespace Visifire.Charts
                 foreach (FrameworkElement face in series.Faces.VisualComponents)
                     VisifireElement.AttachEvents2AreaVisual(series, series, face);
 
-                series.AttachAreaToolTip(chart, dataSeriesFaces.VisualComponents);
+                if(!chart.IndicatorEnabled)
+                    series.AttachAreaToolTip(chart, dataSeriesFaces.VisualComponents);
 
                 areaFaceCanvas.Tag = null;
 
@@ -1461,6 +1462,9 @@ namespace Visifire.Charts
                         if (animationEnabled)
                             curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
                     }
+
+                    curDataPoints[index]._visualPosition = new Point(curXPosition, curYPosition);
+
                     if (i + 1 == xValues.Length - 1)
                     {
                         marker = GetMarkerForDataPoint(chart, height, isTopOfStack, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
@@ -1476,6 +1480,8 @@ namespace Visifire.Charts
                             if (animationEnabled)
                                 nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
                         }
+
+                        nextDataPoints[index]._visualPosition = new Point(nextXPosition, nextYPosition);
                     }
 
                     if (curDataPoints[index].Parent.Faces == null)
@@ -1744,6 +1750,9 @@ namespace Visifire.Charts
                         if (animationEnabled)
                             curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
                     }
+
+                    curDataPoints[index]._visualPosition = new Point(curXPosition, curYPosition);
+
                     if (i + 1 == xValues.Length - 1)
                     {
                         marker = GetMarkerForDataPoint(chart, height, false, nextDataPoints[index], nextYPosition, nextDataPoints[index].InternalYValue > 0);
@@ -1759,6 +1768,8 @@ namespace Visifire.Charts
                             if (animationEnabled)
                                 nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
                         }
+
+                        nextDataPoints[index]._visualPosition = new Point(nextXPosition, nextYPosition);
                     }
 
                     if (curDataPoints[index].Parent.Faces == null)
@@ -2878,7 +2889,7 @@ namespace Visifire.Charts
             Double oldMarkerLeft = Double.NaN;
             Point newPosition, oldPosition;
             Storyboard storyBoardDp = null;
-            Boolean animationEnabled = chart.AnimatedUpdate;
+            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;
             Point oldVisualPositionOfDataPoint;
             Canvas labelCanvas = dataSeries.Faces.LabelCanvas;//(areaCanvas.Parent as Canvas).Children[0] as Canvas;
             Double height = chart.ChartArea.ChartVisualCanvas.Height;

@@ -1124,7 +1124,7 @@ namespace Visifire.Charts
 
                     rightRightBorderPathGeometry.Figures.Add(rightBorderPathFigure);
 
-                    // Bottom border Ellipse
+                    // Bottom _axisIndicatorBorderElement Ellipse
                     EllipseGeometry ellipseGeometryBorder = new EllipseGeometry();
                     ellipseGeometryBorder.Center = new Point(topRadius, funnelSlice.Height);
                     ellipseGeometryBorder.RadiusX = funnelSlice.BottomRadius;
@@ -1132,7 +1132,7 @@ namespace Visifire.Charts
 
                     borderGeometryGroup.Children.Add(ellipseGeometryBorder);
 
-                    // Bottom border Ellipse
+                    // Bottom _axisIndicatorBorderElement Ellipse
                     ellipseGeometryBorder = new EllipseGeometry();
                     ellipseGeometryBorder.Center = new Point(topRadius, 0);
                     ellipseGeometryBorder.RadiusX = funnelSlice.TopRadius;

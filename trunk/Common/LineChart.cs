@@ -1733,7 +1733,7 @@ namespace Visifire.Charts
 
         private static void UpdateXAndYValue(DataPoint dataPoint, Canvas line2dLabelCanvas)
         {
-            Boolean isAnimationEnabled = (dataPoint.Chart as Chart).AnimatedUpdate;
+            Boolean isAnimationEnabled = (Boolean)(dataPoint.Chart as Chart).AnimatedUpdate;
 
             if (!(Boolean)dataPoint.Enabled)
                 return;

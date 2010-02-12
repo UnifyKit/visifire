@@ -125,14 +125,19 @@ namespace Visifire.Charts
             else
                 top = bottom;
 
+            if (isPositive)
+                dataPoint._visualPosition = new Point(left + columnWidth / 2, top);
+            else
+                dataPoint._visualPosition = new Point(left + columnWidth / 2, bottom);
+
             dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
             //dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             //dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
-            
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.Visual);
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
             
             dataPoint.SetCursor2DataPointVisualFaces();
@@ -441,7 +446,7 @@ namespace Visifire.Charts
             //if (dataPoint.Faces == null)
             //    return;
 
-            Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
+            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             Canvas columnCanvas, labelCanvas;
 
@@ -640,8 +645,8 @@ namespace Visifire.Charts
         public static void UpdateVisualForYValue4StackedColumnChart(RenderAs chartType, Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
         {
             System.Diagnostics.Debug.WriteLine("Animate--YValue" + dataPoint.YValue.ToString() + " IsAxisChange=" + isAxisChanged.ToString());
-            
-            Boolean animationEnabled = chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
+
+            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;                                            // Whether the animation for the DataPoint is enabled   
             DataSeries dataSeries = dataPoint.Parent;                                   // parent of the current DataPoint
             //dataSeries.Faces.Visual as Canvas;// dataPointVisual.Parent as Canvas;                     // Existing parent canvas of column
 

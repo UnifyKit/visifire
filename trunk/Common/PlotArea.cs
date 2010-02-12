@@ -879,7 +879,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Creates new border element for PlotArea
+        /// Creates new _axisIndicatorBorderElement element for PlotArea
         /// </summary>
         /// <returns>Border</returns>
         internal Border GetNewBorderElement()

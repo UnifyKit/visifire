@@ -362,8 +362,8 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty AnimatedUpdateProperty = DependencyProperty.Register
             ("AnimatedUpdate",
-            typeof(Boolean),
-            typeof(Chart), new PropertyMetadata(false));
+            typeof(Nullable<Boolean>),
+            typeof(Chart), null);
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.InternalBorderThickness dependency property.
@@ -663,11 +663,20 @@ namespace Visifire.Charts
         /// <summary>
         /// Enables or disables animation
         /// </summary>
-        public Boolean AnimatedUpdate
+        [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
+        public Nullable<Boolean> AnimatedUpdate
         {
             get
             {
-                return (Boolean)GetValue(AnimatedUpdateProperty);
+                if ((Nullable<Boolean>)GetValue(AnimatedUpdateProperty) == null)
+                {
+                    if (Series.Count == 1 && (Series[0].RenderAs == RenderAs.Pie || Series[0].RenderAs == RenderAs.Doughnut))
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                    return (Nullable<Boolean>)GetValue(AnimatedUpdateProperty);
             }
             set
             {
@@ -1313,6 +1322,8 @@ namespace Visifire.Charts
                             Panel parent = seriesVisual.Parent as Panel;
                             parent.Children.Remove(seriesVisual);
                         }
+
+                        ds.RemoveToolTip();
                     }
 
                     InternalSeries.Clear();
@@ -2225,7 +2236,7 @@ namespace Visifire.Charts
         internal void UnlockRender()
         {   
             _renderLock = false;           
-         }
+        }
 
         /// <summary>
         /// Calculate font color of DataPoint labels depending upon chart background

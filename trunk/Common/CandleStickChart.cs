@@ -367,7 +367,7 @@ namespace Visifire.Charts
             // Need to re position the shadow also
             ApplyOrRemoveShadow(dataPoint, dataPointWidth);
 
-            // Apply or remove border
+            // Apply or remove _axisIndicatorBorderElement
             ApplyOrUpdateBorder(dataPoint, dataPointWidth);
 
             // Apply or remove bevel
@@ -375,10 +375,13 @@ namespace Visifire.Charts
             
             if(dataPoint.LabelVisual != null)
                 SetLabelPosition(dataPoint, canvasWidth, canvasHeight);
+
+            dataPoint._visualPosition= new Point((Double)dataPointVisual.GetValue(Canvas.LeftProperty) + dataPointVisual.Width / 2, (Double)dataPointVisual.GetValue(Canvas.TopProperty));
+
         }
 
         /// <summary>
-        /// Apply or Update border for the DataPoint
+        /// Apply or Update _axisIndicatorBorderElement for the DataPoint
         /// </summary>
         /// <param name="dataPoint"></param>
         /// <param name="dataPointWidth"></param>
@@ -468,7 +471,8 @@ namespace Visifire.Charts
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
-            dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
+            if(!chart.IndicatorEnabled)
+                dataPoint.AttachToolTip(chart, dataPoint, dataPoint.Faces.VisualComponents);
             dataPoint.AttachHref(chart, dataPoint.Faces.VisualComponents, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
         }
 

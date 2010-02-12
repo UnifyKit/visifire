@@ -417,6 +417,18 @@ namespace Visifire.Charts
 
         public DataPoint DataPoint;
 
+        public PieDoughnutPoints ExplodedPoints
+        {
+            get;
+            set;
+        }
+
+        public PieDoughnutPoints UnExplodedPoints
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Data
@@ -3723,12 +3735,61 @@ namespace Visifire.Charts
 
             UpdateExplodedPosition(pieParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
-            dataPoint.ExplodeAnimation = new Storyboard();
-            dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+            pieParams.ExplodedPoints = explodedPoints;
+            pieParams.UnExplodedPoints = unExplodedPoints;
 
-            dataPoint.UnExplodeAnimation = new Storyboard();
-            dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+            if ((Boolean)(dataPoint.Chart as Chart).AnimatedUpdate)
+            {
+                dataPoint.ExplodeAnimation = new Storyboard();
+                dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
 
+                dataPoint.UnExplodeAnimation = new Storyboard();
+                dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, pieParams.OffsetX, pieParams.OffsetY);
+            }
+            else
+            {
+                if (!(dataPoint.Chart as Chart).AnimationEnabled)
+                {
+                    if ((Boolean)dataPoint.Exploded)
+                    {
+                        foreach (Shape path in pieFaces)
+                        {
+                            if (path == null) continue;
+                            (path.RenderTransform as TranslateTransform).X = pieParams.OffsetX;
+                            (path.RenderTransform as TranslateTransform).Y = pieParams.OffsetY;
+                        }
+
+                        if (dataPoint.LabelVisual != null)
+                        {
+                            if (dataPoint.LabelStyle == LabelStyles.Inside)
+                            {
+                                TranslateTransform translateTransform = new TranslateTransform();
+                                (dataPoint.LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = pieParams.OffsetX;
+                                translateTransform.Y = pieParams.OffsetY;
+                            }
+                            else
+                            {
+                                (dataPoint.LabelVisual as Canvas).SetValue(Canvas.LeftProperty, explodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (dataPoint.LabelLine != null)
+                        {
+                            (dataPoint.LabelLine.RenderTransform as TranslateTransform).X = pieParams.OffsetX;
+                            (dataPoint.LabelLine.RenderTransform as TranslateTransform).Y = pieParams.OffsetY;
+
+                            PathFigure figure = (dataPoint.LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = explodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = explodedPoints.LabelLineEndPoint;
+                        }
+
+                        dataPoint._interactiveExplodeState = true;
+                    }
+                }
+            }
             #endregion
         }
 
@@ -3764,19 +3825,62 @@ namespace Visifire.Charts
 
             UpdateExplodedPosition(pieParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
+            pieParams.ExplodedPoints = explodedPoints;
+            pieParams.UnExplodedPoints = unExplodedPoints;
+
             TranslateTransform translateTransform = new TranslateTransform();
             pieVisual.RenderTransform = translateTransform;
-            dataPoint.ExplodeAnimation = new Storyboard();
-            dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-            dataPoint.UnExplodeAnimation = new Storyboard();
-            dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+
+            if ((Boolean)(currentDataSeries.Chart as Chart).AnimatedUpdate)
+            {
+                dataPoint.ExplodeAnimation = new Storyboard();
+                dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                dataPoint.UnExplodeAnimation = new Storyboard();
+                dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+            }
+            else
+            {
+                if (!(currentDataSeries.Chart as Chart).AnimationEnabled)
+                {
+                    if ((Boolean)dataPoint.Exploded)
+                    {
+                        translateTransform.X = offsetX;
+                        translateTransform.Y = offsetY;
+
+                        if (dataPoint.LabelVisual != null)
+                        {
+                            if (dataPoint.LabelStyle == LabelStyles.Inside)
+                            {
+                                translateTransform = new TranslateTransform();
+                                (dataPoint.LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                translateTransform.X = offsetX;
+                                translateTransform.Y = offsetY;
+                            }
+                            else
+                            {
+                                (dataPoint.LabelVisual as Canvas).SetValue(Canvas.LeftProperty, explodedPoints.LabelPosition.X);
+                            }
+                        }
+
+                        if (dataPoint.LabelLine != null)
+                        {
+                            PathFigure figure = (dataPoint.LabelLine.Data as PathGeometry).Figures[0];
+                            PathSegmentCollection segments = figure.Segments;
+                            (segments[0] as LineSegment).Point = explodedPoints.LabelLineMidPoint;
+                            (segments[1] as LineSegment).Point = explodedPoints.LabelLineEndPoint;
+                        }
+
+                        dataPoint._interactiveExplodeState = true;
+                    }
+                }
+            }
 
             pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
             pieVisual.SetValue(Canvas.LeftProperty, widthOfPlotArea / 2 - pieVisual.Width / 2);
             visual.Children.Add(pieVisual);
             faces.VisualComponents.Add(pieVisual);
             faces.Visual = pieVisual;
-
             #endregion
         }
 
@@ -4340,11 +4444,61 @@ namespace Visifire.Charts
 
                     UpdateExplodedPosition(doughnutParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
+                    doughnutParams.ExplodedPoints = explodedPoints;
+                    doughnutParams.UnExplodedPoints = unExplodedPoints;
+
                     ///------------------------
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
+                    if ((Boolean)chart.AnimatedUpdate)
+                    {
+                        dataPoint.ExplodeAnimation = new Storyboard();
+                        dataPoint.ExplodeAnimation = CreateExplodingOut3DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
+                        dataPoint.UnExplodeAnimation = new Storyboard();
+                        dataPoint.UnExplodeAnimation = CreateExplodingIn3DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, doughnutFaces, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, unExplodedPoints, explodedPoints, doughnutParams.OffsetX, doughnutParams.OffsetY);
+                    }
+                    else
+                    {
+                        if (!chart.AnimationEnabled)
+                        {
+                            if ((Boolean)dataPoint.Exploded)
+                            {
+                                foreach (Shape path in doughnutFaces)
+                                {
+                                    if (path == null) continue;
+                                    (path.RenderTransform as TranslateTransform).X = offsetX;
+                                    (path.RenderTransform as TranslateTransform).Y = offsetY;
+                                }
+
+                                if (dataPoint.LabelVisual != null)
+                                {
+                                    if (dataPoint.LabelStyle == LabelStyles.Inside)
+                                    {
+                                        TranslateTransform translateTransform = new TranslateTransform();
+                                        (dataPoint.LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                        translateTransform.X = offsetX;
+                                        translateTransform.Y = offsetY;
+                                    }
+                                    else
+                                    {
+                                        (dataPoint.LabelVisual as Canvas).SetValue(Canvas.LeftProperty, explodedPoints.LabelPosition.X);
+                                    }
+                                }
+
+                                if (dataPoint.LabelLine != null)
+                                {
+                                    (dataPoint.LabelLine.RenderTransform as TranslateTransform).X = offsetX;
+                                    (dataPoint.LabelLine.RenderTransform as TranslateTransform).Y = offsetY;
+
+                                    PathFigure figure = (dataPoint.LabelLine.Data as PathGeometry).Figures[0];
+                                    PathSegmentCollection segments = figure.Segments;
+                                    (segments[0] as LineSegment).Point = explodedPoints.LabelLineMidPoint;
+                                    (segments[1] as LineSegment).Point = explodedPoints.LabelLineEndPoint;
+                                }
+
+                                dataPoint._interactiveExplodeState = true;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -4361,12 +4515,56 @@ namespace Visifire.Charts
 
                     UpdateExplodedPosition(doughnutParams, dataPoint, offsetX, unExplodedPoints, explodedPoints, widthOfPlotArea);
 
+                    doughnutParams.ExplodedPoints = explodedPoints;
+                    doughnutParams.UnExplodedPoints = unExplodedPoints;
+
                     TranslateTransform translateTransform = new TranslateTransform();
                     pieVisual.RenderTransform = translateTransform;
-                    dataPoint.ExplodeAnimation = new Storyboard();
-                    dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
-                    dataPoint.UnExplodeAnimation = new Storyboard();
-                    dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+
+                    if ((Boolean)chart.AnimatedUpdate)
+                    {
+                        dataPoint.ExplodeAnimation = new Storyboard();
+                        dataPoint.ExplodeAnimation = CreateExplodingOut2DAnimation(currentDataSeries, dataPoint, dataPoint.ExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                        dataPoint.UnExplodeAnimation = new Storyboard();
+                        dataPoint.UnExplodeAnimation = CreateExplodingIn2DAnimation(currentDataSeries, dataPoint, dataPoint.UnExplodeAnimation, pieVisual, dataPoint.LabelVisual as Canvas, dataPoint.LabelLine, translateTransform, unExplodedPoints, explodedPoints, offsetX, offsetY);
+                    }
+                    else
+                    {
+                        if (!chart.AnimationEnabled)
+                        {
+                            if ((Boolean)dataPoint.Exploded)
+                            {
+                                translateTransform.X = offsetX;
+                                translateTransform.Y = offsetY;
+
+                                if (dataPoint.LabelVisual != null)
+                                {
+                                    if (dataPoint.LabelStyle == LabelStyles.Inside)
+                                    {
+                                        translateTransform = new TranslateTransform();
+                                        (dataPoint.LabelVisual as Canvas).RenderTransform = translateTransform;
+
+                                        translateTransform.X = offsetX;
+                                        translateTransform.Y = offsetY;
+                                    }
+                                    else
+                                    {
+                                        (dataPoint.LabelVisual as Canvas).SetValue(Canvas.LeftProperty, explodedPoints.LabelPosition.X);
+                                    }
+                                }
+
+                                if (dataPoint.LabelLine != null)
+                                {
+                                    PathFigure figure = (dataPoint.LabelLine.Data as PathGeometry).Figures[0];
+                                    PathSegmentCollection segments = figure.Segments;
+                                    (segments[0] as LineSegment).Point = explodedPoints.LabelLineMidPoint;
+                                    (segments[1] as LineSegment).Point = explodedPoints.LabelLineEndPoint;
+                                }
+
+                                dataPoint._interactiveExplodeState = true;
+                            }
+                        }
+                    }
 
                     pieVisual.SetValue(Canvas.TopProperty, height / 2 - pieVisual.Height / 2);
                     pieVisual.SetValue(Canvas.LeftProperty, widthOfPlotArea / 2 - pieVisual.Width / 2);

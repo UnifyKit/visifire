@@ -6,12 +6,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
 >
     <Grid x:Name="LayoutRoot">
         
-        <vc:Chart Name="MyChart" Theme="Theme1" Width="400" Height="300" IndicatorEnabled="True">
-
-            <vc:Chart.AxesX>
-                <vc:Axis IntervalType="Days" Interval="3"/> 
-            </vc:Chart.AxesX>
-            
+        <vc:Chart Name="MyChart" Theme="Theme1" Width="500" Height="300">
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Line">
                     <vc:DataSeries.DataPoints>
