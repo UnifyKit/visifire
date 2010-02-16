@@ -66,4 +66,9 @@ namespace Visifire.Charts
     /// Collection of ToolTips
     /// </summary>
     public class ToolTipCollection : ObservableCollection<Visifire.Charts.ToolTip> {  }
+
+    /// <summary>
+    /// Collection of DataMapping
+    /// </summary>
+    public class DataMappingCollection : ObservableCollection<DataMapping> { }
 }

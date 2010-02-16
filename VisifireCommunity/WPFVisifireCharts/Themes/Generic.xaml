@@ -252,7 +252,13 @@
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <!--<Setter Property="BorderColor" Value="Black"/>-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Canvas x:Name="RootElement"></Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type vc:Title}" >

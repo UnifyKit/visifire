@@ -203,6 +203,13 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
         <Setter Property="Bevel" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Canvas x:Name="RootElement"></Canvas>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="vc:ToolTip">
