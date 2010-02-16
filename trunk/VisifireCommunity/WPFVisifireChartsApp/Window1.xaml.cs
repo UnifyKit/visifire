@@ -20,6 +20,7 @@ using System.Windows.Media.Animation;
 using System.IO;
 using System.Xml;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 
 namespace WPFVisifireChartsApp
 {

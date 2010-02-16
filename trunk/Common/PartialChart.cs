@@ -50,6 +50,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Visifire.Commons;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 namespace Visifire.Charts
 {
@@ -181,7 +182,7 @@ namespace Visifire.Charts
         public override void OnApplyTemplate()
         {   
             base.OnApplyTemplate();
-
+            
             LoadControlsFromTemplate();
 
             LoadToolBar();
@@ -211,6 +212,11 @@ namespace Visifire.Charts
 #if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
+
+            foreach (DataSeries ds in Series)
+            {
+                _rootElement.Children.Add(ds);
+            }
         }
 
 
@@ -1250,6 +1256,9 @@ namespace Visifire.Charts
                     foreach (DataSeries ds in e.NewItems)
                     {   
                         ds.Chart = this;
+
+                        //if (ds.DataContext == null)
+                          //  ds.SetBinding(DataContextProperty, new Binding());
 
                         foreach (DataPoint dp in ds.DataPoints)
                         {   

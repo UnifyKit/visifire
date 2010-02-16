@@ -45,6 +45,7 @@ using System.Windows.Shapes;
 using Visifire.Commons;
 using System.Windows.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Visifire.Charts
 {
@@ -86,6 +87,8 @@ namespace Visifire.Charts
         public override void Bind()
         {
 #if SL
+            base.Bind();
+            
             Binding b = new Binding("BorderThickness");
             b.Source = this;
             this.SetBinding(InternalBorderThicknessProperty, b);
@@ -93,6 +96,7 @@ namespace Visifire.Charts
             b = new Binding("Opacity");
             b.Source = this;
             this.SetBinding(InternalOpacityProperty, b);
+
 #endif
         }
 
@@ -3549,6 +3553,106 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Binds to an Object
+        /// </summary>
+
+        internal void BindData(Object sender, DataMappingCollection dataMappings)
+        {
+            foreach (DataMapping dm in dataMappings)
+            {
+                switch (dm.MemberName)
+                {
+                    case "Open":
+                        if (YValues == null)
+                            YValues = new Double[4];
+
+                        YValues[0] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                        break;
+
+                    case "Close":
+                        if (YValues == null)
+                            YValues = new Double[4];
+
+                        YValues[1] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                        break;
+
+                    case "High":
+                        if (YValues == null)
+                            YValues = new Double[4];
+
+                        YValues[2] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                        break;
+
+                    case "Low":
+                        if (YValues == null)
+                            YValues = new Double[4];
+
+                        YValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                        break;
+
+                    default:
+                        this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
+                        break;
+                }    
+            }
+
+            INotifyPropertyChanged iNotifyPropertyChanged = sender as INotifyPropertyChanged;
+
+            if (iNotifyPropertyChanged != null)
+            {
+                iNotifyPropertyChanged.PropertyChanged += new PropertyChangedEventHandler(iNotifyPropertyChanged_PropertyChanged);
+            }
+        }
+
+        void iNotifyPropertyChanged_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            DataMapping dm;
+
+            try
+            {
+                dm = (from item in Parent.DataMappings where (item.Path == e.PropertyName) select item).Single();
+            }
+            catch (Exception exp)
+            {
+                return;
+            }
+            
+
+            Double[] newYValues = new Double[4];
+            if (YValues != null)
+                YValues.CopyTo(newYValues,0);
+
+            switch (dm.MemberName)
+            {
+                case "Open" :
+                    newYValues[0] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                    YValues = newYValues;
+                    break;
+
+                case "Close":
+                    newYValues[1] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null)); YValues = newYValues;
+                    YValues = newYValues;
+                    break;
+
+                case "High":
+                    newYValues[2] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                    YValues = newYValues;
+                    break;
+
+                case "Low":
+                    newYValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                    YValues = newYValues;
+                    break;
+
+                default:
+                    this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
+                    break;
+            }            
+        }
+
+
 
         /// <summary>
         /// Start interactive animation

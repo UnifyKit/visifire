@@ -132,6 +132,9 @@
     <Compile Include="..\..\Common\Converters.cs">
       <Link>Converters.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\DataMapping.cs">
+      <Link>DataMapping.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\DataPoint.cs">
       <Link>DataPoint.cs</Link>
     </Compile>

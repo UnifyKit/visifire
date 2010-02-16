@@ -294,7 +294,6 @@ namespace Visifire.Charts
                     }
                     else
                     {
-
                         if (dp.Parent.RenderAs == RenderAs.Bar || dp.Parent.RenderAs == RenderAs.StackedBar || dp.Parent.RenderAs == RenderAs.StackedBar100)
                         {
                             if (dp.YValue >= 0)
@@ -311,7 +310,7 @@ namespace Visifire.Charts
                                 if (toolTipPosition.X < 0)
                                     toolTipPosition.X = positionOfDp.X + 10;
 
-                                toolTipPosition.Y = toolTipPosition.Y + 5;
+                                toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height - 5;
                             }
                         }
                         else
@@ -387,7 +386,6 @@ namespace Visifire.Charts
                 {
                     dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
                     dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
-
                 }
 
                 if (dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
@@ -445,6 +443,8 @@ namespace Visifire.Charts
                     }
                 }
 
+                #region Get the desired DataPoint whose value can be displayed inside Axis Indicator
+
                 if (Chart.Series.IndexOf(dp.Parent) == 0)
                     dpOfFirstDataSeries = dp;
                 else
@@ -473,6 +473,12 @@ namespace Visifire.Charts
                         dpOfFirstDataSeries = nearsestDPOfFirstDS;
                 }
 
+                if (dpOfFirstDataSeries != null)
+                {
+                    if (dpOfFirstDataSeries.InternalXValue != dp.InternalXValue)
+                        dpOfFirstDataSeries = dp;
+                }
+
                 if (!AxisX.IsDateTimeAxis)
                 {
                     if (dpOfFirstDataSeries != null)
@@ -491,10 +497,15 @@ namespace Visifire.Charts
                     DateTime dt = Convert.ToDateTime(dp.XValue);
                     axisIndicatorText = dt.ToString(valueFormatString);
                 }
+
+                #endregion
             }
 
             if (listOfActualPos.Count > 0)
             {
+
+                #region Finding out the middle position of of an XValue in a multi-series chart in order to position Indicator
+
                 Double newPos = 0;
 
                 // Find out the middle position of an XValue in case of multiseries chart so that
@@ -505,12 +516,13 @@ namespace Visifire.Charts
                 if (PlotDetails.DrawingDivisionFactor > 1)
                 {
                     var dps = (from dp1 in nearestDataPointList
-                                    where (dp1.Parent.RenderAs == RenderAs.Column
+                                    where ((dp1.Parent.RenderAs == RenderAs.Column
                                     || dp1.Parent.RenderAs == RenderAs.StackedColumn
                                     || dp1.Parent.RenderAs == RenderAs.StackedColumn100
                                     || dp1.Parent.RenderAs == RenderAs.Bar
                                     || dp1.Parent.RenderAs == RenderAs.StackedBar
                                     || dp1.Parent.RenderAs == RenderAs.StackedBar100)
+                                    && PlotDetails.GetSeriesFromDataPoint(dp1).Count > 1)
                                     select dp1);
 
                     List<DataSeries> indexSeriesList = null;
@@ -544,17 +556,81 @@ namespace Visifire.Charts
                             visualSize = dpAtIndexZero.Faces.Visual.Width;
                         }
 
-                        if(indexSeriesList != null && indexSeriesList.Count > 0)
-                            newPos += ((visualSize * indexSeriesList.Count) / 2);
+                        if (dps != null && dps.Count() > 0)
+                            newPos += ((visualSize * dps.Count()) / 2);
                     }
                     else
-                        if (AxisX.AxisOrientation == Orientation.Horizontal)
-                            newPos = listOfActualPos[0].X;
+                    {
+                        if (dps != null && dps.Count() > 0)
+                        {
+                            DataPoint firstDpInXValue = dps.First();
+
+                            if (AxisX.AxisOrientation == Orientation.Horizontal)
+                            {
+                                if (firstDpInXValue.Faces != null && firstDpInXValue.Faces.Visual != null)
+                                {
+                                    newPos = firstDpInXValue._visualPosition.X + xPlotOffset - firstDpInXValue.Faces.Visual.Width / 2;
+
+                                    newPos += (firstDpInXValue.Faces.Visual.Width * dps.Count()) / 2;
+                                }
+                                else
+                                    newPos = firstDpInXValue._visualPosition.X + xPlotOffset;
+                            }
+                            else
+                            {
+                                if (firstDpInXValue.Faces != null && firstDpInXValue.Faces.Visual != null)
+                                {
+                                    newPos = firstDpInXValue._visualPosition.Y + yPlotOffset - firstDpInXValue.Faces.Visual.Height / 2;
+                                    newPos += (firstDpInXValue.Faces.Visual.Height * dps.Count()) / 2;
+                                }
+                                else
+                                    newPos = firstDpInXValue._visualPosition.Y + yPlotOffset;
+                            }
+
+                            if (!AxisX.IsDateTimeAxis)
+                            {
+                                if (firstDpInXValue != null)
+                                {
+                                    if (firstDpInXValue.AxisXLabel != null)
+                                        axisIndicatorText = firstDpInXValue.AxisXLabel;
+                                    else
+                                        axisIndicatorText = firstDpInXValue.InternalXValue.ToString();
+                                }
+                            }
+                            else
+                            {
+                                String valueFormatString = AxisX.XValueType == ChartValueTypes.Date ? "M/d/yyyy" : AxisX.XValueType == ChartValueTypes.Time ? "h:mm:ss tt" : "M/d/yyyy h:mm:ss tt";
+                                valueFormatString = (String.IsNullOrEmpty((String)AxisX.GetValue(Axis.ValueFormatStringProperty))) ? valueFormatString : AxisX.ValueFormatString;
+
+                                DateTime dt = Convert.ToDateTime(firstDpInXValue.XValue);
+                                axisIndicatorText = dt.ToString(valueFormatString);
+                            }
+                        }
                         else
-                            newPos = listOfActualPos[0].Y;
+                        {
+                            if (AxisX.AxisOrientation == Orientation.Horizontal)
+                            {
+                                newPos = listOfActualPos[0].X;
+                            }
+                            else
+                                newPos = listOfActualPos[0].Y;
+                            
+                        }
+
+                        //if (AxisX.AxisOrientation == Orientation.Horizontal)
+                        //{
+                        //    newPos = listOfActualPos[0].X;
+                        //}
+                        //else
+                        //    newPos = listOfActualPos[0].Y;
+                    }
                 }
                 else
                     newPos = Double.NaN;
+
+                #endregion
+
+                #region Position Indicator
 
                 if (AxisX.AxisOrientation == Orientation.Horizontal)
                 {
@@ -570,6 +646,8 @@ namespace Visifire.Charts
                     else
                         SetPositon4Indicators(AxisX, listOfActualPos[0].Y, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
                 }
+
+                #endregion
             }
 
             System.Diagnostics.Debug.WriteLine("Called..." + new Random().Next().ToString());
@@ -1077,13 +1155,19 @@ namespace Visifire.Charts
                     // same XValue.
                     foreach (DataSeries ds in Chart.Series)
                     {
+                        if(ds.ToolTipElement != null)
+                            ds.ToolTipElement.Hide();
+
                         if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut
                              || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
                             continue;
 
+                        if (_lastNearestDataPoint == null)
+                            return;
+
                         var otherNearestDP = (from dp in ds.DataPoints
-                                  where dp.InternalXValue == _lastNearestDataPoint.InternalXValue
-                                  select dp);
+                                              where dp.InternalXValue == _lastNearestDataPoint.InternalXValue
+                                              select dp);
 
                         if (otherNearestDP != null)
                         {
@@ -1093,13 +1177,18 @@ namespace Visifire.Charts
                                 {
                                     dp.Parent.SetToolTipProperties(dp);
 
-                                    if (ds.ToolTipElement != null)
+                                    if (dp.Parent.ToolTipElement != null)
                                     {
-                                        if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                        if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
                                         {
                                             listOfNearestDataPoints.Add(dp);
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    if (dp.Parent.ToolTipElement != null)
+                                        dp.Parent.ToolTipElement.Show();
                                 }
                             }
                         }
@@ -1120,6 +1209,32 @@ namespace Visifire.Charts
                         _callOutPath4AxisIndicator.Visibility = Visibility.Visible;
 
                         ArrangeToolTips4DataSeries(nearestDataPointList.ToList(), xOffset, yOffset);
+
+                        foreach (DataPoint dp in nearestDataPointList)
+                        {
+                            if (AxisX.AxisOrientation == Orientation.Vertical)
+                            {
+                                if (dp._visualPosition.Y - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) > PlotAreaCanvas.Height
+                                    || dp._visualPosition.Y - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) < 0)
+                                {
+                                    if(dp.Parent.ToolTipElement != null)
+                                        dp.Parent.ToolTipElement.Hide();
+
+                                    DisableIndicators();
+                                }
+                            }
+                            else
+                            {
+                                if (dp._visualPosition.X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) > PlotAreaCanvas.Width
+                                                                   || dp._visualPosition.X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) < 0)
+                                {
+                                    if (dp.Parent.ToolTipElement != null)
+                                        dp.Parent.ToolTipElement.Hide();
+
+                                    DisableIndicators();
+                                }
+                            }
+                        }
 
                         RectangleGeometry clipRectangle = new RectangleGeometry();
                         clipRectangle.Rect = new Rect(0, -PLANK_DEPTH, Chart.ActualWidth, Chart.ActualHeight + PLANK_DEPTH);
@@ -1260,7 +1375,7 @@ namespace Visifire.Charts
             }
             else
             {
-                if (_axisIndicatorBorderElement.ActualWidth + _axisCallOutContainer.Width > axis.Width)
+                if (_axisIndicatorBorderElement.ActualWidth + _axisCallOutContainer.Width > axis.Width - Chart.Padding.Left)
                 {
                     _axisIndicatorElement.Children.Clear();
                     _axisIndicatorElement.Orientation = Orientation.Vertical;
@@ -1340,7 +1455,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Disable all indicators on mouse leave
+        /// Disable all indicators on mouse leave of PlotArea
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
