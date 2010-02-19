@@ -213,8 +213,11 @@ namespace Visifire.Charts
         }
 
         // Using a DependencyProperty as the backing store for ItemsSource.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty DataSourceProperty =
-            DependencyProperty.Register("DataSource", typeof(IEnumerable), typeof(DataSeries), new PropertyMetadata(OnDataSourceChanged));
+        public static readonly DependencyProperty DataSourceProperty = DependencyProperty.Register
+            ("DataSource", 
+            typeof(IEnumerable), 
+            typeof(DataSeries), 
+            new PropertyMetadata(OnDataSourceChanged));
 
 
         /// <summary>
@@ -253,14 +256,19 @@ namespace Visifire.Charts
 
         void DataSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            List<DataPoint> removedDataPoints = new List<DataPoint>();
-            Int32 removedItemsCount = 0;
-
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                DataPoints.Clear();
+                BindData();
                 return;
+                //    if ((sender as ICollection) != null && (sender as ICollection).Count == 0)
+                //    {
+                //        DataPoints.Clear();
+                //        return;
+                //    } 
             }
+
+            List<DataPoint> removedDataPoints = new List<DataPoint>();
+            Int32 removedItemsCount = 0;
 
             if (e.OldItems != null)
             {

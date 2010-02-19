@@ -1,9 +1,12 @@
 ﻿<UserControl  xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" x:Class="SLVisifireApp.Page"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
+xmlns:local="clr-namespace:SLVisifireApp"
+>
 
-    <Grid x:Name="LayoutRoot" Width="500" Height="600">
+    <Grid x:Name="LayoutRoot" Width="600" Height="600">
 
        <vc:Chart Name="MyChart" Theme="Theme1" Width="500" Height="300">
             <vc:Chart.Series>
@@ -28,7 +31,6 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-       
     </Grid>
 </UserControl>
   
