@@ -1287,7 +1287,6 @@ namespace Visifire.Charts
             {
                 if (e.OldItems != null)
                 {
-
                     List<DataSeries> dataSeriesListExceptOldItems = (from x in Series where !e.OldItems.Contains(x) select x).ToList();
                     List<Panel> preExistingCanvases = (from can in dataSeriesListExceptOldItems select can.Visual).ToList();
 
@@ -1299,20 +1298,17 @@ namespace Visifire.Charts
                         {   
                             if(preExistingCanvases.Contains(ds.Visual))
                                 continue;
-                            
-                            if ((ds.PlotGroup != null && ds.PlotGroup.DataSeriesList.Count == 1) || (ds.RenderAs == RenderAs.Area))
+
+                            Panel seriesVisual = ds.Visual;
+
+                            // remove pre existing parent panel for the series visual 
+                            if (seriesVisual != null && seriesVisual.Parent != null)
                             {
-                                Panel seriesVisual = ds.Visual;
-
-                                // remove pre existing parent panel for the series visual 
-                                if (seriesVisual != null && seriesVisual.Parent != null)
-                                {
-                                    Panel parent = seriesVisual.Parent as Panel;
-                                    parent.Children.Remove(seriesVisual);
-                                }
-
-                                ds.Visual = null;
+                                Panel parent = seriesVisual.Parent as Panel;
+                                parent.Children.Remove(seriesVisual);
                             }
+
+                            ds.Visual = null;
                         }
                     }
                 }

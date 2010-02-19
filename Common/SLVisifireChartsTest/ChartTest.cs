@@ -675,7 +675,7 @@ namespace SLVisifireChartsTest
         [Asynchronous]
         public void CheckWatermarkDefaultValue()
         {
-            /* Chart chart = new Chart();
+            Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
@@ -684,7 +684,7 @@ namespace SLVisifireChartsTest
             CreateAsyncTask(chart,
                () => Assert.IsTrue(chart.Watermark));
 
-            EnqueueTestComplete();*/
+            EnqueueTestComplete();
         }
 
         #endregion
@@ -1081,7 +1081,7 @@ namespace SLVisifireChartsTest
         [Asynchronous]
         public void CheckWatermarkPropertyValue()
         {
-           /* Chart chart = new Chart();
+            Chart chart = new Chart();
             chart.Width = 400;
             chart.Height = 300;
             Common.CreateAndAddDefaultDataSeries(chart);
@@ -1091,7 +1091,7 @@ namespace SLVisifireChartsTest
                 () => Assert.IsFalse(chart.Watermark));
 
             EnqueueDelay(_sleepTime);
-            EnqueueTestComplete();*/
+            EnqueueTestComplete();
         }
 
         #endregion
