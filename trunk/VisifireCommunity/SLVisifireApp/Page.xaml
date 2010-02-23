@@ -6,11 +6,10 @@ xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Contro
 xmlns:local="clr-namespace:SLVisifireApp"
 >
 
-    <Grid x:Name="LayoutRoot" Width="600" Height="600">
-
-       <vc:Chart Name="MyChart" Theme="Theme1" Width="500" Height="300">
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Name="MyChart" Theme="Theme1" Width="500" Height="300">
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Line">
                     <vc:DataSeries.DataPoints>
                         <vc:DataPoint XValue="1/1/2009" YValue="20"/>
                         <vc:DataPoint XValue="1/2/2009" YValue="15"/>

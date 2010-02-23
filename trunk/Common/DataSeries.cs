@@ -2478,7 +2478,7 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal override void UpdateVisual(VcProperties property, object newValue)
         {
-            if (!IsNotificationEnable)
+            if (!IsNotificationEnable || (Chart != null && (Double.IsNaN((Chart as Chart).ActualWidth) || Double.IsNaN((Chart as Chart).ActualHeight) || (Chart as Chart).ActualWidth == 0 || (Chart as Chart).ActualHeight == 0)))
                 return;
 
             if (ValidatePartialUpdate(RenderAs, property))

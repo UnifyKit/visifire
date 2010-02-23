@@ -118,6 +118,22 @@ namespace Visifire.Charts
 
             // Attach event handler for size changed event
             this.SizeChanged += new SizeChangedEventHandler(Chart_SizeChanged);
+
+            // Attach event handler for LayoutUpdated event
+            this.LayoutUpdated += new EventHandler(Chart_LayoutUpdated);
+        }
+
+        /// <summary>
+        /// Event handler for LayoutUpdated event of the chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Chart_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (_currentVisibility == Visibility.Collapsed && this.Visibility == Visibility.Visible)
+                Render();
+
+            _currentVisibility = this.Visibility;
         }
 
         /// <summary>
@@ -187,7 +203,12 @@ namespace Visifire.Charts
         /// <summary>
         /// Whether the default style is applied
         /// </summary>
-        private static Boolean _defaultStyleKeyApplied; 
+        private static Boolean _defaultStyleKeyApplied;
+
+        /// <summary>
+        /// Whether the chart is visible
+        /// </summary>
+        private Visibility _currentVisibility;
 
         #endregion
     }
