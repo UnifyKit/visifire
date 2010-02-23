@@ -55,7 +55,7 @@ namespace Visifire.Charts
 
                 case RenderAs.StackedColumn100:
                     renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
-                  
+                   
                     //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
@@ -149,7 +149,10 @@ namespace Visifire.Charts
         }
         
         internal static void UpdateVisualObject(Chart chart, VcProperties property, object newValue, Boolean partialUpdate)
-        {   
+        {
+            if (Double.IsNaN(chart.ActualWidth) || Double.IsNaN(chart.ActualHeight) || chart.ActualWidth == 0 || chart.ActualHeight == 0)
+                return;
+
             if (partialUpdate && chart._datapoint2UpdatePartially.Count <= 500)
             {   
                 chart.PARTIAL_DP_RENDER_LOCK = false;
@@ -310,10 +313,14 @@ namespace Visifire.Charts
                         break;
 
                     case RenderAs.StackedArea:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                         //renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedArea100:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                         //renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
@@ -431,10 +438,18 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.StackedArea:
+                    if (isDataPoint)
+                        sender = (sender as DataPoint).Parent;
+                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
+                    chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                     //renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedArea100:
+                    if (isDataPoint)
+                        sender = (sender as DataPoint).Parent;
+                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
+                    chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                     //renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 

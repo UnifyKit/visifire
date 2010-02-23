@@ -246,7 +246,7 @@ namespace Visifire.Charts
         /// <param name="yOffset">y-offset used for shifting of cordinates among ChartArea and PlotArea </param>
         internal void ArrangeToolTips4DataSeries(List<DataPoint> nearestDataPointList, Double xPlotCanvasOffset, Double yPlotCanvasOffset)
         {
-            Double xPlotOffset = xPlotCanvasOffset; 
+            Double xPlotOffset = xPlotCanvasOffset;
             Double yPlotOffset = yPlotCanvasOffset + (Chart.View3D ? PLANK_DEPTH : 0);
 
             if(AxisX.AxisOrientation == Orientation.Vertical)
@@ -281,11 +281,15 @@ namespace Visifire.Charts
                 toolTip.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 toolTip.UpdateLayout();
 
+                if (toolTip._borderElement == null)
+                    continue;
+
                 Size toolTipSize = Visifire.Commons.Graphics.CalculateVisualSize(toolTip);
 
                 if (toolTipPosition.X + toolTipSize.Width < plotWidth)
                 {
-                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.Bubble || dp.Parent.RenderAs == RenderAs.Point)
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
+                        || dp.Parent.RenderAs == RenderAs.Bubble || dp.Parent.RenderAs == RenderAs.Point)
                     {
                         toolTipPosition.X = toolTipPosition.X + 10;
                         toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2;
@@ -331,7 +335,8 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area)
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
+                        )
                     {
                         toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
                         toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2;
@@ -377,18 +382,23 @@ namespace Visifire.Charts
             {
                 DataPoint dp = nearestDataPointList[index];
 
+                if (dp.Parent.ToolTipElement._borderElement == null)
+                    continue;
+
                 if(dp.Parent.RenderAs == RenderAs.CandleStick)
                 {
-                    dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
+                    if(dp.Parent.ToolTipElement._callOutPath != null)
+                        dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
                     dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
                 }
                 else
                 {
-                    dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
+                    if (dp.Parent.ToolTipElement._callOutPath != null)
+                        dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
                     dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
                 }
 
-                if (dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
+                if(dp.Parent.ToolTipElement._callOutPath != null && dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
                     dp.Parent.ToolTipElement._callOutPath.Fill = Chart._toolTip.Background;
 
                 if (dp.Parent.ToolTipElement.Background == null && Chart._toolTip != null)
@@ -449,7 +459,7 @@ namespace Visifire.Charts
                     dpOfFirstDataSeries = dp;
                 else
                 {
-                    // If the current DataPoint of Line series does not belongs to the first Dataseries of chart then 
+                    // If the current DataPoint of series does not belongs to the first Dataseries of chart then 
                     // find out the nearest DataPoint from first DataSeries.
                     DataPoint nearsestDPOfFirstDS = null;
                     foreach (DataPoint dp1 in Chart.Series[0].DataPoints)
@@ -469,7 +479,7 @@ namespace Visifire.Charts
                             nearsestDPOfFirstDS = dp1;
                     }
 
-                    if(dpOfFirstDataSeries == null)
+                    if (dpOfFirstDataSeries == null)
                         dpOfFirstDataSeries = nearsestDPOfFirstDS;
                 }
 
@@ -504,7 +514,7 @@ namespace Visifire.Charts
             if (listOfActualPos.Count > 0)
             {
 
-                #region Finding out the middle position of of an XValue in a multi-series chart in order to position Indicator
+                #region Finding out the middle position of an XValue in a multi-series chart in order to position Indicator
 
                 Double newPos = 0;
 
@@ -516,14 +526,14 @@ namespace Visifire.Charts
                 if (PlotDetails.DrawingDivisionFactor > 1)
                 {
                     var dps = (from dp1 in nearestDataPointList
-                                    where ((dp1.Parent.RenderAs == RenderAs.Column
-                                    || dp1.Parent.RenderAs == RenderAs.StackedColumn
-                                    || dp1.Parent.RenderAs == RenderAs.StackedColumn100
-                                    || dp1.Parent.RenderAs == RenderAs.Bar
-                                    || dp1.Parent.RenderAs == RenderAs.StackedBar
-                                    || dp1.Parent.RenderAs == RenderAs.StackedBar100)
-                                    && PlotDetails.GetSeriesFromDataPoint(dp1).Count > 1)
-                                    select dp1);
+                               where ((dp1.Parent.RenderAs == RenderAs.Column
+                               || dp1.Parent.RenderAs == RenderAs.StackedColumn
+                               || dp1.Parent.RenderAs == RenderAs.StackedColumn100
+                               || dp1.Parent.RenderAs == RenderAs.Bar
+                               || dp1.Parent.RenderAs == RenderAs.StackedBar
+                               || dp1.Parent.RenderAs == RenderAs.StackedBar100)
+                               && PlotDetails.GetSeriesFromDataPoint(dp1).Count > 1)
+                               select dp1);
 
                     List<DataSeries> indexSeriesList = null;
 
@@ -614,7 +624,7 @@ namespace Visifire.Charts
                             }
                             else
                                 newPos = listOfActualPos[0].Y;
-                            
+
                         }
 
                         //if (AxisX.AxisOrientation == Orientation.Horizontal)
@@ -626,7 +636,33 @@ namespace Visifire.Charts
                     }
                 }
                 else
-                    newPos = Double.NaN;
+                {
+                    foreach (Point point in listOfActualPos)
+                    {
+                        if (AxisX.AxisOrientation == Orientation.Horizontal)
+                        {
+                            if (dpOfFirstDataSeries != null)
+                            {
+                                if (point.X == dpOfFirstDataSeries._visualPosition.X + xPlotOffset)
+                                    newPos = point.X;
+                            }
+                            else
+                                newPos = Double.NaN;
+                        }
+                        else
+                        {
+                            if (dpOfFirstDataSeries != null)
+                            {
+                                if (point.Y == dpOfFirstDataSeries._visualPosition.Y + yPlotOffset)
+                                    newPos = point.Y;
+                            }
+                            else
+                                newPos = Double.NaN;
+                        }
+
+                    }
+                    //newPos = Double.NaN;
+                }
 
                 #endregion
 
@@ -1141,9 +1177,10 @@ namespace Visifire.Charts
 
                                 if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
                                 {
+                                    listOfNearestDataPoints.Clear();
                                     listOfNearestDataPoints.Add(nearestDataPoint);
                                     _lastNearestDataPoint = nearestDataPoint;
-                                    break;
+                                    //break;
                                 }
                             }
                         }
@@ -4472,7 +4509,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Attach events for each DataSeries and InternalDataPoints
         /// </summary>
-        private void AttachEventsToolTipHref2DataSeries()
+        internal void AttachEventsToolTipHref2DataSeries()
         {
             foreach (DataSeries ds in Chart.InternalSeries)
             {
