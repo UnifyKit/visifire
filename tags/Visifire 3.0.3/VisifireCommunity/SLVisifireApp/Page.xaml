@@ -1,0 +1,35 @@
+﻿<UserControl  xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" x:Class="SLVisifireApp.Page"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
+xmlns:local="clr-namespace:SLVisifireApp"
+>
+
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Name="MyChart" Theme="Theme1" Width="500" Height="300">
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Line">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint XValue="1/1/2009" YValue="20"/>
+                        <vc:DataPoint XValue="1/2/2009" YValue="15"/>
+                        <vc:DataPoint XValue="1/3/2009" YValue="40"/>
+                        <vc:DataPoint XValue="1/4/2009" YValue="12"/>
+                        <vc:DataPoint XValue="1/5/2009" YValue="18"/>
+                        <vc:DataPoint XValue="1/6/2009" YValue="10"/>
+                        <vc:DataPoint XValue="1/7/2009" YValue="10"/>
+                        <vc:DataPoint XValue="1/8/2009" YValue="15"/>
+                        <vc:DataPoint XValue="1/9/2009" YValue="20"/>
+                        <vc:DataPoint XValue="1/10/2009" YValue="12"/>
+                        <vc:DataPoint XValue="1/11/2009" YValue="18"/>
+                        <vc:DataPoint XValue="1/12/2009" YValue="10"/>
+                        <vc:DataPoint XValue="1/13/2009" YValue="10"/>
+                        <vc:DataPoint XValue="1/14/2009" YValue="15"/>
+                        <vc:DataPoint XValue="1/15/2009" YValue="15"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</UserControl>
+  

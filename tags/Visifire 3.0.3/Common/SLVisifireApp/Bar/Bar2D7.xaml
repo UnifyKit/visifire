@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="SLVisifireApp.Bar2D7"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="350" Height="400" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme3" ColorSet="DullShades">
+            <vc:Chart.Background>
+                <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
+                    <GradientStop Color="#000000" Offset="0"/>
+                    <GradientStop Color="#333333" Offset="0.5"/>
+                    <GradientStop Color="#7a7a7a" Offset="1"/>
+                </LinearGradientBrush>
+            </vc:Chart.Background>
+            
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Multiseries 3D Bar Chart"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.Legends>
+                <vc:Legend Background="Transparent" LightingEnabled="False"/>
+            </vc:Chart.Legends>
+            
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Bar" Bevel="True" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="322"/>
+                        <vc:DataPoint YValue="543"/>
+                        <vc:DataPoint YValue="645"/>
+                        <vc:DataPoint YValue="265"/>
+                        <vc:DataPoint YValue="600"/>
+                        <vc:DataPoint YValue="765"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+
+                <vc:DataSeries RenderAs="Bar" Bevel="True" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint YValue="435"/>
+                        <vc:DataPoint YValue="456"/>
+                        <vc:DataPoint YValue="587"/>
+                        <vc:DataPoint YValue="437"/>
+                        <vc:DataPoint YValue="500"/>
+                        <vc:DataPoint YValue="700"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+
+    </Grid>
+</UserControl>
