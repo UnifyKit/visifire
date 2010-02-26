@@ -75,9 +75,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WPFVisifireProfiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=87430e68403e4b39, processorArchitecture=MSIL">
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\VisifireProfiler\Build\WPFVisifireProfiler.dll</HintPath>
+      <HintPath>..\..\Common\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +128,9 @@
     </Compile>
     <Compile Include="..\..\Common\ColumnChart.cs">
       <Link>ColumnChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Controls\ZoomBar.cs">
+      <Link>ZoomBar.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\Converters.cs">
       <Link>Converters.cs</Link>

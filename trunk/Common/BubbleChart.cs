@@ -634,20 +634,12 @@ namespace Visifire.Charts
             Double minimumZVal, maximumZVal;
 
             ColumnChart.UpdateParentVisualCanvasSize(chart, bubleChartCanvas);
-
-            if ((property == VcProperties.Enabled || property == VcProperties.DataPoints) || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
+            
+            if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {   
                 dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
                 CalculateMaxAndMinZValue(dataPoint.Parent, out minimumZVal, out maximumZVal);
                 CreateOrUpdateAPointDataPoint(bubleChartCanvas, dataPoint, minimumZVal, maximumZVal, plotWidth, plotHeight);
-
-                if (bubleChartCanvas.Parent != null)
-                {
-                    RectangleGeometry clipRectangle = new RectangleGeometry();
-                    clipRectangle.Rect = new Rect(0, -(dataPoint.Chart as Chart).ChartArea.PLANK_DEPTH, plotWidth + (dataPoint.Chart as Chart).ChartArea.PLANK_OFFSET, plotHeight + (dataPoint.Chart as Chart).ChartArea.PLANK_DEPTH);
-                    (bubleChartCanvas.Parent as Canvas).Clip = clipRectangle;
-                }
-
                 return;
             }
 
@@ -777,6 +769,7 @@ namespace Visifire.Charts
                     
                 case VcProperties.XValue:
                 case VcProperties.YValue:
+                case VcProperties.DataPoints:
 
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue, false);

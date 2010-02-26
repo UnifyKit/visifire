@@ -50,7 +50,7 @@ using System.Windows.Browser;
 #endif
 using Visifire.Commons;
 using System.Windows.Data;
-
+using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -489,12 +489,18 @@ namespace Visifire.Charts
            typeof(Axis),
            new PropertyMetadata(Double.NaN, OnScrollBarOffsetChanged));
 
-
-
-        // Using a DependencyProperty as the backing store for ScrollBarScale.  This enables animation, styling, binding, etc...
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ScrollBarScale dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ScrollBarScale dependency property.
+        /// </returns>
         public static readonly DependencyProperty ScrollBarScaleProperty =
-            DependencyProperty.Register("ScrollBarScale", typeof(double), typeof(Axis), new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
-
+            DependencyProperty.Register("ScrollBarScale",
+            typeof(double),
+            typeof(Axis),
+            new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
+            
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.ScrollBarSize dependency property.
         /// </summary>
@@ -1149,6 +1155,9 @@ namespace Visifire.Charts
             }
         }
 
+        internal Double _internalZoomingScale;
+        internal Double _internalMinimumZoomingScale;
+
         /// <summary>
         /// ScrollBarScale sets the size of ScrollBar thumb.  
         /// Example, if ScrollBarScale is set to 0.5, width of ScrollBar thumb will be
@@ -1588,7 +1597,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the scroll bar
         /// </summary>
-        internal ScrollBar ScrollBarElement
+        internal ZoomBar ScrollBarElement
         {
             get;
             set;
@@ -2126,7 +2135,13 @@ namespace Visifire.Charts
             axis.AxisMaximumNumeric = numericVal;
             axis.AxisMaximumDateTime = dateTimeValue;
 
-            axis.FirePropertyChanged(VcProperties.AxisMaximum);
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if ((axis.Chart as Chart).Series.Count > 0)
+                    (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMaximum, null });
+            }
+            else
+                axis.FirePropertyChanged(VcProperties.AxisMaximum);
         }
 
         /// <summary>
@@ -2138,14 +2153,19 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
 
-
             Double numericVal = axis.AxisMinimumNumeric;
             DateTime dateTimeValue = axis.AxisMinimumDateTime;
             Axis.ConvertValueToDateTimeOrNumeric("AxisMinimum", e.NewValue, ref numericVal, ref dateTimeValue, out axis._axisMinimumValueType);
             axis.AxisMinimumNumeric = numericVal;
             axis.AxisMinimumDateTime = dateTimeValue;
 
-            axis.FirePropertyChanged(VcProperties.AxisMinimum);
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if ((axis.Chart as Chart).Series.Count > 0)
+                    (axis.Chart as Chart).Dispatcher.BeginInvoke(new Action<VcProperties, object>((axis.Chart as Chart).Series[0].UpdateVisual), new object[] { VcProperties.AxisMinimum, null });
+            }
+            else
+                axis.FirePropertyChanged(VcProperties.AxisMinimum);
         }
 
         private static void ConvertValueToDateTimeOrNumeric(String propertyName, Object newValue, ref Double numericVal, ref DateTime dateTimeValue, out ChartValueTypes valueType)
@@ -4192,7 +4212,7 @@ namespace Visifire.Charts
         /// <param name="offset">Scrollbar offset</param>
         internal void SetScrollBarValueFromOffset(Double offset)
         {
-            if (ScrollBarElement != null)
+            if (ScrollBarElement != null && !ScrollBarElement.IsStretching) // &&  !(Chart as Chart).ZoomingEnabled)//
             {
                 Double value = GetScrollBarValueFromOffset(offset);
                 ScrollBarElement.SetValue(ScrollBar.ValueProperty, value);
@@ -4209,12 +4229,16 @@ namespace Visifire.Charts
         internal Double GetScrollBarValueFromOffset(Double offset)
         {
             if (Double.IsNaN(offset))
-                offset = 0;
+            {
+               offset = 0;
+            }
 
             offset = (ScrollBarElement.Maximum - ScrollBarElement.Minimum) * offset + ScrollBarElement.Minimum;
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 offset = ScrollBarElement.Maximum - offset;
+            }
 
             return offset;
         }
@@ -4331,6 +4355,43 @@ namespace Visifire.Charts
             {
                 Visual.Visibility = Visibility.Collapsed;
             }
+
+            AttachEventForZoomBar();
+        }
+
+        private void AttachEventForZoomBar()
+        {
+            ScrollBarElement.ScaleChanged -= OnZoomingScaleChanged;
+            ScrollBarElement.DragCompleted -= OnZoomingScaleChanged;
+            Chart chart = Chart as Chart;
+
+            Boolean isAllLineCharts = (((from ds in chart.Series 
+                                        where (ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.Area) 
+                                        select ds).Count() == chart.Series.Count)
+                                        && chart.PlotDetails.ListOfAllDataPoints.Count <= 500);
+
+            if (isAllLineCharts || chart.PlotDetails.ListOfAllDataPoints.Count < 500)
+                ScrollBarElement.ScaleChanged += new EventHandler(OnZoomingScaleChanged);
+            else
+            {
+                ScrollBarElement.DragStarted += new EventHandler(ScrollBarElement_DragStarted);
+                ScrollBarElement.DragCompleted += new EventHandler(OnZoomingScaleChanged);
+            }
+        }
+        
+        void ScrollBarElement_DragStarted(object sender, EventArgs e)
+        {   
+            ZoomBar zoomBar = sender as ZoomBar;
+            zoomBar.ScrollEventFireEnabled = false;
+        }
+        
+        void OnZoomingScaleChanged(object sender, EventArgs e)
+        {
+            ZoomBar zoomBar = sender as ZoomBar;
+            zoomBar.ScrollEventFireEnabled = true;
+
+            if (ZoomingScaleChanged != null)
+                ZoomingScaleChanged(this, e);
         }
 
         internal static void SaveOldValueOfAxisRange(Axis axis)
@@ -4345,7 +4406,9 @@ namespace Visifire.Charts
         #endregion
 
         #region Internal Events And Delegates
-        
+
+        internal event EventHandler ZoomingScaleChanged;
+
         /// <summary>
         /// Scroll event of axis
         /// </summary>

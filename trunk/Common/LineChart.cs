@@ -2434,7 +2434,7 @@ namespace Visifire.Charts
             clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(0, -depth3d - 4, labelCanvas.Width + depth3d, labelCanvas.Height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + 10);
 
-            System.Diagnostics.Debug.WriteLine(clipRectangle.Rect.ToString());
+            // System.Diagnostics.Debug.WriteLine(clipRectangle.Rect.ToString());
             chartsCanvas.Clip = clipRectangle;
         }
 

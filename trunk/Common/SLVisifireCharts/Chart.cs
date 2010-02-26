@@ -113,6 +113,7 @@ namespace Visifire.Charts
 
             // Attach event handler for loaded event
             this.Loaded += new RoutedEventHandler(Chart_Loaded);
+
         }
 
         #endregion

@@ -2541,7 +2541,7 @@ namespace Visifire.Charts
 
             if (InternalFontSize != _savedFontSize || InternalAngle != _savedAngle || InternalRows != _savedRows)
                 _isRedraw = false;
-
+            
             // check if this is a first time draw or a redraw
             if (_isRedraw)
             {

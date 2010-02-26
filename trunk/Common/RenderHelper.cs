@@ -55,7 +55,7 @@ namespace Visifire.Charts
 
                 case RenderAs.StackedColumn100:
                     renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(chartType, preExistingPanel, width, height, plotDetails, chart, plankDepth, animationEnabled);
-                   
+                  
                     //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
@@ -238,27 +238,33 @@ namespace Visifire.Charts
 
                     case RenderAs.Point:
 
+                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
+                        //{
+                        //    foreach (DataPoint dp in ds.InternalDataPoints)
+                        //    {
+                        //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                        //    }
+                        //}
+
                         foreach (DataSeries ds in selectedDataSeries4Rendering)
-                        {
-                            foreach (DataPoint dp in ds.InternalDataPoints)
-                            {
-                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                            }
-                        }
-                       
+                            PointChart.Update(ds, property, newValue, false);
+
                         // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
                         break;
 
                     case RenderAs.Bubble:
 
+                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
+                        //{
+                        //    foreach (DataPoint dp in ds.InternalDataPoints)
+                        //    {
+                        //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                        //    }
+                        //}
+
                         foreach (DataSeries ds in selectedDataSeries4Rendering)
-                        {
-                            foreach (DataPoint dp in ds.InternalDataPoints)
-                            {
-                                RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                            }
-                        }
+                            BubbleChart.Update(ds, property, newValue, false);
 
                         // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 

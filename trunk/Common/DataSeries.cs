@@ -278,7 +278,7 @@ namespace Visifire.Charts
                     {
                         foreach (object item in e.OldItems)
                         {
-                            if (dp.DataContext == item)
+                            if (dp.DataContext.Equals(item))
                             {
                                 removedDataPoints.Add(dp);
                                 removedItemsCount++;
@@ -2563,33 +2563,42 @@ namespace Visifire.Charts
                     foreach (DataPoint dp in InternalDataPoints)
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
                 }
-                else if (property == VcProperties.DataPoints || property == VcProperties.Enabled)
+                else if (property == VcProperties.DataPoints || property == VcProperties.Enabled || property == VcProperties.ScrollBarScale || property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum)
                 {
                     AxisRepresentations axisRepresentation = AxisRepresentations.AxisX;
 
-                    Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
-                    Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
-                    Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
-                    Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
-
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
-
-                    Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
-                    Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
-                    Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
-                    Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
-
-                    //System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
-                    //System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
-
-                    if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
+                    if ((chart.ZoomingEnabled && property == VcProperties.ScrollBarScale)
+                        || (property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum))
                     {
                         renderAxis = true;
-                        axisRepresentation = AxisRepresentations.AxisY;
+                        property = VcProperties.DataPoints;
                     }
-                    else if (NewAxisMaxX != OldAxisMaxX || NewAxisMinX != OldAxisMinX)
+                    else
                     {
-                        renderAxis = true;
+                        Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                        Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                        Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                        Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+
+                        chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
+
+                        Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                        Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                        Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                        Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+
+                        //System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                        //System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+
+                        if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
+                        {
+                            renderAxis = true;
+                            axisRepresentation = AxisRepresentations.AxisY;
+                        }
+                        else if (NewAxisMaxX != OldAxisMaxX || NewAxisMinX != OldAxisMinX)
+                        {
+                            renderAxis = true;
+                        }
                     }
 
                     // Render Axis if required
@@ -3679,6 +3688,9 @@ namespace Visifire.Charts
                         {   
                             Panel parent = dataPoint.Marker.Visual.Parent as Panel;
                             parent.Children.Remove(dataPoint.Marker.Visual);
+
+                            if (dataPoint.LabelVisual != null)
+                                parent.Children.Remove(dataPoint.LabelVisual);
                         }
                     }
                 }

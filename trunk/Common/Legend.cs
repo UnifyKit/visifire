@@ -1413,7 +1413,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the Padding property of title
         /// </summary>
-        public Thickness InternalPadding
+        internal Thickness InternalPadding
         {
             get
             {

@@ -212,5 +212,4 @@ namespace Visifire.Charts
 
         #endregion
     }
-
 }

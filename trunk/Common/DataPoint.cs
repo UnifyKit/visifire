@@ -3415,13 +3415,13 @@ namespace Visifire.Charts
                     }
                 }
                 else if (_isAlreadyExploded == true)
-                {   
+                {
                     UnExplodeFunnelSlices();
 
                     if (this.ExplodeAnimation != null)
                         this.ExplodeAnimation.Stop();
 
-                    if (this.UnExplodeAnimation != null )
+                    if (this.UnExplodeAnimation != null)
                     {
                         _isAlreadyExploded = false;
 #if WPF                 
@@ -3429,6 +3429,21 @@ namespace Visifire.Charts
 #else
                         this.UnExplodeAnimation.Begin();
 #endif
+                    }
+
+                    _isExplodeRunning = false;
+                }
+
+                if (!_isExplodeRunning && (Boolean)Exploded)
+                {
+                    if (!(Chart as Chart).ChartArea._isFirstTimeRender && Parent != null && !(Chart as Chart).ChartArea._isDefaultInteractivityAllowed && (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut))
+                    {
+#if WPF             
+                        this.ExplodeAnimation.Begin(Chart._rootElement, true);
+#else
+                        this.ExplodeAnimation.Begin();
+#endif
+                        _isExplodeRunning = true;
                     }
                 }
             }
@@ -4117,6 +4132,8 @@ namespace Visifire.Charts
         /// Whether the DataPoint is already Exploded
         /// </summary>
         private Boolean _isAlreadyExploded = false;
+
+        private Boolean _isExplodeRunning = false;
 
         /// <summary>
         /// Whether price is up for financial charts
