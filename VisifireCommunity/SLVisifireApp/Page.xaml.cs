@@ -20,13 +20,6 @@ namespace SLVisifireApp
         public Page()
         {
             InitializeComponent();
-
-            MyChart.MouseLeftButtonUp += new MouseButtonEventHandler(MyChart_MouseLeftButtonUp);
-        }
-
-        void MyChart_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            MyChart.Series[0].DataPoints.RemoveAt(5);
         }
     }
 }

@@ -463,12 +463,9 @@ namespace Visifire.Charts
             Double plotWidth = chart.ChartArea.ChartVisualCanvas.Width;
             ColumnChart.UpdateParentVisualCanvasSize(chart, pointChartCanvas);
 
-            if ((property == VcProperties.Enabled || property == VcProperties.DataPoints) || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
+            if (property == VcProperties.Enabled || (dataPoint.Faces == null && (property == VcProperties.XValue || property == VcProperties.YValue)))
             {
                 CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotWidth, plotHeight);
-
-                ApplyChartClipping(pointChartCanvas, chart, plotWidth, plotHeight);
-
                 return;
             }
 
@@ -603,6 +600,7 @@ namespace Visifire.Charts
                     
                 case VcProperties.XValue:
                 case VcProperties.YValue:
+                case VcProperties.DataPoints:
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue, false);
                     else
@@ -619,11 +617,6 @@ namespace Visifire.Charts
                     break;
             }
 
-            ApplyChartClipping(pointChartCanvas, chart, plotWidth, plotHeight);
-        }
-
-        private static void ApplyChartClipping(Canvas pointChartCanvas, Chart chart, Double plotWidth, Double plotHeight)
-        {
             if (pointChartCanvas.Parent != null)
             {
                 Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks

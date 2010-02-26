@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.IO;
+using Visifire.Commons.Controls;
 
 namespace Visifire.Commons
 {
@@ -587,8 +588,10 @@ namespace Visifire.Commons
 
         #region Template Part
 
-        internal Grid _rootElement;
+        internal Border _zoomRectangle;
+        internal const string ZoomRectangleName = "ZoomRectangle";
 
+        internal Grid _rootElement;
         internal const string RootElementName = "RootElement";
 
         internal Grid _shadowGrid;
@@ -669,7 +672,7 @@ namespace Visifire.Commons
         internal StackPanel _topAxisPanel;
         internal const string TopAxisPanelName = "TopAxisPanel";
 
-        internal ScrollBar _topAxisScrollBar;
+        internal ZoomBar _topAxisScrollBar;
         internal const string TopAxisScrollBarName = "TopAxisScrollBar";
 
         internal Grid _leftAxisGrid;
@@ -681,7 +684,7 @@ namespace Visifire.Commons
         internal StackPanel _leftAxisPanel;
         internal const string LeftAxisPanelName = "LeftAxisPanel";
 
-        internal ScrollBar _leftAxisScrollBar;
+        internal ZoomBar _leftAxisScrollBar;
         internal const string LeftAxisScrollBarName = "LeftAxisScrollBar";
 
         internal Grid _rightAxisGrid;
@@ -690,7 +693,7 @@ namespace Visifire.Commons
         internal StackPanel _rightAxisContainer;
         internal const string RightAxisContainerName = "RightAxisContainer";
 
-        internal ScrollBar _rightAxisScrollBar;
+        internal ZoomBar _rightAxisScrollBar;
         internal const string RightAxisScrollBarName = "RightAxisScrollBar";
 
         internal StackPanel _rightAxisPanel;
@@ -702,7 +705,7 @@ namespace Visifire.Commons
         internal StackPanel _bottomAxisContainer;
         internal const string BottomAxisContainerName = "BottomAxisContainer";
 
-        internal ScrollBar _bottomAxisScrollBar;
+        internal ZoomBar _bottomAxisScrollBar;
         internal const string BottomAxisScrollBarName = "BottomAxisScrollBar";
 
         internal StackPanel _bottomAxisPanel;

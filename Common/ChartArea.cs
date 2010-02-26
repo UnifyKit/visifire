@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using Visifire.Commons;
 using System.Windows.Input;
 using System.Windows.Controls.Primitives;
+using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -178,7 +179,7 @@ namespace Visifire.Charts
             AttachOrDetachIntaractivity(chart.InternalSeries);
 
             if (!_isFirstTimeRender || !chart.AnimationEnabled)
-            {
+            {   
                 AttachScrollEvents();
                 Visifire.Charts.Chart.SelectDataPoints(Chart);
 
@@ -249,7 +250,7 @@ namespace Visifire.Charts
             Double xPlotOffset = xPlotCanvasOffset;
             Double yPlotOffset = yPlotCanvasOffset + (Chart.View3D ? PLANK_DEPTH : 0);
 
-            if(AxisX.AxisOrientation == Orientation.Vertical)
+            if (AxisX.AxisOrientation == Orientation.Vertical)
                 xPlotOffset += (Chart.View3D ? PLANK_THICKNESS : 0);
 
             Double plotWidth = PlotAreaCanvas.Width;
@@ -261,7 +262,7 @@ namespace Visifire.Charts
             String axisIndicatorText = "";
 
             foreach (DataPoint dp in nearestDataPointList)
-            {   
+            {
                 // Shifting of cordinates from PlotArea to ChartArea
                 Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset, dp._visualPosition.Y + yPlotOffset);
 
@@ -270,11 +271,13 @@ namespace Visifire.Charts
 
                 listOfActualPos.Add(new Point(toolTipPosition.X, toolTipPosition.Y));
 
+                Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                offset = GetScrollingOffsetOfAxis(AxisX, offset);
                 // Calculate position with respect to ScrollViewer
-                if(AxisX.AxisOrientation == Orientation.Horizontal)
-                    toolTipPosition.X -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                    toolTipPosition.X -= offset;
                 else
-                    toolTipPosition.Y -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                    toolTipPosition.Y -= offset;
 
                 #region Set initial position of ToolTip
 
@@ -327,7 +330,7 @@ namespace Visifire.Charts
                                 toolTipPosition.Y = toolTipPosition.Y - toolTipSize.Height / 2 + 10;
                         }
 
-                        if(toolTipPosition.Y < 0)
+                        if (toolTipPosition.Y < 0)
                             toolTipPosition.Y = toolTipPosition.Y + 20;
                     }
                     toolTip.SetValue(Canvas.LeftProperty, toolTipPosition.X);
@@ -385,9 +388,12 @@ namespace Visifire.Charts
                 if (dp.Parent.ToolTipElement._borderElement == null)
                     continue;
 
-                if(dp.Parent.RenderAs == RenderAs.CandleStick)
+                Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                offset = GetScrollingOffsetOfAxis(AxisX, offset);
+
+                if (dp.Parent.RenderAs == RenderAs.CandleStick)
                 {
-                    if(dp.Parent.ToolTipElement._callOutPath != null)
+                    if (dp.Parent.ToolTipElement._callOutPath != null)
                         dp.Parent.ToolTipElement._callOutPath.Fill = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
                     dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.PriceUpColor, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.PriceUpColor;
                 }
@@ -398,7 +404,7 @@ namespace Visifire.Charts
                     dp.Parent.ToolTipElement.Background = (Boolean)dp.Parent.LightingEnabled ? Graphics.GetLightingEnabledBrush(dp.Parent.Color, "Linear", new Double[] { 0.80, 0.55 }) : dp.Parent.Color;
                 }
 
-                if(dp.Parent.ToolTipElement._callOutPath != null && dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
+                if (dp.Parent.ToolTipElement._callOutPath != null && dp.Parent.ToolTipElement._callOutPath.Fill == null && Chart._toolTip != null)
                     dp.Parent.ToolTipElement._callOutPath.Fill = Chart._toolTip.Background;
 
                 if (dp.Parent.ToolTipElement.Background == null && Chart._toolTip != null)
@@ -407,11 +413,11 @@ namespace Visifire.Charts
                 dp.Parent.ToolTipElement.SetValue(Canvas.LeftProperty, toolTipsPositionInfo[index].Left);
                 dp.Parent.ToolTipElement.SetValue(Canvas.TopProperty, toolTipsPositionInfo[index].Top);
 
-                Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset), dp._visualPosition.Y + yPlotOffset);
+                Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset - offset, dp._visualPosition.Y + yPlotOffset);
                 if (AxisX.AxisOrientation == Orientation.Vertical)
                 {
-                    positionOfDp.X += AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
-                    positionOfDp.Y -= AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                    positionOfDp.X += offset;
+                    positionOfDp.Y -= offset;
                 }
 
                 if (dp.Parent.RenderAs == RenderAs.Bar || dp.Parent.RenderAs == RenderAs.StackedBar || dp.Parent.RenderAs == RenderAs.StackedBar100)
@@ -435,7 +441,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (listOfActualPos[index].X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) + dp.Parent.ToolTipElement._borderElement.ActualWidth < plotWidth)
+                    if (listOfActualPos[index].X - offset + dp.Parent.ToolTipElement._borderElement.ActualWidth < plotWidth)
                     {
                         dp.Parent.ToolTipElement.CallOutStartPoint = new Point(1, dp.Parent.ToolTipElement._borderElement.ActualHeight / 4);
                         dp.Parent.ToolTipElement.CallOutMidPoint = new Point(positionOfDp.X - toolTipsPositionInfo[index].Left, positionOfDp.Y - toolTipsPositionInfo[index].Top);
@@ -670,7 +676,7 @@ namespace Visifire.Charts
 
                 if (AxisX.AxisOrientation == Orientation.Horizontal)
                 {
-                    if(!Double.IsNaN(newPos))
+                    if (!Double.IsNaN(newPos))
                         SetPositon4Indicators(AxisX, newPos, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
                     else
                         SetPositon4Indicators(AxisX, listOfActualPos[0].X, axisIndicatorText, xPlotCanvasOffset, yPlotCanvasOffset, plotWidth, plotHeight);
@@ -1011,15 +1017,77 @@ namespace Visifire.Charts
                 {   
                     if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis && AxisX != null)
                     {
+                        Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                        offset = GetScrollingOffsetOfAxis(AxisX, offset);
+
                         if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
-                            Chart._plotAreaScrollViewer.ScrollToVerticalOffset(AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
+                            Chart._plotAreaScrollViewer.ScrollToVerticalOffset(offset);
                         else
-                            Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
+                            Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+
+                        /*
+                         * if (AxisX.ScrollViewerElement.Children.Count > 0)
+                        {
+                            FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+                            Double value = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                            Double scrollViewerOffset;
+
+                            if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                            {
+                                scrollViewerOffset = ChartVisualCanvas.Height - PlotAreaScrollViewer.ViewportHeight;
+                                scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? value * (scrollViewerOffset / ZOOMING_MAX_VAL) : value;
+                                Chart._plotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
+                            }
+                            else
+                            {
+                                scrollViewerOffset = scrollViewerContent.ActualWidth - PlotAreaScrollViewer.ViewportWidth;
+                                scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? value * (scrollViewerOffset / ZOOMING_MAX_VAL) : value;
+                                Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);                                
+                                                 
+                                // Double scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? value * (scrollViewerContent.ActualWidth / ZOOMING_MAX_VAL) : value;
+                                // Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);    
+                            }
+                        }*/
                     }
                 };
             }
-#endif      
+#endif
         }
+
+        private Double GetScrollingOffsetOfAxis(Axis axis, Double offset)
+        {
+            Chart chart = axis.Chart as Chart;
+            Double value = offset;
+
+            if(chart.ZoomingEnabled)
+            {
+                Double scrollViewerOffset = 0;
+
+                if(axis.ScrollViewerElement.Children.Count > 0)
+                {   
+                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    // Vertical chart
+                    if(axis.AxisOrientation == Orientation.Horizontal)
+                    {   
+                        Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+                        scrollViewerOffset = value * (MaxHorizontalOffset / ZOOMING_MAX_VAL);
+                    }   
+                    else
+                    {
+                        Double MaxVerticalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
+                        scrollViewerOffset = value * (MaxVerticalOffset / ZOOMING_MAX_VAL);
+                    }
+                }
+
+                return scrollViewerOffset;
+            }
+            else
+            {   
+                return value;
+            }
+        }
+
 
         /// <summary>
         /// Hide all axis scrollbars
@@ -1192,7 +1260,7 @@ namespace Visifire.Charts
                     // same XValue.
                     foreach (DataSeries ds in Chart.Series)
                     {
-                        if(ds.ToolTipElement != null)
+                        if (ds.ToolTipElement != null)
                             ds.ToolTipElement.Hide();
 
                         if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut
@@ -1249,12 +1317,15 @@ namespace Visifire.Charts
 
                         foreach (DataPoint dp in nearestDataPointList)
                         {
+                            Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                            offset = GetScrollingOffsetOfAxis(AxisX, offset);
+
                             if (AxisX.AxisOrientation == Orientation.Vertical)
                             {
-                                if (dp._visualPosition.Y - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) > PlotAreaCanvas.Height
-                                    || dp._visualPosition.Y - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) < 0)
+                                if (dp._visualPosition.Y - offset > PlotAreaCanvas.Height
+                                    || dp._visualPosition.Y - offset < 0)
                                 {
-                                    if(dp.Parent.ToolTipElement != null)
+                                    if (dp.Parent.ToolTipElement != null)
                                         dp.Parent.ToolTipElement.Hide();
 
                                     DisableIndicators();
@@ -1262,8 +1333,8 @@ namespace Visifire.Charts
                             }
                             else
                             {
-                                if (dp._visualPosition.X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) > PlotAreaCanvas.Width
-                                                                   || dp._visualPosition.X - AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset) < 0)
+                                if (dp._visualPosition.X - offset > PlotAreaCanvas.Width
+                                      || dp._visualPosition.X - offset < 0)
                                 {
                                     if (dp.Parent.ToolTipElement != null)
                                         dp.Parent.ToolTipElement.Hide();
@@ -1368,6 +1439,9 @@ namespace Visifire.Charts
 
             Double leftOfIndicator = 0;
 
+            Double offset = axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset);
+            offset = GetScrollingOffsetOfAxis(axis, offset);
+
             if (axis.AxisOrientation == Orientation.Horizontal)
             {
                 _axisIndicatorElement.Children.Clear();
@@ -1394,7 +1468,7 @@ namespace Visifire.Charts
                 (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[0] as LineSegment).Point = new Point(0, 0);
                 (((_callOutPath4AxisIndicator.Data as PathGeometry).Figures[0] as PathFigure).Segments[1] as LineSegment).Point = new Point(6, 8);
 
-                _verticalLineIndicator.SetValue(Canvas.LeftProperty, actualPos - xPlotCanvasOffset - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset));
+                _verticalLineIndicator.SetValue(Canvas.LeftProperty, actualPos - xPlotCanvasOffset - offset);
 
                 _verticalLineIndicator.X1 = xPlotCanvasOffset;
                 _verticalLineIndicator.Y1 = yPlotCanvasOffset;
@@ -1403,7 +1477,7 @@ namespace Visifire.Charts
                 _verticalLineIndicator.Y2 = plotHeight + yPlotCanvasOffset;
 
                 //  Set position of indicator over Axis
-                leftOfIndicator = actualPos - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset) - _axisIndicatorElement.ActualWidth / 2;
+                leftOfIndicator = actualPos - offset - _axisIndicatorElement.ActualWidth / 2;
                 Double topOfIndicator = plotHeight + yPlotCanvasOffset;
                 topOfIndicator += (axis.ScrollBarElement.Visibility == Visibility.Visible) ? axis.ScrollBarElement.Height : 0;
 
@@ -1470,7 +1544,7 @@ namespace Visifire.Charts
                     leftOfIndicator -= _axisIndicatorElement.ActualWidth;
                 }
 
-                _verticalLineIndicator.SetValue(Canvas.TopProperty, actualPos - yPlotCanvasOffset - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset));
+                _verticalLineIndicator.SetValue(Canvas.TopProperty, actualPos - yPlotCanvasOffset - offset);
 
                 _verticalLineIndicator.X1 = xPlotCanvasOffset;
                 _verticalLineIndicator.Y1 = yPlotCanvasOffset;
@@ -1480,7 +1554,7 @@ namespace Visifire.Charts
 
                 //  Set position of indicator over Axis
                 leftOfIndicator += xPlotCanvasOffset;
-                Double topOfIndicator = actualPos - axis.GetScrollBarValueFromOffset(axis.CurrentScrollScrollBarOffset) - _axisIndicatorElement.ActualHeight / 2;
+                Double topOfIndicator = actualPos - offset - _axisIndicatorElement.ActualHeight / 2;
                 leftOfIndicator -= (axis.ScrollBarElement.Visibility == Visibility.Visible) ? axis.ScrollBarElement.Width : 0;
 
                 _axisIndicatorElement.SetValue(Canvas.LeftProperty, leftOfIndicator);
@@ -1740,10 +1814,12 @@ namespace Visifire.Charts
         {
             Double totalHeightReduced = 0;
             
+            Chart chart = Chart as Chart;
+
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 if (!forceRender && AxisX.Width == availableSize.Width && !(AxisX.Width >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0))
-                {   
+                {
                     return Double.NaN;
                 }
 
@@ -1756,27 +1832,46 @@ namespace Visifire.Charts
                 if (PlotAreaScrollViewer != null)
                 {   
                     AxisX.ScrollableSize = ScrollableLength;
-#if SL
-                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
-                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
-#else                   
-                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
-                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
-#endif
-                }
 
+                    if (chart.ZoomingEnabled)
+                    {
+                        AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                    }
+                    else
+                    {
+#if SL
+                        AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
+                        AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
+#else                   
+                        AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
+                        AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
+#endif
+                    }
+                }
+                
                 AxisX.CreateVisualObject(Chart);
 
                 SetScrollBarChanges(AxisX);
 
                 AxisX.ScrollBarElement.Scroll -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
+                
+                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+                AxisX.ZoomingScaleChanged -= new EventHandler(ScrollBarElement_ScaleChanged);
 
-                if (AxisX.Width >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0)
-                    AxisX.ScrollBarElement.Visibility = Visibility.Collapsed;
+                if (chart.ZoomingEnabled)
+                {
+                    AxisX.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
+                    AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                }
                 else
                 {
-                    AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                    if (AxisX.Width >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0)
+                        AxisX.ScrollBarElement.Visibility = Visibility.Collapsed;
+                    else
+                    {
+                        AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                    }
                 }
 
                 Chart._bottomAxisPanel.Children.Add(AxisX.Visual);
@@ -1786,8 +1881,27 @@ namespace Visifire.Charts
 
                 AxisX.Height = size.Height;
 
+                /*
+                 * Double value = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                Double scrollViewerOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+
+                scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? value * (scrollViewerOffset / ZOOMING_MAX_VAL) : value;
+                Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
+                 */
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
-                    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -1 * AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
+                {
+                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+                    if (scrollViewerContent != null)
+                    {
+                        Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                        offset = GetScrollingOffsetOfAxis(AxisX, offset);
+                        Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+                        scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * offset);
+                    }
+                }
+
+                // if (AxisX.ScrollViewerElement.Children.Count > 0)
+                //      (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -1 * AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
             }
             else
                 Chart._bottomAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -1808,13 +1922,21 @@ namespace Visifire.Charts
                 if (PlotAreaScrollViewer != null)
                 {
                     AxisX2.ScrollableSize = ScrollableLength;
+
+                    if (chart.ZoomingEnabled)
+                    {
+                        AxisX2.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                    }
+                    else
+                    {
 #if SL
-                    AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
-                    AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
+                        AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
+                        AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
 #else               
                     AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
                     AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
 #endif
+                    }
                 }
 
                 AxisX2.CreateVisualObject(Chart);
@@ -1822,6 +1944,14 @@ namespace Visifire.Charts
 
                 AxisX2.ScrollBarElement.Scroll -= AxesX2ScrollBarElement_Scroll;
                 AxisX2.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesX2ScrollBarElement_Scroll);
+
+                AxisX2.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+                AxisX2.ZoomingScaleChanged -= new EventHandler(ScrollBarElement_ScaleChanged);
+
+                if (chart.ZoomingEnabled)
+                {
+                    AxisX2.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
+                }
 
                 if (AxisX2.Width >= AxisX2.ScrollableSize || AxisX2.ScrollBarElement.Maximum == 0)
                     AxisX2.ScrollBarElement.Visibility = Visibility.Collapsed;
@@ -1839,7 +1969,6 @@ namespace Visifire.Charts
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                     (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -AxisX2.GetScrollBarValueFromOffset(AxisX2.CurrentScrollScrollBarOffset));
-
             }
             else
                 Chart._topAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -1862,7 +1991,7 @@ namespace Visifire.Charts
 
                 AxisY.Height = size.Height;
             }
-            else
+            else if(PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 Chart._leftAxisScrollBar.Visibility = Visibility.Collapsed;
 
 
@@ -1890,6 +2019,19 @@ namespace Visifire.Charts
             return totalHeightReduced;
         }
 
+        void ScrollBarElement_ScaleChanged(object sender, EventArgs e)
+        {   
+            Axis axis = sender as Axis;
+            Chart chart = Chart as Chart;
+
+            axis._internalZoomingScale = axis._internalMinimumZoomingScale + (1 - axis._internalMinimumZoomingScale) * (1 - axis.ScrollBarElement.Scale);
+
+            // chart.Dispatcher.BeginInvoke(new Action(chart.ChartArea.DrawChart));
+            //chart.Series[0].UpdateVisual(VcProperties.ScrollBarScale, null);
+            if(chart.Series.Count > 0)
+                chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
+        }
+
         /// <summary>
         /// Draw AxisY
         /// </summary>
@@ -1902,7 +2044,7 @@ namespace Visifire.Charts
         private Double DrawAxesY(Size availableSize, Boolean forceRender)
         {
             Double totalWidthReduced = 0;
-
+            Chart chart = Chart as Chart;
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 if (!forceRender && AxisX.Height == availableSize.Height && !(AxisX.Height >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0))
@@ -1920,13 +2062,20 @@ namespace Visifire.Charts
                 {
                     AxisX.ScrollableSize = ScrollableLength;
 
+                    if ((Chart as Chart).ZoomingEnabled)
+                    {   
+                        AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                    }
+                    else
+                    {
 #if SL
-                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
-                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
+                        AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
+                        AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
 #else
-                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
-                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
+                        AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
+                        AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
 #endif
+                    }
                 }
 
                 AxisX.CreateVisualObject(Chart);
@@ -1937,11 +2086,22 @@ namespace Visifire.Charts
                 AxisX.ScrollBarElement.Scroll -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
 
-                if (AxisX.Height >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0)
-                    AxisX.ScrollBarElement.Visibility = Visibility.Collapsed;
+                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+                AxisX.ZoomingScaleChanged -= new EventHandler(ScrollBarElement_ScaleChanged);
+
+                if (chart.ZoomingEnabled)
+                {
+                    AxisX.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
+                    AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                }
                 else
                 {
-                    AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                    if (AxisX.Height >= AxisX.ScrollableSize || AxisX.ScrollBarElement.Maximum == 0)
+                        AxisX.ScrollBarElement.Visibility = Visibility.Collapsed;
+                    else
+                    {
+                        AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+                    }
                 }
 
                 Chart._leftAxisPanel.Children.Add(AxisX.Visual);
@@ -1951,8 +2111,22 @@ namespace Visifire.Charts
 
                 AxisX.Width = size.Width;
 
+                //----------------------
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
-                    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
+                {
+                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    if (scrollViewerContent != null)
+                    {
+                        Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                        offset = GetScrollingOffsetOfAxis(AxisX, offset);
+                        Chart._plotAreaScrollViewer.ScrollToVerticalOffset(offset);
+                        scrollViewerContent.SetValue(Canvas.TopProperty, -1 * offset);
+                    }
+                }
+
+                //if (AxisX.ScrollViewerElement.Children.Count > 0)
+                //    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
 
             }
 
@@ -1972,13 +2146,21 @@ namespace Visifire.Charts
                 if (PlotAreaScrollViewer != null)
                 {
                     AxisX2.ScrollableSize = ScrollableLength;
+
+                    if ((Chart as Chart).ZoomingEnabled)
+                    {
+                        AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                    }
+                    else
+                    {
 #if SL
-                    AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
-                    AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
+                        AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
+                        AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
 #else
-                    AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
-                    AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
+                        AxisX2.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
+                        AxisX2.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
 #endif
+                    }
                 }
 
                 AxisX2.CreateVisualObject(Chart);
@@ -1986,6 +2168,14 @@ namespace Visifire.Charts
 
                 AxisX2.ScrollBarElement.Scroll -= AxesX2ScrollBarElement_Scroll;
                 AxisX2.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesX2ScrollBarElement_Scroll);
+
+                AxisX2.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+                AxisX2.ZoomingScaleChanged -= new EventHandler(ScrollBarElement_ScaleChanged);
+
+                if (chart.ZoomingEnabled)
+                {
+                    AxisX2.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
+                }
 
                 if (AxisX2.Height >= AxisX2.ScrollableSize || AxisX2.ScrollBarElement.Maximum == 0)
                     AxisX2.ScrollBarElement.Visibility = Visibility.Collapsed;
@@ -2024,6 +2214,12 @@ namespace Visifire.Charts
 
                 AxisY.Width = size.Width;
 
+                //if (AxisX != null)
+                //{
+                //    AxisX.Width = availableSize.Width - totalWidthReduced;
+                //    AxisX.ScrollBarElement.Width = availableSize.Width - totalWidthReduced;
+                //}
+
                 Double left = Chart.Padding.Left + Chart._leftOuterTitlePanel.ActualWidth + Chart._leftOuterLegendPanel.ActualWidth;
                 AxisY.SetValue(Canvas.LeftProperty, (Double)left);
             }
@@ -2044,7 +2240,6 @@ namespace Visifire.Charts
                 totalWidthReduced += size.Width;
 
                 AxisY2.Width = size.Width;
-
             }
 
             return totalWidthReduced;
@@ -2082,7 +2277,7 @@ namespace Visifire.Charts
         /// <param name="plotAreaSize">Size of the plotArea</param>
         /// <returns>Remaining size of the plotArea after drawing axes</returns>
         private Size RenderAxes(Size plotAreaSize)
-        {
+        {   
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX);
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisY);
             Axis.SaveOldValueOfAxisRange(Chart.ChartArea.AxisX2);
@@ -2105,9 +2300,16 @@ namespace Visifire.Charts
                 plotAreaSize = SetChartAreaCenterGridMargin(plotAreaSize, ref left, ref top, ref right, ref bottom);
 
                 UpdateLayoutSettings(plotAreaSize);
+                
+                Double oldAxisXWidth = _plotAreaSize.Width - ((AxisY != null)? AxisY.Width : 0) - ((AxisY2 != null)? AxisY2.Width : 0);
 
                 DrawAxesY(plotAreaSize, true);
-                
+
+                Double newAxisXWidth = _plotAreaSize.Width - ((AxisY != null) ? AxisY.Width : 0) - ((AxisY2 != null) ? AxisY2.Width : 0);
+
+                if (oldAxisXWidth != newAxisXWidth)
+                    plotAreaSize.Width = newAxisXWidth;
+
                 Double totalHeightReduced2 = DrawAxesX(plotAreaSize, false);
 
                 if (!Double.IsNaN(totalHeightReduced2) && totalHeightReduced2 != totalHeightReduced1)
@@ -2252,7 +2454,7 @@ namespace Visifire.Charts
                 if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                 {   
                     if (Chart.InternalSeries.Count > 0)
-                    {
+                    {   
                         chartSize = CalculatePlotAreaAutoSize(chartSize);
                     }
                 }
@@ -2310,71 +2512,90 @@ namespace Visifire.Charts
         {
             Double chartSize;
 
-            if ((Chart as Chart).MinimumGap != null)
+            Chart chart = (Chart as Chart);
+            Double maxChartSize = 30000;
+
+            if (chart.ZoomingEnabled)
             {
-                //if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
-                //{
-                //    //TimeSpan dateRange = AxisX.MaxDate.Subtract(AxisX.MinDate);
-                //    Double maxNoOfDataPoint = ((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
-                //    chartSize =(Double) (Chart as Chart).MinimumGap * maxNoOfDataPoint;
-                //}
-                //else
-                    chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
-            }
-            else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)) && !IsAutoCalculatedScrollBarScale)
-            {
-                chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
+                if (_isFirstTimeRender)
+                {
+                    Chart.AxesX[0]._internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
+                    Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                    chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
+                }
+                else
+                {
+                    chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
+                }
             }
             else
             {
-                if (PlotDetails.ListOfAllDataPoints.Count > 0)
+                if ((Chart as Chart).MinimumGap != null)
                 {
-                    Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
-                    Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
-                    Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
-
-                    Double maxDiff = maxXValue - minXValue;
-
-                    Double magicNumber = currentSize * 34 / ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor));
-
-                    if (maxDiff / minDiff > magicNumber)
+                    //if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
+                    //{
+                    //    //TimeSpan dateRange = AxisX.MaxDate.Subtract(AxisX.MinDate);
+                    //    Double maxNoOfDataPoint = ((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                    //    chartSize =(Double) (Chart as Chart).MinimumGap * maxNoOfDataPoint;
+                    //}
+                    //else
+                    chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
+                }
+                else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)) && !IsAutoCalculatedScrollBarScale)
+                {
+                    chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
+                }
+                else
+                {
+                    if (PlotDetails.ListOfAllDataPoints.Count > 0)
                     {
-                        chartSize = (maxDiff / minDiff) * ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor)) / 34;
+                        Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
+                        Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
+                        Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
+
+                        Double maxDiff = maxXValue - minXValue;
+
+                        Double magicNumber = currentSize * 34 / ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor));
+
+                        if (maxDiff / minDiff > magicNumber)
+                        {
+                            chartSize = (maxDiff / minDiff) * ((Double)550 * (PlotDetails.DrawingDivisionFactor == 0 ? 1 : PlotDetails.DrawingDivisionFactor)) / 34;
+                        }
+                        else
+                        {
+                            chartSize = currentSize;
+                        }
                     }
                     else
                     {
                         chartSize = currentSize;
                     }
+
                 }
-                else
+#if SL          
+                if (chartSize > 32000)
                 {
-                    chartSize = currentSize;
+                    chartSize = 32000;
+                    Chart.AxesX[0].IsNotificationEnable = false;
+                    Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                    Chart.AxesX[0].IsNotificationEnable = true;
                 }
-
-            }
-
-#if SL
-            if (chartSize > 32000)
-            {
-                chartSize = 32000;
-                Chart.AxesX[0].IsNotificationEnable = false;
-                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
-                Chart.AxesX[0].IsNotificationEnable = true;
-            }
 #endif
 
-            if ((Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
-            {
-                Chart.AxesX[0].IsNotificationEnable = false;
-                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
-                Chart.AxesX[0].IsNotificationEnable = true;
-                //IsAutoCalculatedScrollBarScale = true;
-            }
-            else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
-            {
-                Chart.AxesX[0].IsNotificationEnable = false;
-                Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
-                Chart.AxesX[0].IsNotificationEnable = true;
+                if ((Double.IsNaN(Chart.AxesX[0].ScrollBarScale)))
+                {
+                    Chart.AxesX[0].IsNotificationEnable = false;
+                    Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                    Chart.AxesX[0].IsNotificationEnable = true;
+                    //IsAutoCalculatedScrollBarScale = true;
+                }
+                else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
+                {
+                    Chart.AxesX[0].IsNotificationEnable = false;
+                    Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
+                    Chart.AxesX[0].IsNotificationEnable = true;
+                }
+            
             }
 
             return chartSize;
@@ -2894,6 +3115,8 @@ namespace Visifire.Charts
             //System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
         }
 
+        private const Double ZOOMING_MAX_VAL = 100;
+
         /// <summary>
         /// Event handler for scroll event of the axis-x scrollbar
         /// </summary>
@@ -2901,26 +3124,51 @@ namespace Visifire.Charts
         /// <param name="e">System.Windows.Controls.Primitives.ScrollEventArgs</param>
         private void AxesXScrollBarElement_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
+            Chart chart = Chart as Chart;
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 Double offset = e.NewValue;
+
+                if ((Chart as Chart).ZoomingEnabled)
+                {
+                    AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                }
+                else
+                {
 #if SL
-                AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
-                AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
+                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
+                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
 #else           
-                AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
-                AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
-                
+                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
+                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
+#endif
+                }
+#if WPF         
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
+
                 Double offsetInPixel = offset;
 
-                PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
-
-                if (AxisX.ScrollViewerElement.Children.Count > 0)
-                    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -offset);
+                //  if (AxisX.ScrollViewerElement.Children.Count > 0)
+                //  (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -offset);
                 
+                if (AxisX.ScrollViewerElement.Children.Count > 0)
+                {
+                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+                    /*Double scrollViewerOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+
+                    scrollViewerOffset = chart.ZoomingEnabled ? offset * (scrollViewerOffset / ZOOMING_MAX_VAL) : offset;
+                    //scrollViewerOffset = Math.Min((scrollViewerContent.Width - AxisX.Width), scrollViewerOffset);
+                    PlotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
+                    scrollViewerContent.SetValue(Canvas.LeftProperty, -scrollViewerOffset);
+                    * */
+                    Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
+                    Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
+                    scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * scrollViewerOffset);
+                    System.Diagnostics.Debug.WriteLine("scrollViewerOffset =" + (-scrollViewerOffset).ToString());
+                }   
+
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
 
                 AxisX._isScrollToOffsetEnabled = false;
@@ -2938,22 +3186,55 @@ namespace Visifire.Charts
             {
                 Double offset = e.NewValue;
 
+                if (Chart.ZoomingEnabled)
+                {
+                    AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+                }
+                else
+                {
 #if SL
-                AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
-                AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
+                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
+                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportHeight;
 #else
-                AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
-                AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
+                    AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualHeight;
+                    AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualHeight;
+#endif
+                }
+
+#if WPF
                 if (e.NewValue <= 1)
                     offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
+
                 Double offsetInPixel = offset;
+
+
 
                 PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
 
-                if (AxisX.ScrollViewerElement.Children.Count > 0)
-                    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -offset);
+                //if (AxisX.ScrollViewerElement.Children.Count > 0)
+                //    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -offset);
 
+
+                if (AxisX.ScrollViewerElement.Children.Count > 0)
+                {
+                   /* FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    Double scrollViewerOffset = (chart.ZoomingEnabled ? offset * (ChartVisualCanvas.Height / ZOOMING_MAX_VAL) : offset);
+                    PlotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
+                    scrollViewerOffset = Math.Min((ChartVisualCanvas.Height - AxisX.Height), scrollViewerOffset);
+                    scrollViewerContent.SetValue(Canvas.TopProperty, -scrollViewerOffset);*/
+
+                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    if (scrollViewerContent != null)
+                    {
+                        Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
+                        offsetInPixel = scrollViewerOffset;
+                        Chart._plotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
+                        scrollViewerContent.SetValue(Canvas.TopProperty, -1 * scrollViewerOffset);
+                    }
+                }
 
                 SaveAxisContentOffsetAndResetMargin(AxisX, (AxisX.ScrollBarElement.Maximum - offset));
 
@@ -2967,6 +3248,7 @@ namespace Visifire.Charts
                 AxisX.FireScrollEvent(e, offsetInPixel);
 
             }
+
             if (AxisX2 != null)
             {
                 AxisX2.ScrollBarElement.Value = e.NewValue;
@@ -2996,10 +3278,24 @@ namespace Visifire.Charts
 #endif
                 Double offsetInPixel = offset;
 
-                PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+
+                //PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+
+                //if (AxisX2.ScrollViewerElement.Children.Count > 0)
+                //    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(offset, 0, 0, 0);
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
-                    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(offset, 0, 0, 0);
+                {
+                    FrameworkElement scrollViewerContent = (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    Double scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? offset * (scrollViewerContent.Width / ZOOMING_MAX_VAL) : offset;
+                    PlotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
+
+                    scrollViewerContent.Margin = new Thickness(offset, 0, 0, 0);
+                }
+
+
+
 
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
                 AxisX2.FireScrollEvent(e, offsetInPixel);
@@ -3018,10 +3314,22 @@ namespace Visifire.Charts
                     offset = e.NewValue * AxisX2.ScrollBarElement.Maximum;
 #endif
                 Double offsetInPixel = offset;
-                PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
+
+                // PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
+                
+                // if (AxisX2.ScrollViewerElement.Children.Count > 0)
+                //    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(0, offset, 0, 0);
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
-                    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(0, offset, 0, 0);
+                {
+                    FrameworkElement scrollViewerContent = (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement);
+
+                    Double scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? offset * (scrollViewerContent.Height / ZOOMING_MAX_VAL) : offset;
+                    PlotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
+
+                    scrollViewerContent.Margin = new Thickness(0, scrollViewerOffset, 0, 0);
+                }
+
                 
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
 

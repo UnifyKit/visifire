@@ -51,6 +51,7 @@ using System.ComponentModel;
 using Visifire.Commons;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -103,21 +104,21 @@ namespace Visifire.Charts
             _topAxisGrid = GetTemplateChild(TopAxisGridName) as Grid;
             _topAxisContainer = GetTemplateChild(TopAxisContainerName) as StackPanel;
             _topAxisPanel = GetTemplateChild(TopAxisPanelName) as StackPanel;
-            _topAxisScrollBar = GetTemplateChild(TopAxisScrollBarName) as ScrollBar;
+            _topAxisScrollBar = GetTemplateChild(TopAxisScrollBarName) as ZoomBar;
 
             _leftAxisGrid = GetTemplateChild(LeftAxisGridName) as Grid;
             _leftAxisContainer = GetTemplateChild(LeftAxisContainerName) as StackPanel;
             _leftAxisPanel = GetTemplateChild(LeftAxisPanelName) as StackPanel;
-            _leftAxisScrollBar = GetTemplateChild(LeftAxisScrollBarName) as ScrollBar;
+            _leftAxisScrollBar = GetTemplateChild(LeftAxisScrollBarName) as ZoomBar;
 
             _rightAxisGrid = GetTemplateChild(RightAxisGridName) as Grid;
             _rightAxisContainer = GetTemplateChild(RightAxisContainerName) as StackPanel;
-            _rightAxisScrollBar = GetTemplateChild(RightAxisScrollBarName) as ScrollBar;
+            _rightAxisScrollBar = GetTemplateChild(RightAxisScrollBarName) as ZoomBar;
             _rightAxisPanel = GetTemplateChild(RightAxisPanelName) as StackPanel;
 
             _bottomAxisGrid = GetTemplateChild(BottomAxisGridName) as Grid;
             _bottomAxisContainer = GetTemplateChild(BottomAxisContainerName) as StackPanel;
-            _bottomAxisScrollBar = GetTemplateChild(BottomAxisScrollBarName) as ScrollBar;
+            _bottomAxisScrollBar = GetTemplateChild(BottomAxisScrollBarName) as ZoomBar;
             _bottomAxisPanel = GetTemplateChild(BottomAxisPanelName) as StackPanel;
 
             _centerInnerGrid = GetTemplateChild(CenterInnerGridName) as Grid;
@@ -150,6 +151,8 @@ namespace Visifire.Charts
             _centerDockOutsidePlotAreaPanel = GetTemplateChild(CenterDockOutsidePlotAreaPanelName) as StackPanel;
 
             _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;  
+            
+            _zoomRectangle = GetTemplateChild(ZoomRectangleName) as Border;  
         }
 
         /// <summary>
@@ -248,6 +251,45 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Get or Set ZoomingEnabled property
+        /// (Decides whether the zooming is enabled for chart)
+        /// </summary>
+        public Boolean ZoomingEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ZoomingEnabledProperty);
+            }
+            set
+            {
+                SetValue(ZoomingEnabledProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ZoomingEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ZoomingEnabled dependency property.
+        /// </returns>
+        public static DependencyProperty ZoomingEnabledProperty = DependencyProperty.Register
+            ("ZoomingEnabled",
+            typeof(Boolean),
+            typeof(Chart),
+            new PropertyMetadata(false, OnZoomingEnabledPropertyChanged));
+
+        /// <summary>
+        /// Event handler manages ZoomingEnabled property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnZoomingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Chart c = d as Chart;
+            c.InvokeRender();
+        }
 
         /// <summary>
         /// Identifies the Visifire.Charts.Chart.IndicatorEnabled dependency property.  
@@ -572,7 +614,7 @@ namespace Visifire.Charts
             }
             get
             {
-                if ((Nullable<Boolean>)GetValue(ScrollingEnabledProperty) == null)
+                if ((Nullable<Boolean>)GetValue(ScrollingEnabledProperty) == null || ZoomingEnabled)
                 {
                     return true;
                 }
