@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Visifire.Charts;
 using Visifire.Commons;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace SLVisifireApp
 {

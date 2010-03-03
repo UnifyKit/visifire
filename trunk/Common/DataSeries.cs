@@ -2398,7 +2398,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal DataPoint GetNearestDataPoint(object sender, MouseEventArgs e, DataSeries ds)
+        internal DataPoint GetNearestDataPoint(object sender, MouseEventArgs e, List<DataPoint> listOfDataPoints)
         {
             DataPoint nearestDataPoint = null;
 
@@ -2413,8 +2413,10 @@ namespace Visifire.Charts
 
                 xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
 
-                foreach (DataPoint dp in ds.DataPoints)
+                foreach (DataPoint dp in listOfDataPoints)
                 {
+                    DataSeries ds = dp.Parent;
+
                     if ((ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
                         && dp.YValues == null)
                         continue;
@@ -2438,12 +2440,12 @@ namespace Visifire.Charts
                         if (dp._distance < nearestDataPoint._distance)
                             nearestDataPoint = dp;
 
-                        if (pixelPosition > chart.ChartArea.PlottingCanvas.Width || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
-                        {
-                            nearestDataPoint = null;
-                            ds.ToolTipElement.Hide();
-                            break;
-                        }
+                        //if (pixelPosition > chart.ChartArea.PlottingCanvas.Width || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
+                        //{
+                        //    nearestDataPoint = null;
+                        //    ds.ToolTipElement.Hide();
+                        //    continue;
+                        //}
                     }
                     else
                     {
@@ -2458,12 +2460,12 @@ namespace Visifire.Charts
                         if (dp._distance < nearestDataPoint._distance)
                             nearestDataPoint = dp;
 
-                        if (pixelPosition > chart.ChartArea.PlottingCanvas.Height || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
-                        {
-                            nearestDataPoint = null;
-                            ds.ToolTipElement.Hide();
-                            break;
-                        }
+                        //if (pixelPosition > chart.ChartArea.PlottingCanvas.Height || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
+                        //{
+                        //    nearestDataPoint = null;
+                        //    ds.ToolTipElement.Hide();
+                        //    break;
+                        //}
                     }
                 }
             }

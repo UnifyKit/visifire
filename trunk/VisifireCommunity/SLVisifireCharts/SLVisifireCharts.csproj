@@ -66,8 +66,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FJ.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=089c7b0929673c5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Common\FJ.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="system" />
