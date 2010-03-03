@@ -1420,12 +1420,11 @@ namespace Visifire.Charts
                 return (Thickness)((_internalPadding == null) ? GetValue(PaddingProperty) : _internalPadding);
             }
             set
-            {
+            {   
                 _internalPadding = value;
             }
         }
-
-
+        
         /// <summary>
         /// Get or set the Opacity property
         /// </summary>

@@ -1070,7 +1070,8 @@ namespace Visifire.Charts
                     // Vertical chart
                     if(axis.AxisOrientation == Orientation.Horizontal)
                     {   
-                        Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+                        //Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+                        Double MaxHorizontalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
                         scrollViewerOffset = value * (MaxHorizontalOffset / ZOOMING_MAX_VAL);
                     }   
                     else
@@ -1237,21 +1238,32 @@ namespace Visifire.Charts
                         if (ds.RenderAs != RenderAs.Pie && ds.RenderAs != RenderAs.Doughnut
                              && ds.RenderAs != RenderAs.SectionFunnel && ds.RenderAs != RenderAs.StreamLineFunnel)
                         {
-                            DataPoint nearestDataPoint = ds.GetNearestDataPoint(sender, e, ds);
-
-                            if (nearestDataPoint != null)
+                            if (ds.DataPoints.Count > 0)
                             {
-                                nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
+                                DataPoint nearestDataPoint = ds.GetNearestDataPoint(sender, e, ds.DataPoints.ToList());
 
-                                if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                if (nearestDataPoint != null)
                                 {
-                                    listOfNearestDataPoints.Clear();
-                                    listOfNearestDataPoints.Add(nearestDataPoint);
-                                    _lastNearestDataPoint = nearestDataPoint;
-                                    //break;
+                                    nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
+
+                                    if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                    {
+                                        //listOfNearestDataPoints.Clear();
+                                        listOfNearestDataPoints.Add(nearestDataPoint);
+                                        _lastNearestDataPoint = nearestDataPoint;
+                                        //break;
+                                    }
                                 }
                             }
                         }
+                    }
+
+                    if (listOfNearestDataPoints != null && listOfNearestDataPoints.Count > 0)
+                    {
+                        DataPoint dp = listOfNearestDataPoints[0].Parent.GetNearestDataPoint(sender, e, listOfNearestDataPoints);
+                        listOfNearestDataPoints.Clear();
+                        listOfNearestDataPoints.Add(dp);
+                        _lastNearestDataPoint = dp;
                     }
 
                     // Now find out the other nearest DataPoints from the last nearest DataPoint found above.
@@ -1894,9 +1906,12 @@ namespace Visifire.Charts
                     if (scrollViewerContent != null)
                     {
                         Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
-                        offset = GetScrollingOffsetOfAxis(AxisX, offset);
-                        Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
-                        scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * offset);
+                        if (!Double.IsNaN(offset))
+                        {
+                            offset = GetScrollingOffsetOfAxis(AxisX, offset);
+                            Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+                            scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * offset);
+                        }
                     }
                 }
 

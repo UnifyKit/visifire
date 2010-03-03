@@ -729,8 +729,8 @@
                                 </Grid>
                             </ControlTemplate>
                             <ControlTemplate x:Key="VerticalThumbGripControlTemplate" TargetType="Thumb">
-                                <Grid Margin="0,1,0,1"  >
-                                    <TextBlock RenderTransformOrigin=".5,.5" Text="|||" FontSize="5" VerticalAlignment="Center">
+                                <Grid Margin="0,3,0,0"  >
+                                    <TextBlock RenderTransformOrigin=".5,.5" Text="||" FontSize="5" VerticalAlignment="Center">
                                         <TextBlock.RenderTransform>
                                             <RotateTransform Angle="90"></RotateTransform>
                                         </TextBlock.RenderTransform>
@@ -814,14 +814,15 @@
                                         </Rectangle>
                                         <Rectangle x:Name="Highlight" Stroke="#FF6DBDD1" StrokeThickness="1" RadiusX="1" RadiusY="1" Margin="1" IsHitTestVisible="false" Opacity="0"/>
                                         <Thumb x:Name="ElementTopGrip" Margin="0,0,0,0" Grid.Column="0" Template="{StaticResource VerticalThumbGripControlTemplate}" VerticalAlignment="Top" Cursor="SizeNS" MinWidth="5" Width="6" Background="Transparent"></Thumb>
+                                        <Border x:Name="ElementCenterBorder" IsHitTestVisible="False" BorderBrush="Gray" BorderThickness=".6" Background="#AFE2E2E2" Margin="3,9,3,9" ></Border>
                                         <Thumb x:Name="ElementBottomGrip" Margin="0,0,0,0" Visibility="Visible" Template="{StaticResource VerticalThumbGripControlTemplate}" Grid.Column="0" VerticalAlignment="Bottom" Cursor="SizeNS" MinWidth="5" Width="6" Background="Transparent"></Thumb>
 
                                     </Grid>
                                 </Grid>
                             </ControlTemplate>
                             <ControlTemplate x:Key="HorizontalThumbGripControlTemplate" TargetType="Thumb">
-                                <Grid Margin="0,1,0,1" >
-                                    <TextBlock Text="|||" FontSize="5" VerticalAlignment="Center"></TextBlock>
+                                <Grid Margin="1,1,0,1" >
+                                    <TextBlock Text="||" FontSize="5" VerticalAlignment="Center"></TextBlock>
                                 </Grid>
                             </ControlTemplate>
                             <ControlTemplate x:Key="HorizontalThumbTemplate" TargetType="Thumb">
@@ -902,6 +903,7 @@
                                         </Rectangle>
                                         <Rectangle x:Name="Highlight" Stroke="#FF6DBDD1" StrokeThickness="1" RadiusX="1" RadiusY="1" Margin="1" IsHitTestVisible="false" Opacity="0" />
                                         <Thumb x:Name="ElementLeftGrip" Margin="1,1,0,1" Grid.Column="0" Template="{StaticResource HorizontalThumbGripControlTemplate}" HorizontalAlignment="Left" Cursor="SizeWE" MinWidth="5" Width="6" Background="Transparent"></Thumb>
+                                        <Border x:Name="ElementCenterBorder" IsHitTestVisible="False" BorderBrush="Gray" BorderThickness=".6" Background="#AFE2E2E2" Margin="9,3,9,3" ></Border>
                                         <Thumb x:Name="ElementRightGrip" Margin="0,1,2,0" Visibility="Visible" Template="{StaticResource HorizontalThumbGripControlTemplate}" Grid.Column="0" HorizontalAlignment="Right" Cursor="SizeWE" MinWidth="5" Width="6" Background="Transparent"></Thumb>
                                     </Grid>
                                 </Grid>

@@ -4276,8 +4276,10 @@ namespace Visifire.Charts
                 Double xValue = PixelPositionToXValue(lengthInPixel, offsetInPixel4MinValue);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
+                {
                     ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
                         xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                }
                 else
                     ViewMinimum = xValue;
 

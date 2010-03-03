@@ -3607,6 +3607,11 @@ namespace Visifire.Charts
                         YValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
                         break;
 
+                    case "YValue":
+                        Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                        this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
+                        break;
+
                     default:
                         this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
                         break;
@@ -3659,6 +3664,11 @@ namespace Visifire.Charts
                 case "Low":
                     newYValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
                     YValues = newYValues;
+                    break;
+
+                case "YValue":
+                    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
                     break;
 
                 default:
