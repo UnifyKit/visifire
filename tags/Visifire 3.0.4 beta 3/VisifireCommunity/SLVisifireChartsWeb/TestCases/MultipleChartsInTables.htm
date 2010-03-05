@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Visifire Test Page</title>
+        <script type="text/javascript" src="../Visifire.js"></script>
+</head>
+    
+<body style="background-color:Gray;">
+
+    <script type="text/javascript">
+        var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1" AnimationEnabled="True" Bevel="True" BorderThickness="2" BorderBrush="Black" View3D="False">'
+                               + '     <vc:Chart.Titles>'
+                               + '         <vc:Title Enabled="False" Text="Athens 2004 Olympics"/>'
+                               + '     </vc:Chart.Titles>'
+
+                               + '     <vc:Chart.Series>'
+                               + '         <vc:DataSeries RenderAs="Column" LabelEnabled="True">'
+                               + '             <vc:DataSeries.DataPoints>'
+                               + '                 <vc:DataPoint AxisXLabel="USA" YValue="35"/>'
+                               + '                 <vc:DataPoint AxisXLabel="China" YValue="32"/>'
+                               + '                 <vc:DataPoint AxisXLabel="Russia" YValue="27"/>'
+                               + '                 <vc:DataPoint AxisXLabel="Australia" YValue="17"/>'
+                               + '                 <vc:DataPoint AxisXLabel="Japan" YValue="16"/>'
+                               + '             </vc:DataSeries.DataPoints>'
+                               + '         </vc:DataSeries>'
+                               + '     </vc:Chart.Series>'
+                               + ' </vc:Chart>';
+    </script>
+    <table>
+    <tr>
+    <td>
+        <div id="VisifireChart0">
+            <script type="text/javascript">
+
+                // Create Visifire object
+                var vChart1 = new Visifire('../ClientBin/SL.Visifire.Charts.xap', "MyChart1", 500, 300);
+                vChart1.setDataUri("data1.xml");
+                // Render chart
+                vChart1.render("VisifireChart0");
+                
+            </script>
+        </div>
+    </td>
+    </tr>
+    <tr>
+    <td>
+        <div id="VisifireChart1">
+            <script type="text/javascript">
+
+                // Create Visifire object
+                var vChart2 = new Visifire('../ClientBin/SL.Visifire.Charts.xap', "MyChart2", 500, 300);
+                vChart2.setDataUri("data3.xml");
+                // Render chart
+                vChart2.render("VisifireChart1");
+                
+            </script>
+        </div>
+    </td>
+    </tr>
+    <tr>
+    <td>
+        <div id="VisifireChart2">
+            <script type="text/javascript">
+
+                // Create Visifire object
+                var vChart3 = new Visifire('../ClientBin/SL.Visifire.Charts.xap', "MyChart3", 500, 300);
+                vChart3.setDataXml(chartXml);
+                // Render chart
+                vChart3.render("VisifireChart2");
+                
+            </script>
+        </div>
+    </td>
+    </tr>
+    </table>
+    
+</body>
+
+</html>
