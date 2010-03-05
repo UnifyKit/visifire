@@ -218,6 +218,9 @@
     <Compile Include="..\..\Common\StackedColumn100.cs">
       <Link>StackedColumn100.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\StepLineChart.cs">
+      <Link>StepLineChart.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\StockChart.cs">
       <Link>StockChart.cs</Link>
     </Compile>

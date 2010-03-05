@@ -1452,7 +1452,7 @@ namespace Visifire.Charts
             {
                 if ((Nullable<Double>)GetValue(LineThicknessProperty) == null)
                 {
-                    if (RenderAs == RenderAs.Line)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.StepLine)
                     {
                         Double retValue = (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
                         return retValue > 4 ? 4 : retValue;
@@ -1821,7 +1821,7 @@ namespace Visifire.Charts
         {
             get
             {
-                if (this.RenderAs == RenderAs.Line || this.RenderAs == RenderAs.Point)
+                if (this.RenderAs == RenderAs.Line || this.RenderAs == RenderAs.StepLine || this.RenderAs == RenderAs.Point)
                     return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? true : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
                 else
                     return ((Nullable<Boolean>)GetValue(MarkerEnabledProperty) == null) ? false : (Nullable<Boolean>)GetValue(MarkerEnabledProperty);
@@ -1891,7 +1891,7 @@ namespace Visifire.Charts
             get
             {
                 if ((Nullable<Double>)GetValue(MarkerSizeProperty) == null)
-                    if (this.RenderAs == RenderAs.Line)
+                    if (this.RenderAs == RenderAs.Line || this.RenderAs == RenderAs.StepLine)
                         return (this.LineThickness * 2);
                     else
                         return 8;
@@ -2429,7 +2429,7 @@ namespace Visifire.Charts
 
                     if (chart.ChartArea.AxisX.AxisOrientation == Orientation.Horizontal)
                     {
-                        dp._distance = Math.Abs(pixelPosition - dp._visualPosition.X);
+                        dp._x_distance = Math.Abs(pixelPosition - dp._visualPosition.X);
 
                         if (nearestDataPoint == null)
                         {
@@ -2437,7 +2437,7 @@ namespace Visifire.Charts
                             continue;
                         }
 
-                        if (dp._distance < nearestDataPoint._distance)
+                        if (dp._x_distance < nearestDataPoint._x_distance)
                             nearestDataPoint = dp;
 
                         //if (pixelPosition > chart.ChartArea.PlottingCanvas.Width || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
@@ -2449,7 +2449,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                         dp._distance = Math.Abs(pixelPosition - dp._visualPosition.Y);
+                         dp._x_distance = Math.Abs(pixelPosition - dp._visualPosition.Y);
 
                         if (nearestDataPoint == null)
                         {
@@ -2457,7 +2457,7 @@ namespace Visifire.Charts
                             continue;
                         }
 
-                        if (dp._distance < nearestDataPoint._distance)
+                        if (dp._x_distance < nearestDataPoint._x_distance)
                             nearestDataPoint = dp;
 
                         //if (pixelPosition > chart.ChartArea.PlottingCanvas.Height || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
@@ -2466,6 +2466,54 @@ namespace Visifire.Charts
                         //    ds.ToolTipElement.Hide();
                         //    break;
                         //}
+                    }
+                }
+            }
+
+            return nearestDataPoint;
+        }
+
+        internal DataPoint GetNearestDataPointAlongYPosition(object sender, MouseEventArgs e, List<DataPoint> listOfDataPoints)
+        {
+            DataPoint nearestDataPoint = null;
+
+            Chart chart = Chart as Chart;
+
+            if (chart.ChartArea.AxisX != null)
+            {
+                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+
+                foreach (DataPoint dp in listOfDataPoints)
+                {
+                    DataSeries ds = dp.Parent;
+
+                    if (chart.ChartArea.AxisX.AxisOrientation == Orientation.Horizontal)
+                    {
+                        dp._y_distance = Math.Abs(pixelPosition - dp._visualPosition.Y);
+
+                        if (nearestDataPoint == null)
+                        {
+                            nearestDataPoint = dp;
+                            continue;
+                        }
+
+                        if (dp._y_distance < nearestDataPoint._y_distance)
+                            nearestDataPoint = dp;
+
+                    }
+                    else
+                    {
+                        dp._y_distance = Math.Abs(pixelPosition - dp._visualPosition.X);
+
+                        if (nearestDataPoint == null)
+                        {
+                            nearestDataPoint = dp;
+                            continue;
+                        }
+
+                        if (dp._y_distance < nearestDataPoint._y_distance)
+                            nearestDataPoint = dp;
                     }
                 }
             }
@@ -2503,7 +2551,7 @@ namespace Visifire.Charts
                     Brush brush = null;
                     (Chart as Chart).ChartArea.LoadSeriesColorSet4SingleSeries(this);
 
-                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area || RenderAs == RenderAs.StepLine)
                     {
                         //if ((Brush)GetValue(DataSeries.ColorProperty) == null)
                         //    brush = InternalDataPoints[0]._internalColor;
@@ -2527,7 +2575,7 @@ namespace Visifire.Charts
                     if (RenderAs != RenderAs.CandleStick)
                         UpdateLegendMarker();
 
-                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area || RenderAs == RenderAs.StepLine)
                     {
                         RenderHelper.UpdateVisualObject(RenderAs, this, VcProperties.Color, newValue, renderAxis);
                     }
@@ -2542,7 +2590,7 @@ namespace Visifire.Charts
                 }
                 else if (property == VcProperties.ShadowEnabled || property == VcProperties.Opacity)
                 {
-                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area || RenderAs == RenderAs.StepLine)
                         //LineChart.Update(this, property, newValue);
                         RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
 
@@ -2551,7 +2599,7 @@ namespace Visifire.Charts
                 }
                 else if (property == VcProperties.LineStyle || property == VcProperties.LineThickness || property == VcProperties.LightingEnabled)
                 {
-                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area)
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.Area || RenderAs == RenderAs.StepLine)
                         RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
 
                     foreach (DataPoint dp in InternalDataPoints)
@@ -3686,7 +3734,7 @@ namespace Visifire.Charts
                 {
                     foreach (DataPoint dataPoint in e.OldItems)
                     {
-                        if (RenderAs == RenderAs.Line && dataPoint.Marker != null && dataPoint.Marker.Visual != null && dataPoint.Marker.Visual.Parent != null)
+                        if ((RenderAs == RenderAs.Line || RenderAs == RenderAs.StepLine) && dataPoint.Marker != null && dataPoint.Marker.Visual != null && dataPoint.Marker.Visual.Parent != null)
                         {   
                             Panel parent = dataPoint.Marker.Visual.Parent as Panel;
                             parent.Children.Remove(dataPoint.Marker.Visual);

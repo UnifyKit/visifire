@@ -4367,8 +4367,8 @@ namespace Visifire.Charts
             ScrollBarElement.DragCompleted -= OnZoomingScaleChanged;
             Chart chart = Chart as Chart;
 
-            Boolean isAllLineCharts = (((from ds in chart.Series 
-                                        where (ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.Area) 
+            Boolean isAllLineCharts = (((from ds in chart.Series
+                                         where (ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StepLine) 
                                         select ds).Count() == chart.Series.Count)
                                         && chart.PlotDetails.ListOfAllDataPoints.Count <= 500);
 
