@@ -2222,6 +2222,7 @@ namespace Visifire.Charts
                 ApplyFontPropertiesOfMarkerAsSymbol(markerAsSymbol);
 
                 if (markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
+                    || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.StepLine
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || markerAsSymbol.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )
@@ -2375,6 +2376,7 @@ namespace Visifire.Charts
 
 
                 if (marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Line
+                    || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.StepLine
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.Stock
                     || marker.DataSeriesOfLegendMarker.RenderAs == RenderAs.CandleStick
                     )

@@ -490,6 +490,7 @@ namespace Visifire.Charts
                     case RenderAs.Column:
                     case RenderAs.Doughnut:
                     case RenderAs.Line:
+                    case RenderAs.StepLine:
                     case RenderAs.Pie:
                     case RenderAs.Point:
                     case RenderAs.Stock:

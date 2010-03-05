@@ -2338,7 +2338,6 @@ namespace Visifire.Charts
                 }
 
 
-
                 dataPoint.Storyboard = storyBoard;
 
 #if WPF

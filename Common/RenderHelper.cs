@@ -101,6 +101,11 @@ namespace Visifire.Charts
                 case RenderAs.CandleStick:
                     renderedCanvas = CandleStick.GetVisualObjectForCandleStick(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
+
+                case RenderAs.StepLine:
+                    renderedCanvas = StepLineChart.GetVisualObjectForLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    break;
+
             }
 
             return renderedCanvas;
@@ -235,6 +240,19 @@ namespace Visifire.Charts
                             foreach(DataSeries ds in selectedDataSeries4Rendering)
                                 LineChart.Update(ds, property, newValue, false);
                         break;
+
+                  case RenderAs.StepLine:
+
+                        if (property == VcProperties.Enabled)
+                            ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        //LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                        else
+                            //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+
+                            foreach (DataSeries ds in selectedDataSeries4Rendering)
+                                StepLineChart.Update(ds, property, newValue, false);
+                        break;
+
 
                     case RenderAs.Point:
 
@@ -398,6 +416,27 @@ namespace Visifire.Charts
 
                     LineChart.Update(sender, property, newValue, isAXisChanged);
                     
+                    break;
+
+                case RenderAs.StepLine:
+
+                    //if (isAXisChanged && isDataPoint && chart._partialUpdateAnimation)
+                    //{   foreach (DataSeries ds in chart.Series)
+                    //    {   
+                    //        //if (ds == dataPoint.Parent)
+                    //        //    continue;
+
+                    //        foreach (DataPoint dp in ds.DataPoints)
+                    //        {   
+                    //            RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //    LineChart.Update(sender, property, newValue);
+
+                    StepLineChart.Update(sender, property, newValue, isAXisChanged);
+
                     break;
 
                 case RenderAs.Point:

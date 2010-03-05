@@ -2301,7 +2301,7 @@ namespace Visifire.Charts
             {
                 Double intensity;
 
-                if (labelStyle == LabelStyles.Inside && dataPoint.Parent.RenderAs != RenderAs.Line)
+                if (labelStyle == LabelStyles.Inside && (dataPoint.Parent.RenderAs != RenderAs.Line || dataPoint.Parent.RenderAs != RenderAs.StepLine))
                 {
                     intensity = Graphics.GetBrushIntensity(dataPoint.Color);
                     returnBrush = Graphics.GetDefaultFontColor(intensity);

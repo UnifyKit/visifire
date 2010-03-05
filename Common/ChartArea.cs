@@ -291,7 +291,7 @@ namespace Visifire.Charts
 
                 if (toolTipPosition.X + toolTipSize.Width < plotWidth)
                 {
-                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.StepLine || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
                         || dp.Parent.RenderAs == RenderAs.Bubble || dp.Parent.RenderAs == RenderAs.Point)
                     {
                         toolTipPosition.X = toolTipPosition.X + 10;
@@ -338,7 +338,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
+                    if (dp.Parent.RenderAs == RenderAs.Line || dp.Parent.RenderAs == RenderAs.StepLine || dp.Parent.RenderAs == RenderAs.Area || dp.Parent.RenderAs == RenderAs.StackedArea || dp.Parent.RenderAs == RenderAs.StackedArea100
                         )
                     {
                         toolTipPosition.X = toolTipPosition.X - toolTipSize.Width - 10;
@@ -471,9 +471,9 @@ namespace Visifire.Charts
                     foreach (DataPoint dp1 in Chart.Series[0].DataPoints)
                     {
                         //if(dp1.Faces != null && dp1.Faces.Visual != null)
-                        //    dp1._distance = Math.Abs(dp._visualPosition.X - (Double)((Double)dp1.Faces.Visual.GetValue(Canvas.LeftProperty) + dp1.Faces.Visual.Width / 2));
+                        //    dp1._x_distance = Math.Abs(dp._visualPosition.X - (Double)((Double)dp1.Faces.Visual.GetValue(Canvas.LeftProperty) + dp1.Faces.Visual.Width / 2));
                         //else
-                        dp1._distance = Math.Abs(dp._visualPosition.X - dp1._visualPosition.X);
+                        dp1._x_distance = Math.Abs(dp._visualPosition.X - dp1._visualPosition.X);
 
                         if (nearsestDPOfFirstDS == null)
                         {
@@ -481,7 +481,7 @@ namespace Visifire.Charts
                             continue;
                         }
 
-                        if (dp1._distance < nearsestDPOfFirstDS._distance)
+                        if (dp1._x_distance < nearsestDPOfFirstDS._x_distance)
                             nearsestDPOfFirstDS = dp1;
                     }
 
@@ -1244,9 +1244,9 @@ namespace Visifire.Charts
 
                                 if (nearestDataPoint != null)
                                 {
-                                    nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
+                                    //nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
 
-                                    if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
+                                    //if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
                                     {
                                         //listOfNearestDataPoints.Clear();
                                         listOfNearestDataPoints.Add(nearestDataPoint);
@@ -1262,7 +1262,7 @@ namespace Visifire.Charts
                     {
                         DataPoint dp = listOfNearestDataPoints[0].Parent.GetNearestDataPoint(sender, e, listOfNearestDataPoints);
                         listOfNearestDataPoints.Clear();
-                        listOfNearestDataPoints.Add(dp);
+                        //listOfNearestDataPoints.Add(dp);
                         _lastNearestDataPoint = dp;
                     }
 
@@ -1288,24 +1288,29 @@ namespace Visifire.Charts
 
                         if (otherNearestDP != null)
                         {
-                            foreach (DataPoint dp in otherNearestDP)
+                            if (otherNearestDP.Count() > 0)
                             {
-                                if (!listOfNearestDataPoints.Contains(dp))
-                                {
-                                    dp.Parent.SetToolTipProperties(dp);
+                                DataPoint dp = otherNearestDP.First().Parent.GetNearestDataPointAlongYPosition(sender, e, otherNearestDP.ToList());
 
-                                    if (dp.Parent.ToolTipElement != null)
+                                //foreach (DataPoint dp in otherNearestDP)
+                                {
+                                    //if (!listOfNearestDataPoints.Contains(dp))
                                     {
-                                        if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
+                                        dp.Parent.SetToolTipProperties(dp);
+
+                                        if (dp.Parent.ToolTipElement != null)
                                         {
-                                            listOfNearestDataPoints.Add(dp);
+                                            if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
+                                            {
+                                                listOfNearestDataPoints.Add(dp);
+                                            }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    if (dp.Parent.ToolTipElement != null)
-                                        dp.Parent.ToolTipElement.Show();
+                                    //else
+                                    //{
+                                    //    if (dp.Parent.ToolTipElement != null)
+                                    //        dp.Parent.ToolTipElement.Show();
+                                    //}
                                 }
                             }
                         }
@@ -1659,6 +1664,27 @@ namespace Visifire.Charts
             Chart.InternalAxesY = Chart.AxesY.ToList();
         }
 
+        private void ResetStoryboards4InternalDataPointsList()
+        {
+            foreach (DataSeries ds in Chart.InternalSeries)
+            {
+                foreach (DataPoint dp in ds.InternalDataPoints)
+                {
+                    if (dp.Storyboard != null)
+                    {
+                        dp.Storyboard.Stop();
+                        dp.Storyboard.Children.Clear();
+
+#if WPF
+                        dp.Storyboard.Remove(Chart._rootElement);
+                        
+#endif
+                        dp.Storyboard = null;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Populate InternalSeries list from Series collection
         /// InternalSeries is used while rendering the chart, Series collection is not used.
@@ -1667,7 +1693,12 @@ namespace Visifire.Charts
         private void PopulateInternalSeriesList()
         {
             if (Chart.InternalSeries != null)
+            {
+                if((Boolean)Chart.AnimatedUpdate)
+                    ResetStoryboards4InternalDataPointsList();
+
                 Chart.InternalSeries.Clear();
+            }
 
             if (Chart.Series.Count == 0)
             {
@@ -3735,7 +3766,7 @@ namespace Visifire.Charts
 
                 Brush seriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
 
-                if (!Chart.UniqueColors || dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StackedArea || dataSeries.RenderAs == RenderAs.StackedArea100)
+                if (!Chart.UniqueColors || dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine || dataSeries.RenderAs == RenderAs.StackedArea || dataSeries.RenderAs == RenderAs.StackedArea100)
                 {
                     if (seriesColor == null)
                         dataSeries._internalColor = colorSet.GetNewColorFromColorSet();
@@ -3852,10 +3883,10 @@ namespace Visifire.Charts
 
                 else
                 {
-                    if (!FLAG_UNIQUE_COLOR_4_EACH_DP || dataSeries.RenderAs == RenderAs.Line)
+                    if (!FLAG_UNIQUE_COLOR_4_EACH_DP || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                         seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
 
-                    if (dataSeries.RenderAs == RenderAs.Line)
+                    if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                         dataSeries._internalColor = seriesColor;
 
                     foreach (DataPoint dp in dataSeries.DataPoints)
@@ -3874,7 +3905,7 @@ namespace Visifire.Charts
                                 {
                                     dp._internalColor = colorSet4MultiSeries.GetNewColorFromColorSet();
 
-                                    if (dataSeries.RenderAs == RenderAs.Line)
+                                    if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                                         dataSeries._internalColor = seriesColor;
                                     else
                                         dataSeries._internalColor = null;
@@ -3949,7 +3980,7 @@ namespace Visifire.Charts
 
                 if ((Boolean)dataPoint.LightingEnabled)
                 {
-                    if (dataPoint.Parent.RenderAs == RenderAs.Line)
+                    if (dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine)
                         markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", new Double[] { 0.65, 0.55 });
                 }
 
@@ -3959,21 +3990,22 @@ namespace Visifire.Charts
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.CandleStick
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
-                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line)
-                {
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.StepLine)
+                {   
                     markerBevel = false;
                 }
                 else
                     markerBevel = Chart.View3D ? false : dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
 
                 Size markerSize;
-                if (dataPoint.Parent.RenderAs == RenderAs.Line)
+                if (dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine)
                     markerSize = new Size(8, 8);
                 else
                     markerSize = new Size(8, 8);
 
                 dataPoint.LegendMarker = new Marker(
-                        ((dataPoint.Parent.RenderAs == RenderAs.Line) ? (MarkerTypes)dataPoint.MarkerType : RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent)),
+                        ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine) ? (MarkerTypes)dataPoint.MarkerType : RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent)),
                         1,
                         markerSize,
                         markerBevel,
@@ -3981,7 +4013,7 @@ namespace Visifire.Charts
                         ""
                         );
 
-                if ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.Stock || dataPoint.Parent.RenderAs == RenderAs.CandleStick) && dataPoint.MarkerEnabled == false)
+                if ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine || dataPoint.Parent.RenderAs == RenderAs.Stock || dataPoint.Parent.RenderAs == RenderAs.CandleStick) && dataPoint.MarkerEnabled == false)
                 {
                     dataPoint.LegendMarker.Opacity = 0;
                 }
@@ -4111,7 +4143,7 @@ namespace Visifire.Charts
 
                         if ((Boolean)dataSeries.LightingEnabled)
                         {
-                            if (dataSeries.RenderAs == RenderAs.Line)
+                            if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                                 markerColor = Graphics.GetLightingEnabledBrush(markerColor, "Linear", new Double[] { 0.65, 0.55 });
                         }
 
@@ -4121,7 +4153,8 @@ namespace Visifire.Charts
                             || dataSeries.RenderAs == RenderAs.Stock
                             || dataSeries.RenderAs == RenderAs.CandleStick
                             || dataSeries.RenderAs == RenderAs.Bubble
-                            || dataSeries.RenderAs == RenderAs.Line)
+                            || dataSeries.RenderAs == RenderAs.Line
+                            || dataSeries.RenderAs == RenderAs.StepLine)
                         {
                             markerBevel = false;
                         }
@@ -4129,7 +4162,7 @@ namespace Visifire.Charts
                             markerBevel = Chart.View3D ? false : dataSeries.Bevel ? dataSeries.Bevel : false;
 
                         Size markerSize;
-                        if (dataSeries.RenderAs == RenderAs.Line)
+                        if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                         {
                             markerSize = new Size(8, 8);
                         }
@@ -4147,7 +4180,7 @@ namespace Visifire.Charts
 
                         dataSeries.LegendMarker.DataSeriesOfLegendMarker = dataSeries;
 
-                        if ((dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.Stock || dataSeries.RenderAs == RenderAs.CandleStick) && dataSeries.MarkerEnabled == false)
+                        if ((dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine || dataSeries.RenderAs == RenderAs.Stock || dataSeries.RenderAs == RenderAs.CandleStick) && dataSeries.MarkerEnabled == false)
                             dataSeries.LegendMarker.Opacity = 0;
 
                         dataSeries.LegendMarker.Tag = new ElementData() { Element = dataSeries };
@@ -5176,6 +5209,7 @@ namespace Visifire.Charts
                     return dataSeries.MarkerType;
 
                 case RenderAs.Line:
+                case RenderAs.StepLine:
                 case RenderAs.Stock:
                 case RenderAs.CandleStick:
                     return dataSeries.MarkerType;

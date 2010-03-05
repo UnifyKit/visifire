@@ -1450,6 +1450,7 @@ namespace Visifire.Charts
                 case RenderAs.Bubble:
                 case RenderAs.Column:
                 case RenderAs.Line:
+                case RenderAs.StepLine:
                 case RenderAs.Stock:
                 case RenderAs.CandleStick:
                 case RenderAs.Point:
@@ -1588,6 +1589,7 @@ namespace Visifire.Charts
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StackedBar100, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Line, sortedSeriesIndexGroupedBySeries);
+            sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.StepLine, sortedSeriesIndexGroupedBySeries);
 
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Point, sortedSeriesIndexGroupedBySeries);
             sortedSeriesIndexGroupedBySeries = GenerateIndexByRenderAs(RenderAs.Stock, sortedSeriesIndexGroupedBySeries);
@@ -1618,7 +1620,7 @@ namespace Visifire.Charts
             Boolean ignore = false;     // is used to indicate whether the series has any affect on index or not
 
             // This is a array of ignorable render as types while calculating drawing index
-            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.Point, RenderAs.Bubble, RenderAs.Stock, RenderAs.CandleStick };
+            RenderAs[] ignorableCharts = { RenderAs.Line, RenderAs.StepLine,RenderAs.Point, RenderAs.Bubble, RenderAs.Stock, RenderAs.CandleStick };
 
             // repeat the loop until the seriesIndexList becomes empty
             while (seriesIndexList.Count > 0)

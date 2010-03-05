@@ -213,6 +213,8 @@ namespace Visifire.Commons
                 Object element = (parentObj as ObservableObject).Chart._rootElement.FindName(name);
                 if (element != null)
                     (parentObj as ObservableObject).Chart._rootElement.UnregisterName(name);
+
+                da.KeyFrames.Clear();
             };
 #endif
 

@@ -2034,7 +2034,7 @@ namespace Visifire.Charts
 
                 /* Line and bubble are first while updating DataPoints one by one. So to take advantage of updating DataPoints one by one
                 conditions are written below */
-                if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false))
+                if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false) || Parent.RenderAs != RenderAs.StepLine || (Parent.RenderAs == RenderAs.StepLine && chart.AnimatedUpdate == false))
                 {
                     if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
                     {
@@ -2043,7 +2043,7 @@ namespace Visifire.Charts
                         chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
                         chart._datapoint2UpdatePartially.Add(this, property);
                     }
-                    else if (!recursive && property == VcProperties.XValue && (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point))
+                    else if (!recursive && property == VcProperties.XValue && (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.StepLine || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point))
                     {   
                         chart.PARTIAL_DP_RENDER_LOCK = true;
                         chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
@@ -3126,8 +3126,8 @@ namespace Visifire.Charts
                     InteractivityHelper.ApplyBorderEffect(shape, borderStyle, borderThickness, borderColor);            
                 }
             }
-            
-            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+
+            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {               
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(true, true);
@@ -3141,7 +3141,7 @@ namespace Visifire.Charts
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
 
-                if(Parent.RenderAs == RenderAs.Line)
+                if (Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine)
                     LineChart.SelectMovingMarker(this);
             }
         }
@@ -3183,8 +3183,8 @@ namespace Visifire.Charts
                     }
                 }
             }
-            
-            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+
+            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
             {
                
                 if (allowPropertyChange)
@@ -3548,6 +3548,7 @@ namespace Visifire.Charts
                 switch (renderAs)
                 {
                     case RenderAs.Line:
+                    case RenderAs.StepLine:
                     case RenderAs.CandleStick:
                     case RenderAs.Stock:
 
@@ -3676,8 +3677,6 @@ namespace Visifire.Charts
                     break;
             }            
         }
-
-
 
         /// <summary>
         /// Start interactive animation
@@ -3971,10 +3970,10 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (Parent.RenderAs == RenderAs.StackedArea 
-                || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line)
+            else if (Parent.RenderAs == RenderAs.StackedArea
+                || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine)
             {
-                if (Parent.RenderAs != RenderAs.Line)
+                if (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.StepLine)
                 {
                     if (Parent.Faces != null)
                     {
@@ -4134,9 +4133,14 @@ namespace Visifire.Charts
         internal Boolean _isAutoName = true;
 
         /// <summary>
-        /// Distance from mouse pointer used for line chart only
+        /// Distance from mouse pointer along X coordinate
         /// </summary>
-        internal Double _distance;
+        internal Double _x_distance;
+
+        /// <summary>
+        /// Distance from mouse pointer along Y coordinate
+        /// </summary>
+        internal Double _y_distance;
 
         /// <summary>
         /// Whether the DataPoint is already Exploded
