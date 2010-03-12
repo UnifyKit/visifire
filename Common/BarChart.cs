@@ -906,7 +906,10 @@ namespace Visifire.Charts
                 }
             }
 
-            ColumnChart.CreateOrUpdatePlank(chart, plotGroupList[0].AxisY, columnCanvas, depth3d, Orientation.Vertical);
+            if (plotGroupList.Count > 0 && plotGroupList[0].XWiseStackedDataList.Keys.Count > 0)
+            {
+                ColumnChart.CreateOrUpdatePlank(chart, plotGroupList[0].AxisY, columnCanvas, depth3d, Orientation.Vertical);
+            }
 
             // Apply animation
             if (animationEnabled && currentDataSeries != null)

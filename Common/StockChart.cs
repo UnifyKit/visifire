@@ -149,6 +149,11 @@ namespace Visifire.Charts
             // Place label for the DataPoint
             CandleStick.CreateAndPositionLabel(dataPoint.Parent.Faces.LabelCanvas, dataPoint);
 
+            if (dataPoint.Parent.ToolTipElement != null)
+                dataPoint.Parent.ToolTipElement.Hide();
+
+            (dataPoint.Chart as Chart).ChartArea.DisableIndicators();
+
             dataPoint._visualPosition = new Point((Double)dataPointVisual.GetValue(Canvas.LeftProperty) + dataPointVisual.Width / 2, (Double)dataPointVisual.GetValue(Canvas.TopProperty));
         }
 
@@ -524,6 +529,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.XValue:
+                case VcProperties.YValue:
                 case VcProperties.YValues:
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue, isAxisChanged);

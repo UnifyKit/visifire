@@ -362,6 +362,11 @@ namespace Visifire.Charts
             else
                 marker.SetPosition(xPosition, yPosition, new Point(0.5, 0.5));
 
+            if (dataPoint.Parent.ToolTipElement != null)
+                dataPoint.Parent.ToolTipElement.Hide();
+
+            (dataPoint.Chart as Chart).ChartArea.DisableIndicators();
+
             dataPoint._visualPosition = new Point(xPosition, yPosition);
         }
 
@@ -577,9 +582,7 @@ namespace Visifire.Charts
                     //}
                     //else
                     //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
-
                     break;
-
                 default:
                     // case VcProperties.Enabled:
                     foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
@@ -769,6 +772,7 @@ namespace Visifire.Charts
                     
                 case VcProperties.XValue:
                 case VcProperties.YValue:
+                case VcProperties.YValues:
                 case VcProperties.DataPoints:
 
                     if (isAxisChanged)

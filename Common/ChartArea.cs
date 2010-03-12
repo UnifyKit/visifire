@@ -93,7 +93,6 @@ namespace Visifire.Charts
             isScrollingActive = Chart.IsScrollingActivated;
             //System.Diagnostics.Debug.WriteLine("Draw() > ");
             
-
             _renderCount = 0;
 
             Chart = chart;
@@ -226,7 +225,7 @@ namespace Visifire.Charts
             }
         }
 
-        private void DisableIndicators()
+        internal void DisableIndicators()
         {
             if (Chart.IndicatorEnabled)
             {
@@ -1296,13 +1295,16 @@ namespace Visifire.Charts
                                 {
                                     //if (!listOfNearestDataPoints.Contains(dp))
                                     {
-                                        dp.Parent.SetToolTipProperties(dp);
-
-                                        if (dp.Parent.ToolTipElement != null)
+                                        if (dp != null)
                                         {
-                                            if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
+                                            dp.Parent.SetToolTipProperties(dp);
+
+                                            if (dp.Parent.ToolTipElement != null)
                                             {
-                                                listOfNearestDataPoints.Add(dp);
+                                                if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
+                                                {
+                                                    listOfNearestDataPoints.Add(dp);
+                                                }
                                             }
                                         }
                                     }
@@ -2072,10 +2074,20 @@ namespace Visifire.Charts
 
             axis._internalZoomingScale = axis._internalMinimumZoomingScale + (1 - axis._internalMinimumZoomingScale) * (1 - axis.ScrollBarElement.Scale);
 
+            _isDragging = true;
+
             // chart.Dispatcher.BeginInvoke(new Action(chart.ChartArea.DrawChart));
             //chart.Series[0].UpdateVisual(VcProperties.ScrollBarScale, null);
-            if(chart.Series.Count > 0)
+            if (chart.Series.Count > 0)
+            {
                 chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
+                chart.Dispatcher.BeginInvoke(new Action(ActivateDraggingLock));
+            }
+        }
+
+        private void ActivateDraggingLock()
+        {
+            _isDragging = false;
         }
 
         /// <summary>
@@ -2538,16 +2550,19 @@ namespace Visifire.Charts
             }
             
             ScrollableLength = chartSize;
+            //Chart._plotAreaScrollViewer.Width = newSize.Width;
             Chart._plotAreaScrollViewer.Height = newSize.Height;
             Chart._plotAreaScrollViewer.UpdateLayout();
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
 
-           // this.PlottingCanvas
-           //     this.ChartVisualCanvas
-           //this.PlotAreaCanvas
+            // this.PlottingCanvas
+            // this.ChartVisualCanvas
+            // this.PlotAreaCanvas
 
 
         }
+
+        private Double _oldZoomingScale = Double.NaN;
 
         /// <summary>
         /// Calculate PlotArea size for auto scroll
@@ -2559,19 +2574,30 @@ namespace Visifire.Charts
             Double chartSize;
 
             Chart chart = (Chart as Chart);
-            Double maxChartSize = 30000;
+            Double maxChartSize = 15000;
 
             if (chart.ZoomingEnabled)
             {
                 if (_isFirstTimeRender)
                 {
                     Chart.AxesX[0]._internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
+                    _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                     Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                     chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
                 }
                 else
                 {
+                    Double internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
+
+                    if (internalMinimumZoomingScale != _oldZoomingScale && !_isDragging)
+                    {
+                        Chart.AxesX[0]._internalMinimumZoomingScale = internalMinimumZoomingScale;
+                        Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
+                        _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                    }
+
                     chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
+
                 }
             }
             else
@@ -3256,7 +3282,7 @@ namespace Visifire.Charts
 
 
 
-                PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
+                //PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
 
                 //if (AxisX.ScrollViewerElement.Children.Count > 0)
                 //    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -offset);
@@ -3291,6 +3317,7 @@ namespace Visifire.Charts
                     AxisX.ScrollBarOffset = (offset > 1) ? 1 : (offset < 0) ? 0 : offset;
 
                 AxisX._isScrollToOffsetEnabled = true;
+                
                 AxisX.FireScrollEvent(e, offsetInPixel);
 
             }
@@ -3446,7 +3473,7 @@ namespace Visifire.Charts
                     isVisualExist = true;
 
                 // If froced redraw is true, its need to remove all preexisting canvas before we add the new visual canvas for the DataSeries
-                if (Chart._forcedRedraw)
+                if (Chart._forcedRedraw || (selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea || selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea100))
                 {
                     // remove pre existing parent panel for the series visual 
                     if (renderedChart != null && renderedChart.Parent != null)
@@ -3628,8 +3655,11 @@ namespace Visifire.Charts
                     {
                         foreach (DataPoint dataPoint in Chart.InternalSeries[0].InternalDataPoints)
                         {
-                            if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
-                                dataPoint.ExplodeOrUnExplodeWithoutAnimation();
+                            if (dataPoint.Parent.RenderAs != RenderAs.SectionFunnel && dataPoint.Parent.RenderAs != RenderAs.StreamLineFunnel)
+                            {
+                                if ((Boolean)dataPoint.Exploded && dataPoint.InternalYValue != 0)
+                                    dataPoint.ExplodeOrUnExplodeWithoutAnimation();
+                            }
                         }
                     }
                 }
@@ -5294,6 +5324,8 @@ namespace Visifire.Charts
         private const Double DEFAULT_TOOLTIP_OPACITY = 0.9;
 
         private DataPoint _lastNearestDataPoint;
+
+        private Boolean _isDragging = false;
 
         /// <summary>
         /// Whether default interactivity is allowed for Pie/Doughnut/Funnel chart

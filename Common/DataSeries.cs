@@ -2417,6 +2417,9 @@ namespace Visifire.Charts
                 {
                     DataSeries ds = dp.Parent;
 
+                    if (!(Boolean)dp.Enabled)
+                        continue;
+
                     if ((ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
                         && dp.YValues == null)
                         continue;
@@ -2487,6 +2490,9 @@ namespace Visifire.Charts
                 foreach (DataPoint dp in listOfDataPoints)
                 {
                     DataSeries ds = dp.Parent;
+
+                    if (!(Boolean)dp.Enabled)
+                        continue;
 
                     if (chart.ChartArea.AxisX.AxisOrientation == Orientation.Horizontal)
                     {

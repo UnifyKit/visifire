@@ -2164,7 +2164,7 @@ namespace Visifire.Charts
                                 renderAxis = false;
                         }
 
-                        if (renderAxis == false)
+                        //if (renderAxis == false)
                             updateAllDpsOnAxisChange = true;
                     }
                 }
@@ -2191,6 +2191,9 @@ namespace Visifire.Charts
                             foreach (DataPoint dp in ds.InternalDataPoints)
                             {
                                 RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, !updateAllDpsOnAxisChange);
+
+                                if (ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
+                                    break;
                             }
                         }
                     }
@@ -3764,7 +3767,8 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    ExplodeOrUnExplodeWithoutAnimation();
+                    if (Parent.RenderAs != RenderAs.SectionFunnel && Parent.RenderAs != RenderAs.StreamLineFunnel)
+                        ExplodeOrUnExplodeWithoutAnimation();
                 }
             }
 
