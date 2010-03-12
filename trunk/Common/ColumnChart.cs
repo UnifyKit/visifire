@@ -1283,10 +1283,13 @@ namespace Visifire.Charts
 
             columnCanvas.Tag = null;
 
-            if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                ColumnChart.CreateOrUpdatePlank(chart, dataSeriesList4Rendering[0].PlotGroup.AxisY, columnCanvas, depth3d, Orientation.Horizontal);
-            else
-                ColumnChart.CreateOrUpdatePlank(chart, dataSeriesList4Rendering[0].PlotGroup.AxisY, columnCanvas, depth3d, Orientation.Vertical);
+            if (xValues.Count() > 0)
+            {
+                if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                    ColumnChart.CreateOrUpdatePlank(chart, dataSeriesList4Rendering[0].PlotGroup.AxisY, columnCanvas, depth3d, Orientation.Horizontal);
+                else
+                    ColumnChart.CreateOrUpdatePlank(chart, dataSeriesList4Rendering[0].PlotGroup.AxisY, columnCanvas, depth3d, Orientation.Vertical);
+            }
 
             // Remove old visual and add new visual in to the existing panel
             if (preExistingPanel != null)
@@ -1338,13 +1341,34 @@ namespace Visifire.Charts
 
             Panel renderedChart = selectedDataSeries4Rendering[0].Visual as Panel;
 
-            renderedChart.Width = chart.ChartArea.ChartVisualCanvas.Width;
-            renderedChart.Height = chart.ChartArea.ChartVisualCanvas.Height;
+            if (selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea || selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea100)
+            {
+                if (renderedChart != null && renderedChart.Parent != null)
+                {
+                    Panel parent = renderedChart.Parent as Panel;
+                    parent.Children.Remove(renderedChart);
+                }
+
+                // Must set it to null. If renderedChart is set to null new visual canvas for the series will be created 
+                renderedChart = null;
+            }
+            else
+            {
+                renderedChart.Width = chart.ChartArea.ChartVisualCanvas.Width;
+                renderedChart.Height = chart.ChartArea.ChartVisualCanvas.Height;
+            }
 
             renderedChart = chartArea.RenderSeriesFromList(renderedChart, selectedDataSeries4Rendering);
 
             foreach (DataSeries ds in selectedDataSeries4Rendering)
                 ds.Visual = renderedChart;
+
+            if (selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea || selectedDataSeries4Rendering[0].RenderAs == RenderAs.StackedArea100)
+            {
+                if (!ChartVisualCanvas.Children.Contains(renderedChart))
+                    ChartVisualCanvas.Children.Add(renderedChart);
+            }
+
         }
 
         //internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
@@ -1383,6 +1407,7 @@ namespace Visifire.Charts
                 case VcProperties.DataPoints:
                 case VcProperties.Enabled:
                 case VcProperties.YValue:
+                case VcProperties.YValues:
                     chart.ChartArea.RenderSeries();
                 break;
                 case VcProperties.XValue:
@@ -1728,6 +1753,7 @@ namespace Visifire.Charts
                     goto YVALUE_UPDATE;
 
                 case VcProperties.YValue:
+                case VcProperties.YValues:
                 YVALUE_UPDATE:
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue);
@@ -1970,6 +1996,11 @@ namespace Visifire.Charts
             // Update existing Plank
             CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnChartCanvas, depth3d,
                 dataPoint.Parent.RenderAs == RenderAs.Column ? Orientation.Horizontal : Orientation.Vertical);
+
+            if (dataSeries.ToolTipElement != null)
+                dataSeries.ToolTipElement.Hide();
+            
+            chart.ChartArea.DisableIndicators();
 
             Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;
 

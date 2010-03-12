@@ -600,6 +600,7 @@ namespace Visifire.Charts
                     
                 case VcProperties.XValue:
                 case VcProperties.YValue:
+                case VcProperties.YValues:
                 case VcProperties.DataPoints:
                     if (isAxisChanged)
                         UpdateDataSeries(dataSeries, property, newValue, false);

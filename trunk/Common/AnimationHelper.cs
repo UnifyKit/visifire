@@ -146,6 +146,9 @@ namespace Visifire.Commons
                 if (splines != null)
                     keyFrame.KeySpline = splines[index];
 
+                if (Double.IsNaN(frameTime[index]))
+                    continue;
+
                 keyFrame.KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(frameTime[index]));
                 keyFrame.Value = values[index];
                 da.KeyFrames.Add(keyFrame);

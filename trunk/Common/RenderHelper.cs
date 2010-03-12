@@ -219,6 +219,14 @@ namespace Visifire.Charts
 
                 chart._toolTip.Hide();
 
+                if (selectedDataSeries4Rendering.Count > 0)
+                {
+                    if (selectedDataSeries4Rendering[0].ToolTipElement != null)
+                        selectedDataSeries4Rendering[0].ToolTipElement.Hide();
+                }
+
+                chart.ChartArea.DisableIndicators();
+
                 switch (currentRenderAs)
                 {
                     case RenderAs.Column:
@@ -483,17 +491,30 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.StackedArea:
-                    if (isDataPoint)
-                        sender = (sender as DataPoint).Parent;
-                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
+                    //if (isDataPoint)
+                    //    sender = (sender as DataPoint).Parent;
+
+                    List<DataSeries> stackedAreaList = (from ds in chart.Series where ds.RenderAs == RenderAs.StackedArea select ds).ToList();
+
+                    if (stackedAreaList.Count > 0)
+                        ColumnChart.Update(chart, stackedAreaList[0].RenderAs, stackedAreaList);
+
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
+
+                    //ColumnChart.Update(sender, property, newValue, isAXisChanged);
                     //renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedArea100:
-                    if (isDataPoint)
-                        sender = (sender as DataPoint).Parent;
-                    ColumnChart.Update(sender, property, newValue, isAXisChanged);
+                    //if (isDataPoint)
+                    //    sender = (sender as DataPoint).Parent;
+                    //ColumnChart.Update(sender, property, newValue, isAXisChanged);
+
+                    List<DataSeries> stackedArea100List = (from ds in chart.Series where ds.RenderAs == RenderAs.StackedArea select ds).ToList();
+
+                    if (stackedArea100List.Count > 0)
+                        ColumnChart.Update(chart, stackedArea100List[0].RenderAs, stackedArea100List);
+
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
                     //renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;

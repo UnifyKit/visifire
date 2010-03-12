@@ -292,7 +292,7 @@ namespace Visifire.Charts
 
                 if (autoLabelStyle != dataPoint.LabelStyle)
                 {
-                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue == 0 ? LabelStyles.OutSide : autoLabelStyle));
+                    tb.TextElement.Foreground = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, (dataPoint.YValue <= 0 ? LabelStyles.OutSide : autoLabelStyle));
                 }
 
                 dataPoint.LabelVisual = tb.Visual;
@@ -1156,6 +1156,8 @@ namespace Visifire.Charts
                                     pointCollection[0]._visualPosition.X, pointCollection[0]._visualPosition.Y, ref labelLeft, ref labelTop, 6,
                                     new Size(pointCollection[0].LabelVisual.Width, pointCollection[0].LabelVisual.Height));
 
+                                (((pointCollection[0].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[0].TextParser(pointCollection[0].LabelText);
+                                pointCollection[0].LabelVisual.Visibility = Visibility.Visible;
                                 pointCollection[0].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
                                 pointCollection[0].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
                             }
@@ -1259,6 +1261,8 @@ namespace Visifire.Charts
                                         pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, ref labelLeft, ref labelTop, 6,
                                         new Size(pointCollection[i].LabelVisual.Width, pointCollection[i].LabelVisual.Height));
 
+                                    (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
+                                    pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
                                     pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
                                     pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
                                 }
@@ -1479,6 +1483,9 @@ namespace Visifire.Charts
                     {
                         if (dp.Marker != null && dp.Marker.Visual != null)
                             dp.Marker.Visual.Visibility = Visibility.Collapsed;
+
+                        if (dp.LabelVisual != null)
+                            dp.LabelVisual.Visibility = Visibility.Collapsed;
 
                         chart._toolTip.Hide();
                         continue;
@@ -1741,6 +1748,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.YValue:
+                case VcProperties.YValues:
                     if (Double.IsNaN(dataPoint._oldYValue) || dataPoint.Faces == null) // Broken point of broken line
                         UpdateDataSeries(dataPoint.Parent, property, newValue);
                     else
@@ -1910,9 +1918,9 @@ namespace Visifire.Charts
                 {
                     if (dataPoint.Storyboard != null)
                         dataPoint.Storyboard.Pause();
-                    
+
                     oldPoint = pathFigure.StartPoint;
-                    pathFigure.StartPoint = new Point(x, y);
+                //    pathFigure.StartPoint = new Point(x, y);
                     
                 }
                 else
@@ -1924,14 +1932,15 @@ namespace Visifire.Charts
             }
             else
             {
-                
+                target = lineSeg2;
+                oldPoint = lineSeg2.Point;
 
                 if (isAnimationEnabled)
                 {
                     if (dataPoint.Storyboard != null)
                         dataPoint.Storyboard.Pause();
 
-                    oldPoint = lineSeg2.Point;
+                    //oldPoint = lineSeg2.Point;
                 }
                 else
                 {
@@ -2200,6 +2209,8 @@ namespace Visifire.Charts
 
             if (dataSeries.ToolTipElement != null)
                 dataSeries.ToolTipElement.Hide();
+
+            chart.ChartArea.DisableIndicators();
 
             if (dataSeries.Faces != null)
             {
@@ -2721,6 +2732,9 @@ namespace Visifire.Charts
 
                     foreach (DataPoint dp in ds.DataPoints)
                     {
+                        if (!(Boolean)dp.Enabled)
+                            continue;
+
                         if (dp.Marker != null)
                         {
                             dp._x_distance = Math.Abs(xPosition - dp._visualPosition.X);

@@ -211,7 +211,10 @@ namespace Visifire.Charts
                currentDataSeries.Storyboard = AnimationHelper.ApplyOpacityAnimation(labelCanvas, currentDataSeries, currentDataSeries.Storyboard, 1, 1, 0, 1);
             }
 
-            ColumnChart.CreateOrUpdatePlank(chart, plotGroupList[0].AxisY, columnCanvas, depth3d, Orientation.Horizontal);
+            if (plotGroupList.Count > 0 && plotGroupList[0].XWiseStackedDataList.Keys.Count > 0)
+            {
+                ColumnChart.CreateOrUpdatePlank(chart, plotGroupList[0].AxisY, columnCanvas, depth3d, Orientation.Horizontal);
+            }
 
             // Remove old visual and add new visual in to the existing panel
             if (preExistingPanel != null)
@@ -520,7 +523,13 @@ namespace Visifire.Charts
 
             // Create new Column with new YValue
             BarChart.DrawStackedBarsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, dataPointVisual.Height, maxBarHeight, limitingYValue, depth3d, false);
-                
+
+            if (dataSeries.ToolTipElement != null)
+                dataSeries.ToolTipElement.Hide();
+
+            CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnCanvas, depth3d,
+                (dataPoint.Parent.RenderAs == RenderAs.StackedColumn || dataPoint.Parent.RenderAs == RenderAs.StackedColumn100) ? Orientation.Horizontal : Orientation.Vertical);
+
             Boolean isPositive;
 
             if (animationEnabled)
@@ -731,7 +740,15 @@ namespace Visifire.Charts
 
             // Create new Column with new YValue
             DrawStackedColumnsAtXValue(chartType, dataPoint.InternalXValue, plotGroup, columnCanvas, labelCanvas, plotGroup.DrawingIndex, dataPointVisual.Width, maxColumnWidth, limitingYValue, depth3d, false);
-            
+
+            if (dataSeries.ToolTipElement != null)
+                dataSeries.ToolTipElement.Hide();
+
+            chart.ChartArea.DisableIndicators();
+
+            CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnCanvas, depth3d,
+                (dataPoint.Parent.RenderAs == RenderAs.StackedColumn || dataPoint.Parent.RenderAs == RenderAs.StackedColumn100) ? Orientation.Horizontal : Orientation.Vertical);
+
             Boolean isPositive;
 
             if (animationEnabled)
