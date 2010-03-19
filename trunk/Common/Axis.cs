@@ -4259,8 +4259,11 @@ namespace Visifire.Charts
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double lengthInPixel;
 
+
                 if (axisOrientation == Orientation.Horizontal)
                 {
+                    offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
+
                     lengthInPixel = chart.ChartArea.ChartVisualCanvas.Width;
                     offsetInPixel4MinValue = offsetInPixel;
                     offsetInPixel4MaxValue = offsetInPixel4MinValue + Width;

@@ -487,6 +487,9 @@ namespace Visifire.Commons.Controls
             else
             {
                 double num = base.Maximum - base.Minimum;
+
+                //_oldTrackLength = trackLength;
+
                 return ((trackLength * this.ViewportSize) / (this.ViewportSize + num));
             }
         }
@@ -1046,7 +1049,7 @@ namespace Visifire.Commons.Controls
         /// Update laypout of the trackTrackLayout
         /// </summary>
         /// <param name="trackLength">Length of the track</param>
-        private void UpdateTrackLayout(double trackLength)
+        internal void UpdateTrackLayout(double trackLength)
         {
             double maximum = base.Maximum;
             double minimum = base.Minimum;
@@ -1083,6 +1086,7 @@ namespace Visifire.Commons.Controls
             if (this.Orientation == Orientation.Horizontal)
             {   
                 trackLength = base.ActualWidth;
+
                 if (this._elementHorizontalSmallDecrease != null)
                 {
                     trackLength -= (this._elementHorizontalSmallDecrease.ActualWidth + this._elementHorizontalSmallDecrease.Margin.Left) + this._elementHorizontalSmallDecrease.Margin.Right;
@@ -1254,7 +1258,7 @@ namespace Visifire.Commons.Controls
         private Boolean _isGripDragged = false;
 
         // Current size of the thumb
-        private Double _currentThumbSize = Double.NaN;
+        internal Double _currentThumbSize = Double.NaN;
 
         private Double _oldTrackLength = Double.NaN;
 

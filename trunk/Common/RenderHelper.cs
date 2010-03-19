@@ -187,7 +187,7 @@ namespace Visifire.Charts
             }
 
             chart.ChartArea.PrePartialUpdateConfiguration(chart, VcProperties.None, null, null, false, true, true, AxisRepresentations.AxisY, true);
-            
+
             //chart.ChartArea.RenderSeries();
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
 
@@ -232,6 +232,9 @@ namespace Visifire.Charts
                     case RenderAs.Column:
                     case RenderAs.Bar:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
+                        //    foreach (DataPoint dp in ds.DataPoints)
+                        //        ColumnChart.Update(dp, property, newValue, false);
                         //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         break;
 
@@ -538,7 +541,7 @@ namespace Visifire.Charts
                     break;
             }
 
-            chart.ChartArea.AttachScrollEvents();
+            //chart.ChartArea.AttachScrollEvents();
         }
 
    }

@@ -519,7 +519,7 @@ namespace Visifire.Commons
         /// </summary>
         protected virtual void LoadWatermark()
         {
-            CreateWatermarkElement("www.visifire.com", "http://www.visifire.com");
+            CreateWatermarkElement("Visifire Community Edition", "http://www.visifire.com");
         }
 
         protected void CreateWatermarkElement(String text, String href)
