@@ -1,49 +1,43 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO8859-1" />
-
-    <script type="text/javascript" src="./Visifire.js"></script>
-
+    <title>Visifire Charts</title>
+<script language="javascript" type="text/javascript" >
+</script>
+    <script type="text/javascript" src="Visifire.js"></script>
 </head>
 <body>
+    <!-- To embed in existing html copy the code below -->
 
-
-    <div id="myChart" style="width: 500; height:400;">
-        <script language="javascript" type="text/javascript">
-            var chartXmlString = ''
-            + '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="260" Theme="Theme1">'
-            + '<vc:Chart.Series>'
-            + '<vc:DataSeries Color="Red" RenderAs="Column">'
+    <div id="VisifireChart">
+    <script language="javascript" type="text/javascript">
+        var chartXmlString = ''
++ '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0" Theme="Theme1" >'
+    + '<vc:Chart.Titles>'
+        + '<vc:Title Text="Global Fortune 5 Companies 2007" />'
+    + '</vc:Chart.Titles>'
+    + '<vc:Chart.AxesX>'
+        + '<vc:Axis Title="Companies" />'
+    + '</vc:Chart.AxesX>'
+    + '<vc:Chart.AxesY>'
+        + '<vc:Axis Title="Revenue in Million dollars" AxisType="Primary" />'
+    + '</vc:Chart.AxesY>'
+    + '<vc:Chart.Series>'
+        + '<vc:DataSeries RenderAs="Column" AxisYType="Primary" >'
             + '<vc:DataSeries.DataPoints>'
-            + '<vc:DataPoint AxisXLabel="Q1" YValue="50" />'
-            + '<vc:DataPoint AxisXLabel="Q2" YValue="60" />'
-            + '<vc:DataPoint AxisXLabel="Q3" YValue="80" />'
-            + '<vc:DataPoint AxisXLabel="Q4" YValue="70" />'
+                + '<vc:DataPoint AxisXLabel="Wall-Mart" YValue="351139" />'
+                + '<vc:DataPoint AxisXLabel="Exxon Mobil" YValue="345254" />'
+                + '<vc:DataPoint AxisXLabel="Shell" YValue="318845" />'
+                + '<vc:DataPoint AxisXLabel="BP" YValue="274316" />'
+                + '<vc:DataPoint AxisXLabel="General Motors" YValue="207349" />'
             + '</vc:DataSeries.DataPoints>'
-            + '</vc:DataSeries>'
-            + '</vc:Chart.Series>'
-            + '</vc:Chart>';
-
-            var container = document.getElementById("myChart");
-            
-            var vChart = new Visifire("ClientBin/SL.Visifire.Charts.xap", 500, 400);
-            
-            //vChart.isWindowless = true;
-           // vChart.preLoad = (function() { alert('hello') });
-            
-            vChart.setDataXml(chartXmlString);
-            vChart.render("myChart");
-
-            function resizeChart(vchart, chart, height, width) {
-                chart.SetPropertyFromJs("Height", height);
-                chart.SetPropertyFromJs("Width", width);
-                vchart.setSize(width, height);
-
-            }
- 
-
+        + '</vc:DataSeries>'
+    + '</vc:Chart.Series>'
++ '</vc:Chart>';
+        var vChart = new Visifire("ClientBin/SL.Visifire.Charts.xap", 500, 300);
+        vChart.setDataXml(chartXmlString);
+        vChart.render("VisifireChart");
     </script>
     </div>
+    <!-- Copy till here -->
 </body>
 </html>

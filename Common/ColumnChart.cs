@@ -1183,7 +1183,10 @@ namespace Visifire.Charts
                     CreateLabel(chart, columnVisualSize, isPositive, dataPoint.IsTopOfStack, dataPoint, left, bottom, ref labelCanvas);
 
                 if (dataPoint.LabelVisual != null)
-                    dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
+                {
+                    if(!chart.IndicatorEnabled)
+                        dataPoint.AttachToolTip(chart, dataPoint, dataPoint.LabelVisual);
+                }
             }
             
             #endregion
@@ -1982,12 +1985,18 @@ namespace Visifire.Charts
             UpdateParentVisualCanvasSize(chart, columnChartCanvas);
             UpdateParentVisualCanvasSize(chart, labelCanvas);
 
+            Double widthOfAcolumn;
+            if (chartType == RenderAs.Column)
+                widthOfAcolumn = CalculateWidthOfEachColumn(chart, columnChartCanvas.Width, dataSeries.PlotGroup.AxisX, RenderAs.Column, Orientation.Horizontal);
+            else
+                widthOfAcolumn = CalculateWidthOfEachColumn(chart, columnChartCanvas.Height, dataSeries.PlotGroup.AxisX, RenderAs.Bar, Orientation.Vertical);
+
             // Create new Column with new YValue
             if (chartType == RenderAs.Column)
                 CreateColumnDataPointVisual(columnChartCanvas, labelCanvas, chart.PlotDetails, dataPoint,
-                isPositive, oldVisual.Width, depth3d, false);
+                isPositive, widthOfAcolumn, depth3d, false);
             else
-                BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, isPositive, oldVisual.Height, depth3d, false);
+                BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, isPositive, widthOfAcolumn, depth3d, false);
 
             // Visifire.Profiler.Profiler.Start("Remove");
             columnChartCanvas.Children.Remove(oldVisual);
@@ -2007,7 +2016,7 @@ namespace Visifire.Charts
             #region Animate Column
 
             // animationEnabled = false;
-            if (animationEnabled)
+            if (animationEnabled && !dataSeries._isZooming)
             {
                 //if (dataPoint._oldYValue == dataPoint.InternalYValue)
                 //    return;

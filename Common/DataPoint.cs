@@ -2169,6 +2169,8 @@ namespace Visifire.Charts
                     }
                 }
 
+                Parent._isZooming = false;
+
                 System.Diagnostics.Debug.WriteLine("RenderAxis3 =" + renderAxis.ToString());
                 System.Diagnostics.Debug.WriteLine("updateAllDpsOnAxisChange =" + updateAllDpsOnAxisChange.ToString());
                 if (chart.PARTIAL_DP_RENDER_LOCK)

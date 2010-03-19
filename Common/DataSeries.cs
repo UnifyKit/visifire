@@ -2552,6 +2552,8 @@ namespace Visifire.Charts
                 Chart chart = Chart as Chart;
                 Boolean renderAxis = false;
 
+                _isZooming = false;
+
                 if (property == VcProperties.ColorSet)
                 {
                     Brush brush = null;
@@ -2627,6 +2629,7 @@ namespace Visifire.Charts
                         || (property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum))
                     {
                         renderAxis = true;
+                        _isZooming = true;
                         property = VcProperties.DataPoints;
                     }
                     else
@@ -2657,8 +2660,11 @@ namespace Visifire.Charts
                         }
                     }
 
-                    // Render Axis if required
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
+                    //if (!_isZooming)
+                    {
+                        // Render Axis if required
+                        chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
+                    }
 
                     // Return
                     if (renderAxis)
@@ -4063,6 +4069,8 @@ namespace Visifire.Charts
         internal Boolean _isAutoName = true;
 
         internal Ellipse _movingMarker;
+
+        internal Boolean _isZooming = false;
 
         /// <summary>
         /// Nearest DataPoint form mouse pointer

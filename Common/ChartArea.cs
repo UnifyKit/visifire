@@ -227,7 +227,7 @@ namespace Visifire.Charts
 
         internal void DisableIndicators()
         {
-            if (Chart.IndicatorEnabled)
+            //if (Chart.IndicatorEnabled)
             {
                 if (_axisIndicatorElement != null)
                     _axisIndicatorElement.Visibility = Visibility.Collapsed;
@@ -1053,7 +1053,7 @@ namespace Visifire.Charts
 #endif
         }
 
-        private Double GetScrollingOffsetOfAxis(Axis axis, Double offset)
+        internal Double GetScrollingOffsetOfAxis(Axis axis, Double offset)
         {
             Chart chart = axis.Chart as Chart;
             Double value = offset;
@@ -1297,10 +1297,10 @@ namespace Visifire.Charts
                                     {
                                         if (dp != null)
                                         {
-                                            dp.Parent.SetToolTipProperties(dp);
-
                                             if (dp.Parent.ToolTipElement != null)
                                             {
+                                                dp.Parent.SetToolTipProperties(dp);
+
                                                 if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
                                                 {
                                                     listOfNearestDataPoints.Add(dp);
@@ -1880,7 +1880,9 @@ namespace Visifire.Charts
 
                     if (chart.ZoomingEnabled)
                     {
+                        AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
                         AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
+
                     }
                     else
                     {
@@ -1898,16 +1900,18 @@ namespace Visifire.Charts
 
                 SetScrollBarChanges(AxisX);
 
+                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
                 AxisX.ScrollBarElement.Scroll -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarElement.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                
-                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+               
                 AxisX.ZoomingScaleChanged -= new EventHandler(ScrollBarElement_ScaleChanged);
 
                 if (chart.ZoomingEnabled)
                 {
                     AxisX.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
                     AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+
+                    zoomCount++;
                 }
                 else
                 {
@@ -1917,7 +1921,12 @@ namespace Visifire.Charts
                     {
                         AxisX.ScrollBarElement.Visibility = Visibility.Visible;
                     }
+
+                    zoomCount = 0;
                 }
+
+                if (!_isFirstTimeRender)
+                    AxisX.ScrollBarElement.UpdateTrackLayout(AxisX.ScrollBarElement.GetTrackLength());
 
                 Chart._bottomAxisPanel.Children.Add(AxisX.Visual);
 
@@ -1942,8 +1951,11 @@ namespace Visifire.Charts
                         if (!Double.IsNaN(offset))
                         {
                             offset = GetScrollingOffsetOfAxis(AxisX, offset);
-                            Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
-                            scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * offset);
+                            //if (!Double.IsNaN(offset))
+                            {
+                                Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(offset);
+                                scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * offset);
+                            }
                         }
                     }
                 }
@@ -2121,7 +2133,9 @@ namespace Visifire.Charts
                     AxisX.ScrollableSize = ScrollableLength;
 
                     if ((Chart as Chart).ZoomingEnabled)
-                    {   
+                    {
+                        AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+                        AxisX.ScrollBarElement.Height = availableSize.Height;
                         AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
                     }
                     else
@@ -2151,6 +2165,8 @@ namespace Visifire.Charts
                 {
                     AxisX.ZoomingScaleChanged += new EventHandler(ScrollBarElement_ScaleChanged);
                     AxisX.ScrollBarElement.Visibility = Visibility.Visible;
+
+                    zoomCount++;
                 }
                 else
                 {
@@ -2160,7 +2176,12 @@ namespace Visifire.Charts
                     {
                         AxisX.ScrollBarElement.Visibility = Visibility.Visible;
                     }
+
+                    zoomCount = 0;
                 }
+
+                if (!_isFirstTimeRender)
+                    AxisX.ScrollBarElement.UpdateTrackLayout(AxisX.ScrollBarElement.GetTrackLength());
 
                 Chart._leftAxisPanel.Children.Add(AxisX.Visual);
 
@@ -2588,11 +2609,14 @@ namespace Visifire.Charts
                 else
                 {
                     Double internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
-
+                    
                     if (internalMinimumZoomingScale != _oldZoomingScale && !_isDragging)
                     {
                         Chart.AxesX[0]._internalMinimumZoomingScale = internalMinimumZoomingScale;
-                        Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
+                        if (!Double.IsNaN(Chart.AxesX[0].ScrollBarElement.Scale) && !Double.IsNaN(Chart.AxesX[0].ScrollBarElement._currentThumbSize) && zoomCount != 0)
+                            Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
+                        else
+                            chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                         _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                     }
 
@@ -3201,6 +3225,11 @@ namespace Visifire.Charts
             {
                 Double offset = e.NewValue;
 
+                //if (zoomCount == 1)
+                //    offset = 0;
+
+                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
+
                 if ((Chart as Chart).ZoomingEnabled)
                 {
                     AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
@@ -3236,9 +3265,13 @@ namespace Visifire.Charts
                     scrollViewerContent.SetValue(Canvas.LeftProperty, -scrollViewerOffset);
                     * */
                     Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
-                    Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
-                    scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * scrollViewerOffset);
-                    System.Diagnostics.Debug.WriteLine("scrollViewerOffset =" + (-scrollViewerOffset).ToString());
+
+                    if (!Double.IsNaN(scrollViewerOffset))
+                    {
+                        Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
+                        scrollViewerContent.SetValue(Canvas.LeftProperty, -1 * scrollViewerOffset);
+                        System.Diagnostics.Debug.WriteLine("scrollViewerOffset =" + (-scrollViewerOffset).ToString());
+                    }
                 }   
 
                 SaveAxisContentOffsetAndResetMargin(AxisX, offset);
@@ -3257,6 +3290,11 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 Double offset = e.NewValue;
+
+                //if (zoomCount == 1)
+                //    offset = 0;
+
+                AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
 
                 if (Chart.ZoomingEnabled)
                 {
@@ -3303,8 +3341,11 @@ namespace Visifire.Charts
                     {
                         Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
                         offsetInPixel = scrollViewerOffset;
-                        Chart._plotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
-                        scrollViewerContent.SetValue(Canvas.TopProperty, -1 * scrollViewerOffset);
+                        if (!Double.IsNaN(scrollViewerOffset))
+                        {
+                            Chart._plotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
+                            scrollViewerContent.SetValue(Canvas.TopProperty, -1 * scrollViewerOffset);
+                        }
                     }
                 }
 
@@ -5304,6 +5345,8 @@ namespace Visifire.Charts
         /// Whether it is the first time render of the chart
         /// </summary>
         internal bool _isFirstTimeRender = true;
+
+        private Int32 zoomCount = 0;
 
         internal ColorSet _financialColorSet = null;
 
