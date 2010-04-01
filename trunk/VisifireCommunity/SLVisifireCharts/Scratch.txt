@@ -1,4 +1,74 @@
-﻿
+﻿              
+
+            //------------------------------------------
+/*
+            Double percentValue;
+            //percentValue = ((maxPixelPos - minPixelPos) / chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength()) * (minPixelPos / (maxPixelPos) * 100);
+
+            if (maxPixelValue - minPixelValue > chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() / 2 - minPixelValue)
+                percentValue = 1 - Math.Abs((minPixelValue / maxPixelValue) - ((minPixelValue) / (434)));
+            else
+                percentValue = 1 - Math.Abs((minPixelValue / maxPixelValue) - ((minPixelValue) / (434 - (maxPixelValue - minPixelValue))));
+
+            Double value = (chart.ChartArea.AxisX.ScrollBarElement.Maximum - chart.ChartArea.AxisX.ScrollBarElement.Minimum) * percentValue;
+
+            chart.ChartArea.AxisX.ScrollBarElement.Scale = percentValue;
+
+            chart.ChartArea.AxisX.ScrollBarElement._currentThumbSize = chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() * chart.ChartArea.AxisX.ScrollBarElement.Scale;
+
+            chart.ChartArea.AxisX._internalZoomingScale = chart.ChartArea.AxisX._internalMinimumZoomingScale + (1 - chart.ChartArea.AxisX._internalMinimumZoomingScale) * (1 - chart.ChartArea.AxisX.ScrollBarElement.Scale);
+
+            if (chart.Series.Count > 0)
+            {
+                chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
+            }
+
+            Double val;
+            if (maxPixelValue - minPixelValue > chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() / 2 - minPixelValue)
+            {
+                val = Math.Abs((434 - maxPixelValue) / minPixelValue * 100 - 100);
+                if (val > 434)
+                    val = 434 - val;
+            }
+            else
+                val = (maxPixelValue - minPixelValue) / (434 - minPixelValue) * 100;
+
+            chart.ChartArea.AxisX.ScrollBarElement._isNotificationEnabled = false;
+            chart.ChartArea.AxisX.ScrollBarElement.Value = val;
+            chart.ChartArea.AxisX.ScrollBarElement._isNotificationEnabled = true;
+
+            chart.ChartArea.AxisX.ScrollBarElement.RaiseScrollEvent(ScrollEventType.ThumbPosition);
+            ///////////////////////////
+  
+  
+  /*  Double offsetInPixel4MinValue;
+            Double offsetInPixel4MaxValue;
+
+            Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+            Double lengthInPixel;
+            Double offsetInPixel = chart.ChartArea.AxisX.GetScrollBarValueFromOffset(chart.ChartArea.AxisX.ScrollBarOffset);
+
+            if (axisOrientation == Orientation.Horizontal)
+            {
+                offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
+
+                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Width;
+                offsetInPixel4MinValue = offsetInPixel;
+                offsetInPixel4MaxValue = offsetInPixel4MinValue + Width;
+            }
+            else
+            {
+                // For Bar chart types
+                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Height;
+                offsetInPixel4MaxValue = lengthInPixel - offsetInPixel;
+                offsetInPixel4MinValue = offsetInPixel4MaxValue - Height;
+            }
+
+            viewPortPixDiff = offsetInPixel4MaxValue - offsetInPixel4MinValue; */
+
+
+
+/////////
  if ((Boolean)dataPoint.LabelEnabled)
                     {
                         //Double currXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, dataPoint.InternalXValue);

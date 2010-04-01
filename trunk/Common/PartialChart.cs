@@ -212,6 +212,8 @@ namespace Visifire.Charts
 
             _isTemplateApplied = true;
 
+            //_zoomRectangle.Visibility = Visibility.Collapsed;
+
 #if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif

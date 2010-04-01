@@ -114,9 +114,9 @@ namespace Visifire.Charts
             PopulateInternalSeriesList();
 
             CreateDefaultToolTipsForSeries(chart);
-            
+
             PlotDetails = new PlotDetails(chart);
-           
+
             SetLegendStyleFromTheme();
 
             CalculatePlankParameters();
@@ -156,6 +156,7 @@ namespace Visifire.Charts
 
                 _plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddingTitles);
             }
+
 
             HideAllAxesScrollBars();
 
@@ -749,15 +750,15 @@ namespace Visifire.Charts
             }
 
             if (updateAxis)
-            {
+            {   
                 PopulateInternalAxesXList();
                 PopulateInternalAxesYList();
 
                 ClearAxesPanel();
 
                 //  Check if drawing axis is necessary or not
-                //if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-                //    SetAxesProperties();
+                // if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+                //   SetAxesProperties();
 
                 Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
                 
@@ -1185,9 +1186,12 @@ namespace Visifire.Charts
                 Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
                 PlotAreaCanvas.MouseMove -= new MouseEventHandler(PlotAreaCanvas_MouseMove);
                 PlotAreaCanvas.MouseLeave -= new MouseEventHandler(PlotAreaCanvas_MouseLeave);
+                PlotAreaCanvas.MouseLeftButtonDown -= new MouseButtonEventHandler(PlotAreaCanvas_MouseLeftButtonDown);
+                PlotAreaCanvas.MouseLeftButtonUp -= new MouseButtonEventHandler(PlotAreaCanvas_MouseLeftButtonUp);
                 PlotAreaCanvas.MouseMove += new MouseEventHandler(PlotAreaCanvas_MouseMove);
                 PlotAreaCanvas.MouseLeave += new MouseEventHandler(PlotAreaCanvas_MouseLeave);
-
+                PlotAreaCanvas.MouseLeftButtonDown += new MouseButtonEventHandler(PlotAreaCanvas_MouseLeftButtonDown);
+                PlotAreaCanvas.MouseLeftButtonUp += new MouseButtonEventHandler(PlotAreaCanvas_MouseLeftButtonUp);
             }
             else
                 Chart.PlotArea.UpdateProperties();
@@ -1209,13 +1213,161 @@ namespace Visifire.Charts
             
         }
 
+        void PlotAreaCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
+                if (Chart.ZoomingEnabled)
+                {
+                    if (_zoomStart)
+                    {
+                        _lastZoomPos = new Point(e.GetPosition(ChartVisualCanvas).X, e.GetPosition(ChartVisualCanvas).Y);
+
+                        if (AxisX.AxisOrientation == Orientation.Horizontal)
+                        {
+                            if (_lastZoomPos.X < _firstZoomPos.X)
+                            {
+                                Point temp = _lastZoomPos;
+                                _lastZoomPos = _firstZoomPos;
+                                _firstZoomPos = temp;
+                            }
+                        }
+                        else
+                        {
+                            if (_lastZoomPos.Y < _firstZoomPos.Y)
+                            {
+                                Point temp = _lastZoomPos;
+                                _lastZoomPos = _firstZoomPos;
+                                _firstZoomPos = temp;
+                            }
+                        }
+
+                        Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomPos.X);
+                        Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomPos.Y);
+
+                        Double minXValue;
+                        Double maxXValue;
+
+                        if (AxisX.AxisOrientation == Orientation.Horizontal)
+                        {
+                            if (_firstZoomPos.X < 0)
+                                _firstZoomPos.X = 0;
+
+                            if (_lastZoomPos.X > ChartVisualCanvas.Width)
+                                _lastZoomPos.X = ChartVisualCanvas.Width;
+
+                            minXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _firstZoomPos.X);
+                            maxXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _lastZoomPos.X);
+
+                        }
+                        else
+                        {
+                            if (_firstZoomPos.Y < 0)
+                                _firstZoomPos.Y = 0;
+
+                            if (_lastZoomPos.Y > ChartVisualCanvas.Height)
+                                _lastZoomPos.Y = ChartVisualCanvas.Height;
+
+                            minXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _firstZoomPos.Y);
+                            maxXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _lastZoomPos.Y);
+
+                        }
+
+                        Object minValue, maxValue;
+
+                        if (AxisX.IsDateTimeAxis)
+                        {
+                            minValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, minXValue, AxisX.InternalIntervalType);
+                            maxValue = DateTimeHelper.XValueToDateTime(AxisX.MinDate, maxXValue, AxisX.InternalIntervalType);
+                        }
+                        else
+                        {
+                            minValue = minXValue;
+                            maxValue = maxXValue;
+                        }
+
+
+                        if (!minValue.Equals(maxValue))
+                        {
+                            AxisX.Zoom(minValue, maxValue);
+                        }
+
+                        //ChartVisualCanvas.ReleaseMouseCapture();
+                        Chart._zoomRectangle.Visibility = Visibility.Collapsed;
+                        _zoomStart = false;
+
+                    }
+                }
+            }
+        }
+
+        void PlotAreaCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
+                if (Chart.ZoomingEnabled)
+                {
+                    Chart._zoomRectangle.Visibility = Visibility.Visible;
+                    Chart._zoomRectangle.SetValue(Canvas.ZIndexProperty, 2);
+
+                    _firstZoomPos = new Point(e.GetPosition(ChartVisualCanvas).X, e.GetPosition(ChartVisualCanvas).Y);
+
+                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomPos.X);
+                    Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomPos.Y);
+
+                    Chart._zoomRectangle.Width = 0;
+                    Chart._zoomRectangle.Height = 0;
+
+                    Chart._toolTip.Hide();
+
+                    _zoomStart = true;
+
+                    Chart._zoomRectangle.IsHitTestVisible = false;
+                }
+            }
+        }
+
         /// <summary>
-        /// Enable indicators and position them on mouse move
+        /// Enable indicators and position them on mouse move. This is also used to select a region in PlotArea for zooming.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void PlotAreaCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
+                if (Chart.ZoomingEnabled)
+                {
+                    if (_zoomStart)
+                    {
+                        if (_firstZoomPos.X <= e.GetPosition(ChartVisualCanvas).X)
+                        {
+                            Chart._zoomRectangle.Width = (e.GetPosition(ChartVisualCanvas).X) - _firstZoomPos.X;
+                        }
+                        else
+                        {
+                            Chart._zoomRectangle.SetValue(Canvas.LeftProperty, e.GetPosition(ChartVisualCanvas).X);
+                            Chart._zoomRectangle.Width = _firstZoomPos.X - (e.GetPosition(ChartVisualCanvas).X);
+                        }
+
+                        if (_firstZoomPos.Y <= e.GetPosition(ChartVisualCanvas).Y)
+                        {
+                            Chart._zoomRectangle.Height = e.GetPosition(ChartVisualCanvas).Y - _firstZoomPos.Y;
+                        }
+                        else
+                        {
+                            Chart._zoomRectangle.SetValue(Canvas.TopProperty, e.GetPosition(ChartVisualCanvas).Y);
+                            Chart._zoomRectangle.Height = _firstZoomPos.Y - e.GetPosition(ChartVisualCanvas).Y;
+                        }
+
+                        System.Diagnostics.Debug.WriteLine("Chart._zoomRectangle.Width : " + Chart._zoomRectangle.Width + ", " + Chart._zoomRectangle.Height);
+
+                        //ChartVisualCanvas.CaptureMouse();
+                    }
+                }
+            }
+
+
             if (Chart.IndicatorEnabled)
             {
                 Double x1 = e.GetPosition(Chart._toolTipCanvas).X;
@@ -1598,6 +1750,11 @@ namespace Visifire.Charts
             }
 
             DisableIndicators();
+
+            //if(Chart._zoomRectangle != null)
+            //    Chart._zoomRectangle.Visibility = Visibility.Collapsed;
+
+            //_zoomStart = false;
         }
 
         /// <summary>
@@ -1684,6 +1841,8 @@ namespace Visifire.Charts
                         dp.Storyboard = null;
                     }
                 }
+
+                ds.InternalDataPoints.Clear();
             }
         }
 
@@ -1698,6 +1857,7 @@ namespace Visifire.Charts
             {
                 if((Boolean)Chart.AnimatedUpdate)
                     ResetStoryboards4InternalDataPointsList();
+
 
                 Chart.InternalSeries.Clear();
             }
@@ -2085,11 +2245,16 @@ namespace Visifire.Charts
             Chart chart = Chart as Chart;
 
             axis._internalZoomingScale = axis._internalMinimumZoomingScale + (1 - axis._internalMinimumZoomingScale) * (1 - axis.ScrollBarElement.Scale);
+            
+            OnScrollBarScaleChanged(chart);
+        }
 
-            _isDragging = true;
-
+        internal void OnScrollBarScaleChanged(Chart chart)
+        {
             // chart.Dispatcher.BeginInvoke(new Action(chart.ChartArea.DrawChart));
             //chart.Series[0].UpdateVisual(VcProperties.ScrollBarScale, null);
+            _isDragging = true;
+
             if (chart.Series.Count > 0)
             {
                 chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
@@ -2365,7 +2530,7 @@ namespace Visifire.Charts
             Double top = 0, left = 0, right = 0, bottom = 0;
 
             if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {
+            {   
                 #region For vertical chart
 
                 Double totalWidthReduced1 = DrawAxesY(plotAreaSize, true);
@@ -2474,18 +2639,18 @@ namespace Visifire.Charts
         /// <param name="NewSize">New size of the plotArea</param>
         /// <returns>Actual size of the plotarea excluding axis</returns>
         private Size DrawChart(Size plotAreaSize)
-        {
+        {   
             ResetStoryboards();
 
-            //Visifire.Profiler.Profiler.Start("RenderAxis");
+            // Visifire.Profiler.Profiler.Start("RenderAxis");
             Size remainingSizeAfterDrawingAxes = RenderAxes(plotAreaSize);
-            //Visifire.Profiler.Profiler.End("RenderAxis");
-            //Visifire.Profiler.Profiler.Start("Render");
+            // Visifire.Profiler.Profiler.End("RenderAxis");
+            // Visifire.Profiler.Profiler.Start("Render");
             RenderChart(remainingSizeAfterDrawingAxes, AxisRepresentations.AxisX, false);
-                        
-            //Visifire.Profiler.Profiler.End("Render");
+                    
+            // Visifire.Profiler.Profiler.End("Render");
             return remainingSizeAfterDrawingAxes;
-            //return new Size();
+            // return new Size();
         }
 
         /// <summary>
@@ -2583,7 +2748,44 @@ namespace Visifire.Charts
 
         }
 
-        private Double _oldZoomingScale = Double.NaN;
+        internal Double CalculateChartSizeForZooming(Chart chart, Double currentSize)
+        {
+            Double chartSize = currentSize;
+            MAX_CHART_SIZE = 15000;
+
+            if (_isFirstTimeRender)
+            {
+                Chart.AxesX[0]._internalMinimumZoomingScale = currentSize / MAX_CHART_SIZE + 0.0000001;
+                _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                chartSize = MAX_CHART_SIZE * Chart.AxesX[0]._internalZoomingScale;
+            }
+            else
+            {   
+                Double internalMinimumZoomingScale = currentSize / MAX_CHART_SIZE + 0.0000001;
+
+                if (internalMinimumZoomingScale != _oldZoomingScale && !_isDragging)
+                {   
+                    Chart.AxesX[0]._internalMinimumZoomingScale = internalMinimumZoomingScale;
+                    if (!Double.IsNaN(Chart.AxesX[0].ScrollBarElement.Scale) && !Double.IsNaN(Chart.AxesX[0].ScrollBarElement._currentThumbSize) && zoomCount != 0)
+                        Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
+                    else
+                        chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                    _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
+                }
+                //else if (IsZoomingBetweenXValue)
+                //{
+                //    chartSize = currentSize + currentSize * Chart.AxesX[0]._internalZoomingScale;
+                //    if (chartSize > MAX_CHART_SIZE)
+                //        chartSize = MAX_CHART_SIZE;
+                //}
+                //else // Zooming using ZoomBar thumb
+                
+                chartSize = MAX_CHART_SIZE * Chart.AxesX[0]._internalZoomingScale;
+            }
+
+            return chartSize;
+        }
 
         /// <summary>
         /// Calculate PlotArea size for auto scroll
@@ -2595,37 +2797,12 @@ namespace Visifire.Charts
             Double chartSize;
 
             Chart chart = (Chart as Chart);
-            Double maxChartSize = 15000;
-
             if (chart.ZoomingEnabled)
             {
-                if (_isFirstTimeRender)
-                {
-                    Chart.AxesX[0]._internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
-                    _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                    Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                    chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
-                }
-                else
-                {
-                    Double internalMinimumZoomingScale = currentSize / maxChartSize + 0.0000001;
-                    
-                    if (internalMinimumZoomingScale != _oldZoomingScale && !_isDragging)
-                    {
-                        Chart.AxesX[0]._internalMinimumZoomingScale = internalMinimumZoomingScale;
-                        if (!Double.IsNaN(Chart.AxesX[0].ScrollBarElement.Scale) && !Double.IsNaN(Chart.AxesX[0].ScrollBarElement._currentThumbSize) && zoomCount != 0)
-                            Chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale + (1 - Chart.AxesX[0]._internalMinimumZoomingScale) * (1 - Chart.AxesX[0].ScrollBarElement.Scale);
-                        else
-                            chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                        _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
-                    }
-
-                    chartSize = maxChartSize * Chart.AxesX[0]._internalZoomingScale;
-
-                }
+                chartSize = CalculateChartSizeForZooming(chart, currentSize);
             }
             else
-            {
+            {   
                 if ((Chart as Chart).MinimumGap != null)
                 {
                     //if (AxisX.XValueType != ChartValueTypes.Numeric && AxisX != null && PlotDetails.ListOfAllDataPoints.Count > 0)
@@ -2739,6 +2916,7 @@ namespace Visifire.Charts
             if (PlottingCanvas != null)
             {
                 PlottingCanvas.Loaded -= PlottingCanvas_Loaded;
+                PlottingCanvas.Children.Clear();
                 PlotAreaCanvas.Children.Remove(PlottingCanvas);
                 PlottingCanvas = null;
             }
@@ -3081,15 +3259,23 @@ namespace Visifire.Charts
         internal void ResizePanels(Size remainingSizeAfterDrawingAxes, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
-            PlotAreaScrollViewer.Background = Graphics.TRANSPARENT_BRUSH;
+
+            if(_isFirstTimeRender)
+                PlotAreaScrollViewer.Background = Graphics.TRANSPARENT_BRUSH;
 
             PlotAreaCanvas.Width = remainingSizeAfterDrawingAxes.Width;
             PlotAreaCanvas.Height = remainingSizeAfterDrawingAxes.Height;
                         
             if (Chart._forcedRedraw || PlottingCanvas == null)
-            {   
-                PlottingCanvas = new Canvas();
+            {
+                if (PlottingCanvas != null)
+                {
+                    PlottingCanvas.Children.Clear();
+                    PlottingCanvas.Loaded -= new RoutedEventHandler(PlottingCanvas_Loaded);
+                }
                 
+                PlottingCanvas = new Canvas();
+
                 PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
                 PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
                 PlotAreaCanvas.Children.Add(PlottingCanvas);
@@ -3118,9 +3304,31 @@ namespace Visifire.Charts
 
             if (Chart._forcedRedraw || ChartVisualCanvas == null)
             {
+                if (ChartVisualCanvas != null)
+                    ChartVisualCanvas.Children.Clear();
+
                 ChartVisualCanvas = new Canvas();
+
                 PlottingCanvas.Children.Add(ChartVisualCanvas);
             }
+
+            //if (Chart._forcedRedraw)
+            //{
+            //    if (ChartVisualCanvas == null)
+            //    {
+            //        ChartVisualCanvas = new Canvas();
+
+            //        PlottingCanvas.Children.Add(ChartVisualCanvas);
+            //    }
+            //    else
+            //    {
+            //        ChartVisualCanvas.Children.Clear();
+
+            //        if (ChartVisualCanvas.Parent != null && (ChartVisualCanvas.Parent as Canvas).Children.Contains(ChartVisualCanvas))
+            //            (ChartVisualCanvas.Parent as Canvas).Children.Remove(ChartVisualCanvas);
+            //        PlottingCanvas.Children.Add(ChartVisualCanvas);
+            //    }
+            //}
 
             // Default size of the chart canvas
             Size chartCanvasSize = new Size(0, 0);
@@ -3616,8 +3824,8 @@ namespace Visifire.Charts
                             if (series.InternalDataPoints.Count >= 1)
                                 isAnyActiveStoryboard = true;
 
-                            series.Storyboard.Completed += delegate
-                            {
+                            series.Storyboard.Completed += delegate(object sender, EventArgs e)
+                            {   
                                 _isAnimationFired = true;
                                 Chart._rootElement.IsHitTestVisible = true;
 
@@ -5309,14 +5517,24 @@ namespace Visifire.Charts
         #region Data
 
         /// <summary>
+        /// Old Zooming Scale
+        /// </summary>
+        private Double _oldZoomingScale = Double.NaN;
+
+        /// <summary>
         /// Size of the PlotArea is calculated in calculated in Draw() 
         /// </summary>
-        Size _plotAreaSize;
+        internal Size _plotAreaSize;
         
         /// <summary>
         /// Grid animation duration
         /// </summary>
-        internal static Double GRID_ANIMATION_DURATION = 1;             
+        internal static Double GRID_ANIMATION_DURATION = 1;    
+        
+        /// <summary>
+        /// Maximum size of the chart drawn inside the ScrollViewer.
+        /// </summary>
+        internal static Double MAX_CHART_SIZE = 15000;
 
         /// <summary>
         /// Chart scroll-viewer Offset for horizontal chart. 
@@ -5374,6 +5592,10 @@ namespace Visifire.Charts
         /// Whether default interactivity is allowed for Pie/Doughnut/Funnel chart
         /// </summary>
         internal Boolean _isDefaultInteractivityAllowed = false;
+
+        private Point _firstZoomPos;
+        private Point _lastZoomPos;
+        private Boolean _zoomStart = false;
 
         #endregion "Used for Testing Only"
 

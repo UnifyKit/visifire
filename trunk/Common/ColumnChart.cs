@@ -2707,10 +2707,18 @@ namespace Visifire.Charts
             if ((dataPoint.Chart as Chart).View3D)
                 return;
 
+            Thickness dpBorderThickness = dataPoint.BorderThickness;
+
             // Add visual elements used for lighting
             if (dataPoint.Parent.Bevel && columnVisual.Height > 7 && columnVisual.Width > 14)
             {
-                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(null, columnVisual.Width - 2 * dataPoint.BorderThickness.Left, columnVisual.Height - 2 * dataPoint.BorderThickness.Left, 6, 6,
+                if (dataPoint.Parent.SelectionEnabled)
+                {   
+                    if (dataPoint.BorderThickness == new Thickness(0))
+                        dpBorderThickness = new Thickness(1);
+                }
+
+                Canvas bevelCanvas = ExtendedGraphics.Get2DRectangleBevel(null, columnVisual.Width - 2 * dpBorderThickness.Left, columnVisual.Height - 2 * dpBorderThickness.Left, 6, 6,
                     Graphics.GetBevelTopBrush(dataPoint.Color),
                     Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -70 : 0), dataPoint.Color),
                     Graphics.GetBevelSideBrush(((Boolean)dataPoint.LightingEnabled ? -110 : 180), dataPoint.Color),
@@ -2721,8 +2729,8 @@ namespace Visifire.Charts
 
                 dataPoint.Faces.BevelElements.Add(bevelCanvas);
 
-                bevelCanvas.SetValue(Canvas.LeftProperty, dataPoint.BorderThickness.Left);
-                bevelCanvas.SetValue(Canvas.TopProperty, dataPoint.BorderThickness.Left);
+                bevelCanvas.SetValue(Canvas.LeftProperty, dpBorderThickness.Left);
+                bevelCanvas.SetValue(Canvas.TopProperty, dpBorderThickness.Left);
 
                 columnVisual.Children.Add(bevelCanvas);
             }

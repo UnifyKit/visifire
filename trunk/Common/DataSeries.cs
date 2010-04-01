@@ -85,7 +85,7 @@ namespace Visifire.Charts
             DefaultStyleKey = typeof(DataSeries);
 #endif
 
-            SetBinding(DataSeries.DataContextProperty, new Binding());
+            //SetBinding(DataSeries.DataContextProperty, new Binding());
 
             // Initialize DataPoints list
             DataPoints = new DataPointCollection();
@@ -315,8 +315,9 @@ namespace Visifire.Charts
                             throw new Exception("Error While Mapping Data: Please Verify that you are mapping the Data Correctly");
                         }
                     }
-
-                    this.DataPoints.Add(dp);
+                    
+                    //this.DataPoints.Add(dp);
+                    this.DataPoints.Insert(e.NewStartingIndex, dp);
                 }
             }
         }
@@ -1455,7 +1456,7 @@ namespace Visifire.Charts
                     if (RenderAs == RenderAs.Line || RenderAs == RenderAs.StepLine)
                     {
                         Double retValue = (Double)(((Chart as Chart).ActualWidth * (Chart as Chart).ActualHeight) + 25000) / 35000;
-                        return retValue > 4 ? 4 : retValue;
+                        return retValue > 3 ? 3 : retValue;
                     }
                     else if (RenderAs == RenderAs.Stock)
                         return 2;
@@ -2233,7 +2234,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Type of scale used in axis
+        /// Type of zoomBarScale used in axis
         /// </summary>
         public ChartValueTypes XValueType
         {
@@ -2539,7 +2540,7 @@ namespace Visifire.Charts
 
             if (ValidatePartialUpdate(RenderAs, property))
             {
-                if (NonPartialUpdateChartTypes(RenderAs))
+                if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
                 {
                     if (property == VcProperties.Color)
                         PartialUpdateOfColorProperty((Brush)newValue);

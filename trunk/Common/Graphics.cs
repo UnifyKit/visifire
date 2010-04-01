@@ -473,9 +473,14 @@ namespace Visifire.Charts
         {
             rectangle.RadiusX = xRadius.TopLeft;
             rectangle.RadiusY = xRadius.BottomLeft;
-            rectangle.StrokeThickness = strokeThickness;
             rectangle.StrokeDashArray = strokeDashArray != null ? strokeDashArray : strokeDashArray;
-            rectangle.Stroke = stroke;
+            rectangle.StrokeThickness = strokeThickness;
+
+            if (rectangle.StrokeThickness != 0)
+            {
+
+                rectangle.Stroke = stroke;
+            }
         }
         /// <summary>
         /// Creates and returns a rectangle bevel layer based on the given params

@@ -133,23 +133,10 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
 
                                                         <!-- <Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
-
+                                                        <Border Name="ZoomRectangle" CornerRadius="5"  Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
                                                     </Canvas>
                                                 </ScrollViewer>
-                                                <!--<Border Name="ZoomRectangle" BorderThickness="1,0,1,0" Opacity="1" >
-                                                    <Border.Background>
-                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                            <GradientStop Color="#FFAFDAF2" Offset="0.144"/>
-                                                            <GradientStop Color="#FFF1F1F1" Offset="1"/>
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                    <Border.BorderBrush>
-                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                            <GradientStop Color="#FF5E79F4" Offset="0.546"/>
-                                                            <GradientStop Color="White" Offset="1"/>
-                                                        </LinearGradientBrush>
-                                                    </Border.BorderBrush>
-                                                </Border>-->
+                                                
                                             </Grid>
                                             
                                             <Grid x:Name="InnerGrid" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

@@ -271,22 +271,23 @@ namespace Visifire.Commons.Controls
             }
         }
 
+        //Change it
         /// <summary>
         /// Zooming Scale
         /// </summary>
-        public Double Scale 
+        internal Double Scale
         {   
             get; 
-            private set; 
+            set; 
         }
 
-        public Double ZoomBarStartPosition
+        internal Double ZoomBarStartPosition
         {
             get;
             private set;
         }
 
-        public Double ZoomBarEndPosition
+        internal Double ZoomBarEndPosition
         {   
             get;
             private set;
@@ -945,9 +946,21 @@ namespace Visifire.Commons.Controls
             CalculateAndUpdateValues4RightGrip(trackLength);
 
             CalculateZoomEndPosition();
-            
+
             if (Drag != null)
                 Drag(this, null);
+        }
+
+
+        internal void UpdateScale(Double scale)
+        {
+            Double oldThumbSize = _currentThumbSize;
+            Double trackLength = GetTrackLength();
+            Scale = scale;
+            _currentThumbSize = scale * trackLength;
+            //UpdateThumbSize(trackLength);
+            UpdateTrackLayout(trackLength);
+            CalculateZoomEndPosition();
         }
 
         /// <summary>
@@ -984,7 +997,7 @@ namespace Visifire.Commons.Controls
                         _currentThumbSize = tempNewThumbSize;
 
                     _elementHorizontalLargeDecrease.Width = largeDec;
-
+                    
                 }
                 else
                 {
@@ -1023,7 +1036,7 @@ namespace Visifire.Commons.Controls
                 else
                 {
                     if (!(_elementVerticalLargeDecrease.Height == 0 && _currentThumbSize == _elementVerticalThumb.MinHeight))
-                    {
+                    {   
                         if ((_currentThumbSize - deltaChange) > _elementVerticalThumb.MinHeight)
                         {
                             _currentThumbSize -= deltaChange;
@@ -1263,7 +1276,7 @@ namespace Visifire.Commons.Controls
         private Double _oldTrackLength = Double.NaN;
 
         // Whether notication is enabled for the Value changed event
-        private Boolean _isNotificationEnabled = true;
+        internal Boolean _isNotificationEnabled = true;
 
         internal Boolean IsStretching
         {

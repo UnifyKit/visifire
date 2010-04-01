@@ -691,6 +691,8 @@ namespace Visifire.Charts
         {
             Double shadowThickness = LineThickness + 2;
 
+            (Chart as Chart).PlotDetails.SetTrendLineValues(ReferingAxis);
+
             switch (Orientation)
             {
                 case Orientation.Vertical:
