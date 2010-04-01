@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Untitled Page</title>
+
+    <script type="text/javascript" src="Visifire.js"></script>
+    
+</head>
+<body>
+    <div id="Div1">
+        
+        <script type="text/javascript">
+            
+            var background = "White";
+           
+            var vChart = new Visifire("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300, background);
+            vChart.setDataUri('data.xml');
+
+            vChart.preLoad = function(args) {
+
+                var chart = args[0];
+                chart.MouseLeftButtonUp = function(object, eventargs) {
+
+                var dateTime1 = new Date("1/1/2001");
+                var dateTime2 = new Date("3/1/2001");
+
+                var localDateTime1 = dateTime1.toLocaleDateString();
+                var localDateTime2 = dateTime2.toLocaleDateString();
+                
+                chart.AxesX[0].Zoom(localDateTime1, localDateTime2);
+
+                };
+
+            };
+            
+            vChart.render("Div1");
+            
+        </script>
+    </div>
+</body>
+</html>

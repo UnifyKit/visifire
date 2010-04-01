@@ -1,0 +1,28 @@
+﻿<Page x:Class="WPFVisifireChartsXbap.Page1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Page1" Background="#FFD6D6D6" 
+    xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
+    >
+    <Grid x:Name="LayoutRoot">
+        <vc:Chart Name="MyChart"  Width="400" Height="350" Theme="Theme3" BorderBrush="Gray">
+            
+            <vc:Chart.Titles>
+                <vc:Title Text="Addmission Process"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="StreamLineFunnel" ShowInLegend="False" LabelEnabled="True" LabelText="#AxisXLabel, #YValue"
+                               >
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="Students Applied Online" YValue="600"/>
+                        <vc:DataPoint AxisXLabel="Students Called for Test" YValue="420"/>
+                        <vc:DataPoint AxisXLabel="Attended Test" YValue="300"/>
+                        <vc:DataPoint AxisXLabel="Selected" YValue="200"/>
+                        <vc:DataPoint AxisXLabel="Joined" YValue="150"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+        </vc:Chart>
+    </Grid>
+</Page>
