@@ -298,6 +298,8 @@ namespace Visifire.Charts
             if ((elementType.Equals(typeof(DataSeries)) && (property == VcProperties.DataPoints || property ==  VcProperties.XValueType))
                 || 
                 (elementType.Equals(typeof(DataPoint)) && property == VcProperties.XValue)
+                ||
+                property == VcProperties.None
                 )
             {
                 if(_axisXPrimary == null)
@@ -545,7 +547,7 @@ namespace Visifire.Charts
        /// Set TrendLine values
        /// </summary>
        /// <param name="axisX">Axis</param>
-        private void SetTrendLineValues(Axis axisX)
+        internal void SetTrendLineValues(Axis axisX)
         {
             if (axisX.IsDateTimeAxis)
             {
@@ -595,7 +597,7 @@ namespace Visifire.Charts
         /// Generates XValues for DataTime axis
         /// </summary>
         private void GenerateXValueForDataTimeAxis(Axis axisX)
-        {
+        {   
             if (axisX != null)
             {
                 axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTimes
@@ -618,7 +620,12 @@ namespace Visifire.Charts
                         Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 8 : 8;
                         if (minDate != maxDate)
                         {
-                            axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval, axisX.XValueType);
+                            if (Chart.ChartArea._isFirstTimeRender)
+                                axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ActualWidth, Chart.ActualHeight, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval, axisX.XValueType);
+                            else
+                            {
+                                axisX.InternalInterval = DateTimeHelper.CalculateAutoInterval(Chart.ChartArea.ChartVisualCanvas.Width, Chart.ChartArea.ChartVisualCanvas.Height, axisX.AxisOrientation, minDate, maxDate, out autoIntervalType, maxInterval, axisX.XValueType);
+                            }
                         }
                         else
                         {

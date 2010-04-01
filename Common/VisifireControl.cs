@@ -535,9 +535,9 @@ namespace Visifire.Commons
 
                 if(!String.IsNullOrEmpty(href))
                     _waterMarkElement.TextDecorations = TextDecorations.Underline;
-                
-                _waterMarkElement.Foreground = new SolidColorBrush(Colors.LightGray);
-                _waterMarkElement.FontSize = 9;
+
+                _waterMarkElement.Foreground = new SolidColorBrush(Color.FromArgb((byte)255, (byte)200, (byte)200, (byte)200));
+                _waterMarkElement.FontSize = 10;
                 AttachHref(this, _waterMarkElement, href, HrefTargets._blank);
                 _toolbarContainer.Children.Add(_waterMarkElement);
             }

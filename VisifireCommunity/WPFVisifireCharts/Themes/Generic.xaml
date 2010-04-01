@@ -133,7 +133,7 @@
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
 
                                                         <!--<Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
-
+                                                        <Border Name="ZoomRectangle" CornerRadius="5"  Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
                                                     </Canvas>
                                                 </ScrollViewer>
                                                 <!--<Border Name="ZoomRectangle" BorderThickness="0" Background="Azure" Opacity="0.7" ></Border>-->
