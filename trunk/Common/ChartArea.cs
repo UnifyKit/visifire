@@ -189,6 +189,20 @@ namespace Visifire.Charts
             chart._forcedRedraw = false;
 
             AddOrRemovePanels(chart);
+
+            AttachEvents2ZoomOutIcons(chart);
+        }
+
+        private void AttachEvents2ZoomOutIcons(Chart chart)
+        {
+            if (chart.PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
+                if (chart._zoomOutTextBlock != null)
+                    chart._zoomOutTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
+
+                if (chart._showAllTextBlock != null)
+                    chart._showAllTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
+            }
         }
 
         /// <summary>
@@ -726,6 +740,7 @@ namespace Visifire.Charts
                 if (!chart._centerInnerGrid.Children.Contains(PlotAreaCanvas))
                     chart._centerInnerGrid.Children.Add(PlotAreaCanvas);
             }
+            
         }
 
         /// <summary>
@@ -1209,8 +1224,6 @@ namespace Visifire.Charts
             //    chart._drawingCanvas.Children.Add(PlotAreaCanvas);
             
             //PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
-
-            
         }
 
         void PlotAreaCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -1221,55 +1234,57 @@ namespace Visifire.Charts
                 {
                     if (_zoomStart)
                     {
-                        _lastZoomPos = new Point(e.GetPosition(ChartVisualCanvas).X, e.GetPosition(ChartVisualCanvas).Y);
-
                         if (AxisX.AxisOrientation == Orientation.Horizontal)
                         {
-                            if (_lastZoomPos.X < _firstZoomPos.X)
+                            _actualZoomMaxPos = new Point(e.GetPosition(PlottingCanvas).X, PlottingCanvas.Height);
+
+                            if (_actualZoomMaxPos.X < _actualZoomMinPos.X)
                             {
-                                Point temp = _lastZoomPos;
-                                _lastZoomPos = _firstZoomPos;
-                                _firstZoomPos = temp;
+                                Point temp = _actualZoomMaxPos;
+                                _actualZoomMaxPos = _actualZoomMinPos;
+                                _actualZoomMinPos = temp;
                             }
                         }
                         else
                         {
-                            if (_lastZoomPos.Y < _firstZoomPos.Y)
+                            _actualZoomMaxPos = new Point(PlottingCanvas.Width, e.GetPosition(PlottingCanvas).Y);
+
+                            if (_actualZoomMaxPos.Y < _actualZoomMinPos.Y)
                             {
-                                Point temp = _lastZoomPos;
-                                _lastZoomPos = _firstZoomPos;
-                                _firstZoomPos = temp;
+                                Point temp = _actualZoomMaxPos;
+                                _actualZoomMaxPos = _actualZoomMinPos;
+                                _actualZoomMinPos = temp;
                             }
                         }
 
-                        Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomPos.X);
-                        Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomPos.Y);
+                        Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomRectPosOverPlotArea.X);
+                        Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomRectPosOverPlotArea.Y);
 
                         Double minXValue;
                         Double maxXValue;
 
                         if (AxisX.AxisOrientation == Orientation.Horizontal)
                         {
-                            if (_firstZoomPos.X < 0)
-                                _firstZoomPos.X = 0;
+                            if (_actualZoomMinPos.X < 0)
+                                _actualZoomMinPos.X = 0;
 
-                            if (_lastZoomPos.X > ChartVisualCanvas.Width)
-                                _lastZoomPos.X = ChartVisualCanvas.Width;
+                            if (_actualZoomMaxPos.X > ChartVisualCanvas.Width)
+                                _actualZoomMaxPos.X = ChartVisualCanvas.Width;
 
-                            minXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _firstZoomPos.X);
-                            maxXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _lastZoomPos.X);
+                            minXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.X);
+                            maxXValue = Graphics.PixelPositionToValue(0, ScrollableLength, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.X);
 
                         }
                         else
                         {
-                            if (_firstZoomPos.Y < 0)
-                                _firstZoomPos.Y = 0;
+                            if (_actualZoomMinPos.Y < 0)
+                                _actualZoomMinPos.Y = 0;
 
-                            if (_lastZoomPos.Y > ChartVisualCanvas.Height)
-                                _lastZoomPos.Y = ChartVisualCanvas.Height;
+                            if (_actualZoomMaxPos.Y > ChartVisualCanvas.Height)
+                                _actualZoomMaxPos.Y = ChartVisualCanvas.Height;
 
-                            minXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _firstZoomPos.Y);
-                            maxXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _lastZoomPos.Y);
+                            minXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMinPos.Y);
+                            maxXValue = Graphics.PixelPositionToValue(ScrollableLength, 0, AxisX.InternalAxisMinimum, AxisX.InternalAxisMaximum, _actualZoomMaxPos.Y);
 
                         }
 
@@ -1292,10 +1307,8 @@ namespace Visifire.Charts
                             AxisX.Zoom(minValue, maxValue);
                         }
 
-                        //ChartVisualCanvas.ReleaseMouseCapture();
                         Chart._zoomRectangle.Visibility = Visibility.Collapsed;
                         _zoomStart = false;
-
                     }
                 }
             }
@@ -1307,13 +1320,27 @@ namespace Visifire.Charts
             {
                 if (Chart.ZoomingEnabled)
                 {
+                    Double x = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).X;
+                    Double y = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).Y;
+
+                    _actualZoomMinPos = new Point(e.GetPosition(PlottingCanvas).X, e.GetPosition(PlottingCanvas).Y);    
+
                     Chart._zoomRectangle.Visibility = Visibility.Visible;
-                    Chart._zoomRectangle.SetValue(Canvas.ZIndexProperty, 2);
+                    Chart._zoomRectangle.SetValue(Canvas.ZIndexProperty, 90000);
 
-                    _firstZoomPos = new Point(e.GetPosition(ChartVisualCanvas).X, e.GetPosition(ChartVisualCanvas).Y);
+                    if (AxisX.AxisOrientation == Orientation.Horizontal)
+                    {
+                        Chart._zoomRectangle.BorderThickness = new Thickness(0.7, 0, 0.7, 0);
+                        _firstZoomRectPosOverPlotArea = new Point(x, 0);
+                    }
+                    else
+                    {
+                        Chart._zoomRectangle.BorderThickness = new Thickness(0, 0.7, 0, 0.7);
+                        _firstZoomRectPosOverPlotArea = new Point((Chart._zoomRectangle.Parent as Canvas).ActualWidth + PLANK_THICKNESS, y);
+                    }
 
-                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomPos.X);
-                    Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomPos.Y);
+                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, _firstZoomRectPosOverPlotArea.X);
+                    Chart._zoomRectangle.SetValue(Canvas.TopProperty, _firstZoomRectPosOverPlotArea.Y);
 
                     Chart._zoomRectangle.Width = 0;
                     Chart._zoomRectangle.Height = 0;
@@ -1327,6 +1354,54 @@ namespace Visifire.Charts
             }
         }
 
+        private void SetPosition4ZoomRectangle(Double x, Double y)
+        {
+            if (_firstZoomRectPosOverPlotArea.X <= x)
+            {
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                    Chart._zoomRectangle.Width = x - _firstZoomRectPosOverPlotArea.X;
+                else
+                    Chart._zoomRectangle.Width = PlottingCanvas.Width - PLANK_THICKNESS;
+            }
+            else
+            {
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                {
+                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, x);
+                    Chart._zoomRectangle.Width = _firstZoomRectPosOverPlotArea.X - x;
+                }
+                else
+                {
+                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, PlottingCanvas.Width);
+                    Chart._zoomRectangle.Width = PlottingCanvas.Width - PLANK_THICKNESS;
+                }
+            }
+
+            if (_firstZoomRectPosOverPlotArea.Y <= y)
+            {
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                    Chart._zoomRectangle.Height = PlottingCanvas.Height - PLANK_THICKNESS;
+                else
+                    Chart._zoomRectangle.Height = y - _firstZoomRectPosOverPlotArea.Y;
+            }
+            else
+            {
+                if (AxisX.AxisOrientation == Orientation.Horizontal)
+                {
+                    Chart._zoomRectangle.SetValue(Canvas.TopProperty, PlottingCanvas.Height);
+                    Chart._zoomRectangle.Height = PlottingCanvas.Height - PLANK_THICKNESS;
+                }
+                else
+                {
+                    Chart._zoomRectangle.SetValue(Canvas.TopProperty, y);
+                    Chart._zoomRectangle.Height = _firstZoomRectPosOverPlotArea.Y - y;
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine("Chart._zoomRectangle.Width : " + Chart._zoomRectangle.Width + ", " + Chart._zoomRectangle.Height);
+
+        }
+
         /// <summary>
         /// Enable indicators and position them on mouse move. This is also used to select a region in PlotArea for zooming.
         /// </summary>
@@ -1334,39 +1409,25 @@ namespace Visifire.Charts
         /// <param name="e"></param>
         void PlotAreaCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            #region Set position for Zoom rectangle
+
             if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
             {
                 if (Chart.ZoomingEnabled)
                 {
                     if (_zoomStart)
                     {
-                        if (_firstZoomPos.X <= e.GetPosition(ChartVisualCanvas).X)
-                        {
-                            Chart._zoomRectangle.Width = (e.GetPosition(ChartVisualCanvas).X) - _firstZoomPos.X;
-                        }
-                        else
-                        {
-                            Chart._zoomRectangle.SetValue(Canvas.LeftProperty, e.GetPosition(ChartVisualCanvas).X);
-                            Chart._zoomRectangle.Width = _firstZoomPos.X - (e.GetPosition(ChartVisualCanvas).X);
-                        }
+                        Double x = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).X;
+                        Double y = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).Y;
 
-                        if (_firstZoomPos.Y <= e.GetPosition(ChartVisualCanvas).Y)
-                        {
-                            Chart._zoomRectangle.Height = e.GetPosition(ChartVisualCanvas).Y - _firstZoomPos.Y;
-                        }
-                        else
-                        {
-                            Chart._zoomRectangle.SetValue(Canvas.TopProperty, e.GetPosition(ChartVisualCanvas).Y);
-                            Chart._zoomRectangle.Height = _firstZoomPos.Y - e.GetPosition(ChartVisualCanvas).Y;
-                        }
-
-                        System.Diagnostics.Debug.WriteLine("Chart._zoomRectangle.Width : " + Chart._zoomRectangle.Width + ", " + Chart._zoomRectangle.Height);
-
-                        //ChartVisualCanvas.CaptureMouse();
+                        SetPosition4ZoomRectangle(x, y);
                     }
                 }
             }
 
+            #endregion
+
+            #region Set position for Indicator
 
             if (Chart.IndicatorEnabled)
             {
@@ -1395,15 +1456,8 @@ namespace Visifire.Charts
 
                                 if (nearestDataPoint != null)
                                 {
-                                    //nearestDataPoint.Parent.SetToolTipProperties(nearestDataPoint);
-
-                                    //if (!String.IsNullOrEmpty(ds.ToolTipElement.Text))
-                                    {
-                                        //listOfNearestDataPoints.Clear();
-                                        listOfNearestDataPoints.Add(nearestDataPoint);
-                                        _lastNearestDataPoint = nearestDataPoint;
-                                        //break;
-                                    }
+                                    listOfNearestDataPoints.Add(nearestDataPoint);
+                                    _lastNearestDataPoint = nearestDataPoint;
                                 }
                             }
                         }
@@ -1413,7 +1467,6 @@ namespace Visifire.Charts
                     {
                         DataPoint dp = listOfNearestDataPoints[0].Parent.GetNearestDataPoint(sender, e, listOfNearestDataPoints);
                         listOfNearestDataPoints.Clear();
-                        //listOfNearestDataPoints.Add(dp);
                         _lastNearestDataPoint = dp;
                     }
 
@@ -1443,28 +1496,17 @@ namespace Visifire.Charts
                             {
                                 DataPoint dp = otherNearestDP.First().Parent.GetNearestDataPointAlongYPosition(sender, e, otherNearestDP.ToList());
 
-                                //foreach (DataPoint dp in otherNearestDP)
+                                if (dp != null)
                                 {
-                                    //if (!listOfNearestDataPoints.Contains(dp))
+                                    if (dp.Parent.ToolTipElement != null)
                                     {
-                                        if (dp != null)
-                                        {
-                                            if (dp.Parent.ToolTipElement != null)
-                                            {
-                                                dp.Parent.SetToolTipProperties(dp);
+                                        dp.Parent.SetToolTipProperties(dp);
 
-                                                if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
-                                                {
-                                                    listOfNearestDataPoints.Add(dp);
-                                                }
-                                            }
+                                        if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
+                                        {
+                                            listOfNearestDataPoints.Add(dp);
                                         }
                                     }
-                                    //else
-                                    //{
-                                    //    if (dp.Parent.ToolTipElement != null)
-                                    //        dp.Parent.ToolTipElement.Show();
-                                    //}
                                 }
                             }
                         }
@@ -1521,6 +1563,8 @@ namespace Visifire.Charts
                     }
                 }
             }
+
+            #endregion
         }
 
         private void CreateVerticalLineIndicator()
@@ -3433,9 +3477,6 @@ namespace Visifire.Charts
             {
                 Double offset = e.NewValue;
 
-                //if (zoomCount == 1)
-                //    offset = 0;
-
                 AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
 
                 if ((Chart as Chart).ZoomingEnabled)
@@ -3451,11 +3492,13 @@ namespace Visifire.Charts
                     AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ActualWidth;
                     AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ActualWidth;
 #endif
-                }
+
 #if WPF         
-                if (e.NewValue <= 1)
-                    offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
+                    if (e.NewValue <= 1)
+                        offset = e.NewValue * AxisX.ScrollBarElement.Maximum;
 #endif
+
+                }
 
                 Double offsetInPixel = offset;
 
@@ -3498,9 +3541,6 @@ namespace Visifire.Charts
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 Double offset = e.NewValue;
-
-                //if (zoomCount == 1)
-                //    offset = 0;
 
                 AxisX.ScrollBarElement.IsStretchable = chart.ZoomingEnabled;
 
@@ -5568,8 +5608,6 @@ namespace Visifire.Charts
 
         internal ColorSet _financialColorSet = null;
 
-        #region "Used for testing purpose only"
-
         /// <summary>
         /// Number of redrawing chart for a single render call 
         /// (Used for Testing Only)
@@ -5586,18 +5624,32 @@ namespace Visifire.Charts
 
         private DataPoint _lastNearestDataPoint;
 
-        private Boolean _isDragging = false;
+        internal Boolean _isDragging = false;
 
         /// <summary>
         /// Whether default interactivity is allowed for Pie/Doughnut/Funnel chart
         /// </summary>
         internal Boolean _isDefaultInteractivityAllowed = false;
 
-        private Point _firstZoomPos;
-        private Point _lastZoomPos;
+        /// <summary>
+        /// First position of Zoom rectangle
+        /// </summary>
+        private Point _firstZoomRectPosOverPlotArea;
+
+        /// <summary>
+        /// Whether zooming has started using Zoom rectangle
+        /// </summary>
         private Boolean _zoomStart = false;
 
-        #endregion "Used for Testing Only"
+        /// <summary>
+        /// Min position of Zoom
+        /// </summary>
+        private Point _actualZoomMinPos;
+
+        /// <summary>
+        /// Max position of Zoom
+        /// </summary>
+        private Point _actualZoomMaxPos;
 
         #endregion
     }

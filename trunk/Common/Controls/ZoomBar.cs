@@ -46,7 +46,7 @@ namespace Visifire.Commons.Controls
             {
                 this.UpdateTrackLayout(this.GetTrackLength());
 
-                if (!_isGripDragged)
+                if (!_isGripDragged && !_isZoomedUsingZoomRect)
                     _currentThumbSize = Double.NaN;
             };
 
@@ -1269,6 +1269,8 @@ namespace Visifire.Commons.Controls
         private double _dragValue;
 
         private Boolean _isGripDragged = false;
+
+        internal Boolean _isZoomedUsingZoomRect = false;
 
         // Current size of the thumb
         internal Double _currentThumbSize = Double.NaN;

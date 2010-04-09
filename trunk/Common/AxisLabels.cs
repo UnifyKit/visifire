@@ -2037,6 +2037,11 @@ namespace Visifire.Charts
                 // get the max height of the labels
                 height = Math.Max(height, label.ActualHeight);
 
+                if (Double.IsPositiveInfinity(InternalMaxHeight))
+                {
+                    height = Math.Max(height, _maxRowHeight);
+                }
+
                 if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight >= label.ActualHeight && InternalMaxHeight > _maxRowHeight)
                 {
                     height = Math.Max(height, _maxRowHeight);

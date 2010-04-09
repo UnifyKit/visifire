@@ -190,6 +190,8 @@ namespace Visifire.Charts
 
             LoadToolBar();
 
+            LoadZoomIcons();
+
             if (StyleDictionary == null)
                 LoadTheme("Theme1", false);
 
@@ -2265,20 +2267,20 @@ namespace Visifire.Charts
 
                 _renderLock = true;
 
-                try
+               // try
                 {   
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
                 }
-                catch (Exception e)
-                {
-                    _renderLock = false;
-                    if (CheckSizeError(e as ArgumentException))
-                        return;
-                    else
-                        throw new Exception(e.Message, e);
-                }
+                //catch (Exception e)
+                //{
+                //    _renderLock = false;
+                //    if (CheckSizeError(e as ArgumentException))
+                //        return;
+                //    else
+                //        throw new Exception(e.Message, e);
+                //}
             }
         }
         

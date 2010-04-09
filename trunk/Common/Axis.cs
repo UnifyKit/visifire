@@ -86,7 +86,6 @@ namespace Visifire.Charts
 
             InternalAxisMinimum = Double.NaN;
             InternalAxisMaximum = Double.NaN;
-
         }
 
         public override void Bind()
@@ -189,7 +188,7 @@ namespace Visifire.Charts
             Double viewPortPixDiff = ScrollableSize;   // Pixel diff between ViewMin and ViewMax
             Double xValuePixDiff;             // maxPixelValue - minPixelValue;
 
-            xValuePixDiff = maxPixelValue - minPixelValue;
+            xValuePixDiff = Math.Abs(maxPixelValue - minPixelValue);
 
             _internalZoomingScale = ((viewPortPixDiff - xValuePixDiff) / xValuePixDiff);
 
@@ -204,7 +203,9 @@ namespace Visifire.Charts
                 newChartSize = ChartArea.MAX_CHART_SIZE;
 
             _internalZoomingScale = newChartSize / ChartArea.MAX_CHART_SIZE + 0.0000001;
-            
+
+            chart.ChartArea.AxisX.ScrollBarElement._isZoomedUsingZoomRect = true;
+
             chart.ChartArea.OnScrollBarScaleChanged(chart);
 
             chart.Dispatcher.BeginInvoke(new Action(delegate()
@@ -241,10 +242,61 @@ namespace Visifire.Charts
         /// <param name="maxXValue">Max XValue</param>
         public void Zoom(Object minXValue, Object maxXValue)
         {
-            if((Chart as Chart).ZoomingEnabled)
+            System.Diagnostics.Debug.WriteLine("minXValue : " + minXValue + ", MaxXValue : " + maxXValue);
+
+            Chart chart = (Chart as Chart);
+
+            if (chart.ZoomingEnabled)
+            {
+                if(_oldZoomState.MinXValue != null && _oldZoomState.MaxXValue != null)
+                    _zoomStateStack.Push(new ZoomState(_oldZoomState.MinXValue, _oldZoomState.MaxXValue));
+                
                 ZoomIn(minXValue, maxXValue);
+
+                _oldZoomState.MinXValue = minXValue;
+                _oldZoomState.MaxXValue = maxXValue;
+
+                chart._zoomOutTextBlock.Visibility = Visibility.Visible;
+                chart._zoomIconSeparater.Visibility = Visibility.Visible;
+                chart._showAllTextBlock.Visibility = Visibility.Visible;
+            }
         }
-        
+
+        internal void _zoomOutIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_zoomStateStack.Count > 0)
+            {
+                _zoomState = _zoomStateStack.Pop();
+                ZoomIn(_zoomState.MinXValue, _zoomState.MaxXValue);
+
+                Chart chart = (Chart as Chart);
+
+                if (_zoomStateStack.Count == 0)
+                {
+                    chart._zoomOutTextBlock.Visibility = Visibility.Collapsed;
+                    chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+                    chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        internal void _showAllIconImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ZoomIn(_initialState.MinXValue, _initialState.MaxXValue);
+
+            _showAllState = true;
+
+            Chart chart = (Chart as Chart);
+
+            chart._zoomOutTextBlock.Visibility = Visibility.Collapsed;
+            chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+            chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
+        }
+
+        private ZoomState _oldZoomState = new ZoomState(null, null);
+        private ZoomState _zoomState = new ZoomState(null, null);
+        private ZoomState _initialState = new ZoomState(null, null);
+
         #endregion
 
         #region Public Properties
@@ -4367,7 +4419,7 @@ namespace Visifire.Charts
 
         internal void FireScrollEvent(ScrollEventArgs e, Double offsetInPixel)
         {
-            if (_oldScrollBarOffsetInPixel == offsetInPixel)
+            if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
                 return;
 
             _oldScrollBarOffsetInPixel = offsetInPixel;
@@ -4380,7 +4432,6 @@ namespace Visifire.Charts
 
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double lengthInPixel;
-
 
                 if (axisOrientation == Orientation.Horizontal)
                 {
@@ -4416,6 +4467,53 @@ namespace Visifire.Charts
                         xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 else
                     ViewMaximum = xValue;
+
+                if (_zoomStateStack.Count == 0)
+                {
+                    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+                    _oldZoomState.MinXValue = null;
+                    _oldZoomState.MaxXValue = null;
+                }
+
+                if (_showAllState)
+                {
+                    _zoomStateStack.Clear();
+                    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+                    _oldZoomState.MinXValue = null;
+                    _oldZoomState.MaxXValue = null;
+                    _showAllState = false;
+                }
+
+                //else if(ScrollBarElement.Scale == 1 && !chart.ChartArea._isFirstTimeRender)
+                //{
+                //    chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+                //    _isShowAll = false;
+                //    _zoomStateStack.Clear();
+                //    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+                //    _oldZoomState.MinXValue = null;
+                //    _oldZoomState.MaxXValue = null;
+                //    _saveZoomStateOnZoomRect = true;
+                //}
+
+                //if (ScrollBarElement.Scale == 1 && !chart.ChartArea._isFirstTimeRender)
+                //{
+                //    chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+                //    chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
+                //    chart._zoomOutTextBlock.Visibility = Visibility.Collapsed;
+
+                //    _zoomStateStack.Clear();
+
+                //    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+
+                //    _oldZoomState.MinXValue = null;
+                //    _oldZoomState.MaxXValue = null;
+                //}
+
+                if (chart.ChartArea._isFirstTimeRender)
+                {
+                    _initialState.MinXValue = ViewMinimum;
+                    _initialState.MaxXValue = ViewMaximum;
+                }
 
                 if (_onScroll != null && !chart.ChartArea._isFirstTimeRender)
                     _onScroll(this, new AxisScrollEventArgs(e));
@@ -4489,7 +4587,8 @@ namespace Visifire.Charts
         private void AttachEventForZoomBar()
         {
             ScrollBarElement.ScaleChanged -= OnZoomingScaleChanged;
-            ScrollBarElement.DragCompleted -= OnZoomingScaleChanged;
+            ScrollBarElement.DragCompleted -= ScrollBarElement_DragCompleted;
+
             Chart chart = Chart as Chart;
 
             Boolean isAllLineCharts = (((from ds in chart.Series
@@ -4498,14 +4597,70 @@ namespace Visifire.Charts
                                         && chart.PlotDetails.ListOfAllDataPoints.Count <= 500);
 
             if (isAllLineCharts || chart.PlotDetails.ListOfAllDataPoints.Count < 500)
+            {
                 ScrollBarElement.ScaleChanged += new EventHandler(OnZoomingScaleChanged);
+
+                ScrollBarElement.DragCompleted += new EventHandler(ScrollBarElement_DragCompleted);
+
+                _renderAfterDrag = false;
+            }
             else
             {
                 ScrollBarElement.DragStarted += new EventHandler(ScrollBarElement_DragStarted);
-                ScrollBarElement.DragCompleted += new EventHandler(OnZoomingScaleChanged);
+                ScrollBarElement.DragCompleted += new EventHandler(ScrollBarElement_DragCompleted);
+                _renderAfterDrag = true;
             }
         }
-        
+
+        Boolean _dragCompletedLock = false;
+        Boolean _renderAfterDrag = false;
+
+        void ScrollBarElement_DragCompleted(object sender, EventArgs e)
+        {
+            if (!_renderAfterDrag)
+                SetZoomState();
+            else
+            {
+                OnZoomingScaleChanged(sender, e);
+                (Chart as Chart).Dispatcher.BeginInvoke(new Action(SetZoomState));
+            }
+        }
+
+        private void SetZoomState()
+        {
+            Chart chart = (Chart as Chart);
+
+            if (!_dragCompletedLock && ScrollBarElement.Scale < 1)
+            {
+                _dragCompletedLock = true;
+
+                if (_oldZoomState.MinXValue != null && _oldZoomState.MaxXValue != null)
+                    _zoomStateStack.Push(new ZoomState(_oldZoomState.MinXValue, _oldZoomState.MaxXValue));
+
+                _oldZoomState.MinXValue = ViewMinimum;
+                _oldZoomState.MaxXValue = ViewMaximum;
+
+
+                chart._zoomOutTextBlock.Visibility = Visibility.Visible;
+                chart._zoomIconSeparater.Visibility = Visibility.Visible;
+                chart._showAllTextBlock.Visibility = Visibility.Visible;
+            }
+
+            if (ScrollBarElement.Scale == 1)
+            {
+                chart._showAllTextBlock.Visibility = Visibility.Collapsed;
+                chart._zoomIconSeparater.Visibility = Visibility.Collapsed;
+                chart._zoomOutTextBlock.Visibility = Visibility.Collapsed;
+
+                _zoomStateStack.Clear();
+
+                _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+
+                _oldZoomState.MinXValue = null;
+                _oldZoomState.MaxXValue = null;
+            }
+        }
+
         void ScrollBarElement_DragStarted(object sender, EventArgs e)
         {   
             ZoomBar zoomBar = sender as ZoomBar;
@@ -4519,6 +4674,8 @@ namespace Visifire.Charts
 
             if (ZoomingScaleChanged != null)
                 ZoomingScaleChanged(this, e);
+
+            _dragCompletedLock = false;
         }
 
         internal static void SaveOldValueOfAxisRange(Axis axis)
@@ -4623,6 +4780,8 @@ namespace Visifire.Charts
         /// </summary>
         private event EventHandler<AxisScrollEventArgs> _onScroll;
 
+        internal Stack<ZoomState> _zoomStateStack = new Stack<ZoomState>();
+
         /// <summary>
         /// Margin between axis title and axis scale
         /// </summary>
@@ -4636,6 +4795,21 @@ namespace Visifire.Charts
         Double _internalMaxWidth = Double.NaN;
         Double _internalMinHeight = Double.NaN;
         Double _internalMinWidth = Double.NaN;
+
+        Boolean _showAllState = false;
+
+        internal class ZoomState
+        {
+            public ZoomState(Object minValue, Object maxValue)
+            {
+                MinXValue = minValue;
+                MaxXValue = maxValue;
+            }
+
+            public Object MinXValue;
+
+            public Object MaxXValue;
+        }
 
         #endregion
     }

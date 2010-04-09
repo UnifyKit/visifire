@@ -237,7 +237,7 @@ namespace Visifire.Charts
                             if (!dataPoint.IsLabelStyleSet && !dataPoint.Parent.IsLabelStyleSet && !isVertical && tb.TextBlockDesiredSize.Height >= columnVisualSize.Height)
                             {
                                 labelLeft = canvasLeft + columnVisualSize.Width / 2 - tb.TextBlockDesiredSize.Width / 2;
-                                labelTop = canvasTop - outsideGap;// -tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
+                                labelTop = canvasTop - outsideGap;// - tb.TextBlockDesiredSize.Height - (((Double)dataPoint.MarkerSize / 2) * (Double)dataPoint.MarkerScale - (isView3D ? -outsideGap : outsideGap));
                             }
                             else
                             {
