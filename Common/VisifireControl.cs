@@ -148,7 +148,7 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Enable/Disable the watermark
+        /// Enable/Disable the watermark. This property is applicable in Enterprise version only.
         /// </summary>
         [Obsolete]
         public Boolean Watermark
@@ -232,11 +232,100 @@ namespace Visifire.Commons
             _toolbarContainer.VerticalAlignment = VerticalAlignment.Top;
             _toolbarContainer.Margin = new Thickness(0, 3, 5, 0);
             _toolbarContainer.SetValue(Canvas.ZIndexProperty, 90000);
- 
+
             LoadWatermark();
             LoadSaveIcon();
             
             _rootElement.Children.Add(_toolbarContainer);
+        }
+
+        /// <summary>
+        /// Load container for Zoom icons at the top-right corner of PlotArea
+        /// </summary>
+        protected void LoadZoomIcons()
+        {
+            _zoomIconContainer = new StackPanel();
+            _zoomIconContainer.Orientation = Orientation.Horizontal;
+            _zoomIconContainer.HorizontalAlignment = HorizontalAlignment.Right;
+            _zoomIconContainer.VerticalAlignment = VerticalAlignment.Top;
+            _zoomIconContainer.Margin = new Thickness(0, 3, 5, 0);
+            _zoomIconContainer.SetValue(Canvas.ZIndexProperty, 95000);
+
+            LoadZoomOutIcon();
+            LoadSeparater();
+            LoadShowAllIcon();
+
+            _plotAreaGrid.Children.Add(_zoomIconContainer);
+        }
+
+        /// <summary>
+        /// Load separater for Zoom icons
+        /// </summary>
+        private void LoadSeparater()
+        {
+            _zoomIconSeparater = new TextBlock();
+            _zoomIconSeparater.Text = "|";
+            _zoomIconSeparater.FontSize = 9;
+            _zoomIconSeparater.Foreground = new SolidColorBrush(Colors.Gray);
+            _zoomIconSeparater.HorizontalAlignment = HorizontalAlignment.Right;
+            _zoomIconSeparater.VerticalAlignment = VerticalAlignment.Center;
+            _zoomIconSeparater.Margin = new Thickness(2, 0, 0, 0);
+            _zoomIconSeparater.Visibility = Visibility.Collapsed;
+            _zoomIconContainer.Children.Add(_zoomIconSeparater);
+        }
+
+        /// <summary>
+        /// Load Show All text (for zooming) at the top-right corner of PlotArea
+        /// </summary>
+        private void LoadShowAllIcon()
+        {
+            _showAllTextBlock = new System.Windows.Controls.TextBlock();
+            _showAllTextBlock.HorizontalAlignment = HorizontalAlignment.Right;
+            _showAllTextBlock.VerticalAlignment = VerticalAlignment.Center;
+            _showAllTextBlock.Margin = new Thickness(2, 0, 0, 0);
+            _showAllTextBlock.Cursor = Cursors.Hand;
+            _showAllTextBlock.Text = "Show All";
+            _showAllTextBlock.FontSize = 9;
+
+            _showAllTextBlock.MouseMove += delegate(Object sender, MouseEventArgs e)
+            {
+                _showAllTextBlock.TextDecorations = TextDecorations.Underline;
+            };
+
+            _showAllTextBlock.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _showAllTextBlock.TextDecorations = null;
+            };
+
+            _showAllTextBlock.Visibility = Visibility.Collapsed;
+            _zoomIconContainer.Children.Add(_showAllTextBlock);
+        }
+
+        /// <summary>
+        /// Load Zoom Out text (for zooming) at the top-right corner of PlotArea
+        /// </summary>
+        private void LoadZoomOutIcon()
+        {
+            _zoomOutTextBlock = new System.Windows.Controls.TextBlock();
+            _zoomOutTextBlock.HorizontalAlignment = HorizontalAlignment.Right;
+            _zoomOutTextBlock.VerticalAlignment = VerticalAlignment.Center;
+            _zoomOutTextBlock.Margin = new Thickness(2, 0, 0, 0);
+            _zoomOutTextBlock.Cursor = Cursors.Hand;
+            _zoomOutTextBlock.Text = "Zoom Out";
+            _zoomOutTextBlock.FontSize = 9;
+
+            _zoomOutTextBlock.MouseMove += delegate(Object sender, MouseEventArgs e)
+            {
+                _zoomOutTextBlock.TextDecorations = TextDecorations.Underline;
+            };
+
+            _zoomOutTextBlock.MouseLeave += delegate(Object sender, MouseEventArgs e)
+            {
+                _zoomOutTextBlock.TextDecorations = null;
+            };
+
+            _zoomOutTextBlock.Visibility = Visibility.Collapsed;
+            _zoomIconContainer.Children.Add(_zoomOutTextBlock);
         }
 
         /// <summary>
@@ -782,6 +871,14 @@ namespace Visifire.Commons
         private StackPanel _toolbarContainer;
 
         private System.Windows.Controls.Image _saveIconImage;
+
+        internal System.Windows.Controls.TextBlock _zoomOutTextBlock;
+
+        internal System.Windows.Controls.TextBlock _showAllTextBlock;
+
+        internal TextBlock _zoomIconSeparater;
+
+        private StackPanel _zoomIconContainer;
 
         #endregion
 

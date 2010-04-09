@@ -381,16 +381,9 @@ namespace WPFVisifireChartsTest
             }
         }
 
-
-        private void chart_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            isLoaded = true;
-        }
-
         #region Private Data
 
         const int sleepTime = 2000;
-        bool isLoaded = false;
 
         #endregion
     }

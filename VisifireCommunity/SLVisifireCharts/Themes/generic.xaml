@@ -123,17 +123,16 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                         </Grid>
 
                                         <Grid x:Name="CenterInnerGrid" Margin="0" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
+                                            
                                             <Canvas x:Name="PlotAreaShadowCanvas" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
                                             <!-- Margin="0,0,4,4" -->
                                             <Grid x:Name="PlotAreaGrid" Canvas.ZIndex="0" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <ScrollViewer BorderThickness="0" IsTabStop="False" x:Name="PlotAreaScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Padding="0">
-                                                    <Canvas x:Name="PlotCanvas">
-
+                                                    <Canvas x:Name="PlotCanvas" >
+                                                        
                                                         <Canvas x:Name="DrawingCanvas" Canvas.ZIndex="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>
 
                                                         <!-- <Canvas x:Name="PlotAreaBevelCanvas" Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Canvas>-->
-                                                        <Border Name="ZoomRectangle" CornerRadius="5"  Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
                                                     </Canvas>
                                                 </ScrollViewer>
                                                 
@@ -174,6 +173,10 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
+                                        
+                                        <Canvas Canvas.ZIndex="2"  Margin="0">
+                                            <Border Name="ZoomRectangle" CornerRadius="0" BorderBrush="Black" Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
+                                        </Canvas>
 
                                     </Grid>
                                 </Grid>

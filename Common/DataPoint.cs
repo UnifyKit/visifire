@@ -2568,15 +2568,16 @@ namespace Visifire.Charts
         private static void OnXValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            
+
             // Double / Int32 value entered in Managed Code
-            if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
-            {
-                dataPoint.InternalXValue = Convert.ToDouble(e.NewValue);
-                dataPoint.XValueType = ChartValueTypes.Numeric;
-            }
+            //if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
+            //{
+            //    dataPoint.InternalXValue = Convert.ToDouble(e.NewValue);
+            //    dataPoint.XValueType = ChartValueTypes.Numeric;
+            //}
+
             // DateTime value entered in Managed Code
-            else if ((e.NewValue.GetType().Equals(typeof(DateTime))))
+            if ((e.NewValue.GetType().Equals(typeof(DateTime))))
             {
                 dataPoint.InternalXValueAsDateTime = (DateTime)e.NewValue;
                 dataPoint.XValueType = ChartValueTypes.DateTime;
@@ -2612,9 +2613,25 @@ namespace Visifire.Charts
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("Invalid Input for XValue");
-                throw new Exception("Invalid Input for XValue");
+                try
+                {
+                    Object propertyValue = Convert.ChangeType(e.NewValue, typeof(System.Double), System.Globalization.CultureInfo.InvariantCulture);
+
+                    dataPoint.InternalXValue = Convert.ToDouble(propertyValue);
+                    dataPoint.XValueType = ChartValueTypes.Numeric;
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Invalid Input for XValue");
+                    throw new Exception("Invalid Input for XValue");
+                }
             }
+
+            //else
+            //{
+            //    System.Diagnostics.Debug.WriteLine("Invalid Input for XValue");
+            //    throw new Exception("Invalid Input for XValue");
+            //}
 
             dataPoint.InvokeUpdateVisual(VcProperties.XValue, e.NewValue);
 
@@ -3143,6 +3160,14 @@ namespace Visifire.Charts
                 if (InteractivityHelper.SELECTED_MARKER_FILL_COLOR == null)
                     InteractivityHelper.SELECTED_MARKER_FILL_COLOR = Graphics.ORANGE_BRUSH;
 
+                if ((!Double.IsNaN(_originalMarkerSize.Width) && !Double.IsNaN(_originalMarkerSize.Height)) && new Size(Marker.MarkerShape.Width, Marker.MarkerShape.Height) != _originalMarkerSize)
+                {
+                    Marker.MarkerShape.Width = _originalMarkerSize.Width;
+                    Marker.MarkerShape.Height = _originalMarkerSize.Height;
+                }
+
+                _originalMarkerSize = new Size(Marker.MarkerShape.Width, Marker.MarkerShape.Height);
+
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
 
@@ -3613,13 +3638,22 @@ namespace Visifire.Charts
                         YValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
                         break;
 
-                    case "YValue":
-                        Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                        this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
-                        break;
+                    //case "YValue":
+                    //    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                    //    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
+                    //    break;
 
                     default:
-                        this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
+                        System.Reflection.PropertyInfo sourcePropertyInfo = sender.GetType().GetProperty(dm.Path);
+                        Object propertyValue = sourcePropertyInfo.GetValue(sender, null);
+
+                        System.Reflection.PropertyInfo targetPropertyInfo = this.GetType().GetProperty(dm.MemberName);
+
+                        // Change type of the source property to target property type
+                        propertyValue = Convert.ChangeType(propertyValue,
+                            targetPropertyInfo.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
+
+                        this.GetType().GetProperty(dm.MemberName).SetValue(this, propertyValue, null);
                         break;
                 }    
             }
@@ -3640,7 +3674,7 @@ namespace Visifire.Charts
             {
                 dm = (from item in Parent.DataMappings where (item.Path == e.PropertyName) select item).Single();
             }
-            catch (Exception exp)
+            catch
             {
                 return;
             }
@@ -3672,13 +3706,25 @@ namespace Visifire.Charts
                     YValues = newYValues;
                     break;
 
-                case "YValue":
-                    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
-                    break;
+                //case "YValue":
+                //    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
+                //    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
+                //    break;
 
                 default:
-                    this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
+
+                    System.Reflection.PropertyInfo sourcePropertyInfo = sender.GetType().GetProperty(dm.Path);
+                    Object propertyValue = sourcePropertyInfo.GetValue(sender, null);
+
+                    System.Reflection.PropertyInfo targetPropertyInfo = this.GetType().GetProperty(dm.MemberName);
+
+                    // Change type of the source property to target property type
+                    propertyValue = Convert.ChangeType(propertyValue,
+                        targetPropertyInfo.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
+
+                    this.GetType().GetProperty(dm.MemberName).SetValue(this, propertyValue, null);
+
+                    //this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
                     break;
             }            
         }
@@ -4169,6 +4215,8 @@ namespace Visifire.Charts
 
         Nullable<Thickness> _borderThickness = null;
         Double _internalOpacity = Double.NaN;
+
+        Size _originalMarkerSize = new Size(Double.NaN, Double.NaN);
 
 #if WPF
         /// <summary>

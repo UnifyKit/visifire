@@ -139,7 +139,19 @@ namespace Visifire.Charts
                                 break;
 
                             default:
-                                dp.GetType().GetProperty(dm.MemberName).SetValue(dp, dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null), null);
+
+                                System.Reflection.PropertyInfo sourcePropertyInfo = dp.DataContext.GetType().GetProperty(dm.Path);
+                                Object propertyValue = sourcePropertyInfo.GetValue(dp.DataContext, null);
+
+                                System.Reflection.PropertyInfo targetPropertyInfo = dp.GetType().GetProperty(dm.MemberName);
+
+                                // Change type of the source property to target property type
+                                propertyValue = Convert.ChangeType(propertyValue,
+                                    targetPropertyInfo.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
+
+                                dp.GetType().GetProperty(dm.MemberName).SetValue(dp, propertyValue, null);
+
+                                //dp.GetType().GetProperty(dm.MemberName).SetValue(dp, dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null), null);
                                 break;
                         }
                     }
@@ -310,7 +322,7 @@ namespace Visifire.Charts
                         {
                             dp.BindData(item, DataMappings);
                         }
-                        catch (Exception exc)
+                        catch
                         {
                             throw new Exception("Error While Mapping Data: Please Verify that you are mapping the Data Correctly");
                         }
@@ -361,7 +373,7 @@ namespace Visifire.Charts
                             {
                                 dp.BindData(item, DataMappings);
                             }
-                            catch (Exception exc)
+                            catch
                             {
                                 throw new Exception("Error While Mapping Data: Please Verify that you are mapping the Data Correctly");
                             }

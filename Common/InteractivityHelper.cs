@@ -45,6 +45,7 @@ internal class InteractivityHelper
     {
         ApplyBorderEffect(shape, borderStyles, borderThickness, borderColor);
         shape.Fill = fillColor;
+
         shape.Height *= scaleFactor;
         shape.Width *= scaleFactor;
 

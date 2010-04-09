@@ -6,7 +6,7 @@
   
     <Grid x:Name="LayoutRoot" Background="Gray">
 
-        <vc:Chart Theme="Theme1" x:Name="MyChart" View3D="false" Width="500" Height="300" ZoomingEnabled="true">
+       <vc:Chart Theme="Theme1" x:Name="MyChart" View3D="false" Width="500" Height="300" ZoomingEnabled="true">
 
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
