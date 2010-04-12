@@ -292,6 +292,15 @@ namespace Visifire.Charts
         private static void OnZoomingEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Chart c = d as Chart;
+
+            if(c._zoomIconSeparater != null)
+            {
+                if ((Boolean)e.NewValue)
+                    c._zoomIconContainer.Visibility = Visibility.Visible;
+                else
+                    c._zoomIconContainer.Visibility = Visibility.Collapsed;
+            }
+            
             c.InvokeRender();
         }
 
