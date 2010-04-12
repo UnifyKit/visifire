@@ -288,7 +288,7 @@ namespace Visifire.Commons
             _showAllTextBlock.FontSize = 9;
 
             _showAllTextBlock.MouseMove += delegate(Object sender, MouseEventArgs e)
-            {
+            {   
                 _showAllTextBlock.TextDecorations = TextDecorations.Underline;
             };
 
@@ -878,7 +878,7 @@ namespace Visifire.Commons
 
         internal TextBlock _zoomIconSeparater;
 
-        private StackPanel _zoomIconContainer;
+        internal StackPanel _zoomIconContainer;
 
         #endregion
 
