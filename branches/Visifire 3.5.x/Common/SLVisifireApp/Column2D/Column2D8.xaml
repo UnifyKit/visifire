@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="SLVisifireApp.Column2D8"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <vc:Chart Theme="Theme1" ColorSet="VisiBlue" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="5 Largest Countries in Population"/>
+            </vc:Chart.Titles>
+            
+            <vc:Chart.AxesY>
+                <vc:Axis ScalingSet="1000000,M;1000,B" Title="Population" TitleFontSize="12">
+                    <vc:Axis.Grids>
+                        <vc:ChartGrid InterlacedColor="#f5f9fa"/>
+                    </vc:Axis.Grids>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+
+            <vc:Chart.Series>
+                <vc:DataSeries RenderAs="Column" Bevel="False" LabelEnabled="True" RadiusX="6" RadiusY="6" Cursor="Hand">
+                    <vc:DataSeries.DataPoints>
+                        <vc:DataPoint AxisXLabel="China" YValue="1321851888"/>
+                        <vc:DataPoint AxisXLabel="India" YValue="1129866154"/>
+                        <vc:DataPoint AxisXLabel="USA" YValue="301139947"/>
+                        <vc:DataPoint AxisXLabel="Indonesia" YValue="234693997"/>
+                        <vc:DataPoint AxisXLabel="Brazil" YValue="190010647"/>
+                    </vc:DataSeries.DataPoints>
+                </vc:DataSeries>
+            </vc:Chart.Series>
+
+        </vc:Chart>
+    </Grid>
+</UserControl>
