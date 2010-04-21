@@ -1,0 +1,21 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" View3D="True" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Browser Market Share"/>
+  </vc:Chart.Titles>
+
+  <vc:Chart.Series>
+    <vc:DataSeries RenderAs="Doughnut" Bevel="False" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Internet Explorer 7.0" YValue="44.02"/>
+        <vc:DataPoint AxisXLabel="Internet Explorer 6.0" YValue="30.61"/>
+        <vc:DataPoint AxisXLabel="Firefox 2.0" YValue="16.30"/>
+        <vc:DataPoint AxisXLabel="Safari 3.0" YValue="4.60"/>
+        <vc:DataPoint AxisXLabel="Safari 4.1" YValue="0.74"/>
+        <vc:DataPoint AxisXLabel="Opera 9.x" YValue="0.70"/>
+        <vc:DataPoint AxisXLabel="Other" YValue="3.05"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

@@ -1,0 +1,69 @@
+﻿<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+          Theme="Theme1" BorderBrush="Gray" Width="500" Height="300">
+
+  <vc:Chart.Titles>
+    <vc:Title Text="Imports of Goods"/>
+  </vc:Chart.Titles>
+  
+  <vc:Chart.AxesX>
+    <vc:Axis Title="Month"/>
+  </vc:Chart.AxesX>
+  
+  <vc:Chart.AxesY>
+    <vc:Axis Title="Total(In millions of dollars)" Prefix="$"/>
+  </vc:Chart.AxesY>
+
+  <vc:Chart.Legends>
+    <vc:Legend BorderColor="#dbf2f2" BorderThickness="0.5" CornerRadius="2">
+      <vc:Legend.Background>
+        <LinearGradientBrush EndPoint="1,1" StartPoint="0,1">
+          <GradientStop Color="#f9f8f8" Offset="0.1"/>
+          <GradientStop Color="#f1fafa" Offset="0.4"/>
+          <GradientStop Color="#fcfefe" Offset="1"/>
+        </LinearGradientBrush>
+      </vc:Legend.Background>
+    </vc:Legend>
+  </vc:Chart.Legends>
+
+  <vc:Chart.Series>
+    <vc:DataSeries LegendText="Capital Goods" RenderAs="StackedColumn" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint AxisXLabel="Jan" YValue="25987"/>
+        <vc:DataPoint AxisXLabel="Feb" YValue="24550"/>
+        <vc:DataPoint AxisXLabel="Mar" YValue="31302"/>
+        <vc:DataPoint AxisXLabel="Apr" YValue="34406"/>
+        <vc:DataPoint AxisXLabel="May" YValue="32774"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries LegendText="Consumer Goods" Bevel="True" RenderAs="StackedColumn" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="31243"/>
+        <vc:DataPoint YValue="29692"/>
+        <vc:DataPoint YValue="31390"/>
+        <vc:DataPoint YValue="31080"/>
+        <vc:DataPoint YValue="31623"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries LegendText="Foods and Beverages" RenderAs="StackedColumn" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="8216"/>
+        <vc:DataPoint YValue="6483"/>
+        <vc:DataPoint YValue="9592"/>
+        <vc:DataPoint YValue="8006"/>
+        <vc:DataPoint YValue="6291"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+
+    <vc:DataSeries LegendText="Automotive Vehicles" RenderAs="StackedColumn" Cursor="Hand">
+      <vc:DataSeries.DataPoints>
+        <vc:DataPoint YValue="20725"/>
+        <vc:DataPoint YValue="22710"/>
+        <vc:DataPoint YValue="21060"/>
+        <vc:DataPoint YValue="22581"/>
+        <vc:DataPoint YValue="19970"/>
+      </vc:DataSeries.DataPoints>
+    </vc:DataSeries>
+  </vc:Chart.Series>
+</vc:Chart>

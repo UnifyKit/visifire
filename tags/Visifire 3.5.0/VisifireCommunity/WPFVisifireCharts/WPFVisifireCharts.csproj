@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CF8E563B-5C37-47C3-8431-056EE13E6A00}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Visifire.Charts</RootNamespace>
+    <AssemblyName>WPFVisifire.Charts</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>WPFVisifireCharts.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WPF</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Silverlight|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WPF|AnyCPU' ">
+    <OutputPath>bin\WPF\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Common\WPFToolkit.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Common\AnimationHelper.cs">
+      <Link>AnimationHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\AreaChart.cs">
+      <Link>AreaChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Axis.cs">
+      <Link>Axis.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\AxisLabel.cs">
+      <Link>AxisLabel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\AxisLabels.cs">
+      <Link>AxisLabels.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\AxisManager.cs">
+      <Link>AxisManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\AxisScrollEventArgs.cs">
+      <Link>AxisScrollEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\BarChart.cs">
+      <Link>BarChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\BubbleChart.cs">
+      <Link>BubbleChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\CandleStickChart.cs">
+      <Link>CandleStickChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ChartArea.cs">
+      <Link>ChartArea.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ChartGrid.cs">
+      <Link>ChartGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Collections.cs">
+      <Link>Collections.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ColorSet.cs">
+      <Link>ColorSet.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ColorSets.cs">
+      <Link>ColorSets.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ColumnChart.cs">
+      <Link>ColumnChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Controls\ZoomBar.cs">
+      <Link>ZoomBar.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Converters.cs">
+      <Link>Converters.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\DataMapping.cs">
+      <Link>DataMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\DataPoint.cs">
+      <Link>DataPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\DataSeries.cs">
+      <Link>DataSeries.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\DateTimeHelper.cs">
+      <Link>DateTimeHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ElementData.cs">
+      <Link>ElementData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Enums.cs">
+      <Link>Enums.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\FunnelChart.cs">
+      <Link>FunnelChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Graphics.cs">
+      <Link>Graphics.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\InteractivityHelper.cs">
+      <Link>InteractivityHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\LabelPlacementHelper.cs">
+      <Link>LabelPlacementHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Legend.cs">
+      <Link>Legend.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\LineChart.cs">
+      <Link>LineChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Marker.cs">
+      <Link>Marker.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ObservableObject.cs">
+      <Link>ObservableObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PartialChart.cs">
+      <Link>PartialChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PieChart.cs">
+      <Link>PieChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PlotArea.cs">
+      <Link>PlotArea.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PlotAreaMouseButtonEventArgs.cs">
+      <Link>PlotAreaMouseButtonEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PlotAreaMouseEventArgs.cs">
+      <Link>PlotAreaMouseEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PlotDetails.cs">
+      <Link>PlotDetails.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PlotGroup.cs">
+      <Link>PlotGroup.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PointChart.cs">
+      <Link>PointChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\RenderHelper.cs">
+      <Link>RenderHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\StackedColumn.cs">
+      <Link>StackedColumn.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\StackedColumn100.cs">
+      <Link>StackedColumn100.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\StepLineChart.cs">
+      <Link>StepLineChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\StockChart.cs">
+      <Link>StockChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Theme.cs">
+      <Link>Theme.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Themes.cs">
+      <Link>Themes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Ticks.cs">
+      <Link>Ticks.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Title.cs">
+      <Link>Title.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ToolTip.cs">
+      <Link>ToolTip.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\TrendLine.cs">
+      <Link>TrendLine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\VisifireControl.cs">
+      <Link>VisifireControl.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\VisifireElement.cs">
+      <Link>VisifireElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\WPFVisifireCharts\Chart.cs">
+      <Link>Chart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\XWiseData.cs">
+      <Link>XWiseData.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WPFVisifireCharts.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Common\WPFVisifireCharts\Theme1.xaml">
+      <Link>Theme1.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Common\WPFVisifireCharts\Theme2.xaml">
+      <Link>Theme2.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Common\WPFVisifireCharts\Theme3.xaml">
+      <Link>Theme3.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Common\WPFVisifireCharts\ColorSets.xaml">
+      <Link>ColorSets.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Common\Images\save_icon.png">
+      <Link>save_icon.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
