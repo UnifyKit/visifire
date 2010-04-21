@@ -1,16 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireApp", "SLVisifireApp\SLVisifireApp.csproj", "{F16255E4-2248-47D9-9606-BBE44463075F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireCharts", "SLVisifireCharts\SLVisifireCharts.csproj", "{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireCharts", "WPFVisifireCharts\WPFVisifireCharts.csproj", "{CF8E563B-5C37-47C3-8431-056EE13E6A00}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireChartsApp", "WPFVisifireChartsApp\WPFVisifireChartsApp.csproj", "{8FB59643-9EB8-4C87-8F87-C1C3BE2E5470}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireChartsTest", "WPFVisifireChartsTest\WPFVisifireChartsTest.csproj", "{E5A10564-F1C8-47B5-A4A8-B1514D02CA0D}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C0A3F9F-000F-47BF-9609-60780A3B0488}"
 	ProjectSection(SolutionItems) = preProject
 		AnimationHelper.cs = AnimationHelper.cs
@@ -61,6 +51,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VisifireElement.cs = VisifireElement.cs
 		XWiseData.cs = XWiseData.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireApp", "SLVisifireApp\SLVisifireApp.csproj", "{F16255E4-2248-47D9-9606-BBE44463075F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireCharts", "SLVisifireCharts\SLVisifireCharts.csproj", "{CC926AB3-DF2D-4820-95AC-46247A5E3FC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireCharts", "WPFVisifireCharts\WPFVisifireCharts.csproj", "{CF8E563B-5C37-47C3-8431-056EE13E6A00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireChartsApp", "WPFVisifireChartsApp\WPFVisifireChartsApp.csproj", "{8FB59643-9EB8-4C87-8F87-C1C3BE2E5470}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFVisifireChartsTest", "WPFVisifireChartsTest\WPFVisifireChartsTest.csproj", "{E5A10564-F1C8-47B5-A4A8-B1514D02CA0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVisifireChartsTest", "SLVisifireChartsTest\SLVisifireChartsTest.csproj", "{A7F07EC6-5257-4394-AFCE-19EC93D8D99D}"
 EndProject
