@@ -962,11 +962,23 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        pieCanvasWidth = minLength - labelLineLength * 2 - LABEL_LINE_LENGTH * 2;
-                        pieCanvasHeight = pieCanvasWidth;
+                        //pieCanvasWidth = minLength - labelLineLength * 2 - LABEL_LINE_LENGTH * 2;
+                        //pieCanvasHeight = pieCanvasWidth;
 
-                        labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH * 2;
-                        labelEllipseHeight = labelEllipseWidth;
+                        //labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH * 2;
+                        //labelEllipseHeight = labelEllipseWidth;
+
+                        //minLength = Math.Min(width, height);
+                        pieCanvasWidth = minLength - maxLabelWidth - LABEL_LINE_LENGTH / 2;
+
+                        if (pieCanvasWidth < Math.Min(width, height) / 3)
+                            pieCanvasWidth = Math.Min(width, height) / 3;
+
+                        pieCanvasHeight = Math.Abs(pieCanvasWidth);
+
+                        labelEllipseWidth = Math.Abs(pieCanvasWidth) + LABEL_LINE_LENGTH;
+                        labelEllipseHeight = labelEllipseWidth + LABEL_LINE_LENGTH / 2;
+
                     }
                                        
                     PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
@@ -980,6 +992,7 @@ namespace Visifire.Charts
                     labelEllipseHeight = pieCanvasHeight;
 
                     PositionLabels(visual, totalSum, dataPoints, new Size(Math.Abs(pieCanvasWidth), Math.Abs(pieCanvasHeight)), new Size(Math.Abs(labelEllipseWidth), Math.Abs(labelEllipseHeight)), new Size(width, height), scaleY, is3D);
+
                 }
             }
             else
