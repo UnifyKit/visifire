@@ -1,4 +1,17 @@
-﻿              
+﻿//--------------Pie Chart Fix--------------------
+
+minLength = Math.Min(width, height);
+                        pieCanvasWidth = minLength - maxLabelWidth;
+
+                        if (pieCanvasWidth < minLength / 3)
+                            pieCanvasWidth = minLength / 3;
+                        
+                        pieCanvasHeight = pieCanvasWidth;
+
+                        labelEllipseWidth = pieCanvasWidth + LABEL_LINE_LENGTH;
+                        labelEllipseHeight = labelEllipseWidth + LABEL_LINE_LENGTH;
+
+//----------------------------------              
 
             //------------------------------------------
 /*
