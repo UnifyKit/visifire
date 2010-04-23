@@ -137,7 +137,6 @@ namespace Visifire.Charts
                 {
                     minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, xValue);
                     scrollBarOffset = minPixelValue / (ScrollableSize - Width);
-
                 }
                 else
                 {
@@ -4453,8 +4452,13 @@ namespace Visifire.Charts
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                 {
-                    ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
-                        xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                    if (chart.PlotDetails.ListOfAllDataPoints.Count != 0)
+                    {
+                        ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
+                            xValue, chart.ChartArea.AxisX.InternalIntervalType);
+                    }
+                    else
+                        ViewMinimum = chart.ChartArea.AxisX.MinDate;
                 }
                 else
                     ViewMinimum = xValue;
