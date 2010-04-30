@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Windows.Shapes;
+using System.Windows.Browser;
 
 #endif
 
@@ -54,6 +55,12 @@ namespace Visifire.Charts
 #endif
 
             Entries = new List<KeyValuePair<String, Marker>>();
+
+            // Attach event handler with EventChanged event of VisifireElement
+            EventChanged += delegate
+            {
+                FirePropertyChanged(VcProperties.MouseEvent);
+            };
         }
 
         public override void Bind()
@@ -1474,6 +1481,122 @@ namespace Visifire.Charts
 
         #region Public Events And Delegates
 
+        /// <summary>
+        /// Event handler for the MouseLeftButtonDown event 
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new event EventHandler<LegendMouseButtonEventArgs> MouseLeftButtonDown
+        {
+            remove
+            {
+                _onMouseLeftButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseLeftButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseLeftButtonUp event 
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new event EventHandler<LegendMouseButtonEventArgs> MouseLeftButtonUp
+        {
+            remove
+            {
+                _onMouseLeftButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseLeftButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+#if WPF
+        /// <summary>
+        /// Event handler for the MouseLeftButtonDown event 
+        /// </summary>
+        public new event EventHandler<LegendMouseButtonEventArgs> MouseRightButtonDown
+        {
+            remove
+            {
+                _onMouseRightButtonDown -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonDown += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for the MouseLeftButtonUp event 
+        /// </summary>
+        public new event EventHandler<LegendMouseButtonEventArgs> MouseRightButtonUp
+        {
+            remove
+            {
+                _onMouseRightButtonUp -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseRightButtonUp += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+#endif
+
+        /// <summary>
+        /// Event handler for the MouseMove event 
+        /// </summary>
+#if SL
+        [ScriptableMember]
+#endif
+        public new event EventHandler<LegendMouseEventArgs> MouseMove
+        {
+            remove
+            {
+                _onMouseMove -= value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+            add
+            {
+                _onMouseMove += value;
+
+                if (EventChanged != null)
+                    EventChanged(this, null);
+            }
+        }
+
         #endregion
 
         #region Protected Methods
@@ -2043,6 +2166,11 @@ namespace Visifire.Charts
             AttachToolTip(Chart, this, Visual);
             AttachEvents2Visual(this, Visual);
         }
+        
+
+
+
+
 
         /// <summary>
         /// Return actual size of the TextBlock
@@ -2550,6 +2678,65 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+#if WPF
+        internal override void FireMouseRightButtonDownEvent(object sender, object e)
+        {
+            if (_onMouseRightButtonDown != null)
+                _onMouseRightButtonDown(sender, new LegendMouseButtonEventArgs(e as MouseButtonEventArgs));
+        }
+
+        internal override void FireMouseRightButtonUpEvent(object sender, object e)
+        {
+            if (_onMouseRightButtonUp != null)
+                _onMouseRightButtonUp(sender, new LegendMouseButtonEventArgs(e as MouseButtonEventArgs));
+        }
+#endif
+
+        internal override void FireMouseLeftButtonDownEvent(object sender, object e)
+        {
+            if (_onMouseLeftButtonDown != null)
+                _onMouseLeftButtonDown(sender, new LegendMouseButtonEventArgs(e as MouseButtonEventArgs));
+        }
+
+        internal override void FireMouseLeftButtonUpEvent(object sender, object e)
+        {
+            if (_onMouseLeftButtonUp != null)
+                _onMouseLeftButtonUp(sender, new LegendMouseButtonEventArgs(e as MouseButtonEventArgs));
+        }
+
+        internal override void FireMouseMoveEvent(object sender, object e)
+        {
+            if (_onMouseMove != null)
+                _onMouseMove(sender, new LegendMouseEventArgs(e as MouseEventArgs));
+        }
+        
+        internal override object GetMouseLeftButtonDownEventHandler()
+        {
+            return _onMouseLeftButtonDown;
+        }
+
+        internal override object GetMouseLeftButtonUpEventHandler()
+        {
+            return _onMouseLeftButtonUp;
+        }
+
+        internal override object GetMouseMoveEventHandler()
+        {
+            return _onMouseMove;
+        }
+
+#if WPF
+        internal override object GetMouseRightButtonDownEventHandler()
+        {
+            return _onMouseRightButtonDown;
+        }
+
+        internal override object GetMouseRightButtonUpEventHandler()
+        {
+            return _onMouseRightButtonUp;
+        }
+#endif
+
         /// <summary>
         /// Create visual object of the Legend
         /// </summary>
@@ -2621,25 +2808,56 @@ namespace Visifire.Charts
 
         #region Internal Events And Delegates
 
+        /// <summary>
+        /// EventChanged event is fired if any event is attached
+        /// </summary>
+        internal new event EventHandler EventChanged;
+
         #endregion
 
         #region Data
 
-        private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
+        /// <summary>
+        /// Handler for MouseLeftButtonDown event
+        /// </summary>
+        private event EventHandler<LegendMouseButtonEventArgs> _onMouseLeftButtonDown;
 
+        /// <summary>
+        /// Handler for MouseLeftButtonUp event
+        /// </summary>
+        private event EventHandler<LegendMouseButtonEventArgs> _onMouseLeftButtonUp;
+        
+        /// <summary>
+        /// Handler for MouseMove event
+        /// </summary>
+        private event EventHandler<LegendMouseEventArgs> _onMouseMove;
+
+#if WPF
+        /// <summary>
+        /// Handler for MouseRightButtonDown event
+        /// </summary>
+        private event EventHandler<LegendMouseButtonEventArgs> _onMouseRightButtonDown;
+
+        /// <summary>
+        /// Handler for MouseRightButtonUp event
+        /// </summary>
+        private event EventHandler<LegendMouseButtonEventArgs> _onMouseRightButtonUp;
+#endif
+        
+        private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
         private Double _internalFontSize = Double.NaN;
         private FontFamily _internalFontFamily = null;
+        private Nullable<FontStyle> _internalFontStyle = null;
+        private Nullable<FontWeight> _internalFontWeight = null;
+        private Nullable<Thickness> _borderThickness = null;
+        private Brush _internalBackground = null;
+        private Nullable<HorizontalAlignment> _internalHorizontalAlignment = null;
+        private Nullable<VerticalAlignment> _internalVerticalAlignment = null;
+        private Nullable<Thickness> _internalPadding = null;
+        private Double _internalOpacity = Double.NaN;
+        private Double _internalMaxheight = Double.NaN;
+        private Double _internalMaxWidth = Double.NaN;
         internal Brush InternalFontColor;
-        Nullable<FontStyle> _internalFontStyle = null;
-        Nullable<FontWeight> _internalFontWeight = null;
-        Nullable<Thickness> _borderThickness = null;
-        Brush _internalBackground = null;
-        Nullable<HorizontalAlignment> _internalHorizontalAlignment = null;
-        Nullable<VerticalAlignment> _internalVerticalAlignment = null;
-        Nullable<Thickness> _internalPadding = null;
-        Double _internalOpacity = Double.NaN;
-        Double _internalMaxheight = Double.NaN;
-        Double _internalMaxWidth = Double.NaN;
 
 #if WPF
 

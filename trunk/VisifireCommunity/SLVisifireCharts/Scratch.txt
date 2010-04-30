@@ -1,4 +1,8 @@
-﻿//--------------Pie Chart Fix--------------------
+﻿Changed in the folloing functions
+Check4DefaultInteractivity in ChartArea
+
+
+//--------------Pie Chart Fix--------------------
 
 minLength = Math.Min(width, height);
                         pieCanvasWidth = minLength - maxLabelWidth;
@@ -14,10 +18,12 @@ minLength = Math.Min(width, height);
 //----------------------------------              
 
             //------------------------------------------
-/*
-            Double percentValue;
-            //percentValue = ((maxPixelPos - minPixelPos) / chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength()) * (minPixelPos / (maxPixelPos) * 100);
+		    /*
 
+            Double percentValue;
+            
+            //percentValue = ((maxPixelPos - minPixelPos) / chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength()) * (minPixelPos / (maxPixelPos) * 100);
+            
             if (maxPixelValue - minPixelValue > chart.ChartArea.AxisX.ScrollBarElement.GetTrackLength() / 2 - minPixelValue)
                 percentValue = 1 - Math.Abs((minPixelValue / maxPixelValue) - ((minPixelValue) / (434)));
             else

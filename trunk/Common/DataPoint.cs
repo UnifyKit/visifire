@@ -2039,14 +2039,14 @@ namespace Visifire.Charts
                     if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
                     {
                         chart.PARTIAL_DP_RENDER_LOCK = true;
-                        chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
+                        chart._partialRenderBlockedCount = 0;
                         chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
                         chart._datapoint2UpdatePartially.Add(this, property);
                     }
                     else if (!recursive && property == VcProperties.XValue && (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.StepLine || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point))
                     {   
                         chart.PARTIAL_DP_RENDER_LOCK = true;
-                        chart.PARTIAL_RENDER_BLOCKD_COUNT = 0;
+                        chart._partialRenderBlockedCount = 0;
                         chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
                         chart._datapoint2UpdatePartially.Add(this, property);
                     }
@@ -2213,7 +2213,7 @@ namespace Visifire.Charts
                 if (!chart._datapoint2UpdatePartially.Keys.Contains(this))
                 {   
                     chart._datapoint2UpdatePartially.Add(this, property);
-                    chart.PARTIAL_RENDER_BLOCKD_COUNT++;
+                    chart._partialRenderBlockedCount++;
                 }
             }
 
@@ -3638,22 +3638,8 @@ namespace Visifire.Charts
                         YValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
                         break;
 
-                    //case "YValue":
-                    //    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                    //    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
-                    //    break;
-
                     default:
-                        System.Reflection.PropertyInfo sourcePropertyInfo = sender.GetType().GetProperty(dm.Path);
-                        Object propertyValue = sourcePropertyInfo.GetValue(sender, null);
-
-                        System.Reflection.PropertyInfo targetPropertyInfo = this.GetType().GetProperty(dm.MemberName);
-
-                        // Change type of the source property to target property type
-                        propertyValue = Convert.ChangeType(propertyValue,
-                            targetPropertyInfo.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
-
-                        this.GetType().GetProperty(dm.MemberName).SetValue(this, propertyValue, null);
+                        dm.Map(sender, this);
                         break;
                 }    
             }

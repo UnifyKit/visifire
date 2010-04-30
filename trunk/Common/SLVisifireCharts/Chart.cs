@@ -228,7 +228,7 @@ namespace Visifire.Charts
                 _height = e.NewSize.Height;
                 _width = e.NewSize.Width;
 
-                _renderLock = false;
+                RENDER_LOCK = false;
 
                 // Render the chart with new size
                 if (IsInDesignMode)
