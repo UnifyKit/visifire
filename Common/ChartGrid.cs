@@ -28,7 +28,6 @@ namespace Visifire.Charts
     /// </summary>
     public class ChartGrid : ObservableObject
     {
-
         #region Public Methods
 
         /// <summary>
@@ -365,7 +364,7 @@ namespace Visifire.Charts
        /// <param name="animationEnabled">Whether animation is enabled</param>
        /// <param name="animationDuration">Animation duration</param>
         private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
-        {
+        {   
             Double interval = (Double)Interval; // Interval  for the chart grid
             Decimal index = 0;// = (Decimal)Minimum;   // starting point for the loop that generates grids
             Decimal minVal = (Decimal)Minimum;  // smallest value from where the grid must be drawn
@@ -404,9 +403,9 @@ namespace Visifire.Charts
                 }
             }
 
-            //index = minval;
+            // index = minval;
             // maxVal = maxVal + gap / 1000;
-
+            
 #if WPF
             if (Storyboard != null && Storyboard.GetValue(Storyboard.TargetProperty) != null)
                 Storyboard.Stop();

@@ -152,7 +152,8 @@ namespace Visifire.Charts
 
             _toolTipCanvas = GetTemplateChild(ToolTipCanvasName) as Canvas;  
             
-            _zoomRectangle = GetTemplateChild(ZoomRectangleName) as Border;  
+            _zoomRectangle = GetTemplateChild(ZoomRectangleName) as Border;
+            _elementCanvas = GetTemplateChild(ElementCanvasName) as Canvas;  
         }
 
         /// <summary>
@@ -192,6 +193,11 @@ namespace Visifire.Charts
 
             LoadZoomIcons();
 
+            if(_zoomOutTextBlock != null)
+                _zoomOutTextBlock.Foreground = DataSeries.CalculateFontColor(null, this);
+            if(_showAllTextBlock != null)
+                _showAllTextBlock.Foreground = DataSeries.CalculateFontColor(null, this);
+
             if (StyleDictionary == null)
                 LoadTheme("Theme1", false);
 
@@ -214,7 +220,7 @@ namespace Visifire.Charts
 
             _isTemplateApplied = true;
 
-            //_zoomRectangle.Visibility = Visibility.Collapsed;
+            _zoomRectangle.Visibility = Visibility.Collapsed;
 
 #if WPF
             NameScope.SetNameScope(this._rootElement, new NameScope());
@@ -2245,7 +2251,7 @@ namespace Visifire.Charts
 
             if (_isTemplateApplied)
             {
-                if (_renderLock)
+                if (RENDER_LOCK)
                     _renderLapsedCounter++;
                 else
                 {
@@ -2269,12 +2275,12 @@ namespace Visifire.Charts
         /// </summary>
         internal void Render()
         {
-            if (_isTemplateApplied && !_renderLock && _rootElement != null)
+            if (_isTemplateApplied && !RENDER_LOCK && _rootElement != null)
             {
                 if (Double.IsNaN(this.ActualWidth) || Double.IsNaN(this.ActualHeight) || this.ActualWidth == 0 || this.ActualHeight == 0)
                     return;
 
-                _renderLock = true;
+                RENDER_LOCK = true;
 
                 try
                 {   
@@ -2284,7 +2290,7 @@ namespace Visifire.Charts
                 }
                 catch (Exception e)
                 {   
-                    _renderLock = false;
+                    RENDER_LOCK = false;
                     if (CheckSizeError(e as ArgumentException))
                         return;
                     else
@@ -2293,9 +2299,12 @@ namespace Visifire.Charts
             }
         }
         
+        /// <summary>
+        /// Unlock RenderLock
+        /// </summary>
         internal void UnlockRender()
         {   
-            _renderLock = false;           
+            RENDER_LOCK = false;           
         }
 
         /// <summary>
@@ -2353,11 +2362,11 @@ namespace Visifire.Charts
         /// <param name="dockInsidePlotArea">DockInsidePlotArea</param>
         /// <returns>Brush</returns>
         internal static Brush CalculateFontColor(Chart chart, Brush color, Boolean dockInsidePlotArea)
-        {
+        {   
             Brush brush = color;
             Double intensity;
             if (color == null)
-            {
+            {   
                 if (!dockInsidePlotArea)
                 {
                     if (chart != null)
@@ -2414,20 +2423,10 @@ namespace Visifire.Charts
         #endregion
         
         #region Data
-
-        internal Boolean PARTIAL_DP_RENDER_LOCK = false;
-        internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
-        internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
-
-        internal Boolean PARTIAL_DS_RENDER_LOCK = false;
-        // internal Double PARTIAL_RENDER_BLOCKD_COUNT = 0;
-        // internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
-
+       
         /// <summary>
-        /// Set to true before calling forced rerender redraw
+        /// Whether chart is rendered
         /// </summary>
-        internal Boolean _forcedRedraw;
-        
         private EventHandler _rendered;
 
         /// <summary>
@@ -2439,16 +2438,22 @@ namespace Visifire.Charts
         /// Chart area margin
         /// </summary>
         private Thickness _chartAreaMargin;
-        
-        /// <summary>
-        /// Shadow Depth for chart
-        /// </summary>
-        internal static Double SHADOW_DEPTH = 4;
 
         /// <summary>
-        /// Bevel Depth for chart
+        /// Number of partial update-requests has been blocked at this present moment
         /// </summary>
-        internal static Double BEVEL_DEPTH = 5;   
+        internal Double _partialRenderBlockedCount = 0;
+
+        /// <summary>
+        /// DataPoints to render partially
+        /// </summary>
+        internal Dictionary<DataPoint, VcProperties> _datapoint2UpdatePartially;
+
+        /// <summary>
+        /// This flag is used to specify whether chart need to be redrawn forcefully 
+        /// while partial update. 
+        /// </summary>
+        internal Boolean _forcedRedraw;
 
         /// <summary>
         /// Number of time render call is lapsed or failed due to render lock
@@ -2456,20 +2461,39 @@ namespace Visifire.Charts
         internal Int32 _renderLapsedCounter;
 
         /// <summary>
-        /// Render lock is used to protect chart from multiple render
-        /// </summary>
-        internal bool _renderLock = false;
-        
-        /// <summary>
         /// Is used to handle inactive animation after first time render
         /// </summary>
         internal Boolean _internalAnimationEnabled = false;
-
-
+        
         /// <summary>
         /// Whether Theme is changed by the user
         /// </summary>
         internal Boolean _isThemeChanged = false;
+
+        /// <summary>
+        /// Render lock is used to protect chart from multiple render
+        /// </summary>
+        internal Boolean RENDER_LOCK = false;
+
+        /// <summary>
+        /// This lock is used to protect DataPoints from multiple render
+        /// </summary>
+        internal Boolean PARTIAL_DP_RENDER_LOCK = false;
+
+        /// <summary>
+        /// This lock is used to protect DataSeries from multiple render
+        /// </summary>
+        internal Boolean PARTIAL_DS_RENDER_LOCK = false;
+
+        /// <summary>
+        /// Shadow depth for chart
+        /// </summary>
+        internal const Double SHADOW_DEPTH = 4;
+
+        /// <summary>
+        /// Bevel depth for chart
+        /// </summary>
+        internal const Double BEVEL_DEPTH = 5;
         
         #endregion
     }
