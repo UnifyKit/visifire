@@ -17,11 +17,14 @@
             // vChart1.setLogLevel(0); // If you want to disable logging.
             
             var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
+               + ' <vc:Chart.Legends>'
+               + ' <vc:Legend />'
+               + ' </vc:Chart.Legends>'
                + '     <vc:Chart.Titles>'
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries RenderAs="Pie" LabelEnabled="True">'
+               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries" RenderAs="Column" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
@@ -34,11 +37,17 @@
                + ' </vc:Chart>';
             
             // Set Chart XML
-            
             vChart.setDataXml(chartXml);
+            vChart.loaded = function(args) {
+                var chart = args[0];
+                chart.Legends[0].MouseLeftButtonDown = function(sender, e) {
+                    if (e.DataPoint != null) {
+                        alert(e.DataPoint.YValue);
+                    }
+                };
+            };
             
             // Render chart
-            
             vChart.render("VisifireChart0");
             
         </script>

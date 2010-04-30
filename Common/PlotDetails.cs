@@ -336,9 +336,12 @@ namespace Visifire.Charts
             {
                 (element as DataPoint).Parent.PlotGroup.Update(property, oldValue, newValue);
             }
-            
-            if(elementType.Equals(typeof(Chart)) && property == VcProperties.TrendLines)
+
+            if (elementType.Equals(typeof(Chart)) && property == VcProperties.TrendLines)
+            {
                 SetTrendLineValues(_axisXPrimary);
+                SetTrendLineStartAndEndValues(_axisXPrimary);
+            }
             
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
@@ -412,6 +415,8 @@ namespace Visifire.Charts
             PopulatePlotGroups();
 
             SetTrendLineValues(_axisXPrimary);
+
+            SetTrendLineStartAndEndValues(_axisXPrimary);
 
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             SeriesDrawingIndex = GenerateDrawingOrder();
@@ -561,7 +566,32 @@ namespace Visifire.Charts
                         trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
                 }
             }
+        }
 
+        /// <summary>
+        /// Set TrendLine Start and End values
+        /// </summary>
+        /// <param name="axisX">Axis</param>
+        internal void SetTrendLineStartAndEndValues(Axis axisX)
+        {
+            if (axisX.IsDateTimeAxis)
+            {
+                foreach (TrendLine trendLine in Chart.TrendLines)
+                {
+                    if ((Boolean)trendLine.Enabled &&
+                        ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                        || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                        )
+                    )
+                    {
+                        if (trendLine.InternalDateStartValue != null && trendLine.InternalDateEndValue != null)
+                        {
+                            trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -2016,6 +2046,29 @@ namespace Visifire.Charts
                 )
                 )
                     trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+            }
+        }
+
+        /// <summary>
+        /// Set TrendLine value
+        /// </summary>
+        /// <param name="axisX">Axis</param>
+        internal void SetTrendLineStartAndEndValue(TrendLine trendLine, Axis axisX)
+        {
+            if (axisX != null && axisX.IsDateTimeAxis)
+            {
+                if ((Boolean)trendLine.Enabled &&
+                ((trendLine.Orientation == Orientation.Vertical && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                )
+                )
+                {
+                    if (trendLine.InternalDateStartValue != null && trendLine.InternalDateEndValue != null)
+                    {
+                        trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                    }
+                }
             }
         }
 

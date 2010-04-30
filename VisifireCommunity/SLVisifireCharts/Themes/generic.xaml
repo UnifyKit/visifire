@@ -174,7 +174,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                             </Grid>
                                         </Grid>
                                         
-                                        <Canvas Canvas.ZIndex="2"  Margin="0">
+                                        <Canvas Canvas.ZIndex="2" Margin="0">
                                             <Border Name="ZoomRectangle" CornerRadius="0" BorderBrush="Black" Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
                                         </Canvas>
 
@@ -188,6 +188,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                         <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
+                        <Canvas Name="ElementCanvas" Canvas.ZIndex="5"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

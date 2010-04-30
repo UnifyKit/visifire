@@ -67,6 +67,19 @@ namespace Visifire.Commons
 
 #endif
 
+        /// <summary>
+        /// Attach tooltip with a framework element
+        /// </summary>
+        /// <param name="control">Control reference</param>
+        /// <param name="element">Object reference</param>
+        /// <param name="visualElements">FrameworkElements list</param>
+        public void AttachToolTip(VisifireControl control, ObservableObject element, System.Collections.Generic.List<FrameworkElement> visualElements)
+        {
+            // Show ToolTip on mouse move over the chart element
+            foreach (FrameworkElement visualElement in visualElements)
+                AttachToolTip(control, element, visualElement);
+        }
+        
         #endregion
 
         #region Public Properties
@@ -115,25 +128,6 @@ namespace Visifire.Commons
             typeof(String),
             typeof(VisifireElement),
             new PropertyMetadata(String.Empty, ToolTipTextPropertyChanged));
-
-        /// <summary>
-        /// ToolTipText property changed Event handler
-        /// </summary>
-        /// <param name="d">DependencyObject</param>
-        /// <param name="e">DependencyPropertyChangedEventArgs</param>
-        internal static void ToolTipTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as VisifireElement).OnToolTipTextPropertyChanged((String)e.NewValue);
-        }
-
-        /// <summary>
-        /// OnToolTipTextPropertyChanged call back virtual function
-        /// </summary>
-        /// <param name="newValue"></param>
-        internal virtual void OnToolTipTextPropertyChanged(String newValue)
-        {
-
-        }
 
         /// <summary>
         /// TextParser is used to parse text
@@ -327,6 +321,36 @@ namespace Visifire.Commons
 
         #region Protected Methods
 
+        /// <summary>
+        /// Update TextProperty of the tooltip element from ToolTipTextProperty of VisifireElement
+        /// </summary>
+        /// <param name="sender">FrameworkElement</param>
+        /// <param name="e">MouseEventArgs</param>
+        protected void UpdateToolTip(object sender, MouseEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
+                return;
+
+            if (_element.ToolTipText == null)
+            {
+                return;
+            }
+            else
+            {
+                String text = _element.ParseToolTipText(_element.ToolTipText);
+
+                if (!String.IsNullOrEmpty(text))
+                {
+                    _control._toolTip.Text = text;
+
+                    if (_control.ToolTipEnabled)
+                        _control._toolTip.Show();
+
+                    (_control as Chart).UpdateToolTipPosition(sender, e);
+                }
+            }
+        }
+
         #endregion
 
         #region Internal Properties
@@ -405,36 +429,6 @@ namespace Visifire.Commons
             UpdateToolTip(sender, e);
         }
 
-        /// <summary>
-        /// Update TextProperty of the tooltip element from ToolTipTextProperty of VisifireElement
-        /// </summary>
-        /// <param name="sender">FrameworkElement</param>
-        /// <param name="e">MouseEventArgs</param>
-        protected void UpdateToolTip(object sender, MouseEventArgs e)
-        {
-            if (!String.IsNullOrEmpty(_control.ToolTipText) && _control != _element)
-                return;
-
-            if (_element.ToolTipText == null)
-            {
-                return;
-            }
-            else
-            {
-                String text = _element.ParseToolTipText(_element.ToolTipText);
-
-                if (!String.IsNullOrEmpty(text))
-                {
-                    _control._toolTip.Text = text;
-
-                    if (_control.ToolTipEnabled)
-                        _control._toolTip.Show();
-
-                    (_control as Chart).UpdateToolTipPosition(sender, e);
-                }
-            }
-        }
-
         #endregion
 
         #region Private Events
@@ -481,24 +475,33 @@ namespace Visifire.Commons
         #region Internal Methods
 
         /// <summary>
+        /// ToolTipText property changed Event handler
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        internal static void ToolTipTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as VisifireElement).OnToolTipTextPropertyChanged((String)e.NewValue);
+        }
+
+        /// <summary>
+        /// OnToolTipTextPropertyChanged call back virtual function
+        /// </summary>
+        /// <param name="newValue"></param>
+        internal virtual void OnToolTipTextPropertyChanged(String newValue)
+        {
+
+        }
+
+        /// <summary>
         /// Attach events to a visual
         /// </summary>
         /// <param name="obj">Object with which event is attached</param>
         /// <param name="visual">FrameworkElement</param>
         internal static void AttachEvents2Visual(VisifireElement obj, FrameworkElement visual)
-        {
+        {   
             if (visual != null)
                 AttachEvents2Visual(obj, obj, visual);
-        }
-
-        internal MouseButtonEventHandler GetMouseLeftButtonDownEventHandler()
-        {
-            return _onMouseLeftButtonDown;
-        }
-
-        internal MouseButtonEventHandler GetMouseLeftButtonUpEventHandler()
-        {
-            return _onMouseLeftButtonUp;
         }
 
         /// <summary>
@@ -507,155 +510,149 @@ namespace Visifire.Commons
         /// <param name="obj">Object with which event is attached</param>
         /// <param name="senderElement">sender will be passed to the event-handler</param>
         /// <param name="visual">visual object with which event will be attached</param>
-        internal static void AttachEvents2Visual(VisifireElement obj, VisifireElement senderElement, FrameworkElement visual)
+        internal static void AttachEvents2Visual(VisifireElement chartElement, VisifireElement senderElement, FrameworkElement visual)
         {
             if (visual == null)
                 return;
+            object eventHandler = null;
 
-            //if (senderElement != null)
-            //    visual.Tag = senderElement;
+            // Attach event for MouseEnter
+            eventHandler = chartElement.GetMouseEnterEventHandler();
 
-            if (obj._onMouseEnter != null)
+            if (eventHandler != null)
                 visual.MouseEnter += delegate(object sender, MouseEventArgs e)
-                {
-                    if (obj._onMouseEnter != null)
-                        obj._onMouseEnter(senderElement, e);
+                {   
+                    chartElement.FireMouseEnterEvent(senderElement, e);
                 };
 
-            if (obj._onMouseLeave != null)
+            // Attach event for MouseLeave
+            eventHandler = chartElement.GetMouseLeaveEventHandler();
+
+            if (eventHandler != null)
                 visual.MouseLeave += delegate(object sender, MouseEventArgs e)
-                {
-                    if (obj._onMouseLeave != null)
-                        obj._onMouseLeave(senderElement, e);
+                {   
+                    chartElement.FireMouseLeaveEvent(senderElement, e);
                 };
 
-            PlotArea plotArea = obj as PlotArea;
-            object eventHandler;
-
-            if (plotArea != null)
-            {
-                eventHandler = plotArea.GetMouseLeftButtonDownEventHandler();
-            }
-            else
-            {
-                eventHandler = obj._onMouseLeftButtonDown;
-            }
+            // Attach event for MouseLeftButtonDown
+            eventHandler = chartElement.GetMouseLeftButtonDownEventHandler();
 
             if (eventHandler != null)
                 visual.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    if (plotArea != null)
-                    {
-                        plotArea.FireMouseLeftButtonDownEvent(e);
-                    }
-                    else
-                    {
-                        if (obj._onMouseLeftButtonDown != null)
-                        {
-                            obj._onMouseLeftButtonDown(senderElement, e);
-                        }
-                    }
+                    chartElement.FireMouseLeftButtonDownEvent(senderElement, e);
                 };
 
-            if (plotArea != null)
-            {
-                eventHandler = plotArea.GetMouseLeftButtonUpEventHandler();
-            }
-            else
-            {
-                eventHandler = obj._onMouseLeftButtonUp;
-            }
-
+            // Attach event for MouseLeftButtonUp
+            eventHandler = chartElement.GetMouseLeftButtonUpEventHandler();
+            
             if (eventHandler != null)
                 visual.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    if (obj.GetType().Equals(typeof(PlotArea)))
-                    {
-                        (obj as PlotArea).FireMouseLeftButtonUpEvent(e);
-                    }
-                    else
-                    {
-                        if (obj._onMouseLeftButtonUp != null)
-                            obj._onMouseLeftButtonUp(senderElement, e);
-                    }
+                    chartElement.FireMouseLeftButtonUpEvent(senderElement, e);
                 };
 
-            if (plotArea != null)
-                eventHandler = plotArea.GetMouseMoveEventHandler();
-            else
-                eventHandler = obj._onMouseMove;
+            // Attach event for MouseMove
+            eventHandler = chartElement.GetMouseMoveEventHandler();
 
             if (eventHandler != null)
                 visual.MouseMove += delegate(object sender, MouseEventArgs e)
                 {
-                    if (obj.GetType().Equals(typeof(PlotArea)))
-                    {
-                        (obj as PlotArea).FireMouseMoveEvent(e);
-                    }
-                    else
-                    {
-                        if (obj._onMouseMove != null)
-                            obj._onMouseMove(senderElement, e);
-                    }
+                    chartElement.FireMouseMoveEvent(senderElement, e);
                 };
 
             #region RightMouseButtonEvents4WPF
-#if WPF
-            object eventHandler4RightMouseButton;
+#if WPF     
+            // Attach event for MouseLeftButtonDown
+            eventHandler = chartElement.GetMouseRightButtonDownEventHandler();
 
-            if (plotArea != null)
-            {
-                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonDownEventHandler();
-            }
-            else
-            {
-                eventHandler4RightMouseButton = obj._onMouseRightButtonDown;
-            }
-
-            if (eventHandler4RightMouseButton != null)
+            if (eventHandler != null)
                 visual.MouseRightButtonDown += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    if (plotArea != null)
-                    {
-                        plotArea.FireMouseRightButtonDownEvent(e);
-                    }
-                    else
-                    {
-                        if (obj._onMouseRightButtonDown != null)
-                        {
-                            obj._onMouseRightButtonDown(senderElement, e);
-                        }
-                    }
+                    chartElement.FireMouseRightButtonDownEvent(senderElement, e);
                 };
 
-            if (plotArea != null)
-            {
-                eventHandler4RightMouseButton = plotArea.GetMouseRightButtonUpEventHandler();
-            }
-            else
-            {
-                eventHandler4RightMouseButton = obj._onMouseRightButtonUp;
-            }
+            // Attach event for MouseRightButtonUp
+            eventHandler = chartElement.GetMouseRightButtonUpEventHandler();
 
-            if (eventHandler4RightMouseButton != null)
+            if (eventHandler != null)
                 visual.MouseRightButtonUp += delegate(object sender, MouseButtonEventArgs e)
                 {
-                    if (plotArea != null)
-                    {
-                        plotArea.FireMouseRightButtonUpEvent(e);
-                    }
-                    else
-                    {
-                        if (obj._onMouseRightButtonUp != null)
-                        {
-                            obj._onMouseRightButtonUp(senderElement, e);
-                        }
-                    }
+                    chartElement.FireMouseRightButtonUpEvent(senderElement, e);
                 };
 #endif
             #endregion
         }
 
+#if WPF
+        internal virtual void FireMouseRightButtonDownEvent(object sender, object e)
+        {
+            if(_onMouseRightButtonDown != null)
+                _onMouseRightButtonDown(sender, e as MouseButtonEventArgs);
+        }
+
+        internal virtual void FireMouseRightButtonUpEvent(object sender, object e)
+        {
+            if(_onMouseRightButtonUp != null)
+                _onMouseRightButtonUp(sender, e as MouseButtonEventArgs);
+        }
+#endif
+
+        internal virtual void FireMouseLeftButtonDownEvent(object sender, object e)
+        {
+            if (_onMouseLeftButtonDown != null)
+                _onMouseLeftButtonDown(sender, e as MouseButtonEventArgs);
+        }
+
+        internal virtual void FireMouseLeftButtonUpEvent(object sender, object e)
+        {
+            if (_onMouseLeftButtonUp != null)
+                _onMouseLeftButtonUp(sender, e as MouseButtonEventArgs);
+        }
+
+        internal virtual void FireMouseMoveEvent(object sender, object e)
+        {
+            if (_onMouseMove != null)
+                _onMouseMove(sender, e as MouseEventArgs);
+        }
+
+        internal virtual void FireMouseEnterEvent(object sender, object e)
+        {
+            if (_onMouseEnter != null)
+                _onMouseEnter(sender, e as MouseEventArgs);
+        }
+
+        internal virtual void FireMouseLeaveEvent(object sender, object e)
+        {
+            if (_onMouseLeave != null)
+                _onMouseLeave(sender, e as MouseEventArgs);
+        }
+
+        internal virtual object GetMouseLeftButtonDownEventHandler()
+        {
+            return this._onMouseLeftButtonDown;
+        }
+
+        internal virtual object GetMouseLeftButtonUpEventHandler()
+        {
+            return this._onMouseLeftButtonUp;
+        }
+        
+        internal virtual object GetMouseMoveEventHandler()
+        {
+            return this._onMouseMove;
+        }
+
+        internal virtual object GetMouseEnterEventHandler()
+        {
+            return this._onMouseEnter;
+        }
+
+        internal virtual object GetMouseLeaveEventHandler()
+        {
+            return this._onMouseLeave;
+        }
+        
         /// <summary>
         /// Attach events to a Area visual
         /// </summary>
@@ -852,19 +849,6 @@ namespace Visifire.Commons
         }
 
         /// <summary>
-        /// Attach tooltip with a framework element
-        /// </summary>
-        /// <param name="control">Control reference</param>
-        /// <param name="element">Object reference</param>
-        /// <param name="visualElements">FrameworkElements list</param>
-        public void AttachToolTip(VisifireControl control, ObservableObject element, System.Collections.Generic.List<FrameworkElement> visualElements)
-        {
-            // Show ToolTip on mouse move over the chart element
-            foreach (FrameworkElement visualElement in visualElements)
-                AttachToolTip(control, element, visualElement);
-        }
-
-        /// <summary>
         /// Attach Href with a framework elements
         /// </summary>
         /// <param name="control">Chart Control</param>
@@ -940,12 +924,24 @@ namespace Visifire.Commons
             }
         }
 
+#if WPF
+        internal virtual object GetMouseRightButtonDownEventHandler()
+        {
+            return this._onMouseRightButtonDown;
+        }
+
+        internal virtual object GetMouseRightButtonUpEventHandler()
+        {
+            return this._onMouseRightButtonDown;
+        }
+#endif
+
         #endregion
 
         #region Internal Events
 
         /// <summary>
-        /// EventChanged event is fired if any event is attached
+        /// EventChanged event is fired if any event is attached or detached
         /// </summary>
         internal event EventHandler EventChanged;
 

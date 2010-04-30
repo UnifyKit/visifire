@@ -188,6 +188,7 @@
                         <StackPanel x:Name="CenterDockOutsidePlotAreaPanel" Canvas.ZIndex="4" HorizontalAlignment="Center" VerticalAlignment="Center" ></StackPanel>
                         <Canvas x:Name="ToolTipCanvas" Canvas.ZIndex="5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" >
                         </Canvas>
+                        <Canvas Name="ElementCanvas" Canvas.ZIndex="5"/>
                         <Canvas x:Name="ControlsHolder" Height="0" Width="0" >
                         </Canvas>
                     </Grid>

@@ -36,16 +36,27 @@ namespace Visifire.Commons
     {
         #region Public Methods
 
-        public static void ApplyPointAnimation(Storyboard existingStoryBoard, DependencyObject target, String targetName, 
-            String propertyName, Point oldPoint, Point newPoint, Double animationTime, Double beginTime)
-        {
+        /// <summary>
+        /// Apply point animation
+        /// </summary>
+        /// <param name="existingStoryBoard">StoryBoard</param>
+        /// <param name="target">Target object</param>
+        /// <param name="targetName">Name of the Target object </param>
+        /// <param name="propertyName">Property to animate</param>
+        /// <param name="oldPosition">Old position</param>
+        /// <param name="newPosition">New position</param>
+        /// <param name="animationTime">Animation Duration</param>
+        /// <param name="beginTime">Animations begin time</param>
+        public static void ApplyPointAnimation(Storyboard existingStoryBoard, DependencyObject target,
+            String targetName, String propertyName, Point oldPosition, Point newPosition, 
+            Double animationTime, Double beginTime)
+        {   
             PointAnimation pointAnimation = new PointAnimation();
 
-            pointAnimation.From = oldPoint;
-            pointAnimation.To = newPoint;
+            pointAnimation.From = oldPosition;
+            pointAnimation.To = newPosition;
             pointAnimation.SpeedRatio = 2;
             pointAnimation.Duration = new Duration(new TimeSpan(0, 0, 0, (int) animationTime * 1000));
-            //pointAnimation.BeginTime = new TimeSpan(0, 0, 0, (int)beginTime * 1000);
 
             target.SetValue(FrameworkElement.NameProperty, targetName);
 
@@ -295,9 +306,6 @@ namespace Visifire.Commons
                 DoubleCollection frameTimes = Graphics.GenerateDoubleCollection(timeCollection);
         
                 DoubleAnimationUsingKeyFrames animation = AnimationHelper.CreateDoubleAnimation(parentObj, objectToAnimate, property, beginTime, frameTimes, values, splain);
-                
-                //if(splain == null)
-                //    opacityAnimation.SpeedRatio = 2;
 
                 storyboard.Children.Add(animation);
             }

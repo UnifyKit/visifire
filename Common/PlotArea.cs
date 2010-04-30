@@ -550,7 +550,7 @@ namespace Visifire.Charts
                     EventChanged(this, null);
             }
             add
-            {
+            {   
                 _onMouseLeftButtonDown += value;
 
                 if (EventChanged != null)
@@ -1162,61 +1162,61 @@ namespace Visifire.Charts
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseLeftButtonDownEvent(MouseButtonEventArgs e)
-        {
+        internal override void FireMouseLeftButtonDownEvent(Object sender, Object e)
+        {   
             if (_onMouseLeftButtonDown != null)
-                _onMouseLeftButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
-        }
-
-        /// <summary>
-        /// Fire MouseRightButtonDown event
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseRightButtonDownEvent(MouseButtonEventArgs e)
-        {
-#if WPF
-            if (_onMouseRightButtonDown != null)
-                _onMouseRightButtonDown(this, CreatePlotAreaMouseButtonEventArgs(e));
-#endif
+                _onMouseLeftButtonDown(sender, CreatePlotAreaMouseButtonEventArgs(e as MouseButtonEventArgs));
         }
 
         /// <summary>
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseLeftButtonUpEvent(MouseButtonEventArgs e)
+        internal override void FireMouseLeftButtonUpEvent(Object sender, Object e)
         {
             if (_onMouseLeftButtonUp != null)
-                _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
-        }
-
-        /// <summary>
-        /// Fire MouseRightButtonDown event
-        /// </summary>
-        /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseRightButtonUpEvent(MouseButtonEventArgs e)
-        {
-#if WPF
-            if (_onMouseRightButtonUp != null)
-                _onMouseRightButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e));
-#endif
+                _onMouseLeftButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e as MouseButtonEventArgs));
         }
 
         /// <summary>
         /// Fire MouseLeftButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseMoveEvent(MouseEventArgs e)
+        internal override void FireMouseMoveEvent(Object sender, Object e)
         {
             if (_onMouseMove != null)
-                _onMouseMove(this, CreatePlotAreaMouseEventArgs(e));
+                _onMouseMove(this, CreatePlotAreaMouseEventArgs(e as MouseEventArgs));
         }
 
+#if WPF
+        /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal override void FireMouseRightButtonDownEvent(Object sender, Object e)
+        {   
+            if (_onMouseRightButtonDown != null)
+                _onMouseRightButtonDown(sender, CreatePlotAreaMouseButtonEventArgs(e as MouseButtonEventArgs));
+
+        }
+        
+        /// <summary>
+        /// Fire MouseRightButtonDown event
+        /// </summary>
+        /// <param name="e">MouseButtonEventArgs</param>
+        internal void FireMouseRightButtonUpEvent(Object sender, Object e)
+        {
+            if (_onMouseRightButtonUp != null)
+                _onMouseRightButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e as MouseButtonEventArgs));
+        }
+
+#endif
+        
         /// <summary>
         /// Get MouseLeftButtonDown EventHandler
         /// </summary>
         /// <returns></returns>
-        internal new EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonDownEventHandler()
+        internal override object GetMouseLeftButtonDownEventHandler()
         {
             return _onMouseLeftButtonDown;
         }
@@ -1225,9 +1225,18 @@ namespace Visifire.Charts
         /// Get MouseLeftButtonUp EventHandler
         /// </summary>
         /// <returns></returns>
-        internal new EventHandler<PlotAreaMouseButtonEventArgs> GetMouseLeftButtonUpEventHandler()
+        internal override object GetMouseLeftButtonUpEventHandler()
         {
             return _onMouseLeftButtonUp;
+        }
+
+        /// <summary>
+        /// Get MouseLeftButtonUp EventHandler
+        /// </summary>
+        /// <returns></returns>
+        internal override object GetMouseMoveEventHandler()
+        {
+            return _onMouseMove;
         }
 
 #if WPF
@@ -1235,8 +1244,8 @@ namespace Visifire.Charts
         /// Get MouseRightButtonDown EventHandler
         /// </summary>
         /// <returns></returns>
-        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseRightButtonDownEventHandler()
-        {
+        internal override object GetMouseRightButtonDownEventHandler()
+        {   
             return _onMouseRightButtonDown;
         }
 
@@ -1244,20 +1253,11 @@ namespace Visifire.Charts
         /// Get MouseRightButtonUp EventHandler
         /// </summary>
         /// <returns></returns>
-        internal EventHandler<PlotAreaMouseButtonEventArgs> GetMouseRightButtonUpEventHandler()
+        internal override object GetMouseRightButtonUpEventHandler()
         {
             return _onMouseRightButtonUp;
         }
 #endif
-
-        /// <summary>
-        /// Get MouseLeftButtonUp EventHandler
-        /// </summary>
-        /// <returns></returns>
-        internal EventHandler<PlotAreaMouseEventArgs> GetMouseMoveEventHandler()
-        {
-            return _onMouseMove;
-        }
 
         #endregion
 

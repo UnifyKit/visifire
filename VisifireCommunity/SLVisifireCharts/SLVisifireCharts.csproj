@@ -100,6 +100,9 @@
     <Compile Include="..\..\Common\AxisScrollEventArgs.cs">
       <Link>AxisScrollEventArgs.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\AxisZoomEventArgs.cs">
+      <Link>AxisZoomEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\BarChart.cs">
       <Link>BarChart.cs</Link>
     </Compile>
@@ -165,6 +168,12 @@
     </Compile>
     <Compile Include="..\..\Common\Legend.cs">
       <Link>Legend.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\LegendMouseButtonEventArgs.cs">
+      <Link>LegendMouseButtonEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\LegendMouseEventArgs.cs">
+      <Link>LegendMouseEventArgs.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\LineChart.cs">
       <Link>LineChart.cs</Link>
