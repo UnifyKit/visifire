@@ -2321,15 +2321,15 @@ namespace Visifire.Charts
             textBlock = SetFontProperties(textBlock);
 
             Double maxRowHeight = 0;
-            Size textBlockSize;
+            Size trendLineTextBlockSize;
 
             Int32 labelIndex = 0;
             for (labelIndex = 0; labelIndex < AxisLabelList.Count; labelIndex += (ParentAxis.SkipOffset + 1))
             {
                 AxisLabel label = AxisLabelList[labelIndex];
                 textBlock.Text = label.Text;
-                textBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
-                maxRowHeight = Math.Max(maxRowHeight, textBlockSize.Height);
+                trendLineTextBlockSize = Graphics.CalculateTextBlockSize(AxisLabel.GetRadians(GetAngle()), textBlock);
+                maxRowHeight = Math.Max(maxRowHeight, trendLineTextBlockSize.Height);
             }
             */
             return maxRowHeight;

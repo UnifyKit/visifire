@@ -292,7 +292,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => trendLine.InternalNumericValue = 3,
+                () => trendLine.Value = 3,
                 () => trendLine.Orientation = Orientation.Vertical,
                 () => Assert.AreEqual(Orientation.Vertical, trendLine.Orientation));
 
@@ -457,8 +457,8 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => trendLine.Orientation = Orientation.Vertical,
-                () => trendLine.InternalNumericValue = 2,
-                () => Assert.AreEqual(2, trendLine.InternalNumericValue));
+                () => trendLine.Value = 2,
+                () => Assert.AreEqual(2, trendLine.Value));
 
             EnqueueTestComplete();
         }
@@ -506,7 +506,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Horizontal;
-                trendLine.InternalNumericValue = 30;
+                trendLine.Value = 30;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -517,7 +517,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Vertical;
-                trendLine.InternalNumericValue = 3;
+                trendLine.Value = 3;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -528,7 +528,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Vertical;
-                trendLine.InternalNumericValue = 4;
+                trendLine.Value = 4;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -539,7 +539,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Horizontal;
-                trendLine.InternalNumericValue = 60;
+                trendLine.Value = 60;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -550,7 +550,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Horizontal;
-                trendLine.InternalNumericValue = 80;
+                trendLine.Value = 80;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -561,7 +561,7 @@ namespace SLVisifireChartsTest
             {
                 TrendLine trendLine = new TrendLine();
                 trendLine.Orientation = Orientation.Vertical;
-                trendLine.InternalNumericValue = 1;
+                trendLine.Value = 1;
                 chart.TrendLines.Add(trendLine);
             });
 
@@ -585,7 +585,7 @@ namespace SLVisifireChartsTest
         /// </summary>
         private TrendLine TrendLineToTest
         {
-            get { return new TrendLine() { InternalNumericValue = 60, Orientation = Orientation.Horizontal }; }
+            get { return new TrendLine() { Value = 60, Orientation = Orientation.Horizontal }; }
         }
 
         #region Private Data

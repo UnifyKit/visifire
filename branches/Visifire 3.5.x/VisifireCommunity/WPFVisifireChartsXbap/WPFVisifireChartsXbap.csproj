@@ -21,7 +21,7 @@
     <SignManifests>false</SignManifests>
     <ManifestKeyFile>WPFVisifireChartsXbap_TemporaryKey.pfx</ManifestKeyFile>
     <ManifestCertificateThumbprint>57CCF71A72571E42CF93731C306DF9D5A8315D95</ManifestCertificateThumbprint>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>WPFVisifireChartsXbap_TemporaryKey.snk</AssemblyOriginatorKeyFile>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <ExcludedPermissions>

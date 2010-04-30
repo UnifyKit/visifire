@@ -1525,12 +1525,12 @@ namespace SLVisifireChartsTest
                 _htmlElement.SetProperty("value", "Legend MouseLeave event fired");
             };
 
-            legend.MouseLeftButtonUp += delegate(Object sender, MouseButtonEventArgs e)
+            legend.MouseLeftButtonUp += delegate(Object sender, LegendMouseButtonEventArgs e)
             {
                 _htmlElement.SetProperty("value", "Legend MouseLeftButtonUp event fired");
             };
 
-            legend.MouseLeftButtonDown += delegate(Object sender, MouseButtonEventArgs e)
+            legend.MouseLeftButtonDown += delegate(Object sender, LegendMouseButtonEventArgs e)
             {
                 _htmlElement.SetProperty("value", "Legend MouseLeftButtonDown event fired");
             };

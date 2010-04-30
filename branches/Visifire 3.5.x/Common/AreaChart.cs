@@ -1516,9 +1516,16 @@ namespace Visifire.Charts
 
                     PolygonalChartShapeParams areaParams = GetAreaParms(series, areaBrush, depth3d);
 
+                    // This is used to set some pixel padding for the last two points of a PointCollection
+                    Double pixelPadding = 0.8;
+
                     foreach (PointCollection points in pointSet)
                     {
+                        points[points.Count - 2] = new Point(points[points.Count - 2].X + pixelPadding, points[points.Count - 2].Y);
+                        points[points.Count - 1] = new Point(points[points.Count - 1].X + pixelPadding, points[points.Count - 1].Y);
+
                         areaParams.Points = points;
+                        
                         Faces faces = curDataPoints[index].Parent.Faces;
                         if (faces.Parts == null)
                             faces.Parts = new List<DependencyObject>();
@@ -1817,8 +1824,14 @@ namespace Visifire.Charts
                     if (faces.Parts == null)
                         faces.Parts = new List<DependencyObject>();
 
+                    // This is used to set some pixel padding for the last two points of a PointCollection
+                    Double pixelPadding = 0.8;
+
                     foreach (PointCollection points in pointSet)
                     {
+                        points[points.Count - 2] = new Point(points[points.Count - 2].X + pixelPadding, points[points.Count - 2].Y);
+                        points[points.Count - 1] = new Point(points[points.Count - 1].X + pixelPadding, points[points.Count - 1].Y);
+
                         areaParams.Points = points;
 
                         if (chart.View3D)
@@ -3758,7 +3771,6 @@ namespace Visifire.Charts
                 faces.Parts = new List<DependencyObject>();
 
             Canvas visual = new Canvas();
-
             visual.Width = areaParams.Size.Width;
             visual.Height = areaParams.Size.Height;
 
@@ -3767,7 +3779,6 @@ namespace Visifire.Charts
             faces.Parts.Add(polygon);
 
             polygon.Fill = areaParams.Lighting ? Graphics.GetLightingEnabledBrush(areaParams.Background, "Linear", null) : areaParams.Background;
-
             polygon.Stroke = areaParams.BorderColor;
             polygon.StrokeDashArray = areaParams.BorderStyle != null ? ExtendedGraphics.CloneCollection(areaParams.BorderStyle) : areaParams.BorderStyle;
             polygon.StrokeThickness = areaParams.BorderThickness;

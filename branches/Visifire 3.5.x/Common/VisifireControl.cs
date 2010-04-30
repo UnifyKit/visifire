@@ -608,7 +608,7 @@ namespace Visifire.Commons
         /// </summary>
         protected virtual void LoadWatermark()
         {
-            CreateWatermarkElement("Visifire Community Edition", "http://www.visifire.com");
+            CreateWatermarkElement("Visifire Community Edition", "http://www.visifire.com/license.php");
         }
 
         protected void CreateWatermarkElement(String text, String href)
@@ -624,8 +624,9 @@ namespace Visifire.Commons
 
                 if(!String.IsNullOrEmpty(href))
                     _waterMarkElement.TextDecorations = TextDecorations.Underline;
-
-                _waterMarkElement.Foreground = new SolidColorBrush(Color.FromArgb((byte)255, (byte)200, (byte)200, (byte)200));
+                
+                //_waterMarkElement.Foreground = new SolidColorBrush(Color.FromArgb((byte)255, (byte)220, (byte)220, (byte)220));
+                _waterMarkElement.Foreground = new SolidColorBrush(Colors.Gray);
                 _waterMarkElement.FontSize = 10;
                 AttachHref(this, _waterMarkElement, href, HrefTargets._blank);
                 _toolbarContainer.Children.Add(_waterMarkElement);
@@ -673,12 +674,20 @@ namespace Visifire.Commons
         /// </summary>
         internal Boolean _isTemplateApplied;
 
+        /// <summary>
+        /// WaterMark element
+        /// </summary>
         internal TextBlock _waterMarkElement;
 
         #region Template Part
 
         internal Border _zoomRectangle;
+
+        internal Canvas _elementCanvas;
+
         internal const string ZoomRectangleName = "ZoomRectangle";
+
+        internal const string ElementCanvasName = "ElementCanvas";
 
         internal Grid _rootElement;
         internal const string RootElementName = "RootElement";

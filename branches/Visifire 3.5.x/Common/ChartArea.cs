@@ -85,13 +85,12 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Draw chartarea
+        /// Draw ChartArea
         /// </summary>
         /// <param name="chart">Chart</param>
         public void Draw(Chart chart)
         {   
             isScrollingActive = Chart.IsScrollingActivated;
-            //System.Diagnostics.Debug.WriteLine("Draw() > ");
             
             _renderCount = 0;
 
@@ -126,6 +125,7 @@ namespace Visifire.Charts
             ClearLegendPanels();
 
             Boolean isLeftOrRightAlignedTitlesExist;
+
             Size actualChartSize = GetActualChartSize();
 
             // Add all the legends to chart of type dock outside
@@ -162,7 +162,12 @@ namespace Visifire.Charts
 
             // Check if drawing axis is necessary or not
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
                 SetAxesProperties();
+
+                Chart._elementCanvas.Children.Clear();
+                AddAndRemoveTrendLineLabel();
+            }
 
             Size remainingSize = DrawChart(_plotAreaSize);
 
@@ -173,8 +178,6 @@ namespace Visifire.Charts
             AddLegends(Chart, true, remainingSize.Height, remainingSize.Width);
 
             RetainOldScrollOffsetOfScrollViewer();
-
-            // Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas);
 
             AttachOrDetachIntaractivity(chart.InternalSeries);
 
@@ -191,6 +194,80 @@ namespace Visifire.Charts
             AddOrRemovePanels(chart);
 
             AttachEvents2ZoomOutIcons(chart);
+        }
+
+        private void ClearTrendLineLabels()
+        {
+            foreach (TrendLine trendLine in Chart.TrendLines)
+            {
+                Chart._elementCanvas.Children.Remove(trendLine.LabelTextBlock);
+                trendLine.LabelTextBlock = null;
+            }
+        }
+
+        private void AddAndRemoveTrendLineLabel()
+        {
+            ClearTrendLineLabels();
+
+            foreach (TrendLine trendLine in Chart.TrendLines)
+            {
+                if (!String.IsNullOrEmpty(trendLine.LabelText))
+                {
+                    TextBlock tb = new TextBlock();
+                    trendLine.ApplyLabelFontProperties(tb);
+
+                    trendLine.LabelTextBlock = tb;
+
+                    if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                    {
+                        if (trendLine.AxisType == AxisTypes.Primary)
+                        {
+                            if (trendLine.Orientation == Orientation.Horizontal)
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Right;
+                                tb.VerticalAlignment = VerticalAlignment.Center;
+                            }
+                            else
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Center;
+                                tb.VerticalAlignment = VerticalAlignment.Top;
+                            }
+                        }
+                        else
+                        {
+                            if (trendLine.Orientation == Orientation.Horizontal)
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Left;
+                                tb.VerticalAlignment = VerticalAlignment.Center;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (trendLine.AxisType == AxisTypes.Primary)
+                        {
+                            if (trendLine.Orientation == Orientation.Horizontal)
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Right;
+                                tb.VerticalAlignment = VerticalAlignment.Center;
+                            }
+                            else
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Center;
+                                tb.VerticalAlignment = VerticalAlignment.Top;
+                            }
+                        }
+                        else
+                        {
+                            if (trendLine.Orientation == Orientation.Vertical)
+                            {
+                                tb.HorizontalAlignment = HorizontalAlignment.Center;
+                                tb.VerticalAlignment = VerticalAlignment.Top;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void AttachEvents2ZoomOutIcons(Chart chart)
@@ -775,6 +852,8 @@ namespace Visifire.Charts
                 // if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
                 //   SetAxesProperties();
 
+                AddAndRemoveTrendLineLabel();
+                
                 Size remainingSizeAfterDrawingAxes = RenderAxes(_plotAreaSize);
                 
                 ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
@@ -785,8 +864,6 @@ namespace Visifire.Charts
                     RenderGrids();
                     RenderTrendLines();
                 }
-
-                
             }
 
             AddOrRemovePanels(Chart);
@@ -1078,17 +1155,17 @@ namespace Visifire.Charts
             {
                 Double scrollViewerOffset = 0;
 
-                if(axis.ScrollViewerElement.Children.Count > 0)
-                {   
+                if (axis.ScrollViewerElement.Children.Count > 0)
+                {
                     FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
 
                     // Vertical chart
-                    if(axis.AxisOrientation == Orientation.Horizontal)
-                    {   
+                    if (axis.AxisOrientation == Orientation.Horizontal)
+                    {
                         //Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
                         Double MaxHorizontalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
                         scrollViewerOffset = value * (MaxHorizontalOffset / ZOOMING_MAX_VAL);
-                    }   
+                    }
                     else
                     {
                         Double MaxVerticalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
@@ -1226,6 +1303,141 @@ namespace Visifire.Charts
             //PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
         }
 
+        internal Point GetPlotAreaStartPosition()
+        {
+            Double left, top;
+            if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
+                if (AxisY != null)
+                {
+                    left = GetAxisLeft(AxisY) + AxisY.Width;
+                    top = GetAxisTop(AxisY);
+                }
+                else
+                {
+                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
+                    top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
+                }
+            }
+            else
+            {
+                if (AxisX != null)
+                {
+                    left = GetAxisLeft(AxisX) + AxisX.Width;
+                    top = GetAxisTop(AxisX);
+                }
+                else
+                {
+                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
+                    top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
+                }
+            }
+
+            return new Point(left, top);
+        }
+
+        internal Point GetPositionWithRespect2ChartArea(Point positionWithRespect2PlotArea)
+        {
+            Point plotAreaStartPos = GetPlotAreaStartPosition();
+
+            return new Point(positionWithRespect2PlotArea.X + plotAreaStartPos.X,
+                positionWithRespect2PlotArea.Y + plotAreaStartPos.Y);
+        }
+
+        internal Double GetAxisLeft(Axis axis)
+        {
+            Double left = 0;
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
+                    }
+                    else
+                    {
+                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + PlotAreaCanvas.Width;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
+                    {
+                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + Chart._leftAxisGrid.ActualWidth;
+                    }
+                }
+            }
+            else
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary ||  axis.AxisType == AxisTypes.Secondary)
+                    {
+                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + Chart._leftAxisGrid.ActualWidth;
+                    }
+                }
+            }
+
+            return left;
+        }
+
+        internal Double GetAxisTop(Axis axis)
+        {
+            Double top = 0;
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + PlotAreaCanvas.Height;
+                    }
+                    else
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight;
+                    }
+                }
+            }
+            else
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight + PlotAreaCanvas.Height;
+                    }
+                    else
+                    {
+                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight;
+                    }
+                }
+            }
+
+            return top;
+        }
+
         void PlotAreaCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1306,6 +1518,12 @@ namespace Visifire.Charts
                         {
                             AxisX.Zoom(minValue, maxValue);
                         }
+
+                        AxisX._zoomState.MinXValue = minValue;
+                        AxisX._zoomState.MaxXValue = maxValue;
+
+                        if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue))
+                            AxisX.FireZoomEvent(AxisX._zoomState, e);
 
                         Chart._zoomRectangle.Visibility = Visibility.Collapsed;
                         _zoomStart = false;
@@ -2291,6 +2509,8 @@ namespace Visifire.Charts
             axis._internalZoomingScale = axis._internalMinimumZoomingScale + (1 - axis._internalMinimumZoomingScale) * (1 - axis.ScrollBarElement.Scale);
             
             OnScrollBarScaleChanged(chart);
+
+            chart.Dispatcher.BeginInvoke(new Action<EventArgs>(FireZoomEvent), new object[] { e });
         }
 
         internal void OnScrollBarScaleChanged(Chart chart)
@@ -2302,8 +2522,17 @@ namespace Visifire.Charts
             if (chart.Series.Count > 0)
             {
                 chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
+                chart.Dispatcher.BeginInvoke(new Action<Chart, Double>(AxisX.CalculateViewMinimumAndMaximum), new object[] { chart, AxisX.ScrollBarElement.Value });
                 chart.Dispatcher.BeginInvoke(new Action(ActivateDraggingLock));
             }
+        }
+
+        private void FireZoomEvent(EventArgs e)
+        {
+            AxisX._zoomState.MinXValue = AxisX.ViewMinimum;
+            AxisX._zoomState.MaxXValue = AxisX.ViewMaximum;
+
+            AxisX.FireZoomEvent(AxisX._zoomState, e);
         }
 
         private void ActivateDraggingLock()
@@ -3131,16 +3360,52 @@ namespace Visifire.Charts
                         trendLine.CreateVisualObject(trendLineCanvas.Width, trendLineCanvas.Height);
 
                         if (trendLine.Visual != null)
+                        {
                             trendLineCanvas.Children.Add(trendLine.Visual);
+                            if(trendLine.LabelTextBlock != null)
+                                Chart._elementCanvas.Children.Add(trendLine.LabelTextBlock);
+                        }
                     }
                     else
+                    {
                         trendLine.CreateVisualObject(trendLineCanvas.Width, trendLineCanvas.Height);
+                        if (trendLine.LabelTextBlock != null)
+                            Chart._elementCanvas.Children.Add(trendLine.LabelTextBlock);
+                    }
 
                     if (trendLine.Visual != null)
                     {
                         RectangleGeometry clipRectangle = new RectangleGeometry();
                         clipRectangle.Rect = new Rect(0, 0, trendLineCanvas.Width, trendLineCanvas.Height);
                         trendLine.Visual.Clip = clipRectangle;
+
+                        if (trendLine.LabelTextBlock != null)
+                        {
+#if WPF
+                        Size trendLineTextBlockSize = Graphics.CalculateVisualSize(trendLine.LabelTextBlock);
+#else
+                            Size trendLineTextBlockSize = new Size(trendLine.LabelTextBlock.ActualWidth, trendLine.LabelTextBlock.ActualHeight);
+#endif
+
+                            clipRectangle = new RectangleGeometry();
+                            Point pos = GetPlotAreaStartPosition();
+                            if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                            {
+                                if (trendLine.Orientation == Orientation.Horizontal)
+                                    clipRectangle.Rect = new Rect(0, pos.Y, Chart.ActualWidth, PlotAreaCanvas.Height);
+                                else
+                                    clipRectangle.Rect = new Rect(pos.X, 0, PlotAreaCanvas.Width, Chart.ActualHeight);
+                            }
+                            else
+                            {
+                                if (trendLine.Orientation == Orientation.Horizontal)
+                                    clipRectangle.Rect = new Rect(0, pos.Y + Chart._topOffsetGrid.Height, Chart.ActualWidth, PlotAreaCanvas.Height);
+                                else
+                                    clipRectangle.Rect = new Rect(pos.X, 0, PlotAreaCanvas.Width, Chart.ActualHeight);
+                            }
+
+                            Chart._elementCanvas.Clip = clipRectangle;
+                        }
 
                         Int32 zIndex = (Int32)trendLine.GetValue(Canvas.ZIndexProperty);
 
@@ -3149,6 +3414,7 @@ namespace Visifire.Charts
                         else
                             trendLine.Visual.SetValue(Canvas.ZIndexProperty, zIndex);
                     }
+
                 }
             }
         }
@@ -3161,7 +3427,7 @@ namespace Visifire.Charts
                 {
                     trendLineCanvas.Children.Remove(trendLine.Visual);
                     trendLine.Visual.Children.Clear();
-                    trendLine.Visual = null;
+                    trendLine.Visual = null;                    
                 }
             }
         }
@@ -3536,6 +3802,11 @@ namespace Visifire.Charts
                 AxisX._isScrollToOffsetEnabled = true;
 
                 AxisX.FireScrollEvent(e, offsetInPixel);
+
+                foreach (TrendLine trendLine in Chart.TrendLines)
+                {
+                    trendLine.UpdateTrendLineLabelPosition(ChartVisualCanvas.Width, ChartVisualCanvas.Height);
+                }
             }
 
             if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
@@ -3609,6 +3880,10 @@ namespace Visifire.Charts
                 
                 AxisX.FireScrollEvent(e, offsetInPixel);
 
+                foreach (TrendLine trendLine in Chart.TrendLines)
+                {
+                    trendLine.UpdateTrendLineLabelPosition(ChartVisualCanvas.Width, ChartVisualCanvas.Height);
+                }
             }
 
             if (AxisX2 != null)
@@ -5154,20 +5429,20 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="ds">DataSeries</param>
         private void Check4DefaultInteractivity(DataSeries ds)
-        {
+        {   
             if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
             {
-                MouseButtonEventHandler onMouseLeftButtonDown4DataSeries = null;
-                MouseButtonEventHandler onMouseLeftButtonUp4DataSeries = null;
+                Object onMouseLeftButtonDown4DataSeries = null;
+                Object onMouseLeftButtonUp4DataSeries = null;
 
-                MouseButtonEventHandler onMouseLeftButtonDown4DataPoint = null;
-                MouseButtonEventHandler onMouseLeftButtonUp4DataPoint = null;
+                Object onMouseLeftButtonDown4DataPoint = null;
+                Object onMouseLeftButtonUp4DataPoint = null;
 
                 onMouseLeftButtonDown4DataSeries = ds.GetMouseLeftButtonDownEventHandler();
                 onMouseLeftButtonUp4DataSeries = ds.GetMouseLeftButtonUpEventHandler();
 
                 foreach (DataPoint dp in ds.DataPoints)
-                {
+                {   
                     onMouseLeftButtonDown4DataPoint = dp.GetMouseLeftButtonDownEventHandler();
                     onMouseLeftButtonUp4DataPoint = dp.GetMouseLeftButtonUpEventHandler();
 
@@ -5431,7 +5706,7 @@ namespace Visifire.Charts
 
             AttachScrollEvents();
 
-            Chart._renderLock = false;
+            Chart.RENDER_LOCK = false;
 
             if (Chart._renderLapsedCounter >= 1)
                 Chart.Render();
