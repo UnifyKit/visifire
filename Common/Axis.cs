@@ -165,7 +165,7 @@ namespace Visifire.Charts
                 newMaxXValue = DateTimeHelper.DateDiff(Convert.ToDateTime(maxXValue), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
             }
             else
-            {
+            {   
                 newMinXValue = Convert.ToDouble(minXValue);
                 newMaxXValue = Convert.ToDouble(maxXValue);
             }
@@ -238,7 +238,7 @@ namespace Visifire.Charts
         }
 
         //private void ResetZoomState()
-        //{
+        //{   
         //    ScrollBarElement.UpdateTrackLayout(ScrollBarElement.GetTrackLength());
         //    if (ScrollBarElement._currentThumbSize == ScrollBarElement.GetTrackLength())
         //    {
@@ -266,7 +266,7 @@ namespace Visifire.Charts
 
                 _oldZoomState.MinXValue = minXValue;
                 _oldZoomState.MaxXValue = maxXValue;
-
+                
                 chart._zoomOutTextBlock.Visibility = Visibility.Visible;
                 chart._zoomIconSeparater.Visibility = Visibility.Visible;
                 chart._showAllTextBlock.Visibility = Visibility.Visible;
@@ -690,7 +690,19 @@ namespace Visifire.Charts
             typeof(double),
             typeof(Axis),
             new PropertyMetadata(Double.NaN, OnScrollBarScalePropertyChanged));
-            
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ClosestPlotDistance dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ClosestPlotDistance dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ClosestPlotDistanceProperty =
+            DependencyProperty.Register("ClosestPlotDistance",
+            typeof(double),
+            typeof(Axis),
+            new PropertyMetadata(Double.NaN, OnClosestPlotDistancePropertyChanged));
+
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.ScrollBarSize dependency property.
         /// </summary>
@@ -1359,11 +1371,22 @@ namespace Visifire.Charts
             get { return (Double)GetValue(ScrollBarScaleProperty); }
             set
             {
-
                 if (value <= 0 || value > 1)
                     throw new Exception("Value does not fall under the expected range. ScrollBarScale always varies from 0 to 1.");
 
                 SetValue(ScrollBarScaleProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Distance between two nearest plots
+        /// </summary>
+        public Double ClosestPlotDistance
+        {
+            get { return (Double)GetValue(ClosestPlotDistanceProperty); }
+            set
+            {
+                SetValue(ClosestPlotDistanceProperty, value);
             }
         }
 
@@ -1719,16 +1742,61 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get the actual value of AxisMinimum property which is calculated internally or set by user.
+        /// </summary>
+        public Object ActualAxisMinimum
+        {   
+            get
+            {   
+                if (IsDateTimeAxis)
+                {   
+                    if (Chart != null && (Chart as Chart).PlotDetails.ListOfAllDataPoints.Count != 0)
+                    {   
+                        return DateTimeHelper.XValueToDateTime(MinDate,
+                            InternalAxisMinimum, InternalIntervalType);
+                    }
+                    else
+                        return MinDate;
+                }
+                else
+                {   
+                    return InternalAxisMinimum;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the actual value of AxisMaximum property which is calculated internally or set by user.
+        /// </summary>
+        public Object ActualAxisMaximum
+        {   
+            get
+            {   
+                if (IsDateTimeAxis)
+                {   
+                    if (Chart != null && (Chart as Chart).PlotDetails.ListOfAllDataPoints.Count != 0)
+                    {
+                        return DateTimeHelper.XValueToDateTime(MinDate,
+                            InternalAxisMaximum, InternalIntervalType);
+                    }
+                    else
+                        return MaxDate;
+                }
+                else
+                {   
+                    return InternalAxisMaximum;
+                }
+            }
+        }
+
+        /// <summary>
         /// Internal axis minimum is used for internal calculation purpose
         /// </summary>
         internal Double InternalAxisMinimum
         {
             get;
-            set;
+            private set;
         }
-
-        internal Double _oldInternalAxisMinimum;
-        internal Double _oldInternalAxisMaximum;
 
         /// <summary>
         /// Internal axis maximum is used for internal calculation purpose
@@ -1736,9 +1804,12 @@ namespace Visifire.Charts
         internal Double InternalAxisMaximum
         {
             get;
-            set;
+            private set;
         }
 
+        internal Double _oldInternalAxisMinimum;
+        internal Double _oldInternalAxisMaximum;
+        
         /// <summary>
         /// Internal interval is used for internal calculation purpose
         /// </summary>
@@ -2496,7 +2567,7 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnScrollBarSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             Axis axis = d as Axis;
             axis.FirePropertyChanged(VcProperties.ScrollBarSize);
         }
@@ -2505,12 +2576,10 @@ namespace Visifire.Charts
         {
             Axis axis = d as Axis;
 
-            //if (axis._isScrollToOffsetEnabled)
-            //    axis.SetScrollBarValueFromOffset((Double)e.NewValue);
-            axis.FirePropertyChanged(VcProperties.ScrollBarScale);
+           axis.FirePropertyChanged(VcProperties.ScrollBarScale);
 
             if (axis.Chart != null && (axis.Chart as Chart).ChartArea != null)
-            {
+            {   
                 if (axis.IsNotificationEnable)
                 {
                     (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = false;
@@ -2520,6 +2589,12 @@ namespace Visifire.Charts
                     (axis.Chart as Chart).ChartArea.IsAutoCalculatedScrollBarScale = true;
                 }
             }
+        }
+
+        private static void OnClosestPlotDistancePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;                     
+            axis.FirePropertyChanged(VcProperties.ClosestPlotDistance);
         }
 
         /// <summary>
@@ -2842,42 +2917,45 @@ namespace Visifire.Charts
 
             foreach (TrendLine trendLine in trendLines)
             {
-                if (trendLine.LabelTextBlock != null)
+                if ((Boolean)trendLine.Enabled)
                 {
+                    if (trendLine.LabelTextBlock != null)
+                    {
 #if WPF
-                Size textBlockSize = Graphics.CalculateVisualSize(trendLine.LabelTextBlock);
+                        Size textBlockSize = Graphics.CalculateVisualSize(trendLine.LabelTextBlock);
 #else
                     Size textBlockSize = new Size(trendLine.LabelTextBlock.ActualWidth, trendLine.LabelTextBlock.ActualHeight);
 #endif
 
-                    if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                    {
-                        if (axis.AxisOrientation == Orientation.Horizontal)
+                        if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         {
-                            if (axis.AxisType == AxisTypes.Primary)
-                                size = Math.Max(size, textBlockSize.Height);
+                            if (axis.AxisOrientation == Orientation.Horizontal)
+                            {
+                                if (axis.AxisType == AxisTypes.Primary)
+                                    size = Math.Max(size, textBlockSize.Height);
+                            }
+                            else
+                            {
+                                if (axis.AxisType == AxisTypes.Primary)
+                                    size = Math.Max(size, textBlockSize.Width);
+                                else
+                                    size = Math.Max(size, textBlockSize.Width);
+                            }
                         }
                         else
                         {
-                            if (axis.AxisType == AxisTypes.Primary)
-                                size = Math.Max(size, textBlockSize.Width);
+                            if (axis.AxisOrientation == Orientation.Vertical)
+                            {
+                                if (axis.AxisType == AxisTypes.Primary)
+                                    size = Math.Max(size, textBlockSize.Width);
+                            }
                             else
-                                size = Math.Max(size, textBlockSize.Width);
-                        }
-                    }
-                    else
-                    {
-                        if (axis.AxisOrientation == Orientation.Vertical)
-                        {
-                            if (axis.AxisType == AxisTypes.Primary)
-                                size = Math.Max(size, textBlockSize.Width);
-                        }
-                        else
-                        {
-                            if (axis.AxisType == AxisTypes.Primary)
-                                size = Math.Max(size, textBlockSize.Height);
-                            else
-                                size = Math.Max(size, textBlockSize.Height);
+                            {
+                                if (axis.AxisType == AxisTypes.Primary)
+                                    size = Math.Max(size, textBlockSize.Height);
+                                else
+                                    size = Math.Max(size, textBlockSize.Height);
+                            }
                         }
                     }
                 }
@@ -4003,7 +4081,6 @@ namespace Visifire.Charts
             Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
             Double minValue = minimumDifference;
 
-
             if (Double.IsInfinity(minValue))
             {
                 minValue = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) * .8;
@@ -4638,41 +4715,49 @@ namespace Visifire.Charts
 
         internal void FireScrollEvent(ScrollEventArgs e, Double offsetInPixel)
         {
-            if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
-                return;
-
-            _oldScrollBarOffsetInPixel = offsetInPixel;
-
-            if (AxisRepresentation == AxisRepresentations.AxisX)
+            if (Chart != null && (Chart as Chart).Series.Count > 0)
             {
-                Chart chart = Chart as Chart;
-
-                CalculateViewMinimumAndMaximum(chart, offsetInPixel);
-                
-                if (_zoomStateStack.Count == 0)
+                if (PlotDetails.ListOfAllDataPoints.Count != 0)
                 {
-                    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
-                    _oldZoomState.MinXValue = null;
-                    _oldZoomState.MaxXValue = null;
-                }
+                    if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
+                        return;
 
-                if (_showAllState)
-                {
-                    _zoomStateStack.Clear();
-                    _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
-                    _oldZoomState.MinXValue = null;
-                    _oldZoomState.MaxXValue = null;
-                    _showAllState = false;
-                }
+                    _oldScrollBarOffsetInPixel = offsetInPixel;
 
-                if (chart.ChartArea._isFirstTimeRender)
-                {
-                    _initialState.MinXValue = ViewMinimum;
-                    _initialState.MaxXValue = ViewMaximum;
-                }
+                    if (AxisRepresentation == AxisRepresentations.AxisX)
+                    {
+                        Chart chart = Chart as Chart;
 
-                if (_onScroll != null && !chart.ChartArea._isFirstTimeRender)
-                    _onScroll(this, new AxisScrollEventArgs(e));
+                        CalculateViewMinimumAndMaximum(chart, offsetInPixel);
+
+                        if (_zoomStateStack.Count == 0)
+                        {
+                            _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+                            _oldZoomState.MinXValue = null;
+                            _oldZoomState.MaxXValue = null;
+                        }
+
+                        if (_showAllState)
+                        {
+                            _zoomStateStack.Clear();
+                            _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
+                            _oldZoomState.MinXValue = null;
+                            _oldZoomState.MaxXValue = null;
+                            _showAllState = false;
+                        }
+
+                        if (chart.ChartArea._isFirstTimeRender || _isScrollEventFiredFirstTime)
+                        {
+                            _initialState.MinXValue = ViewMinimum;
+                            _initialState.MaxXValue = ViewMaximum;
+                        }
+
+                        if (_onScroll != null && !chart.ChartArea._isFirstTimeRender)
+                            _onScroll(this, new AxisScrollEventArgs(e));
+
+                        _isScrollEventFiredFirstTime = false;
+                    }
+                }
             }
         }
 
@@ -4686,6 +4771,9 @@ namespace Visifire.Charts
             AxisLabels.IsNotificationEnable = false;
             AxisLabels.Chart = Chart;
 
+            if (!Double.IsNaN(ClosestPlotDistance) && !Chart.ChartArea.IsAutoCalculatedScrollBarScale)
+                throw new ArgumentException(" ScrollBarScale property and ClosestPlotDistance property in Axis cannot be set together.");
+            
             if (AxisRepresentation == AxisRepresentations.AxisX)
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisXLabels");
             else if (AxisRepresentation == AxisRepresentations.AxisY)
@@ -4976,6 +5064,11 @@ namespace Visifire.Charts
         internal event EventHandler<AxisZoomEventArgs> _onZoom;
 
         internal Stack<ZoomState> _zoomStateStack = new Stack<ZoomState>();
+
+        /// <summary>
+        /// Check whether Scroll event fired first time
+        /// </summary>
+        private Boolean _isScrollEventFiredFirstTime = true;
 
         /// <summary>
         /// Margin between axis title and axis scale

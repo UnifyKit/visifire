@@ -2289,7 +2289,7 @@ namespace Visifire.Charts
                     ChartArea.Draw(this);
                 }
                 catch (Exception e)
-                {   
+                {
                     RENDER_LOCK = false;
                     if (CheckSizeError(e as ArgumentException))
                         return;
@@ -2488,7 +2488,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Shadow depth for chart
         /// </summary>
-        internal const Double SHADOW_DEPTH = 4;
+        internal const Double SHADOW_DEPTH = 5;
 
         /// <summary>
         /// Bevel depth for chart

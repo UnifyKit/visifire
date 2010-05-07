@@ -20,6 +20,15 @@
 
 namespace Visifire.Charts
 {
+
+    public enum OCHL
+    {   
+        Open = 0,
+        Close = 1,
+        High = 2,
+        Low = 3
+    }
+
     /// <summary>
     /// Export file types
     /// </summary>
@@ -227,9 +236,10 @@ namespace Visifire.Charts
     /// Layout of legends
     /// </summary>
     public enum Layouts
-    {
-        FlowLayout = 0,
-        Gridlayout = 1
+    {   
+        Auto = 0,
+        FlowLayout = 1,
+        GridLayout = 2
     }
 
     public enum VcProperties
@@ -253,6 +263,7 @@ namespace Visifire.Charts
         Color,
         ColorSet,
         CornerRadius,
+        ClosestPlotDistance,
         Cursor,
         DataPoints,
         DockInsidePlotArea,
@@ -273,6 +284,8 @@ namespace Visifire.Charts
         InterlacedColor,
         Interval,
         IntervalType,
+        IncludeYValueInLegend,
+        IncludePercentageInLegend,
         LabelBackground,
         LabelEnabled,
         LabelFontColor,

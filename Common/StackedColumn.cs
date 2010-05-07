@@ -83,15 +83,16 @@ namespace Visifire.Charts
                 columnVisual = column.Visual as Panel;
                 columnVisual.SetValue(Canvas.ZIndexProperty, ColumnChart.GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveOrNegativeIndex));
                 dataPoint.Faces = column;
-                ColumnChart.ApplyOrRemoveShadow(dataPoint, true, false);
             }
             else
             {   
                 column = ColumnChart.Get2DColumn(dataPoint, columnWidth, columnHeight, true, false);
                 columnVisual = column.Visual as Panel;
+                dataPoint.Faces = column;
             }
 
-            dataPoint.Faces = column;
+            ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
+
             dataPoint.Faces.LabelCanvas = labelCanvas;
 
             columnVisual.SetValue(Canvas.LeftProperty, left);

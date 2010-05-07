@@ -822,7 +822,6 @@ namespace Visifire.Commons.Controls
                 _isNotificationEnabled = false;
                 Value = value;
                 _isNotificationEnabled = true;
-
             }
 
             Scale = _currentThumbSize / trackLength;

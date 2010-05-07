@@ -1476,7 +1476,7 @@ namespace Visifire.Charts
                             else
                             {
                                 if (ParentAxis.XValueType == ChartValueTypes.Date)
-                                {
+                                {   
                                     DateTime dt = ParentAxis.MinDate;
                                     Decimal tempIndex = index;
 

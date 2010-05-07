@@ -264,54 +264,59 @@ namespace Visifire.Charts
         /// <param name="dataPoint">DataPoint</param>
         internal static void ApplyOrRemoveShadow(DataPoint dataPoint, Double dataPointWidth)
         {
-            Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;
-            Faces faces = dataPoint.Faces;
-            Rectangle openCloseRect = faces.VisualComponents[1] as Rectangle;
+            //Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;
+            //Faces faces = dataPoint.Faces;
+            //Rectangle openCloseRect = faces.VisualComponents[1] as Rectangle;
 
-            dataPoint.Faces.ClearList(ref faces.ShadowElements);
+            //dataPoint.Faces.ClearList(ref faces.ShadowElements);
             
-            if ((Boolean) dataPoint.ShadowEnabled)
-            {   
-                // Shadow for line
-                Line highLowShadowLine = new Line()
-                {
-                    IsHitTestVisible = false,
-                    X1 = dataPointVisual.Width / 2 + _shadowDepth,
-                    X2 = dataPointVisual.Width / 2 + _shadowDepth,
-                    Y1 = 0,
-                    Y2 = Math.Max(dataPointVisual.Height - _shadowDepth, 1),
-                    Stroke = _shadowColor,
-                    StrokeThickness = GetStrokeThickness(dataPoint, dataPointWidth),
-                    StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
-                };
+            //if ((Boolean) dataPoint.ShadowEnabled)
+            //{   
+            //    // Shadow for line
+            //    Line highLowShadowLine = new Line()
+            //    {
+            //        IsHitTestVisible = false,
+            //        X1 = dataPointVisual.Width / 2 + _shadowDepth,
+            //        X2 = dataPointVisual.Width / 2 + _shadowDepth,
+            //        Y1 = 0,
+            //        Y2 = Math.Max(dataPointVisual.Height - _shadowDepth, 1),
+            //        Stroke = _shadowColor,
+            //        StrokeThickness = GetStrokeThickness(dataPoint, dataPointWidth),
+            //        StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+            //    };
 
-                highLowShadowLine.SetValue(Canvas.ZIndexProperty, -4);
-                highLowShadowLine.SetValue(Canvas.TopProperty, _shadowDepth);
+            //    highLowShadowLine.SetValue(Canvas.ZIndexProperty, -4);
+            //    highLowShadowLine.SetValue(Canvas.TopProperty, _shadowDepth);
 
-                // Shadow for Rectangle
-                Rectangle openCloseShadowRect = new Rectangle()
-                {   
-                    IsHitTestVisible = false,
-                    Fill = _shadowColor,
-                    Width = dataPointWidth,
-                    Height = openCloseRect.Height,
-                    Stroke = _shadowColor,
-                    StrokeThickness = dataPoint.BorderThickness.Left,
-                    StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
-                };
+            //    // Shadow for Rectangle
+            //    Rectangle openCloseShadowRect = new Rectangle()
+            //    {   
+            //        IsHitTestVisible = false,
+            //        Fill = _shadowColor,
+            //        Width = dataPointWidth,
+            //        Height = openCloseRect.Height,
+            //        Stroke = _shadowColor,
+            //        StrokeThickness = dataPoint.BorderThickness.Left,
+            //        StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+            //    };
 
-                openCloseShadowRect.SetValue(Canvas.TopProperty, (Double)openCloseRect.GetValue(Canvas.TopProperty) + _shadowDepth);
-                openCloseShadowRect.SetValue(Canvas.LeftProperty, (Double)openCloseRect.GetValue(Canvas.LeftProperty) + _shadowDepth);
-                openCloseShadowRect.SetValue(Canvas.ZIndexProperty, -4);
+            //    openCloseShadowRect.SetValue(Canvas.TopProperty, (Double)openCloseRect.GetValue(Canvas.TopProperty) + _shadowDepth);
+            //    openCloseShadowRect.SetValue(Canvas.LeftProperty, (Double)openCloseRect.GetValue(Canvas.LeftProperty) + _shadowDepth);
+            //    openCloseShadowRect.SetValue(Canvas.ZIndexProperty, -4);
 
-                // Add elements into the list of Shadow Elements
-                faces.ShadowElements.Add(highLowShadowLine);
-                faces.ShadowElements.Add(openCloseShadowRect);
+            //    // Add elements into the list of Shadow Elements
+            //    faces.ShadowElements.Add(highLowShadowLine);
+            //    faces.ShadowElements.Add(openCloseShadowRect);
                 
-                // Added to DataPoint visual Canvas
-                dataPointVisual.Children.Add(openCloseShadowRect);
-                dataPointVisual.Children.Add(highLowShadowLine);
-            }
+            //    // Added to DataPoint visual Canvas
+            //    dataPointVisual.Children.Add(openCloseShadowRect);
+            //    dataPointVisual.Children.Add(highLowShadowLine);
+            //}
+
+            if ((Boolean)dataPoint.ShadowEnabled)
+                dataPoint.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 5, 0.95);
+            else
+                dataPoint.Faces.Visual.Effect = null;
         }
 
         /// <summary>
