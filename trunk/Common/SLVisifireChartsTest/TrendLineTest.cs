@@ -14,7 +14,7 @@ namespace SLVisifireChartsTest
     /// This class runs the unit tests Visifire.Charts.TrendLine class 
     /// </summary>
     [TestClass]
-    public class AAAAATrendLineTest:SilverlightControlTest
+    public class TrendLineTest:SilverlightControlTest
     {
         #region CheckTrendLineDefaultPropertyValue
         /// <summary>

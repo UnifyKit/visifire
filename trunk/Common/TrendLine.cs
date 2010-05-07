@@ -1165,9 +1165,14 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal override void UpdateVisual(VcProperties propertyName, object value)
         {
-            if (Line == null || Shadow == null)
+            if (StartValue != null && EndValue != null && Value != null)
+                throw new Exception("Value property cannot be set with StartValue and EndValue in TrendLine");
+
+            if ((Line == null || Shadow == null) && (Rectangle == null || ShadowRectangle == null))
+            {
                 FirePropertyChanged(propertyName);
-            else if (propertyName == VcProperties.Value)
+            }
+            else if (propertyName == VcProperties.Value || propertyName == VcProperties.StartValue || propertyName == VcProperties.EndValue)
             {
                 Chart chart = (Chart as Chart);
                 Axis axis = chart.PlotDetails.GetAxisXFromChart(chart, AxisType);
@@ -1390,48 +1395,54 @@ namespace Visifire.Charts
 
             (Chart as Chart).PlotDetails.SetTrendLineValues(ReferingAxis);
 
-            switch (Orientation)
+            if (Line != null)
             {
-                case Orientation.Vertical:
-                    Line.Y1 = 0;
-                    Line.Y2 = height;
-                    Line.X1 = Graphics.ValueToPixelPosition(0,
-                    width,
-                    (Double)ReferingAxis.InternalAxisMinimum,
-                    (Double)ReferingAxis.InternalAxisMaximum,
-                    InternalNumericValue);
-                    Line.X2 = Line.X1;
-                    Visual.Height = height;
-                    Visual.Width = shadowThickness;
-                    break;
-                case Orientation.Horizontal:
-                    Line.X1 = 0;
-                    Line.X2 = width;
-                    Line.Y1 = Graphics.ValueToPixelPosition(height,
-                    0,
-                    (Double)ReferingAxis.InternalAxisMinimum,
-                    (Double)ReferingAxis.InternalAxisMaximum,
-                    InternalNumericValue);
-                    Line.Y2 = Line.Y1;
-                    Visual.Height = shadowThickness;
-                    Visual.Width = width;
-                    break;
+                switch (Orientation)
+                {
+                    case Orientation.Vertical:
+                        Line.Y1 = 0;
+                        Line.Y2 = height;
+                        Line.X1 = Graphics.ValueToPixelPosition(0,
+                        width,
+                        (Double)ReferingAxis.InternalAxisMinimum,
+                        (Double)ReferingAxis.InternalAxisMaximum,
+                        InternalNumericValue);
+                        Line.X2 = Line.X1;
+                        Visual.Height = height;
+                        Visual.Width = shadowThickness;
+                        break;
+                    case Orientation.Horizontal:
+                        Line.X1 = 0;
+                        Line.X2 = width;
+                        Line.Y1 = Graphics.ValueToPixelPosition(height,
+                        0,
+                        (Double)ReferingAxis.InternalAxisMinimum,
+                        (Double)ReferingAxis.InternalAxisMaximum,
+                        InternalNumericValue);
+                        Line.Y2 = Line.Y1;
+                        Visual.Height = shadowThickness;
+                        Visual.Width = width;
+                        break;
 
+                }
             }
 
-            if (Orientation == Orientation.Horizontal)
+            if (Shadow != null)
             {
-                Shadow.X1 = Line.X1;
-                Shadow.X2 = Line.X2 + 3;
-                Shadow.Y1 = Line.Y1 + 3;
-                Shadow.Y2 = Line.Y2 + 3;
-            }
-            else
-            {
-                Shadow.X1 = Line.X1 + 3;
-                Shadow.X2 = Line.X2 + 3;
-                Shadow.Y1 = Line.Y1 + 3;
-                Shadow.Y2 = Line.Y2;
+                if (Orientation == Orientation.Horizontal)
+                {
+                    Shadow.X1 = Line.X1;
+                    Shadow.X2 = Line.X2 + 3;
+                    Shadow.Y1 = Line.Y1 + 3;
+                    Shadow.Y2 = Line.Y2 + 3;
+                }
+                else
+                {
+                    Shadow.X1 = Line.X1 + 3;
+                    Shadow.X2 = Line.X2 + 3;
+                    Shadow.Y1 = Line.Y1 + 3;
+                    Shadow.Y2 = Line.Y2;
+                }
             }
         }
 

@@ -1,4 +1,101 @@
-﻿Changed in the folloing functions
+﻿
+        //private Double GetPixelDistanceBetweenTwoNearestXValues(PlotDetails plotDetails, Chart chart, Double plotAreaSize)
+        //{
+        //    List<KeyValuePair<Double[], Double>> listOfKeyValuePair = new List<KeyValuePair<double[],double>>();
+
+        //    foreach (PlotGroup plotGroup in plotDetails.PlotGroups)
+        //    {
+        //        Double[] _xValues = (from dataPoint in plotGroup.DataPointsInPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
+                
+        //        Double minDiff = Double.MaxValue;
+                
+        //        Double[] closetsXValuesInPlotGroup = GetClosestDataPoints(_xValues, ref minDiff);
+        //        listOfKeyValuePair.Add(new KeyValuePair<double[], double>(closetsXValuesInPlotGroup, minDiff));
+
+        //    }
+
+        //    Double minValue = Double.MaxValue;
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        minValue = Math.Min(minValue, keyValuePair.Value);    
+        //    }
+
+        //    Double[] closestXValues = new double[2];
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        if (minValue == keyValuePair.Value)
+        //            closestXValues = keyValuePair.Key;
+        //    }
+
+        //     // Get the minimum and maximum value dependeing on the axis representation value
+        //    Double minimum = plotDetails.GetAxisXMinimumDataValue(AxisX);
+        //    Double maximum = plotDetails.GetAxisXMaximumDataValue(AxisX);
+
+        //    Double minPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[0]);
+        //    Double maxPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[1]);
+
+        //    Double minPixelDiff = maxPixelValue - minPixelValue;
+
+        //    return minPixelDiff;
+        //}
+
+        //private Double[] GetClosestDataPoints(Double[] values, ref Double minDiff)
+        //{
+        //    Double[] distinctValues = values.Distinct().ToArray();
+
+        //    Double[] nearestXValues = new double[2];
+
+        //    // get unique values and then sort it
+        //    Array.Sort(distinctValues);
+
+        //    Double oldMinDiff = Double.MaxValue;
+
+        //    for (Int32 i = 0; i < distinctValues.Length - 1; i++)
+        //    {
+        //        // get the smallest difference between two successive elements
+        //        minDiff = Math.Abs(distinctValues[i] - distinctValues[i + 1]);
+
+        //        if (minDiff < oldMinDiff)
+        //        {
+        //            nearestXValues = new double[] { distinctValues[i], distinctValues[i + 1] };
+        //            oldMinDiff = minDiff;
+        //        }
+        //    }
+
+        //    return nearestXValues;
+        //}
+
+
+
+
+
+
+
+
+
+
+private void OnDataSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+{
+    // Remove handler for oldValue.CollectionChanged (if present)
+    INotifyCollectionChanged oldValueINotifyCollectionChanged = oldValue as INotifyCollectionChanged;
+    INotifyCollectionChanged newValueINotifyCollectionChanged = newValue as INotifyCollectionChanged;
+
+    if (oldValueINotifyCollectionChanged != null)
+    {
+        oldValueINotifyCollectionChanged.CollectionChanged -= new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
+    }
+
+    if (newValueINotifyCollectionChanged != null)
+    {
+        newValueINotifyCollectionChanged.CollectionChanged += new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
+    }
+}
+
+
+
+Changed in the folloing functions
 Check4DefaultInteractivity in ChartArea
 
 

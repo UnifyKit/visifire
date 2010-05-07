@@ -6,10 +6,6 @@
     <vc:Title Text="Visifire Chart"></vc:Title>
   </vc:Chart.Titles>
 
-  <vc:Chart.AxesX>
-    <vc:Axis Enabled="false"/>
-  </vc:Chart.AxesX>
-
   <vc:Chart.Series>
     <vc:DataSeries RenderAs="Column">
       <vc:DataSeries.DataPoints>

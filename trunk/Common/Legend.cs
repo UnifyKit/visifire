@@ -25,6 +25,7 @@ using System.Windows.Browser;
 using System.Windows.Data;
 
 using Visifire.Commons;
+using System.Linq;
 
 namespace Visifire.Charts
 {
@@ -54,7 +55,7 @@ namespace Visifire.Charts
             DefaultStyleKey = typeof(Legend);
 #endif
 
-            Entries = new List<KeyValuePair<String, Marker>>();
+            Entries = new List<LegendEntry>();
 
             // Attach event handler with EventChanged event of VisifireElement
             EventChanged += delegate
@@ -105,8 +106,7 @@ namespace Visifire.Charts
             b = new Binding("Opacity");
             b.Source = this;
             this.SetBinding(InternalOpacityProperty, b);
-
-
+            
             b = new Binding("MaxWidth");
             b.Source = this;
             this.SetBinding(InternalMaxWidthProperty, b);
@@ -147,6 +147,7 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.Reversed dependency property.
+        /// Set to true if you want to reverse the sequence of Legend entries.
         /// </summary>
         /// <returns>
         /// The identifier for the Visifire.Charts.Legend.Reversed dependency property.
@@ -240,6 +241,18 @@ namespace Visifire.Charts
             typeof(Boolean),
             typeof(Legend),
             new PropertyMetadata(OnLightingEnabledPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.ShadowEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.ShadowEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
+            ("ShadowEnabled",
+            typeof(Boolean),
+            typeof(Legend),
+            new PropertyMetadata(OnShadowEnabledPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Legend.CornerRadius dependency property.
@@ -683,7 +696,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the Href porperty
+        /// Get or set the Reversed porperty.
+        /// Set to true if you want to reverse the sequence of Legend entries.
         /// </summary>
         public Boolean Reversed
         {
@@ -1061,6 +1075,21 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get or set the ShadowEnabled property of the Legend
+        /// </summary>
+        public Boolean ShadowEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ShadowEnabledProperty);
+            }
+            set
+            {
+                SetValue(ShadowEnabledProperty, value);
+            }
+        }
+
 #if WPF
         [System.ComponentModel.TypeConverter(typeof(System.Windows.CornerRadiusConverter))]
 #else
@@ -1072,7 +1101,7 @@ namespace Visifire.Charts
         public CornerRadius CornerRadius
         {
             get
-            {
+            {   
                 return (CornerRadius)GetValue(CornerRadiusProperty);
             }
             set
@@ -1245,7 +1274,7 @@ namespace Visifire.Charts
             }
             set
             {
-#if SL
+#if SL          
                 if (MaxHeight != value)
                 {
                     SetValue(MaxHeightProperty, value);
@@ -1662,16 +1691,38 @@ namespace Visifire.Charts
         /// <summary>
         /// Layout type of Legend
         /// </summary>
-        internal Layouts LegendLayout
+        internal Layouts Layout
         {
-            get;
-            set;
+            get
+            {
+                Layouts layOut = (Layouts) GetValue(LayoutProperty);
+
+                if(layOut == Layouts.Auto)
+                    return Layouts.FlowLayout;
+                else
+                    return (Layouts) GetValue(LayoutProperty);
+            }
+            set
+            {
+                SetValue(LayoutProperty, value);
+            }
         }
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Legend.HrefTarget dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Legend.HrefTarget dependency property.
+        /// </returns>
+        internal static readonly DependencyProperty LayoutProperty = DependencyProperty.Register
+            ("Layout",
+            typeof(Layouts),
+            typeof(Legend),null);
 
         /// <summary>
         /// Label text and Marker as symbol
         /// </summary>
-        internal List<KeyValuePair<String, Marker>> Entries
+        internal List<LegendEntry> Entries
         {
             get;
             set;
@@ -1971,6 +2022,17 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Event handler attached with ShadowEnabled property changed event of Legend element
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Legend legend = d as Legend;
+            legend.FirePropertyChanged(VcProperties.ShadowEnabled);
+        }
+
+        /// <summary>
         /// Event handler attached with CornerRadius property changed event of Legend element
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2162,16 +2224,11 @@ namespace Visifire.Charts
             Visual.Opacity = this.InternalOpacity;
 
             ApplyLighting();
+            ApplyShadow();
             AttachHref(Chart, Visual, Href, HrefTarget);
             AttachToolTip(Chart, this, Visual);
             AttachEvents2Visual(this, Visual);
         }
-        
-
-
-
-
-
         /// <summary>
         /// Return actual size of the TextBlock
         /// </summary>
@@ -2188,7 +2245,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Plloy lighting over Legend
+        /// Apply lighting over Legend
         /// </summary>
         private void ApplyLighting()
         {
@@ -2196,6 +2253,22 @@ namespace Visifire.Charts
                 LegendContainer.Background = Graphics.LightingBrush(LightingEnabled);
             else
                 LegendContainer.Background = new SolidColorBrush(Colors.Transparent);
+        }
+
+        /// <summary>
+        /// Apply shadow over Legend
+        /// </summary>
+        private void ApplyShadow()
+        {
+            if (ShadowEnabled)
+                Visual.Effect = new System.Windows.Media.Effects.DropShadowEffect()
+            {
+                BlurRadius = 6,
+                Direction = 315,
+                ShadowDepth = 5,
+                Opacity = 0.95,
+                Color = Color.FromArgb((Byte)255,(Byte)135,(Byte)135,(Byte)135)
+            };
         }
 
         /// <summary>
@@ -2226,22 +2299,22 @@ namespace Visifire.Charts
         /// </summary>
         /// <returns>EntrySize</returns>
         private EntrySize GetMaxSymbolAndColumnWidth()
-        {
+        {   
             EntrySize entrySize = new EntrySize();
 
-            foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
+            foreach (LegendEntry labelAndSymbol in Entries)
             {
                 TextBlock t = new TextBlock();
-                t.Text = labelAndSymbol.Key;
+                t.Text = labelAndSymbol.Labels[0];
                 ApplyFontProperty(t);
                 Size labelSize = TextBlockActualSize(t);
                 entrySize.TextSize.Width = (labelSize.Width > entrySize.TextSize.Width) ? labelSize.Width : entrySize.TextSize.Width;
                 entrySize.TextSize.Height = (labelSize.Height > entrySize.TextSize.Height) ? labelSize.Height : entrySize.TextSize.Height;
-                (labelAndSymbol.Value as Marker).Margin = EntryMargin;
+                (labelAndSymbol.Marker as Marker).Margin = EntryMargin;
 
-                (labelAndSymbol.Value as Marker).CreateVisual();
-                entrySize.SymbolSize.Width = ((labelAndSymbol.Value as Marker).MarkerActualSize.Width > entrySize.SymbolSize.Width) ? (labelAndSymbol.Value as Marker).MarkerActualSize.Width : entrySize.SymbolSize.Width;
-                entrySize.SymbolSize.Height = ((labelAndSymbol.Value as Marker).MarkerActualSize.Height > entrySize.SymbolSize.Height) ? (labelAndSymbol.Value as Marker).MarkerActualSize.Height : entrySize.SymbolSize.Height;
+                (labelAndSymbol.Marker as Marker).CreateVisual();
+                entrySize.SymbolSize.Width = ((labelAndSymbol.Marker as Marker).MarkerActualSize.Width > entrySize.SymbolSize.Width) ? (labelAndSymbol.Marker as Marker).MarkerActualSize.Width : entrySize.SymbolSize.Width;
+                entrySize.SymbolSize.Height = ((labelAndSymbol.Marker as Marker).MarkerActualSize.Height > entrySize.SymbolSize.Height) ? (labelAndSymbol.Marker as Marker).MarkerActualSize.Height : entrySize.SymbolSize.Height;
             }
 
             return entrySize;
@@ -2337,12 +2410,12 @@ namespace Visifire.Charts
             legendPanel.Children.Add(StackPanelColumn());
             legendPanel.Height = 0;
 
-            foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
+            foreach (LegendEntry labelAndSymbol in Entries)
             {
-                Marker markerAsSymbol = labelAndSymbol.Value;
+                Marker markerAsSymbol = labelAndSymbol.Marker;
                 markerAsSymbol.Margin = EntryMargin;
                 markerAsSymbol.LabelMargin = LabelMargin;
-                markerAsSymbol.Text = labelAndSymbol.Key;
+                markerAsSymbol.Text = labelAndSymbol.Labels[0];
 
                 markerAsSymbol.TextAlignmentY = AlignmentY.Center;
                 markerAsSymbol.TextAlignmentX = AlignmentX.Right;
@@ -2412,72 +2485,77 @@ namespace Visifire.Charts
         /// Draw vertical grid layout for legend
         /// </summary>
         /// <param name="legendContent">Legend content referecnce</param>
-        private void DrawVerticalGridlayout4Legend(ref Grid legendContent)
+        private void DrawVerticalGridlayout4Legend(ref Grid legendContent, out ScrollViewer scrollViewer)
         {
-            Int32 row, column;
-            Grid legendGrid = new Grid();
-
-            EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
-
-            MaxRows = (Int32)(InternalMaximumHeight / (maxEntrySize.SymbolSize.Height + maxEntrySize.TextSize.Height + EntryMargin + LabelMargin));
-
-            MaxColumns = (Int32)Math.Ceiling(((Double)Entries.Count / MaxRows));
-
-            for (row = 0; row < MaxRows; row++)
-                legendGrid.RowDefinitions.Add(new RowDefinition());
-
-            row = 0;
-            column = 0;
-
-            Double maxRowHeight = 0;
-
-            foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {
-                if (row == 0)
-                {
-                    legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.SymbolSize.Width + EntryMargin + LabelMargin / 2) });
-                    legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.TextSize.Width + LabelMargin / 2) });
-                }
-
-                (labelAndSymbol.Value as Marker).Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
-                (labelAndSymbol.Value as Marker).Visual.SetValue(Grid.RowProperty, row);
-                (labelAndSymbol.Value as Marker).Visual.SetValue(Grid.ColumnProperty, column++);
-
-                legendGrid.Children.Add((labelAndSymbol.Value as Marker).Visual);
-
-                TextBlock label = new TextBlock();
-                label.Margin = new Thickness(LabelMargin, 0, 0, 0);
-
-                label.Text = labelAndSymbol.Key;
-                ApplyFontProperty(label);
-                label.SetValue(Grid.RowProperty, row);
-                label.SetValue(Grid.ColumnProperty, column++);
-                label.HorizontalAlignment = HorizontalAlignment.Left;
-                label.VerticalAlignment = VerticalAlignment.Center;
-                legendGrid.Children.Add(label);
-                label.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                Double maxRowHeight1 = (label.DesiredSize.Height > (labelAndSymbol.Value as Marker).Visual.DesiredSize.Height) ? label.DesiredSize.Height : (labelAndSymbol.Value as Marker).Visual.DesiredSize.Height;
-
-                if (maxRowHeight1 > maxRowHeight)
-                {
-                    maxRowHeight = maxRowHeight1;
-                    legendGrid.RowDefinitions[row].Height = new GridLength(maxRowHeight + 2 * EntryMargin);
-                }
-
-                if (column >= MaxColumns * 2)
-                {
-                    row++;
-                    column = 0;
-                }
-            }
-
-            legendGrid.ShowGridLines = true;
-            legendGrid.HorizontalAlignment = HorizontalAlignment.Center;
-            legendGrid.VerticalAlignment = VerticalAlignment.Center;
-
-            legendContent.Children.Add(legendGrid);
+            DrawHorizontalGridlayout4Legend(ref legendContent, out scrollViewer);
         }
+
+        //private void DrawVerticalGridlayout4Legend(ref Grid legendContent)
+        //{
+        //    Int32 row, column;
+        //    Grid legendGrid = new Grid();
+
+        //    EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
+
+        //    MaxRows = (Int32)(InternalMaximumHeight / (maxEntrySize.SymbolSize.Height + maxEntrySize.TextSize.Height + EntryMargin + LabelMargin));
+
+        //    MaxColumns = (Int32)Math.Ceiling(((Double)Entries.Count / MaxRows));
+
+        //    for (row = 0; row < MaxRows; row++)
+        //        legendGrid.RowDefinitions.Add(new RowDefinition());
+
+        //    row = 0;
+        //    column = 0;
+
+        //    Double maxRowHeight = 0;
+
+        //    foreach (LegendEntry labelAndSymbol in Entries)
+        //    {
+        //        if (row == 0)
+        //        {
+        //            legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.SymbolSize.Width + EntryMargin + LabelMargin / 2) });
+        //            legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.TextSize.Width + LabelMargin / 2) });
+        //        }
+
+        //        (labelAndSymbol.Marker as Marker).Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
+        //        (labelAndSymbol.Marker as Marker).Visual.SetValue(Grid.RowProperty, row);
+        //        (labelAndSymbol.Marker as Marker).Visual.SetValue(Grid.ColumnProperty, column++);
+
+        //        legendGrid.Children.Add((labelAndSymbol.Marker as Marker).Visual);
+
+        //        TextBlock label = new TextBlock();
+        //        label.Margin = new Thickness(LabelMargin, 0, 0, 0);
+
+        //        label.Text = labelAndSymbol.Labels[0];
+        //        ApplyFontProperty(label);
+        //        label.SetValue(Grid.RowProperty, row);
+        //        label.SetValue(Grid.ColumnProperty, column++);
+        //        label.HorizontalAlignment = HorizontalAlignment.Left;
+        //        label.VerticalAlignment = VerticalAlignment.Center;
+        //        legendGrid.Children.Add(label);
+        //        label.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+        //        Double maxRowHeight1 = (label.DesiredSize.Height > (labelAndSymbol.Marker as Marker).Visual.DesiredSize.Height) ? label.DesiredSize.Height : (labelAndSymbol.Marker as Marker).Visual.DesiredSize.Height;
+
+        //        if (maxRowHeight1 > maxRowHeight)
+        //        {
+        //            maxRowHeight = maxRowHeight1;
+        //            legendGrid.RowDefinitions[row].Height = new GridLength(maxRowHeight + 2 * EntryMargin);
+        //        }
+
+        //        if (column >= MaxColumns * 2)
+        //        {
+        //            row++;
+        //            column = 0;
+        //        }
+        //    }
+
+        //    legendGrid.ShowGridLines = true;
+        //    legendGrid.HorizontalAlignment = HorizontalAlignment.Center;
+        //    legendGrid.VerticalAlignment = VerticalAlignment.Center;
+
+        //    legendContent.Children.Add(legendGrid);
+        //}
 
         /// <summary>
         /// Draw horizontal flow layout for legend
@@ -2491,12 +2569,12 @@ namespace Visifire.Charts
             (legendPanel as StackPanel).Orientation = Orientation.Vertical;
             legendPanel.Children.Add(StackPanelRow());
 
-            foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
+            foreach (LegendEntry labelAndSymbol in Entries)
             {
-                Marker marker = labelAndSymbol.Value;
+                Marker marker = labelAndSymbol.Marker;
                 marker.Margin = EntryMargin;
                 marker.LabelMargin = LabelMargin;
-                marker.Text = labelAndSymbol.Key;
+                marker.Text = labelAndSymbol.Labels[0];
                 ApplyFontPropertiesOfMarkerAsSymbol(marker);
 
                 marker.TextAlignmentY = AlignmentY.Center;
@@ -2566,110 +2644,275 @@ namespace Visifire.Charts
         /// Draw horizontal grid layout for legend
         /// </summary>
         /// <param name="legendContent">Legend content referecnce</param>
-        private void DrawHorizontalGridlayout4Legend(ref Grid legendContent)
-        {
-            Int32 row, column;
+        private void DrawHorizontalGridlayout4Legend(ref Grid legendContent, out ScrollViewer scrollViewer)
+        {   
             Grid legendGrid = new Grid();
+            scrollViewer = new ScrollViewer();
+            scrollViewer.BorderThickness = new Thickness(0);
 
-            EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
+            if (Entries.Count > 0)
+            {   
+                // Check number of columns possible
+                Int32 totalNumberOfColumn = (from le in Entries where le.Labels != null select le.Labels.Count()).Max() + 1; // 1 for Legend
 
-            MaxColumns = (Int32)(InternalMaximumWidth / (maxEntrySize.SymbolSize.Width + maxEntrySize.TextSize.Width + EntryMargin + LabelMargin));
+                // Create required numbers of column
+                for (Int32 i = 0; i < totalNumberOfColumn; i++)
+                    legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 
-            MaxRows = (Int32)Math.Ceiling(((Double)Entries.Count / MaxColumns));
+                //Create required numbers of row
+                for (Int32 i = 1; i <= Entries.Count; i++)
+                    legendGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
-            for (row = 0; row < MaxRows; row++)
-                legendGrid.RowDefinitions.Add(new RowDefinition());
+                Int32 rowIndex = 0;
 
-            row = 0;
-            column = 0;
+                List<Rectangle> linesAsRect = new List<Rectangle>();
+                
+                foreach (LegendEntry legendEntry in Entries)
+                {   
+                    Int32 columnIndex = 0;
 
-            Double maxRowHeight = 0;
+                    if (legendEntry.IsCompleteLine)
+                    {   
+                        Rectangle rectAsLine = new Rectangle()
+                        {   
+                            Height = 1,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            Fill = new SolidColorBrush(Colors.Black)
+                        };
+                        
+                        linesAsRect.Add(rectAsLine);
 
-            foreach (KeyValuePair<String, Marker> labelAndSymbol in Entries)
-            {
-                if (row == 0)
-                {
-                    legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.SymbolSize.Width + EntryMargin + LabelMargin / 2) });
-                    legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.TextSize.Width + LabelMargin / 2) });
+                        rectAsLine.SetValue(Grid.RowProperty, rowIndex);
+                        legendGrid.Children.Add(rectAsLine);
+                    }
+                    else
+                    {   
+                        Marker marker = legendEntry.Marker;
+
+                        // Create the first column for Marker
+                        if (marker != null)
+                        {   
+                            marker.CreateVisual();
+                            marker.Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
+                            marker.Visual.SetValue(Grid.RowProperty, rowIndex);
+                            marker.Visual.SetValue(Grid.ColumnProperty, columnIndex);
+                            marker.Visual.VerticalAlignment = VerticalAlignment.Center;
+                            legendGrid.Children.Add(marker.Visual);
+                        }
+
+                        VerticalAlignment verticalAlignment = VerticalAlignment.Center;
+                        List<TextBlock> labels = new List<TextBlock>();
+                        Int32 labelIndex = 0;
+
+                        // Create one or more column for labels
+                        foreach (String labelText in legendEntry.Labels)
+                        {
+                            TextBlock label = new TextBlock();
+                            labels.Add(label);
+
+                            columnIndex++;
+
+                            if (legendEntry.XAlignments[labelIndex] != HorizontalAlignment.Left)
+                                label.Margin = new Thickness(LabelMargin, 0, 0, 0);
+
+                            label.Text = labelText;
+                            ApplyFontProperty(label);
+                            label.SetValue(Grid.RowProperty, rowIndex);
+                            label.SetValue(Grid.ColumnProperty, columnIndex);
+                            label.HorizontalAlignment = legendEntry.XAlignments[labelIndex];
+                            label.VerticalAlignment = VerticalAlignment.Center;
+                            legendGrid.Children.Add(label);
+
+                            // Align the Marker at top if any labels included NewLine '\n'
+                            if (labelText.Contains('\n'))
+                                verticalAlignment = VerticalAlignment.Top;
+
+                            labelIndex++;
+                        }
+
+                        // Update verticalAlignment for all column items
+                        if (marker != null)
+                            marker.Visual.VerticalAlignment = verticalAlignment;
+
+                        foreach (TextBlock label in labels)
+                            label.VerticalAlignment = verticalAlignment;
+                    }
+                    
+                    // Next row
+                    rowIndex++;
                 }
 
-                (labelAndSymbol.Value as Marker).Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
-                (labelAndSymbol.Value as Marker).Visual.SetValue(Grid.RowProperty, row);
-                (labelAndSymbol.Value as Marker).Visual.SetValue(Grid.ColumnProperty, column++);
+                foreach(Rectangle rectAsLine in linesAsRect)
+                   rectAsLine.SetValue(Grid.ColumnSpanProperty, totalNumberOfColumn);
 
-                legendGrid.Children.Add((labelAndSymbol.Value as Marker).Visual);
-
-                TextBlock label = new TextBlock();
-                label.Margin = new Thickness(LabelMargin, 0, 0, 0);
-
-                label.Text = labelAndSymbol.Key;
-                ApplyFontProperty(label);
-                label.SetValue(Grid.RowProperty, row);
-                label.SetValue(Grid.ColumnProperty, column++);
-                label.HorizontalAlignment = HorizontalAlignment.Left;
-                label.VerticalAlignment = VerticalAlignment.Center;
-                legendGrid.Children.Add(label);
-                label.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                Double maxRowHeight1 = (label.DesiredSize.Height > (labelAndSymbol.Value as Marker).Visual.DesiredSize.Height) ? label.DesiredSize.Height : (labelAndSymbol.Value as Marker).Visual.DesiredSize.Height;
-
-                if (maxRowHeight1 > maxRowHeight)
-                {
-                    maxRowHeight = maxRowHeight1;
-                    legendGrid.RowDefinitions[row].Height = new GridLength(maxRowHeight + 2 * EntryMargin);
-                }
-
-                if (column >= MaxColumns * 2)
-                {
-                    row++;
-                    column = 0;
-                }
             }
 
-            legendGrid.ShowGridLines = true;
+            //legendGrid.ShowGridLines = true;
             legendGrid.HorizontalAlignment = HorizontalAlignment.Center;
             legendGrid.VerticalAlignment = VerticalAlignment.Center;
-
-            legendContent.Children.Add(legendGrid);
+            scrollViewer.Content = legendGrid;
+            scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            legendContent.Children.Add(scrollViewer);
         }
+
+        //private void DrawHorizontalGridlayout4Legend(ref Grid legendContent)
+        //{
+        //    Int32 row, column;
+        //    Grid legendGrid = new Grid();
+
+        //    EntrySize maxEntrySize = GetMaxSymbolAndColumnWidth();
+
+        //    MaxColumns = (Int32)(InternalMaximumWidth / (maxEntrySize.SymbolSize.Width + maxEntrySize.TextSize.Width + EntryMargin + LabelMargin));
+
+        //    MaxRows = (Int32)Math.Ceiling(((Double)Entries.Count / MaxColumns));
+
+        //    for (row = 0; row < MaxRows; row++)
+        //        legendGrid.RowDefinitions.Add(new RowDefinition());
+
+        //    row = 0;
+        //    column = 0;
+
+        //    Double maxRowHeight = 0;
+
+        //    foreach (LegendEntry labelAndSymbol in Entries)
+        //    {   
+        //        if (row == 0)
+        //        {
+        //            legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.SymbolSize.Width + EntryMargin + LabelMargin / 2) });
+        //            legendGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(maxEntrySize.TextSize.Width + LabelMargin / 2) });
+        //        }
+
+        //        (labelAndSymbol.Marker as Marker).Visual.Margin = new Thickness(EntryMargin, EntryMargin, LabelMargin / 2, EntryMargin);
+        //        (labelAndSymbol.Marker as Marker).Visual.SetValue(Grid.RowProperty, row);
+        //        (labelAndSymbol.Marker as Marker).Visual.SetValue(Grid.ColumnProperty, column++);
+
+        //        legendGrid.Children.Add((labelAndSymbol.Marker as Marker).Visual);
+
+        //        TextBlock label = new TextBlock();
+        //        label.Margin = new Thickness(LabelMargin, 0, 0, 0);
+
+        //        label.Text = labelAndSymbol.Labels[0];
+        //        ApplyFontProperty(label);
+        //        label.SetValue(Grid.RowProperty, row);
+        //        label.SetValue(Grid.ColumnProperty, column++);
+        //        label.HorizontalAlignment = HorizontalAlignment.Left;
+        //        label.VerticalAlignment = VerticalAlignment.Center;
+        //        legendGrid.Children.Add(label);
+        //        label.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+        //        Double maxRowHeight1 = (label.DesiredSize.Height > (labelAndSymbol.Marker as Marker).Visual.DesiredSize.Height) ? label.DesiredSize.Height : (labelAndSymbol.Marker as Marker).Visual.DesiredSize.Height;
+
+        //        if (maxRowHeight1 > maxRowHeight)
+        //        {
+        //            maxRowHeight = maxRowHeight1;
+        //            legendGrid.RowDefinitions[row].Height = new GridLength(maxRowHeight + 2 * EntryMargin);
+        //        }
+
+        //        if (column >= MaxColumns * 2)
+        //        {
+        //            row++;
+        //            column = 0;
+        //        }
+        //    }
+
+        //    legendGrid.ShowGridLines = true;
+        //    legendGrid.HorizontalAlignment = HorizontalAlignment.Center;
+        //    legendGrid.VerticalAlignment = VerticalAlignment.Center;
+
+        //    legendContent.Children.Add(legendGrid);
+        //}
 
         /// <summary>
         /// Create the content of the Legend
         /// </summary>
         /// <returns>Grid</returns>
         private Grid CreateLegendContent()
-        {
+        {   
             Grid legendContent = new Grid();
+            ScrollViewer scrollViewer = null;
 
             InternalMaximumWidth -= 2 * InternalPadding.Left;
             InternalMaximumHeight -= 2 * InternalPadding.Left;
 
             if (Orientation == Orientation.Vertical)
-            {
-                if (LegendLayout == Layouts.FlowLayout)
+            {   
+                if (Layout == Layouts.FlowLayout)
                 {
                     DrawVerticalFlowLayout4Legend(ref legendContent);
                 }
-                else if (LegendLayout == Layouts.Gridlayout)// MaxWidth is reqired for GridLayout calculation
+                else if (Layout == Layouts.GridLayout) // MaxWidth is reqired for GridLayout calculation
                 {
-                    DrawVerticalGridlayout4Legend(ref legendContent);
+                    DrawVerticalGridlayout4Legend(ref legendContent, out scrollViewer);
                 }
             }
             else if (Orientation == Orientation.Horizontal)
             {
-                if (LegendLayout == Layouts.FlowLayout)
-                {
+                if (Layout == Layouts.FlowLayout)
+                {   
                     DrawHorizontalFlowLayout4Legend(ref legendContent);
                 }
-                else if (LegendLayout == Layouts.Gridlayout)// MaxWidth is reqired for GridLayout calculation
+                else if (Layout == Layouts.GridLayout) // MaxWidth is reqired for GridLayout calculation
                 {
-                    DrawHorizontalGridlayout4Legend(ref legendContent);
+                    DrawHorizontalGridlayout4Legend(ref legendContent, out scrollViewer);
                 }
             }
 
             legendContent.Measure(new Size(Double.MaxValue, Double.MaxValue));
             legendContent.Height = legendContent.DesiredSize.Height + InternalPadding.Left * 2;
             legendContent.Width = legendContent.DesiredSize.Width + InternalPadding.Left * 2;
+
+            if (Layout == Layouts.GridLayout)
+            {   
+                Double maxHeight, maxWidth;
+
+                if (Double.IsInfinity(InternalMaximumWidth))
+                    maxWidth = (Chart as Chart).ActualWidth * 0.5;
+                else
+                    maxWidth = InternalMaximumWidth;
+
+                                if (Double.IsInfinity(InternalMaximumHeight))
+                    maxHeight = (Chart as Chart).ActualHeight * 0.5;
+                else
+                    maxHeight = InternalMaximumHeight;
+
+                if (legendContent.Width > maxWidth)
+                {
+                    scrollViewer.Width = maxWidth - InternalPadding.Left * 2;
+                    legendContent.Width = maxWidth;
+                    scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+                }
+ 
+                if (legendContent.Height > maxHeight)
+                {   
+                    scrollViewer.Height = maxHeight - InternalPadding.Left * 2;
+                    scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+                    legendContent.Height = maxHeight;
+                }
+
+                if (scrollViewer.VerticalScrollBarVisibility == ScrollBarVisibility.Visible)
+                {
+                    if (legendContent.Width + SCROLLBAR_SIZE_OF_SCROLLVIEWER < maxWidth)
+                    {
+                        legendContent.Width += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
+
+                        if(!Double.IsNaN(scrollViewer.Width))
+                            scrollViewer.Width += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
+                    }
+                }
+
+                if (scrollViewer.HorizontalScrollBarVisibility == ScrollBarVisibility.Visible)
+                {
+                    if (legendContent.Height + SCROLLBAR_SIZE_OF_SCROLLVIEWER < maxHeight)
+                    {
+                        legendContent.Height += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
+
+                        if (!Double.IsNaN(scrollViewer.Height))
+                            scrollViewer.Height += SCROLLBAR_SIZE_OF_SCROLLVIEWER;
+                    }
+                }
+
+            }
 
             return legendContent;
         }
@@ -2784,7 +3027,7 @@ namespace Visifire.Charts
             LegendContainer.Children.Add(legendContent);
 
             LegendContainer.VerticalAlignment = VerticalAlignment.Center;
-            LegendContainer.HorizontalAlignment = HorizontalAlignment.Center;
+            LegendContainer.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             ApplyVisualProperty();
 
@@ -2843,7 +3086,8 @@ namespace Visifire.Charts
         /// </summary>
         private event EventHandler<LegendMouseButtonEventArgs> _onMouseRightButtonUp;
 #endif
-        
+
+        private const Double SCROLLBAR_SIZE_OF_SCROLLVIEWER = 18;
         private const Double ENTRY_SYMBOL_LINE_WIDTH = 18;
         private Double _internalFontSize = Double.NaN;
         private FontFamily _internalFontFamily = null;
@@ -2868,7 +3112,24 @@ namespace Visifire.Charts
  
 #endif
 
+
         #endregion
     }
 
+    internal class LegendEntry
+    {
+        public LegendEntry(Marker marker, List<String> labels, List<HorizontalAlignment> xAlignments)
+        {   
+            Marker = marker;
+            Labels = labels;
+            XAlignments = xAlignments;
+        }
+
+        public LegendEntry() { }
+            
+        public Boolean IsCompleteLine;
+        public Marker Marker;
+        public List<String> Labels;
+        public List<HorizontalAlignment> XAlignments;
+    }
 }

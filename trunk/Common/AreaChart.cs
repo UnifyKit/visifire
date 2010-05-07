@@ -935,10 +935,19 @@ namespace Visifire.Charts
 
                     foreach (FrameworkElement face in series.Faces.VisualComponents)
                         VisifireElement.AttachEvents2AreaVisual(currentDataPoint, currentDataPoint, face);
+
                 }
 
                 foreach (FrameworkElement face in series.Faces.VisualComponents)
                     VisifireElement.AttachEvents2AreaVisual(series, series, face);
+
+                if ((Boolean)series.ShadowEnabled)
+                {
+                    if (series.Faces != null && series.Faces.Visual != null)
+                    {
+                        series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                    }
+                }
 
                 if(!chart.IndicatorEnabled)
                     series.AttachAreaToolTip(chart, dataSeriesFaces.VisualComponents);
@@ -1573,6 +1582,14 @@ namespace Visifire.Charts
                         }
 
                         curDataPoints[index].Parent.Faces.Visual = visual;
+
+                        if ((Boolean)series.ShadowEnabled)
+                        {
+                            if (series.Faces != null && series.Faces.Visual != null)
+                            {
+                                series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                            }
+                        }
                     }
 
                     curBase += curYValues[index];
@@ -1875,6 +1892,14 @@ namespace Visifire.Charts
                             }
                         }
                         curDataPoints[index].Parent.Faces.Visual = visual;
+
+                        if ((Boolean)series.ShadowEnabled)
+                        {
+                            if (series.Faces != null && series.Faces.Visual != null)
+                            {
+                                series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                            }
+                        }
                     }
                     curBase += curPercentageY;
                     nextBase += nextPercentageY;
@@ -2858,13 +2883,22 @@ namespace Visifire.Charts
                 case VcProperties.MarkerScale:
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
-                case VcProperties.ShadowEnabled:
                     // Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     // LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
                     LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
                     break;
 
-              
+                case VcProperties.ShadowEnabled:
+                    if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                    {
+                        if ((Boolean)dataSeries.ShadowEnabled)
+                        {
+                            dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                        }
+                        else
+                            dataSeries.Faces.Visual.Effect = null;
+                    }
+                    break;
 
                 case VcProperties.ShowInLegend:
                     chart.InvokeRender();
