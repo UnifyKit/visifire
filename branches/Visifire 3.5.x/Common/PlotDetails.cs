@@ -346,6 +346,7 @@ namespace Visifire.Charts
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
             if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
                 || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
+                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
                 )
                 SeriesDrawingIndex = GenerateDrawingOrder();
                 
@@ -724,12 +725,12 @@ namespace Visifire.Charts
                                         minDate = minDate.AddMinutes(-1);
                                     }
                                     else if (minDateDifference.TotalSeconds > 0)
-                                    {
+                                    {   
                                         autoIntervalType = IntervalTypes.Seconds;
                                         minDate = minDate.AddSeconds(-1);
                                     }
                                     else if (minDateDifference.TotalMilliseconds > 0)
-                                    {
+                                    {   
                                         autoIntervalType = IntervalTypes.Milliseconds;
                                         minDate = minDate.AddMilliseconds(-1);
                                     }
@@ -1860,10 +1861,11 @@ namespace Visifire.Charts
             Double dataSeriesCount = 0;
             Double min = Double.PositiveInfinity;
             foreach (PlotGroup plotGroup in PlotGroups)
-            {
+            {   
                 dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
                                    where dataSeries.DataPoints.Count > 0
                                    select dataSeries).Count();
+
                 if (dataSeriesCount > 0)
                 {
                     if ((!Double.IsNaN(plotGroup.MinimumX) && plotGroup.AxisX == axisX))

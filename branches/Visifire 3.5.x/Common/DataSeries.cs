@@ -50,6 +50,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -103,45 +104,12 @@ namespace Visifire.Charts
         void DataMappings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
-            {
+            {   
                 foreach (DataPoint dp in DataPoints)
                 {
                     foreach (DataMapping dm in e.NewItems)
                     {
-                        switch (dm.MemberName)
-                        {
-                            case "Open":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[0] = (Double)(dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null));
-                                break;
-
-                            case "Close":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[1] = (Double)(dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null));
-                                break;
-
-                            case "High":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[2] = (Double)(dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null));
-                                break;
-
-                            case "Low":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[3] = (Double)(dp.DataContext.GetType().GetProperty(dm.Path).GetValue(dp.DataContext, null));
-                                break;
-
-                            default:
-                                dm.Map(dp.DataContext, dp);
-                                break;
-                        }
+                        dp.UpdateBindProperty(dm, dp.DataContext);
                     }
                 }
             }
@@ -151,40 +119,7 @@ namespace Visifire.Charts
                 {
                     foreach (DataMapping dm in e.OldItems)
                     {
-                        switch (dm.MemberName)
-                        {
-                            case "Open":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[0] = 0;
-                                break;
-
-                            case "Close":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[1] = 0;
-                                break;
-
-                            case "High":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[2] = 0;
-                                break;
-
-                            case "Low":
-                                if (dp.YValues == null)
-                                    dp.YValues = new Double[4];
-
-                                dp.YValues[3] = 0;
-                                break;
-
-                            default:
-                                dp.GetType().GetProperty(dm.MemberName).SetValue(dp, null, null);
-                                break;
-                        }
+                        dp.ResetBindProperty(dm, dp.DataContext);
                     }
                 }
             }
@@ -239,59 +174,49 @@ namespace Visifire.Charts
         {
             // Remove handler for oldValue.CollectionChanged (if present)
             INotifyCollectionChanged oldValueINotifyCollectionChanged = oldValue as INotifyCollectionChanged;
+            
+            if (null != oldValueINotifyCollectionChanged)
+            {   
+                // Detach the WeakEventListener
+                if (null != _weakEventListener)
+                {
+                    _weakEventListener.Detach();
+                    _weakEventListener = null;
+                }
+            }
+
+            // Add handler for newValue.CollectionChanged (if possible)
             INotifyCollectionChanged newValueINotifyCollectionChanged = newValue as INotifyCollectionChanged;
-
-            if (oldValueINotifyCollectionChanged != null)
-            {
-                oldValueINotifyCollectionChanged.CollectionChanged -= new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
+            if (null != newValueINotifyCollectionChanged)
+            {   
+                // Use a WeakEventListener so that the backwards reference doesn't keep this object alive
+                _weakEventListener = new WeakEventListener<DataSeries, object, NotifyCollectionChangedEventArgs>(this);
+                _weakEventListener.OnEventAction = (instance, source, eventArgs) => DataSource_CollectionChanged(source, eventArgs);
+                _weakEventListener.OnDetachAction = (weakEventListener) => newValueINotifyCollectionChanged.CollectionChanged -= weakEventListener.OnEvent;
+                
+                newValueINotifyCollectionChanged.CollectionChanged += _weakEventListener.OnEvent;
             }
-
-            if (newValueINotifyCollectionChanged != null)
-            {
-                newValueINotifyCollectionChanged.CollectionChanged += new NotifyCollectionChangedEventHandler(DataSource_CollectionChanged);
-            }
-
+            
             BindData();
         }
-
-        void DataSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
+        
+        private void DataSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {   
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 BindData();
                 return;
-                //    if ((sender as ICollection) != null && (sender as ICollection).Count == 0)
-                //    {
-                //        DataPoints.Clear();
-                //        return;
-                //    } 
             }
 
-            List<DataPoint> removedDataPoints = new List<DataPoint>();
-            Int32 removedItemsCount = 0;
-
             if (e.OldItems != null)
-            {
-                foreach (DataPoint dp in this.DataPoints)
-                {
-                    if (dp.DataContext != null)
-                    {
-                        foreach (object item in e.OldItems)
-                        {
-                            if (dp.DataContext.Equals(item))
-                            {
-                                removedDataPoints.Add(dp);
-                                removedItemsCount++;
-                            }
-                        }
-
-                        if (removedItemsCount == e.OldItems.Count)
-                            break;
-                    }
-                }
+            {               
+                var removedDataPoints = (from dp in DataPoints
+                                         where dp.DataContext != null && e.OldItems.Contains(dp.DataContext)
+                                         select dp).ToList();
 
                 foreach (DataPoint dp in removedDataPoints)
                 {
+                    dp.DetachEventFromWeakEventListner();
                     DataPoints.Remove(dp);
                 }
             }
@@ -305,7 +230,7 @@ namespace Visifire.Charts
                     dp.DataContext = item;
 
                     if (DataMappings != null)
-                    {
+                    {   
                         try
                         {
                             dp.BindData(item, DataMappings);
@@ -317,7 +242,7 @@ namespace Visifire.Charts
                     }
                     
                     //this.DataPoints.Add(dp);
-                    this.DataPoints.Insert(e.NewStartingIndex, dp);
+                    DataPoints.Insert(e.NewStartingIndex, dp);
                 }
             }
         }
@@ -375,6 +300,30 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+        
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.IncludeYValueInLegend dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.IncludeYValueInLegend dependency property.
+        /// </returns>
+        public static readonly DependencyProperty IncludeYValueInLegendProperty = DependencyProperty.Register
+            ("IncludeYValueInLegend",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(OnIncludeYValueInLegendPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataSeries.IncludePercentageInLegend dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataSeries.IncludePercentageInLegend dependency property.
+        /// </returns>
+        public static readonly DependencyProperty IncludePercentageInLegendProperty = DependencyProperty.Register
+            ("IncludePercentageInLegend",
+            typeof(Boolean),
+            typeof(DataSeries),
+            new PropertyMetadata(OnIncludePercentageInLegendPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.DataSeries.FillType dependency property.
@@ -382,6 +331,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.DataSeries.FillType dependency property.
         /// </returns>
+        /// Not yet made as public.
         private static readonly DependencyProperty FillTypeProperty = DependencyProperty.Register
             ("FillType",
             typeof(FillType),
@@ -1055,7 +1005,7 @@ namespace Visifire.Charts
             typeof(Int32),
             typeof(DataSeries),
             new PropertyMetadata(OnZIndexPropertyChanged));
-
+        
         /// <summary>
         /// FillType for funnel
         /// </summary>
@@ -1068,6 +1018,36 @@ namespace Visifire.Charts
             set
             {
                 SetValue(FillTypeProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Whether to include percentage value in Legend
+        /// </summary>
+        public Boolean IncludePercentageInLegend
+        {
+            get
+            {
+                return (Boolean)GetValue(IncludePercentageInLegendProperty);
+            }
+            set
+            {
+                SetValue(IncludePercentageInLegendProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Whether to include YValue in Legend
+        /// </summary>
+        public Boolean IncludeYValueInLegend
+        {
+            get
+            {
+                return (Boolean)GetValue(IncludeYValueInLegendProperty);
+            }
+            set
+            {
+                SetValue(IncludeYValueInLegendProperty, value);
             }
         }
 
@@ -2958,6 +2938,28 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// IncludeYValueInLegendProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnIncludeYValueInLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.IncludeYValueInLegend);
+        }
+
+        /// <summary>
+        /// IncludePercentageInLegendProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnIncludePercentageInLegendPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {   
+            DataSeries dataSeries = d as DataSeries;
+            dataSeries.FirePropertyChanged(VcProperties.IncludePercentageInLegend);
+        }
+
+        /// <summary>
         /// FillTypeProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -3991,6 +3993,11 @@ namespace Visifire.Charts
 
         #region Data
 
+        /// <summary>
+        /// WeakEventListener used to handle INotifyCollectionChanged events.
+        /// </summary>
+        internal WeakEventListener<DataSeries, object, NotifyCollectionChangedEventArgs> _weakEventListener;
+        
         /// <summary>
         /// Whether event attached for DataPoint selection
         /// </summary>

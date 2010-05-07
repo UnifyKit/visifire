@@ -174,7 +174,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                             </Grid>
                                         </Grid>
                                         
-                                        <Canvas Canvas.ZIndex="2"  Margin="0">
+                                        <Canvas Canvas.ZIndex="2" Margin="0">
                                             <Border Name="ZoomRectangle" CornerRadius="0" BorderBrush="Black" Background="LightGray" Opacity="0.4" Canvas.ZIndex="2" />
                                         </Canvas>
 

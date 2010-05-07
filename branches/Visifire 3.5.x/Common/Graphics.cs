@@ -28,6 +28,7 @@ using System.ComponentModel;
 using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Media.Imaging;
+using System.Text;
 
 namespace Visifire.Charts
 {
@@ -628,15 +629,21 @@ namespace Visifire.Charts
             return path;
         }
 
-        public static System.Windows.Media.Effects.DropShadowEffect GetShadowEffect()
+        public static System.Windows.Media.Effects.DropShadowEffect GetShadowEffect(Double direction, Double shadowDepth, Double opacity)
         {
             return new System.Windows.Media.Effects.DropShadowEffect()
             {
-                BlurRadius = 5,
-                Direction = -45,
-                ShadowDepth = Chart.SHADOW_DEPTH,
-                Opacity = 0.94,
-                Color = Colors.Gray
+                Direction = direction,
+                ShadowDepth = shadowDepth,
+                Opacity = opacity,
+#if WPF
+                Color = Color.FromArgb((Byte)255, (Byte)215, (Byte)215, (Byte)215),
+                RenderingBias = System.Windows.Media.Effects.RenderingBias.Quality,
+                BlurRadius = 5
+#else
+                Color = Color.FromArgb((Byte)255, (Byte)135, (Byte)135, (Byte)135),
+                BlurRadius = 6
+#endif
             };
         }
 
@@ -723,7 +730,41 @@ namespace Visifire.Commons
         }
 
         #region Static Methods
+/*
+        public static ScrollViewer CreateScrollViewerFromXAML(Double scrollBarSize)
+        {
+            StringBuilder xaml = new StringBuilder();
+            
+            xaml.Append("<ScrollViewer xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">");
+			xaml.Append("<ScrollViewer.Template>");
+			xaml.Append("<ControlTemplate TargetType=\"ScrollViewer\">");
+						xaml.Append("<Border BorderBrush=\"{TemplateBinding BorderBrush}\" BorderThickness=\"{TemplateBinding BorderThickness}\" CornerRadius=\"2\">");
+							xaml.Append("<Grid Background=\"{TemplateBinding Background}\">");
+								xaml.Append("<Grid.ColumnDefinitions>");
+									xaml.Append("<ColumnDefinition Width=\"*\"/>");
+									xaml.Append("<ColumnDefinition Width=\"Auto\"/>");
+								xaml.Append("</Grid.ColumnDefinitions>");
+								xaml.Append("<Grid.RowDefinitions>");
+									xaml.Append("<RowDefinition Height=\"*\"/>");
+									xaml.Append("<RowDefinition Height=\"Auto\"/>");
+								xaml.Append("</Grid.RowDefinitions>");
+								xaml.Append("<ScrollContentPresenter x:Name=\"ScrollContentPresenter\" Cursor=\"{TemplateBinding Cursor}\" Margin=\"{TemplateBinding Padding}\" ContentTemplate=\"{TemplateBinding ContentTemplate}\"/>");
+								xaml.Append("<Rectangle Fill=\"#FFE9EEF4\" Grid.Column=\"1\" Grid.Row=\"1\"/>");
+								xaml.Append("<ScrollBar x:Name=\"VerticalScrollBar\" Margin=\"0,-1,-1,-1\" Width=\"18\" Visibility=\"{TemplateBinding ComputedVerticalScrollBarVisibility}\" IsTabStop=\"False\" Grid.Column=\"1\" Grid.Row=\"0\" Maximum=\"{TemplateBinding ScrollableHeight}\" Minimum=\"0\" Value=\"{TemplateBinding VerticalOffset}\" Orientation=\"Vertical\" ViewportSize=\"{TemplateBinding ViewportHeight}\"/>");
+								xaml.Append("<ScrollBar x:Name=\"HorizontalScrollBar\" Height=\"18\" Margin=\"-1,0,-1,-1\" Visibility=\"{TemplateBinding ComputedHorizontalScrollBarVisibility}\" IsTabStop=\"False\" Grid.Column=\"0\" Grid.Row=\"1\" Maximum=\"{TemplateBinding ScrollableWidth}\" Minimum=\"0\" Value=\"{TemplateBinding HorizontalOffset}\" Orientation=\"Horizontal\" ViewportSize=\"{TemplateBinding ViewportWidth}\"/>");
+							xaml.Append("</Grid>");
+						xaml.Append("</Border>");
+					xaml.Append("</ControlTemplate>");
+			xaml.Append("</ScrollViewer.Template>");
+		xaml.Append("</ScrollViewer>");
 
+#if SL
+           return (ScrollViewer) System.Windows.Markup.XamlReader.Load(xaml.ToString());
+#else
+           return (ScrollViewer)XamlReader.Load(new XmlTextReader(new System.IO.StringReader(xaml.ToString())));
+#endif
+        }
+        */
 #if SL
 
         /// <summary>

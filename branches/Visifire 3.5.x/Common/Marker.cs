@@ -196,10 +196,10 @@ namespace Visifire.Commons
                 {
                     DropShadowEffect drp = new DropShadowEffect();
                     drp.Color = Colors.Gray;
-                    drp.BlurRadius = 100;
-                    drp.ShadowDepth = 4;
-                    drp.Opacity = 0.62;
-                    drp.Direction = 302;
+                    drp.BlurRadius = 5;
+                    drp.ShadowDepth = 2.5;
+                    drp.Opacity = 0.90;
+                    drp.Direction = 315;
                     MarkerShape.Effect = drp;
                 }
                 else

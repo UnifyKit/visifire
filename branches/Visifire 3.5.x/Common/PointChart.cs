@@ -170,7 +170,8 @@ namespace Visifire.Charts
 
             marker.Tag = new ElementData() { Element = dataPoint };
 
-            marker.ShadowEnabled = dataPoint.Parent.ShadowEnabled;
+            marker.ShadowEnabled = (Boolean)dataPoint.ShadowEnabled;
+            marker.PixelLavelShadow = true; 
             marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
 
             if (marker.MarkerType != MarkerTypes.Cross)

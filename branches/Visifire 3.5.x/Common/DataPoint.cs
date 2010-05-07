@@ -46,6 +46,10 @@ using Visifire.Commons;
 using System.Windows.Data;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Visifire.Commons.Controls;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -63,11 +67,10 @@ namespace Visifire.Charts
         /// Initializes a new instance of the Visifire.Charts.DataPoint class
         /// </summary>
         public DataPoint()
-        {
+        {   
             ToolTipText = String.Empty;
             InternalXValue = Double.NaN;
             XValueType = ChartValueTypes.Numeric;
-            //YValues = new DoubleCollection();
             
             // Apply default style from generic
 #if WPF
@@ -79,8 +82,6 @@ namespace Visifire.Charts
 #else
             
             DefaultStyleKey = typeof(DataPoint);
-
-
 #endif
         }
 
@@ -233,7 +234,6 @@ namespace Visifire.Charts
                     str = str.Replace("#Sum", Parent.PlotGroup.AxisY.GetFormattedString(sum));  //_stackSum[XValue].X contains sum of all data points with same X value
                 }
             }
-
 
             if (_parent.RenderAs == RenderAs.Stock || _parent.RenderAs == RenderAs.CandleStick)
             {
@@ -2226,8 +2226,8 @@ namespace Visifire.Charts
         public void ActivePartialUpdateRenderLock()
         {
             (Chart as Chart).PARTIAL_DP_RENDER_LOCK = false;
-            //Visifire.Profiler.Profiler.End("Render");
-            //Visifire.Profiler.Profiler.Report("Render", true, false);
+            // Visifire.Profiler.Profiler.End("Render");
+            // Visifire.Profiler.Profiler.Report("Render", true, false);
         }
 
         #region Internal Properties
@@ -2539,8 +2539,17 @@ namespace Visifire.Charts
                 dataPoint._oldYValue = Double.IsNaN((Double)e.OldValue) ? dataPoint._oldYValue : (Double)e.OldValue;
                 dataPoint._oldYValue = Double.IsNaN(dataPoint._oldYValue) ? 0 : dataPoint._oldYValue;
 
-                if (!(dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock)))
-                    dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
+                if ((dataPoint.Chart as Chart).Series.Count == 1 &&
+                    ((Boolean)dataPoint.Parent.ShowInLegend &&
+                    (dataPoint.Parent.IncludeYValueInLegend || dataPoint.Parent.IncludePercentageInLegend)))
+                {
+                    dataPoint.FirePropertyChanged(VcProperties.YValue);
+                }
+                else
+                {
+                    if (!(dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock)))
+                        dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
+                }
             }
         }
 
@@ -3508,7 +3517,7 @@ namespace Visifire.Charts
         {   
             Double percentage = 0;
 
-            if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel)
+            if (Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel)
             {
                 if ((Parent.Chart as Chart).PlotDetails != null)
                 {
@@ -3603,56 +3612,113 @@ namespace Visifire.Charts
         /// <summary>
         /// Binds to an Object
         /// </summary>
-
-        internal void BindData(Object sender, DataMappingCollection dataMappings)
-        {
+        internal void BindData(Object dataSource, DataMappingCollection dataMappings)
+        {   
             foreach (DataMapping dm in dataMappings)
-            {
-                switch (dm.MemberName)
-                {
-                    case "Open":
-                        if (YValues == null)
-                            YValues = new Double[4];
-
-                        YValues[0] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                        break;
-
-                    case "Close":
-                        if (YValues == null)
-                            YValues = new Double[4];
-
-                        YValues[1] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                        break;
-
-                    case "High":
-                        if (YValues == null)
-                            YValues = new Double[4];
-
-                        YValues[2] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                        break;
-
-                    case "Low":
-                        if (YValues == null)
-                            YValues = new Double[4];
-
-                        YValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                        break;
-
-                    default:
-                        dm.Map(sender, this);
-                        break;
-                }    
+            {   
+                UpdateBindProperty(dm, dataSource);  
             }
 
-            INotifyPropertyChanged iNotifyPropertyChanged = sender as INotifyPropertyChanged;
+            INotifyPropertyChanged iNotifyPropertyChanged = dataSource as INotifyPropertyChanged;
 
             if (iNotifyPropertyChanged != null)
             {
-                iNotifyPropertyChanged.PropertyChanged += new PropertyChangedEventHandler(iNotifyPropertyChanged_PropertyChanged);
+                // Use a WeakEventListener so that the backwards reference doesn't keep this object alive
+                _weakEventListener = new WeakEventListener<DataPoint, object, PropertyChangedEventArgs>(this);
+
+                _weakEventListener.OnEventAction = (instance, source, eventArgs) =>
+                {
+                    instance.iNotifyPropertyChanged_PropertyChanged(source, eventArgs);
+                };
+
+                _weakEventListener.OnDetachAction = (weakEventListener) => iNotifyPropertyChanged.PropertyChanged -= weakEventListener.OnEvent;
+
+                iNotifyPropertyChanged.PropertyChanged += _weakEventListener.OnEvent;
             }
         }
 
-        void iNotifyPropertyChanged_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        internal void DetachEventFromWeakEventListner()
+        {   
+            // Detach the WeakEventListener
+            if (null != _weakEventListener)
+            {   
+                _weakEventListener.Detach();
+                _weakEventListener = null;
+            }
+        }
+
+        /// <summary>
+        /// WeakEventListener used to handle INotifyCollectionChanged events.
+        /// </summary>
+        internal WeakEventListener<DataPoint, object, PropertyChangedEventArgs> _weakEventListener;
+
+        /// <summary>
+        /// Update value of the property from DataSource
+        /// </summary>
+        /// <param name="dm">DataMapping</param>
+        /// <param name="dataSource">DataSource</param>
+        internal void UpdateBindProperty(DataMapping dm, Object dataSource)
+        {   
+            switch (dm.MemberName)
+            {
+                case "Open":
+                case "Close":
+                case "High":
+                case "Low":
+
+                    Double[] newYValues = new Double[4];
+                    if (YValues != null)
+                        YValues.CopyTo(newYValues, 0);
+
+                    // find the array index of OCHL (open close high low)
+                    Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
+
+                    newYValues[enumIndex] = (Double)dm.GetPropertyValue(dataSource);
+                    YValues = newYValues;
+                    break;
+
+                default:
+
+                    dm.Map(dataSource, this);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Reset value of the property that was mapped
+        /// </summary>
+        /// <param name="dm">DataMapping</param>
+        /// <param name="dataSource">DataSource</param>
+        internal void ResetBindProperty(DataMapping dm, Object dataSource)
+        {   
+            Double[] newYValues = new Double[4];
+
+            if (YValues != null)
+                YValues.CopyTo(newYValues, 0);
+
+            switch (dm.MemberName)
+            {   
+                case "Open":
+                case "Close":
+                case "High":
+                case "Low":
+
+                    if (YValues == null)
+                    {   
+                        Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
+                        YValues[enumIndex] = 0;
+                    }
+
+                    break;
+
+                default:
+                    this.GetType().GetProperty(dm.MemberName).SetValue(this, null, null);
+                    break;
+            }
+        }
+
+
+        private void iNotifyPropertyChanged_PropertyChanged(object dataSource, PropertyChangedEventArgs e)
         {
             DataMapping dm;
 
@@ -3664,55 +3730,8 @@ namespace Visifire.Charts
             {
                 return;
             }
-            
 
-            Double[] newYValues = new Double[4];
-            if (YValues != null)
-                YValues.CopyTo(newYValues,0);
-
-            switch (dm.MemberName)
-            {
-                case "Open" :
-                    newYValues[0] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                    YValues = newYValues;
-                    break;
-
-                case "Close":
-                    newYValues[1] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null)); YValues = newYValues;
-                    YValues = newYValues;
-                    break;
-
-                case "High":
-                    newYValues[2] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                    YValues = newYValues;
-                    break;
-
-                case "Low":
-                    newYValues[3] = (Double)(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                    YValues = newYValues;
-                    break;
-
-                //case "YValue":
-                //    Object value = Convert.ToDouble(sender.GetType().GetProperty(dm.Path).GetValue(sender, null));
-                //    this.GetType().GetProperty(dm.MemberName).SetValue(this, value, null);
-                //    break;
-
-                default:
-
-                    System.Reflection.PropertyInfo sourcePropertyInfo = sender.GetType().GetProperty(dm.Path);
-                    Object propertyValue = sourcePropertyInfo.GetValue(sender, null);
-
-                    System.Reflection.PropertyInfo targetPropertyInfo = this.GetType().GetProperty(dm.MemberName);
-
-                    // Change type of the source property to target property type
-                    propertyValue = Convert.ChangeType(propertyValue,
-                        targetPropertyInfo.PropertyType, System.Globalization.CultureInfo.CurrentCulture);
-
-                    this.GetType().GetProperty(dm.MemberName).SetValue(this, propertyValue, null);
-
-                    //this.GetType().GetProperty(dm.MemberName).SetValue(this, sender.GetType().GetProperty(dm.Path).GetValue(sender, null), null);
-                    break;
-            }            
+            UpdateBindProperty(dm, dataSource);
         }
 
         /// <summary>

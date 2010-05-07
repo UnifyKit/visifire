@@ -3894,6 +3894,7 @@ namespace Visifire.Charts
             visual.Children.Add(pieVisual);
             faces.VisualComponents.Add(pieVisual);
             faces.Visual = pieVisual;
+
             #endregion
         }
 

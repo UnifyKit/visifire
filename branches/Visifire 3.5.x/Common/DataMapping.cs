@@ -70,10 +70,10 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="source">DataSource object</param>
         /// <param name="target">Target object</param>
-        public void Map(Object source, Object target)
+        public void Map(Object dataSource, Object target)
         {   
             // Get value of the property
-            Object propertyValue = GetPropertyValue(source);
+            Object propertyValue = GetPropertyValue(dataSource);
 
             // Property info of target object
             System.Reflection.PropertyInfo targetPropertyInfo = target.GetType().GetProperty(MemberName);
