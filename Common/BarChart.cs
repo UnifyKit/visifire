@@ -709,16 +709,19 @@ namespace Visifire.Charts
                 columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
 
                 dataPoint.Faces = column;
-                ColumnChart.ApplyOrRemoveShadow(dataPoint, false, false);
+                ApplyOrRemoveShadow(chart, dataPoint);
             }
             else
             {   
                 // column = Get2DBar(barParams);
                 column = ColumnChart.Get2DColumn(dataPoint, columnWidth, columnHeight, false, false);
                 columnVisual = column.Visual as Panel;
+
+                dataPoint.Faces = column;
+                ApplyOrRemoveShadow(chart, dataPoint);
             }
 
-            dataPoint.Faces = column;
+            
             dataPoint.Faces.LabelCanvas = labelCanvas;
             dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
 
@@ -761,6 +764,23 @@ namespace Visifire.Charts
             dataPoint.AttachHref(chart, dataPoint.Faces.Visual, dataPoint.Href, (HrefTargets)dataPoint.HrefTarget);
 
             dataPoint.SetCursor2DataPointVisualFaces();
+        }
+
+        internal static void ApplyOrRemoveShadow(Chart chart, DataPoint dataPoint)
+        {
+            Faces faces = dataPoint.Faces;
+
+            if (faces == null)
+                throw new Exception("Faces of DataPoint is null. ApplyOrRemoveShadow()");
+            
+            Canvas barVisual = faces.Visual as Canvas;
+
+            if ((Boolean)dataPoint.ShadowEnabled)
+            {
+                barVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+            }
+            else
+                barVisual.Effect = null;
         }
 
         internal static void DrawStackedBarsAtXValue(RenderAs chartType, Double xValue, PlotGroup plotGroup, Canvas columnCanvas, Canvas labelCanvas, Double drawingIndex, Double heightPerBar, Double maxBarHeight, Double limitingYValue, Double depth3d, Boolean animationEnabled)
@@ -1000,15 +1020,16 @@ namespace Visifire.Charts
                 barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(chart.ChartArea.PlotAreaCanvas.Height, left, top, columnCanvas.Width, columnCanvas.Height, (dataPoint.InternalYValue > 0), PositiveOrNegativeZIndex));
 
                 dataPoint.Faces = bar;
-                ColumnChart.ApplyOrRemoveShadow(dataPoint, true, false);
+                ApplyOrRemoveShadow(chart, dataPoint);
             }
             else
             {
                 bar = ColumnChart.Get2DColumn(dataPoint, barWidth, finalHeight, true, false);
                 barVisual = bar.Visual as Panel;
+                dataPoint.Faces = bar;
+                ApplyOrRemoveShadow(chart, dataPoint);
             }
 
-            dataPoint.Faces = bar;
             dataPoint.Faces.LabelCanvas = labelCanvas;
 
             barVisual.SetValue(Canvas.LeftProperty, left);

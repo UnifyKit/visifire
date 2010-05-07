@@ -190,63 +190,68 @@ namespace Visifire.Charts
         {   
             #region Apply Shadow
 
-            Faces dpFaces = dataPoint.Faces;
+            //Faces dpFaces = dataPoint.Faces;
             //dataPointVisual.Background = Graphics.GetRandomColor();
 
-            dpFaces.ClearList(ref dpFaces.ShadowElements);
+            //dpFaces.ClearList(ref dpFaces.ShadowElements);
 
-            if (dataPoint.ShadowEnabled == true)
-            {
-                // Create High and Low Line
-                Line highLowShadow = new Line()
-                {   
-                    IsHitTestVisible = false,
-                    X1 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
-                    X2 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
-                    Y1 = 0 + CandleStick._shadowDepth,
-                    Y2 = dataPointVisual.Height + CandleStick._shadowDepth,
-                    Stroke = CandleStick._shadowColor,
-                    StrokeThickness = (Double)dataPoint.BorderThickness.Left,
-                    StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
-                };
+            //if (dataPoint.ShadowEnabled == true)
+            //{
+            //    // Create High and Low Line
+            //    Line highLowShadow = new Line()
+            //    {   
+            //        IsHitTestVisible = false,
+            //        X1 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+            //        X2 = dataPointVisual.Width / 2 + CandleStick._shadowDepth,
+            //        Y1 = 0 + CandleStick._shadowDepth,
+            //        Y2 = dataPointVisual.Height + CandleStick._shadowDepth,
+            //        Stroke = CandleStick._shadowColor,
+            //        StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+            //        StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+            //    };
 
-                // Create Open Line
-                Line openShadowLine = new Line()
-                {
-                    IsHitTestVisible = false,
-                    X1 = openLine.X1 + CandleStick._shadowDepth,
-                    X2 = openLine.X2 + CandleStick._shadowDepth,
-                    Y1 = openLine.Y1 + CandleStick._shadowDepth,
-                    Y2 = openLine.Y2 + CandleStick._shadowDepth,
-                    Stroke = CandleStick._shadowColor,
-                    StrokeThickness = (Double)dataPoint.BorderThickness.Left,
-                    StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
-                };
+            //    // Create Open Line
+            //    Line openShadowLine = new Line()
+            //    {
+            //        IsHitTestVisible = false,
+            //        X1 = openLine.X1 + CandleStick._shadowDepth,
+            //        X2 = openLine.X2 + CandleStick._shadowDepth,
+            //        Y1 = openLine.Y1 + CandleStick._shadowDepth,
+            //        Y2 = openLine.Y2 + CandleStick._shadowDepth,
+            //        Stroke = CandleStick._shadowColor,
+            //        StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+            //        StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+            //    };
 
-                // Create Close Line
-                Line closeShadowLine = new Line()
-                {   
-                    IsHitTestVisible = false,
-                    X1 = closeLine.X1 + CandleStick._shadowDepth,
-                    X2 = closeLine.X2 + CandleStick._shadowDepth,
-                    Y1 = closeLine.Y1 + CandleStick._shadowDepth,
-                    Y2 = closeLine.Y2 + CandleStick._shadowDepth,
+            //    // Create Close Line
+            //    Line closeShadowLine = new Line()
+            //    {   
+            //        IsHitTestVisible = false,
+            //        X1 = closeLine.X1 + CandleStick._shadowDepth,
+            //        X2 = closeLine.X2 + CandleStick._shadowDepth,
+            //        Y1 = closeLine.Y1 + CandleStick._shadowDepth,
+            //        Y2 = closeLine.Y2 + CandleStick._shadowDepth,
 
-                    Stroke = CandleStick._shadowColor,
-                    StrokeThickness = (Double)dataPoint.BorderThickness.Left,
-                    StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
-                };
+            //        Stroke = CandleStick._shadowColor,
+            //        StrokeThickness = (Double)dataPoint.BorderThickness.Left,
+            //        StrokeDashArray = Graphics.LineStyleToStrokeDashArray(dataPoint.BorderStyle.ToString())
+            //    };
 
-                // Add shadow elements to list of shadow elements
-                dpFaces.ShadowElements.Add(highLowShadow);
-                dpFaces.ShadowElements.Add(openShadowLine);
-                dpFaces.ShadowElements.Add(closeShadowLine);
+            //    // Add shadow elements to list of shadow elements
+            //    dpFaces.ShadowElements.Add(highLowShadow);
+            //    dpFaces.ShadowElements.Add(openShadowLine);
+            //    dpFaces.ShadowElements.Add(closeShadowLine);
 
-                // Add shadows
-                dataPointVisual.Children.Add(highLowShadow);
-                dataPointVisual.Children.Add(openShadowLine);
-                dataPointVisual.Children.Add(closeShadowLine);
-            }
+            //    // Add shadows
+            //    dataPointVisual.Children.Add(highLowShadow);
+            //    dataPointVisual.Children.Add(openShadowLine);
+            //    dataPointVisual.Children.Add(closeShadowLine);
+            //}
+
+            if ((Boolean)dataPoint.ShadowEnabled)
+                dataPointVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+            else
+                dataPointVisual.Effect = null;
 
             #endregion
         }

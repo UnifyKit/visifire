@@ -3,6 +3,16 @@
 <head>
     <title>Visifire Basic Chart Sample</title>
     <script type="text/javascript" src="Visifire.js"></script>
+    <script type="text/javascript" >
+        var chart;
+        var enabled = true;
+
+        function DisplaySeries() 
+        {
+            enabled = !enabled;
+            chart.Series[1].SetPropertyFromJs("Enabled", enabled);
+        }
+    </script>
 </head>
     
 <body>
@@ -24,7 +34,7 @@
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries" RenderAs="Column" LabelEnabled="True">'
+               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries" RenderAs="Line" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
@@ -33,27 +43,31 @@
                + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="16"/>'
                + '             </vc:DataSeries.DataPoints>'
                + '         </vc:DataSeries>'
+                              + '         <vc:DataSeries ShowInLegend="true" Name="MySeries2" RenderAs="Line" LabelEnabled="True">'
+               + '             <vc:DataSeries.DataPoints>'
+               + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="135"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="232"/>'
+               + '                 <vc:DataPoint AxisXLabel="Russia" XValue="31"  YValue="327"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" XValue="41"  YValue="417"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="216"/>'
+               + '             </vc:DataSeries.DataPoints>'
+               + '         </vc:DataSeries>'
                + '     </vc:Chart.Series>'
                + ' </vc:Chart>';
             
             // Set Chart XML
             vChart.setDataXml(chartXml);
-            vChart.loaded = function(args) {
-                var chart = args[0];
-                chart.Legends[0].MouseLeftButtonDown = function(sender, e) {
-                    if (e.DataPoint != null) {
-                        alert(e.DataPoint.YValue);
-                    }
-                };
+            vChart.loaded = function(args) 
+            {
+                chart = args[0];
             };
             
             // Render chart
             vChart.render("VisifireChart0");
-            
         </script>
         
     </div>
-    
+    <input type="button" onclick="DisplaySeries();"  style="width:150px;" value="Disable/Enable" />
 </body>
 
 </html>

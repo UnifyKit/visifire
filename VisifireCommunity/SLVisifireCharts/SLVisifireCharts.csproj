@@ -130,6 +130,9 @@
     <Compile Include="..\..\Common\ColumnChart.cs">
       <Link>ColumnChart.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\Controls\WeakEventListener.cs">
+      <Link>WeakEventListener.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\Controls\ZoomBar.cs">
       <Link>ZoomBar.cs</Link>
     </Compile>

@@ -7,7 +7,7 @@
     <Grid x:Name="LayoutRoot" Background="White">
 
         <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300">
-
+            
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
@@ -16,9 +16,9 @@
                         <vc:DataPoint XValue="3" YValue="30"/>
                         <vc:DataPoint XValue="4" YValue="40"/>
                         <vc:DataPoint XValue="5" YValue="50"/>
-                        <vc:DataPoint XValue="6" YValue="10"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
+
             </vc:Chart.Series>
         </vc:Chart>
 

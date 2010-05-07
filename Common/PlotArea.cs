@@ -2,7 +2,7 @@
     Copyright (C) 2008 Webyog Softworks Private Limited
 
     This file is a part of Visifire Charts.
- 
+    
     Visifire is a free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -1204,14 +1204,14 @@ namespace Visifire.Charts
         /// Fire MouseRightButtonDown event
         /// </summary>
         /// <param name="e">MouseButtonEventArgs</param>
-        internal void FireMouseRightButtonUpEvent(Object sender, Object e)
+        internal override void FireMouseRightButtonUpEvent(Object sender, Object e)
         {
             if (_onMouseRightButtonUp != null)
                 _onMouseRightButtonUp(this, CreatePlotAreaMouseButtonEventArgs(e as MouseButtonEventArgs));
         }
 
 #endif
-        
+
         /// <summary>
         /// Get MouseLeftButtonDown EventHandler
         /// </summary>

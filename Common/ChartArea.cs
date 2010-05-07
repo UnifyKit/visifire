@@ -156,8 +156,7 @@ namespace Visifire.Charts
 
                 _plotAreaSize = CalculatePlotAreaSize(remainingSizeAfterAddingTitles);
             }
-
-
+            
             HideAllAxesScrollBars();
 
             // Check if drawing axis is necessary or not
@@ -275,10 +274,24 @@ namespace Visifire.Charts
             if (chart.PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
             {
                 if (chart._zoomOutTextBlock != null)
-                    chart._zoomOutTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
+                {
+                    if (!_isZoomOutEventAttached)
+                    {
+                        chart._zoomOutTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
+                        chart._zoomOutTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._zoomOutIconImage_MouseLeftButtonUp);
+                        _isZoomOutEventAttached = true;
+                    }
+                }
 
                 if (chart._showAllTextBlock != null)
-                    chart._showAllTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
+                {
+                    if (!_isShowAllEventAttached)
+                    {
+                        chart._showAllTextBlock.MouseLeftButtonUp -= new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
+                        chart._showAllTextBlock.MouseLeftButtonUp += new MouseButtonEventHandler(AxisX._showAllIconImage_MouseLeftButtonUp);
+                        _isShowAllEventAttached = true;
+                    }
+                }
             }
         }
 
@@ -886,8 +899,7 @@ namespace Visifire.Charts
                     ds.AttachOrDetachIntaractivity();
             }
         }
-
-
+        
         #endregion
 
         #region Public Properties
@@ -1155,21 +1167,24 @@ namespace Visifire.Charts
             {
                 Double scrollViewerOffset = 0;
 
-                if (axis.ScrollViewerElement.Children.Count > 0)
+                if (axis.ScrollViewerElement != null)
                 {
-                    FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
+                    if (axis.ScrollViewerElement.Children.Count > 0)
+                    {
+                        FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
 
-                    // Vertical chart
-                    if (axis.AxisOrientation == Orientation.Horizontal)
-                    {
-                        //Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
-                        Double MaxHorizontalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
-                        scrollViewerOffset = value * (MaxHorizontalOffset / ZOOMING_MAX_VAL);
-                    }
-                    else
-                    {
-                        Double MaxVerticalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
-                        scrollViewerOffset = value * (MaxVerticalOffset / ZOOMING_MAX_VAL);
+                        // Vertical chart
+                        if (axis.AxisOrientation == Orientation.Horizontal)
+                        {
+                            //Double MaxHorizontalOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
+                            Double MaxHorizontalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
+                            scrollViewerOffset = value * (MaxHorizontalOffset / ZOOMING_MAX_VAL);
+                        }
+                        else
+                        {
+                            Double MaxVerticalOffset = ScrollableLength - PlotAreaScrollViewer.ViewportHeight;
+                            scrollViewerOffset = value * (MaxVerticalOffset / ZOOMING_MAX_VAL);
+                        }
                     }
                 }
 
@@ -1513,17 +1528,23 @@ namespace Visifire.Charts
                             maxValue = maxXValue;
                         }
 
-
-                        if (!minValue.Equals(maxValue))
+                        Size currentPlotAreaSize = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
+                        if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
                         {
-                            AxisX.Zoom(minValue, maxValue);
+                            if (!minValue.Equals(maxValue))
+                            {
+                                AxisX.Zoom(minValue, maxValue);
+                            }
                         }
 
                         AxisX._zoomState.MinXValue = minValue;
                         AxisX._zoomState.MaxXValue = maxValue;
 
-                        if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue))
-                            AxisX.FireZoomEvent(AxisX._zoomState, e);
+                        if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
+                        {
+                            if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue))
+                                AxisX.FireZoomEvent(AxisX._zoomState, e);
+                        }
 
                         Chart._zoomRectangle.Visibility = Visibility.Collapsed;
                         _zoomStart = false;
@@ -1538,6 +1559,8 @@ namespace Visifire.Charts
             {
                 if (Chart.ZoomingEnabled)
                 {
+                    plotAreaSizeBeforeZoom = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
+
                     Double x = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).X;
                     Double y = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).Y;
 
@@ -3068,8 +3091,8 @@ namespace Visifire.Charts
         private Double CalculatePlotAreaAutoSize(Double currentSize)
         {
             Double chartSize;
-
             Chart chart = (Chart as Chart);
+
             if (chart.ZoomingEnabled)
             {
                 chartSize = CalculateChartSizeForZooming(chart, currentSize);
@@ -3087,14 +3110,37 @@ namespace Visifire.Charts
                     //else
                     chartSize = (Double)(Chart as Chart).MinimumGap * ((from series in Chart.InternalSeries select series.InternalDataPoints.Count).Max());
                 }
+                else if (!Double.IsNaN(Chart.AxesX[0].ClosestPlotDistance) && !Double.IsNaN(AxisX.InternalAxisMinimum) && !Double.IsNaN(AxisX.InternalAxisMaximum))
+                {   
+                    // Double minPixelDiff = GetPixelDistanceBetweenTwoNearestXValues(PlotDetails, chart, currentSize);
+
+                    // Get the actual AxisMaminimum and ActualMaximum value dependeing on the axis representation value
+                    Double minimum = AxisX.InternalAxisMinimum;
+                    Double maximum = AxisX.InternalAxisMaximum;
+
+                    Double minimumDifference = PlotDetails.GetMaxOfMinDifferencesForXValue();
+
+                    Double minXValue = minimum;
+                    Double maxXValue = (minimum + minimumDifference);
+
+                    Double minPixelValue = Graphics.ValueToPixelPosition(0, currentSize, minimum, maximum, minXValue);
+                    Double maxPixelValue = Graphics.ValueToPixelPosition(0, currentSize, minimum, maximum, maxXValue);
+
+                    Double minPixelDiff = maxPixelValue - minPixelValue;
+
+                    if (minPixelDiff > Chart.AxesX[0].ClosestPlotDistance)
+                        chartSize = currentSize;
+                    else
+                        chartSize = currentSize * (Chart.AxesX[0].ClosestPlotDistance / minPixelDiff);
+                }
                 else if ((!Double.IsNaN(Chart.AxesX[0].ScrollBarScale)) && !IsAutoCalculatedScrollBarScale)
                 {
                     chartSize = currentSize / Chart.AxesX[0].ScrollBarScale;
                 }
                 else
-                {
+                {   
                     if (PlotDetails.ListOfAllDataPoints.Count > 0)
-                    {
+                    {   
                         Double minDiff = PlotDetails.GetMinOfMinDifferencesForXValue();
                         Double maxXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Max());
                         Double minXValue = (Double)((from dataPoint in PlotDetails.ListOfAllDataPoints select dataPoint.InternalXValue).Min());
@@ -3136,7 +3182,7 @@ namespace Visifire.Charts
                     //IsAutoCalculatedScrollBarScale = true;
                 }
                 else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
-                {
+                {   
                     Chart.AxesX[0].IsNotificationEnable = false;
                     Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
                     Chart.AxesX[0].IsNotificationEnable = true;
@@ -3146,6 +3192,74 @@ namespace Visifire.Charts
 
             return chartSize;
         }
+
+        //private Double GetPixelDistanceBetweenTwoNearestXValues(PlotDetails plotDetails, Chart chart, Double plotAreaSize)
+        //{
+        //    List<KeyValuePair<Double[], Double>> listOfKeyValuePair = new List<KeyValuePair<double[],double>>();
+
+        //    foreach (PlotGroup plotGroup in plotDetails.PlotGroups)
+        //    {
+        //        Double[] _xValues = (from dataPoint in plotGroup.DataPointsInPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
+                
+        //        Double minDiff = Double.MaxValue;
+                
+        //        Double[] closetsXValuesInPlotGroup = GetClosestDataPoints(_xValues, ref minDiff);
+        //        listOfKeyValuePair.Add(new KeyValuePair<double[], double>(closetsXValuesInPlotGroup, minDiff));
+
+        //    }
+
+        //    Double minValue = Double.MaxValue;
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        minValue = Math.Min(minValue, keyValuePair.Value);    
+        //    }
+
+        //    Double[] closestXValues = new double[2];
+
+        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
+        //    {
+        //        if (minValue == keyValuePair.Value)
+        //            closestXValues = keyValuePair.Key;
+        //    }
+
+        //     // Get the minimum and maximum value dependeing on the axis representation value
+        //    Double minimum = plotDetails.GetAxisXMinimumDataValue(AxisX);
+        //    Double maximum = plotDetails.GetAxisXMaximumDataValue(AxisX);
+
+        //    Double minPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[0]);
+        //    Double maxPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[1]);
+
+        //    Double minPixelDiff = maxPixelValue - minPixelValue;
+
+        //    return minPixelDiff;
+        //}
+
+        //private Double[] GetClosestDataPoints(Double[] values, ref Double minDiff)
+        //{
+        //    Double[] distinctValues = values.Distinct().ToArray();
+
+        //    Double[] nearestXValues = new double[2];
+
+        //    // get unique values and then sort it
+        //    Array.Sort(distinctValues);
+
+        //    Double oldMinDiff = Double.MaxValue;
+
+        //    for (Int32 i = 0; i < distinctValues.Length - 1; i++)
+        //    {
+        //        // get the smallest difference between two successive elements
+        //        minDiff = Math.Abs(distinctValues[i] - distinctValues[i + 1]);
+
+        //        if (minDiff < oldMinDiff)
+        //        {
+        //            nearestXValues = new double[] { distinctValues[i], distinctValues[i + 1] };
+        //            oldMinDiff = minDiff;
+        //        }
+        //    }
+
+        //    return nearestXValues;
+        //}
 
         internal Boolean IsAutoCalculatedScrollBarScale
         {
@@ -4531,19 +4645,38 @@ namespace Visifire.Charts
             }
         }
 
+        private Boolean CheckShowYValueAndPercentageInLegendApplicable(RenderAs renderAs)
+        {
+            return (renderAs == RenderAs.Stock || renderAs == RenderAs.CandleStick) ? false : true;
+        }
+
         /// <summary>
-        /// Add entries to a legend
+        /// Add entries to a legend for single series chart
         /// </summary>
         /// <param name="legend">Legend</param>
         /// <param name="dataPoints">List of InternalDataPoints</param>
-        private void AddEntriesToLegend(Legend legend, List<DataPoint> dataPoints)
-        {
+        private void AddEntriesToLegendForSingleSeriesChart(Legend legend, List<DataPoint> dataPoints)
+        {   
+            Boolean showSumOfYValue = false;
+            Boolean showSumOfPercentage = false;
+            Boolean isShowYValueAndPercentageInLegendApplicable = false;
+            Double sum = 0;
+
+            if (dataPoints.Count > 0)
+            {
+                sum = (from dp in dataPoints where !Double.IsNaN(dp.YValue) select dp.YValue).Sum();
+                isShowYValueAndPercentageInLegendApplicable = CheckShowYValueAndPercentageInLegendApplicable(dataPoints[0].Parent.RenderAs);
+            }
+
             foreach (DataPoint dataPoint in dataPoints)
             {
+                DataSeries dataSeries = dataPoint.Parent;
+
                 if (!(Boolean)dataPoint.Enabled || !(Boolean)dataPoint.ShowInLegend)
                     continue;
 
-                if ((dataPoint.Parent.RenderAs == RenderAs.SectionFunnel || dataPoint.Parent.RenderAs == RenderAs.StreamLineFunnel) && dataPoint.InternalYValue < 0)
+                if ((dataSeries.RenderAs == RenderAs.SectionFunnel || dataSeries.RenderAs == RenderAs.StreamLineFunnel) 
+                    && dataPoint.InternalYValue < 0)
                     continue;
 
                 String legendText = (String.IsNullOrEmpty(dataPoint.LegendText) ? dataPoint.Name : ObservableObject.GetFormattedMultilineText(dataPoint.LegendText));
@@ -4551,15 +4684,15 @@ namespace Visifire.Charts
                 Brush markerColor = dataPoint._internalColor;
 
                 if (dataPoint.Parent.RenderAs == RenderAs.CandleStick)
-                {
+                {   
                     markerColor = (Brush)dataPoint.GetValue(DataPoint.ColorProperty);
 
                     if (markerColor == null)
-                    {
+                    {   
                         if (dataPoint.YValues != null)
-                        {
+                        {   
                             if (dataPoint.YValues.Length >= 2)
-                            {
+                            {   
                                 Double openY = dataPoint.YValues[0];
                                 Double closeY = dataPoint.YValues[1];
 
@@ -4569,7 +4702,6 @@ namespace Visifire.Charts
                     }
                     else
                         markerColor = dataPoint.Color;
-
                 }
 
                 if ((Boolean)dataPoint.LightingEnabled)
@@ -4579,48 +4711,94 @@ namespace Visifire.Charts
                 }
 
                 Boolean markerBevel;
-                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point
-                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Stock
+                if ((dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.CandleStick
-                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Bubble
-                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Doughnut
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Line
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Point
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Pie 
+                    || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.Stock
                     || (dataPoint.Parent as DataSeries).RenderAs == RenderAs.StepLine)
                 {   
                     markerBevel = false;
                 }
                 else
                     markerBevel = Chart.View3D ? false : dataPoint.Parent.Bevel ? dataPoint.Parent.Bevel : false;
+                
+                MarkerTypes markerTypes = RenderAsToLegendMarkerType(dataPoint.Parent.RenderAs, dataPoint);
+                Size markerSize = new Size(8, 8);
 
-                Size markerSize;
-                if (dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine)
-                    markerSize = new Size(8, 8);
-                else
-                    markerSize = new Size(8, 8);
-
-                dataPoint.LegendMarker = new Marker(
-                        ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine) ? (MarkerTypes)dataPoint.MarkerType : RenderAsToMarkerType(dataPoint.Parent.RenderAs, dataPoint.Parent)),
-                        1,
-                        markerSize,
-                        markerBevel,
-                        markerColor,
-                        ""
-                        );
-
-                if ((dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine || dataPoint.Parent.RenderAs == RenderAs.Stock || dataPoint.Parent.RenderAs == RenderAs.CandleStick) && dataPoint.MarkerEnabled == false)
-                {
+                dataPoint.LegendMarker = new Marker(markerTypes, 1, markerSize, markerBevel, markerColor, "");
+                
+                if (dataPoint.MarkerEnabled == false && (dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine 
+                    || dataPoint.Parent.RenderAs == RenderAs.Stock || dataPoint.Parent.RenderAs == RenderAs.CandleStick))
+                {   
                     dataPoint.LegendMarker.Opacity = 0;
                 }
-
-
+                
                 dataPoint.LegendMarker.DataSeriesOfLegendMarker = dataPoint.Parent;
                 dataPoint.LegendMarker.Tag = new ElementData() { Element = dataPoint };
 
-                legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataPoint.LegendMarker));
-            }
+                List<String> textDatas = new List<String>() { legendText };
+                List<HorizontalAlignment> textXAlignments = new List<HorizontalAlignment>() { HorizontalAlignment.Left };
 
+                if (dataSeries.IncludeYValueInLegend && isShowYValueAndPercentageInLegendApplicable)
+                {   
+                    textDatas.Add(Double.IsNaN(dataPoint.YValue) ? "" : dataPoint.YValue.ToString());
+                    textXAlignments.Add(HorizontalAlignment.Right);
+                    legend.Layout = Layouts.GridLayout;
+                    showSumOfYValue = true;
+                }
+
+                if (dataSeries.IncludePercentageInLegend && !Double.IsNaN(dataPoint.YValue) && isShowYValueAndPercentageInLegendApplicable)
+                {   
+                    textDatas.Add(((dataPoint.YValue/sum)*100).ToString("#0.##"));
+                    textXAlignments.Add(HorizontalAlignment.Right);
+                    textDatas.Add("%");
+                    textXAlignments.Add(HorizontalAlignment.Left);
+                    legend.Layout = Layouts.GridLayout;
+                    showSumOfPercentage = true;
+                }
+
+                legend.Entries.Add(new LegendEntry(dataPoint.LegendMarker, textDatas, textXAlignments));
+            }
+            
             if (legend != null && legend.Reversed)
                 legend.Entries.Reverse();
+
+#region Display Sum of YValue and Sum of Percentage
+
+            if (isShowYValueAndPercentageInLegendApplicable && (showSumOfPercentage || showSumOfYValue) )
+            {   
+                List<String> textDatasTotal = null;
+                List<HorizontalAlignment> textXAlignmentsTotal = null;
+
+                textDatasTotal = new List<String>();
+                textXAlignmentsTotal = new List<HorizontalAlignment>();
+
+                legend.Entries.Add(new LegendEntry() { IsCompleteLine = true });
+                textDatasTotal.Add("Total:");
+                textXAlignmentsTotal.Add(HorizontalAlignment.Right);
+
+                if (showSumOfYValue)
+                {   
+                    textDatasTotal.Add(sum.ToString());
+                    textXAlignmentsTotal.Add(HorizontalAlignment.Right);
+                }
+
+                if (showSumOfPercentage)
+                {   
+                    textDatasTotal.Add("100");
+                    textXAlignmentsTotal.Add(HorizontalAlignment.Right);
+                    textDatasTotal.Add("%");
+                    textXAlignmentsTotal.Add(HorizontalAlignment.Left);
+                }
+
+                legend.Entries.Add(new LegendEntry(null, textDatasTotal, textXAlignmentsTotal));
+            }
+
+#endregion
+
         }
 
         /// <summary>
@@ -4630,10 +4808,10 @@ namespace Visifire.Charts
         /// <param name="DockInsidePlotArea">DockInsidePlotArea</param>
         /// <param name="Height">Ramaining height available for Legend</param>
         /// <param name="Width">Remaining width available for Legend</param>
-        private void AddLegends(Chart chart, Boolean DockInsidePlotArea, Double Height, Double Width)
+        private void AddLegends(Chart chart, Boolean dockInsidePlotArea, Double heightAvailable, Double widthAvailable)
         {
             List<Legend> dockTest = (from legend in chart.Legends
-                                     where legend.DockInsidePlotArea == DockInsidePlotArea
+                                     where legend.DockInsidePlotArea == dockInsidePlotArea
                                      select legend).ToList();
 
             if (dockTest.Count <= 0)
@@ -4651,7 +4829,7 @@ namespace Visifire.Charts
 
                     var legends = (from entry in chart.Legends
                                    where
-                                   (entry.Name == chart.InternalSeries[0].Legend && entry.DockInsidePlotArea == DockInsidePlotArea)
+                                   (entry.Name == chart.InternalSeries[0].Legend && entry.DockInsidePlotArea == dockInsidePlotArea)
                                    select entry);
 
                     if (legends.Count() > 0)
@@ -4662,7 +4840,7 @@ namespace Visifire.Charts
                 if (legend == null)
                     return;
 
-                AddEntriesToLegend(legend, chart.InternalSeries[0].InternalDataPoints.ToList());
+                AddEntriesToLegendForSingleSeriesChart(legend, chart.InternalSeries[0].InternalDataPoints.ToList());
             }
             else
             {
@@ -4682,7 +4860,7 @@ namespace Visifire.Charts
                         // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(dataSeries.Legend)
                         // || !String.IsNullOrEmpty(dataSeries.InternalLegendName)))
                         if (chart.Legends.Count > 0)
-                        {
+                        {   
                             legend = null;
                             var legends = from entry in chart.Legends
                                           where (
@@ -4690,7 +4868,7 @@ namespace Visifire.Charts
                                               // entry.Name == dataSeries.Legend
                                               // || entry.Name == dataSeries.InternalLegendName
                                           )
-                                          && entry.DockInsidePlotArea == DockInsidePlotArea
+                                          && entry.DockInsidePlotArea == dockInsidePlotArea
                                           select entry;
 
                             if (legends.Count() > 0)
@@ -4764,7 +4942,7 @@ namespace Visifire.Charts
                             markerSize = new Size(8, 8);
 
                         dataSeries.LegendMarker = new Marker(
-                                RenderAsToMarkerType(dataSeries.RenderAs, dataSeries),
+                                RenderAsToLegendMarkerType(dataSeries.RenderAs, dataSeries),
                                 1,
                                 markerSize,
                                 markerBevel,
@@ -4778,47 +4956,25 @@ namespace Visifire.Charts
                             dataSeries.LegendMarker.Opacity = 0;
 
                         dataSeries.LegendMarker.Tag = new ElementData() { Element = dataSeries };
-                        legend.Entries.Add(new KeyValuePair<String, Marker>(legendText, dataSeries.LegendMarker));
+                        legend.Entries.Add(new LegendEntry(dataSeries.LegendMarker, new List<String> { legendText }, new List<HorizontalAlignment> { HorizontalAlignment.Left }));
                     }
 
                     if (legend != null && legend.Reversed)
                         legend.Entries.Reverse();
                 }
             }
-
-            StackPanel topLegendPanel;
-            StackPanel bottomLegendPanel;
-            StackPanel leftLegendPanel;
-            StackPanel rightLegendPanel;
-            StackPanel centerPanel;
-
-            if (DockInsidePlotArea)
-            {
-                topLegendPanel = chart._topInnerLegendPanel;
-                bottomLegendPanel = chart._bottomInnerLegendPanel;
-                leftLegendPanel = chart._leftInnerLegendPanel;
-                rightLegendPanel = chart._rightInnerLegendPanel;
-                centerPanel = chart._centerDockInsidePlotAreaPanel;
-            }
-            else
-            {
-                topLegendPanel = chart._topOuterLegendPanel;
-                bottomLegendPanel = chart._bottomOuterLegendPanel;
-                leftLegendPanel = chart._leftOuterLegendPanel;
-                rightLegendPanel = chart._rightOuterLegendPanel;
-                centerPanel = chart._centerDockOutsidePlotAreaPanel;
-            }
-
+            
             List<Legend> legendsOnTop = (from entry in chart.Legends
-                                         where entry.Entries.Count > 0 && entry.InternalVerticalAlignment == VerticalAlignment.Top
-                                         && entry.DockInsidePlotArea == DockInsidePlotArea
+                                         where entry.Entries.Count > 0 
+                                         && entry.InternalVerticalAlignment == VerticalAlignment.Top
+                                         && entry.DockInsidePlotArea == dockInsidePlotArea
                                          && (Boolean)entry.Enabled
                                          select entry).ToList();
 
             List<Legend> legendsOnBottom = (from entry in chart.Legends
                                             where entry.Entries.Count > 0
                                             && entry.InternalVerticalAlignment == VerticalAlignment.Bottom
-                                            && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
+                                            && entry.DockInsidePlotArea == dockInsidePlotArea && (Boolean)entry.Enabled
                                             select entry).ToList();
 
             List<Legend> legendsOnLeft = (from entry in chart.Legends
@@ -4826,118 +4982,128 @@ namespace Visifire.Charts
                                           && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
                                           entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
                                           && entry.InternalHorizontalAlignment == HorizontalAlignment.Left
-                                          && entry.DockInsidePlotArea == DockInsidePlotArea && (Boolean)entry.Enabled
+                                          && entry.DockInsidePlotArea == dockInsidePlotArea && (Boolean)entry.Enabled
                                           select entry).ToList();
-
+                                          
             List<Legend> legendsOnRight = (from entry in chart.Legends
                                            where entry.Entries.Count > 0
                                            && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
                                            entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
                                            && entry.InternalHorizontalAlignment == HorizontalAlignment.Right
-                                           && entry.DockInsidePlotArea == DockInsidePlotArea
+                                           && entry.DockInsidePlotArea == dockInsidePlotArea
                                            && (Boolean)entry.Enabled
                                            select entry).ToList();
-
+                                           
             List<Legend> legendsAtCenter = (from entry in chart.Legends
                                             where entry.Entries.Count > 0
                                             && (entry.InternalVerticalAlignment == VerticalAlignment.Center ||
                                             entry.InternalVerticalAlignment == VerticalAlignment.Stretch)
                                             && (entry.InternalHorizontalAlignment == HorizontalAlignment.Center ||
                                             entry.InternalHorizontalAlignment == HorizontalAlignment.Stretch)
-                                            && entry.DockInsidePlotArea == DockInsidePlotArea
+                                            && entry.DockInsidePlotArea == dockInsidePlotArea
                                             && (Boolean)entry.Enabled
                                             select entry).ToList();
+                                            
+            StackPanel topLegendPanel, bottomLegendPanel, leftLegendPanel, rightLegendPanel, centerPanel;
 
-            if (legendsOnTop.Count > 0)
-            {
-                foreach (Legend legend in legendsOnTop)
-                {
+            GetReferenceOfLegendPanels(dockInsidePlotArea, out topLegendPanel, out bottomLegendPanel,
+                out leftLegendPanel, out rightLegendPanel, out centerPanel);
+
+            PlaceLegendsAtTop(legendsOnTop, heightAvailable, widthAvailable, topLegendPanel);
+            PlaceLegendsAtBottom(legendsOnBottom, heightAvailable, widthAvailable, bottomLegendPanel);
+            PlaceLegendsAtLeft(legendsOnLeft, heightAvailable, widthAvailable, leftLegendPanel);
+            PlaceLegendsAtRight(legendsOnRight, heightAvailable, widthAvailable, rightLegendPanel);
+            PlaceLegendsAtCenter(legendsAtCenter, heightAvailable, widthAvailable, centerPanel);
+        }
+        
+        /// <summary>
+        /// Get reference of Legend containers
+        /// </summary>
+        /// <param name="dockInsidePlotArea">Whether the legends are dock inside PlotArea</param>
+        /// <param name="topLegendPanel">Top Legend container</param>
+        /// <param name="bottomLegendPanel">Bottom Legend container</param>
+        /// <param name="leftLegendPanel">Left Legend container</param>
+        /// <param name="rightLegendPanel">Right Legend container</param>
+        /// <param name="centerPanel">Center Panel</param>
+        private void GetReferenceOfLegendPanels(Boolean dockInsidePlotArea,
+            out StackPanel topLegendPanel, out StackPanel bottomLegendPanel, out StackPanel leftLegendPanel,
+            out StackPanel rightLegendPanel, out StackPanel centerPanel)
+        {   
+            if (dockInsidePlotArea)
+            {   
+                topLegendPanel = Chart._topInnerLegendPanel;
+                bottomLegendPanel = Chart._bottomInnerLegendPanel;
+                leftLegendPanel = Chart._leftInnerLegendPanel;
+                rightLegendPanel = Chart._rightInnerLegendPanel;
+                centerPanel = Chart._centerDockInsidePlotAreaPanel;
+            }
+            else
+            {   
+                topLegendPanel = Chart._topOuterLegendPanel;
+                bottomLegendPanel = Chart._bottomOuterLegendPanel;
+                leftLegendPanel = Chart._leftOuterLegendPanel;
+                rightLegendPanel = Chart._rightOuterLegendPanel;
+                centerPanel = Chart._centerDockOutsidePlotAreaPanel;
+            }
+        }
+        
+        /// <summary>
+        /// Places Legends at center
+        /// </summary>
+        /// <param name="legendsAtCenter">Liet of Legends</param>
+        /// <param name="heightAvailable">Available height to draw legend</param>
+        /// <param name="widthAvailable">Available width to draw legend</param>
+        /// <param name="centerPanel">Legend container</param>
+        private void PlaceLegendsAtCenter(List<Legend> legendsAtCenter, Double heightAvailable, Double widthAvailable, StackPanel centerPanel)
+        {
+            if (legendsAtCenter.Count > 0)
+            {   
+                foreach (Legend legend in legendsAtCenter)
+                {   
                     legend.Orientation = Orientation.Horizontal;
-                    legend.LegendLayout = Layouts.FlowLayout;
 
-                    if (!Double.IsNaN(Width) && Width > 0)
+                    if (Double.IsPositiveInfinity(legend.InternalMaxWidth)) // legend.MaximumWidth == 0
+                        legend.InternalMaximumWidth = widthAvailable * 60 / 100;
+                    else
                     {
-                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
-                            legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                        if (legend.InternalMaxWidth > widthAvailable * 60 / 100)
+                            legend.InternalMaximumWidth = widthAvailable * 60 / 100;
                         else
-                        {
-                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
-                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
-                            else
-                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
-                        }
-
-                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
-                            legend.InternalMaximumHeight = Double.PositiveInfinity;
-                        else
-                        {
-                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
-                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                            else
-                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
-                        }
+                            legend.InternalMaximumWidth = legend.InternalMaxWidth;
                     }
 
                     legend.CreateVisualObject();
 
                     if (legend.Visual != null)
-                        topLegendPanel.Children.Add(legend.Visual);
+                        centerPanel.Children.Add(legend.Visual);
                 }
             }
+        }
 
-
-            if (legendsOnBottom.Count > 0)
-            {
-                legendsOnBottom.Reverse();
-                foreach (Legend legend in legendsOnBottom)
-                {
-                    legend.Orientation = Orientation.Horizontal;
-                    legend.LegendLayout = Layouts.FlowLayout;
-
-                    if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
-                    {
-                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
-                            legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
-                        else
-                        {
-                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
-                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
-                            else
-                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
-                        }
-
-                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
-                            legend.InternalMaximumHeight = Double.PositiveInfinity;
-                        else
-                        {
-                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
-                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                            else
-                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
-                        }
-                    }
-
-                    legend.CreateVisualObject();
-                    if (legend.Visual != null)
-                        bottomLegendPanel.Children.Add(legend.Visual);
-                }
-            }
-
-            if (legendsOnLeft.Count > 0)
-            {
-                foreach (Legend legend in legendsOnLeft)
+        /// <summary>
+        /// Places Legends at right
+        /// </summary>
+        /// <param name="legendsAtCenter">List of Legends</param>
+        /// <param name="heightAvailable">Available height to draw legend</param>
+        /// <param name="widthAvailable">Available width to draw legend</param>
+        /// <param name="centerPanel">Legend container</param>
+        private void PlaceLegendsAtRight(List<Legend> legendsOnRight, Double heightAvailable, Double widthAvailable, StackPanel rightLegendPanel)
+        {   
+            if (legendsOnRight.Count > 0)
+            {   
+                legendsOnRight.Reverse();
+                foreach (Legend legend in legendsOnRight)
                 {
                     legend.Orientation = Orientation.Vertical;
-                    legend.LegendLayout = Layouts.FlowLayout;
 
-                    if ((!Double.IsNaN(Width) && Width > 0) && (!Double.IsNaN(Height) && Height > 0))
+                    if (!Double.IsNaN(heightAvailable) && heightAvailable > 0)
                     {
                         if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
-                            legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
                         else
                         {
-                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
-                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
+                            if (legend.InternalMaxHeight > heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
                             else
                                 legend.InternalMaximumHeight = legend.InternalMaxHeight;
                         }
@@ -4946,8 +5112,54 @@ namespace Visifire.Charts
                             legend.InternalMaximumWidth = Double.PositiveInfinity;
                         else
                         {
-                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
-                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            if (legend.InternalMaxWidth > widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right)
+                                legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
+                        }
+                    }
+
+                    legend.CreateVisualObject();
+
+                    if (legend.Visual != null)
+                        rightLegendPanel.Children.Add(legend.Visual);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Places Legends at left
+        /// </summary>
+        /// <param name="legendsAtCenter">List of Legends</param>
+        /// <param name="heightAvailable">Available height to draw legend</param>
+        /// <param name="widthAvailable">Available width to draw legend</param>
+        /// <param name="centerPanel">Legend container</param>
+        private void PlaceLegendsAtLeft(List<Legend> legendsOnLeft, Double heightAvailable, Double widthAvailable, StackPanel leftLegendPanel)
+        {
+            if (legendsOnLeft.Count > 0)
+            {   
+                foreach (Legend legend in legendsOnLeft)
+                {
+                    legend.Orientation = Orientation.Vertical;
+
+                    if ((!Double.IsNaN(widthAvailable) && widthAvailable > 0) && (!Double.IsNaN(heightAvailable) && heightAvailable > 0))
+                    {
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
+                            legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
+                        else
+                        {   
+                            if (legend.InternalMaxHeight > heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
+                            legend.InternalMaximumWidth = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.InternalMaxWidth > widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right)
+                                legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
                             else
                                 legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
@@ -4959,65 +5171,96 @@ namespace Visifire.Charts
 
                 }
             }
+        }
 
-            if (legendsOnRight.Count > 0)
+        /// <summary>
+        /// Places Legends at bottom
+        /// </summary>
+        /// <param name="legendsAtCenter">List of Legends</param>
+        /// <param name="heightAvailable">Available height to draw legend</param>
+        /// <param name="widthAvailable">Available width to draw legend</param>
+        /// <param name="centerPanel">Legend container</param>
+        private void PlaceLegendsAtBottom(List<Legend> legendsOnBottom, Double heightAvailable, Double widthAvailable, StackPanel bottomLegendPanel)
+        {
+            if (legendsOnBottom.Count > 0)
             {
-                legendsOnRight.Reverse();
-                foreach (Legend legend in legendsOnRight)
-                {
-                    legend.Orientation = Orientation.Vertical;
-                    legend.LegendLayout = Layouts.FlowLayout;
+                legendsOnBottom.Reverse();
+                foreach (Legend legend in legendsOnBottom)
+                {   
+                    legend.Orientation = Orientation.Horizontal;
 
-                    if (!Double.IsNaN(Height) && Height > 0)
+                    if ((!Double.IsNaN(widthAvailable) && widthAvailable > 0) && (!Double.IsNaN(heightAvailable) && heightAvailable > 0))
                     {
-                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
-                            legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                        else
-                        {
-                            if (legend.InternalMaxHeight > Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom)
-                                legend.InternalMaximumHeight = Height - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - chart.Padding.Top - chart.Padding.Bottom;
-                            else
-                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
-                        }
-
                         if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
-                            legend.InternalMaximumWidth = Double.PositiveInfinity;
+                            legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
                         else
                         {
-                            if (legend.InternalMaxWidth > Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right)
-                                legend.InternalMaximumWidth = Width - Chart.BorderThickness.Left - Chart.BorderThickness.Right - chart.Padding.Left - chart.Padding.Right;
+                            if (legend.InternalMaxWidth > widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right)
+                                legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
                             else
                                 legend.InternalMaximumWidth = legend.InternalMaxWidth;
                         }
+
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
+                            legend.InternalMaximumHeight = Double.PositiveInfinity;
+                        else
+                        {
+                            if (legend.InternalMaxHeight > heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
+                        }
                     }
 
                     legend.CreateVisualObject();
                     if (legend.Visual != null)
-                        rightLegendPanel.Children.Add(legend.Visual);
+                        bottomLegendPanel.Children.Add(legend.Visual);
                 }
             }
+        }
 
-            if (legendsAtCenter.Count > 0)
-            {
-                foreach (Legend legend in legendsAtCenter)
+        /// <summary>
+        /// Places Legends at top
+        /// </summary>
+        /// <param name="legendsAtCenter">List of Legends</param>
+        /// <param name="heightAvailable">Available height to draw legend</param>
+        /// <param name="widthAvailable">Available width to draw legend</param>
+        /// <param name="centerPanel">Legend container</param>
+        private void PlaceLegendsAtTop(List<Legend> legendsOnTop, Double heightAvailable, Double widthAvailable, StackPanel topLegendPanel)
+        {   
+            if (legendsOnTop.Count > 0)
+            {   
+                foreach (Legend legend in legendsOnTop)
                 {
                     legend.Orientation = Orientation.Horizontal;
-                    legend.LegendLayout = Layouts.FlowLayout;
 
-                    if (Double.IsPositiveInfinity(legend.InternalMaxWidth)) // legend.MaximumWidth == 0
-                        legend.InternalMaximumWidth = Width * 60 / 100;
-                    else
-                    {
-                        if (legend.InternalMaxWidth > Width * 60 / 100)
-                            legend.InternalMaximumWidth = Width * 60 / 100;
+                    if (!Double.IsNaN(widthAvailable) && widthAvailable > 0)
+                    {   
+                        if (Double.IsPositiveInfinity(legend.InternalMaxWidth))
+                            legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
                         else
-                            legend.InternalMaximumWidth = legend.InternalMaxWidth;
+                        {
+                            if (legend.InternalMaxWidth > widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right)
+                                legend.InternalMaximumWidth = widthAvailable - Chart.BorderThickness.Left - Chart.BorderThickness.Right - Chart.Padding.Left - Chart.Padding.Right;
+                            else
+                                legend.InternalMaximumWidth = legend.InternalMaxWidth;
+                        }
+
+                        if (Double.IsPositiveInfinity(legend.InternalMaxHeight))
+                            legend.InternalMaximumHeight = Double.PositiveInfinity;
+                        else
+                        {   
+                            if (legend.InternalMaxHeight > heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom)
+                                legend.InternalMaximumHeight = heightAvailable - Chart.BorderThickness.Top - Chart.BorderThickness.Bottom - Chart.Padding.Top - Chart.Padding.Bottom;
+                            else
+                                legend.InternalMaximumHeight = legend.InternalMaxHeight;
+                        }
                     }
 
                     legend.CreateVisualObject();
 
                     if (legend.Visual != null)
-                        centerPanel.Children.Add(legend.Visual);
+                        topLegendPanel.Children.Add(legend.Visual);
                 }
             }
         }
@@ -5276,7 +5519,7 @@ namespace Visifire.Charts
                     return 0;
             }
             else
-            {
+            {   
                 return overflow;
             }
         }
@@ -5704,12 +5947,12 @@ namespace Visifire.Charts
         {
             PlottingCanvas.Loaded -= new RoutedEventHandler(PlottingCanvas_Loaded);
 
-            AttachScrollEvents();
-
             Chart.RENDER_LOCK = false;
 
             if (Chart._renderLapsedCounter >= 1)
                 Chart.Render();
+
+            AttachScrollEvents();
 
             Animate();
 
@@ -5787,18 +6030,37 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Convert RenderAs to MarkerType
+        /// Note: Used for Single series chart
         /// </summary>
         /// <param name="renderAs">Chart type</param>
         /// <param name="dataSeries">DataSeries</param>
         /// <returns>MarkerType</returns>
-        internal MarkerTypes RenderAsToMarkerType(RenderAs renderAs, DataSeries dataSeries)
-        {
+        internal MarkerTypes RenderAsToLegendMarkerType(RenderAs renderAs, DataPoint dataPoint)
+        {   
+            DataSeries dataSeries = dataPoint.Parent;
+
+            if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
+                return (MarkerTypes)dataPoint.MarkerType;
+            else
+                return (MarkerTypes)RenderAsToLegendMarkerType(renderAs, dataSeries);
+        }
+        
+        /// <summary>
+        /// Convert RenderAs to MarkerType
+        /// Note: Used for multiseries chart
+        /// </summary>
+        /// <param name="renderAs">Chart type</param>
+        /// <param name="dataSeries">DataSeries</param>
+        /// <returns>MarkerType</returns>
+        internal MarkerTypes RenderAsToLegendMarkerType(RenderAs renderAs, DataSeries dataSeries)
+        {   
             switch (renderAs)
-            {
+            {   
                 case RenderAs.Pie:
                 case RenderAs.Doughnut:
                 case RenderAs.Bubble:
                     return MarkerTypes.Circle;
+
                 case RenderAs.Point:
                     return dataSeries.MarkerType;
 
@@ -5912,6 +6174,11 @@ namespace Visifire.Charts
         private Point _firstZoomRectPosOverPlotArea;
 
         /// <summary>
+        /// PlotArea size before zooming starts
+        /// </summary>
+        private Size plotAreaSizeBeforeZoom = new Size();
+
+        /// <summary>
         /// Whether zooming has started using Zoom rectangle
         /// </summary>
         private Boolean _zoomStart = false;
@@ -5925,6 +6192,16 @@ namespace Visifire.Charts
         /// Max position of Zoom
         /// </summary>
         private Point _actualZoomMaxPos;
+
+        /// <summary>
+        /// Check whether mouse event over ZoomOut icon is attached
+        /// </summary>
+        private Boolean _isZoomOutEventAttached = false;
+
+        /// <summary>
+        /// Check whether mouse event over ShowAll icon is attached
+        /// </summary>
+        private Boolean _isShowAllEventAttached = false;
 
         #endregion
     }
