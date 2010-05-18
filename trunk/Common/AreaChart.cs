@@ -941,11 +941,14 @@ namespace Visifire.Charts
                 foreach (FrameworkElement face in series.Faces.VisualComponents)
                     VisifireElement.AttachEvents2AreaVisual(series, series, face);
 
-                if ((Boolean)series.ShadowEnabled)
+                if (!VisifireControl.IsXbapApp)
                 {
-                    if (series.Faces != null && series.Faces.Visual != null)
+                    if ((Boolean)series.ShadowEnabled)
                     {
-                        series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                        if (series.Faces != null && series.Faces.Visual != null)
+                        {
+                            series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                        }
                     }
                 }
 
@@ -1583,11 +1586,14 @@ namespace Visifire.Charts
 
                         curDataPoints[index].Parent.Faces.Visual = visual;
 
-                        if ((Boolean)series.ShadowEnabled)
+                        if (!VisifireControl.IsXbapApp)
                         {
-                            if (series.Faces != null && series.Faces.Visual != null)
+                            if ((Boolean)series.ShadowEnabled)
                             {
-                                series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                                if (series.Faces != null && series.Faces.Visual != null)
+                                {
+                                    series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                                }
                             }
                         }
                     }
@@ -1893,11 +1899,14 @@ namespace Visifire.Charts
                         }
                         curDataPoints[index].Parent.Faces.Visual = visual;
 
-                        if ((Boolean)series.ShadowEnabled)
+                        if (!VisifireControl.IsXbapApp)
                         {
-                            if (series.Faces != null && series.Faces.Visual != null)
+                            if ((Boolean)series.ShadowEnabled)
                             {
-                                series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                                if (series.Faces != null && series.Faces.Visual != null)
+                                {
+                                    series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                                }
                             }
                         }
                     }
@@ -2883,21 +2892,10 @@ namespace Visifire.Charts
                 case VcProperties.MarkerScale:
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
+                case VcProperties.ShadowEnabled:
                     // Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     // LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
                     LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref labelCanvas, out xPosition, out yPosition);
-                    break;
-
-                case VcProperties.ShadowEnabled:
-                    if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
-                    {
-                        if ((Boolean)dataSeries.ShadowEnabled)
-                        {
-                            dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
-                        }
-                        else
-                            dataSeries.Faces.Visual.Effect = null;
-                    }
                     break;
 
                 case VcProperties.ShowInLegend:
@@ -3733,6 +3731,22 @@ namespace Visifire.Charts
                     }
 
                     break;
+
+                case VcProperties.ShadowEnabled:
+                    if (!VisifireControl.IsXbapApp)
+                    {
+                        if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                        {
+                            if ((Boolean)dataSeries.ShadowEnabled)
+                            {
+                                dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+                            }
+                            else
+                                dataSeries.Faces.Visual.Effect = null;
+                        }
+                    }
+                    break;
+
                 case VcProperties.DataPoints:
                 case VcProperties.Enabled:
                 case VcProperties.Bevel:

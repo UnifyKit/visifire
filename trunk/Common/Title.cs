@@ -40,6 +40,8 @@ using Visifire.Commons;
 using System.Windows.Data;
 #endif
 
+using System.Windows.Media.Effects;
+
 namespace Visifire.Charts
 {
     /// <summary>
@@ -420,6 +422,18 @@ namespace Visifire.Charts
                   typeof(CornerRadius),
                   typeof(Title),
                   new PropertyMetadata(OnCornerRadiusPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Title.ShadowEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Title.ShadowEnabled dependency property.
+        /// </returns>
+        public new static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
+            ("ShadowEnabled",
+            typeof(Boolean),
+            typeof(Title),
+            new PropertyMetadata(OnShadowEnabledPropertyChanged));
 
 #if WPF
         /// <summary>
@@ -1091,6 +1105,18 @@ namespace Visifire.Charts
             }
         }
 
+        public Boolean ShadowEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ShadowEnabledProperty);
+            }
+            set
+            {
+                SetValue(ShadowEnabledProperty, value);
+            }
+        }
+
         /// <summary>
         /// Get or set the Margin property of title
         /// </summary>
@@ -1253,6 +1279,21 @@ namespace Visifire.Charts
         /// Text element of the title to display text content
         /// </summary>
         internal TextBlock TextElement
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Shadow text element of the title
+        /// </summary>
+        private TextBlock ShadowTextElement
+        {
+            get;
+            set;
+        }
+
+        private Grid ShadowGrid
         {
             get;
             set;
@@ -1462,6 +1503,18 @@ namespace Visifire.Charts
             title.InternalMargin = (Thickness)e.NewValue;
             title.FirePropertyChanged(VcProperties.Margin);
         }
+
+        /// <summary>
+        /// ShadowEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnShadowEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Title title = d as Title;
+            title.FirePropertyChanged(VcProperties.ShadowEnabled);
+        }
+
         /// <summary>
         /// PaddingProperty changed call back function
         /// </summary>
@@ -1521,7 +1574,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="title">Title</param>
         /// <returns>Boolean</returns>
-        private static Boolean ApplyProperties(Title title)
+        private Boolean ApplyProperties(Title title)
         {
             if (title.Visual != null)
             {
@@ -1541,8 +1594,23 @@ namespace Visifire.Charts
                 title.TextElement.FontStyle = title.InternalFontStyle;
                 title.TextElement.FontWeight = title.InternalFontWeight;
                 title.TextElement.Text = GetFormattedMultilineText(title.Text);
-                title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.InternalFontColor, title.DockInsidePlotArea);
+                title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.Background, title.InternalFontColor, title.DockInsidePlotArea);
                 title.TextElement.TextWrapping = TextWrapping.Wrap;
+
+                if (VisifireControl.IsXbapApp)
+                {
+                    if (title.ShadowTextElement != null)
+                    {
+                        title.ShadowTextElement.FontFamily = title.InternalFontFamily;
+                        title.ShadowTextElement.FontSize = title.InternalFontSize;
+                        title.ShadowTextElement.FontStyle = title.InternalFontStyle;
+                        title.ShadowTextElement.FontWeight = title.InternalFontWeight;
+                        title.ShadowTextElement.Text = GetFormattedMultilineText(title.Text);
+                        title.ShadowTextElement.Foreground = new SolidColorBrush(Colors.Gray);
+                        title.ShadowTextElement.Foreground.Opacity = 0.6;
+                        title.ShadowTextElement.TextWrapping = TextWrapping.Wrap;
+                    }
+                }
 
                 // Set Border Properties 
                 title.Visual.BorderBrush = title.BorderColor;
@@ -1570,6 +1638,109 @@ namespace Visifire.Charts
             }
             else
                 return false;
+        }
+
+        private Brush GetParentColor(Chart chart)
+        {
+            Brush brush = null;
+            if (!DockInsidePlotArea)
+            {
+                if (chart.Background != null && !Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)))
+                    brush = chart.Background;
+            }
+            else
+            {
+                if(chart.PlotArea.Background != null && !Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)))
+                    brush = chart.PlotArea.Background;
+                else if (chart.Background != null && !Graphics.AreBrushesEqual(chart.Background, new SolidColorBrush(Colors.Transparent)))
+                    brush = chart.Background;
+            }
+
+            return brush;
+        }
+
+        private void ApplyShadow()
+        {
+            if (ShadowEnabled)
+            {
+                if (VisifireControl.IsXbapApp)
+                {
+                    Brush brush = GetParentColor(Chart as Chart);
+                    if (((Background == null || Graphics.AreBrushesEqual(Background, new SolidColorBrush(Colors.Transparent))) && (brush == null || Graphics.AreBrushesEqual(brush, new SolidColorBrush(Colors.White))))
+                        || (Background != null && brush != null && Graphics.AreBrushesEqual(brush, Background)))
+                    {
+                        if (ShadowTextElement != null)
+                        {
+                            ShadowTextElement.Visibility = Visibility.Visible;
+
+                            if ((HorizontalAlignment == HorizontalAlignment.Left || HorizontalAlignment == HorizontalAlignment.Right)
+                                && (VerticalAlignment == VerticalAlignment.Center || VerticalAlignment == VerticalAlignment.Stretch))
+                            {
+                                ShadowTextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                                Size size = new Size(ShadowTextElement.DesiredSize.Width, ShadowTextElement.DesiredSize.Height);
+
+                                ShadowTextElement.SetValue(Canvas.LeftProperty, (Double)2);
+                                ShadowTextElement.SetValue(Canvas.TopProperty, (Double)(size.Width + 2));
+                            }
+                            else
+                            {
+                                ShadowTextElement.SetValue(Canvas.LeftProperty, (Double)2);
+                                ShadowTextElement.SetValue(Canvas.TopProperty, (Double)2);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Size size = Graphics.CalculateVisualSize(Visual);
+
+                        ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, size.Width + 4, size.Height + 4,
+                                                            CornerRadius, CornerRadius,
+                                                            6);
+                        Size clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                        ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize, CornerRadius);
+                        ShadowGrid.SetValue(Canvas.ZIndexProperty, -5);
+                        ShadowGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        ShadowGrid.VerticalAlignment = VerticalAlignment.Stretch;
+                        ShadowGrid.Margin = new Thickness(-InternalPadding.Left, -InternalPadding.Top, 0, 0);
+                        InnerCanvas.Children.Insert(0, ShadowGrid);
+                    }
+                }
+                else
+                {
+                    DropShadowEffect shadow = new DropShadowEffect()
+                    {
+                        BlurRadius = 5,
+                        Direction = 315,
+                        ShadowDepth = 4,
+                        Opacity = 0.95,
+#if WPF
+                        Color = Color.FromArgb((Byte)255, (Byte)185, (Byte)185, (Byte)185)
+#else
+                        Color = Color.FromArgb((Byte)255, (Byte)135, (Byte)135, (Byte)135)
+#endif
+                    };
+
+                    Visual.Effect = shadow;
+                }
+            }
+            else
+            {
+                if (VisifireControl.IsXbapApp)
+                {
+                    if (InnerCanvas.Children.Contains(ShadowGrid))
+                    {
+                        InnerCanvas.Children.Remove(ShadowGrid);
+                        ShadowGrid = null;
+                    }
+
+                    if(ShadowTextElement != null)
+                        ShadowTextElement.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    Visual.Effect = null;
+                }
+            }
         }
 
         #endregion
@@ -1638,30 +1809,13 @@ namespace Visifire.Charts
             }
         }
 
-        /// <summary>
-        /// Creates the Title visual object
-        /// </summary>
-        internal void CreateVisualObject(ElementData tag)
+        private void SetAlignment4TextBlock(TextBlock textElement)
         {
-            if (!(Boolean)Enabled)
-                return;
-
-            // Creating Title Visual Object
-            Visual = new Border();
-            TextElement = new TextBlock() { Tag = tag };
-            InnerCanvas = new Canvas() { Tag = tag };
-            InnerCanvas.Children.Add(TextElement);
-            Visual.Child = InnerCanvas;
-            Visual.Opacity = this.InternalOpacity;
-
-            // Set Properties
-            ApplyProperties(this);
-
 #if WPF
-            TextElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            TextBlockDesiredSize = new Size(TextElement.DesiredSize.Width, TextElement.DesiredSize.Height);
+            textElement.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            TextBlockDesiredSize = new Size(textElement.DesiredSize.Width, textElement.DesiredSize.Height);
 #else
-            TextBlockDesiredSize = new Size(TextElement.ActualWidth, TextElement.ActualHeight);
+            TextBlockDesiredSize = new Size(textElement.ActualWidth, textElement.ActualHeight);
 #endif
 
             // Set TextElement position inside Title Visual
@@ -1672,14 +1826,14 @@ namespace Visifire.Charts
                     RotateTransform rt = new RotateTransform();
 
                     rt.Angle = 270;
-                    TextElement.RenderTransformOrigin = new Point(0, 0);
-                    TextElement.RenderTransform = rt;
+                    textElement.RenderTransformOrigin = new Point(0, 0);
+                    textElement.RenderTransform = rt;
 
                     InnerCanvas.Height = TextBlockDesiredSize.Width;
                     InnerCanvas.Width = TextBlockDesiredSize.Height;
 
-                    TextElement.SetValue(Canvas.LeftProperty, (Double)0);
-                    TextElement.SetValue(Canvas.TopProperty, (Double)TextBlockDesiredSize.Width);
+                    textElement.SetValue(Canvas.LeftProperty, (Double)0);
+                    textElement.SetValue(Canvas.TopProperty, (Double)TextBlockDesiredSize.Width);
 
                     SetTextAlignment4LeftAndRight();
                 }
@@ -1695,12 +1849,46 @@ namespace Visifire.Charts
                 InnerCanvas.Height = TextBlockDesiredSize.Height;
                 InnerCanvas.Width = TextBlockDesiredSize.Width;
             }
+        }
+
+        /// <summary>
+        /// Creates the Title visual object
+        /// </summary>
+        internal void CreateVisualObject(ElementData tag)
+        {
+            if (!(Boolean)Enabled)
+                return;
+
+            // Creating Title Visual Object
+            Visual = new Border();
+            TextElement = new TextBlock() { Tag = tag };
+            InnerCanvas = new Canvas() { Tag = tag };
+            InnerCanvas.Children.Add(TextElement);
+
+            if (VisifireControl.IsXbapApp && ShadowEnabled)
+            {
+                ShadowTextElement = new TextBlock();
+                ShadowTextElement.IsHitTestVisible = false;
+                InnerCanvas.Children.Add(ShadowTextElement);
+            }
+
+            Visual.Child = InnerCanvas;
+            Visual.Opacity = this.InternalOpacity;
+
+            // Set Properties
+            ApplyProperties(this);
+
+            SetAlignment4TextBlock(TextElement);
+
+            if (VisifireControl.IsXbapApp && ShadowEnabled)
+                SetAlignment4TextBlock(ShadowTextElement);
 
             this.Height = InnerCanvas.Height;
             this.Width = InnerCanvas.Width;
 
-
             SetTextAlignment4TopAndBottom();
+
+            ApplyShadow();
 
             // Attach event to title visual object 
             AttachEvents2Visual(this, TextElement);

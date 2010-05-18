@@ -314,7 +314,11 @@ namespace Visifire.Charts
                 }
             }
 
-            marker.PixelLavelShadow = true; // pixelLavelShadow;
+            if (VisifireControl.IsXbapApp)
+                marker.PixelLavelShadow = false; // pixelLavelShadow;
+            else
+                marker.PixelLavelShadow = true;
+
             marker.CreateVisual();
 
             UpdateBubblePositionAccording2XandYValue(dataPoint, plotWidth, plotHeight, false, 0, 0);

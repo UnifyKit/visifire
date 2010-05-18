@@ -1,4 +1,149 @@
-﻿
+﻿//////////////// Code for Plank Color
+//System.Windows.Shapes.Path path = null;
+            //if (Chart.PlotArea.Background != null && !Graphics.AreBrushesEqual(Chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)))
+            //{
+            //    path = new System.Windows.Shapes.Path();
+            //    path.Fill = Chart.PlotArea.Background;
+            //    path.Stroke = new SolidColorBrush(Colors.LightGray);
+            //    path.StrokeThickness = 0.1;
+            //    path.Opacity = 0.7;
+
+            //    PathGeometry geometry = new PathGeometry();
+            //    PathFigure pathFigure = new PathFigure();
+
+            //    PointCollection collection = new PointCollection();
+            //    UIElementCollection listOfRect = (_horizontalPlank.Visual as Canvas).Children;
+
+            //    (listOfRect[0] as Rectangle).Opacity = 0.9;
+            //    (listOfRect[1] as Rectangle).Opacity = 0.9;
+            //    (listOfRect[2] as Rectangle).Opacity = 0.9;
+
+            //    (listOfRect[0] as Rectangle).StrokeThickness = 0.5;
+            //    (listOfRect[1] as Rectangle).StrokeThickness = 0.5;
+            //    (listOfRect[2] as Rectangle).StrokeThickness = 0.5;
+
+            //    (listOfRect[0] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+            //    (listOfRect[1] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+            //    (listOfRect[2] as Rectangle).Stroke = new SolidColorBrush(Colors.Black);
+
+            //    collection.Add(new Point(plankDepth, -plankDepth));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width + plankDepth, -plankDepth));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width + plankThickness, PLANK_OFFSET - plankDepth - plankThickness));
+            //    collection.Add(new Point((listOfRect[1] as Rectangle).Width, (listOfRect[0] as Rectangle).Height));
+            //    collection.Add(new Point(0, (listOfRect[0] as Rectangle).Height));
+            //    collection.Add(new Point(0, -plankDepth + plankThickness));
+
+            //    foreach (Point point in collection)
+            //    {
+            //        LineSegment segment = new LineSegment();
+            //        segment.Point = point;
+            //        pathFigure.Segments.Add(segment);
+            //    }
+
+            //    geometry.Figures.Add(pathFigure);
+            //    path.Data = geometry;
+
+            //}
+            //else
+            //    _horizontalPlank.Visual.Opacity = 0.9;
+            
+            //////////////////////Code for Plank Color ends//////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Double intensity;
+            //Brush newBrush;
+
+            //if (brush.GetType().Name == "LinearGradientBrush" || brush.GetType().Name == "RadialGradientBrush")
+            //{
+            //    List<KeyValuePair<KeyValuePair<Color, Double>, Double>> listOfKeyPairs = new List<KeyValuePair<KeyValuePair<Color, double>, double>>();
+
+            //    foreach (GradientStop stop in (brush as GradientBrush).GradientStops)
+            //    {
+            //        KeyValuePair<Color, Double> pair = Graphics.GetColorIntensity(stop.Color);
+            //        listOfKeyPairs.Add(new KeyValuePair<KeyValuePair<Color, Double>, Double>(pair, stop.Offset));
+            //    }
+
+            //    var orderedListOfKeyPairs = (from pair in listOfKeyPairs orderby pair.Key.Value ascending select pair);
+
+            //    Color colorAtEndPoint = Colors.Transparent;
+            //    if (brush.GetType().Name == "LinearGradientBrush")
+            //    {
+            //        if ((brush as LinearGradientBrush).StartPoint.X < (brush as LinearGradientBrush).EndPoint.X)
+            //        {
+            //            if ((brush as LinearGradientBrush).EndPoint.X > 0.8)
+            //            {
+            //                foreach (KeyValuePair<KeyValuePair<Color, Double>, Double> pair in orderedListOfKeyPairs)
+            //                {
+            //                    if (pair.Key.Value > 0.8 && pair.Value > 0.8)
+            //                    {
+            //                        colorAtEndPoint = pair.Key.Key;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+
+            //    intensity = orderedListOfKeyPairs.First().Key.Value;
+
+            //    if (intensity < 0.50)
+            //        intensity = intensity + 0.33;
+
+            //    Color newColor;
+            //    if (colorAtEndPoint != null && colorAtEndPoint != Colors.Transparent)
+            //    {
+            //        KeyValuePair<Color, Double> pairAtEndPoint = Graphics.GetColorIntensity(colorAtEndPoint);
+            //        if (intensity < pairAtEndPoint.Value && pairAtEndPoint.Value != 1)
+            //            intensity = pairAtEndPoint.Value;
+            //        else if (pairAtEndPoint.Value == 0)
+            //            intensity = 0.50;
+
+            //        newColor = Graphics.GetDarkerColor(orderedListOfKeyPairs.First().Key.Key, intensity);
+            //        newBrush = Graphics.CreateSolidColorBrush(newColor);
+                 
+            //        if (pairAtEndPoint.Value != 1)
+            //            newBrush.Opacity = 0.75;
+            //        else
+            //            newBrush.Opacity = 0.45;
+            //    }
+            //    else
+            //    {
+            //        newColor = Graphics.GetDarkerColor(orderedListOfKeyPairs.First().Key.Key, intensity);
+            //        newBrush = Graphics.CreateSolidColorBrush(newColor);
+
+            //        if (brush.GetType().Name == "RadialGradientBrush")
+            //            newBrush.Opacity = 0.45;
+            //    }
+            //}
+            //else
+            //{
+            //    intensity = Graphics.GetBrushIntensity(brush);
+            //    if (intensity < 0.50)
+            //        intensity = intensity + 0.33;
+            //    else if (intensity > 0.90)
+            //        intensity = 0.90;
+
+            //    Color newColor = Graphics.GetDarkerColor((brush as SolidColorBrush).Color, intensity);
+            //    newBrush = Graphics.CreateSolidColorBrush(newColor);
+            //}
+
+            //if (newBrush == null || Graphics.AreBrushesEqual(newBrush, new SolidColorBrush(Colors.Transparent)))
+            //{
+            //    newBrush = new SolidColorBrush(Colors.LightGray);
+            //}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
         //private Double GetPixelDistanceBetweenTwoNearestXValues(PlotDetails plotDetails, Chart chart, Double plotAreaSize)
         //{
         //    List<KeyValuePair<Double[], Double>> listOfKeyValuePair = new List<KeyValuePair<double[],double>>();

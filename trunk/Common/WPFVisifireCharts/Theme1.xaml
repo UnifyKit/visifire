@@ -61,18 +61,19 @@
         <Setter Property="LineThickness" Value="0.5"/>
     </Style>
     <Style x:Key="Legend"  TargetType="{x:Type vc:Legend}">
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="White"/>
         <Setter Property="Padding" Value="4"/>
         <Setter Property="EntryMargin" Value="3"/>
         <Setter Property="LabelMargin" Value="6"/>
         <Setter Property="FontFamily" Value="Arial"/>
         <Setter Property="FontStyle" Value="Normal"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="FontSize" Value="9"/>
-        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="BorderThickness" Value="0.50"/>
         <Setter Property="BorderColor" Value="Black"/>
         <Setter Property="LightingEnabled" Value="true"/>
-        <Setter Property="TitleFontSize" Value="10"/>
+        <Setter Property="ShadowEnabled" Value="true"/>
+        <Setter Property="TitleFontSize" Value="11"/>
         <Setter Property="TitleBackground" Value="LightGray"/>
         <Setter Property="TitleAlignmentX" Value="Stretch"/>
         <Setter Property="TitleTextAlignment" Value="Center"/>

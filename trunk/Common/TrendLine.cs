@@ -1124,6 +1124,30 @@ namespace Visifire.Charts
                 Line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
             }
 
+#if WPF
+            ApplyShadow4XBAP();
+#else
+            ApplyShadow();
+#endif
+        }
+
+        /// <summary>
+        /// Apply properties of TrendLine to line visual and line-shadow visual
+        /// </summary>
+        private void ApplyRectangleProperties()
+        {
+            if (Rectangle != null)
+                Rectangle.Fill = LineColor;
+
+
+            if (VisifireControl.IsXbapApp)
+                ApplyShadow4XBAP();
+            else
+                ApplyShadow();
+        }
+
+        private void ApplyShadow4XBAP()
+        {
             if (Shadow != null)
             {
                 Shadow.StrokeThickness = LineThickness + 2;
@@ -1136,21 +1160,42 @@ namespace Visifire.Charts
                 Shadow.StrokeLineJoin = PenLineJoin.Round;
                 Shadow.Visibility = ShadowEnabled ? Visibility.Visible : Visibility.Collapsed;
             }
-        }
-
-        /// <summary>
-        /// Apply properties of TrendLine to line visual and line-shadow visual
-        /// </summary>
-        private void ApplyRectangleProperties()
-        {
-            if (Rectangle != null)
-                Rectangle.Fill = LineColor;
 
             if (ShadowRectangle != null)
             {
                 ShadowRectangle.Fill = new SolidColorBrush(Colors.LightGray);
                 ShadowRectangle.Opacity = 0.7;
                 ShadowRectangle.Visibility = ShadowEnabled ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+        }
+
+        private void ApplyShadow()
+        {
+            if (ShadowEnabled)
+            {
+                if (Line != null)
+                {
+                    Line.Effect = ExtendedGraphics.GetShadowEffect(270, 3, 0.95);
+                }
+
+                if (Rectangle != null)
+                {
+                    Rectangle.Effect = ExtendedGraphics.GetShadowEffect(270, 3, 0.95);
+                }
+            }
+
+            else
+            {
+                if (Line != null)
+                {
+                    Line.Effect = null;
+                }
+
+                if (Rectangle != null)
+                {
+                    Rectangle.Effect = null;
+                }
             }
         }
 
@@ -1466,7 +1511,7 @@ namespace Visifire.Charts
 
             Visual.Opacity = this.Opacity;
             Visual.Cursor = this.Cursor;
-            Double shadowThickness = LineThickness + 2;
+            //Double shadowThickness = LineThickness + 2;
 
             if (StartValue != null && EndValue != null && Value != null)
                 throw new Exception("Value property cannot be set with StartValue and EndValue in TrendLine");
@@ -1477,21 +1522,30 @@ namespace Visifire.Charts
             if (Value != null)
             {
                 Line = new Line() { Tag = new ElementData() { Element = this } };
+                
+#if WPF
                 Shadow = new Line() { IsHitTestVisible = false };
+#endif
 
                 PositionTheLine(width, height);
 
                 ApplyProperties();
 
+#if WPF
                 Visual.Children.Add(Shadow);
+#endif
                 Visual.Children.Add(Line);
             }
 
             if(StartValue != null && EndValue != null)
             {
                 Rectangle = new Rectangle() { Tag = new ElementData() { Element = this } };
+
+#if WPF
                 ShadowRectangle = new Rectangle() { IsHitTestVisible = false };
                 Visual.Children.Add(ShadowRectangle);
+#endif
+
                 Visual.Children.Add(Rectangle);
 
                 PositionTheStartEndRectangle(width, height);
