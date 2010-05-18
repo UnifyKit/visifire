@@ -1052,28 +1052,34 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                //lineShadow = new Path() { IsHitTestVisible = false };
-                //lineShadow.Stroke = Graphics.GetLightingEnabledBrush(new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
-                //lineShadow.StrokeStartLineCap = PenLineCap.Round;
-                //lineShadow.StrokeEndLineCap = PenLineCap.Round;
-                //lineShadow.StrokeLineJoin = PenLineJoin.Round;
-                //lineShadow.StrokeThickness = lineParams.LineThickness;
-                //lineShadow.Opacity = 0.5;
+                if (VisifireControl.IsXbapApp)
+                {
+                    lineShadow = new Path() { IsHitTestVisible = false };
+                    lineShadow.Stroke = Graphics.GetLightingEnabledBrush(new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
+                    lineShadow.StrokeStartLineCap = PenLineCap.Round;
+                    lineShadow.StrokeEndLineCap = PenLineCap.Round;
+                    lineShadow.StrokeLineJoin = PenLineJoin.Round;
+                    lineShadow.StrokeThickness = lineParams.LineThickness;
+                    lineShadow.Opacity = 0.5;
 
-                //if (lineParams.ShadowEnabled)
-                //    lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, true, width, height, null);
+                    if (lineParams.ShadowEnabled)
+                        lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, true, width, height, null);
 
-                //TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
-                //lineShadow.RenderTransform = tt;
+                    TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
+                    lineShadow.RenderTransform = tt;
 
-                //visual.Children.Add(lineShadow);
-
-                visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    visual.Children.Add(lineShadow);
+                }
+                else
+                {
+                    visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    lineShadow = null;
+                }
             }
-            //else
-            //    lineShadow = null;
+            else
+                lineShadow = null;
 
-            lineShadow = null;
+            //lineShadow = null;
 
             visual.Children.Add(line);
 
@@ -1517,22 +1523,37 @@ namespace Visifire.Charts
                 // Apply new Data for Line
                 StepLineChart.GetPathGeometry(gg, pointCollectionList, false, width, height, label2dCanvas);
 
-                //// Update GeometryGroup for shadow
-                //if (dataSeries.Faces.Parts[1] != null)
-                //{
-                //    if (dataSeries.ShadowEnabled)
-                //    {
-                //        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
+                if (VisifireControl.IsXbapApp)
+                {
+                    // Update GeometryGroup for shadow
+                    if (dataSeries.Faces.Parts[1] != null)
+                    {
+                        if (dataSeries.ShadowEnabled)
+                        {
+                            (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
 
-                //        // gg.Children.Clear();
-                //        GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
+                            // gg.Children.Clear();
+                            GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
 
-                //        // Apply new Data for Line
-                //        StepLineChart.GetPathGeometry(ggShadow, pointCollectionList, true, width, height, label2dCanvas);
-                //    }
-                //    else
-                //        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
-                //}
+                            // Apply new Data for Line
+                            StepLineChart.GetPathGeometry(ggShadow, pointCollectionList, true, width, height, label2dCanvas);
+                        }
+                        else
+                            (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                    {
+                        if ((Boolean)dataSeries.ShadowEnabled)
+                        {
+                            dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                        }
+                        else
+                            dataSeries.Faces.Visual.Effect = null;
+                    }
+                }
 
                 dataSeries._movingMarker.Visibility = Visibility.Collapsed;
 
@@ -1713,22 +1734,11 @@ namespace Visifire.Charts
                 case VcProperties.MarkerScale:
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
+                case VcProperties.ShadowEnabled:
                     //Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     //LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
                     LineChart.CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
 
-                    break;
-
-                case VcProperties.ShadowEnabled:
-                    if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
-                    {
-                        if ((Boolean)dataSeries.ShadowEnabled)
-                        {
-                            dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
-                        }
-                        else
-                            dataSeries.Faces.Visual.Effect = null;
-                    }
                     break;
 
                 case VcProperties.Opacity:
@@ -1875,55 +1885,55 @@ namespace Visifire.Charts
                 pathFigure = dataPoint.Faces.Parts[2] as PathFigure;
             }
 
-
-
-
             LineSegment shadowLineSeg1;                         //Shadow Line Segment from previous DataPoint to Step point.
             LineSegment shadowLineSeg2;                         //Shadow Line Segment from Step point to the current DataPoint.
             LineSegment nextShadowLineSeg1;                     //Shadow Line Segment from current DataPoint to next Step point.
 
-            //PathFigure shadowPathFigure;
+            PathFigure shadowPathFigure;
 
-            //// For line shadow
-            //if (dataPoint.Parent.ShadowEnabled)
-            //{
-            //    shadowLineSeg1 = dataPoint.ShadowFaces.Parts[0] as LineSegment;
-            //    shadowLineSeg2 = dataPoint.ShadowFaces.Parts[1] as LineSegment;
-                
-            //    nextShadowLineSeg1 = shadowLineSeg2;
-            //    if (dataPoint.Faces.NextDataPoint != null)
-            //    {
-            //        nextShadowLineSeg1 = dataPoint.Faces.NextDataPoint.ShadowFaces.Parts[0] as LineSegment;
-            //    }
+            if (VisifireControl.IsXbapApp)
+            {
+                // For line shadow
+                if (dataPoint.Parent.ShadowEnabled)
+                {
+                    shadowLineSeg1 = dataPoint.ShadowFaces.Parts[0] as LineSegment;
+                    shadowLineSeg2 = dataPoint.ShadowFaces.Parts[1] as LineSegment;
 
-            //    shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
-            //    if (dataPoint.Faces.PreviousDataPoint != null)
-            //    {
-            //        pathFigure = dataPoint.ShadowFaces.Parts[2] as PathFigure;
-            //    }
+                    nextShadowLineSeg1 = shadowLineSeg2;
+                    if (dataPoint.Faces.NextDataPoint != null)
+                    {
+                        nextShadowLineSeg1 = dataPoint.Faces.NextDataPoint.ShadowFaces.Parts[0] as LineSegment;
+                    }
 
-            //    if (shadowLineSeg1 == null)
-            //    {
-            //        shadowOldPoint = shadowPathFigure.StartPoint;
-            //        shadowTarget = shadowPathFigure;
-            //        if (!isAnimationEnabled)
-            //        {
-            //            shadowPathFigure.StartPoint = new Point(x, y);
-            //            nextShadowLineSeg1.Point = new Point(xNext, y);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        shadowTarget = shadowLineSeg2;
-            //        shadowOldPoint = shadowLineSeg2.Point;
-            //        if (!isAnimationEnabled)
-            //        {
-            //            shadowLineSeg1.Point = new Point(x, yPrevious);
-            //            shadowLineSeg2.Point = new Point(x, y);
-            //            nextShadowLineSeg1.Point = new Point(xNext, y);
-            //        }
-            //    }
-            //}
+                    shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
+                    if (dataPoint.Faces.PreviousDataPoint != null)
+                    {
+                        pathFigure = dataPoint.ShadowFaces.Parts[2] as PathFigure;
+                    }
+
+                    if (shadowLineSeg1 == null)
+                    {
+                        shadowOldPoint = shadowPathFigure.StartPoint;
+                        shadowTarget = shadowPathFigure;
+                        if (!isAnimationEnabled)
+                        {
+                            shadowPathFigure.StartPoint = new Point(x, y);
+                            nextShadowLineSeg1.Point = new Point(xNext, y);
+                        }
+                    }
+                    else
+                    {
+                        shadowTarget = shadowLineSeg2;
+                        shadowOldPoint = shadowLineSeg2.Point;
+                        if (!isAnimationEnabled)
+                        {
+                            shadowLineSeg1.Point = new Point(x, yPrevious);
+                            shadowLineSeg2.Point = new Point(x, y);
+                            nextShadowLineSeg1.Point = new Point(xNext, y);
+                        }
+                    }
+                }
+            }
 
             if (lineSeg1 == null)
             {
@@ -2022,87 +2032,84 @@ namespace Visifire.Charts
                     storyBorad.Children.Add(pointAnimation3);
                 }
 
-               
-//                if (shadowTarget != null)
-//                {
+                if (VisifireControl.IsXbapApp)
+                {
+                    if (shadowTarget != null)
+                    {
 
-//                    shadowLineSeg1 = dataPoint.ShadowFaces.Parts[0] as LineSegment;
-//                    shadowLineSeg2 = dataPoint.ShadowFaces.Parts[1] as LineSegment;
-//                    nextShadowLineSeg1 = shadowLineSeg2;
-//                    if (dataPoint.Faces.NextDataPoint != null)
-//                    {
-//                        nextShadowLineSeg1 = dataPoint.Faces.NextDataPoint.ShadowFaces.Parts[0] as LineSegment;
-//                    }
+                        shadowLineSeg1 = dataPoint.ShadowFaces.Parts[0] as LineSegment;
+                        shadowLineSeg2 = dataPoint.ShadowFaces.Parts[1] as LineSegment;
+                        nextShadowLineSeg1 = shadowLineSeg2;
+                        if (dataPoint.Faces.NextDataPoint != null)
+                        {
+                            nextShadowLineSeg1 = dataPoint.Faces.NextDataPoint.ShadowFaces.Parts[0] as LineSegment;
+                        }
 
-//                    shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
-//                    if (dataPoint.Faces.PreviousDataPoint != null)
-//                    {
-//                        pathFigure = dataPoint.ShadowFaces.Parts[2] as PathFigure;
-//                    }
+                        shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
+                        if (dataPoint.Faces.PreviousDataPoint != null)
+                        {
+                            pathFigure = dataPoint.ShadowFaces.Parts[2] as PathFigure;
+                        }
 
-//                    shadowTarget = shadowPathFigure;
-//                    if (shadowLineSeg1 != null)
-//                    {
-//                        shadowTarget = shadowLineSeg2;
-//                    }
-                    
-//                    newPoint = new Point(x, y);
-//                    PointAnimation pointAnimationS2 = new PointAnimation();
-//                    pointAnimationS2.From = shadowOldPoint;
-//                    pointAnimationS2.To = newPoint;
-//                    pointAnimationS2.SpeedRatio = 2;
-//                    pointAnimationS2.Duration = new Duration(new TimeSpan(0, 0, 1));
+                        shadowTarget = shadowPathFigure;
+                        if (shadowLineSeg1 != null)
+                        {
+                            shadowTarget = shadowLineSeg2;
+                        }
 
-//                    //shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
+                        newPoint = new Point(x, y);
+                        PointAnimation pointAnimationS2 = new PointAnimation();
+                        pointAnimationS2.From = shadowOldPoint;
+                        pointAnimationS2.To = newPoint;
+                        pointAnimationS2.SpeedRatio = 2;
+                        pointAnimationS2.Duration = new Duration(new TimeSpan(0, 0, 1));
 
-//                    Storyboard.SetTarget(pointAnimationS2, shadowTarget);
-//                    Storyboard.SetTargetProperty(pointAnimationS2, (shadowLineSeg2 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-//                    Storyboard.SetTargetName(pointAnimationS2, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
+                        //shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
 
-//                    storyBorad.Children.Add(pointAnimationS2);
+                        Storyboard.SetTarget(pointAnimationS2, shadowTarget);
+                        Storyboard.SetTargetProperty(pointAnimationS2, (shadowLineSeg2 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
+                        Storyboard.SetTargetName(pointAnimationS2, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
 
-//                    PointAnimation pointAnimationS3 = new PointAnimation();
-//                    pointAnimationS3 = pointAnimationS2;
-//                    if (dataPoint.Faces.NextDataPoint != null)
-//                    {
-//                        newPoint = new Point(xNext, y);
-//                        shadowTarget = nextShadowLineSeg1;
-//                        pointAnimationS3 = new PointAnimation();
-//                        pointAnimationS3.From = nextShadowLineSeg1.Point;
-//                        pointAnimationS3.To = newPoint;
-//                        pointAnimationS3.SpeedRatio = 2;
-//                        pointAnimationS3.Duration = new Duration(new TimeSpan(0, 0, 1));
+                        storyBorad.Children.Add(pointAnimationS2);
 
-//                        //shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
+                        PointAnimation pointAnimationS3 = new PointAnimation();
+                        pointAnimationS3 = pointAnimationS2;
+                        if (dataPoint.Faces.NextDataPoint != null)
+                        {
+                            newPoint = new Point(xNext, y);
+                            shadowTarget = nextShadowLineSeg1;
+                            pointAnimationS3 = new PointAnimation();
+                            pointAnimationS3.From = nextShadowLineSeg1.Point;
+                            pointAnimationS3.To = newPoint;
+                            pointAnimationS3.SpeedRatio = 2;
+                            pointAnimationS3.Duration = new Duration(new TimeSpan(0, 0, 1));
 
-//                        Storyboard.SetTarget(pointAnimationS3, shadowTarget);
-//                        Storyboard.SetTargetProperty(pointAnimationS3, (nextShadowLineSeg1 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-//                        Storyboard.SetTargetName(pointAnimationS3, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
-//                        storyBorad.Children.Add(pointAnimationS3);
-//                    }
+                            //shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
 
+                            Storyboard.SetTarget(pointAnimationS3, shadowTarget);
+                            Storyboard.SetTargetProperty(pointAnimationS3, (nextShadowLineSeg1 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
+                            Storyboard.SetTargetName(pointAnimationS3, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
+                            storyBorad.Children.Add(pointAnimationS3);
+                        }
 
-                    
-
-
-//#if WPF
-//                    if (shadowLineSeg1 != null && nextShadowLineSeg1 != null)
-//                    {    
-//                        (shadowLineSeg2 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS2);
-//                        (nextShadowLineSeg1 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS3);
-//                    }
-//                    else if (nextShadowLineSeg1 == null && shadowLineSeg1 != null)
-//                    {
-//                        (shadowLineSeg2 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS2);
-//                    }
-//                    else
-//                    {
-//                        (shadowPathFigure as PathFigure).BeginAnimation(PathFigure.StartPointProperty, pointAnimationS2);
-//                        (nextShadowLineSeg1 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS3);
-//                    }
-
-//#endif
-//                }
+#if WPF
+                        if (shadowLineSeg1 != null && nextShadowLineSeg1 != null)
+                        {
+                            (shadowLineSeg2 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS2);
+                            (nextShadowLineSeg1 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS3);
+                        }
+                        else if (nextShadowLineSeg1 == null && shadowLineSeg1 != null)
+                        {
+                            (shadowLineSeg2 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS2);
+                        }
+                        else
+                        {
+                            (shadowPathFigure as PathFigure).BeginAnimation(PathFigure.StartPointProperty, pointAnimationS2);
+                            (nextShadowLineSeg1 as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimationS3);
+                        }
+#endif
+                    }
+                }
 
                 #endregion
 
@@ -2506,7 +2513,9 @@ namespace Visifire.Charts
             line2dCanvas.Height = height;
 
             series.Faces.Parts.Add(polyline);
-            //series.Faces.Parts.Add(PolylineShadow);
+
+            if (VisifireControl.IsXbapApp)
+                series.Faces.Parts.Add(PolylineShadow);
 
             labelCanvas.Children.Add(line2dLabelCanvas);
             chartsCanvas.Children.Add(line2dCanvas);

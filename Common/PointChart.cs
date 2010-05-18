@@ -171,7 +171,12 @@ namespace Visifire.Charts
             marker.Tag = new ElementData() { Element = dataPoint };
 
             marker.ShadowEnabled = (Boolean)dataPoint.ShadowEnabled;
-            marker.PixelLavelShadow = true; 
+
+            if (VisifireControl.IsXbapApp)
+                marker.PixelLavelShadow = false;
+            else
+                marker.PixelLavelShadow = true;
+
             marker.MarkerSize = new Size((Double)dataPoint.MarkerSize, (Double)dataPoint.MarkerSize);
 
             if (marker.MarkerType != MarkerTypes.Cross)

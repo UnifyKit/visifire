@@ -66,13 +66,14 @@
         <Setter Property="FontFamily" Value="Arial"/>
         <Setter Property="FontStyle" Value="Normal"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="FontSize" Value="9"/>
+        <Setter Property="FontSize" Value="10"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderColor" Value="White"/>
         <Setter Property="CornerRadius" Value="1"/>
         <Setter Property="Enabled" Value="true"/>
         <Setter Property="LightingEnabled" Value="true"/>
-        <Setter Property="TitleFontSize" Value="10"/>
+        <Setter Property="ShadowEnabled" Value="false"/>
+        <Setter Property="TitleFontSize" Value="11"/>
         <Setter Property="TitleBackground" Value="LightGray"/>
         <Setter Property="TitleAlignmentX" Value="Stretch"/>
         <Setter Property="TitleTextAlignment" Value="Center"/>

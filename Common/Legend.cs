@@ -26,6 +26,7 @@ using System.Windows.Data;
 
 using Visifire.Commons;
 using System.Linq;
+using System.Windows.Media.Effects;
 
 namespace Visifire.Charts
 {
@@ -1679,6 +1680,12 @@ namespace Visifire.Charts
             set;
         }
 
+        internal Border ShadowBorder
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Legend visual
         /// </summary>
@@ -2164,7 +2171,7 @@ namespace Visifire.Charts
             textBlock.FontStyle = InternalFontStyle;
             textBlock.FontWeight = InternalFontWeight;
             textBlock.FontSize = InternalFontSize;
-            textBlock.Foreground = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, this.DockInsidePlotArea);
+            textBlock.Foreground = Charts.Chart.CalculateFontColor((Chart as Chart), Background, FontColor, this.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -2177,7 +2184,7 @@ namespace Visifire.Charts
             marker.FontStyle = InternalFontStyle;
             marker.FontWeight = InternalFontWeight;
             marker.FontSize = InternalFontSize;
-            marker.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, this.DockInsidePlotArea);
+            marker.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), Background, FontColor, this.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -2201,7 +2208,7 @@ namespace Visifire.Charts
             if (!String.IsNullOrEmpty(Title))
                 title.Text = GetFormattedMultilineText(Title);
 
-            title.InternalFontColor = Charts.Chart.CalculateFontColor((Chart as Chart), TitleFontColor, this.DockInsidePlotArea);
+            title.InternalFontColor = Charts.Chart.CalculateFontColor((Chart as Chart), Background, TitleFontColor, this.DockInsidePlotArea);
         }
 
         /// <summary>
@@ -2213,7 +2220,6 @@ namespace Visifire.Charts
                 Visual.Cursor = Cursor;
 
             Visual.BorderBrush = BorderColor;
-
             Visual.BorderThickness = InternalBorderThickness;
 
             Visual.CornerRadius = CornerRadius;
@@ -2224,11 +2230,11 @@ namespace Visifire.Charts
             Visual.Opacity = this.InternalOpacity;
 
             ApplyLighting();
-            ApplyShadow();
             AttachHref(Chart, Visual, Href, HrefTarget);
             AttachToolTip(Chart, this, Visual);
             AttachEvents2Visual(this, Visual);
         }
+
         /// <summary>
         /// Return actual size of the TextBlock
         /// </summary>
@@ -2258,17 +2264,43 @@ namespace Visifire.Charts
         /// <summary>
         /// Apply shadow over Legend
         /// </summary>
-        private void ApplyShadow()
-        {
+        private void ApplyShadow(Grid innerGrid)
+        {   
             if (ShadowEnabled)
-                Visual.Effect = new System.Windows.Media.Effects.DropShadowEffect()
-            {
-                BlurRadius = 6,
-                Direction = 315,
-                ShadowDepth = 5,
-                Opacity = 0.95,
-                Color = Color.FromArgb((Byte)255,(Byte)135,(Byte)135,(Byte)135)
-            };
+            {   
+                if (VisifireControl.IsXbapApp)
+                {   
+                    Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, Visual.Width, Visual.Height,
+                                                        CornerRadius, CornerRadius, 6);
+
+                    shadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(shadowGrid.Width , shadowGrid.Height), CornerRadius);
+                    
+                    shadowGrid.SetValue(Canvas.ZIndexProperty, -12);
+                    shadowGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    shadowGrid.VerticalAlignment = VerticalAlignment.Stretch;
+                    // shadowGrid.Margin = new Thickness(0, 0, -(Charts.Chart.SHADOW_DEPTH + BorderThickness.Right + BorderThickness.Left), -(Charts.Chart.SHADOW_DEPTH + BorderThickness.Bottom + BorderThickness.Top));
+                    shadowGrid.Margin = new Thickness(0, 0, -(Charts.Chart.SHADOW_DEPTH + EntryMargin), -(Charts.Chart.SHADOW_DEPTH + EntryMargin));
+
+                    innerGrid.Children.Insert(0,shadowGrid);
+                }
+                else
+                {   
+                    DropShadowEffect shadow = new DropShadowEffect()
+                    {
+                        BlurRadius = 5,
+                        Direction = 315,
+                        ShadowDepth = 4,
+                        Opacity = 0.95,
+#if WPF
+                        Color = Color.FromArgb((Byte)255, (Byte)185, (Byte)185, (Byte)185)
+#else
+                    Color = Color.FromArgb((Byte)255, (Byte)135, (Byte)135, (Byte)135)
+#endif
+                    };
+
+                    Visual.Effect = shadow;
+                }
+            }
         }
 
         /// <summary>
@@ -2980,6 +3012,8 @@ namespace Visifire.Charts
         }
 #endif
 
+
+
         /// <summary>
         /// Create visual object of the Legend
         /// </summary>
@@ -2995,6 +3029,7 @@ namespace Visifire.Charts
 
             Visual = new Border() { Tag = tag };
             Grid innerGrid = new Grid() { Tag = tag };
+
             (Visual as Border).Child = innerGrid;
 
             LegendContainer = new StackPanel() { Tag = tag };
@@ -3045,6 +3080,10 @@ namespace Visifire.Charts
                 Visual.Width = InternalMaxWidth;
             else
                 Visual.Width = Visual.DesiredSize.Width + InternalPadding.Left;
+
+            ApplyShadow(innerGrid);
+
+            Visual.Margin = new Thickness(4);
         }
 
         #endregion

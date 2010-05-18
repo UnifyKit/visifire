@@ -76,7 +76,7 @@ namespace Visifire.Charts
             Ticks = new TicksCollection();
 
             // Initialize AxisLabels element
-            AxisLabels = new AxisLabels();
+            //AxisLabels = new AxisLabels();
 
             // Attach event handler on collection changed event with chart grid collection
             Grids.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Grids_CollectionChanged);
@@ -2792,7 +2792,7 @@ namespace Visifire.Charts
                 // if (!String.IsNullOrEmpty(this.Title) && String.IsNullOrEmpty(AxisTitleElement.Text))
                 AxisTitleElement.Text = GetFormattedMultilineText(this.Title);
 
-                AxisTitleElement.InternalFontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), this.TitleFontColor, false);
+                AxisTitleElement.InternalFontColor = Visifire.Charts.Chart.CalculateFontColor((Chart as Chart), Background, this.TitleFontColor, false);
 
                 AxisTitleElement.IsNotificationEnable = true;
             }
@@ -4767,13 +4767,16 @@ namespace Visifire.Charts
         /// <param name="Chart">Chart</param>
         internal void CreateVisualObject(Chart Chart)
         {
+            if(AxisLabels == null)
+                AxisLabels = new AxisLabels();
+
             IsNotificationEnable = false;
             AxisLabels.IsNotificationEnable = false;
             AxisLabels.Chart = Chart;
 
             if (!Double.IsNaN(ClosestPlotDistance) && !Chart.ChartArea.IsAutoCalculatedScrollBarScale)
                 throw new ArgumentException(" ScrollBarScale property and ClosestPlotDistance property in Axis cannot be set together.");
-            
+
             if (AxisRepresentation == AxisRepresentations.AxisX)
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisXLabels");
             else if (AxisRepresentation == AxisRepresentations.AxisY)

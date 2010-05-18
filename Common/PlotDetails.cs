@@ -39,9 +39,8 @@ using System.Diagnostics;
 #endif
 using Visifire.Commons;
 
-
 namespace Visifire.Charts
-{
+{   
     /// <summary>
     /// Containes all the details about the data required for various plotting puposes
     /// </summary>
@@ -77,28 +76,28 @@ namespace Visifire.Charts
         }
 
 
-        public void ReCreate(VisifireElement element, VcProperties property, object oldValue, object newValue)
+        public void ReCreate(VisifireElement element, ElementTypes elementType, VcProperties property, object oldValue, object newValue)
         {   
-            Type elementType = element.GetType();
+            //Type elementType = element.GetType();
             
             // Create a plot groups list
             // this.PlotGroups = new List<PlotGroup>();
 
             // Set default chart orientation
-            if((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                ||(elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
+            if((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                ||(elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
             )
                 this.ChartOrientation = ChartOrientationType.Undefined;
 
             // Validate XValue type of the DataPoint and DataSeries
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
-                || (elementType.Equals(typeof(DataPoint)) && property == VcProperties.XValue)
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
+                || (elementType == ElementTypes.DataPoint && property == VcProperties.XValue)
              )  
                 SetDataPointsNameAndValidateDataPointXValueType();
 
             // Calculate all the required details
-            this.Calculate(element, property, oldValue, newValue);
+            this.Calculate(element, elementType, property, oldValue, newValue);
         }
 
         #endregion
@@ -277,17 +276,17 @@ namespace Visifire.Charts
         /// <summary>
         /// Calculate PlotDetails
         /// </summary>
-        private void Calculate(VisifireElement element, VcProperties property, object oldValue, object newValue)
+        private void Calculate(VisifireElement element, ElementTypes elementType, VcProperties property, object oldValue, object newValue)
         {
-            Type elementType = element.GetType();
+            //Type elementType = element.GetType();
 
             // Create Axis incase if it doesnt exist
-            if (elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
+            if (elementType == ElementTypes.Chart && property == VcProperties.Series)
             {
                 CreateMissingAxes();
             }
 
-            if (elementType.Equals(typeof(Chart)) && property == VcProperties.AxesX)
+            if (elementType == ElementTypes.Chart && property == VcProperties.AxesX)
             {   
                 Axis axisXSecondary = GetAxisXFromChart(Chart, AxisTypes.Secondary);
 
@@ -295,9 +294,9 @@ namespace Visifire.Charts
                     throw new Exception("Note: Secondary AxisX is not yet supported in Visifire.");
             }
 
-            if ((elementType.Equals(typeof(DataSeries)) && (property == VcProperties.DataPoints || property ==  VcProperties.XValueType))
-                || 
-                (elementType.Equals(typeof(DataPoint)) && property == VcProperties.XValue)
+            if ((elementType == ElementTypes.DataSeries && (property == VcProperties.DataPoints || property == VcProperties.XValueType))
+                ||
+                (elementType == ElementTypes.DataPoint && property == VcProperties.XValue)
                 ||
                 property == VcProperties.None
                 )
@@ -308,7 +307,7 @@ namespace Visifire.Charts
                 // Generate XValues for DataTime axis
                 GenerateXValueForDataTimeAxis(_axisXPrimary);
             }
-            else if (elementType.Equals(typeof(Chart)) && property == VcProperties.AxesX)
+            else if (elementType == ElementTypes.Chart && property == VcProperties.AxesX)
             {
                 _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
@@ -317,43 +316,43 @@ namespace Visifire.Charts
             }
 
             // Create list of datapoints from all series
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && (property == VcProperties.DataPoints || property == VcProperties.Enabled))
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && (property == VcProperties.DataPoints || property == VcProperties.Enabled))
                 )
                 CreateListOfDataPoints();
 
             // Identifies the various plot groups and populates the list
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.None) || (elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && (property == VcProperties.RenderAs || property == VcProperties.Enabled))
+            if ((elementType == ElementTypes.Chart && property == VcProperties.None) || (elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && (property == VcProperties.RenderAs || property == VcProperties.Enabled))
                 )
                 PopulatePlotGroups();
 
-            else if (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
+            else if (elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints)
             {
                 (element as DataSeries).PlotGroup.Update(property, oldValue, newValue);
             }
-            else if (elementType.Equals(typeof(DataPoint)) && (property == VcProperties.XValue || property == VcProperties.YValue || property == VcProperties.YValues))
+            else if (elementType == ElementTypes.DataPoint && (property == VcProperties.XValue || property == VcProperties.YValue || property == VcProperties.YValues))
             {
                 (element as DataPoint).Parent.PlotGroup.Update(property, oldValue, newValue);
             }
 
-            if (elementType.Equals(typeof(Chart)) && property == VcProperties.TrendLines)
+            if (elementType == ElementTypes.Chart && property == VcProperties.TrendLines)
             {
                 SetTrendLineValues(_axisXPrimary);
                 SetTrendLineStartAndEndValues(_axisXPrimary);
             }
             
             // Generates a index set that identifies the order in which the series must be drawn(layering order)
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.RenderAs)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && property == VcProperties.RenderAs)
+                || (elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints)
                 )
                 SeriesDrawingIndex = GenerateDrawingOrder();
                 
                 
             // Gets a unique set of axis labels by axisX type
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataPoint)) && property == VcProperties.AxisXLabel)
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataPoint && property == VcProperties.AxisXLabel)
             )
             {
                 // To store all the axisX labels for the primary axisX;
@@ -367,7 +366,7 @@ namespace Visifire.Charts
                 AxisXPrimaryLabels = GetAxisXLabels(AxisTypes.Primary);
                 AxisXSecondaryLabels = GetAxisXLabels(AxisTypes.Secondary);
             }
-            else if ((elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints))
+            else if ((elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints))
             {
                 DataSeries ds = element as DataSeries;
                 if (ds.AxisXType == AxisTypes.Primary)
@@ -387,9 +386,9 @@ namespace Visifire.Charts
             }
 
             // Set Labels count state
-            if ((elementType.Equals(typeof(Chart)) && property == VcProperties.Series)
-                || (elementType.Equals(typeof(DataSeries)) && property == VcProperties.DataPoints)
-                || (elementType.Equals(typeof(DataPoint)) && property == VcProperties.AxisXLabel)
+            if ((elementType == ElementTypes.Chart && property == VcProperties.Series)
+                || (elementType == ElementTypes.DataSeries && property == VcProperties.DataPoints)
+                || (elementType == ElementTypes.DataPoint && property == VcProperties.AxisXLabel)
             )   
                 SetLabelsCountState();
         }

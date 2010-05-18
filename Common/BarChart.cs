@@ -709,7 +709,10 @@ namespace Visifire.Charts
                 columnVisual.SetValue(Canvas.ZIndexProperty, GetBarZIndex(left, top, height, dataPoint.InternalYValue > 0));
 
                 dataPoint.Faces = column;
-                ApplyOrRemoveShadow(chart, dataPoint);
+
+                if (VisifireControl.IsXbapApp)
+                    ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, false, false);
+
             }
             else
             {   
@@ -718,10 +721,11 @@ namespace Visifire.Charts
                 columnVisual = column.Visual as Panel;
 
                 dataPoint.Faces = column;
-                ApplyOrRemoveShadow(chart, dataPoint);
             }
 
-            
+            if (!VisifireControl.IsXbapApp)
+                ApplyOrRemoveShadow(chart, dataPoint);
+
             dataPoint.Faces.LabelCanvas = labelCanvas;
             dataPoint.Parent.Faces = new Faces() { Visual = columnCanvas, LabelCanvas = labelCanvas };
 
@@ -1020,15 +1024,18 @@ namespace Visifire.Charts
                 barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(chart.ChartArea.PlotAreaCanvas.Height, left, top, columnCanvas.Width, columnCanvas.Height, (dataPoint.InternalYValue > 0), PositiveOrNegativeZIndex));
 
                 dataPoint.Faces = bar;
-                ApplyOrRemoveShadow(chart, dataPoint);
+                if (VisifireControl.IsXbapApp)
+                    ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, true, false);
             }
             else
             {
                 bar = ColumnChart.Get2DColumn(dataPoint, barWidth, finalHeight, true, false);
                 barVisual = bar.Visual as Panel;
                 dataPoint.Faces = bar;
-                ApplyOrRemoveShadow(chart, dataPoint);
             }
+
+            if (!VisifireControl.IsXbapApp)
+                ApplyOrRemoveShadow(chart, dataPoint);
 
             dataPoint.Faces.LabelCanvas = labelCanvas;
 

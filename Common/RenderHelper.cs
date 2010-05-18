@@ -186,7 +186,7 @@ namespace Visifire.Charts
                     return;
             }
 
-            chart.ChartArea.PrePartialUpdateConfiguration(chart, VcProperties.None, null, null, false, true, true, AxisRepresentations.AxisY, true);
+            chart.ChartArea.PrePartialUpdateConfiguration(chart, Visifire.Charts.ElementTypes.Chart, VcProperties.None, null, null, false, true, true, AxisRepresentations.AxisY, true);
 
             //chart.ChartArea.RenderSeries();
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered

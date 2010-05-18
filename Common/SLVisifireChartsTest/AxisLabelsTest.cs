@@ -150,6 +150,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.Angle = -30;
             _axisY.AxisLabels.Angle = 30;
 
@@ -181,6 +184,9 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             _axisX.AxisLabels.TextAlignment = TextAlignment.Center;
             _axisY.AxisLabels.TextAlignment = TextAlignment.Center;
@@ -214,6 +220,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.Interval = 2;
             _axisY.AxisLabels.Interval = 20;
 
@@ -245,6 +254,9 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             _axisX.AxisLabels.InternalOpacity = 0.5;
             _axisY.AxisLabels.InternalOpacity = 0.5;
@@ -278,6 +290,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.FontSize = 14;
             _axisY.AxisLabels.FontSize = 14;
 
@@ -309,6 +324,9 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             _axisX.AxisLabels.FontFamily = new FontFamily("Arial");
             _axisY.AxisLabels.FontFamily = new FontFamily("Arial");
@@ -342,6 +360,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
             _axisY.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
 
@@ -373,6 +394,9 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             _axisX.AxisLabels.FontStyle = FontStyles.Italic;
             _axisY.AxisLabels.FontStyle = FontStyles.Italic;
@@ -406,6 +430,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.FontWeight = FontWeights.Bold;
             _axisY.AxisLabels.FontWeight = FontWeights.Bold;
 
@@ -436,6 +463,8 @@ namespace SLVisifireChartsTest
 
             _axisX = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+
             _axisX.AxisLabels.Rows = 2;
             chart.AxesX.Add(_axisX);
 
@@ -462,6 +491,8 @@ namespace SLVisifireChartsTest
             chart.Height = 300;
 
             _axisX = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
 
             _axisX.AxisLabels.TextWrap = 0.5;
             _axisX.AxisLabels.Angle = 0;
@@ -560,6 +591,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Axis axisX = new Axis();
+            axisX.AxisLabels = new AxisLabels();
             axisX.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
             chart.AxesX.Add(axisX);
 
@@ -632,6 +664,7 @@ namespace SLVisifireChartsTest
             TestPanel.Children.Add(chart);
 
             Axis axisX = new Axis();
+            axisX.AxisLabels = new AxisLabels();
             axisX.AxisLabels.FontColor = new SolidColorBrush(Colors.Red);
             chart.AxesX.Add(axisX);
 
