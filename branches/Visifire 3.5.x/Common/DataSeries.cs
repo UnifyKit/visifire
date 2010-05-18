@@ -2620,7 +2620,7 @@ namespace Visifire.Charts
                         Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
                         Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
-                        chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
+                        chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
 
                         Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
                         Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
@@ -2644,7 +2644,7 @@ namespace Visifire.Charts
                     //if (!_isZooming)
                     {
                         // Render Axis if required
-                        chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
+                        chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
                     }
 
                     // Return
@@ -2676,7 +2676,7 @@ namespace Visifire.Charts
                     property == VcProperties.AxisXType || property == VcProperties.Enabled)
                 {
                     renderAxis = true;
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, newValue, true, true, true, AxisRepresentations.AxisX, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, true, true, true, AxisRepresentations.AxisX, true);
                     RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
                 }
                 else

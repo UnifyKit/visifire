@@ -304,6 +304,9 @@ namespace WPFVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
@@ -341,6 +344,9 @@ namespace WPFVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -380,6 +386,9 @@ namespace WPFVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
@@ -415,6 +424,9 @@ namespace WPFVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -452,6 +464,9 @@ namespace WPFVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
@@ -487,6 +502,9 @@ namespace WPFVisifireChartsTest
 
             _axisX = new Axis();
             _axisY = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -524,6 +542,9 @@ namespace WPFVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
+            _axisX.AxisLabels = new AxisLabels();
+            _axisY.AxisLabels = new AxisLabels();
+
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
 
@@ -558,6 +579,9 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             _axisX = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+
             chart.AxesX.Add(_axisX);
 
             Common.CreateAndAddDefaultDataSeries(chart);
@@ -592,6 +616,9 @@ namespace WPFVisifireChartsTest
             chart.Height = 300;
 
             _axisX = new Axis();
+
+            _axisX.AxisLabels = new AxisLabels();
+            
             chart.AxesX.Add(_axisX);
 
             DataSeries dataSeries = new DataSeries();

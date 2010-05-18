@@ -1052,28 +1052,33 @@ namespace Visifire.Charts
             line.Data = GetPathGeometry(null, pointCollectionList, false, width, height, line2dLabelCanvas);
 
             if (lineParams.ShadowEnabled)
-            {   
-                //lineShadow = new Path() { IsHitTestVisible = false };
-                //lineShadow.Stroke = Graphics.GetLightingEnabledBrush( new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
-                //lineShadow.StrokeStartLineCap = PenLineCap.Round;
-                //lineShadow.StrokeEndLineCap = PenLineCap.Round;
-                //lineShadow.StrokeLineJoin = PenLineJoin.Round;
-                //lineShadow.StrokeThickness = lineParams.LineThickness;
-                //lineShadow.Opacity = 0.5;
+            {
+                if (VisifireControl.IsXbapApp)
+                {
+                    lineShadow = new Path() { IsHitTestVisible = false };
+                    lineShadow.Stroke = Graphics.GetLightingEnabledBrush(new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
+                    lineShadow.StrokeStartLineCap = PenLineCap.Round;
+                    lineShadow.StrokeEndLineCap = PenLineCap.Round;
+                    lineShadow.StrokeLineJoin = PenLineJoin.Round;
+                    lineShadow.StrokeThickness = lineParams.LineThickness;
+                    lineShadow.Opacity = 0.5;
 
-                //if (lineParams.ShadowEnabled)
-                //    lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, true, width, height, null);
+                    if (lineParams.ShadowEnabled)
+                        lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, true, width, height, null);
 
-                //TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
-                //lineShadow.RenderTransform = tt;
+                    TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
+                    lineShadow.RenderTransform = tt;
 
-                //visual.Children.Add(lineShadow);
-                visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    visual.Children.Add(lineShadow);
+                }
+                else
+                {
+                    visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    lineShadow = null;
+                }
             }
-            //else
-            //    lineShadow = null;
-
-            lineShadow = null;
+            else
+                lineShadow = null;
 
             visual.Children.Add(line);
 
@@ -1494,22 +1499,37 @@ namespace Visifire.Charts
                     // Apply new Data for Line
                     LineChart.GetPathGeometry(gg, pointCollectionList, false, width, height, label2dCanvas);
 
-                    //// Update GeometryGroup for shadow
-                    //if (dataSeries.Faces.Parts[1] != null)
-                    //{
-                    //    if (dataSeries.ShadowEnabled)
-                    //    {
-                    //        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
-                            
-                    //        // gg.Children.Clear();
-                    //        GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
+                    if (VisifireControl.IsXbapApp)
+                    {
+                        // Update GeometryGroup for shadow
+                        if (dataSeries.Faces.Parts[1] != null)
+                        {
+                            if (dataSeries.ShadowEnabled)
+                            {
+                                (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
 
-                    //        // Apply new Data for Line
-                    //        LineChart.GetPathGeometry(ggShadow, pointCollectionList, true, width, height, label2dCanvas);
-                    //    }
-                    //    else
-                    //        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
-                    //}
+                                // gg.Children.Clear();
+                                GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
+
+                                // Apply new Data for Line
+                                LineChart.GetPathGeometry(ggShadow, pointCollectionList, true, width, height, label2dCanvas);
+                            }
+                            else
+                                (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    else
+                    {
+                        if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                        {
+                            if ((Boolean)dataSeries.ShadowEnabled)
+                            {
+                                dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                            }
+                            else
+                                dataSeries.Faces.Visual.Effect = null;
+                        }
+                    }
 
                     dataSeries._movingMarker.Visibility = Visibility.Collapsed;
 
@@ -1690,22 +1710,11 @@ namespace Visifire.Charts
                 case VcProperties.MarkerScale:                   
                 case VcProperties.MarkerSize:
                 case VcProperties.MarkerType:
+                case VcProperties.ShadowEnabled:
                     //Double y = Graphics.ValueToPixelPosition(plotGroup.AxisY.Height, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue);
                     //LineChart.GetMarkerForDataPoint(true, chart, y, dataPoint, dataPoint.InternalYValue > 0);
                     CreateMarkerAForLineDataPoint(dataPoint, width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
 
-                    break;
-
-                case VcProperties.ShadowEnabled:
-                    if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
-                    {
-                        if ((Boolean)dataSeries.ShadowEnabled)
-                        {
-                            dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
-                        }
-                        else
-                            dataSeries.Faces.Visual.Effect = null;
-                    }
                     break;
 
                 case VcProperties.Opacity:
@@ -1810,35 +1819,38 @@ namespace Visifire.Charts
             }
 
             DependencyObject target = null;
-            //DependencyObject shadowTarget = null;    // Target object
+            DependencyObject shadowTarget = null;    // Target object
             Point oldPoint = new Point();                    // Old Position
 
             // Collect reference of line geometry object
             LineSegment lineSeg = dataPoint.Faces.Parts[0] as LineSegment;
             PathFigure pathFigure = dataPoint.Faces.Parts[1] as PathFigure;
 
-            //LineSegment shadowLineSeg;
-            //PathFigure shadowPathFigure;
+            if (VisifireControl.IsXbapApp)
+            {
+                LineSegment shadowLineSeg;
+                PathFigure shadowPathFigure;
 
-            //// For line shadow
-            //if(dataPoint.Parent.ShadowEnabled)
-            //{   
-            //    shadowLineSeg = dataPoint.ShadowFaces.Parts[0] as LineSegment;
-            //    shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
+                // For line shadow
+                if (dataPoint.Parent.ShadowEnabled)
+                {
+                    shadowLineSeg = dataPoint.ShadowFaces.Parts[0] as LineSegment;
+                    shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
 
-            //    if (shadowLineSeg == null)
-            //    {
-            //        shadowTarget = shadowPathFigure;
-            //        if (!isAnimationEnabled)
-            //            shadowPathFigure.StartPoint = new Point(x, y);
-            //    }
-            //    else
-            //    {
-            //        shadowTarget = shadowLineSeg;
-            //        if (!isAnimationEnabled)
-            //            shadowLineSeg.Point = new Point(x, y);
-            //    }
-            //}
+                    if (shadowLineSeg == null)
+                    {
+                        shadowTarget = shadowPathFigure;
+                        if (!isAnimationEnabled)
+                            shadowPathFigure.StartPoint = new Point(x, y);
+                    }
+                    else
+                    {
+                        shadowTarget = shadowLineSeg;
+                        if (!isAnimationEnabled)
+                            shadowLineSeg.Point = new Point(x, y);
+                    }
+                }
+            }
 
             if (lineSeg == null)
             {   
@@ -1894,30 +1906,33 @@ namespace Visifire.Charts
 
                 storyBorad.Children.Add(pointAnimation);
 
-//                if (shadowTarget != null)
-//                {   
-//                    pointAnimation = new PointAnimation();
+                if (VisifireControl.IsXbapApp)
+                {
+                    if (shadowTarget != null)
+                    {
+                        pointAnimation = new PointAnimation();
 
-//                    pointAnimation.From = oldPoint;
-//                    pointAnimation.To = new Point(x, y);
-//                    pointAnimation.SpeedRatio = 2;
-//                    pointAnimation.Duration = new Duration(new TimeSpan(0, 0, 1));
+                        pointAnimation.From = oldPoint;
+                        pointAnimation.To = new Point(x, y);
+                        pointAnimation.SpeedRatio = 2;
+                        pointAnimation.Duration = new Duration(new TimeSpan(0, 0, 1));
 
-//                    shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
-                    
-//                    Storyboard.SetTarget(pointAnimation, shadowTarget);
-//                    Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-//                    Storyboard.SetTargetName(pointAnimation, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
+                        shadowTarget.SetValue(FrameworkElement.NameProperty, "ShadowSegment_" + dataPoint.Name);
 
-//                    storyBorad.Children.Add(pointAnimation);
+                        Storyboard.SetTarget(pointAnimation, shadowTarget);
+                        Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
+                        Storyboard.SetTargetName(pointAnimation, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
 
-//#if WPF
-//                    if (lineSeg != null)
-//                        (shadowTarget as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimation);
-//                    else
-//                        (shadowTarget as PathFigure).BeginAnimation(PathFigure.StartPointProperty, pointAnimation);
-//#endif
-//                }
+                        storyBorad.Children.Add(pointAnimation);
+
+#if WPF
+                        if (lineSeg != null)
+                            (shadowTarget as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimation);
+                        else
+                            (shadowTarget as PathFigure).BeginAnimation(PathFigure.StartPointProperty, pointAnimation);
+#endif
+                    }
+                }
 
                 #endregion
 
@@ -2310,7 +2325,9 @@ namespace Visifire.Charts
             line2dCanvas.Height = height;
 
             series.Faces.Parts.Add(polyline);
-            //series.Faces.Parts.Add(PolylineShadow);
+
+            if (VisifireControl.IsXbapApp)
+                series.Faces.Parts.Add(PolylineShadow);
 
             labelCanvas.Children.Add(line2dLabelCanvas);
             chartsCanvas.Children.Add(line2dCanvas);

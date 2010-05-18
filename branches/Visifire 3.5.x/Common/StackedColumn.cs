@@ -83,6 +83,10 @@ namespace Visifire.Charts
                 columnVisual = column.Visual as Panel;
                 columnVisual.SetValue(Canvas.ZIndexProperty, ColumnChart.GetStackedColumnZIndex(left, top, (dataPoint.InternalYValue > 0), positiveOrNegativeIndex));
                 dataPoint.Faces = column;
+
+                if (VisifireControl.IsXbapApp)
+                    ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, true, false);
+
             }
             else
             {   
@@ -91,7 +95,8 @@ namespace Visifire.Charts
                 dataPoint.Faces = column;
             }
 
-            ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
+            if (!VisifireControl.IsXbapApp)
+                ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
 
             dataPoint.Faces.LabelCanvas = labelCanvas;
 

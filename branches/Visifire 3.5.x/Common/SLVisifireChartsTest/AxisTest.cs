@@ -1822,6 +1822,7 @@ namespace SLVisifireChartsTest
 
             Axis axis = new Axis();
             axis.AxisMinimum = -5;
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             chart.AxesX.Add(axis);
 

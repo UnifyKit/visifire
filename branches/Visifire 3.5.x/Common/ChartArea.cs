@@ -193,6 +193,8 @@ namespace Visifire.Charts
             AddOrRemovePanels(chart);
 
             AttachEvents2ZoomOutIcons(chart);
+
+            System.Diagnostics.Debug.WriteLine("xxxxxxx--- Render End");
         }
 
         private void ClearTrendLineLabels()
@@ -837,7 +839,7 @@ namespace Visifire.Charts
         /// Update the axis
         /// </summary>
         /// <param name="isSizeChanged"></param>
-        internal void PrePartialUpdateConfiguration(VisifireElement sender, VcProperties property, object oldValue, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
+        internal void PrePartialUpdateConfiguration(VisifireElement sender, ElementTypes elementType, VcProperties property, object oldValue, object newValue, Boolean updateLists, Boolean calculatePlotDetails, Boolean updateAxis, AxisRepresentations renderAxisType, Boolean isPartialUpdate)
         {   
             if(updateLists)
                 PopulateInternalSeriesList();
@@ -846,7 +848,7 @@ namespace Visifire.Charts
             {
                 // PlotDetails = new PlotDetails(Chart);
                 
-                PlotDetails.ReCreate(sender, property, oldValue, newValue);
+                PlotDetails.ReCreate(sender, elementType, property, oldValue, newValue);
             }
 
             if (updateLists)
@@ -1242,7 +1244,9 @@ namespace Visifire.Charts
 
                 if (legend.InternalVerticalAlignment == VerticalAlignment.Bottom || legend.InternalVerticalAlignment == VerticalAlignment.Top)
                 {
-                    boundingRec.Height -= elementSize.Height;
+                    if(boundingRec.Height >= elementSize.Height)
+                        boundingRec.Height -= elementSize.Height;
+
                     if (legend.InternalVerticalAlignment == VerticalAlignment.Bottom)
                         Chart._bottomOuterLegendPanel.Height += elementSize.Height;
                     else
@@ -1251,8 +1255,10 @@ namespace Visifire.Charts
                 else if (legend.InternalVerticalAlignment == VerticalAlignment.Center || legend.InternalVerticalAlignment == VerticalAlignment.Stretch)
                 {   
                     if (legend.InternalHorizontalAlignment == HorizontalAlignment.Left || legend.InternalHorizontalAlignment == HorizontalAlignment.Right)
-                    {
-                        boundingRec.Width -= elementSize.Width;
+                    {   
+                        if (boundingRec.Width >= elementSize.Width)
+                            boundingRec.Width -= elementSize.Width;
+                            
                         if (legend.InternalHorizontalAlignment == HorizontalAlignment.Left)
                             Chart._leftOuterLegendPanel.Width += elementSize.Width;
                         else
@@ -1281,6 +1287,11 @@ namespace Visifire.Charts
             }
 
             Chart.PlotArea.Chart = Chart;
+
+            if (chart._zoomOutTextBlock != null)
+                chart._zoomOutTextBlock.Foreground = DataSeries.CalculateFontColor(null, chart);
+            if (chart._showAllTextBlock != null)
+                chart._showAllTextBlock.Foreground = DataSeries.CalculateFontColor(null, chart);
 
             if (Chart.PlotArea.Visual == null)
             {
@@ -1318,6 +1329,10 @@ namespace Visifire.Charts
             //PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
         }
 
+        /// <summary>
+        /// Get the start position of PlotArea
+        /// </summary>
+        /// <returns></returns>
         internal Point GetPlotAreaStartPosition()
         {
             Double left, top;
@@ -1351,6 +1366,11 @@ namespace Visifire.Charts
             return new Point(left, top);
         }
 
+        /// <summary>
+        /// Get PlotArea position wrt ChartArea coordinates
+        /// </summary>
+        /// <param name="positionWithRespect2PlotArea"></param>
+        /// <returns></returns>
         internal Point GetPositionWithRespect2ChartArea(Point positionWithRespect2PlotArea)
         {
             Point plotAreaStartPos = GetPlotAreaStartPosition();
@@ -1404,6 +1424,11 @@ namespace Visifire.Charts
             return left;
         }
 
+        /// <summary>
+        /// Get top of Axis
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
         internal Double GetAxisTop(Axis axis)
         {
             Double top = 0;
@@ -1453,6 +1478,11 @@ namespace Visifire.Charts
             return top;
         }
 
+        /// <summary>
+        /// Event handler calls while selecting the PlotArea region while zooming
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void PlotAreaCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1553,6 +1583,11 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Event handler calls while selecting the PlotArea region while zooming
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void PlotAreaCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -1595,6 +1630,11 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Set position for Zoom rectangle
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         private void SetPosition4ZoomRectangle(Double x, Double y)
         {
             if (_firstZoomRectPosOverPlotArea.X <= x)
@@ -1808,6 +1848,9 @@ namespace Visifire.Charts
             #endregion
         }
 
+        /// <summary>
+        /// Create vertical line indicators
+        /// </summary>
         private void CreateVerticalLineIndicator()
         {
             _verticalLineIndicator = new Line();
@@ -2035,11 +2078,6 @@ namespace Visifire.Charts
             }
 
             DisableIndicators();
-
-            //if(Chart._zoomRectangle != null)
-            //    Chart._zoomRectangle.Visibility = Visibility.Collapsed;
-
-            //_zoomStart = false;
         }
 
         /// <summary>
@@ -2108,6 +2146,9 @@ namespace Visifire.Charts
             Chart.InternalAxesY = Chart.AxesY.ToList();
         }
 
+        /// <summary>
+        /// Reset storyboards for all DataPoints if internal DataPoints list is cleared
+        /// </summary>
         private void ResetStoryboards4InternalDataPointsList()
         {
             foreach (DataSeries ds in Chart.InternalSeries)
@@ -2137,18 +2178,19 @@ namespace Visifire.Charts
         /// Each render must work with a single set of non variable data set otherwise chart won't render properly.
         /// </summary>
         private void PopulateInternalSeriesList()
-        {
+        {   
             if (Chart.InternalSeries != null)
             {
                 if((Boolean)Chart.AnimatedUpdate)
                     ResetStoryboards4InternalDataPointsList();
-
-
+                
                 Chart.InternalSeries.Clear();
             }
 
-            if (Chart.Series.Count == 0)
-            {
+            List<DataSeries> listOfEnabledSeries = (from ds in Chart.Series where (Boolean)ds.Enabled orderby ds.ZIndex select ds).ToList();
+            
+            if (listOfEnabledSeries.Count == 0)
+            {   
                 Chart.InternalSeries = new List<DataSeries>();
 
                 if (Chart.IsInDesignMode)
@@ -2160,21 +2202,21 @@ namespace Visifire.Charts
                     SetBlankSeries();
             }
             else
-                Chart.InternalSeries = (from ds in Chart.Series orderby ds.ZIndex select ds).ToList();
-
+                Chart.InternalSeries = listOfEnabledSeries;
+                
             foreach (DataSeries ds in Chart.InternalSeries)
             {
                 if (_isFirstTimeRender)
-                {
+                {   
                     ds.InternalDataPoints = new List<DataPoint>();
                     foreach (DataPoint dp in ds.DataPoints)
-                    {
+                    {   
                         ds.InternalDataPoints.Add(dp);
                         dp._oldYValue = dp.InternalYValue;
                     }
                 }
                 else
-                {
+                {   
                     ds.InternalDataPoints = ds.DataPoints.ToList();
                 }
             }
@@ -3341,7 +3383,9 @@ namespace Visifire.Charts
             ExtendedGraphics.GetBrushesForPlank(Chart, out frontBrush, out topBrush, out rightBrush, false);
             
             _horizontalPlank = ColumnChart.Get3DPlank(ScrollableLength - plankDepth, plankThickness, plankDepth, frontBrush, topBrush, rightBrush);
+
             Panel plank = _horizontalPlank.Visual as Panel;
+
 #if SL
             plank.SetValue(Canvas.TopProperty, position - plankThickness);
 #else
@@ -3350,14 +3394,10 @@ namespace Visifire.Charts
 #endif
 
             plank.SetValue(Canvas.ZIndexProperty, -1);
-
             plank.Opacity = 0.9;
 
             PlottingCanvas.Children.Add(plank);
         }
-
-
-        
 
         internal Faces _horizontalPlank;
         internal Faces _verticalPlank;
@@ -3441,8 +3481,8 @@ namespace Visifire.Charts
             }
 
             List<Color> colors = new List<Color>();
-            colors.Add(Color.FromArgb(255, 232, 232, 232));
-            colors.Add(Color.FromArgb(255, 142, 135, 135));
+            colors.Add(Color.FromArgb(255, 212, 212, 212));
+            colors.Add(Color.FromArgb(255, 142, 125, 125));
 
             Brush rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 0, 1 });
 
@@ -4411,7 +4451,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Series">List of DataSeries</param>
         private void SetDataPointColorFromColorSet(System.Collections.Generic.IList<DataSeries> series)
-        {
+        {   
             ColorSet colorSet = null;
 
             if(_financialColorSet == null)
@@ -4421,17 +4461,17 @@ namespace Visifire.Charts
 
             // Load chart colorSet
             if (!String.IsNullOrEmpty(Chart.ColorSet))
-            {
+            {   
                 colorSet = Chart.GetColorSetByName(Chart.ColorSet);
                 _chartColorSet = colorSet;
             }
 
             if (series.Count == 1)
-            {
+            {   
                 LoadSeriesColorSet4SingleSeries(series[0]);
             }
             else if (series.Count > 1)
-            {
+            {   
                 if (_chartColorSet != null)
                     _chartColorSet.ResetIndex();
 
@@ -4605,7 +4645,7 @@ namespace Visifire.Charts
                         Brush DataSeriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
 
                         if (dPColor == null)
-                        {   
+                        {
                             // If unique color for each DataPoint
                             if (FLAG_UNIQUE_COLOR_4_EACH_DP)
                             {
@@ -4664,7 +4704,7 @@ namespace Visifire.Charts
 
             if (dataPoints.Count > 0)
             {
-                sum = (from dp in dataPoints where !Double.IsNaN(dp.YValue) select dp.YValue).Sum();
+                sum = (from dp in dataPoints where (!Double.IsNaN(dp.YValue) && (Boolean) dp.Enabled) select dp.YValue).Sum();
                 isShowYValueAndPercentageInLegendApplicable = CheckShowYValueAndPercentageInLegendApplicable(dataPoints[0].Parent.RenderAs);
             }
 
@@ -4810,6 +4850,9 @@ namespace Visifire.Charts
         /// <param name="Width">Remaining width available for Legend</param>
         private void AddLegends(Chart chart, Boolean dockInsidePlotArea, Double heightAvailable, Double widthAvailable)
         {
+            if (chart.Series.Count == 0)
+                return;
+
             List<Legend> dockTest = (from legend in chart.Legends
                                      where legend.DockInsidePlotArea == dockInsidePlotArea
                                      select legend).ToList();
@@ -4817,19 +4860,19 @@ namespace Visifire.Charts
             if (dockTest.Count <= 0)
                 return;
 
-            if ((chart.InternalSeries.Count == 1 || (chart.InternalSeries[0].RenderAs == RenderAs.Pie || chart.InternalSeries[0].RenderAs == RenderAs.Doughnut || chart.InternalSeries[0].RenderAs == RenderAs.SectionFunnel || chart.InternalSeries[0].RenderAs == RenderAs.StreamLineFunnel)) && (Boolean)chart.InternalSeries[0].Enabled)
+            if ((chart.Series.Count == 1 || (chart.Series[0].RenderAs == RenderAs.Pie || chart.Series[0].RenderAs == RenderAs.Doughnut || chart.Series[0].RenderAs == RenderAs.SectionFunnel || chart.Series[0].RenderAs == RenderAs.StreamLineFunnel)) && (Boolean)chart.Series[0].Enabled)
             {
                 Legend legend = null;
                 foreach (Legend entry in chart.Legends)
                     entry.Entries.Clear();
 
-                // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(chart.InternalSeries[0].Legend) || !String.IsNullOrEmpty(chart.InternalSeries[0].InternalLegendName)))
+                // if (chart.Legends.Count > 0 && (!String.IsNullOrEmpty(chart.Series[0].Legend) || !String.IsNullOrEmpty(chart.Series[0].InternalLegendName)))
                 if (chart.Legends.Count > 0)
                 {
 
                     var legends = (from entry in chart.Legends
                                    where
-                                   (entry.Name == chart.InternalSeries[0].Legend && entry.DockInsidePlotArea == dockInsidePlotArea)
+                                   (entry.Name == chart.Series[0].Legend && entry.DockInsidePlotArea == dockInsidePlotArea)
                                    select entry);
 
                     if (legends.Count() > 0)
@@ -4840,12 +4883,12 @@ namespace Visifire.Charts
                 if (legend == null)
                     return;
 
-                AddEntriesToLegendForSingleSeriesChart(legend, chart.InternalSeries[0].InternalDataPoints.ToList());
+                AddEntriesToLegendForSingleSeriesChart(legend, chart.Series[0].InternalDataPoints.ToList());
             }
             else
             {
                 List<DataSeries> seriesToBeShownInLegend =
-                    (from entry in chart.InternalSeries
+                    (from entry in chart.Series
                      where entry.ShowInLegend == true && entry.Enabled == true
                      select entry).ToList();
 
@@ -5949,8 +5992,10 @@ namespace Visifire.Charts
 
             Chart.RENDER_LOCK = false;
 
-            if (Chart._renderLapsedCounter >= 1)
-                Chart.Render();
+            System.Diagnostics.Debug.WriteLine("xxxx----Rendered UnLocked ON Load of PlotArea");
+
+            //if (Chart._renderLapsedCounter >= 1)
+            //    Chart.Render();
 
             AttachScrollEvents();
 
@@ -5958,15 +6003,15 @@ namespace Visifire.Charts
 
             Chart._internalAnimationEnabled = false;
 
-            //if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
+            // if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
             //    Visifire.Charts.Chart.SelectDataPoints(Chart);
 
             Chart.FireRenderedEvent();
 
             _isFirstTimeRender = false;
 
-            //System.Diagnostics.Debug.WriteLine("Loaded() >");
-        }
+            // System.Diagnostics.Debug.WriteLine("Loaded() >");
+       }
 
        /// <summary>
        /// Add Title visual to DrawingArea
