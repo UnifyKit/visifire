@@ -6,7 +6,11 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300" View3D="false">
+        <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300" View3D="true">
+            
+            <vc:Chart.PlotArea>
+                <vc:PlotArea Background="LightGray"/>
+            </vc:Chart.PlotArea>
             
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column" LabelEnabled="true">
@@ -16,7 +20,6 @@ mc:Ignorable="d"
                         <vc:DataPoint YValue="30"/>
                         <vc:DataPoint YValue="40"/>
                         <vc:DataPoint YValue="50"/>
-                        <vc:DataPoint YValue="10"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

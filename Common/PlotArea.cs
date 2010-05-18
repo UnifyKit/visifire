@@ -495,7 +495,7 @@ namespace Visifire.Charts
                     SetValue(BackgroundProperty, value);
                     FirePropertyChanged(VcProperties.Background);
                 }
-#else
+#else           
                 SetValue(BackgroundProperty, value);
 #endif
             }
@@ -830,35 +830,6 @@ namespace Visifire.Charts
             (d as PlotArea).FirePropertyChanged(VcProperties.ShadowEnabled);
         }
 
-        /// <summary>
-        /// Returns PathGeometry for clipping Shadow of PlotArea
-        /// </summary>
-        /// <param name="clipSize">Size clipSize</param>
-        /// <returns>PathGeometry</returns>
-        private PathGeometry GetShadowClip(Size clipSize)
-        {
-            PathGeometry pathGeometry = new PathGeometry();
-            pathGeometry.FillRule = FillRule.EvenOdd;
-            pathGeometry.Figures = new PathFigureCollection();
-
-            PathFigure pathFigure = new PathFigure();
-
-            pathFigure.StartPoint = new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH);
-            pathFigure.Segments = new PathSegmentCollection();
-
-            // Do not change the order of the lines below
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, clipSize.Height - Charts.Chart.SHADOW_DEPTH)));
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, 0)));
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, 0)));
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, clipSize.Height)));
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height)));
-            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH)));
-
-            pathGeometry.Figures.Add(pathFigure);
-
-            return pathGeometry;
-        }
-
         #endregion
 
         #region Internal Methods
@@ -918,8 +889,7 @@ namespace Visifire.Charts
 
             BorderElement.Opacity = this.InternalOpacity;
 
-            if (InternalBackground != null)
-                BorderElement.Background = InternalBackground;
+            BorderElement.Background = InternalBackground;
 
             if (BorderColor != null)
                 BorderElement.BorderBrush = BorderColor;
@@ -1000,11 +970,24 @@ namespace Visifire.Charts
         {
             Chart._plotAreaShadowCanvas.Children.Clear();
             Chart._drawingCanvas.Children.Remove(InnerShadowGrid);
-            Chart chart = Chart as Chart;
-            Size clipSize;
 
-            if (chart.PlotArea.ShadowEnabled)
+            if (ShadowGrid != null)
+                ShadowGrid = null;
+
+            Chart chart = Chart as Chart;
+
+            if(VisifireControl.IsXbapApp)
+                GetShadow4XBAP(chart, plotAreaViewPortSize, plankOffset, plankDepth, plankThickness);
+            else
+                GetShadow(chart, plotAreaViewPortSize, plankOffset, plankDepth, plankThickness);
+        }
+
+        private void GetShadow4XBAP(Chart chart, Size plotAreaViewPortSize, Double plankOffset, Double plankDepth, Double plankThickness)
+        {
+            if (chart.PlotArea.ShadowEnabled || chart.View3D)
             {
+                Size clipSize;
+
                 if (chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                 {
                     ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, BorderElement.Width + Visifire.Charts.Chart.SHADOW_DEPTH
@@ -1013,6 +996,8 @@ namespace Visifire.Charts
                     , CornerRadius, 6);
 
                     clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+
+                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
                 }
                 else
                 {
@@ -1027,23 +1012,44 @@ namespace Visifire.Charts
                             clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height + Visifire.Charts.Chart.SHADOW_DEPTH);
 
                             ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                            ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
 
                             InnerShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
                            , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
                            , CornerRadius
                            , CornerRadius, 6);
-                            InnerShadowGrid.Clip = GetShadowClip(new Size(InnerShadowGrid.Width + Visifire.Charts.Chart.SHADOW_DEPTH, InnerShadowGrid.Height));
+                            InnerShadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(InnerShadowGrid.Width + Visifire.Charts.Chart.SHADOW_DEPTH, InnerShadowGrid.Height));
                             InnerShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
                             Chart._drawingCanvas.Children.Add(InnerShadowGrid);
                         }
                         else
                         {
-                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth
-                                                   , plotAreaViewPortSize.Height + Visifire.Charts.Chart.SHADOW_DEPTH - plankOffset
-                                                   , CornerRadius
-                                                   , CornerRadius, 6);
-                            clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
-                            ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                            if (chart.PlotArea.ShadowEnabled)
+                            {
+                                ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth
+                                                       , plotAreaViewPortSize.Height + Visifire.Charts.Chart.SHADOW_DEPTH - plankOffset
+                                                       , CornerRadius
+                                                       , CornerRadius, 6);
+                                clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                                ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+
+                            }
+                            else
+                            {
+                                Double offset = 3.5;
+                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                {
+                                    ShadowGrid = ExtendedGraphics.GetRectangle4PlotAreaEdge(this, plotAreaViewPortSize.Width + offset - plankThickness - plankDepth
+                                                           , plotAreaViewPortSize.Height - plankOffset
+                                                           , CornerRadius
+                                                           , CornerRadius, 6, this.InternalBackground);
+
+                                    clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height + 5);
+                                    ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                }
+                            }
                         }
                     }
                     else
@@ -1054,14 +1060,165 @@ namespace Visifire.Charts
                             , 6);
 
                         clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                        ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+
                     }
                 }
 
-                ShadowGrid.Clip = GetShadowClip(clipSize);
 
-                ShadowGrid.IsHitTestVisible = false;
-                Chart._plotAreaShadowCanvas.Children.Add(ShadowGrid);
-                ShadowGrid.UpdateLayout();
+                if (ShadowGrid != null)
+                {
+                    ShadowGrid.IsHitTestVisible = false;
+                    Chart._plotAreaShadowCanvas.Children.Add(ShadowGrid);
+                    ShadowGrid.UpdateLayout();
+                }
+            }
+        }
+
+        private void GetShadow(Chart chart, Size plotAreaViewPortSize, Double plankOffset, Double plankDepth, Double plankThickness)
+        {
+            if (chart.PlotArea.ShadowEnabled || chart.View3D)
+            {
+                Size clipSize;
+
+                if (chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
+                {
+                    if (chart.PlotArea.ShadowEnabled)
+                    {
+                        ShadowGrid = new Grid();
+                        ShadowGrid.Width = BorderElement.Width;
+                        ShadowGrid.Height = BorderElement.Height;
+
+                        ShadowGrid.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+                        //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+
+                        if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                            ShadowGrid.Background = this.Background;
+                        else
+                        {
+                            ShadowGrid.Background = new SolidColorBrush(Colors.LightGray);
+                            clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
+                            ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                        }
+                    }
+                }
+                else
+                {
+                    if (chart.View3D)
+                    {
+                        if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                        {
+                            if (chart.PlotArea.ShadowEnabled)
+                            {
+                                ShadowGrid = new Grid();
+                                ShadowGrid.Width = plotAreaViewPortSize.Width - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
+                                ShadowGrid.Height = plotAreaViewPortSize.Height - plankDepth;
+
+                                ShadowGrid.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+
+                                //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height - 4);
+
+                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                {
+                                    ShadowGrid.Background = this.Background;
+                                    //clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
+                                    //ShadowGrid.Clip = GetShadowClip(clipSize);
+                                }
+                                else
+                                {
+                                    ShadowGrid.Background = new SolidColorBrush(Colors.LightGray);
+                                    clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
+                                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                }
+
+                                ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+
+                                InnerShadowGrid = new Grid();
+                                InnerShadowGrid.Width = plotAreaViewPortSize.Width - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
+                                InnerShadowGrid.Height = BorderElement.Height;
+
+                                InnerShadowGrid.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+                                InnerShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                {
+                                    InnerShadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(InnerShadowGrid.Width, InnerShadowGrid.Height + 6));
+                                    InnerShadowGrid.Background = this.Background;
+                                }
+                                else
+                                {
+                                    InnerShadowGrid.Background = new SolidColorBrush(Colors.LightGray);
+                                    clipSize = new Size(InnerShadowGrid.Width + 5, InnerShadowGrid.Height + 6);
+                                    InnerShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                }
+                                Chart._drawingCanvas.Children.Add(InnerShadowGrid);
+                            }
+                        }
+                        else
+                        {
+                            if (chart.PlotArea.ShadowEnabled)
+                            {
+                                ShadowGrid = new Grid();
+                                ShadowGrid.Width = plotAreaViewPortSize.Width - plankThickness - plankDepth;
+                                ShadowGrid.Height = plotAreaViewPortSize.Height - plankOffset;
+
+                                ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+
+                                ShadowGrid.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+
+                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                    ShadowGrid.Background = this.Background;
+                                else
+                                {
+                                    ShadowGrid.Background = new SolidColorBrush(Colors.LightGray);
+                                    clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
+                                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                }
+                            }
+                            else
+                            {
+                                Double offset = 3.5;
+                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                {
+                                    ShadowGrid = ExtendedGraphics.GetRectangle4PlotAreaEdge(this, plotAreaViewPortSize.Width + offset - plankThickness - plankDepth
+                                                           , plotAreaViewPortSize.Height - plankOffset
+                                                           , CornerRadius
+                                                           , CornerRadius, 6, this.InternalBackground);
+
+                                    clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height + 5);
+                                    ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (chart.PlotArea.ShadowEnabled)
+                        {
+                            ShadowGrid = new Grid();
+                            ShadowGrid.Width = plotAreaViewPortSize.Width;
+                            ShadowGrid.Height = plotAreaViewPortSize.Height - plankOffset;
+
+                            ShadowGrid.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+                            //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                            if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                ShadowGrid.Background = this.Background;
+                            else
+                            {
+                                ShadowGrid.Background = new SolidColorBrush(Colors.LightGray);
+                                clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
+                                ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                            }
+                        }
+                    }
+                }
+
+                if (ShadowGrid != null)
+                {
+                    ShadowGrid.IsHitTestVisible = false;
+                    Chart._plotAreaShadowCanvas.Children.Add(ShadowGrid);
+                    ShadowGrid.UpdateLayout();
+                }
             }
         }
 

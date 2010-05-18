@@ -193,11 +193,6 @@ namespace Visifire.Charts
 
             LoadZoomIcons();
 
-            if(_zoomOutTextBlock != null)
-                _zoomOutTextBlock.Foreground = DataSeries.CalculateFontColor(null, this);
-            if(_showAllTextBlock != null)
-                _showAllTextBlock.Foreground = DataSeries.CalculateFontColor(null, this);
-
             if (StyleDictionary == null)
                 LoadTheme("Theme1", false);
 
@@ -555,7 +550,7 @@ namespace Visifire.Charts
 
         /// <summary>
         /// Decides how the color will be applied to the DataPoints.
-        /// <example>If UniqueColors = True and if only one DataSeries is present in Chart then each DataPoint in that DataSeries takes one color from the ColorSet given to the chart.
+        /// <example>If UniqueColors = True and if only one DataSeries is present in Chart then each DataPoint in that DataSeries takes one fontColor from the ColorSet given to the chart.
         /// If UniqueColors = True and if more than one DataSeries are present in Chart then each series takes one color from the ColorSet provided at the chart.
         /// If UniqueColors = False then each DataSeries takes one color
         /// </example>
@@ -881,7 +876,7 @@ namespace Visifire.Charts
                 SetValue(ShadowEnabledProperty, value);
             }
         }
-                       
+
         /// <summary>
         /// PlotArea of the chart
         /// </summary>
@@ -1022,9 +1017,9 @@ namespace Visifire.Charts
 
             // Initialize Series list
             Series = new DataSeriesCollection();
-
+            
             // Initialize PlotArea
-            PlotArea = new PlotArea() { Chart = this };
+            //PlotArea = new PlotArea() { Chart = this };
 
             // Attach event handler on collection changed event with ToolTip collection
             ToolTips.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(ToolTips_CollectionChanged);
@@ -1047,7 +1042,6 @@ namespace Visifire.Charts
             // Attach event handler on collection changed event with AxisY collection
             (AxesY as AxisCollection).CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(AxesY_CollectionChanged);
         }
-
 
         /// <summary>
         /// OnMouseMoveLeave chart set ToolTip position. 
@@ -1397,9 +1391,11 @@ namespace Visifire.Charts
             }
 
             _datapoint2UpdatePartially = null;
+
+            System.Diagnostics.Debug.WriteLine("xxxxxx---------IsBackGround=" + System.Threading.Thread.CurrentThread.IsBackground.ToString());
             InvokeRender();
         }
-              
+        
         /// <summary>
         /// Event handler manages property change of visifire elements, like Title, Legends, DataSeries etc.
         /// </summary>
@@ -1488,7 +1484,7 @@ namespace Visifire.Charts
                 ChartArea = new ChartArea(this as Chart);
             }
 
-#if WPF
+#if WPF     
             NameScope.SetNameScope(this._rootElement, new NameScope());
 #endif
 
@@ -1591,31 +1587,45 @@ namespace Visifire.Charts
         private void ApplyChartShadow(Double width, Double height)
         {   
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
-            {   
-                _shadowGrid.Children.Clear();
+            {
+                if (VisifireControl.IsXbapApp)
+                {
+                    _shadowGrid.Children.Clear();
 
-                if (_rootElement != null)
-                {   
-                    // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
-                    ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
-                    ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
-                    ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
-                    ChartShadowLayer.IsHitTestVisible = false;
-                    ChartShadowLayer.SetValue(Canvas.ZIndexProperty, 0);
+                    if (_rootElement != null)
+                    {
+                        // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
+                        ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
+                        ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;
+                        ChartShadowLayer.Height = height - Chart.SHADOW_DEPTH;
+                        ChartShadowLayer.IsHitTestVisible = false;
+                        ChartShadowLayer.SetValue(Canvas.ZIndexProperty, 0);
 
-                    _shadowGrid.Children.Add(ChartShadowLayer);
+                        _shadowGrid.Children.Add(ChartShadowLayer);
 
-                    ChartShadowLayer.Margin = new Thickness(Chart.SHADOW_DEPTH, Chart.SHADOW_DEPTH, 0, 0);
+                        ChartShadowLayer.Margin = new Thickness(Chart.SHADOW_DEPTH, Chart.SHADOW_DEPTH, 0, 0);
 
-                    if (this._chartBorder != null)
-                        this._chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+                        if (this._chartBorder != null)
+                            this._chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+
+                        _isShadowApplied = true;
+                    }
+
+                }
+                else
+                {
+                    if(_rootElement != null)
+                        _rootElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
 
                     _isShadowApplied = true;
                 }
             }
 
-            if (ShadowEnabled && ChartShadowLayer != null)
-                ChartShadowLayer.Visibility = Visibility.Visible;
+            if (VisifireControl.IsXbapApp)
+            {
+                if (ShadowEnabled && ChartShadowLayer != null)
+                    ChartShadowLayer.Visibility = Visibility.Visible;
+            }
         }
 
         /// <summary>
@@ -1629,8 +1639,16 @@ namespace Visifire.Charts
                 _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
                 _isShadowApplied = false;
 
-                if (ChartShadowLayer != null)
-                    ChartShadowLayer.Visibility = Visibility.Collapsed;
+                if (VisifireControl.IsXbapApp)
+                {
+                    if (ChartShadowLayer != null)
+                        ChartShadowLayer.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    if (_rootElement != null)
+                        _rootElement.Effect = null;
+                }
             }
         }
 
@@ -1991,7 +2009,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Embedded color sets
+        /// Embedded fontColor sets
         /// </summary>
         private ColorSets EmbeddedColorSets
         {
@@ -2248,11 +2266,17 @@ namespace Visifire.Charts
         /// </summary>
         internal void InvokeRender()
         {
-
             if (_isTemplateApplied)
             {
+#if WPF
                 if (RENDER_LOCK)
+#else
+                if (RENDER_LOCK && System.Threading.Thread.CurrentThread.IsBackground)
+#endif
+                {   
                     _renderLapsedCounter++;
+                    System.Diagnostics.Debug.WriteLine("----Rendered Locked in InvokeRender Function");
+                }
                 else
                 {
 #if WPF             
@@ -2262,10 +2286,16 @@ namespace Visifire.Charts
                         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new RenderDelegate(Render));
 #else
                     if (IsInDesignMode)
+                    {
                         Render();
+                        System.Diagnostics.Debug.WriteLine("xxxx----Render() direct call from InvokeRender Function");
+                    }
                     else
+                    {
+                        System.Diagnostics.Debug.WriteLine("xxxx----Render() dispatched from InvokeRender Function");
                         this.Dispatcher.BeginInvoke(Render);
-#endif
+                    }
+#endif              
                 }
             }
         }
@@ -2283,7 +2313,8 @@ namespace Visifire.Charts
                 RENDER_LOCK = true;
 
                 try
-                {   
+                {
+                    System.Diagnostics.Debug.WriteLine("----Rendered");
                     PrepareChartAreaForDrawing();
 
                     ChartArea.Draw(this);
@@ -2297,6 +2328,10 @@ namespace Visifire.Charts
                         throw new Exception(e.Message, e);
                 }
             }
+            //else if (RENDER_LOCK)
+            //{
+            //    System.Diagnostics.Debug.WriteLine("----Rendered Locked in Render Function");
+            //}
         }
         
         /// <summary>
@@ -2304,11 +2339,17 @@ namespace Visifire.Charts
         /// </summary>
         internal void UnlockRender()
         {   
-            RENDER_LOCK = false;           
+            System.Diagnostics.Debug.WriteLine("----Rendered UnLocked in UnlockRender");
+            RENDER_LOCK = false;
+
+#if SL
+            if (_renderLapsedCounter >= 1)
+                Render();
+#endif
         }
 
         /// <summary>
-        /// Calculate font color of DataPoint labels depending upon chart background
+        /// Calculate font fontColor of DataPoint labels depending upon chart background
         /// </summary>
         /// <param name="chart">Chart</param>
         /// <param name="dataPoint">DataPoint</param>
@@ -2358,35 +2399,20 @@ namespace Visifire.Charts
         /// Calculate FontColor for text elements over chart depending upon chart background and dockInsidePlotArea
         /// </summary>
         /// <param name="chart">Chart</param>
-        /// <param name="color">FontColor</param>
+        /// <param name="fontColor">FontColor</param>
         /// <param name="dockInsidePlotArea">DockInsidePlotArea</param>
         /// <returns>Brush</returns>
-        internal static Brush CalculateFontColor(Chart chart, Brush color, Boolean dockInsidePlotArea)
+        internal static Brush CalculateFontColor(Chart chart, Brush backgroundColor, Brush fontColor, Boolean dockInsidePlotArea)
         {   
-            Brush brush = color;
+            Brush brush = fontColor;
             Double intensity;
-            if (color == null)
-            {   
-                if (!dockInsidePlotArea)
+            if (fontColor == null)
+            {
+                if (backgroundColor == null || Graphics.AreBrushesEqual(backgroundColor, new SolidColorBrush(Colors.Transparent)))
                 {
-                    if (chart != null)
+                    if (!dockInsidePlotArea)
                     {
-                        if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
-                        {
-                            brush = Graphics.BLACK_BRUSH;
-                        }
-                        else
-                        {
-                            intensity = Graphics.GetBrushIntensity(chart.Background);
-                            brush = Graphics.GetDefaultFontColor(intensity);
-                        }
-                    }
-                }
-                else
-                {
-                    if (chart.PlotArea != null)
-                    {
-                        if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, Graphics.TRANSPARENT_BRUSH) || chart.PlotArea.InternalBackground == null)
+                        if (chart != null)
                         {
                             if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
                             {
@@ -2398,12 +2424,35 @@ namespace Visifire.Charts
                                 brush = Graphics.GetDefaultFontColor(intensity);
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (chart.PlotArea != null)
                         {
-                            intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
-                            brush = Graphics.GetDefaultFontColor(intensity);
+                            if (Graphics.AreBrushesEqual(chart.PlotArea.InternalBackground, Graphics.TRANSPARENT_BRUSH) || chart.PlotArea.InternalBackground == null)
+                            {
+                                if (Graphics.AreBrushesEqual(chart.Background, Graphics.TRANSPARENT_BRUSH) || chart.Background == null)
+                                {
+                                    brush = Graphics.BLACK_BRUSH;
+                                }
+                                else
+                                {
+                                    intensity = Graphics.GetBrushIntensity(chart.Background);
+                                    brush = Graphics.GetDefaultFontColor(intensity);
+                                }
+                            }
+                            else
+                            {
+                                intensity = Graphics.GetBrushIntensity(chart.PlotArea.InternalBackground);
+                                brush = Graphics.GetDefaultFontColor(intensity);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    intensity = Graphics.GetBrushIntensity(backgroundColor);
+                    brush = Graphics.GetDefaultFontColor(intensity);
                 }
             }
             return brush;

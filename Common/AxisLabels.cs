@@ -513,7 +513,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the color for the text in axis labels 
+        /// Get or set the alignment for the text in axis labels 
         /// </summary>
         public TextAlignment TextAlignment
         {
@@ -683,7 +683,7 @@ namespace Visifire.Charts
             }
             internal set
             {
-                System.Diagnostics.Debug.Assert(typeof(Axis).Equals(value.GetType()), "Unknown Parent", "DataPoint should have DataSeries as Parent");
+                System.Diagnostics.Debug.Assert(typeof(Axis).Equals(value.GetType()), "Unknown Parent", "AxisLabels should have Axis as Parent");
                 _parent = value;
             }
         }
@@ -1968,7 +1968,7 @@ namespace Visifire.Charts
         {
             //Set size affecting font properties
             label.FontSize = InternalFontSize;
-            label.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), FontColor, false);
+            label.FontColor = Charts.Chart.CalculateFontColor((Chart as Chart), ParentAxis.Background, FontColor, false);
             label.FontFamily = InternalFontFamily;
             label.FontStyle = InternalFontStyle;
             label.FontWeight = InternalFontWeight;

@@ -637,6 +637,22 @@ namespace Visifire.Commons
 
         #region Internal Properties
 
+        /// <summary>
+        /// Whether the chart is running under an XBAP application
+        /// </summary>
+        internal static Boolean IsXbapApp
+        {
+            get
+            {
+#if WPF
+                return System.Windows.Interop.BrowserInteropHelper.IsBrowserHosted;
+#else
+
+                return false;
+#endif
+            }
+        }
+
         #endregion
 
         #region Private Delegates

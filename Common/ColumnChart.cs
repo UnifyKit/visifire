@@ -1067,6 +1067,10 @@ namespace Visifire.Charts
                 columnVisual.SetValue(Canvas.ZIndexProperty, GetColumnZIndex(left, top, (dataPoint.InternalYValue > 0)));
                 
                 dataPoint.Faces = columnFaces;
+
+                if (VisifireControl.IsXbapApp)
+                    ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, false, false);
+
             }   
             else
             {   
@@ -1076,7 +1080,8 @@ namespace Visifire.Charts
 
             dataPoint.Faces = columnFaces;
 
-            ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
+            if (!VisifireControl.IsXbapApp)
+                ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
 
             columnVisual.SetValue(Canvas.LeftProperty, left);
             columnVisual.SetValue(Canvas.TopProperty, top);
@@ -1694,17 +1699,22 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.ShadowEnabled:
-                    //ApplyOrRemoveShadow(dataPoint,
-                    //    (dataSeries.RenderAs == RenderAs.StackedColumn || dataSeries.RenderAs == RenderAs.StackedColumn100
-                    //    || dataSeries.RenderAs == RenderAs.StackedBar || dataSeries.RenderAs == RenderAs.StackedBar100
-                    //    ), false);
-                    if (dataSeries.RenderAs == RenderAs.Column
-                        || dataSeries.RenderAs == RenderAs.StackedColumn
-                        || dataSeries.RenderAs == RenderAs.StackedColumn100)
-                        ApplyOrRemoveShadow(chart, dataPoint);
+                    if (VisifireControl.IsXbapApp)
+                    {
+                        ApplyOrRemoveShadow4XBAP(dataPoint,
+                            (dataSeries.RenderAs == RenderAs.StackedColumn || dataSeries.RenderAs == RenderAs.StackedColumn100
+                            || dataSeries.RenderAs == RenderAs.StackedBar || dataSeries.RenderAs == RenderAs.StackedBar100
+                            ), false);
+                    }
                     else
-                        BarChart.ApplyOrRemoveShadow(chart, dataPoint);
-                    
+                    {
+                        if (dataSeries.RenderAs == RenderAs.Column
+                            || dataSeries.RenderAs == RenderAs.StackedColumn
+                            || dataSeries.RenderAs == RenderAs.StackedColumn100)
+                            ApplyOrRemoveShadow(chart, dataPoint);
+                        else
+                            BarChart.ApplyOrRemoveShadow(chart, dataPoint);
+                    }
                     break;
 
                 case VcProperties.Opacity:
@@ -2775,11 +2785,78 @@ namespace Visifire.Charts
 
             ApplyRemoveLighting(dataPoint);
 
-            //ApplyOrRemoveShadow(dataPoint, isStacked, isTopOfStack);
+            if (VisifireControl.IsXbapApp)
+                ApplyOrRemoveShadow4XBAP(dataPoint, isStacked, isTopOfStack);
 
             return faces;
         }
 
+        internal static void ApplyOrRemoveShadow4XBAP(DataPoint dataPoint, Boolean isStacked, Boolean isTopOfStack)
+        {
+            Faces faces = dataPoint.Faces;
+
+            if (faces == null)
+                throw new Exception("Faces of DataPoint is null. ColumnChart.ApplyOrRemoveShadow()");
+
+            Canvas columnVisual = faces.Visual as Canvas;
+
+            // Remove visual elements used for lighting
+            faces.ClearList(ref faces.ShadowElements);
+
+            if ((Boolean)dataPoint.ShadowEnabled)
+            {
+                Double shadowVerticalOffsetGap = 1;
+                Double shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap;
+                Double shadowHeight = columnVisual.Height;
+                CornerRadius xRadius = (CornerRadius)dataPoint.RadiusX;
+                CornerRadius yRadius = (CornerRadius)dataPoint.RadiusY;
+
+                if (isStacked)
+                {
+                    if (dataPoint.InternalXValue >= 0)
+                    {
+                        if (isTopOfStack)
+                        {
+                            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
+                            shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
+                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
+                        }
+                        else
+                        {
+                            shadowHeight = columnVisual.Height + 6;
+                            shadowVerticalOffset = -2;
+                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                            yRadius = new CornerRadius(0, 0, 0, 0);
+                        }
+                    }
+                    else
+                    {
+                        if (isTopOfStack)
+                        {
+                            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
+                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
+                        }
+                        else
+                        {
+                            shadowHeight = columnVisual.Height + Chart.SHADOW_DEPTH + 2;
+                            shadowVerticalOffset = -2;
+                            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
+                            yRadius = new CornerRadius(0, 0, 0, 0);
+                        }
+                    }
+                }
+
+                Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(null, columnVisual.Width, shadowHeight, xRadius, yRadius, isStacked ? 3 : 5);
+                shadowGrid.SetValue(Canvas.TopProperty, shadowVerticalOffset);
+                shadowGrid.SetValue(Canvas.LeftProperty, Chart.SHADOW_DEPTH);
+                shadowGrid.Opacity = 0.7;
+                shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
+                faces.ShadowElements.Add(shadowGrid);
+                columnVisual.Children.Add(shadowGrid);
+            }
+        }
 
         internal static void ApplyOrRemoveShadow(Chart chart, DataPoint dataPoint)
         {
@@ -2789,9 +2866,6 @@ namespace Visifire.Charts
                 throw new Exception("Faces of DataPoint is null. ColumnChart.ApplyOrRemoveShadow()");
             
             Canvas columnVisual = faces.Visual as Canvas;
-
-            //// Remove visual elements used for lighting
-            //faces.ClearList(ref faces.ShadowElements);
 
             if ((Boolean)dataPoint.ShadowEnabled)
             {
@@ -2803,57 +2877,6 @@ namespace Visifire.Charts
                 {
                     columnVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 5, 0.95);
                 }
-
-                //Double shadowVerticalOffsetGap = 1;
-                //Double shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap;
-                //Double shadowHeight = columnVisual.Height;
-                //CornerRadius xRadius = (CornerRadius)dataPoint.RadiusX;
-                //CornerRadius yRadius = (CornerRadius)dataPoint.RadiusY;
-
-                //if (isStacked)
-                //{
-                //    if (dataPoint.InternalXValue >= 0)
-                //    {
-                //        if (isTopOfStack)
-                //        {
-                //            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
-                //            shadowVerticalOffset = Chart.SHADOW_DEPTH - shadowVerticalOffsetGap - shadowVerticalOffsetGap;
-                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                //            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                //        }
-                //        else
-                //        {
-                //            shadowHeight = columnVisual.Height + 6;
-                //            shadowVerticalOffset = -2;
-                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                //            yRadius = new CornerRadius(0, 0, 0, 0);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (isTopOfStack)
-                //        {
-                //            shadowHeight = columnVisual.Height - shadowVerticalOffset + shadowVerticalOffsetGap;
-                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                //            yRadius = new CornerRadius(yRadius.TopLeft, yRadius.TopRight, 0, 0);
-                //        }
-                //        else
-                //        {
-                //            shadowHeight = columnVisual.Height + Chart.SHADOW_DEPTH + 2;
-                //            shadowVerticalOffset = -2;
-                //            xRadius = new CornerRadius(xRadius.TopLeft, xRadius.TopRight, xRadius.BottomRight, xRadius.BottomLeft);
-                //            yRadius = new CornerRadius(0, 0, 0, 0);
-                //        }
-                //    }
-                //}
-
-                //Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(null, columnVisual.Width, shadowHeight, xRadius, yRadius, isStacked ? 3 : 5);
-                //shadowGrid.SetValue(Canvas.TopProperty, shadowVerticalOffset);
-                //shadowGrid.SetValue(Canvas.LeftProperty, Chart.SHADOW_DEPTH);
-                //shadowGrid.Opacity = 0.7;
-                //shadowGrid.SetValue(Canvas.ZIndexProperty, -1);
-                //faces.ShadowElements.Add(shadowGrid);
-                //columnVisual.Children.Add(shadowGrid);
             }
             else
                 columnVisual.Effect = null;

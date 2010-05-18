@@ -645,6 +645,7 @@ namespace WPFVisifireChartsTest
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Minutes;
             axis.Interval = 20;
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -775,6 +776,7 @@ namespace WPFVisifireChartsTest
             Random rand = new Random();
 
             Axis axis = new Axis();
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -952,6 +954,7 @@ namespace WPFVisifireChartsTest
 
             Axis axis = new Axis();
             axis.ValueFormatString = "dd MMM yyyy";
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             chart.AxesX.Add(axis);
 
@@ -994,6 +997,7 @@ namespace WPFVisifireChartsTest
             Random rand = new Random();
 
             Axis axis = new Axis();
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             axis.IntervalType = IntervalTypes.Months;
             chart.AxesX.Add(axis);

@@ -216,7 +216,14 @@ namespace Visifire.Charts
     { 
         AxisX = 0, 
         AxisY = 1 
-    };
+    }
+
+    internal enum ElementTypes
+    {
+        Chart,
+        DataSeries,
+        DataPoint
+    }
 
     /// <summary>
     /// Visifire elements

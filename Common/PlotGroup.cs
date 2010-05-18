@@ -7,7 +7,7 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-      
+    
     You should have received a copy of the GNU General Public License
     along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
   
@@ -34,7 +34,7 @@ namespace Visifire.Charts
     /// One or more than one DataSeries are grouped into a PlotGroup
     /// </summary>
     internal class PlotGroup
-    {
+    {   
         #region Public Methods
         /// <summary>
         /// Initializes a new instance of the Visifire.Charts.PlotGroup class.

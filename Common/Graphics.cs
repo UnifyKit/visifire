@@ -29,6 +29,8 @@ using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Media.Imaging;
 using System.Text;
+using System.Linq;
+using System.Windows.Media.Effects;
 
 namespace Visifire.Charts
 {
@@ -244,22 +246,21 @@ namespace Visifire.Charts
 
         internal static void GetBrushesForPlank(Chart chart, out Brush frontBrush, out Brush topBrush, out Brush rightBrush, Boolean zeroPlank)
         {
-            
             List<Color> colors = new List<Color>();
-            
+
             if (zeroPlank)
             {
                 colors.Add(Colors.White); // #FFFFFFFF
                 colors.Add(Color.FromArgb(255, 223, 223, 223)); // #FFDFDFDF
-                frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1});
+                frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1 });
 
             }
             else
-            {   
-                colors.Add(Color.FromArgb(125, 134, 134, 134)); // #FF868686
-                colors.Add(Color.FromArgb(255, 210, 210, 210)); // #FFD2D2D2
-                colors.Add(Color.FromArgb(255, 255, 255, 255)); // #FFFFFFFF
-                colors.Add(Color.FromArgb(255, 223, 223, 223)); // #FFDFDFDF
+            {
+                colors.Add(Color.FromArgb(125, 144, 144, 144)); // #FF868686
+                colors.Add(Color.FromArgb(255, 220, 220, 220)); // #FFD2D2D2
+                colors.Add(Color.FromArgb(255, 245, 245, 245)); // #FFFFFFFF
+                colors.Add(Color.FromArgb(255, 220, 220, 220)); // #FFDFDFDF
                 frontBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 0, 1.844, 1, 0.442 });
             }
 
@@ -268,13 +269,14 @@ namespace Visifire.Charts
             colors.Add(Color.FromArgb(255, 232, 232, 232));  // #FFE8E8E8
 
             rightBrush = Graphics.CreateLinearGradientBrush(45, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 1, 0 });
-            
+
             colors = new List<Color>();
-            colors.Add(Color.FromArgb(255, 200, 200, 200));  // #FF8E8787
-            colors.Add(Color.FromArgb(255, 245, 245, 245));  // #FFE8E8E8
+            colors.Add(Color.FromArgb(255, 180, 180, 180));  // #FF8E8787
+            colors.Add(Color.FromArgb(255, 240, 240, 240));  // #FFE8E8E8
             //colors.Add(Color.FromArgb(255, 232, 227, 227));  // #FFE8E3E3
 
             topBrush = Graphics.CreateLinearGradientBrush(0, new Point(0.5, 1), new Point(0.5, 0), colors, new List<double>() { 1, 0 });
+        
         }
 
         /// <summary>
@@ -316,13 +318,13 @@ namespace Visifire.Charts
             // Do not change the order of the lines below
             // Segmens required to create the rectangle
             pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(width - xRadius.TopRight, 0)));
-            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(width, yRadius.TopRight), new Size(xRadius.TopRight, yRadius.TopRight), 0, SweepDirection.Clockwise));
+            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(width, yRadius.TopRight), new Size(xRadius.TopRight, yRadius.TopRight),0, SweepDirection.Clockwise));
             pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(width, height - yRadius.BottomRight)));
-            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(width - xRadius.BottomRight, height), new Size(xRadius.BottomRight, yRadius.BottomRight), 0, SweepDirection.Clockwise));
+            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(width - xRadius.BottomRight, height), new Size(xRadius.BottomRight, yRadius.BottomRight),0, SweepDirection.Clockwise));
             pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(xRadius.BottomLeft, height)));
-            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(0, height - yRadius.BottomLeft), new Size(xRadius.BottomLeft, yRadius.BottomLeft), 0, SweepDirection.Clockwise));
+            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(0, height - yRadius.BottomLeft), new Size(xRadius.BottomLeft, yRadius.BottomLeft), 0,SweepDirection.Clockwise));
             pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, yRadius.TopLeft)));
-            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(xRadius.TopLeft, 0), new Size(xRadius.TopLeft, yRadius.TopLeft), 0, SweepDirection.Clockwise));
+            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(xRadius.TopLeft, 0), new Size(xRadius.TopLeft, yRadius.TopLeft), 0,SweepDirection.Clockwise));
 
             pathGeometry.Figures.Add(pathFigure);
 
@@ -629,7 +631,7 @@ namespace Visifire.Charts
             return path;
         }
 
-        public static System.Windows.Media.Effects.DropShadowEffect GetShadowEffect(Double direction, Double shadowDepth, Double opacity)
+        public static DropShadowEffect GetShadowEffect(Double direction, Double shadowDepth, Double opacity)
         {
             return new System.Windows.Media.Effects.DropShadowEffect()
             {
@@ -637,7 +639,7 @@ namespace Visifire.Charts
                 ShadowDepth = shadowDepth,
                 Opacity = opacity,
 #if WPF
-                Color = Color.FromArgb((Byte)255, (Byte)215, (Byte)215, (Byte)215),
+                Color = Color.FromArgb((Byte)255, (Byte)200, (Byte)200, (Byte)200),
                 RenderingBias = System.Windows.Media.Effects.RenderingBias.Quality,
                 BlurRadius = 5
 #else
@@ -645,6 +647,60 @@ namespace Visifire.Charts
                 BlurRadius = 6
 #endif
             };
+        }
+
+        internal static PathGeometry GetShadowClip(Size clipSize, CornerRadius radius)
+        {
+            PathGeometry pathGeometry = new PathGeometry();
+            pathGeometry.FillRule = FillRule.EvenOdd;
+            pathGeometry.Figures = new PathFigureCollection();
+
+            PathFigure pathFigure = new PathFigure();
+
+            pathFigure.StartPoint = new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH);
+            pathFigure.Segments = new PathSegmentCollection();
+
+            // Do not change the order of the lines below
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, clipSize.Height)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, 0)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, 0)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, clipSize.Height - Charts.Chart.SHADOW_DEPTH - radius.BottomRight)));
+            pathFigure.Segments.Add(Graphics.GetArcSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH - radius.BottomRight, clipSize.Height - Charts.Chart.SHADOW_DEPTH), new Size(radius.BottomRight, radius.BottomRight), 90, SweepDirection.Clockwise));
+
+            pathGeometry.Figures.Add(pathFigure);
+
+            return pathGeometry;
+        }
+
+        /// <summary>
+        /// Returns PathGeometry for clipping Shadow of an element
+        /// </summary>
+        /// <param name="clipSize">Size clipSize</param>
+        /// <returns>PathGeometry</returns>
+        internal static PathGeometry GetShadowClip(Size clipSize)
+        {
+            PathGeometry pathGeometry = new PathGeometry();
+            pathGeometry.FillRule = FillRule.EvenOdd;
+            pathGeometry.Figures = new PathFigureCollection();
+
+            PathFigure pathFigure = new PathFigure();
+
+            pathFigure.StartPoint = new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH);
+            pathFigure.Segments = new PathSegmentCollection();
+
+            // Do not change the order of the lines below
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, clipSize.Height - Charts.Chart.SHADOW_DEPTH)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width - Charts.Chart.SHADOW_DEPTH, 0)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, 0)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(clipSize.Width, clipSize.Height)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height)));
+            pathFigure.Segments.Add(Graphics.GetLineSegment(new Point(0, clipSize.Height - Charts.Chart.SHADOW_DEPTH)));
+
+            pathGeometry.Figures.Add(pathFigure);
+
+            return pathGeometry;
         }
 
         /// <summary>
@@ -703,6 +759,45 @@ namespace Visifire.Charts
             visual.Children.Add(bottomLeft);
             visual.Children.Add(bottom);
             visual.Children.Add(bottomRight);
+
+            return visual;
+        }
+
+        /// <summary>
+        /// Creates a rectangle for 3D PlotArea right edge based on the given params
+        /// </summary>
+        /// <param name="tagReference"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="xRadius"></param>
+        /// <param name="yRadius"></param>
+        /// <param name="minCurvature"></param>
+        /// <param name="brush"></param>
+        /// <returns>Grid</returns>
+        public static Grid GetRectangle4PlotAreaEdge(FrameworkElement tagReference, Double width, Double height, CornerRadius xRadius, CornerRadius yRadius, Double minCurvature, Brush brush)
+        {
+            CornerRadius tempXRadius = new CornerRadius(Math.Max(xRadius.TopLeft, minCurvature), Math.Max(xRadius.TopRight, minCurvature), Math.Max(xRadius.BottomRight, minCurvature), Math.Max(xRadius.BottomLeft, minCurvature));
+            CornerRadius tempYRadius = new CornerRadius(Math.Max(yRadius.TopLeft, minCurvature), Math.Max(yRadius.TopRight, minCurvature), Math.Max(yRadius.BottomRight, minCurvature), Math.Max(yRadius.BottomLeft, minCurvature));
+
+            CornerRadius radiusX = GetCorrectedRadius(tempXRadius, width / 2);
+            CornerRadius radiusY = GetCorrectedRadius(tempYRadius, height / 2);
+
+            Grid visual = new Grid() { IsHitTestVisible = false };
+            visual.Height = height;
+            visual.Width = width;
+
+            Rectangle rect = new Rectangle()
+            { 
+                Width = width,
+                Height = height,
+                RadiusX = 5,
+                RadiusY = 5,    
+                Fill = new SolidColorBrush(Color.FromArgb((Byte)255,(Byte)167,(Byte)171,(Byte)171)),
+                Opacity = 0.90,
+                Tag = (tagReference != null) ? new ElementData() { Element = tagReference } : null
+            };
+
+            visual.Children.Add(rect);
 
             return visual;
         }
@@ -1429,7 +1524,7 @@ namespace Visifire.Commons
             ArcSegment arcSegment = new ArcSegment();
             arcSegment.Point = point;
             arcSegment.Size = size;
-            arcSegment.RotationAngle = 0;
+            arcSegment.RotationAngle = rotation;
             arcSegment.SweepDirection = SweepDirection.Clockwise;
             return arcSegment;
         }
@@ -1520,6 +1615,13 @@ namespace Visifire.Commons
             rt.CenterY = 0.5;
             brush.RelativeTransform = rt;
 
+            return brush;
+        }
+
+        public static Brush CreateSolidColorBrush(Color color)
+        {
+            SolidColorBrush brush = new SolidColorBrush();
+            brush.Color = color;
             return brush;
         }
 
@@ -1723,6 +1825,13 @@ namespace Visifire.Commons
             return intensity;
         }
 
+        public static KeyValuePair<Color, Double> GetColorIntensity(Color color)
+        {
+            Double intensity = 0;
+            intensity = (Double)(color.R + color.G + color.B) / (3 * 255);
+            return new KeyValuePair<Color, double>(color, intensity);
+        }
+
         /// <summary>
         /// Creates and returns a default font color based on intensity
         /// </summary>
@@ -1802,8 +1911,6 @@ namespace Visifire.Commons
             darkerShade.A = color.A;
             return darkerShade;
         }
-
-
 
         /// <summary>
         /// Returns a lighter shade of the color by increasing the brightness by the given intensity value

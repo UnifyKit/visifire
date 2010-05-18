@@ -2009,10 +2009,12 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         /// <returns>Is need to update all DataPoints on axis change</returns>
         internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
-        {   
-            // if (Parent == null || !ValidatePartialUpdate(Parent.RenderAs, property))
-            //    return;
+        {
+            Chart chart = Chart as Chart;
 
+            /* Don’t proceed for the chart types which do not support partial update of properties
+             * (Except Color property).
+             */
             if (!recursive && NonPartialUpdateChartTypes(Parent.RenderAs))
             {   
                 if (property == VcProperties.Color)
@@ -2023,8 +2025,16 @@ namespace Visifire.Charts
                 return false;
             }
 
-            Chart chart = Chart as Chart;
-
+            /* If there is more than one DataSeries, and IncludePercentageInLegend property or 
+               IncludeYValueInLegend property are set to true Legends need to update according to new YValue. 
+               So charts need to re-render. 
+             */
+            if ((property == VcProperties.YValue || property == VcProperties.Enabled) && (Parent.IncludePercentageInLegend || Parent.IncludeYValueInLegend) && (Boolean)Parent.ShowInLegend)
+            {   
+                FirePropertyChanged(property);
+                return false;
+            }
+            
             if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
             {   
                 Boolean updateAllDpsOnAxisChange = false;
@@ -2071,7 +2081,7 @@ namespace Visifire.Charts
 
                         Object oldValue = (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock) ? (Object)_oldYValues : _oldYValue;
 
-                        chart.PlotDetails.ReCreate(this, property, oldValue, newValue);
+                        chart.PlotDetails.ReCreate(this, ElementTypes.DataPoint, property, oldValue, newValue);
 
                         Double NewMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
                         Double NewMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
@@ -2096,7 +2106,7 @@ namespace Visifire.Charts
                         Double OldMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
                         Double OldMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
 
-                        chart.PlotDetails.ReCreate(this, property, null, newValue);
+                        chart.PlotDetails.ReCreate(this, ElementTypes.DataPoint, property, null, newValue);
 
                         Double NewMaxXValue = chart.PlotDetails.GetAxisXMaximumDataValue(plotGroup.AxisX);
                         Double NewMinXValue = chart.PlotDetails.GetAxisXMinimumDataValue(plotGroup.AxisX);
@@ -2135,7 +2145,7 @@ namespace Visifire.Charts
                             oldZeroBaseLineX = plotGroup.AxisX._zeroBaseLinePixPosition;
                     }
                     System.Diagnostics.Debug.WriteLine("RenderAxis2 =" + renderAxis.ToString());
-                    chart.ChartArea.PrePartialUpdateConfiguration(this, property, null, null, false, false, renderAxis, axisRepresentation, true);
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataPoint, property, null, null, false, false, renderAxis, axisRepresentation, true);
 
                     if (property == VcProperties.YValue)
                     {

@@ -660,6 +660,7 @@ namespace SLVisifireChartsTest
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Hours;
             axis.Interval = 200;
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             chart.AxesX.Add(axis);
 
@@ -705,6 +706,7 @@ namespace SLVisifireChartsTest
             Axis axis = new Axis();
             axis.IntervalType = IntervalTypes.Minutes;
             axis.Interval = 20;
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -752,6 +754,7 @@ namespace SLVisifireChartsTest
 
             Axis axis = new Axis();
             axis.ValueFormatString = "dd/MM/yyyy hh:mm:ss tt";
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -800,6 +803,7 @@ namespace SLVisifireChartsTest
             Axis axis = new Axis();
             axis.AxisMinimum = new DateTime(2008, 12, 1, 1, 2, 4);
             axis.AxisMaximum = new DateTime(2009, 6, 1, 12, 4, 5);
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -846,6 +850,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             ChartGrid grid = new ChartGrid();
             grid.Enabled = true;
@@ -1051,6 +1056,7 @@ namespace SLVisifireChartsTest
 
             Axis axis = new Axis();
             axis.ValueFormatString = "dd MMM yyyy";
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             chart.AxesX.Add(axis);
 
@@ -1096,6 +1102,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
 
             Axis axis = new Axis();
+            axis.AxisLabels = new AxisLabels();
             axis.AxisLabels.Angle = -45;
             axis.IntervalType = IntervalTypes.Months;
             chart.AxesX.Add(axis);
