@@ -173,7 +173,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(new Thickness(0), chart.Legends[0].BorderThickness));
+                () => Assert.AreEqual(new Thickness(0.50), chart.Legends[0].BorderThickness));
 
             EnqueueTestComplete();
         }
@@ -193,7 +193,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Legends[0].Background));
+                () => Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Legends[0].Background));
 
             EnqueueTestComplete();
         }
@@ -293,7 +293,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(11, chart.Legends[0].FontSize, Common.HighPrecisionDelta));
+                () => Assert.AreEqual(10, chart.Legends[0].FontSize, Common.HighPrecisionDelta));
 
             EnqueueTestComplete();
         }
@@ -517,7 +517,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(12, chart.Legends[0].TitleFontSize));
+                () => Assert.AreEqual(11, chart.Legends[0].TitleFontSize));
 
             EnqueueTestComplete();
         }

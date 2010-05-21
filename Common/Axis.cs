@@ -189,6 +189,9 @@ namespace Visifire.Charts
 
             xValuePixDiff = Math.Abs(maxPixelValue - minPixelValue);
 
+            if (viewPortPixDiff < xValuePixDiff)
+                viewPortPixDiff = xValuePixDiff;
+
             _internalZoomingScale = ((viewPortPixDiff - xValuePixDiff) / xValuePixDiff);
 
             Double newChartSize = 0;
@@ -2924,7 +2927,7 @@ namespace Visifire.Charts
 #if WPF
                         Size textBlockSize = Graphics.CalculateVisualSize(trendLine.LabelTextBlock);
 #else
-                    Size textBlockSize = new Size(trendLine.LabelTextBlock.ActualWidth, trendLine.LabelTextBlock.ActualHeight);
+                        Size textBlockSize = new Size(trendLine.LabelTextBlock.ActualWidth, trendLine.LabelTextBlock.ActualHeight);
 #endif
 
                         if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)

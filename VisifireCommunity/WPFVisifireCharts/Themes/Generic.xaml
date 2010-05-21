@@ -100,7 +100,7 @@
                                                 <vcc:ZoomBar x:Name="TopAxisScrollBar" MinHeight="0" Height="17" Orientation="Horizontal" Visibility="Collapsed"/>
                                             </StackPanel>
                                         </Grid>
-
+                                        
                                         <Grid x:Name="LeftAxisGrid" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <StackPanel x:Name="LeftAxisContainer" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <StackPanel x:Name="LeftAxisPanel"></StackPanel>

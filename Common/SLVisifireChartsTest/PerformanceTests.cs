@@ -508,7 +508,7 @@ namespace SLVisifireChartsTest
 
                         EnqueueCallback(() =>
                         {
-                            if (chart.ChartArea._renderCount > 0)
+                            //if (chart.ChartArea._renderCount > 0)
                             {
                                 DateTime end = DateTime.UtcNow;
                                 totalDuration = (end - start).TotalSeconds;

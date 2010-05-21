@@ -163,8 +163,11 @@ namespace Visifire.Charts
         {
             if (ShadowEnabled)
             {
-                _chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
-                _bevelCanvas.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+                if (VisifireControl.IsXbapApp)
+                {
+                    _chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+                    _bevelCanvas.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
+                }
             }
             
             _chartAreaMargin = new Thickness(_chartAreaGrid.Margin.Left, _chartAreaGrid.Margin.Top, _chartAreaGrid.Margin.Right, _chartAreaGrid.Margin.Bottom);
@@ -1614,7 +1617,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    if(_rootElement != null)
+                    if (_rootElement != null)
                         _rootElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
 
                     _isShadowApplied = true;
@@ -2189,7 +2192,7 @@ namespace Visifire.Charts
 
             if (stackTrace.Contains("set_Height(Double value)")
             || stackTrace.Contains("set_Width(Double value)")
-            || e.Message == "Height must be non-negative." || e.Message == "Width must be non-negative.")
+            || e.Message == "Height must be non-negative." || e.Message == "Width must be non-negative." || e.Message == "Size must be non-negative.")
             {
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine("------------------------------------------");
@@ -2268,7 +2271,7 @@ namespace Visifire.Charts
         {
             if (_isTemplateApplied)
             {
-#if WPF
+#if WPF         
                 if (RENDER_LOCK)
 #else
                 if (RENDER_LOCK && System.Threading.Thread.CurrentThread.IsBackground)

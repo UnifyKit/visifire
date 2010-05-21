@@ -990,14 +990,17 @@ namespace Visifire.Charts
 
                 if (chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
                 {
-                    ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, BorderElement.Width + Visifire.Charts.Chart.SHADOW_DEPTH
-                    , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
-                    , CornerRadius
-                    , CornerRadius, 6);
+                    if (chart.PlotArea.ShadowEnabled)
+                    {
+                        ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, BorderElement.Width + Visifire.Charts.Chart.SHADOW_DEPTH
+                        , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
+                        , CornerRadius
+                        , CornerRadius, 6);
 
-                    clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                        clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
 
-                    ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                        ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                    }
                 }
                 else
                 {
@@ -1005,22 +1008,25 @@ namespace Visifire.Charts
                     {
                         if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                         {
-                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
-                            , plotAreaViewPortSize.Height - plankDepth + Visifire.Charts.Chart.SHADOW_DEPTH
-                            , CornerRadius
-                            , CornerRadius, 6);
-                            clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height + Visifire.Charts.Chart.SHADOW_DEPTH);
+                            if (chart.PlotArea.ShadowEnabled)
+                            {
+                                ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
+                                , plotAreaViewPortSize.Height - plankDepth + Visifire.Charts.Chart.SHADOW_DEPTH
+                                , CornerRadius
+                                , CornerRadius, 6);
+                                clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height + Visifire.Charts.Chart.SHADOW_DEPTH);
 
-                            ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
-                            ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                                ShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
 
-                            InnerShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
-                           , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
-                           , CornerRadius
-                           , CornerRadius, 6);
-                            InnerShadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(InnerShadowGrid.Width + Visifire.Charts.Chart.SHADOW_DEPTH, InnerShadowGrid.Height));
-                            InnerShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
-                            Chart._drawingCanvas.Children.Add(InnerShadowGrid);
+                                InnerShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Visifire.Charts.Chart.SHADOW_DEPTH - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART
+                               , BorderElement.Height + Visifire.Charts.Chart.SHADOW_DEPTH
+                               , CornerRadius
+                               , CornerRadius, 6);
+                                InnerShadowGrid.Clip = ExtendedGraphics.GetShadowClip(new Size(InnerShadowGrid.Width + Visifire.Charts.Chart.SHADOW_DEPTH, InnerShadowGrid.Height));
+                                InnerShadowGrid.SetValue(Canvas.LeftProperty, plankOffset);
+                                Chart._drawingCanvas.Children.Add(InnerShadowGrid);
+                            }
                         }
                         else
                         {
@@ -1054,14 +1060,16 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Charts.Chart.SHADOW_DEPTH
-                            , plotAreaViewPortSize.Height - plankOffset + Visifire.Charts.Chart.SHADOW_DEPTH, CornerRadius
-                            , CornerRadius
-                            , 6);
+                        if (chart.PlotArea.ShadowEnabled)
+                        {
+                            ShadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, plotAreaViewPortSize.Width + Charts.Chart.SHADOW_DEPTH
+                                , plotAreaViewPortSize.Height - plankOffset + Visifire.Charts.Chart.SHADOW_DEPTH, CornerRadius
+                                , CornerRadius
+                                , 6);
 
-                        clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
-                        ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
-
+                            clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
+                            ShadowGrid.Clip = ExtendedGraphics.GetShadowClip(clipSize);
+                        }
                     }
                 }
 
