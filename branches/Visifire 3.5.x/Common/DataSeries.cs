@@ -2337,11 +2337,21 @@ namespace Visifire.Charts
         {
             if (LegendMarker != null && LegendMarker.Visual != null && RenderAs != RenderAs.CandleStick)
             {
-                LegendMarker.BorderColor = (Brush)Color;
-                //LegendMarker.MarkerFillColor = (Brush)Color;
+                if (RenderAs == RenderAs.Line || RenderAs == RenderAs.StepLine)
+                {
+                    LegendMarker.BorderColor = Graphics.GetLightingEnabledBrush((Brush)Color, "Linear", new Double[] { 0.65, 0.55 });
+                    LegendMarker.MarkerFillColor = new SolidColorBrush(Colors.White);
 
-                LegendMarker.MarkerFillColor = (Brush)Color;
+                    if ((LegendMarker.Visual as Grid).Parent != null && (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
+                        (((LegendMarker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = Graphics.GetLightingEnabledBrush((Brush)Color, "Linear", new Double[] { 0.65, 0.55 });
 
+                }
+                else
+                {
+                    LegendMarker.BorderColor = (Brush)Color;
+                    //LegendMarker.MarkerFillColor = (Brush)Color;
+                    LegendMarker.MarkerFillColor = (Brush)Color;
+                }
                 LegendMarker.UpdateMarker();
             }
         }
@@ -2556,7 +2566,13 @@ namespace Visifire.Charts
                             brush = dp._internalColor;
 
                         RenderHelper.UpdateVisualObject(RenderAs, dp, VcProperties.Color, brush, renderAxis);
+
+                        if (RenderAs != RenderAs.CandleStick)
+                            DataPoint.UpdateLegendMarker(dp, dp.Color);
                     }
+
+                    if (RenderAs != RenderAs.CandleStick)
+                        UpdateLegendMarker();
 
                 }
                 else if (property == VcProperties.Color)

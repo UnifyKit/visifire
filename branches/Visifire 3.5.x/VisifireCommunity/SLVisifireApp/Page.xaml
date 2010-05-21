@@ -6,12 +6,8 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300" View3D="true">
-            
-            <vc:Chart.PlotArea>
-                <vc:PlotArea Background="LightGray"/>
-            </vc:Chart.PlotArea>
-            
+        <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300" View3D="True" ZoomingEnabled="true">
+
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column" LabelEnabled="true">
                     <vc:DataSeries.DataPoints>
