@@ -1124,11 +1124,10 @@ namespace Visifire.Charts
                 Line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
             }
 
-#if WPF
-            ApplyShadow4XBAP();
-#else
-            ApplyShadow();
-#endif
+            if (VisifireControl.IsXbapApp)
+                ApplyShadow4XBAP();
+            else
+                ApplyShadow();
         }
 
         /// <summary>
@@ -1138,7 +1137,6 @@ namespace Visifire.Charts
         {
             if (Rectangle != null)
                 Rectangle.Fill = LineColor;
-
 
             if (VisifireControl.IsXbapApp)
                 ApplyShadow4XBAP();
@@ -1176,12 +1174,12 @@ namespace Visifire.Charts
             {
                 if (Line != null)
                 {
-                    Line.Effect = ExtendedGraphics.GetShadowEffect(270, 3, 0.95);
+                    Line.Effect = new System.Windows.Media.Effects.DropShadowEffect() { Opacity = 0.5 };
                 }
 
                 if (Rectangle != null)
                 {
-                    Rectangle.Effect = ExtendedGraphics.GetShadowEffect(270, 3, 0.95);
+                    Rectangle.Effect = new System.Windows.Media.Effects.DropShadowEffect() { Opacity = 0.5 };
                 }
             }
 
@@ -1559,11 +1557,13 @@ namespace Visifire.Charts
             {
                 AttachToolTip(ReferingAxis.Chart, this, Line);
                 AttachHref(ReferingAxis.Chart, Line, Href, HrefTarget);
+                AttachEvents2Visual(this, Line);
             }
             else
             {
                 AttachToolTip(ReferingAxis.Chart, this, Rectangle);
                 AttachHref(ReferingAxis.Chart, Rectangle, Href, HrefTarget);
+                AttachEvents2Visual(this, Rectangle);
             }
         }
 

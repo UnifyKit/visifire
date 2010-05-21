@@ -3347,21 +3347,38 @@ namespace Visifire.Charts
         private String GetAxisXLabelString()
         {
             String labelString = "";
+            Chart chart = Chart as Chart;
 
-            if (Parent.PlotGroup != null && Parent.PlotGroup.AxisX != null && Parent.PlotGroup.AxisX.AxisLabels != null)
+            if(chart.PlotDetails.ChartOrientation == ChartOrientationType.NoAxis)
             {
-                if (Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary != null &&
-                Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(InternalXValue))
+                if(String.IsNullOrEmpty(this.AxisXLabel))
                 {
-                    labelString = Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary[InternalXValue];
+                    if (Parent.PlotGroup.AxisX.IsDateTimeAxis)
+                        labelString = AxisLabels.FormatDate(this.InternalXValueAsDateTime, Parent.PlotGroup.AxisX);
+                    else
+                        labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
                 }
                 else
-                {
-                    labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
-                }
+                    labelString = this.AxisXLabel;
             }
             else
-                labelString = this.AxisXLabel;
+            {   
+                if (Parent.PlotGroup != null && Parent.PlotGroup.AxisX != null && Parent.PlotGroup.AxisX.AxisLabels != null)
+                {
+                    if (Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary != null &&
+                    Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary.ContainsKey(InternalXValue))
+                    {
+                        labelString = Parent.PlotGroup.AxisX.AxisLabels.AxisLabelContentDictionary[InternalXValue];
+                    }
+                    else
+                    {
+                        labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
+                    }
+                }
+                else
+                    labelString = this.AxisXLabel;
+            }
+
             return labelString;
         }
 
@@ -3591,7 +3608,6 @@ namespace Visifire.Charts
 
             if (marker != null && marker.Visual != null)
             {
-                marker.BorderColor = (Brush)newValue;
                 RenderAs renderAs = dataPoint.Parent.RenderAs;
 
                 switch (renderAs)
@@ -3601,12 +3617,15 @@ namespace Visifire.Charts
                     case RenderAs.CandleStick:
                     case RenderAs.Stock:
 
+                        marker.BorderColor = Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", new Double[] { 0.65, 0.55 });
+
                         if ((marker.Visual as Grid).Parent != null && (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line) != null)
-                            (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = (Brush)newValue;
+                            (((marker.Visual as Grid).Parent as Canvas).Children[0] as Line).Stroke = Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", new Double[] { 0.65, 0.55 }); ;
 
                         break;
 
                     default:
+                        marker.BorderColor = (Brush)newValue;
                         marker.MarkerFillColor = (Brush)newValue;
                         break;
                 }

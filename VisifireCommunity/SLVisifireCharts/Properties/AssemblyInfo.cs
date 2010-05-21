@@ -45,8 +45,8 @@ using System.Windows.Markup;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.0.9")]
-[assembly: AssemblyFileVersion("3.0.9")]
+[assembly: AssemblyVersion("3.1.0")]
+[assembly: AssemblyFileVersion("3.1.0")]
 
 //[assembly: XmlnsDefinition("http://schemas.microsoft.com/client/2007", "Visifire.Charts")]
 //[assembly: XmlnsDefinition("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "Visifire.Charts")]

@@ -42,10 +42,16 @@ namespace Visifire.Charts
     internal class AxisLabel
     {
         #region Public Methods
+            public AxisLabel()
+            {
+                MaxWidth = Double.NaN;
+            }
 
         #endregion
 
         #region Public Properties
+
+            public Double MaxWidth { get; set; }
 
         #endregion
 
@@ -198,7 +204,7 @@ namespace Visifire.Charts
             {
                 return _actualTextWidth;
             }
-            set
+            private set
             {
                 _actualTextWidth = value;
             }
@@ -213,7 +219,7 @@ namespace Visifire.Charts
             {
                 return _actualTextHeight;
             }
-            set
+            private set
             {
                 _actualTextHeight = value;
             }
@@ -563,7 +569,7 @@ namespace Visifire.Charts
 
             ActualTextHeight = TextElement.DesiredSize.Height;
             ActualTextWidth = TextElement.DesiredSize.Width;
-#else
+#else       
             ActualTextHeight = TextElement.ActualHeight;
             ActualTextWidth = TextElement.ActualWidth;
 #endif
@@ -585,16 +591,31 @@ namespace Visifire.Charts
             TextElement.Text = axisLabel.Text;
             TextElement.Foreground = FontColor;
             TextElement.FontSize = FontSize;
-            TextElement.FontFamily = FontFamily;
+            TextElement.LineHeight = FontSize;
+            TextElement.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            
+            if(FontFamily != null)
+                TextElement.FontFamily = FontFamily;
             TextElement.FontStyle = FontStyle;
             TextElement.FontWeight = FontWeight;
             TextElement.TextAlignment = TextAlignment;
+
+            if (!Double.IsNaN(MaxWidth))
+            {
+                TextElement.TextWrapping = TextWrapping.Wrap;
+#if WPF
+                TextElement.MaxWidth = MaxWidth;
+#else
+                TextElement.Width = MaxWidth;
+#endif
+
+            }
         }
 
         /// <summary>
         /// Create visual for AxisLabel
         /// </summary>
-        internal void CreateVisualObject(Boolean positioningAllowed, ElementData tag)
+        internal void CreateVisualObject(ElementData tag)
         {
             TextElement = new TextBlock() { Tag = tag };
             Rotation = new RotateTransform();

@@ -42,6 +42,7 @@ using System.Collections.Generic;
 #endif
 
 using System.Windows.Data;
+using System.Reflection;
 
 namespace Visifire.Charts
 {   
@@ -71,21 +72,65 @@ namespace Visifire.Charts
         /// <param name="source">DataSource object</param>
         /// <param name="target">Target object</param>
         public void Map(Object dataSource, Object target)
-        {   
+        {
             // Get value of the property
             Object propertyValue = GetPropertyValue(dataSource);
 
             // Property info of target object
             System.Reflection.PropertyInfo targetPropertyInfo = target.GetType().GetProperty(MemberName);
 
-            // Convert 'the type of the property value of source' to 'the type of the property value of target'
-            propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType,
-            System.Globalization.CultureInfo.CurrentCulture);
+            // Nullable<InnerType>
+            Type innerTypeOfNullableProperty;
 
-            //Set value of the property of target
+            if (!IsNullable(targetPropertyInfo.PropertyType, out innerTypeOfNullableProperty))
+            {
+                // Convert 'the type of the property value of source' to 'the type of the property value of target'
+                propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType,
+                System.Globalization.CultureInfo.CurrentCulture);
+            }
+            else if (innerTypeOfNullableProperty != null)
+            {
+                // Convert 'the type of the property value of source' to 'the type of the property value of target'
+                propertyValue = Convert.ChangeType(propertyValue, innerTypeOfNullableProperty,
+                System.Globalization.CultureInfo.CurrentCulture);
+            }
+
+            // Set value of the property of target
             target.GetType().GetProperty(MemberName).SetValue(target, propertyValue, null);
         }
-        
+
+        /// <summary>
+        /// Check whether the type of the property is nullable
+        /// </summary>
+        /// <param name="type">Pass Nullable Type</param>
+        /// <param name="innerType">If type is nullable then returns the inter type</param>
+        /// <returns></returns>
+        public static bool IsNullable(Type type, out Type innerType)
+        {
+            bool blnResult;
+            innerType = null;
+
+            Type objGenericType = null;
+
+            if (!type.IsGenericType)
+            {
+                blnResult = false;
+            }
+            else
+            {
+                objGenericType = type.GetGenericTypeDefinition();
+                blnResult = objGenericType.Equals(typeof(Nullable<>));
+
+                if (blnResult)// If nullable type
+                {
+                    PropertyInfo[] propertyInfos = type.GetProperties();
+                    innerType = propertyInfos[1].PropertyType;
+                }
+            }
+
+            return blnResult;
+        }
+
         /// <summary>
         /// Get property value of the Container object
         /// </summary>
