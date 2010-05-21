@@ -630,7 +630,7 @@ namespace Visifire.Charts
         /// <param name="begin">Animation begin time</param>
         /// <param name="duration">Animation duration</param>
         /// <returns>DoubleAnimationUsingKeyFrames</returns>
-        private DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double from, Double to, Double begin, Double duration)
+        internal DoubleAnimationUsingKeyFrames CreateDoubleAnimation(DependencyObject target, String property, Double from, Double to, Double begin, Double duration)
         {
             DoubleAnimationUsingKeyFrames da = new DoubleAnimationUsingKeyFrames();
             da.BeginTime = TimeSpan.FromSeconds(begin);
@@ -773,7 +773,7 @@ namespace Visifire.Charts
         /// <param name="animationDuration">Animation duration</param>
         internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double animationDuration)
         {   
-            if (!(Boolean)Enabled)
+            if (!(Boolean)Enabled || (Double.IsNaN(width) && Double.IsNaN(height)))
             {
                 Visual = null;
                 return;
@@ -823,6 +823,23 @@ namespace Visifire.Charts
                     line.Stroke = LineColor;
                     line.StrokeThickness = LineThickness;
                     line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                }
+
+                if (Chart != null && ParentAxis != null)
+                {
+                    if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisY
+                        && ParentAxis.AxisType == AxisTypes.Primary)
+                    {
+                        foreach (Line line in (Chart as Chart).ChartArea.InterlacedLines)
+                        {
+                            line.Stroke = LineColor;
+                            line.StrokeThickness = LineThickness;
+                            line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                        }
+
+                        foreach (Path path in (Chart as Chart).ChartArea.InterlacedPaths)
+                            path.Fill = InterlacedColor;
+                    }
                 }
             }
             else

@@ -48,6 +48,7 @@ using Visifire.Commons;
 using System.Windows.Input;
 using System.Windows.Controls.Primitives;
 using Visifire.Commons.Controls;
+using System.Windows.Media.Animation;
 
 namespace Visifire.Charts
 {
@@ -1653,7 +1654,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    Chart._zoomRectangle.SetValue(Canvas.LeftProperty, PlottingCanvas.Width);
+                    //Chart._zoomRectangle.SetValue(Canvas.LeftProperty, PlottingCanvas.Width);
                     Chart._zoomRectangle.Width = PlottingCanvas.Width - PLANK_THICKNESS;
                 }
             }
@@ -3465,6 +3466,7 @@ namespace Visifire.Charts
             if (isPartialUpdate)
             {
                 ColumnChart.Update3DPlank(plankThickness, height, plankDepth, _verticalPlank);
+                CreateGridLinesOverPlank(height, _verticalPlank.Visual as Panel, plankDepth, plankThickness);
                 return;
             }
 
@@ -3481,19 +3483,150 @@ namespace Visifire.Charts
             }
 
             List<Color> colors = new List<Color>();
-            colors.Add(Color.FromArgb(255, 212, 212, 212));
-            colors.Add(Color.FromArgb(255, 142, 125, 125));
+            //colors.Add(Color.FromArgb(255, 212, 212, 212));
+            //colors.Add(Color.FromArgb(255, 142, 125, 125));
+
+            colors.Add(Color.FromArgb(255, 240, 240, 240));
+            colors.Add(Color.FromArgb(255, 200, 200, 200));
 
             Brush rightBrush = Graphics.CreateLinearGradientBrush(0, new Point(0, 0.5), new Point(1, 0.5), colors, new List<double>() { 0, 1 });
 
             _verticalPlank = ColumnChart.Get3DPlank(plankThickness, height, plankDepth, null, null, rightBrush);
             Panel plank = _verticalPlank.Visual as Panel;
 
+            #region Create grid lines over plank
+
+            CreateGridLinesOverPlank(height, plank, plankDepth, plankThickness);
+
+            #endregion
+
             plank.SetValue(Canvas.TopProperty, plankDepth);
             plank.SetValue(Canvas.ZIndexProperty, -1);
-            plank.SetValue(Canvas.OpacityProperty, plankOpacity);
+            plank.SetValue(Canvas.OpacityProperty, (Double)0.8);
 
             PlottingCanvas.Children.Add(plank);
+        }
+
+        private void CreateGridLinesOverPlank(Double height, Panel plank, Double plankDepth, Double plankThickness)
+        {
+            if (plank.Children.Contains(GridLineCanvas4VerticalPlank))
+            {
+                plank.Children.Remove(GridLineCanvas4VerticalPlank);
+                GridLineCanvas4VerticalPlank.Children.Clear();
+            }
+
+            if (AxisY != null && AxisY.Grids.Count > 0)
+            {
+                GridLineCanvas4VerticalPlank = new Canvas();
+                GridLineCanvas4VerticalPlank.Width = plank.Width;
+                GridLineCanvas4VerticalPlank.Height = plank.Height;
+                plank.Children.Add(GridLineCanvas4VerticalPlank);
+
+                if ((Boolean)AxisY.Grids[0].Enabled)
+                {
+                    Decimal minVal = (Decimal)AxisY.Grids[0].Minimum;
+                    Decimal maxVal = (Decimal)AxisY.Grids[0].Maximum;
+                    Double interval = (Double)AxisY.Grids[0].Interval;
+                    Decimal index = 0;
+                    Double position = 0;
+                    Double[] newYCoord = new Double[2];
+                    Double[] prevYCoord = new Double[2];
+                    Decimal gap = (Decimal)interval;
+                    Int32 countRectangles = 0;
+
+                    InterlacedLines = new List<Line>();
+                    InterlacedPaths = new List<System.Windows.Shapes.Path>();
+
+                    Storyboard4PlankGridLines = new Storyboard();
+
+                    if (minVal != maxVal)
+                    {
+                        for (Decimal xValue = minVal; xValue <= maxVal; )
+                        {
+                            Line line = new Line();
+
+                            Brush lineBrush = AxisY.Grids[0].LineColor;
+
+                            line.Stroke = lineBrush;
+                            line.StrokeThickness = AxisY.Grids[0].LineThickness;
+                            line.StrokeDashArray = ExtendedGraphics.GetDashArray(AxisY.Grids[0].LineStyle);
+
+                            position = Graphics.ValueToPixelPosition(height, 0, AxisY.Grids[0].Minimum, AxisY.Grids[0].Maximum, (Double)xValue);
+
+                            if (position == 0)
+                                position += AxisY.Grids[0].LineThickness;
+
+                            line.X1 = plankDepth;
+                            line.X2 = 0;
+                            line.Y1 = position - plankDepth;
+                            line.Y2 = position - plankThickness;
+
+                            newYCoord = new Double[] { position - plankDepth, position - plankThickness };
+
+                            if (Chart._internalAnimationEnabled)
+                            {
+                                line.X2 = line.X1;
+                                line.Y2 = line.Y1;
+                                Storyboard4PlankGridLines.Children.Add(AxisY.Grids[0].CreateDoubleAnimation(line, "X2", plankDepth, 0, 0.75, 0.75));
+                                Storyboard4PlankGridLines.Children.Add(AxisY.Grids[0].CreateDoubleAnimation(line, "Y2", position - plankDepth, position - plankThickness, 0.75, 0.75));
+                            }
+
+                            GridLineCanvas4VerticalPlank.Children.Add(line);
+                            InterlacedLines.Add(line);
+
+                            if (index % 2 == 1)
+                            {
+                                System.Windows.Shapes.Path path = new System.Windows.Shapes.Path();
+                                path.StrokeThickness = 0;
+
+                                if (Chart._internalAnimationEnabled)
+                                {
+                                    path.Opacity = 0;
+                                    Storyboard4PlankGridLines.Children.Add(AxisY.Grids[0].CreateDoubleAnimation(path, "Opacity", 0, 1, 1, 0.75));
+                                }
+
+                                PointCollection col = new PointCollection();
+                                col.Add(new Point(plankDepth, prevYCoord[0]));
+                                col.Add(new Point(0, prevYCoord[1]));
+                                col.Add(new Point(0, newYCoord[1]));
+                                col.Add(new Point(plankDepth, newYCoord[0]));
+                                col.Add(new Point(plankDepth, prevYCoord[0]));
+
+                                path.Data = GetPathGeometry(col);
+
+                                Brush interlacedBrush = AxisY.Grids[0].InterlacedColor;
+
+                                countRectangles++;
+                                path.Fill = interlacedBrush;
+                                path.SetValue(Canvas.ZIndexProperty, 10);
+                                GridLineCanvas4VerticalPlank.Children.Add(path);
+                                InterlacedPaths.Add(path);
+                            }
+
+                            index += (AxisY.SkipOffset + 1);
+                            xValue = minVal + index * gap;
+
+                            prevYCoord = new Double[] { position - plankDepth, position - plankThickness };
+                        }
+                    }
+                }
+            }
+        }
+
+        private Geometry GetPathGeometry(PointCollection collection)
+        {
+            PathGeometry geometry = new PathGeometry();
+            PathFigure pathFigure = new PathFigure();
+
+            foreach (Point point in collection)
+            {
+                LineSegment segment = new LineSegment();
+                segment.Point = point;
+                pathFigure.Segments.Add(segment);
+            }
+
+            geometry.Figures.Add(pathFigure);
+            return geometry;
         }
 
         /// <summary>
@@ -3858,6 +3991,15 @@ namespace Visifire.Charts
             }
 
             ResizePanels(remainingSizeAfterDrawingAxes, renderAxisType, isPartialUpdate);
+
+            if (Double.IsNaN(remainingSizeAfterDrawingAxes.Height) 
+                || Double.IsNaN(remainingSizeAfterDrawingAxes.Width)
+                || remainingSizeAfterDrawingAxes.Height == 0 
+                || remainingSizeAfterDrawingAxes.Width == 0)
+            {
+                throw new ArgumentException("Size must be non-negative.");
+            }
+
 
             // Draw the chart grids
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -4261,6 +4403,24 @@ namespace Visifire.Charts
                         chartGrid.Storyboard.Completed += delegate
                         {
                             _isAnimationFired = true;
+
+                        };
+                    }
+                }
+
+                if (axis.AxisRepresentation == AxisRepresentations.AxisY && axis.AxisType == AxisTypes.Primary)
+                {
+                    if (Storyboard4PlankGridLines != null)
+                    {
+#if WPF
+                        Storyboard4PlankGridLines.Begin(Chart._rootElement, true);
+#else
+                        Storyboard4PlankGridLines.Begin();
+#endif
+
+                        Storyboard4PlankGridLines.Completed += delegate
+                        {
+                            _isAnimationFired = true;
                         };
                     }
                 }
@@ -4544,8 +4704,14 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    dataSeries._internalColor = null;
-
+                    if (Chart.Series.Count > 1)
+                    {
+                        if(seriesColor == null)
+                            dataSeries._internalColor = colorSet.GetNewColorFromColorSet();
+                    }
+                    else
+                        dataSeries._internalColor = null;
+ 
                     foreach (DataPoint dp in dataSeries.DataPoints)
                     {
                         dp.IsNotificationEnable = false;
@@ -4634,8 +4800,8 @@ namespace Visifire.Charts
                     if (!FLAG_UNIQUE_COLOR_4_EACH_DP || dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
                         seriesColor = colorSet4MultiSeries.GetNewColorFromColorSet();
 
-                    if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
-                        dataSeries._internalColor = seriesColor;
+                    //if (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
+                    dataSeries._internalColor = seriesColor;
 
                     foreach (DataPoint dp in dataSeries.DataPoints)
                     {   
@@ -4861,7 +5027,7 @@ namespace Visifire.Charts
                 return;
 
             if ((chart.Series.Count == 1 || (chart.Series[0].RenderAs == RenderAs.Pie || chart.Series[0].RenderAs == RenderAs.Doughnut || chart.Series[0].RenderAs == RenderAs.SectionFunnel || chart.Series[0].RenderAs == RenderAs.StreamLineFunnel)) && (Boolean)chart.Series[0].Enabled)
-            {
+            {   
                 Legend legend = null;
                 foreach (Legend entry in chart.Legends)
                     entry.Entries.Clear();
@@ -6247,6 +6413,38 @@ namespace Visifire.Charts
         /// Check whether mouse event over ShowAll icon is attached
         /// </summary>
         private Boolean _isShowAllEventAttached = false;
+
+        /// <summary>
+        /// Canvas for grid lines over vertical plank
+        /// </summary>
+        private Canvas GridLineCanvas4VerticalPlank;
+
+        /// <summary>
+        /// Chart grid storyboard
+        /// </summary>
+        internal Storyboard Storyboard4PlankGridLines
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// List of interlaced paths for grid lines over vertical plank
+        /// </summary>
+        internal List<System.Windows.Shapes.Path> InterlacedPaths
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// List of interlaced grid lines over vertical plank
+        /// </summary>
+        internal List<Line> InterlacedLines
+        {
+            get;
+            set;
+        }
 
         #endregion
     }

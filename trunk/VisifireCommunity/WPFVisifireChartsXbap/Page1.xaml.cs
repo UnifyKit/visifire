@@ -25,6 +25,13 @@ namespace WPFVisifireChartsXbap
         public Page1()
         {
             InitializeComponent();
+
+            MyChart.MouseLeftButtonUp += new MouseButtonEventHandler(MyChart_MouseLeftButtonUp);
+        }
+
+        void MyChart_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            MyChart.PlotArea.ShadowEnabled = !MyChart.PlotArea.ShadowEnabled;
         }
     }
 }

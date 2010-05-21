@@ -3073,17 +3073,17 @@ namespace Visifire.Charts
 
             if (!Double.IsPositiveInfinity(InternalMaxHeight) && InternalMaxHeight < Visual.DesiredSize.Height)
                 Visual.Height = InternalMaxHeight;
-            else
+            else 
                 Visual.Height = Visual.DesiredSize.Height;
 
             if (!Double.IsPositiveInfinity(InternalMaxWidth) && InternalMaxWidth < Visual.DesiredSize.Width + InternalPadding.Left)
                 Visual.Width = InternalMaxWidth;
-            else
+            else if (Layout == Layouts.GridLayout)
                 Visual.Width = Visual.DesiredSize.Width + InternalPadding.Left;
+            else
+                Visual.Width = Visual.DesiredSize.Width;
 
             ApplyShadow(innerGrid);
-
-            Visual.Margin = new Thickness(4);
         }
 
         #endregion

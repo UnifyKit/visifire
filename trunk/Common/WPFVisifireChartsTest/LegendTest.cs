@@ -238,7 +238,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(new Thickness(0), chart.Legends[0].BorderThickness);
+                Assert.AreEqual(new Thickness(0.50), chart.Legends[0].BorderThickness);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -266,7 +266,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.Transparent), chart.Legends[0].Background);
+                Common.AssertBrushesAreEqual(new SolidColorBrush(Colors.White), chart.Legends[0].Background);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -406,7 +406,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(9, chart.Legends[0].FontSize, Common.HighPrecisionDelta);
+                Assert.AreEqual(10, chart.Legends[0].FontSize, Common.HighPrecisionDelta);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -714,7 +714,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(10, chart.Legends[0].TitleFontSize);
+                Assert.AreEqual(11, chart.Legends[0].TitleFontSize);
             }
 
             window.Dispatcher.InvokeShutdown();
