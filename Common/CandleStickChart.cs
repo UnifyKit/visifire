@@ -179,27 +179,27 @@ namespace Visifire.Charts
         {
             highY = lowY = openY = closeY = 0;
 
-            if (dataPoint.YValues.Length >= 4)
+            if (dataPoint.InternalYValues.Length >= 4)
             {
-                openY = dataPoint.YValues[0];
-                closeY = dataPoint.YValues[1];
-                highY = dataPoint.YValues[2];
-                lowY = dataPoint.YValues[3];
+                openY = dataPoint.InternalYValues[0];
+                closeY = dataPoint.InternalYValues[1];
+                highY = dataPoint.InternalYValues[2];
+                lowY = dataPoint.InternalYValues[3];
             }
-            else if (dataPoint.YValues.Length >= 3)
+            else if (dataPoint.InternalYValues.Length >= 3)
             {
-                openY = dataPoint.YValues[0];
-                closeY = dataPoint.YValues[1];
-                highY = dataPoint.YValues[2];
+                openY = dataPoint.InternalYValues[0];
+                closeY = dataPoint.InternalYValues[1];
+                highY = dataPoint.InternalYValues[2];
             }
-            else if (dataPoint.YValues.Length >= 2)
+            else if (dataPoint.InternalYValues.Length >= 2)
             {
-                openY = dataPoint.YValues[0];
-                closeY = dataPoint.YValues[1];
+                openY = dataPoint.InternalYValues[0];
+                closeY = dataPoint.InternalYValues[1];
             }
-            else if (dataPoint.YValues.Length >= 1)
+            else if (dataPoint.InternalYValues.Length >= 1)
             {
-                openY = dataPoint.YValues[0];
+                openY = dataPoint.InternalYValues[0];
             }
         }
 
@@ -444,7 +444,7 @@ namespace Visifire.Charts
 
             dataPoint.Faces = null;
 
-            if (dataPoint.YValues == null || dataPoint.Enabled == false)
+            if (dataPoint.InternalYValues == null || dataPoint.Enabled == false)
                 return;
 
             // Creating ElementData for Tag
@@ -609,7 +609,9 @@ namespace Visifire.Charts
                 PlotGroup plotGroup = series.PlotGroup;
                 _tempDataSeries = series;
 
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+                List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(series, false);
+
+                foreach (DataPoint dataPoint in viewPortDataPoints)
                     CreateOrUpdateACandleStick(dataPoint, candleStickCanvas, labelCanvas, width, height, dataPointWidth);
 
                 // Apply animation to series

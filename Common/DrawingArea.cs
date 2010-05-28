@@ -306,7 +306,7 @@ namespace Visifire.Commons
                 if (_parent.GetType().Equals(typeof(Chart)))
                 {
                     _centerPanelDockInsidePlotArea = (_parent as Chart)._centerDockInsidePolotAreaPanel;
-                   _centerPanelDockOutsidePlotArea = (_parent as Chart)._centerDockOutsidePlotAreaPanel;
+                   _centerPanelDockOutsidePlotArea = (_parent as Chart)._centerDockOutsidePlouAreaPanel;
                 }
 
                 // Testing -- Start

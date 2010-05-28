@@ -241,7 +241,7 @@ namespace Visifire.Charts
 #endif
         void AddXWiseStackedDataEntry(ref XWiseStackedData xWiseData, DataPoint dataPoint)
         {
-            if (dataPoint.InternalYValue >= 0)
+            if (dataPoint.YValue >= 0)
             {
                 xWiseData.Positive.Add(dataPoint);
             }
@@ -368,6 +368,130 @@ namespace Visifire.Charts
             }
         }
 
+        public void CalculateMinYValueWithInAXValueRange(Double minXValue, Double maxXValue, out Double minimumY)
+        {
+            switch (RenderAs)
+            {   
+                case RenderAs.StackedArea:
+                case RenderAs.StackedBar:
+                case RenderAs.StackedColumn:
+                    {
+                        CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn, RenderAs.StackedBar, RenderAs.StackedArea);
+
+                        Double[] xValuesInViewPort = RenderHelper.GetXValuesUnderViewPort(XWiseStackedDataList.Keys.ToList(), AxisX, AxisY, false);
+
+                        var secectedValues = (from xWiseData in XWiseStackedDataList where xValuesInViewPort.Contains(xWiseData.Key) select xWiseData.Value);
+                        var negativeYValue = from xwisedata in secectedValues select xwisedata.NegativeYValueSum;
+
+                        minimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Max() : 0;
+                    }
+
+                    break;
+
+                case RenderAs.StackedArea100:
+                case RenderAs.StackedBar100:
+                case RenderAs.StackedColumn100:
+                    {
+                        CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
+
+                        Double[] xValuesInViewPort = RenderHelper.GetXValuesUnderViewPort(XWiseStackedDataList.Keys.ToList(), AxisX, AxisY, false);
+
+                        var secectedValues = (from xWiseData in XWiseStackedDataList where xValuesInViewPort.Contains(xWiseData.Key) select xWiseData.Value);
+                        var negativeYValue = from xwisedata in secectedValues select xwisedata.NegativeYValueSum;
+
+                        minimumY = (negativeYValue.Count() > 0) ? (negativeYValue).Min() : 0;
+
+                        // Since for stacked chart the Minimum can't be greater than 0 or less then -100
+                        // Check and set appropriate limit
+                        minimumY = (minimumY >= 0) ? 0 : -100;
+                    }
+
+                    break;
+
+                case RenderAs.CandleStick:
+                case RenderAs.Stock:
+
+                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+                    minimumY = (from dp in dataPointsInViewPort select dp.YValues.Min()).Min();
+
+                    break;
+                default:
+
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+                    var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
+
+                    if (yValues.Count() > 0)
+                        minimumY = yValues.Min();
+                    else
+                        minimumY = Double.NaN;
+
+                    break;
+            };
+        }
+
+        public void CalculateMaxYValueWithInAXValueRange(Double minXValue, Double maxXValue, out Double maximumY)
+        {
+            switch (RenderAs)
+            {
+                case RenderAs.StackedArea:
+                case RenderAs.StackedBar:
+                case RenderAs.StackedColumn:
+                    {
+                        CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn, RenderAs.StackedBar, RenderAs.StackedArea);
+
+                        Double[] xValuesInViewPort = RenderHelper.GetXValuesUnderViewPort(XWiseStackedDataList.Keys.ToList(), AxisX, AxisY, true);
+
+                        var secectedValues = (from xWiseData in XWiseStackedDataList where xValuesInViewPort.Contains(xWiseData.Key) select xWiseData.Value);
+                        var positiveYValue = from xwisedata in secectedValues select xwisedata.PositiveYValueSum;
+
+                        maximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
+
+                    }
+
+                    break;
+
+                case RenderAs.StackedArea100:
+                case RenderAs.StackedBar100:
+                case RenderAs.StackedColumn100:
+                    {
+                        CreateXWiseStackedDataEntry(ref _dataPointsInCurrentPlotGroup, RenderAs.StackedColumn100, RenderAs.StackedBar100, RenderAs.StackedArea100);
+
+                        Double[] xValuesInViewPort = RenderHelper.GetXValuesUnderViewPort(XWiseStackedDataList.Keys.ToList(), AxisX, AxisY, true);
+
+                        var secectedValues = (from xWiseData in XWiseStackedDataList where xValuesInViewPort.Contains(xWiseData.Key) select xWiseData.Value);
+                        var positiveYValue = from xwisedata in secectedValues select xwisedata.PositiveYValueSum;
+                       
+                        maximumY = (positiveYValue.Count() > 0) ? (positiveYValue).Max() : 0;
+
+                        // Since for stacked chart the Maximum can't be greater than 100 or less then 0
+                        // Check and set appropriate limit
+                        maximumY = (maximumY > 0) ? 100 : 0;
+                    }
+
+                    break;
+
+                case RenderAs.CandleStick:
+                case RenderAs.Stock:
+
+                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+
+                    maximumY = (from dp in dataPointsInViewPort select dp.YValues.Max()).Max();
+                    break;
+                default:
+
+                    List<DataPoint> dataPointsInViewPort1 = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
+
+                    var yValues = (from dp in dataPointsInViewPort1 select dp.YValue);
+
+                    if (yValues.Count() > 0)
+                        maximumY = yValues.Max();
+                    else
+                        maximumY = Double.NaN;
+
+                    break;
+            };
+        }
+
         /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>
@@ -445,7 +569,7 @@ namespace Visifire.Charts
                     if (dependentVariableTypes.Count == 1 && dependentVariableTypes[0] == typeof(List<Double>))
                         _yValues = new List<Double>();
                     else
-                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).ToList();
+                        _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.YValue) select dataPoint.YValue).ToList();
 
                     //List<Double> yValuesList = new List<Double>();
 
@@ -555,9 +679,9 @@ namespace Visifire.Charts
                             }
                         }
                         else
-                        {   
-                            MaximumY = (_yValues.Count() > 0) ? (_yValues).Max() : 0;
-                            MinimumY = (_yValues.Count() > 0) ? (_yValues).Min() : 0;
+                        {
+                            MaximumY = (_yValues.Count() > 0) ? _yValues.Max() : 0;
+                            MinimumY = (_yValues.Count() > 0) ? _yValues.Min() : 0;
                         }
 
                         break;
@@ -575,7 +699,7 @@ namespace Visifire.Charts
                             //    MinimumY = value < MinimumY ? value : MinimumY;
                             //}
                             //else
-                            {
+                            {   
                                 var positiveYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.PositiveYValueSum;
                                 var negativeYValue = from xwisedata in XWiseStackedDataList.Values select xwisedata.NegativeYValueSum;
 
