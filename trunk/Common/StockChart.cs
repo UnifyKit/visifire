@@ -277,7 +277,7 @@ namespace Visifire.Charts
 
             dataPoint.Faces = null;
 
-            if (dataPoint.YValues == null || dataPoint.Enabled == false)
+            if (dataPoint.InternalYValues == null || dataPoint.Enabled == false)
                 return;
 
             // Initialize DataPoint faces
@@ -370,7 +370,9 @@ namespace Visifire.Charts
                 PlotGroup plotGroup = series.PlotGroup;
                 _tempDataSeries = series;
 
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+                List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(series, false);
+
+                foreach (DataPoint dataPoint in viewPortDataPoints)
                     CreateOrUpdateAStockDataPoint(dataPoint, stockChartCanvas, labelCanvas, width, height, dataPointWidth);
             }
 

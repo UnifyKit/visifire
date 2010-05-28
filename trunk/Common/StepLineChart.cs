@@ -1350,8 +1350,7 @@ namespace Visifire.Charts
             DataPoint dataPoint = null;
             DataSeries dataSeries = obj as DataSeries;
             Boolean isDataPoint = false;
-
-
+            
             if (dataSeries == null)
             {
                 isDataPoint = true;
@@ -1459,6 +1458,7 @@ namespace Visifire.Charts
                 case VcProperties.YValue:
                 case VcProperties.YValues:
                 case VcProperties.XValue:
+                case VcProperties.ViewportRangeEnabled:
                 RENDER_SERIES:
 
                     if (dataSeries.Enabled == false)
@@ -1466,7 +1466,7 @@ namespace Visifire.Charts
 
                 Axis axisX = plotGroup.AxisX;
                 Axis axisY = plotGroup.AxisY;
-
+                
                 // line2dCanvas.OpacityMask = new SolidColorBrush(Colors.Transparent);
                 // label2dCanvas.OpacityMask = new SolidColorBrush(Colors.Transparent);
 
@@ -1484,10 +1484,20 @@ namespace Visifire.Charts
 
                 List<DataPoint> pc = new List<DataPoint>();
                 List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
-
+                
                 pointCollectionList.Add(pc);
-                // List<DataPoint> enabledDataPoints = (from dp in dataSeries.InternalDataPoints where (Boolean) dp.Enabled == true select dp).ToList();
+
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                {
+                    if (dp.Marker != null && dp.Marker.Visual != null)
+                        dp.Marker.Visual.Visibility = Visibility.Collapsed;
+
+                    if (dp.LabelVisual != null)
+                        dp.LabelVisual.Visibility = Visibility.Collapsed;
+                }
+                
+                List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+                foreach (DataPoint dp in viewPortDataPoints)
                 {
                     if (dp.Enabled == false)
                     {
@@ -2447,8 +2457,10 @@ namespace Visifire.Charts
             // Canvas line2dCanvas = new Canvas();
             // Canvas lineCanvas;
 
-            foreach (DataPoint dataPoint in series.InternalDataPoints)
-            {
+            List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(series, false);
+
+            foreach (DataPoint dataPoint in viewPortDataPoints)
+            {   
                 if (dataPoint.Enabled == false)
                     continue;
 

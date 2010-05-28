@@ -29,8 +29,7 @@ namespace Visifire.Charts
 
                 case RenderAs.Bar:
                     renderedCanvas = ColumnChart.GetVisualObjectForColumnChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
-                   
-                    //renderedCanvas = BarChart.GetVisualObjectForBarChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
+                    // renderedCanvas = BarChart.GetVisualObjectForBarChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Line:
@@ -242,7 +241,7 @@ namespace Visifire.Charts
 
                   case RenderAs.Line:
 
-                        if(property == VcProperties.Enabled)
+                        if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                             //LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         else
@@ -274,9 +273,13 @@ namespace Visifire.Charts
                         //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
                         //    }
                         //}
-
-                        foreach (DataSeries ds in selectedDataSeries4Rendering)
-                            PointChart.Update(ds, property, newValue, false);
+                        if (property == VcProperties.ViewportRangeEnabled)
+                            ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        else
+                        {
+                            foreach (DataSeries ds in selectedDataSeries4Rendering)
+                                PointChart.Update(ds, property, newValue, false);
+                        }
 
                         // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
@@ -291,9 +294,13 @@ namespace Visifire.Charts
                         //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
                         //    }
                         //}
-
-                        foreach (DataSeries ds in selectedDataSeries4Rendering)
-                            BubbleChart.Update(ds, property, newValue, false);
+                        if (property == VcProperties.ViewportRangeEnabled)
+                            ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        else
+                        {
+                            foreach (DataSeries ds in selectedDataSeries4Rendering)
+                                BubbleChart.Update(ds, property, newValue, false);
+                        }
 
                         // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
@@ -380,15 +387,16 @@ namespace Visifire.Charts
                        // CandleStick.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                        // renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
-               
                 }
 
-                //renderedChart = RenderSeriesFromList(selectedDataSeries4Rendering);
+                // renderedChart = RenderSeriesFromList(selectedDataSeries4Rendering);
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
             }
 
-            chart.ChartArea.AttachScrollEvents();
+           // if(property != VcProperties.ViewportRangeEnabled)
+                chart.ChartArea.AttachScrollBarOffsetChangedEventWithAxes();
+
             Visifire.Charts.Chart.SelectDataPoints(chart);
             //AttachEventsToolTipHref2DataSeries();
         }
@@ -544,5 +552,169 @@ namespace Visifire.Charts
             //chart.ChartArea.AttachScrollEvents();
         }
 
+        internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange)
+        {
+            if (dataPoints.Count > 0)
+            {   
+                DataSeries dataSeries = dataPoints[0].Parent;
+                if (dataSeries.PlotGroup.AxisY.ViewportRangeEnabled)
+                {
+                    PlotGroup plotGroup = dataSeries.PlotGroup;
+                    Axis axisX = plotGroup.AxisX;
+                    List<DataPoint> viewPortDataPoints;
+
+                    Double minXValueRangeOfViewPort = axisX._numericViewMinimum;
+                    Double maxXValueRangeOfViewPort = axisX._numericViewMaximum;
+
+                    Double offset = Math.Abs(minXValueRangeOfViewPort - maxXValueRangeOfViewPort) * .4;
+                    //minXValueRangeOfViewPort -= offset;
+                    //maxXValueRangeOfViewPort += offset;
+
+                    if (!isUsedForAxisRange)
+                    {
+                        var leftDataPoints = (from dp in dataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) select dp.InternalXValue);
+                        var rightDataPoints = (from dp in dataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) select dp.InternalXValue);
+
+                        if (leftDataPoints.Count() > 0)
+                            minXValueRangeOfViewPort = leftDataPoints.Max();
+                        if (rightDataPoints.Count() > 0)
+                            maxXValueRangeOfViewPort = rightDataPoints.Min();
+                    }
+                    
+                    viewPortDataPoints = dataPoints
+                               .Where(d => d.InternalXValue >= minXValueRangeOfViewPort
+                                   && d.InternalXValue <= maxXValueRangeOfViewPort).ToList();
+
+                    System.Diagnostics.Debug.WriteLine("viewPortDataPoints=" + viewPortDataPoints.Count.ToString());
+
+                    if (viewPortDataPoints.Count <= 3)
+                    {
+                        var leftDataPoints = (from dp in dataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) orderby dp.InternalXValue select dp);
+                        List<DataPoint> rightDataPoints = (from dp in dataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) orderby dp.InternalXValue select dp).ToList();
+
+                        if (leftDataPoints.Count() > 0)
+                            viewPortDataPoints.Insert(0, leftDataPoints.Last());
+
+                        if (rightDataPoints.Count > 0)
+                            viewPortDataPoints.Add(rightDataPoints[0]);
+
+                        if (rightDataPoints.Count > 1)
+                            viewPortDataPoints.Add(rightDataPoints[1]);
+
+                        if (rightDataPoints.Count > 2)
+                            viewPortDataPoints.Add(rightDataPoints[2]);
+                    }
+
+                    return viewPortDataPoints;
+                }
+                else
+                    return dataPoints;
+            }
+            else
+                return dataPoints;
+        }
+
+        internal static List<DataPoint> GetDataPointsUnderViewPort(DataSeries dataSeries, Boolean isUsedForAxisRange)
+        {
+            if (dataSeries.PlotGroup.AxisY.ViewportRangeEnabled)
+            {
+                PlotGroup plotGroup = dataSeries.PlotGroup;
+                Axis axisX = plotGroup.AxisX;
+                List<DataPoint> viewPortDataPoints;
+
+                Double minXValueRangeOfViewPort = axisX._numericViewMinimum;
+                Double maxXValueRangeOfViewPort = axisX._numericViewMaximum;
+                //Double offset = Math.Abs(minXValueRangeOfViewPort - maxXValueRangeOfViewPort) * .4;
+                //minXValueRangeOfViewPort -= offset;
+                //maxXValueRangeOfViewPort += offset;
+
+                if (!isUsedForAxisRange)
+                {   
+                    var leftDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) select dp.InternalXValue);
+                    var rightDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) select dp.InternalXValue);
+
+                    if (leftDataPoints.Count() > 0)
+                        minXValueRangeOfViewPort = leftDataPoints.Max();
+                    if (rightDataPoints.Count() > 0)
+                        maxXValueRangeOfViewPort = rightDataPoints.Min();
+                }
+
+                viewPortDataPoints = dataSeries.InternalDataPoints
+                           .Where(d => d.InternalXValue >= minXValueRangeOfViewPort
+                               && d.InternalXValue <= maxXValueRangeOfViewPort).ToList();
+
+                if (viewPortDataPoints.Count <= 3)
+                {
+                    var leftDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue < minXValueRangeOfViewPort) orderby dp.InternalXValue select dp);
+                    List<DataPoint> rightDataPoints = (from dp in dataSeries.InternalDataPoints where (dp.InternalXValue > maxXValueRangeOfViewPort) orderby dp.InternalXValue select dp).ToList();
+
+                    if (leftDataPoints.Count() > 0)
+                        viewPortDataPoints.Insert(0,leftDataPoints.Last());
+
+                    if (rightDataPoints.Count > 0)
+                        viewPortDataPoints.Add(rightDataPoints[0]);
+
+                    if (rightDataPoints.Count > 1)
+                        viewPortDataPoints.Add(rightDataPoints[1]);
+
+                    if (rightDataPoints.Count > 2)
+                        viewPortDataPoints.Add(rightDataPoints[2]);
+                }
+
+                return viewPortDataPoints;
+            }
+            else
+                return dataSeries.InternalDataPoints;
+        }
+
+        internal static Double[] GetXValuesUnderViewPort(List<Double> xValues, Axis axisX, Axis axisY, Boolean isUsedForAxisRange)
+        {   
+            if (axisY.ViewportRangeEnabled)
+            {   
+                List<Double> viewPortXValues;
+
+                Double minXValueRangeOfViewPort = axisX._numericViewMinimum;
+                Double maxXValueRangeOfViewPort = axisX._numericViewMaximum;
+                //Double offset = Math.Abs(minXValueRangeOfViewPort - maxXValueRangeOfViewPort) * .4;
+                //minXValueRangeOfViewPort -= offset;
+                //maxXValueRangeOfViewPort += offset;
+
+                if (!isUsedForAxisRange)
+                {
+                    var leftXValues = (from xValue in xValues where (xValue < minXValueRangeOfViewPort) select xValue);
+                    var rightXValues = (from xValue in xValues where (xValue > maxXValueRangeOfViewPort) select xValue);
+
+                    if (leftXValues.Count() > 0)
+                        minXValueRangeOfViewPort = leftXValues.Max();
+                    if (rightXValues.Count() > 0)
+                        maxXValueRangeOfViewPort = rightXValues.Min();
+                }
+
+                viewPortXValues = xValues.Where(d =>
+                    d >= minXValueRangeOfViewPort && d <= maxXValueRangeOfViewPort).ToList();
+
+                if (viewPortXValues.Count <= 3)
+                {
+                    var leftDataPoints = (from xValue in xValues where (xValue < minXValueRangeOfViewPort) select xValue).Distinct();
+                    List<Double> rightDataPoints = (from xValue in xValues where (xValue > maxXValueRangeOfViewPort) select xValue).Distinct().ToList();
+
+                    if (leftDataPoints.Count() > 0)
+                        viewPortXValues.Insert(0, leftDataPoints.Last());
+
+                    if (rightDataPoints.Count > 0)
+                        viewPortXValues.Add(rightDataPoints[0]);
+
+                    if (rightDataPoints.Count > 1)
+                        viewPortXValues.Add(rightDataPoints[1]);
+
+                    if (rightDataPoints.Count > 2)
+                        viewPortXValues.Add(rightDataPoints[2]);
+                }
+
+                return viewPortXValues.ToArray();
+            }
+            else
+                return xValues.ToArray();
+        }
    }
 }

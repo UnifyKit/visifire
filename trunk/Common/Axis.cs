@@ -170,6 +170,9 @@ namespace Visifire.Charts
                 newMaxXValue = Convert.ToDouble(maxXValue);
             }
 
+            chart.ChartArea.AxisX._numericViewMinimum = Math.Min(newMaxXValue, newMinXValue);
+            chart.ChartArea.AxisX._numericViewMaximum = Math.Max(newMaxXValue, newMinXValue);
+       
             Double minPixelValue;
             Double maxPixelValue;
 
@@ -183,7 +186,7 @@ namespace Visifire.Charts
                 minPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMinXValue);
                 maxPixelValue = Graphics.ValueToPixelPosition(ScrollableSize, 0, InternalAxisMinimum, InternalAxisMaximum, newMaxXValue);
             }
-
+            
             Double viewPortPixDiff = ScrollableSize;   // Pixel diff between ViewMin and ViewMax
             Double xValuePixDiff;             // maxPixelValue - minPixelValue;
 
@@ -318,6 +321,19 @@ namespace Visifire.Charts
         #endregion
 
         #region Public Properties
+
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.ViewportRangeEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.ViewportRangeEnabled dependency property.
+        /// </returns>
+        public static DependencyProperty ViewportRangeEnabledProperty = DependencyProperty.Register
+            ("ViewportRangeEnabled",
+            typeof(Boolean),
+            typeof(Axis),
+            new PropertyMetadata(false, OnViewportRangeEnabledPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Axis.AxisLabels dependency property.
@@ -743,6 +759,30 @@ namespace Visifire.Charts
             new PropertyMetadata(OnIntervalTypePropertyChanged));
 
         /// <summary>
+        /// Identifies the Visifire.Charts.Axis.Logarithmic dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.Logarithmic dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LogarithmicProperty = DependencyProperty.Register
+            ("Logarithmic",
+            typeof(Boolean),
+            typeof(Axis),
+            new PropertyMetadata(false, OnLogarithmicPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.Axis.LogarithmBase dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.Axis.LogarithmBase dependency property.
+        /// </returns>
+        public static readonly DependencyProperty LogarithmBaseProperty = DependencyProperty.Register
+            ("LogarithmBase",
+            typeof(Double),
+            typeof(Axis),
+            new PropertyMetadata(10.0, OnLogarithmBasePropertyChanged));
+
+        /// <summary>
         /// Gets axis data view maximum XValue position.
         /// </summary>
         /// <Returns>
@@ -765,7 +805,7 @@ namespace Visifire.Charts
             get;
             internal set;
         }
-        
+
         /// <summary>
         /// Height of the Axis
         /// </summary>
@@ -887,6 +927,38 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Sets whether the Axis scale is Logarithmic. The default value is False.
+        /// </summary>
+        public Boolean Logarithmic
+        {
+            get
+            {
+                return (Boolean)GetValue(LogarithmicProperty);
+            }
+            set
+            {
+
+                SetValue(LogarithmicProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Sets the base of the Logarithm for Logarithmic Axis. The default value is 10.
+        /// </summary>
+        public Double LogarithmBase
+        {
+            get
+            {
+                return (Double)GetValue(LogarithmBaseProperty);
+            }
+            set
+            {
+
+                SetValue(LogarithmBaseProperty, value);
+            }
+        }
+
+        /// <summary>
         /// Get or set the "AxisLabels element" property of the axis
         /// </summary>
         public IntervalTypes IntervalType
@@ -898,6 +970,21 @@ namespace Visifire.Charts
             set
             {
                 SetValue(IntervalTypeProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the ViewportRangeEnabled property of the axis
+        /// </summary>
+        public Boolean ViewportRangeEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(ViewportRangeEnabledProperty);
+            }
+            set
+            {
+                SetValue(ViewportRangeEnabledProperty, value);
             }
         }
 
@@ -1269,7 +1356,12 @@ namespace Visifire.Charts
                 if ((Nullable<Boolean>)GetValue(StartFromZeroProperty) == null)
                 {
                     if (AxisRepresentation == AxisRepresentations.AxisY)
-                        return true;
+                    {
+                        if (ViewportRangeEnabled)
+                            return false;
+                        else
+                            return true;
+                    }
                     else
                         return false;
                 }
@@ -1360,8 +1452,7 @@ namespace Visifire.Charts
             }
         }
 
-        internal Double _internalZoomingScale;
-        internal Double _internalMinimumZoomingScale;
+
 
         /// <summary>
         /// ScrollBarScale sets the size of ScrollBar thumb.  
@@ -1762,8 +1853,11 @@ namespace Visifire.Charts
                         return MinDate;
                 }
                 else
-                {   
-                    return InternalAxisMinimum;
+                {
+                    if (AxisRepresentation == AxisRepresentations.AxisY && Logarithmic)
+                        return DataPoint.ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalAxisMinimum, AxisType);
+                    else
+                        return InternalAxisMinimum;
                 }
             }
         }
@@ -1786,8 +1880,11 @@ namespace Visifire.Charts
                         return MaxDate;
                 }
                 else
-                {   
-                    return InternalAxisMaximum;
+                {
+                    if (AxisRepresentation == AxisRepresentations.AxisY && Logarithmic)
+                        return DataPoint.ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalAxisMaximum, AxisType);
+                    else
+                        return InternalAxisMaximum;
                 }
             }
         }
@@ -1796,7 +1893,7 @@ namespace Visifire.Charts
         /// Internal axis minimum is used for internal calculation purpose
         /// </summary>
         internal Double InternalAxisMinimum
-        {
+        {   
             get;
             private set;
         }
@@ -2165,6 +2262,17 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
             axis.InternalOpacity = (Double)e.NewValue;
             axis.FirePropertyChanged(VcProperties.Opacity);
+        }
+
+        /// <summary>
+        /// ViewportRangeEnabledProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnViewportRangeEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.FirePropertyChanged(VcProperties.ViewportRangeEnabled);
         }
 
         /// <summary>
@@ -2561,7 +2669,7 @@ namespace Visifire.Charts
             Axis axis = d as Axis;
 
             if (axis._isScrollToOffsetEnabled)
-                axis.SetScrollBarValueFromOffset((Double)e.NewValue);
+                axis.SetScrollBarValueFromOffset((Double)e.NewValue, true);
         }
 
         /// <summary>
@@ -2624,6 +2732,28 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Event handler manages Logarithmic property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLogarithmicPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.FirePropertyChanged(VcProperties.Logarithmic);
+        }
+
+        /// <summary>
+        /// Event handler manages LogarithmBase property change event of axis
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnLogarithmBasePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Axis axis = d as Axis;
+            axis.FirePropertyChanged(VcProperties.LogarithmBase);
+        }
+
+        /// <summary>
         /// Set up axis manager and calculate axis values
         /// </summary>
         private void SetUpAxisManager()
@@ -2632,11 +2762,25 @@ namespace Visifire.Charts
             Minimum = AxisRepresentation == AxisRepresentations.AxisX ? PlotDetails.GetAxisXMinimumDataValue(this) : PlotDetails.GetAxisYMinimumDataValue(this);
             Maximum = AxisRepresentation == AxisRepresentations.AxisX ? PlotDetails.GetAxisXMaximumDataValue(this) : PlotDetails.GetAxisYMaximumDataValue(this);
 
+            if(Logarithmic)
+            {
+                Double minimum = PlotDetails.GetAxisYMinimumDataValueFromAllDataSeries(this);
+                if (minimum <= 0 || Maximum <= 0)
+                    throw new Exception("Negative or zero values cannot be plotted correctly on logarithmic charts.");
+            }
+                
             Boolean overflowValidity = (AxisRepresentation == AxisRepresentations.AxisX);
             Boolean stackingOverride = PlotDetails.GetStacked100OverrideState();
 
+
+            // Check if ViewportRangeEnabled property is set in Logarithmic Axis.
+            // If set then the minimum value of Log scale should be generated depending upon the new AxisMinimum.
+            Boolean startFromMinimumValue4LogScale = false;
+            if (AxisRepresentation == AxisRepresentations.AxisY && ViewportRangeEnabled && Logarithmic)
+                startFromMinimumValue4LogScale = true;
+
             // Create and initialize the AxisManagers
-            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride, AxisRepresentation);
+            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride, AxisRepresentation, Logarithmic, LogarithmBase, startFromMinimumValue4LogScale);
 
             // Set the include zero state
             AxisManager.IncludeZero = IncludeZero;
@@ -2711,7 +2855,6 @@ namespace Visifire.Charts
                 // Set the internal axis limits the one obtained from axis manager
                 InternalAxisMaximum = AxisManager.AxisMaximumValue;
                 InternalAxisMinimum = AxisManager.AxisMinimumValue;
-
             }
             else if (this.AxisRepresentation == AxisRepresentations.AxisY && this.AxisType == AxisTypes.Secondary)
             {
@@ -2730,10 +2873,34 @@ namespace Visifire.Charts
                     {   
                         // This will set the internal overriding flag
                         AxisManager.AxisMinimumValue = AxisManager.AxisMinimumValue;
-                        AxisManager.AxisMaximumValue = AxisManager.AxisMaximumValue;
+                        if ((Boolean)StartFromZero)
+                        {
+                            if (AxisManager.AxisMinimumValue == 0)
+                            {
+                                if (Logarithmic)
+                                    AxisManager.AxisMinimumValue = Math.Pow(LogarithmBase, 0);
+                            }
+                        }
+
+                        if (Logarithmic)
+                        {
+                            AxisManager.AxisMaximumValue = Math.Pow(LogarithmBase, AxisManager.AxisMaximumValue);
+
+                            // This interval will reflect the interval in primary axis it is not same as that of primary axis
+                            AxisManager.Interval = (Math.Log(AxisManager.AxisMaximumValue, LogarithmBase) - Math.Log(AxisManager.AxisMinimumValue, LogarithmBase)) / primaryAxisIntervalCount;
+
+                        }
+                        else
+                        {
+                            AxisManager.AxisMaximumValue = AxisManager.AxisMaximumValue;
+
+                            // This interval will reflect the interval in primary axis it is not same as that of primary axis
+                            AxisManager.Interval = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) / primaryAxisIntervalCount;
+
+                        }
 
                         // This interval will reflect the interval in primary axis it is not same as that of primary axis
-                        AxisManager.Interval = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) / primaryAxisIntervalCount;
+                        //AxisManager.Interval = (AxisManager.AxisMaximumValue - AxisManager.AxisMinimumValue) / primaryAxisIntervalCount;
 
                         AxisManager.Calculate();
                     }
@@ -3220,7 +3387,7 @@ namespace Visifire.Charts
                 Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
                 Double theta = Math.Atan(width / labelBase);
 
-                if (width > visualWidth)
+                if (width > visualWidth)
                     width = visualWidth;
 
                 bottomOverflow = (width / Math.Tan(theta));
@@ -4017,47 +4184,62 @@ namespace Visifire.Charts
         /// <param name="margin">Margin between axis title and axis scale</param>
         private void CreateAxisTitleVisual(Thickness margin)
         {
-            if (AxisTitleElement != null)
+            try
             {
-                AxisTitleElement.InternalMargin = margin;
+                Double fontSize;
 
-                AxisTitleElement.IsNotificationEnable = false;
+                if (AxisTitleElement != null)
+                {
+                    AxisTitleElement.InternalMargin = margin;
 
-            RECAL:
+                    AxisTitleElement.IsNotificationEnable = false;
 
-                AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
+                RECAL:
+
+                    AxisTitleElement.CreateVisualObject(new ElementData() { Element = this });
 #if WPF
                 AxisTitleElement.Visual.FlowDirection = FlowDirection.LeftToRight;
 #endif
-                Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
+                    Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
-                if (AxisOrientation == Orientation.Horizontal)
-                {
-                    if (size.Width > Width && Width != 0)
+                    if (AxisOrientation == Orientation.Horizontal)
                     {
-                        if (AxisTitleElement.InternalFontSize == 0.2)
-                            goto RETURN;
+                        if (size.Width > Width && Width != 0)
+                        {
+                            if (AxisTitleElement.InternalFontSize == 0.2)
+                                goto RETURN;
 
-                        AxisTitleElement.InternalFontSize -= 0.2;
+                            fontSize = AxisTitleElement.InternalFontSize;
+                            fontSize -= 0.2;
+                            AxisTitleElement.InternalFontSize = Math.Round(fontSize, 2);
 
-                        goto RECAL;
+                            goto RECAL;
+                        }
                     }
-                }
-                else
-                {
-                    if (size.Height > Height && Height != 0)
+                    else
                     {
-                        if (AxisTitleElement.InternalFontSize == 0.2)
-                            goto RETURN;
-
-                        AxisTitleElement.InternalFontSize -= 0.2;
-                        goto RECAL;
+                        if (size.Height > Height && Height != 0)
+                        {   
+                            if (AxisTitleElement.InternalFontSize == 0.2)
+                                goto RETURN;
+                                
+                            fontSize = AxisTitleElement.InternalFontSize;
+                            fontSize -= 0.2;
+                            AxisTitleElement.InternalFontSize = Math.Round(fontSize, 2);
+                            
+                            goto RECAL;
+                        }
                     }
+
+                RETURN:
+
+                    AxisTitleElement.IsNotificationEnable = true;
                 }
 
-            RETURN:
-
-                AxisTitleElement.IsNotificationEnable = true;
+            }
+            catch (ArgumentException e1)
+            {
+                throw new ArgumentException("Internal Size Error");
             }
         }
 
@@ -4632,7 +4814,7 @@ namespace Visifire.Charts
         /// Set axis scroll value to scrollbar associated with this axis
         /// </summary>
         /// <param name="offset">Scrollbar offset</param>
-        internal void SetScrollBarValueFromOffset(Double offset)
+        internal void SetScrollBarValueFromOffset(Double offset, Boolean isScrollBarOffsetPropertyChanged)
         {
             if (ScrollBarElement != null && !ScrollBarElement.IsStretching) // &&  !(Chart as Chart).ZoomingEnabled)//
             {
@@ -4640,7 +4822,7 @@ namespace Visifire.Charts
                 ScrollBarElement.SetValue(ScrollBar.ValueProperty, value);
 
                 if (ScrollBarOffsetChanged != null)
-                    ScrollBarOffsetChanged(ScrollBarElement, new ScrollEventArgs(ScrollEventType.First, value));
+                    ScrollBarOffsetChanged(ScrollBarElement, new ScrollEventArgs(isScrollBarOffsetPropertyChanged ? ScrollEventType.ThumbTrack : ScrollEventType.First, value));
             }
         }
 
@@ -4669,7 +4851,7 @@ namespace Visifire.Charts
         {
             Double offsetInPixel4MinValue;
             Double offsetInPixel4MaxValue;
-
+            
             Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
             Double lengthInPixel;
 
@@ -4692,22 +4874,24 @@ namespace Visifire.Charts
 
             // Calculate View Minimum
             Double xValue = PixelPositionToXValue(lengthInPixel, offsetInPixel4MinValue);
+            _numericViewMinimum = xValue;
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
-            {
+            {   
                 if (chart.PlotDetails.ListOfAllDataPoints.Count != 0)
-                {
+                {   
                     ViewMinimum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
                         xValue, chart.ChartArea.AxisX.InternalIntervalType);
                 }
                 else
                     ViewMinimum = chart.ChartArea.AxisX.MinDate;
-            }
+            }   
             else
                 ViewMinimum = xValue;
 
             // Calculate View Maximum
             xValue = PixelPositionToXValue(lengthInPixel, offsetInPixel4MaxValue);
+            _numericViewMaximum = xValue;
 
             if (chart.ChartArea.AxisX.IsDateTimeAxis)
                 ViewMaximum = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate,
@@ -4717,31 +4901,31 @@ namespace Visifire.Charts
         }
 
         internal void FireScrollEvent(ScrollEventArgs e, Double offsetInPixel)
-        {
+        {   
             if (Chart != null && (Chart as Chart).Series.Count > 0)
-            {
+            {   
                 if (PlotDetails.ListOfAllDataPoints.Count != 0)
-                {
+                {   
                     if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
                         return;
 
                     _oldScrollBarOffsetInPixel = offsetInPixel;
 
                     if (AxisRepresentation == AxisRepresentations.AxisX)
-                    {
+                    {   
                         Chart chart = Chart as Chart;
 
                         CalculateViewMinimumAndMaximum(chart, offsetInPixel);
 
                         if (_zoomStateStack.Count == 0)
-                        {
+                        {   
                             _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
                             _oldZoomState.MinXValue = null;
                             _oldZoomState.MaxXValue = null;
                         }
-
+                        
                         if (_showAllState)
-                        {
+                        {   
                             _zoomStateStack.Clear();
                             _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
                             _oldZoomState.MinXValue = null;
@@ -4756,7 +4940,9 @@ namespace Visifire.Charts
                         }
 
                         if (_onScroll != null && !chart.ChartArea._isFirstTimeRender)
+                        {   
                             _onScroll(this, new AxisScrollEventArgs(e));
+                        }
 
                         _isScrollEventFiredFirstTime = false;
                     }
@@ -4769,7 +4955,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Chart">Chart</param>
         internal void CreateVisualObject(Chart Chart)
-        {
+        {   
             if(AxisLabels == null)
                 AxisLabels = new AxisLabels();
 
@@ -5057,7 +5243,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Old ScrollBar offset value in pixel
         /// </summary>
-        private Double _oldScrollBarOffsetInPixel = Double.NaN;
+        internal Double _oldScrollBarOffsetInPixel = Double.NaN;
 
         /// <summary>
         /// Handler for Scroll event
@@ -5070,6 +5256,16 @@ namespace Visifire.Charts
         internal event EventHandler<AxisZoomEventArgs> _onZoom;
 
         internal Stack<ZoomState> _zoomStateStack = new Stack<ZoomState>();
+        
+        /// <summary>
+        /// Numeric XValue corresponding to View Minimum (Applicable for Numeric axis as well as DateTime axis)
+        /// </summary>
+        internal Double _numericViewMinimum;
+
+        /// <summary>
+        /// Numeric XValue corresponding to View Maximum (Applicable for Numeric axis as well as DateTime axis)
+        /// </summary>
+        internal Double _numericViewMaximum;
 
         /// <summary>
         /// Check whether Scroll event fired first time
@@ -5089,6 +5285,9 @@ namespace Visifire.Charts
         Double _internalMaxWidth = Double.NaN;
         Double _internalMinHeight = Double.NaN;
         Double _internalMinWidth = Double.NaN;
+
+        internal Double _internalZoomingScale;
+        internal Double _internalMinimumZoomingScale;
 
         Boolean _showAllState = false;
 

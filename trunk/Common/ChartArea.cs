@@ -183,7 +183,7 @@ namespace Visifire.Charts
 
             if (!_isFirstTimeRender || !chart.AnimationEnabled)
             {   
-                AttachScrollEvents();
+                AttachScrollBarOffsetChangedEventWithAxes();
                 Visifire.Charts.Chart.SelectDataPoints(Chart);
 
                 chart.Dispatcher.BeginInvoke(new Action(chart.UnlockRender));
@@ -195,7 +195,41 @@ namespace Visifire.Charts
 
             AttachEvents2ZoomOutIcons(chart);
 
-            System.Diagnostics.Debug.WriteLine("xxxxxxx--- Render End");
+            SettingsForVirtualRendering();
+
+            // System.Diagnostics.Debug.WriteLine("xxxxxxx--- Render End");
+        }
+
+        private void SettingsForVirtualRendering()
+        {
+            if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis && AxisX != null)
+            {   
+                AxisX.Scroll -= AxisX_Scroll;
+                AxisX.Scroll += new EventHandler<AxisScrollEventArgs>(AxisX_Scroll);
+            }
+        }
+
+        void AxisX_Scroll(object sender, AxisScrollEventArgs e)
+        {
+            if(e.ScrollEventArgs.ScrollEventType == ScrollEventType.ThumbTrack
+                || e.ScrollEventArgs.ScrollEventType == ScrollEventType.LargeDecrement
+                || e.ScrollEventArgs.ScrollEventType == ScrollEventType.LargeIncrement
+                || e.ScrollEventArgs.ScrollEventType == ScrollEventType.SmallDecrement
+                || e.ScrollEventArgs.ScrollEventType == ScrollEventType.SmallIncrement)
+            {   
+                Axis axisX = sender as Axis;
+                axisX.Height = axisX.ActualHeight;
+                foreach (DataSeries ds in Chart.Series)
+                {
+                    if ((Boolean)ds.Enabled)
+                    {   
+                        if (ds.PlotGroup.AxisY.ViewportRangeEnabled)
+                            Chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(ds.UpdateVisual), new object[] { VcProperties.ViewportRangeEnabled, null });
+
+                        //ds.UpdateVisual(VcProperties.DataPoints, ds.InternalDataPoints);
+                    }
+                }
+            }
         }
 
         private void ClearTrendLineLabels()
@@ -335,15 +369,14 @@ namespace Visifire.Charts
 
         internal void DisableIndicators()
         {
-            //if (Chart.IndicatorEnabled)
-            {
-                if (_axisIndicatorElement != null)
-                    _axisIndicatorElement.Visibility = Visibility.Collapsed;
-                if (_verticalLineIndicator != null)
-                    _verticalLineIndicator.Visibility = Visibility.Collapsed;
-                if (_callOutPath4AxisIndicator != null)
-                    _callOutPath4AxisIndicator.Visibility = Visibility.Collapsed;
-            }
+            if (_axisIndicatorElement != null)
+                _axisIndicatorElement.Visibility = Visibility.Collapsed;
+
+            if (_verticalLineIndicator != null)
+                _verticalLineIndicator.Visibility = Visibility.Collapsed;
+
+            if (_callOutPath4AxisIndicator != null)
+                _callOutPath4AxisIndicator.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -369,7 +402,7 @@ namespace Visifire.Charts
             String axisIndicatorText = "";
 
             foreach (DataPoint dp in nearestDataPointList)
-            {
+            {   
                 // Shifting of cordinates from PlotArea to ChartArea
                 Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset, dp._visualPosition.Y + yPlotOffset);
 
@@ -626,7 +659,6 @@ namespace Visifire.Charts
 
             if (listOfActualPos.Count > 0)
             {
-
                 #region Finding out the middle position of an XValue in a multi-series chart in order to position Indicator
 
                 Double newPos = 0;
@@ -846,9 +878,7 @@ namespace Visifire.Charts
                 PopulateInternalSeriesList();
 
             if (calculatePlotDetails)
-            {
-                // PlotDetails = new PlotDetails(Chart);
-                
+            {               
                 PlotDetails.ReCreate(sender, elementType, property, oldValue, newValue);
             }
 
@@ -863,10 +893,6 @@ namespace Visifire.Charts
                 PopulateInternalAxesYList();
 
                 ClearAxesPanel();
-
-                //  Check if drawing axis is necessary or not
-                // if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
-                //   SetAxesProperties();
 
                 AddAndRemoveTrendLineLabel();
                 
@@ -1322,12 +1348,6 @@ namespace Visifire.Charts
             Chart.PlotArea.AttachHref(Chart, Chart.PlotArea.BorderElement, Chart.PlotArea.Href, Chart.PlotArea.HrefTarget);
             Chart.PlotArea.DetachToolTip(Chart.PlotArea.BorderElement);
             Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, Chart.PlotArea.BorderElement);
-            // Chart.AttachEvents2Visual(Chart.PlotArea, PlotAreaCanvas.Children[0] as Border);
-            
-            // if (!chart._drawingCanvas.Children.Contains(PlotAreaCanvas))
-            //    chart._drawingCanvas.Children.Add(PlotAreaCanvas);
-            
-            //PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
         }
 
         /// <summary>
@@ -1654,7 +1674,6 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    //Chart._zoomRectangle.SetValue(Canvas.LeftProperty, PlottingCanvas.Width);
                     Chart._zoomRectangle.Width = PlottingCanvas.Width - PLANK_THICKNESS;
                 }
             }
@@ -1874,12 +1893,10 @@ namespace Visifire.Charts
                 _axisCallOutContainer = new Canvas();
                 _axisCallOutContainer.Height = 8;
                 _axisCallOutContainer.HorizontalAlignment = HorizontalAlignment.Center;
-                //_axisIndicatorElement.Visibility = Visibility.Collapsed;
-
+                
                 PathGeometry pathGeometry = new PathGeometry();
                 _callOutPath4AxisIndicator = new System.Windows.Shapes.Path();
                 _callOutPath4AxisIndicator.Fill = new SolidColorBrush(Colors.LightGray); // new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
-                //_callOutPath4AxisIndicator.Opacity = 0.8;
 
                 _callOutPath4AxisIndicator.Data = pathGeometry;
 
@@ -2060,8 +2077,7 @@ namespace Visifire.Charts
                 _axisIndicatorElement.SetValue(Canvas.LeftProperty, leftOfIndicator);
                 _axisIndicatorElement.SetValue(Canvas.TopProperty, topOfIndicator);
             }
-    
-
+            
             // Graphics.DrawPointAt(new Point(leftOfIndicator, topOfIndicator), Chart._toolTipCanvas, Colors.Purple);
         }
 
@@ -2325,13 +2341,6 @@ namespace Visifire.Charts
                 axis.ScrollBarElement.SmallChange = 20;
                 axis.ScrollBarElement.LargeChange = 80;
             }
-
-            // if (_isFirstTimeRender)
-            {   
-                //axis.Scroll -= AxesXScrollBarElement_Scroll;
-                //axis.Scroll += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                //axis.SetScrollBarValueFromOffset(axis.ScrollBarOffset);
-            }
         }
 
         /// <summary>
@@ -2423,13 +2432,6 @@ namespace Visifire.Charts
 
                 AxisX.Height = size.Height;
 
-                /*
-                 * Double value = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
-                Double scrollViewerOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
-
-                scrollViewerOffset = (Chart as Chart).ZoomingEnabled ? value * (scrollViewerOffset / ZOOMING_MAX_VAL) : value;
-                Chart._plotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
-                 */
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                 {
                     FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
@@ -2447,9 +2449,6 @@ namespace Visifire.Charts
                         }
                     }
                 }
-
-                // if (AxisX.ScrollViewerElement.Children.Count > 0)
-                //      (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -1 * AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
             }
             else
                 Chart._bottomAxisScrollBar.Visibility = Visibility.Collapsed;
@@ -2581,8 +2580,6 @@ namespace Visifire.Charts
 
         internal void OnScrollBarScaleChanged(Chart chart)
         {
-            // chart.Dispatcher.BeginInvoke(new Action(chart.ChartArea.DrawChart));
-            //chart.Series[0].UpdateVisual(VcProperties.ScrollBarScale, null);
             _isDragging = true;
 
             if (chart.Series.Count > 0)
@@ -2707,10 +2704,6 @@ namespace Visifire.Charts
                         scrollViewerContent.SetValue(Canvas.TopProperty, -1 * offset);
                     }
                 }
-
-                //if (AxisX.ScrollViewerElement.Children.Count > 0)
-                //    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset));
-
             }
 
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
@@ -2796,13 +2789,7 @@ namespace Visifire.Charts
                 totalWidthReduced += size.Width;
 
                 AxisY.Width = size.Width;
-
-                //if (AxisX != null)
-                //{
-                //    AxisX.Width = availableSize.Width - totalWidthReduced;
-                //    AxisX.ScrollBarElement.Width = availableSize.Width - totalWidthReduced;
-                //}
-
+                
                 Double left = Chart.Padding.Left + Chart._leftOuterTitlePanel.ActualWidth + Chart._leftOuterLegendPanel.ActualWidth;
                 AxisY.SetValue(Canvas.LeftProperty, (Double)left);
             }
@@ -2984,12 +2971,13 @@ namespace Visifire.Charts
             // Visifire.Profiler.Profiler.Start("RenderAxis");
             Size remainingSizeAfterDrawingAxes = RenderAxes(plotAreaSize);
             // Visifire.Profiler.Profiler.End("RenderAxis");
+
             // Visifire.Profiler.Profiler.Start("Render");
             RenderChart(remainingSizeAfterDrawingAxes, AxisRepresentations.AxisX, false);
-                    
             // Visifire.Profiler.Profiler.End("Render");
+
+            // return new Size
             return remainingSizeAfterDrawingAxes;
-            // return new Size();
         }
 
         /// <summary>
@@ -3031,7 +3019,7 @@ namespace Visifire.Charts
                     }
                 */
 
-                //if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
+                // if (!Double.IsNaN((Double)Chart.MinimumGap) && Chart.MinimumGap > 0)
                 //    singlePlotWidth = (Double)Chart.MinimumGap;
 
                 if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -3079,12 +3067,6 @@ namespace Visifire.Charts
             Chart._plotAreaScrollViewer.Height = newSize.Height;
             Chart._plotAreaScrollViewer.UpdateLayout();
             PlotAreaScrollViewer = Chart._plotAreaScrollViewer;
-
-            // this.PlottingCanvas
-            // this.ChartVisualCanvas
-            // this.PlotAreaCanvas
-
-
         }
 
         internal Double CalculateChartSizeForZooming(Chart chart, Double currentSize)
@@ -3112,13 +3094,6 @@ namespace Visifire.Charts
                         chart.AxesX[0]._internalZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                     _oldZoomingScale = Chart.AxesX[0]._internalMinimumZoomingScale;
                 }
-                //else if (IsZoomingBetweenXValue)
-                //{
-                //    chartSize = currentSize + currentSize * Chart.AxesX[0]._internalZoomingScale;
-                //    if (chartSize > MAX_CHART_SIZE)
-                //        chartSize = MAX_CHART_SIZE;
-                //}
-                //else // Zooming using ZoomBar thumb
                 
                 chartSize = MAX_CHART_SIZE * Chart.AxesX[0]._internalZoomingScale;
             }
@@ -3222,7 +3197,6 @@ namespace Visifire.Charts
                     Chart.AxesX[0].IsNotificationEnable = false;
                     Chart.AxesX[0].ScrollBarScale = currentSize / chartSize;
                     Chart.AxesX[0].IsNotificationEnable = true;
-                    //IsAutoCalculatedScrollBarScale = true;
                 }
                 else if (!Double.IsNaN(Chart.AxesX[0].ScrollBarScale) && IsAutoCalculatedScrollBarScale)
                 {   
@@ -3234,75 +3208,7 @@ namespace Visifire.Charts
             }
 
             return chartSize;
-        }
-
-        //private Double GetPixelDistanceBetweenTwoNearestXValues(PlotDetails plotDetails, Chart chart, Double plotAreaSize)
-        //{
-        //    List<KeyValuePair<Double[], Double>> listOfKeyValuePair = new List<KeyValuePair<double[],double>>();
-
-        //    foreach (PlotGroup plotGroup in plotDetails.PlotGroups)
-        //    {
-        //        Double[] _xValues = (from dataPoint in plotGroup.DataPointsInPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
-                
-        //        Double minDiff = Double.MaxValue;
-                
-        //        Double[] closetsXValuesInPlotGroup = GetClosestDataPoints(_xValues, ref minDiff);
-        //        listOfKeyValuePair.Add(new KeyValuePair<double[], double>(closetsXValuesInPlotGroup, minDiff));
-
-        //    }
-
-        //    Double minValue = Double.MaxValue;
-
-        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
-        //    {
-        //        minValue = Math.Min(minValue, keyValuePair.Value);    
-        //    }
-
-        //    Double[] closestXValues = new double[2];
-
-        //    foreach (KeyValuePair<Double[], Double> keyValuePair in listOfKeyValuePair)
-        //    {
-        //        if (minValue == keyValuePair.Value)
-        //            closestXValues = keyValuePair.Key;
-        //    }
-
-        //     // Get the minimum and maximum value dependeing on the axis representation value
-        //    Double minimum = plotDetails.GetAxisXMinimumDataValue(AxisX);
-        //    Double maximum = plotDetails.GetAxisXMaximumDataValue(AxisX);
-
-        //    Double minPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[0]);
-        //    Double maxPixelValue = Graphics.ValueToPixelPosition(0, plotAreaSize, minimum, maximum, closestXValues[1]);
-
-        //    Double minPixelDiff = maxPixelValue - minPixelValue;
-
-        //    return minPixelDiff;
-        //}
-
-        //private Double[] GetClosestDataPoints(Double[] values, ref Double minDiff)
-        //{
-        //    Double[] distinctValues = values.Distinct().ToArray();
-
-        //    Double[] nearestXValues = new double[2];
-
-        //    // get unique values and then sort it
-        //    Array.Sort(distinctValues);
-
-        //    Double oldMinDiff = Double.MaxValue;
-
-        //    for (Int32 i = 0; i < distinctValues.Length - 1; i++)
-        //    {
-        //        // get the smallest difference between two successive elements
-        //        minDiff = Math.Abs(distinctValues[i] - distinctValues[i + 1]);
-
-        //        if (minDiff < oldMinDiff)
-        //        {
-        //            nearestXValues = new double[] { distinctValues[i], distinctValues[i + 1] };
-        //            oldMinDiff = minDiff;
-        //        }
-        //    }
-
-        //    return nearestXValues;
-        //}
+        }     
 
         internal Boolean IsAutoCalculatedScrollBarScale
         {
@@ -3469,12 +3375,6 @@ namespace Visifire.Charts
                 CreateGridLinesOverPlank(height, _verticalPlank.Visual as Panel, plankDepth, plankThickness);
                 return;
             }
-
-            // RectangularChartShapeParams columnParams = new RectangularChartShapeParams();
-            // columnParams.BackgroundBrush = new SolidColorBrush(Color.FromArgb((Byte)255, (Byte)127, (Byte)127, (Byte)127));
-            // columnParams.Lighting = true;
-            // columnParams.Size = new Size(plankThickness, height);
-            // columnParams.Depth = plankDepth;
 
             if (_verticalPlank != null && _verticalPlank.Visual != null && _verticalPlank.Visual.Parent != null)
             {
@@ -3876,7 +3776,6 @@ namespace Visifire.Charts
                 PlottingCanvas.Loaded += new RoutedEventHandler(PlottingCanvas_Loaded);
                 PlottingCanvas.SetValue(Canvas.ZIndexProperty, 1);
                 PlotAreaCanvas.Children.Add(PlottingCanvas);
-                //PlottingCanvas.Background = Graphics.GetRandomColor();
             }
 
             if (Double.IsNaN(remainingSizeAfterDrawingAxes.Height) || remainingSizeAfterDrawingAxes.Height <= 0 || Double.IsNaN(remainingSizeAfterDrawingAxes.Width) || remainingSizeAfterDrawingAxes.Width <= 0)
@@ -3908,24 +3807,6 @@ namespace Visifire.Charts
 
                 PlottingCanvas.Children.Add(ChartVisualCanvas);
             }
-
-            //if (Chart._forcedRedraw)
-            //{
-            //    if (ChartVisualCanvas == null)
-            //    {
-            //        ChartVisualCanvas = new Canvas();
-
-            //        PlottingCanvas.Children.Add(ChartVisualCanvas);
-            //    }
-            //    else
-            //    {
-            //        ChartVisualCanvas.Children.Clear();
-
-            //        if (ChartVisualCanvas.Parent != null && (ChartVisualCanvas.Parent as Canvas).Children.Contains(ChartVisualCanvas))
-            //            (ChartVisualCanvas.Parent as Canvas).Children.Remove(ChartVisualCanvas);
-            //        PlottingCanvas.Children.Add(ChartVisualCanvas);
-            //    }
-            //}
 
             // Default size of the chart canvas
             Size chartCanvasSize = new Size(0, 0);
@@ -4000,6 +3881,22 @@ namespace Visifire.Charts
                 throw new ArgumentException("Size must be non-negative.");
             }
 
+            // Calculate ViewMinimum and ViewMaximum for x-axis because 
+            // chart.ChartArea.ChartVisualCanvas Width and Height is available
+            if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
+            {
+                Double scrollBarOffset = AxisX._oldScrollBarOffsetInPixel;
+
+                if(Double.IsNaN(scrollBarOffset))
+                {
+                    if (PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+                        scrollBarOffset = AxisX.ScrollBarElement.Maximum;
+                    else
+                        scrollBarOffset = 0;// AxisX.ScrollBarElement.Minimum;
+                }
+
+                AxisX.CalculateViewMinimumAndMaximum(Chart, scrollBarOffset);
+            }
 
             // Draw the chart grids
             if (PlotDetails.ChartOrientation != ChartOrientationType.NoAxis)
@@ -4022,7 +3919,6 @@ namespace Visifire.Charts
         private void SaveAxisContentOffsetAndResetMargin(Axis axis, Double scrollBarOffset)
         {
             axis.CurrentScrollScrollBarOffset = scrollBarOffset / axis.ScrollBarElement.Maximum;
-            //System.Diagnostics.Debug.WriteLine("Offset" + scrollBarOffset.ToString());
         }
 
         private const Double ZOOMING_MAX_VAL = 100;
@@ -4033,7 +3929,7 @@ namespace Visifire.Charts
         /// <param name="sender">Scrollbar</param>
         /// <param name="e">System.Windows.Controls.Primitives.ScrollEventArgs</param>
         private void AxesXScrollBarElement_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
+        {   
             Chart chart = Chart as Chart;
             if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
@@ -4046,8 +3942,8 @@ namespace Visifire.Charts
                     AxisX.ScrollBarElement.Maximum = ZOOMING_MAX_VAL;
                 }
                 else
-                {
-#if SL
+                {   
+#if SL              
                     AxisX.ScrollBarElement.Maximum = ScrollableLength - PlotAreaScrollViewer.ViewportWidth;
                     AxisX.ScrollBarElement.ViewportSize = PlotAreaScrollViewer.ViewportWidth;
 #else           
@@ -4063,20 +3959,10 @@ namespace Visifire.Charts
                 }
 
                 Double offsetInPixel = offset;
-
-                //  if (AxisX.ScrollViewerElement.Children.Count > 0)
-                //  (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.LeftProperty, -offset);
-                
+                                
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                 {
                     FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
-                    /*Double scrollViewerOffset = scrollViewerContent.Width - PlotAreaScrollViewer.ViewportWidth;
-
-                    scrollViewerOffset = chart.ZoomingEnabled ? offset * (scrollViewerOffset / ZOOMING_MAX_VAL) : offset;
-                    //scrollViewerOffset = Math.Min((scrollViewerContent.Width - AxisX.Width), scrollViewerOffset);
-                    PlotAreaScrollViewer.ScrollToHorizontalOffset(scrollViewerOffset);
-                    scrollViewerContent.SetValue(Canvas.LeftProperty, -scrollViewerOffset);
-                    * */
                     Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
 
                     if (!Double.IsNaN(scrollViewerOffset))
@@ -4133,29 +4019,17 @@ namespace Visifire.Charts
 
                 Double offsetInPixel = offset;
 
-
-
-                //PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
-
-                //if (AxisX.ScrollViewerElement.Children.Count > 0)
-                //    (AxisX.ScrollViewerElement.Children[0] as FrameworkElement).SetValue(Canvas.TopProperty, -offset);
-
-
                 if (AxisX.ScrollViewerElement.Children.Count > 0)
                 {
-                   /* FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
-
-                    Double scrollViewerOffset = (chart.ZoomingEnabled ? offset * (ChartVisualCanvas.Height / ZOOMING_MAX_VAL) : offset);
-                    PlotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
-                    scrollViewerOffset = Math.Min((ChartVisualCanvas.Height - AxisX.Height), scrollViewerOffset);
-                    scrollViewerContent.SetValue(Canvas.TopProperty, -scrollViewerOffset);*/
-
                     FrameworkElement scrollViewerContent = (AxisX.ScrollViewerElement.Children[0] as FrameworkElement);
 
                     if (scrollViewerContent != null)
                     {
                         Double scrollViewerOffset = GetScrollingOffsetOfAxis(AxisX, offset);
-                        offsetInPixel = scrollViewerOffset;
+
+                        if(!chart.ZoomingEnabled)
+                            offsetInPixel = scrollViewerOffset;
+
                         if (!Double.IsNaN(scrollViewerOffset))
                         {
                             Chart._plotAreaScrollViewer.ScrollToVerticalOffset(scrollViewerOffset);
@@ -4211,12 +4085,6 @@ namespace Visifire.Charts
 #endif
                 Double offsetInPixel = offset;
 
-
-                //PlotAreaScrollViewer.ScrollToHorizontalOffset(offset);
-
-                //if (AxisX2.ScrollViewerElement.Children.Count > 0)
-                //    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(offset, 0, 0, 0);
-
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                 {
                     FrameworkElement scrollViewerContent = (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement);
@@ -4226,9 +4094,6 @@ namespace Visifire.Charts
 
                     scrollViewerContent.Margin = new Thickness(offset, 0, 0, 0);
                 }
-
-
-
 
                 SaveAxisContentOffsetAndResetMargin(AxisX2, offset);
                 AxisX2.FireScrollEvent(e, offsetInPixel);
@@ -4247,11 +4112,6 @@ namespace Visifire.Charts
                     offset = e.NewValue * AxisX2.ScrollBarElement.Maximum;
 #endif
                 Double offsetInPixel = offset;
-
-                // PlotAreaScrollViewer.ScrollToVerticalOffset(offset);
-                
-                // if (AxisX2.ScrollViewerElement.Children.Count > 0)
-                //    (AxisX2.ScrollViewerElement.Children[0] as FrameworkElement).Margin = new Thickness(0, offset, 0, 0);
 
                 if (AxisX2.ScrollViewerElement.Children.Count > 0)
                 {
@@ -4289,7 +4149,7 @@ namespace Visifire.Charts
             List<DataSeries> selectedDataSeries4Rendering;          // Contains a list of serries to be rendered in a rendering cycle
             Int32 currentDrawingIndex;                              // Drawing index of the selected series 
             RenderAs currentRenderAs;                               // Rendereas type of the selected series
-            Panel renderedChart = null;                                   // A canvas that contains the chart rendered using the selected series
+            Panel renderedChart = null;                             // A canvas that contains the chart rendered using the selected series
 
             Int32 zIndex = 1;
 
@@ -4895,12 +4755,12 @@ namespace Visifire.Charts
 
                     if (markerColor == null)
                     {   
-                        if (dataPoint.YValues != null)
+                        if (dataPoint.InternalYValues != null)
                         {   
-                            if (dataPoint.YValues.Length >= 2)
+                            if (dataPoint.InternalYValues.Length >= 2)
                             {   
-                                Double openY = dataPoint.YValues[0];
-                                Double closeY = dataPoint.YValues[1];
+                                Double openY = dataPoint.InternalYValues[0];
+                                Double closeY = dataPoint.InternalYValues[1];
 
                                 markerColor = (closeY > openY) ? dataPoint.Parent.PriceUpColor : dataPoint.Parent.PriceDownColor;
                             }
@@ -6119,31 +5979,31 @@ namespace Visifire.Charts
         /// <summary>
         /// Scroll event is used to scroll to the horizontal/vertical offset of ScrollViewer
         /// </summary>
-        internal void AttachScrollEvents()
+        internal void AttachScrollBarOffsetChangedEventWithAxes()
         {
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
+                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset, false);
             }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
                 AxisX2.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
                 AxisX2.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
+                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset, false);
             }
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
                 AxisX.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset);
+                AxisX.SetScrollBarValueFromOffset(AxisX.ScrollBarOffset, false);
             }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
             {
                 AxisX2.ScrollBarOffsetChanged -= AxesXScrollBarElement_Scroll;
                 AxisX2.ScrollBarOffsetChanged += new System.Windows.Controls.Primitives.ScrollEventHandler(AxesXScrollBarElement_Scroll);
-                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset);
+                AxisX2.SetScrollBarValueFromOffset(AxisX2.ScrollBarOffset, false);
             }
         }
 
@@ -6160,21 +6020,15 @@ namespace Visifire.Charts
 
             System.Diagnostics.Debug.WriteLine("xxxx----Rendered UnLocked ON Load of PlotArea");
 
-            //if (Chart._renderLapsedCounter >= 1)
-            //    Chart.Render();
-
-            AttachScrollEvents();
+            AttachScrollBarOffsetChangedEventWithAxes();
 
             Animate();
 
             Chart._internalAnimationEnabled = false;
 
-            // if(!Chart.AnimationEnabled || Chart.IsInDesignMode || !_isFirstTimeRender)
-            //    Visifire.Charts.Chart.SelectDataPoints(Chart);
+            _isFirstTimeRender = false;
 
             Chart.FireRenderedEvent();
-
-            _isFirstTimeRender = false;
 
             // System.Diagnostics.Debug.WriteLine("Loaded() >");
        }

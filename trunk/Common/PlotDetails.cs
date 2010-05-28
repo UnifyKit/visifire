@@ -1845,9 +1845,32 @@ namespace Visifire.Charts
         /// <returns>Returns the maximum data value as Double</returns>
         internal Double GetAxisYMaximumDataValue(Axis axisY)
         {
-            return (from plotData in PlotGroups
-                    where (!Double.IsNaN(plotData.MaximumY) && plotData.AxisY == axisY)
+            Axis axisX = this.GetAxisXFromChart(Chart, AxisTypes.Primary);
+            Double max = Double.NegativeInfinity;
+
+            if (ListOfAllDataPoints.Count > 0 && axisY.ViewportRangeEnabled && axisX.ViewMinimum != null && axisX.ViewMaximum != null)
+            {
+                foreach (PlotGroup plotGroup in PlotGroups)
+                {
+                    Double tempMaximumY;
+                    plotGroup.CalculateMaxYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMaximumY);
+
+                    if (!Double.IsNaN(tempMaximumY))
+                    {
+                        max = Math.Max(max, tempMaximumY);
+                    }
+                }
+            }
+            else
+            {   
+                max = (from plotData in PlotGroups
+                    where plotData.AxisY == axisY
                     select plotData.MaximumY).Max();
+            }
+
+            max = (Double.IsNaN(max) || Double.IsInfinity(max)) ? (axisY.Logarithmic ? axisY.LogarithmBase : 1) : max;
+            System.Diagnostics.Debug.WriteLine("Max=" + max.ToString());
+            return max;
         }
 
         /// <summary>
@@ -1891,31 +1914,66 @@ namespace Visifire.Charts
         /// <returns>Returns the minimum data value as Double</returns>
         internal Double GetAxisYMinimumDataValue(Axis axisY)
         {
-            Double dataSeriesCount = 0;
             Double min = Double.PositiveInfinity;
-            foreach (PlotGroup plotGroup in PlotGroups)
+            Axis axisX = this.GetAxisXFromChart(Chart, AxisTypes.Primary);
+
+            if (ListOfAllDataPoints.Count > 0 && axisY.ViewportRangeEnabled && axisX.ViewMinimum != null && axisX.ViewMaximum != null)
             {
-                dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
-                                   where dataSeries.DataPoints.Count > 0
-                                   select dataSeries).Count();
-                if (dataSeriesCount > 0)
+                foreach (PlotGroup plotGroup in PlotGroups)
                 {
-                    if ((!Double.IsNaN(plotGroup.MinimumY) && plotGroup.AxisY == axisY))
-                    {
-                        min = Math.Min(min, plotGroup.MinimumY);
-                    }
+                    Double tempMinimumY;
+
+                    plotGroup.CalculateMinYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMinimumY);
+
+                    if (!Double.IsNaN(tempMinimumY))
+                        min = Math.Min(min, tempMinimumY);
                 }
             }
+            else
+            {   
+                Double dataSeriesCount = 0;
+                foreach (PlotGroup plotGroup in PlotGroups)
+                {   
+                    dataSeriesCount = (from dataSeries in plotGroup.DataSeriesList
+                                       where dataSeries.DataPoints.Count > 0
+                                       select dataSeries).Count();
 
-            if (!Double.IsPositiveInfinity(min))
+                    if (dataSeriesCount > 0)
+                    {   
+                        if ((!Double.IsNaN(plotGroup.MinimumY) && plotGroup.AxisY == axisY))
+                        {   
+                            min = Math.Min(min, plotGroup.MinimumY);
+                        }
+                    }
+                }
+             }
+
+            if (!Double.IsInfinity(min) && !Double.IsNaN(min))
                 return min;
             else
                 return 0;
-
-            //return (from plotData in PlotGroups
-            //        where (!Double.IsNaN(plotData.MinimumY) && plotData.AxisY == axisY)
-            //        select plotData.MinimumY).Min();
         }
+
+        internal Double GetAxisYMinimumDataValueFromAllDataSeries(Axis axisY)
+        {
+            Double min = Double.PositiveInfinity;
+
+            var yValues = (from dp in ListOfAllDataPoints where dp.Parent.RenderAs != RenderAs.CandleStick && dp.Parent.RenderAs != RenderAs.Stock select dp.YValue).ToList();
+
+            if (yValues.Count() > 0)
+                min = Math.Min(min, yValues.Min());
+
+            List<Double[]> yValuesArray = (from dp in ListOfAllDataPoints where dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock select dp.YValues).ToList();
+
+            if (yValuesArray.Count() > 0)
+            {
+                List<Double> maxYValuesList = (from yValue in yValuesArray select yValue.Min()).ToList();
+                min = Math.Min(min, maxYValuesList.Min());
+            }
+
+            return min;
+        }
+
 
         /// <summary>
         /// Returns the maximum ZValue

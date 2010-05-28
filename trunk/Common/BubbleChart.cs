@@ -202,7 +202,9 @@ namespace Visifire.Charts
                 //if (series.InternalDataPoints.Count <= 25)
                 //    pixelLavelShadow = true;
 
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+                List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(series, false);
+
+                foreach (DataPoint dataPoint in dataPointsInViewPort)
                 {   
                     CreateOrUpdateAPointDataPoint(bubbleChartCanvas, dataPoint, minimumZVal, maximumZVal, width, height);
 
@@ -588,8 +590,11 @@ namespace Visifire.Charts
                     //    chart.ChartArea.RenderedCanvasList[currentRenderAs] = renderedChart;
                     break;
                 default:
+
+                    List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+
                     // case VcProperties.Enabled:
-                    foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+                    foreach (DataPoint dataPoint in dataPointsInViewPort)
                         UpdateDataPoint(dataPoint, property, newValue, isAxisChanged);
                     break;
             }

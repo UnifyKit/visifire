@@ -5,47 +5,24 @@
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
      Height="300" Width="500">
     <Grid>
-        <vc:Chart Name="MyChart" Height="300" Width="500" View3D="false">
+        <vc:Chart Theme="Theme1" x:Name="chart1" Width="400" Height="300">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire"/>
+                <vc:Title Text="Visifire Chart"></vc:Title>
             </vc:Chart.Titles>
 
-            <vc:Chart.TrendLines>
-                <vc:TrendLine StartValue="8" EndValue="11" LineThickness="20" Orientation="Horizontal" ShadowEnabled="True"/>
-            </vc:Chart.TrendLines>
-
-            <!--<vc:Chart.AxesX>
-                <vc:Axis>
-                    <vc:Axis.AxisLabels>
-                        <vc:AxisLabels TextWrap="0.2" Angle="-30"/>
-                    </vc:Axis.AxisLabels>
-                </vc:Axis>
-            </vc:Chart.AxesX>-->
-
-            <vc:Chart.PlotArea>
-                <vc:PlotArea ShadowEnabled="false" Background="LightGray"/>
-            </vc:Chart.PlotArea>
-
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Bar">
+                <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="ABC1" YValue="25"/>
-                        <vc:DataPoint AxisXLabel="ABC2" YValue="35"/>
-                        <vc:DataPoint AxisXLabel="ABC3" YValue="28"/>
-                        <vc:DataPoint AxisXLabel="ABC4" YValue="75"/>
-                        <vc:DataPoint AxisXLabel="ABC5" YValue="17"/>
-                        <vc:DataPoint AxisXLabel="ABC6" YValue="50"/>
-                        <vc:DataPoint AxisXLabel="ABC7" YValue="43"/>
-                        <vc:DataPoint AxisXLabel="ABC8" YValue="89"/>
-                        <vc:DataPoint AxisXLabel="ABC9" YValue="32"/>
-                        <vc:DataPoint AxisXLabel="ABC10" YValue="87"/>
-                        <vc:DataPoint AxisXLabel="ABC11" YValue="00"/>
-                        <vc:DataPoint AxisXLabel="ABC12" YValue="28"/>
+                        <vc:DataPoint YValue="10"/>
+                        <vc:DataPoint YValue="20"/>
+                        <vc:DataPoint YValue="30"/>
+                        <vc:DataPoint YValue="40"/>
+                        <vc:DataPoint YValue="50"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
-
             </vc:Chart.Series>
         </vc:Chart>
+
     </Grid>
 </Page>

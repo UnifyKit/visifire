@@ -188,7 +188,9 @@ namespace Visifire.Charts
                 
                 currentDataSeries = plotGroup.DataSeriesList[0];
 
-                List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
+                //List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
+                Double[] xValuesList = RenderHelper.GetXValuesUnderViewPort(plotGroup.XWiseStackedDataList.Keys.ToList(), plotGroup.AxisX, plotGroup.AxisY, false);
+
                 plotGroup.DrawingIndex = seriesIndex[plotGroup.AxisY][plotGroup.AxisX];
 
                 widthPerColumn = CalculateWidthOfEachStackedColumn(chart, plotGroup, width, out minDiff, out  maxColumnWidth);
@@ -199,9 +201,9 @@ namespace Visifire.Charts
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
                 if (plotGroup.AxisY.InternalAxisMaximum < 0)
                     limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-
+                
                 foreach (Double xValue in xValuesList)
-                {
+                {   
                     DrawStackedColumnsAtXValue(chartType, xValue, plotGroup, columnCanvas, labelCanvas,
                         plotGroup.DrawingIndex, widthPerColumn, maxColumnWidth, limitingYValue, depth3d, animationEnabled);
                 }
@@ -240,6 +242,59 @@ namespace Visifire.Charts
             visual.Clip = clipRectangle;
 
             return visual;
+        }
+
+        internal static Double CalculatePositionOfDataPointForLogAxis(DataPoint dataPoint, Double canvasSize, PlotGroup plotGroup, List<DataPoint> stackedDataPoints, Double absoluteSum)
+        {
+            Double yValue = dataPoint.InternalYValue;
+
+            Double pixelPos = 0;
+
+            if (stackedDataPoints.First() == dataPoint)
+            {
+                Double newValue = 0;
+                if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn100 || dataPoint.Parent.RenderAs == RenderAs.StackedBar100)
+                {
+                    newValue = dataPoint.YValue / absoluteSum * 100;
+                    newValue = Math.Log(newValue, plotGroup.AxisY.LogarithmBase);
+                }
+                else
+                    newValue = yValue;
+
+                if((dataPoint.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                    pixelPos = Graphics.ValueToPixelPosition(canvasSize, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, newValue);
+                else
+                    pixelPos = Graphics.ValueToPixelPosition(0, canvasSize, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, newValue);
+
+                return pixelPos;
+
+            }
+            else
+            {
+                Int32 index = stackedDataPoints.IndexOf(dataPoint);
+
+                Double totalOfBottomDps = 0;
+
+                for (; index >= 0; index--)
+                {
+                    if (dataPoint.Parent.RenderAs == RenderAs.StackedColumn100 || dataPoint.Parent.RenderAs == RenderAs.StackedBar100)
+                    {
+                        totalOfBottomDps += dataPoint.YValue / absoluteSum * 100;
+                    }
+                    else
+                        totalOfBottomDps += (Double)stackedDataPoints[index].YValue;
+                }
+                
+                totalOfBottomDps = Math.Log(totalOfBottomDps, plotGroup.AxisY.LogarithmBase);
+
+                Double pixelPos4AllDPs = 0;
+                if ((dataPoint.Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                    pixelPos4AllDPs = Graphics.ValueToPixelPosition(canvasSize, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfBottomDps);
+                else
+                    pixelPos4AllDPs = Graphics.ValueToPixelPosition(0, canvasSize, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfBottomDps);
+
+                return pixelPos4AllDPs;
+            }
         }
 
         /// <summary>
@@ -288,18 +343,38 @@ namespace Visifire.Charts
 
                 if (chartType == RenderAs.StackedColumn)
                 {
-                    top = Graphics.ValueToPixelPosition(columnCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
-                    prevSum += dataPoint.InternalYValue;
+                    if (plotGroup.AxisY.Logarithmic)
+                    {
+                        top = CalculatePositionOfDataPointForLogAxis(dataPoint, columnCanvas.Height, plotGroup, plotGroup.XWiseStackedDataList[xValue].Positive.ToList(), absoluteSum);
+                    }
+                    else
+                    {
+                        top = Graphics.ValueToPixelPosition(columnCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, dataPoint.InternalYValue + prevSum);
+                    }
+
                     columnHeight = Math.Abs(top - bottom);
+                    prevSum += dataPoint.InternalYValue;
+
                 }
                 else // if (chartType == RenderAs.StackedColumn100)
                 {
                     Double percentYValue = 0;
 
-                    if(absoluteSum != 0)
-                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+                    if (plotGroup.AxisY.Logarithmic)
+                    {
+                        if (absoluteSum != 0)
+                            percentYValue = Math.Log(dataPoint.YValue / absoluteSum * 100, plotGroup.AxisY.LogarithmBase);
 
-                    top = Graphics.ValueToPixelPosition(columnCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+                        top = CalculatePositionOfDataPointForLogAxis(dataPoint, columnCanvas.Height, plotGroup, plotGroup.XWiseStackedDataList[xValue].Positive.ToList(), absoluteSum);
+                    }
+                    else
+                    {
+                        if (absoluteSum != 0)
+                            percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+
+                        top = Graphics.ValueToPixelPosition(columnCanvas.Height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+                    }
+
                     columnHeight = Math.Abs(top - bottom);
                     prevSum += percentYValue;
                 }

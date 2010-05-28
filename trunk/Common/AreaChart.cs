@@ -568,7 +568,8 @@ namespace Visifire.Charts
             Point endPoint = new Point();
             Boolean IsStartPoint = true;
 
-            List<DataPoint> sortedDataPoints = (from dp in dataSeries.InternalDataPoints orderby dp.InternalXValue select dp).ToList();
+            List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+            List<DataPoint> sortedDataPoints = (from dp in dataPointsInViewPort orderby dp.InternalXValue select dp).ToList();
 
             foreach (DataPoint dataPoint in sortedDataPoints)
             {
@@ -1413,8 +1414,9 @@ namespace Visifire.Charts
             Dictionary<Double, List<Double>> dataPointValuesInStackedOrder = plotDetails.GetDataPointValuesInStackedOrder(plotGroup);
 
             Dictionary<Double, List<DataPoint>> dataPointInStackedOrder = plotDetails.GetDataPointInStackOrder(plotGroup);
-
-            Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
+            
+            // Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
+            Double[] xValues = RenderHelper.GetXValuesUnderViewPort(dataPointValuesInStackedOrder.Keys.ToList(), plotGroup.AxisX, plotGroup.AxisY, false);
 
             Double minimumXValue = plotGroup.MinimumX;
             Double maximumXValue = plotGroup.MaximumX;
@@ -1455,8 +1457,26 @@ namespace Visifire.Charts
 
                     Double curXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i]);
                     Double nextXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i + 1]);
-                    Double curYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, curBase + curYValues[index]);
-                    Double nextYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextBase + nextYValues[index]);
+
+                    Double totalOfCurrSucessiveDpValues = 0;
+                    Double totalOfNextSucessiveDpValues = 0;
+
+                    if (plotGroup.AxisY.Logarithmic)
+                    {
+                        totalOfCurrSucessiveDpValues = Math.Pow(plotGroup.AxisY.LogarithmBase, curBase) + Math.Pow(plotGroup.AxisY.LogarithmBase, curYValues[index]);
+                        totalOfCurrSucessiveDpValues = Math.Log(totalOfCurrSucessiveDpValues, plotGroup.AxisY.LogarithmBase);
+
+                        totalOfNextSucessiveDpValues = Math.Pow(plotGroup.AxisY.LogarithmBase, nextBase) + Math.Pow(plotGroup.AxisY.LogarithmBase, nextYValues[index]);
+                        totalOfNextSucessiveDpValues = Math.Log(totalOfNextSucessiveDpValues, plotGroup.AxisY.LogarithmBase);
+                    }
+                    else
+                    {
+                        totalOfCurrSucessiveDpValues = curBase + curYValues[index];
+                        totalOfNextSucessiveDpValues = nextBase + nextYValues[index];
+                    }
+
+                    Double curYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfCurrSucessiveDpValues);
+                    Double nextYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, totalOfNextSucessiveDpValues);
                     Double curYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, curBase);
                     Double nextYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextBase);
 
@@ -1716,6 +1736,7 @@ namespace Visifire.Charts
 
             Dictionary<Double, List<DataPoint>> dataPointInStackedOrder = plotDetails.GetDataPointInStackOrder(plotGroup);
 
+            //Double[] xValues = RenderHelper.GetXValuesUnderViewPort(dataPointValuesInStackedOrder.Keys.ToList(), plotGroup.AxisX, plotGroup.AxisY, true);
             Double[] xValues = dataPointValuesInStackedOrder.Keys.ToArray();
 
             Double minimumXValue = plotGroup.MinimumX;
@@ -1765,16 +1786,45 @@ namespace Visifire.Charts
                     if (index >= nextYValues.Count || index >= curYValues.Count || curDataPoints[index] == null || nextDataPoints[index] == null)
                         continue;
 
-                    Double curPercentageY = curYValues[index] / curAbsoluteSum * 100;
-                    Double nextPercentageY = nextYValues[index] / nextAbsoluteSum * 100;
+                    Double curPercentageY = 0;
+                    Double nextPercentageY = 0;
 
                     if (Double.IsNaN(nextPercentageY) || Double.IsNaN(curPercentageY))
                         continue;
 
+                    Double percentOfCurrSucessiveDpValues = 0;
+                    Double percentOfNextSucessiveDpValues = 0;
+
+                    if (plotGroup.AxisY.Logarithmic)
+                    {
+                        curPercentageY = Math.Pow(plotGroup.AxisY.LogarithmBase, curYValues[index]) / curAbsoluteSum * 100;
+
+                        nextPercentageY = Math.Pow(plotGroup.AxisY.LogarithmBase, nextYValues[index]) / nextAbsoluteSum * 100;
+
+                        percentOfCurrSucessiveDpValues = Math.Pow(plotGroup.AxisY.LogarithmBase, curBase) + curPercentageY;
+                        percentOfCurrSucessiveDpValues = Math.Log(percentOfCurrSucessiveDpValues, plotGroup.AxisY.LogarithmBase);
+
+                        percentOfNextSucessiveDpValues = Math.Pow(plotGroup.AxisY.LogarithmBase, nextBase) + nextPercentageY;
+                        percentOfNextSucessiveDpValues = Math.Log(percentOfNextSucessiveDpValues, plotGroup.AxisY.LogarithmBase);
+
+                        curPercentageY = Math.Log(curPercentageY, plotGroup.AxisY.LogarithmBase);
+                        nextPercentageY = Math.Log(nextPercentageY, plotGroup.AxisY.LogarithmBase);
+
+
+                    }
+                    else
+                    {
+                        curPercentageY = curYValues[index] / curAbsoluteSum * 100;
+                        nextPercentageY = nextYValues[index] / nextAbsoluteSum * 100;
+
+                        percentOfCurrSucessiveDpValues = curBase + curPercentageY;
+                        percentOfNextSucessiveDpValues = nextBase + nextPercentageY;
+                    }
+
                     Double curXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i]);
                     Double nextXPosition = Graphics.ValueToPixelPosition(0, width, (Double)plotGroup.AxisX.InternalAxisMinimum, (Double)plotGroup.AxisX.InternalAxisMaximum, xValues[i + 1]);
-                    Double curYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, curBase + curPercentageY);
-                    Double nextYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextBase + nextPercentageY);
+                    Double curYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentOfCurrSucessiveDpValues);
+                    Double nextYPosition = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentOfNextSucessiveDpValues);
                     Double curYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, curBase);
                     Double nextYBase = Graphics.ValueToPixelPosition(height, 0, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, nextBase);
 
@@ -3119,7 +3169,7 @@ namespace Visifire.Charts
             {   
                 DataPoint previusDataPoint = dataPoint.Faces.PreviousDataPoint;
                 
-                Boolean isPositive2Negative = false;    // DataPoint at -ve, previous DataPoint is +ve
+                Boolean isPositive2Negative = false;    // DataPoint at -ve, previous DataPoint!is +ve
                 Boolean isNegative2Positive = false;    // DataPoint at -ve, next DataPoint is +ve
                 Boolean isNegative2Negative = false;    // DataPoint at -ve, next DataPoint is -ve
 

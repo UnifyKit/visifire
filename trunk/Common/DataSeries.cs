@@ -2412,7 +2412,7 @@ namespace Visifire.Charts
                         continue;
 
                     if ((ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
-                        && dp.YValues == null)
+                        && dp.InternalYValues == null)
                         continue;
                     else
                     {
@@ -2531,7 +2531,7 @@ namespace Visifire.Charts
             if (ValidatePartialUpdate(RenderAs, property))
             {
                 if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
-                {
+                {   
                     if (property == VcProperties.Color)
                         PartialUpdateOfColorProperty((Brush)newValue);
                     else
@@ -2611,12 +2611,17 @@ namespace Visifire.Charts
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
                 }
                 else if (property == VcProperties.BorderColor || property == VcProperties.BorderThickness || property == VcProperties.BorderStyle)
-                {
+                {   
                     if (RenderAs == RenderAs.Area)
                         RenderHelper.UpdateVisualObject(RenderAs, this, property, newValue, renderAxis);
 
                     foreach (DataPoint dp in InternalDataPoints)
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
+                }
+                else if (property == VcProperties.ViewportRangeEnabled)
+                {
+                    renderAxis = true;
+                    RenderHelper.UpdateVisualObject(chart, property, newValue, false);
                 }
                 else if (property == VcProperties.DataPoints || property == VcProperties.Enabled || property == VcProperties.ScrollBarScale || property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum)
                 {
@@ -2624,13 +2629,13 @@ namespace Visifire.Charts
 
                     if ((chart.ZoomingEnabled && property == VcProperties.ScrollBarScale)
                         || (property == VcProperties.AxisMinimum || property == VcProperties.AxisMaximum))
-                    {
+                    {   
                         renderAxis = true;
                         _isZooming = true;
                         property = VcProperties.DataPoints;
                     }
                     else
-                    {
+                    {   
                         Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
                         Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
                         Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
@@ -2643,22 +2648,27 @@ namespace Visifire.Charts
                         Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
                         Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
-                        //System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
-                        //System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
+                        // System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
+                        // System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
 
+                        if (PlotGroup.AxisY.ViewportRangeEnabled)
+                        {   
+                            renderAxis = true;
+                            axisRepresentation = AxisRepresentations.AxisY;
+                        }
                         if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
-                        {
+                        {   
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisY;
                         }
                         else if (NewAxisMaxX != OldAxisMaxX || NewAxisMinX != OldAxisMinX)
-                        {
+                        {   
                             renderAxis = true;
                         }
                     }
 
                     //if (!_isZooming)
-                    {
+                    {   
                         // Render Axis if required
                         chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
                     }
@@ -2673,20 +2683,6 @@ namespace Visifire.Charts
                     {
                         RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                     }
-
-                    //// Render Axis if required
-                    //chart.ChartArea.PrePartialUpdateConfiguration(this, property, newValue, false, false, renderAxis, axisRepresentation, true);
-
-                    //// Return
-                    //if (renderAxis)
-                    //{
-                    //    // Need to Rerender all charts if axis changes
-                    //    RenderHelper.UpdateVisualObject(chart, property, newValue);
-                    //}
-                    //else
-                    //{
-                    //    RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
-                    //}
                 }
                 else if (property == VcProperties.AxisXType ||
                     property == VcProperties.AxisXType || property == VcProperties.Enabled)
