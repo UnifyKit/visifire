@@ -161,8 +161,8 @@ namespace Visifire.Charts
         private void Update()
         {
             _isUpdated = true;
-            _positiveYValueSum = (from dataPoint in Positive where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Sum();
-            _negativeYValueSum = (from dataPoint in Negative where !Double.IsNaN(dataPoint.InternalYValue) select dataPoint.InternalYValue).Sum();
+            _positiveYValueSum = (from dataPoint in Positive where !Double.IsNaN(dataPoint.YValue) select dataPoint.YValue).Sum();
+            _negativeYValueSum = (from dataPoint in Negative where !Double.IsNaN(dataPoint.YValue) select dataPoint.YValue).Sum();
         }
 
         #endregion

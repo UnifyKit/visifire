@@ -2173,7 +2173,7 @@ namespace Visifire.Charts
         /// Fire Rendered event
         /// </summary>
         internal void FireRenderedEvent()
-        {
+        {   
             if (_rendered != null)
                 _rendered(this, null);
         }
@@ -2192,7 +2192,10 @@ namespace Visifire.Charts
 
             if (stackTrace.Contains("set_Height(Double value)")
             || stackTrace.Contains("set_Width(Double value)")
-            || e.Message == "Height must be non-negative." || e.Message == "Width must be non-negative." || e.Message == "Size must be non-negative.")
+            || e.Message == "Height must be non-negative." 
+            || e.Message == "Width must be non-negative." 
+            || e.Message == "Size must be non-negative." 
+            || e.Message == "Internal Size Error")
             {
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine("------------------------------------------");

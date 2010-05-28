@@ -714,7 +714,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="chart">Chart</param>
         /// <param name="columnParams">Column parameters</param>
-        /// <param name="dataPoint">DataPoint</param>
+        /// <param name=#dataPoint">DataPoint</param>
         /// <param name="left">Left position of MarkerCanvas</param>
         /// <param name="top">Top position</param>
         /// <returns>Marker canvas</returns>
@@ -1228,13 +1228,16 @@ namespace Visifire.Charts
 
             Double widthOfAcolumn;
 
+            Axis axisX = dataSeriesList4Rendering[0].PlotGroup.AxisX;
+            Axis axisY = dataSeriesList4Rendering[0].PlotGroup.AxisY;
+
             if(plotDetails.ChartOrientation == ChartOrientationType.Vertical)
-                widthOfAcolumn = CalculateWidthOfEachColumn(chart, width, dataSeriesList4Rendering[0].PlotGroup.AxisX, RenderAs.Column, Orientation.Horizontal);
+                widthOfAcolumn = CalculateWidthOfEachColumn(chart, width, axisX, RenderAs.Column, Orientation.Horizontal);
             else
-                widthOfAcolumn = CalculateWidthOfEachColumn(chart, height, dataSeriesList4Rendering[0].PlotGroup.AxisX, RenderAs.Bar, Orientation.Vertical);
+                widthOfAcolumn = CalculateWidthOfEachColumn(chart, height, axisX, RenderAs.Bar, Orientation.Vertical);
 
             Dictionary<Double, SortDataPoints> sortedDataPoints = plotDetails.GetDataPointsGroupedByXValue(plotDetails.ChartOrientation == ChartOrientationType.Vertical ? RenderAs.Column : RenderAs.Bar);
-            Double[] xValues = sortedDataPoints.Keys.ToArray();
+            Double[] xValues = RenderHelper.GetXValuesUnderViewPort(sortedDataPoints.Keys.ToList(), axisX, axisY, false);
 
             foreach (Double xValue in xValues)
             {   
@@ -1987,14 +1990,14 @@ namespace Visifire.Charts
                 oldColumnHeight = oldVisual.Height;
             }
             else
-            {
+            {   
                 oldTop = (Double)oldVisual.GetValue(Canvas.LeftProperty);
                 oldColumnHeight = oldVisual.Width;
             }
 
-            if (columnChartCanvas.Parent == null && Double.IsNaN(dataPoint.InternalYValue))
+            if (columnChartCanvas.Parent == null || Double.IsNaN(dataPoint.InternalYValue))
                 return;
-
+                
             labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;
 
             UpdateParentVisualCanvasSize(chart, columnChartCanvas);
@@ -2887,7 +2890,7 @@ namespace Visifire.Charts
         ///// </summary>
         ///// <param name="columnParams">Column parameters</param>
         ///// <returns>Faces</returns>
-        //internal static Faces Get3DColumn(RectangularChartShapeParams columnParams)
+        //internal static Faces Get3DColumn(RectangumarChartShapeParams columnParams)
         //{
         //    return Get3DPlank(columnParams.Size.Width, columnParams.Size.Height, columnParams.Depth, null, null, null);
         //}

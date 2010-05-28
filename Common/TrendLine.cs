@@ -519,6 +519,7 @@ namespace Visifire.Charts
         {
             get
             {
+
                 return (Object)GetValue(ValueProperty);
             }
             set
@@ -668,8 +669,17 @@ namespace Visifire.Charts
         /// </summary>
         internal Double InternalNumericValue
         {
-            get;
-            set;
+            get
+            {
+                if (ReferingAxis.AxisRepresentation == AxisRepresentations.AxisY && ReferingAxis.Logarithmic)
+                    return DataPoint.ConvertYValue2LogarithmicValue(Chart as Chart, _internalNumericValue, AxisType);
+                else
+                    return _internalNumericValue;
+            }
+            set
+            {
+                _internalNumericValue = value;
+            }
         }
 
         /// <summary>
@@ -677,8 +687,17 @@ namespace Visifire.Charts
         /// </summary>
         internal Double InternalNumericStartValue
         {
-            get;
-            set;
+            get
+            {
+                if (ReferingAxis.AxisRepresentation == AxisRepresentations.AxisY && ReferingAxis.Logarithmic)
+                    return DataPoint.ConvertYValue2LogarithmicValue(Chart as Chart, _internalStartNumericValue, AxisType);
+                else
+                    return _internalStartNumericValue;
+            }
+            set
+            {
+                _internalStartNumericValue = value;
+            }
         }
 
         /// <summary>
@@ -686,8 +705,17 @@ namespace Visifire.Charts
         /// </summary>
         internal Double InternalNumericEndValue
         {
-            get;
-            set;
+            get
+            {
+                if (ReferingAxis.AxisRepresentation == AxisRepresentations.AxisY && ReferingAxis.Logarithmic)
+                    return DataPoint.ConvertYValue2LogarithmicValue(Chart as Chart, _internalEndNumericValue, AxisType);
+                else
+                    return _internalEndNumericValue;
+            }
+            set
+            {
+                _internalEndNumericValue = value;
+            }
         }
 
         /// <summary>
@@ -1211,12 +1239,16 @@ namespace Visifire.Charts
             if (StartValue != null && EndValue != null && Value != null)
                 throw new Exception("Value property cannot be set with StartValue and EndValue in TrendLine");
 
-            if ((Line == null || Shadow == null) && (Rectangle == null || ShadowRectangle == null))
+            if (Visual == null || (Value != null && Line == null) || (StartValue != null && EndValue != null && Rectangle == null))
+            {   
+                FirePropertyChanged(propertyName);
+            }
+            else if((VisifireControl.IsXbapApp && propertyName == VcProperties.ShadowEnabled))
             {
                 FirePropertyChanged(propertyName);
             }
             else if (propertyName == VcProperties.Value || propertyName == VcProperties.StartValue || propertyName == VcProperties.EndValue)
-            {
+            {   
                 Chart chart = (Chart as Chart);
                 Axis axis = chart.PlotDetails.GetAxisXFromChart(chart, AxisType);
                 chart.PlotDetails.SetTrendLineValue(this, axis);
@@ -1234,7 +1266,7 @@ namespace Visifire.Charts
                 PositionTrendLineLabel((Chart as Chart).ChartArea.ChartVisualCanvas.Width, (Chart as Chart).ChartArea.ChartVisualCanvas.Height);
             }
         }
-
+        
         internal void UpdateTrendLineLabelPosition(Double width, Double height)
         {
             PositionTrendLineLabel(width, height);
@@ -1574,6 +1606,10 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        private Double _internalNumericValue;
+        private Double _internalStartNumericValue;
+        private Double _internalEndNumericValue;
 
         #endregion
     }

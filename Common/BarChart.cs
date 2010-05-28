@@ -831,7 +831,7 @@ namespace Visifire.Charts
 
                  CreateStackedBarVisual(dataPoint.Parent.RenderAs, dataPoint.InternalYValue >= 0, columnCanvas, labelCanvas, dataPoint,
                      top, ref left, ref right, columnHeight, ref prevSum, absoluteSum, depth3d, animationEnabled,
-                     animationBeginTime, isTopOFStack, positiveIndex);
+                     animationBeginTime, isTopOFStack, positiveIndex, plotGroup.XWiseStackedDataList[xValue].Positive.ToList());
 
                  animationBeginTime += animationTime;
                  positiveIndex++;
@@ -861,7 +861,7 @@ namespace Visifire.Charts
 
                 CreateStackedBarVisual(dataPoint.Parent.RenderAs, dataPoint.InternalYValue >= 0, columnCanvas, labelCanvas, dataPoint, 
                     top, ref left, ref right, columnHeight, ref prevSum, absoluteSum, depth3d, animationEnabled, 
-                    animationBeginTime, isTopOFStack, negativeIndex);
+                    animationBeginTime, isTopOFStack, negativeIndex, plotGroup.XWiseStackedDataList[xValue].Negative.ToList());
 
                 animationBeginTime += animationTime;
                 negativeIndex--;
@@ -914,7 +914,8 @@ namespace Visifire.Charts
                 Double minDiff, heightPerBar, maxBarHeight;
                 heightPerBar = ColumnChart.CalculateWidthOfEachStackedColumn(chart, plotGroup, height, out minDiff, out maxBarHeight);
                 
-                List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
+                //List<Double> xValuesList = plotGroup.XWiseStackedDataList.Keys.ToList();
+                Double[] xValuesList = RenderHelper.GetXValuesUnderViewPort(plotGroup.XWiseStackedDataList.Keys.ToList(), plotGroup.AxisX, plotGroup.AxisY, false);
 
                 Double limitingYValue = 0;
                 if (plotGroup.AxisY.InternalAxisMinimum > 0)
@@ -986,8 +987,8 @@ namespace Visifire.Charts
         private static void CreateStackedBarVisual(RenderAs chartType, Boolean isPositive, Canvas columnCanvas, Canvas labelCanvas,
             DataPoint dataPoint, Double top, ref Double left, ref Double right, Double finalHeight,
             ref Double prevSum, Double absoluteSum, Double depth3d, Boolean animationEnabled,
-            Double animationBeginTime, Boolean isTopOFStack, Int32 PositiveOrNegativeZIndex)
-        {
+            Double animationBeginTime, Boolean isTopOFStack, Int32 PositiveOrNegativeZIndex, List<DataPoint> listOfDataPointsInXValue)
+        {   
             PlotGroup plotGroup = dataPoint.Parent.PlotGroup;
             Chart chart = dataPoint.Chart as Chart;
 
@@ -995,15 +996,27 @@ namespace Visifire.Charts
 
             if (chartType == RenderAs.StackedBar100)
             {
-                if(absoluteSum != 0)
-                    percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+                if (absoluteSum != 0)
+                {
+                    if (plotGroup.AxisY.Logarithmic)
+                    {
+                        percentYValue = Math.Log((dataPoint.InternalYValue / absoluteSum * 100), plotGroup.AxisY.LogarithmBase);
+                    }
+                    else
+                        percentYValue = (dataPoint.InternalYValue / absoluteSum * 100);
+                }
             }
             else
                 percentYValue = dataPoint.InternalYValue;
-                       
+
 
             if (isPositive)
-                right = Graphics.ValueToPixelPosition(0, columnCanvas.Width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+            {
+                if(plotGroup.AxisY.Logarithmic)
+                    right = ColumnChart.CalculatePositionOfDataPointForLogAxis(dataPoint, columnCanvas.Width, plotGroup, listOfDataPointsInXValue, absoluteSum);
+                else
+                    right = Graphics.ValueToPixelPosition(0, columnCanvas.Width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
+            }
             else
                 left = Graphics.ValueToPixelPosition(0, columnCanvas.Width, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, percentYValue + prevSum);
 

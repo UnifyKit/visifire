@@ -48,8 +48,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Visifire.Commons.Controls;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using Visifire.Commons.Controls;
 
 namespace Visifire.Charts
 {
@@ -193,10 +191,10 @@ namespace Visifire.Charts
                 if (String.IsNullOrEmpty(_parent.YValueFormatString))
                 {
                     if (Parent.PlotGroup != null)
-                        str = str.Replace("#YValue", Parent.PlotGroup.AxisY.GetFormattedString(InternalYValue));
+                        str = str.Replace("#YValue", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValue, Parent.AxisYType)));
                 }
                 else
-                    str = str.Replace("#YValue", InternalYValue.ToString(Parent.YValueFormatString));
+                    str = str.Replace("#YValue", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValue, Parent.AxisYType).ToString(Parent.YValueFormatString));
             }
 
             if (str.Contains("##ZValue"))
@@ -243,15 +241,15 @@ namespace Visifire.Charts
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 2)
-                            str = str.Replace("#High", Parent.PlotGroup.AxisY.GetFormattedString(YValues[2]));
+                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 2)
+                            str = str.Replace("#High", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[2], Parent.AxisYType)));
                         else
                             str = str.Replace("#High", "");
                     }
                     else
                     {
-                        if (YValues != null && YValues.Length > 2)
-                            str = str.Replace("#High", YValues[2].ToString(Parent.YValueFormatString));
+                        if (InternalYValues != null && InternalYValues.Length > 2)
+                            str = str.Replace("#High", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[2], Parent.AxisYType).ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#High", "");
                     }
@@ -264,15 +262,15 @@ namespace Visifire.Charts
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 3)
-                            str = str.Replace("#Low", Parent.PlotGroup.AxisY.GetFormattedString(YValues[3]));
+                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 3)
+                            str = str.Replace("#Low", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[3], Parent.AxisYType)));
                         else
                             str = str.Replace("#Low", "");
                     }
                     else
                     {
-                        if (YValues != null && YValues.Length > 3)
-                            str = str.Replace("#Low", YValues[3].ToString(Parent.YValueFormatString));
+                        if (InternalYValues != null && InternalYValues.Length > 3)
+                            str = str.Replace("#Low", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[3], Parent.AxisYType).ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Low", "");
                     }
@@ -284,15 +282,15 @@ namespace Visifire.Charts
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 0)
-                            str = str.Replace("#Open", Parent.PlotGroup.AxisY.GetFormattedString(YValues[0]));
+                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 0)
+                            str = str.Replace("#Open", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[0], Parent.AxisYType)));
                         else
                             str = str.Replace("#Open", "");
                     }
                     else
                     {
-                        if (YValues != null && YValues.Length > 0)
-                            str = str.Replace("#Open", YValues[0].ToString(Parent.YValueFormatString));
+                        if (InternalYValues != null && InternalYValues.Length > 0)
+                            str = str.Replace("#Open", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[0], Parent.AxisYType).ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Open", "");
                     }
@@ -305,15 +303,15 @@ namespace Visifire.Charts
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 1)
-                            str = str.Replace("#Close", Parent.PlotGroup.AxisY.GetFormattedString(YValues[1]));
+                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 1)
+                            str = str.Replace("#Close", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[1], Parent.AxisYType)));
                         else
                             str = str.Replace("#Close", "");
                     }
                     else
                     {
-                        if (YValues != null && YValues.Length > 1)
-                            str = str.Replace("#Close", YValues[1].ToString(Parent.YValueFormatString));
+                        if (InternalYValues != null && InternalYValues.Length > 1)
+                            str = str.Replace("#Close", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[1], Parent.AxisYType).ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Close", "");
                     }
@@ -954,7 +952,7 @@ namespace Visifire.Charts
         {   
             get
             {
-               return (Double)GetValue(YValueProperty);
+                return (Double)GetValue(YValueProperty);
             }
             set
             {
@@ -965,14 +963,31 @@ namespace Visifire.Charts
 
         [System.ComponentModel.TypeConverter(typeof(Converters.DoubleArrayConverter))]
         public Double[] YValues
-        {   
+        {
             get
-            {   
+            {
                 return (Double[]) GetValue(YValuesProperty);
             }
             set
-            {   
+            {
                 SetValue(YValuesProperty, value);
+            }
+        }
+
+        public Double[] InternalYValues
+        {   
+            get
+            {
+                Chart chart = Chart as Chart;
+                Double[] convertedYValues = new Double[4];
+                convertedYValues[0] = (YValues.Length > 0 ? ConvertYValue2LogarithmicValue(chart, YValues[0], Parent.AxisYType) : Double.NaN);
+                convertedYValues[1] = (YValues.Length > 1 ? ConvertYValue2LogarithmicValue(chart, YValues[1], Parent.AxisYType) : Double.NaN);
+                convertedYValues[2] = (YValues.Length > 2 ? ConvertYValue2LogarithmicValue(chart, YValues[2], Parent.AxisYType) : Double.NaN);
+                convertedYValues[3] = (YValues.Length > 3 ? ConvertYValue2LogarithmicValue(chart, YValues[3], Parent.AxisYType) : Double.NaN);
+
+                Double[] newYValues = (from value in convertedYValues where !Double.IsNaN(value) select value).ToArray();
+
+                return newYValues;
             }
         }
         
@@ -989,7 +1004,7 @@ namespace Visifire.Charts
                 //   return 0;
                 //}
                 //else
-                    return YValue;
+                    return ConvertYValue2LogarithmicValue(Chart as Chart, YValue, Parent.AxisYType);
             }
         }
         
@@ -2079,6 +2094,12 @@ namespace Visifire.Charts
                         Double OldMaxYValue = chart.PlotDetails.GetAxisYMaximumDataValue(plotGroup.AxisY);
                         Double OldMinYValue = chart.PlotDetails.GetAxisYMinimumDataValue(plotGroup.AxisY);
 
+                        //Object oldValue = null;
+                        //if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+                        //    oldValue = ConvertActualOldYValueToLogarithmicValue(_oldYValues);
+                        //else
+                        //    oldValue = ConvertActualOldYValueToLogarithmicValue(_oldYValue);
+
                         Object oldValue = (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock) ? (Object)_oldYValues : _oldYValue;
 
                         chart.PlotDetails.ReCreate(this, ElementTypes.DataPoint, property, oldValue, newValue);
@@ -2097,6 +2118,12 @@ namespace Visifire.Charts
                                 axisRepresentation = AxisRepresentations.AxisY;
                                 System.Diagnostics.Debug.WriteLine("RenderAxis1 =" + renderAxis.ToString());
                             }
+                        }
+
+                        if (plotGroup.AxisY.ViewportRangeEnabled)
+                        {
+                            renderAxis = true;
+                            axisRepresentation = AxisRepresentations.AxisY;
                         }
                     }
                     else if (property == VcProperties.XValue)
@@ -2178,7 +2205,7 @@ namespace Visifire.Charts
                             updateAllDpsOnAxisChange = true;
                     }
                 }
-
+                
                 Parent._isZooming = false;
 
                 System.Diagnostics.Debug.WriteLine("RenderAxis3 =" + renderAxis.ToString());
@@ -2197,11 +2224,16 @@ namespace Visifire.Charts
                         return true;
                     }
                     else
-                    {   
+                    {
                         foreach (DataSeries ds in chart.InternalSeries)
-                        {   
+                        {
                             foreach (DataPoint dp in ds.InternalDataPoints)
                             {
+                                if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+                                    dp._oldYValues = (Double[])ConvertActualOldYValueToLogarithmicValue(dp._oldYValues);
+                                else
+                                    dp._oldYValue = (Double)ConvertActualOldYValueToLogarithmicValue(dp._oldYValue);
+
                                 RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, !updateAllDpsOnAxisChange);
 
                                 if (ds.RenderAs == RenderAs.StackedArea || ds.RenderAs == RenderAs.StackedArea100)
@@ -2211,7 +2243,14 @@ namespace Visifire.Charts
                     }
                 }
                 else
+                {
+                    if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+                        _oldYValues = (Double[])ConvertActualOldYValueToLogarithmicValue(_oldYValues);
+                    else
+                        _oldYValue = (Double)ConvertActualOldYValueToLogarithmicValue(_oldYValue);
+
                     RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
+                }
 
                 if (property == VcProperties.Color)
                     UpdateLegendMarker(this, (Brush)newValue);
@@ -2232,6 +2271,28 @@ namespace Visifire.Charts
         
         #endregion
 
+        private Object ConvertActualOldYValueToLogarithmicValue(Object oldValue)
+        {
+            Chart chart = Chart as Chart;
+
+            if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+            {
+                if (_oldYValues != null)
+                {
+                    Double[] convertedYValues = new Double[4];
+                    convertedYValues[0] = (YValues.Length > 0 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[0], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[1] = (YValues.Length > 1 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[1], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[2] = (YValues.Length > 2 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[2], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[3] = (YValues.Length > 3 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[3], Parent.AxisYType) : Double.NaN);
+
+                    oldValue = (from value in convertedYValues where !Double.IsNaN(value) select value).ToArray();
+                }
+            }
+            else
+                oldValue = ConvertYValue2LogarithmicValue(chart, _oldYValue, Parent.AxisYType);
+
+            return oldValue;
+        }
 
         public void ActivePartialUpdateRenderLock()
         {
@@ -2434,7 +2495,7 @@ namespace Visifire.Charts
 
         #endregion
 
-        #region Private Delegates
+        #region Private Eelegates
 
         #endregion
 
@@ -2534,6 +2595,63 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Modify YValue for Logarithmic scale
+        /// </summary>
+        /// <param name="yValue"></param>
+        /// <returns></returns>
+        internal static Double ConvertYValue2LogarithmicValue(Chart chart, Double yValue, AxisTypes axisType)
+        {
+            if (chart != null && chart.ChartArea != null)
+            {
+                if (chart.ChartArea.AxisY != null && chart.ChartArea.AxisY.AxisType == axisType)
+                {
+                    if (chart.ChartArea.AxisY.Logarithmic)
+                    {
+                        yValue = Math.Log(yValue, chart.ChartArea.AxisY.LogarithmBase);
+                    }
+                }
+                else if (chart.ChartArea.AxisY2 != null && chart.ChartArea.AxisY2.AxisType == axisType)
+                {
+                    if (chart.ChartArea.AxisY2.Logarithmic)
+                    {
+                        yValue = Math.Log(yValue, chart.ChartArea.AxisY2.LogarithmBase);
+                    }
+                }
+            }
+
+            return yValue;
+        }
+
+        /// <summary>
+        /// Converts Logarithmic YValue to Actual YValue
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="logValue"></param>
+        /// <returns></returns>
+        internal static Double ConvertLogarithmicValue2ActualValue(Chart chart, Double logValue, AxisTypes axisType)
+        {
+            if (chart != null && chart.ChartArea != null)
+            {
+                if (chart.ChartArea.AxisY != null && chart.ChartArea.AxisY.AxisType == axisType)
+                {
+                    if (chart.ChartArea.AxisY.Logarithmic)
+                    {
+                        logValue = Math.Pow(chart.ChartArea.AxisY.LogarithmBase, logValue);
+                    }
+                }
+                else if (chart.ChartArea.AxisY2 != null && chart.ChartArea.AxisY2.AxisType == axisType)
+                {
+                    if (chart.ChartArea.AxisY2.Logarithmic)
+                    {
+                        logValue = Math.Pow(chart.ChartArea.AxisY2.LogarithmBase, logValue);
+                    }
+                }
+            }
+
+            return logValue;
+        }     
+
+        /// <summary>
         /// YValueProperty changed call back function
         /// </summary>
         /// <param name="d">DependencyObject</param>
@@ -2541,12 +2659,14 @@ namespace Visifire.Charts
         private static void OnYValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-
+            Double newYValue = (Double) e.NewValue;// dataPoint.ConvertYValue2LogarithmicValue((Double)e.NewValue);
+            Double oldYValue = (Double) e.OldValue;// dataPoint.ConvertYValue2LogarithmicValue((Double)e.OldValue);
+            
             if (dataPoint.Chart == null || (dataPoint.Chart as Chart).ChartArea == null)
-                dataPoint._oldYValue = (Double)e.NewValue;
+                dataPoint._oldYValue = newYValue;
             else
             {
-                dataPoint._oldYValue = Double.IsNaN((Double)e.OldValue) ? dataPoint._oldYValue : (Double)e.OldValue;
+                dataPoint._oldYValue = Double.IsNaN(oldYValue) ? dataPoint._oldYValue : oldYValue;
                 dataPoint._oldYValue = Double.IsNaN(dataPoint._oldYValue) ? 0 : dataPoint._oldYValue;
 
                 if ((dataPoint.Chart as Chart).Series.Count == 1 &&
@@ -2558,17 +2678,36 @@ namespace Visifire.Charts
                 else
                 {
                     if (!(dataPoint.Parent.RenderAs.Equals(RenderAs.CandleStick) || dataPoint.Parent.RenderAs.Equals(RenderAs.Stock)))
-                        dataPoint.InvokeUpdateVisual(VcProperties.YValue, e.NewValue);
+                        dataPoint.InvokeUpdateVisual(VcProperties.YValue, newYValue);
                 }
             }
         }
 
-        // private static 
-
         private static void OnYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            dataPoint._oldYValues = (Double[])e.OldValue;
+            //Double[] newYValues = new Double[4] 
+            //{ 
+            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[0]),
+            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[1]),
+            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[2]),
+            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[3])
+            //};
+
+            //Double[] oldYValues = null;
+
+            //if (e.OldValue != null)
+            //{
+            //    oldYValues = new Double[4] 
+            //    { 
+            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[0]),
+            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[1]),
+            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[2]),
+            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[3])
+            //    };
+            //}
+
+            dataPoint._oldYValues = (Double[]) e.OldValue;
 
             if (dataPoint.Parent != null)
             {   
@@ -2594,6 +2733,9 @@ namespace Visifire.Charts
             //    dataPoint.InternalXValue = Convert.ToDouble(e.NewValue);
             //    dataPoint.XValueType = ChartValueTypes.Numeric;
             //}
+
+            if (e.NewValue == null)
+                return;
 
             // DateTime value entered in Managed Code
             if ((e.NewValue.GetType().Equals(typeof(DateTime))))
@@ -3696,8 +3838,8 @@ namespace Visifire.Charts
                 case "Low":
 
                     Double[] newYValues = new Double[4];
-                    if (YValues != null)
-                        YValues.CopyTo(newYValues, 0);
+                    if (InternalYValues != null)
+                        InternalYValues.CopyTo(newYValues, 0);
 
                     // find the array index of OCHL (open close high low)
                     Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
@@ -3722,8 +3864,8 @@ namespace Visifire.Charts
         {   
             Double[] newYValues = new Double[4];
 
-            if (YValues != null)
-                YValues.CopyTo(newYValues, 0);
+            if (InternalYValues != null)
+                InternalYValues.CopyTo(newYValues, 0);
 
             switch (dm.MemberName)
             {   
@@ -3732,10 +3874,10 @@ namespace Visifire.Charts
                 case "High":
                 case "Low":
 
-                    if (YValues == null)
+                    if (InternalYValues == null)
                     {   
                         Int32 enumIndex = (Int32)Enum.Parse(typeof(OCHL), dm.MemberName, true);
-                        YValues[enumIndex] = 0;
+                        InternalYValues[enumIndex] = 0;
                     }
 
                     break;

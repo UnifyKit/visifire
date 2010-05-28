@@ -1265,7 +1265,10 @@ namespace Visifire.Charts
 
                 yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
 
-                eventArgs.YValue = yValue;
+                if (chart.ChartArea.AxisY.Logarithmic)
+                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
+                else
+                    eventArgs.YValue = yValue;
             }
 
             return eventArgs;
@@ -1305,7 +1308,10 @@ namespace Visifire.Charts
 
                 yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
 
-                eventArgs.YValue = yValue;
+                if(chart.ChartArea.AxisY.Logarithmic)
+                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
+                else
+                    eventArgs.YValue = yValue;
             }
 
             if (chart.ChartArea.AxisY2 != null)
@@ -1317,7 +1323,10 @@ namespace Visifire.Charts
 
                 yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
 
-                eventArgs.YValue = yValue;
+                if (chart.ChartArea.AxisY2.Logarithmic)
+                    eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY2.AxisType);
+                else
+                    eventArgs.YValue = yValue;
             }
 
             return eventArgs;

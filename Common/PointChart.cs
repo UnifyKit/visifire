@@ -297,8 +297,10 @@ namespace Visifire.Charts
 
                 if (series.Enabled == false)
                     continue;
-                
-                foreach (DataPoint dataPoint in series.InternalDataPoints)
+
+                List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(series, false);
+
+                foreach (DataPoint dataPoint in dataPointsInViewPort)
                 {
                     CreateOrUpdateAPointDataPoint(pointChartCanvas, dataPoint, plotAreaWidth, plotAreaHeight);
 

@@ -1435,6 +1435,7 @@ namespace Visifire.Charts
                 case VcProperties.YValue:
                 case VcProperties.YValues:
                 case VcProperties.XValue:
+                case VcProperties.ViewportRangeEnabled:
                 RENDER_SERIES:
 
                     if (dataSeries.Enabled == false)
@@ -1463,14 +1464,30 @@ namespace Visifire.Charts
 
                     pointCollectionList.Add(pc);
                     // List<DataPoint> enabledDataPoints = (from dp in dataSeries.InternalDataPoints where (Boolean) dp.Enabled == true select dp).ToList();
+
                     foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                    {
+                        if (dp.Marker != null && dp.Marker.Visual != null)
+                            dp.Marker.Visual.Visibility = Visibility.Collapsed;
+
+                        if (dp.LabelVisual != null)
+                            dp.LabelVisual.Visibility = Visibility.Collapsed;
+                    }
+
+                    List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+
+                    foreach (DataPoint dp in viewPortDataPoints)
                     {   
                         if (dp.Enabled == false)
-                        {   
+                        {
                             if (dp.Marker != null && dp.Marker.Visual != null)
                                 dp.Marker.Visual.Visibility = Visibility.Collapsed;
+                            else
+                                dp.Marker.Visual.Visibility = Visibility.Visible;
 
                             if (dp.LabelVisual != null)
+                                dp.LabelVisual.Visibility = Visibility.Collapsed;
+                            else
                                 dp.LabelVisual.Visibility = Visibility.Collapsed;
 
                             chart._toolTip.Hide();
@@ -1535,27 +1552,6 @@ namespace Visifire.Charts
 
                     Clip(chart, chartsCanvas, labelsCanvas , dataSeries.PlotGroup);
 
-                    //if (label2dCanvas.Parent != null)
-                    //{
-                    //    RectangleGeometry clipRectangle = new RectangleGeometry();
-
-                    //    Double depth3d = chart.ChartArea.PLANK_DEPTH;
-
-                    //    Double clipLeft = 0;
-                    //    Double clipTop = -depth3d - 4;
-                    //    Double clipWidth = line2dCanvas.Width + depth3d;
-                    //    Double clipHeight = line2dCanvas.Height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10;
-
-                    //    AreaChart.GetClipCoordinates(chart, ref clipLeft, ref clipTop, ref clipWidth, ref clipHeight, plotGroup.MinimumX, plotGroup.MaximumX);
-
-                    //    clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
-
-                    //    (label2dCanvas.Parent as Canvas).Clip = clipRectangle;
-
-                    //    clipRectangle = new RectangleGeometry();
-                    //    clipRectangle.Rect = new Rect(0, -depth3d - 4, line2dCanvas.Width + depth3d, line2dCanvas.Height + chart.ChartArea.PLANK_DEPTH + 10);
-                    //    (line2dCanvas.Parent as Canvas).Clip = clipRectangle;
-                    //}
                     break;
             }
         }
@@ -2258,9 +2254,10 @@ namespace Visifire.Charts
             // Polyline polyline, PolylineShadow;
             // Canvas line2dCanvas = new Canvas();
             // Canvas lineCanvas;
+            List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(series, false);
 
-            foreach (DataPoint dataPoint in series.InternalDataPoints)
-            {
+            foreach (DataPoint dataPoint in viewPortDataPoints)
+            {   
                 if (dataPoint.Enabled == false)
                     continue;
 
@@ -2437,7 +2434,7 @@ namespace Visifire.Charts
 
             // Remove old visual and add new visual in to the existing panel
             if (preExistingPanel != null)
-            {
+            {   
                 visual.Children.RemoveAt(1);
                // chartsCanvas.Background = Graphics.GetRandomColor();
                 visual.Children.Add(chartsCanvas);
