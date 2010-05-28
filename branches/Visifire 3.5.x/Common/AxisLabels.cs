@@ -1210,9 +1210,7 @@ namespace Visifire.Charts
             AxisLabels axisLabels = d as AxisLabels;
             axisLabels.FirePropertyChanged(VcProperties.TextAlignment);
         }
-
-
-
+        
         /// <summary>
         /// Event handler attached with FontFamily property changed event of axislabels element
         /// </summary>
@@ -1573,32 +1571,66 @@ namespace Visifire.Charts
                 {
                     AxisLabel label;
 
-                    // Create and save the first label
-                    label = CreateLabel(GetFormattedString(Minimum));
-                    AxisLabelList.Add(label);
-                    LabelValues.Add(Minimum);
-
-                    // Shift the maximum inwards so that the last label is not created
-                    // the reason for this is some times due to double approximation the last label doesnt get created
-                    // thats why the last label is explicitly created and hence must not be created in the following loop
-                    maxVal = (Decimal)(Maximum - interval / 2);
-
-                    //Create and save intermediate labels
-                    for (index = minval + (++count) * gap; index <= maxVal; index = minval + (++count) * gap)
+                    if (!ParentAxis.Logarithmic)
                     {
-                        label = CreateLabel(GetFormattedString((Double)index));
+                        // Create and save the first label
+                        label = CreateLabel(GetFormattedString(Minimum));
                         AxisLabelList.Add(label);
-                        LabelValues.Add((Double)index);
+                        LabelValues.Add(Minimum);
+
+                        // Shift the maximum inwards so that the last label is not created
+                        // the reason for this is some times due to double approximation the last label doesnt get created
+                        // thats why the last label is explicitly created and hence must not be created in the following loop
+                        maxVal = (Decimal)(Maximum - interval / 2);
+
+                        //Create and save intermediate labels
+                        for (index = minval + (++count) * gap; index <= maxVal; index = minval + (++count) * gap)
+                        {
+                            label = CreateLabel(GetFormattedString((Double)index));
+                            AxisLabelList.Add(label);
+                            LabelValues.Add((Double)index);
+                        }
+
+                        Double lastIndex = (Double)index;
+
+                        // Create and save the last label
+                        if (lastIndex <= Maximum)
+                        {
+                            label = CreateLabel(GetFormattedString(lastIndex));
+                            AxisLabelList.Add(label);
+                            LabelValues.Add(lastIndex);
+                        }
                     }
-
-                    Double lastIndex = (Double)index;
-
-                    // Create and save the last label
-                    if (lastIndex <= Maximum)
+                    else
                     {
-                        label = CreateLabel(GetFormattedString(lastIndex));
+                        // Create and save the first label
+                        label = CreateLabel(GetFormattedString(Math.Pow(ParentAxis.LogarithmBase, Minimum)));
                         AxisLabelList.Add(label);
-                        LabelValues.Add(lastIndex);
+                        LabelValues.Add(Minimum);
+
+                        // Shift the maximum inwards so that the last label is not created
+                        // the reason for this is some times due to double approximation the last label doesnt get created
+                        // thats why the last label is explicitly created and hence must not be created in the following loop
+                        maxVal = (Decimal)(Maximum - interval / 2);
+
+                        //Create and save intermediate labels
+
+                        for (index = (Decimal)Math.Pow(ParentAxis.LogarithmBase, (Double)(minval + (++count) * gap)); index < (Decimal)Math.Pow(ParentAxis.LogarithmBase, (Double)maxVal); index = (Decimal)Math.Pow(ParentAxis.LogarithmBase, (Double)(minval + (++count) * gap)))
+                        {
+                            label = CreateLabel(GetFormattedString((Double)index));
+                            AxisLabelList.Add(label);
+                            LabelValues.Add((Double)Math.Log((Double)index, ParentAxis.LogarithmBase));
+                        }
+
+                        Double lastIndex = (Double)index;
+
+                        // Create and save the last label
+                        if (lastIndex <= Math.Pow(ParentAxis.LogarithmBase, (Double)Maximum))
+                        {
+                            label = CreateLabel(GetFormattedString(lastIndex));
+                            AxisLabelList.Add(label);
+                            LabelValues.Add((Double)Math.Log((Double)lastIndex, ParentAxis.LogarithmBase));
+                        }
                     }
                 }
                 else

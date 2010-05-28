@@ -20,7 +20,7 @@ namespace Visifire.Charts
         /// <param name="minValue">Minimum Value.</param>
         /// <param name="startFromZero">Makes sure that the zero is included in the axis range</param>
         /// <param name="allowLimitOverflow">Applies limits so that axis range doesn't cross it</param>
-        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, AxisRepresentations axisRepresentation)
+        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, AxisRepresentations axisRepresentation, Boolean isLogarithmic, Double logarithmicBase, Boolean startFromMinimumValue4LogScale)
         {
             if (maxValue < minValue)
                 throw (new ArgumentException("Invalid Argument:: Maximum Data value should be always greater than the minimum data value."));
@@ -29,20 +29,53 @@ namespace Visifire.Charts
 
             AxisRepresentation = axisRepresentation;
 
+            if (AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                Logarithmic = isLogarithmic;
+                LogarithmicBase = logarithmicBase;
+                if (startFromMinimumValue4LogScale)
+                {
+                    if (this._min == 0)
+                        MinimumValue4LogScale = 1;
+                    else
+                        MinimumValue4LogScale = (Double)this._min;
+                }
+                else
+                    MinimumValue4LogScale = Double.NaN;
+            }
+
             if (startFromZero)
             {
-                if (minValue >= 0) AxisMinimumValue = 0;
-                else if (maxValue <= 0) AxisMaximumValue = 0;
+                if (minValue >= 0)
+                {
+                    if (Logarithmic)
+                        AxisMinimumValue = Math.Pow(LogarithmicBase, 0);
+                    else
+                        AxisMinimumValue = 0;
+                }
+                else if (maxValue <= 0)
+                    AxisMaximumValue = 0;
             }
             if (!allowLimitOverflow)
             {
-                if (minValue == 0) AxisMinimumValue = 0;
-                if (maxValue == 0) AxisMaximumValue = 0;
+                if (minValue == 0)
+                {
+                    if (Logarithmic)
+                        AxisMinimumValue = Math.Pow(LogarithmicBase, 0);
+                    else
+                        AxisMinimumValue = 0;
+                }
+                if (maxValue == 0)
+                    AxisMaximumValue = 0;
             }
             if (!allowLimitOverflow & stackingOverride)
             {
                 AxisMaximumValue = maxValue;
-                AxisMinimumValue = minValue;
+
+                if (Logarithmic && minValue == 0)
+                    AxisMinimumValue = Math.Pow(LogarithmicBase, 0);
+                else
+                    AxisMinimumValue = minValue;
             }
         }
         #endregion
@@ -52,11 +85,10 @@ namespace Visifire.Charts
         /// </summary>
         public void Calculate()
         {
-            Int32 loop = 0;                 // No of iteration.
             Int32 maxMagnitude;             // Magnitude of max data value.         
             Int32 minMagnitude;             // Magnitude of min data value.         
             Int32 magnitude;                // Magnitude of max/min data value.
-            Decimal nextInterval;           // Next calculated interval size from the old interval size.
+            Decimal nextInterval = 1;           // Next calculated interval size from the old interval size.
             Decimal tempAxisMaximumValue;   // Calculated maximum value of the axis.
             Decimal tempAxisMinimumValue;   // Calculated minimum value of the axis.
 
@@ -73,81 +105,188 @@ namespace Visifire.Charts
             }
 
             // Only one value presents to calculate the range.
-            if (this._max == this._min)
+            if (this._max == this._min && !Logarithmic)
             {
                 CalculateSingle();  // Calculation for single value.
                 return;
             }
 
-            // Max is rounded to the nearest power of 10.
-            maxMagnitude = OrderOfMagnitude(this._max);
-
-            // Min is rounded to the nearest power of 10.
-            minMagnitude = OrderOfMagnitude(this._min);
-
-            // The maximum magnitude need to chose, in order to calculate the initial
-            // interval size having maximum the value.
-            magnitude = (maxMagnitude > minMagnitude) ? maxMagnitude : minMagnitude;
-
-            // Interval needs to be sinking towards the power of 10. 
-            // Initially maximum interval is chosen.
-            if (this._overrideInterval)
-                nextInterval = this._interval;
-            else
-                nextInterval = (Decimal)Math.Pow(10, magnitude + 1);
-
-            // Rounding down the axisMaximumValue if necessary.
-            if (this._overrideAxisMaximumValue)
-                tempAxisMaximumValue = this._axisMaximumValue;
-            else
-                tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
-
-            // Rounding up the axisMinimumValue if necessary.            
-            if (this._overrideAxisMinimumValue)
-                tempAxisMinimumValue = this._axisMinimumValue;
-            else
-                tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
-
-            this._interval = nextInterval;
-            this._axisMaximumValue = tempAxisMaximumValue;
-            this._axisMinimumValue = tempAxisMinimumValue;
-
-            // Next intervals will be calculated inside loop in iterative way.
-            // Top value will be rounded down as much as possible.
-            // Bottom value will be rounded up as much as possible.
-            // So, In each pass in while loop calculates the new reduced interval.
-            // which helps to calculate the new maximum and minimum value for axis.
-            while (++loop < 100)
+            if (!Logarithmic)
             {
-                Int32 nextNoOfInterval;   // Number of interval increased in iterative way.     
+                Int32 loop = 0; // No of iteration.
 
-                // Try to minimize the Interval Value if possible.
-                if (!this._overrideInterval)
-                    nextInterval = ReduceInterval(nextInterval);
+                // Max is rounded to the nearest power of 10.
+                maxMagnitude = OrderOfMagnitude(this._max);
 
-                // If next interval is undesirable then stop further calculation.
-                if (nextInterval == 0)
-                    break;
+                // Min is rounded to the nearest power of 10.
+                minMagnitude = OrderOfMagnitude(this._min);
+
+                // The maximum magnitude need to chose, in order to calculate the initial
+                // interval size having maximum the value.
+                magnitude = (maxMagnitude > minMagnitude) ? maxMagnitude : minMagnitude;
+
+                // Interval needs to be sinking towards the power of 10. 
+                // Initially maximum interval is chosen.
+                if (this._overrideInterval)
+                    nextInterval = this._interval;
+                else
+                    nextInterval = (Decimal)Math.Pow(10, magnitude + 1);
 
                 // Rounding down the axisMaximumValue if necessary.
-                if (!this._overrideAxisMaximumValue)
+                if (this._overrideAxisMaximumValue)
+                    tempAxisMaximumValue = this._axisMaximumValue;
+                else
                     tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
 
-                // Rounding down the axisMinimumValue if necessary.
-                if (!this._overrideAxisMinimumValue)
+                // Rounding up the axisMinimumValue if necessary.            
+                if (this._overrideAxisMinimumValue)
+                    tempAxisMinimumValue = this._axisMinimumValue;
+                else
                     tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
 
-                // Calculate the number of interval.
-                nextNoOfInterval = (Int32)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
-
-                // Number of interval cannot exceed the user expected no of interval.
-                if (nextNoOfInterval > this._maxNoOfInterval)
-                    break;
-
+                this._interval = nextInterval;
                 this._axisMaximumValue = tempAxisMaximumValue;
                 this._axisMinimumValue = tempAxisMinimumValue;
-                this._interval = nextInterval;
 
+                // Next intervals will be calculated inside loop in iterative way.
+                // Top value will be rounded down as much as possible.
+                // Bottom value will be rounded up as much as possible.
+                // So, In each pass in while loop calculates the new reduced interval.
+                // which helps to calculate the new maximum and minimum value for axis.
+                while (++loop < 100)
+                {
+                    Int32 nextNoOfInterval;   // Number of interval increased in iterative way.     
+
+                    // Try to minimize the Interval Value if possible.
+                    if (!this._overrideInterval)
+                        nextInterval = ReduceInterval(nextInterval);
+
+                    // If next interval is undesirable then stop further calculation.
+                    if (nextInterval == 0)
+                        break;
+
+                    // Rounding down the axisMaximumValue if necessary.
+                    if (!this._overrideAxisMaximumValue)
+                        tempAxisMaximumValue = RoundAxisMaximumValue(this._max, nextInterval);
+
+                    // Rounding down the axisMinimumValue if necessary.
+                    if (!this._overrideAxisMinimumValue)
+                        tempAxisMinimumValue = RoundAxisMinimumValue(this._min, nextInterval);
+
+                    // Calculate the number of interval.
+                    nextNoOfInterval = (Int32)((tempAxisMaximumValue - tempAxisMinimumValue) / nextInterval);
+
+                    // Number of interval cannot exceed the user expected no of interval.
+                    if (nextNoOfInterval > this._maxNoOfInterval)
+                        break;
+
+                    this._axisMaximumValue = tempAxisMaximumValue;
+                    this._axisMinimumValue = tempAxisMinimumValue;
+                    this._interval = nextInterval;
+
+                }
+            }
+            else
+            {
+                // Calculates AxisMinimum, AxisMaximum, Interval for Logarithmic Scale
+
+                Decimal minInterval = 0;
+                
+                if(!Double.IsNaN(MinimumValue4LogScale))
+                    minInterval = (Decimal)Math.Floor(Math.Log((Double)MinimumValue4LogScale, LogarithmicBase));
+
+                nextInterval = (Decimal) Math.Ceiling(Math.Log((Double)this._max, LogarithmicBase));
+                
+                Double interval = 1;
+
+                Double logInterval = 1;
+                Double actualInterval = 0;
+                Int32 index = 0;
+
+                if (this._overrideInterval)
+                    interval = (Double)this._interval;
+
+                // Rounding up the axisMaximumValue if necessary.
+                if (this._overrideAxisMaximumValue)
+                {
+                    if (this._axisMaximumValue <= 0)
+                        throw new Exception("AxisMaximum should always be positive for Logarithmic charts. Negative or zero values cannot be plotted correctly on Logarithmic charts");
+
+                    tempAxisMaximumValue = this._axisMaximumValue;
+                }
+                else
+                    tempAxisMaximumValue = (Decimal)Math.Pow(LogarithmicBase, (Double)nextInterval);
+
+                // Rounding up the axisMinimumValue if necessary.
+                if (this._overrideAxisMinimumValue)
+                {
+                    if (this._axisMinimumValue <= 0)
+                        throw new Exception("AxisMinimum should always be positive for Logarithmic charts. Negative or zero values cannot be plotted correctly on Logarithmic charts");
+
+                    tempAxisMinimumValue = this._axisMinimumValue;
+                }
+                else
+                {
+                    if ((Decimal)Math.Pow(LogarithmicBase, interval) < this._min)
+                    {
+                        if (!Double.IsNaN(MinimumValue4LogScale))
+                            tempAxisMinimumValue = (Decimal)Math.Pow(LogarithmicBase, (Double)minInterval);
+                        else
+                            tempAxisMinimumValue = (Decimal)Math.Pow(LogarithmicBase, interval);
+                    }
+                    else
+                        tempAxisMinimumValue = (Decimal)Math.Pow(LogarithmicBase, 0);
+                }
+
+                Double minValue = (Double)tempAxisMinimumValue;
+
+                // Set the log max value in AxisMaximum
+                this._axisMaximumValue = (Decimal)Math.Log((Double)tempAxisMaximumValue, LogarithmicBase);
+
+                // Set the log min value in AxisMinimum
+                this._axisMinimumValue = (Decimal)Math.Log((Double)tempAxisMinimumValue, LogarithmicBase);
+                if (!this._overrideInterval)
+                    this._interval = (Decimal)logInterval;
+
+                Double loop = 0;
+                Int32 min = 1;
+
+                // Next interval will be calculated inside loop in iterative way.
+                while (loop <= (Double)nextInterval)
+                {
+                    if ((Decimal)Math.Log((Double)tempAxisMaximumValue, LogarithmicBase) <= (Decimal)Math.Ceiling(Math.Log((Double)this._max, LogarithmicBase)))
+                    {
+                        actualInterval = min + (++index) * interval;
+
+                        this._axisMaximumValue = (Decimal)Math.Log((Double)tempAxisMaximumValue, LogarithmicBase);
+                        this._axisMinimumValue = (Decimal)Math.Log((Double)tempAxisMinimumValue, LogarithmicBase);
+
+                        if(!this._overrideInterval)
+                            this._interval = (Decimal)logInterval;
+                    }
+                    else
+                        break;
+
+                    // Rounding up the axisMinimumValue if necessary.
+                    if (!this._overrideAxisMinimumValue)
+                    {
+                        if ((Decimal)Math.Pow(LogarithmicBase, actualInterval) < this._min)
+                            tempAxisMinimumValue = (Decimal)Math.Pow(LogarithmicBase, actualInterval);
+
+                    }
+
+                    // Rounding up the axisMaximumValue if necessary.
+                    if (!this._overrideAxisMaximumValue)
+                        tempAxisMaximumValue = (Decimal)Math.Pow(LogarithmicBase, actualInterval);
+
+                    // Number of interval cannot exceed the user expected no of interval.
+                    if (actualInterval > this._maxNoOfInterval * logInterval)
+                    {
+                        logInterval++;
+                    }
+
+                    loop = loop + interval;
+                }
             }
         }
 
@@ -156,6 +295,28 @@ namespace Visifire.Charts
         #region Public Properties
 
         public AxisRepresentations AxisRepresentation
+        {
+            get;
+            set;
+        }
+
+        public Boolean Logarithmic
+        {
+            get;
+            set;
+        }
+
+        public Double LogarithmicBase
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// This property is used to set minimum value for log scale if ViewportRangeEnabled property is set to True in AxisY.
+        /// If value is NaN then ViewportRangeEnabled property is not set.
+        /// </summary>
+        public Double MinimumValue4LogScale
         {
             get;
             set;
@@ -375,7 +536,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="mantissaOrExponent">According to the argument mantissa or exponent will be returned.</param>
         /// <param name="number">Number used for calculation.</param>
-        /// <returns>Returns mantissa or exponent.</returns>
+        /// <returns>Reuurns mantissa or exponent.</returns>
         private Int64 GetMantissaOrExponent(MantissaOrExponent mantissaOrExponent, Decimal number)
         {
             if (mantissaOrExponent == MantissaOrExponent.Exponent)
