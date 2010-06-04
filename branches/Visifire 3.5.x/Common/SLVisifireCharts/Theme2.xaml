@@ -51,6 +51,14 @@
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="FontFamily" Value="Verdana"/>
     </Style>
+    <Style x:Key="CustomAxisXLabels" TargetType="vc:CustomAxisLabels">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+    </Style>
+    <Style x:Key="CustomAxisYLabels" TargetType="vc:CustomAxisLabels">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+    </Style>
     <Style x:Key="AxisXTicks" TargetType="vc:Ticks">
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="LineThickness" Value="0.5"/>

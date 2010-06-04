@@ -305,6 +305,13 @@
         <!--<Setter Property="Rows" Value="2"/>-->
     </Style>
 
+    <Style TargetType="{x:Type vc:CustomAxisLabels}">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+    </Style>
+
     <Style TargetType="{x:Type vc:Ticks}">
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="LineThickness" Value="0.5"/>

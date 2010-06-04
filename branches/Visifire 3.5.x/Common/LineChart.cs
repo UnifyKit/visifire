@@ -2523,13 +2523,13 @@ namespace Visifire.Charts
         /// <param name="sender">object</param>
         /// <param name="e">MouseEventArgs</param>
         static void PlotAreaCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
+        {   
             PlotArea plotArea = ((FrameworkElement)sender).Tag as PlotArea;
             if (plotArea == null) return;
             Chart chart = plotArea.Chart as Chart;
             if (chart == null) return;
 
-            ((FrameworkElement) sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs>(MoveMovingMarker), chart, sender, e);
+            ((FrameworkElement) sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs>(MoveMovingMarker), chart, sender, e, RenderAs.Line);
         }
 
         /// <summary>
@@ -2538,11 +2538,24 @@ namespace Visifire.Charts
         /// <param name="chart">Chart reference</param>
         /// <param name="sender">object</param>
         /// <param name="e">MouseEventArgs</param>
-        internal static void MoveMovingMarker(Chart chart, object sender, MouseEventArgs e)
+        internal static void MoveMovingMarker(Chart chart, object sender, MouseEventArgs e, RenderAs chartType)
         {   
             if (!_isMouseEnteredInPlotArea)
                 return;
+
+            foreach (DataSeries ds in chart.InternalSeries)
+            {
+                if (ds.RenderAs != chartType)
+                    continue;
+
+                Double internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(chart, ds.PlotGroup.AxisX, e);
+                Double internalYValue = RenderHelper.CalculateInternalXValueFromPixelPos(chart, ds.PlotGroup.AxisY, e);
+
+                ds.ShowMovingMarker(internalXValue, internalYValue);
+
+            }
             
+            /* Removed old code
             Double xPosition = e.GetPosition(sender as Canvas).X;
 
             foreach (DataSeries ds in chart.InternalSeries)
@@ -2587,7 +2600,7 @@ namespace Visifire.Charts
                     {
                         var nearestDPAlongXPosition = from dp in ds.DataPoints where dp.InternalXValue == nearestDataPoint.InternalXValue select dp;
 
-                        DataPoint newNearestDp = nearestDPAlongXPosition.First().Parent.GetNearestDataPointAlongYPosition(sender, e, nearestDPAlongXPosition.ToList());
+                        DataPoint newNearestDp = nearestDPAlongXPosition.First().Parent.GetNearestDataPointAlongYPosition(e, nearestDPAlongXPosition.ToList());
 
                         if (newNearestDp != null)
                             nearestDataPoint = newNearestDp;
@@ -2595,34 +2608,46 @@ namespace Visifire.Charts
 
                     // DataPoint nearestDataPoint = (from dp in ds.DataPoints orderby Math.Abs(xPosition - dp._visualPosition.X) select dp).First();
 
-                    Ellipse movingMarker = ds._movingMarker;
+                    ShowMovingMarkerAtDataPoint(ds, nearestDataPoint);
+                }
+            }*/
+        
+        }
 
-                    if (nearestDataPoint == null)
-                    {
-                        ds._movingMarker.Visibility = Visibility.Collapsed;
-                        return;
-                    }
+        internal static void ShowMovingMarkerAtDataPoint(DataSeries dataSeries, DataPoint nearestDataPoint)
+        {
+            if (nearestDataPoint == null)
+            {
+                dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+                return;
+            }
 
-                    if (nearestDataPoint.Selected)
-                    {
-                        SelectMovingMarker(nearestDataPoint);
-                    }
-                    else
-                    {
-                        movingMarker.Fill = nearestDataPoint.Parent.Color;
+            if (dataSeries.MovingMarkerEnabled)
+            {
+                Ellipse movingMarker = nearestDataPoint.Parent._movingMarker;
 
-                        Double movingMarkerSize = (Double)nearestDataPoint.Parent.MarkerSize * (Double)nearestDataPoint.Parent.MarkerScale * MOVING_MARKER_SCALE;
+                if(_isMouseEnteredInPlotArea)
+                    movingMarker.Visibility = Visibility.Visible;
 
-                        if (movingMarkerSize < 6)
-                            movingMarkerSize = 6;
+                if (nearestDataPoint.Selected)
+                {
+                    SelectMovingMarker(nearestDataPoint);
+                }
+                else
+                {
+                    movingMarker.Fill = nearestDataPoint.Parent.Color;
 
-                        movingMarker.Height = movingMarkerSize;
-                        movingMarker.Width = movingMarker.Height;
-                        movingMarker.StrokeThickness = 0;
+                    Double movingMarkerSize = (Double)nearestDataPoint.Parent.MarkerSize * (Double)nearestDataPoint.Parent.MarkerScale * MOVING_MARKER_SCALE;
 
-                        movingMarker.SetValue(Canvas.LeftProperty, nearestDataPoint._visualPosition.X - movingMarker.Width / 2);
-                        movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint._visualPosition.Y - movingMarker.Height / 2);
-                    }
+                    if (movingMarkerSize < 6)
+                        movingMarkerSize = 6;
+
+                    movingMarker.Height = movingMarkerSize;
+                    movingMarker.Width = movingMarker.Height;
+                    movingMarker.StrokeThickness = 0;
+
+                    movingMarker.SetValue(Canvas.LeftProperty, nearestDataPoint._visualPosition.X - movingMarker.Width / 2);
+                    movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint._visualPosition.Y - movingMarker.Height / 2);
                 }
             }
         }
