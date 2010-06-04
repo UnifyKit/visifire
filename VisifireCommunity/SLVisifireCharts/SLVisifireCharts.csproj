@@ -146,6 +146,12 @@
     <Compile Include="..\..\Common\Converters.cs">
       <Link>Converters.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\CustomAxisLabel.cs">
+      <Link>CustomAxisLabel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\CustomAxisLabels.cs">
+      <Link>CustomAxisLabels.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\DataMapping.cs">
       <Link>DataMapping.cs</Link>
     </Compile>

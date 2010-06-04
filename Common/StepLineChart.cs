@@ -1814,8 +1814,7 @@ namespace Visifire.Charts
 
             Marker dataPointMarker = dataPoint.Marker;
             Marker legendMarker = dataPoint.LegendMarker;
-
-
+            
             Double height = chart.ChartArea.ChartVisualCanvas.Height;
             Double width = chart.ChartArea.ChartVisualCanvas.Width;
 
@@ -2731,10 +2730,10 @@ namespace Visifire.Charts
             Chart chart = plotArea.Chart as Chart;
             if (chart == null) return;
 
-            ((FrameworkElement)sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs>(StepLineChart.MoveMovingMarker), chart, sender, e);
+            ((FrameworkElement)sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs>(LineChart.MoveMovingMarker), chart, sender, e, RenderAs.StepLine);
         }
 
-        /// <summary>
+     /*   /// <summary>
         /// Move the moving marker
         /// </summary>
         /// <param name="chart">Chart reference</param>
@@ -2791,7 +2790,7 @@ namespace Visifire.Charts
                     {
                         var nearestDPAlongXPosition = from dp in ds.DataPoints where dp.InternalXValue == nearestDataPoint.InternalXValue select dp;
 
-                        DataPoint newNearestDp = nearestDPAlongXPosition.First().Parent.GetNearestDataPointAlongYPosition(sender, e, nearestDPAlongXPosition.ToList());
+                        DataPoint newNearestDp = nearestDPAlongXPosition.First().Parent.GetNearestDataPointAlongYPosition(e, nearestDPAlongXPosition.ToList());
 
                         if (newNearestDp != null)
                             nearestDataPoint = newNearestDp;
@@ -2830,6 +2829,7 @@ namespace Visifire.Charts
                 }
             }
         }
+        */
 
         /// <summary>
         /// Apply Selected effect on Moving Markers

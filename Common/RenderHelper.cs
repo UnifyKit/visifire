@@ -716,5 +716,203 @@ namespace Visifire.Charts
             else
                 return xValues.ToArray();
         }
+
+        #region Helper function for Pixel to Value and Value to Pixel conversion purpose
+
+        /// <summary>
+        /// Calculate internalYValue from mouse pointer position
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="yAxis">y-axis reference</param>
+        /// <param name="e">MouseEventArgs</param>
+        /// <returns>Double internalXValue</returns>
+        internal static Double CalculateInternalXValueFromPixelPos(Chart chart, Axis xAxis, MouseEventArgs e)
+        {
+            Orientation axisOrientation = xAxis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+            Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+
+            return xAxis.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
+        }
+
+        /// <summary>
+        /// Calculate internalYValue from mouse pointer position
+        /// </summary>
+        /// <param name="chart">Chart</param>
+        /// <param name="yAxis">y-axis reference</param>
+        /// <param name="e">MouseEventArgs</param>
+        /// <returns>Double internalYValue</returns>
+        internal static Double CalculateInternalYValueFromPixelPos(Chart chart, Axis yAxis, MouseEventArgs e)
+        {
+            Orientation axisOrientation = yAxis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+            Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+
+            return yAxis.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+        }
+
+        /// <summary>
+        /// Get nearest DataPoint along XAxis
+        /// </summary>
+        /// <param name="dataPoints"></param>
+        /// <param name="internalXValue"></param>
+        /// <returns></returns>
+        internal static DataPoint GetNearestDataPointAlongXAxis(List<DataPoint> dataPoints, Axis xAxis, Double internalXValue)
+        {
+            List<DataPoint> dataPointsAlongX = (from dp in dataPoints
+                                                where
+                                                !(RenderHelper.IsFinancialCType(dp.Parent) && dp.InternalYValues == null)
+                                                || !(!RenderHelper.IsFinancialCType(dp.Parent) && Double.IsNaN(dp.YValue))
+                                                orderby Math.Abs(dp.InternalXValue - internalXValue)
+                                                select dp).ToList();
+
+            if (dataPointsAlongX.Count > 0)
+                return dataPointsAlongX.First();
+            else
+                return null;
+        }
+
+        internal static void UserValueToInternalValues(Axis xAxis, Axis yAxis, Object userXValue, Double userYValue, out Double internalXValue, out Double internalYValue)
+        {
+            internalYValue = userYValue;
+            internalXValue = Double.NaN;
+
+            if (xAxis != null)
+            {
+                if (userXValue != null)
+                {
+                    if (xAxis.IsDateTimeAxis)
+                    {
+                        try
+                        {
+                            DateTime dateTime = Convert.ToDateTime(userXValue);
+                            internalXValue = DateTimeHelper.DateDiff(dateTime, xAxis.FirstLabelDate, xAxis.MinDateRange, xAxis.MaxDateRange, xAxis.InternalIntervalType, xAxis.XValueType);
+                        }
+                        catch
+                        {
+                            throw new ArgumentException("Incorrect DateTime value of XValue.");
+                        }
+                    }
+                    else
+                        internalXValue = Convert.ToDouble(userXValue);
+                }
+
+            }
+
+            if (yAxis != null && yAxis.Logarithmic)
+                internalYValue = DataPoint.ConvertYValue2LogarithmicValue(xAxis.Chart as Chart, userYValue, yAxis.AxisType);
+            else
+                internalYValue = userYValue;
+        }
+
+        /// <summary>
+        /// Find the nearest DataPoint from each dataSeries from a xValue and yValue
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="internalXValue">internalXValue</param>
+        /// <param name="internalYValue">internalYValue</param>
+        /// <returns></returns>
+        internal static DataPoint GetNearestDataPoint(DataSeries dataSeries, Double internalXValue, Double internalYValue)
+        {
+            DataPoint nearestDataPoint = null;
+
+            // Get all DataPoints order by the XValue distance from the internalXValue.
+            List<DataPoint> dataPointsAlongX = (from dp in dataSeries.DataPoints
+                                                where
+                                                !(RenderHelper.IsFinancialCType(dp.Parent) && dp.InternalYValues == null)
+                                                || !(!RenderHelper.IsFinancialCType(dp.Parent) && Double.IsNaN(dp.YValue))
+                                                orderby Math.Abs(dp.InternalXValue - internalXValue)
+                                                select dp).ToList();
+
+            if (dataPointsAlongX.Count > 0)
+            {   
+                // Get the internalYValue of the first DataPoint of the ordered list
+                Double firstValue = dataPointsAlongX[0].InternalYValue;
+
+                // DataPoints along y pixel direction which have same XValue
+                List<DataPoint> dataPointsAlongYHavingSameXValue = new List<DataPoint>();
+
+                foreach (DataPoint dp in dataPointsAlongX)
+                {
+                    if (dp.InternalYValue == firstValue)
+                        dataPointsAlongYHavingSameXValue.Add(dp);
+                }
+
+                if (Double.IsNaN(internalYValue))
+                {
+                    // Sort according to YValue or YValues
+                    if (RenderHelper.IsFinancialCType(dataSeries))
+                        dataPointsAlongYHavingSameXValue = (from dp in dataPointsAlongYHavingSameXValue
+                                                            where (dp.InternalYValues == null)
+                                                            orderby Math.Abs(dp.InternalYValues.Max() - internalYValue)
+                                                            select dp).ToList();
+                    else
+                        dataPointsAlongYHavingSameXValue = (from dp in dataPointsAlongYHavingSameXValue
+                                                            where !Double.IsNaN(dp.InternalYValue)
+                                                            orderby Math.Abs(dp.InternalYValue - internalYValue)
+                                                            select dp).ToList();
+                }
+
+                if (dataPointsAlongYHavingSameXValue.Count > 0)
+                    nearestDataPoint = dataPointsAlongYHavingSameXValue.First();
+            }
+
+            return nearestDataPoint;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// (dataSeries.RenderAs == RenderAs.CandleStick || dataSeries.RenderAs == RenderAs.Stock);
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsFinancialCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.CandleStick || dataSeries.RenderAs == RenderAs.Stock);
+        }
+
+        /// <summary>
+        /// (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsLineCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine);
+        }
+
+        /// <summary>
+        /// Chart types which are not dependent upon other DataSeries.
+        /// (dataSeries.RenderAs == RenderAs.Area 
+        /// || dataSeries.RenderAs == RenderAs.Column
+        /// || dataSeries.RenderAs == RenderAs.Bar 
+        /// || dataSeries.RenderAs == RenderAs.Line
+        /// || dataSeries.RenderAs == RenderAs.StepLine)
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsIndependentCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Column
+                || dataSeries.RenderAs == RenderAs.Bar || dataSeries.RenderAs == RenderAs.Line
+                || dataSeries.RenderAs == RenderAs.StepLine
+                );
+        }
+
+        /// <summary>
+        /// Chart types which works with only single DataSeries.
+        /// (dataSeries.RenderAs == RenderAs.Pie 
+        /// || dataSeries.RenderAs == RenderAs.Doughnut
+        /// || dataSeries.RenderAs == RenderAs.SectionFunnel 
+        /// || dataSeries.RenderAs == RenderAs.StreamLineFunnel)
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsAxisIndependentCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.Pie || dataSeries.RenderAs == RenderAs.Doughnut
+                || dataSeries.RenderAs == RenderAs.SectionFunnel || dataSeries.RenderAs == RenderAs.StreamLineFunnel);
+        }
    }
 }

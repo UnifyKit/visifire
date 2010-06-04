@@ -101,6 +101,78 @@ namespace Visifire.Charts
 
         }
 
+        /// <summary>
+        /// Hide MovingMarker
+        /// </summary>
+        public void HideMovingMarker()
+        {
+            if (_movingMarker != null)
+                _movingMarker.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Show MovingMarker near x and y value
+        /// </summary>
+        /// <param name="xValue">XValue corrosponding to mouse position</param>
+        /// <param name="yValue">YValue corrosponding to mouse position</param>
+        internal void ShowMovingMarker(Double internalXValue, Double internalYValue)
+        {
+            if (MovingMarkerEnabled)
+            {
+                Chart chart = Chart as Chart;
+
+                if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null)
+                {
+                    Axis xAxis = chart.ChartArea.AxisX;
+                    Axis yAxis = this.PlotGroup.AxisY;
+                    
+                    if (!Double.IsNaN(internalYValue) && !Double.IsNaN(internalXValue))
+                        Dispatcher.BeginInvoke(new Action(delegate()
+                        {   
+                            // Find nearest DataPoint
+                            DataPoint nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
+
+                            // Show MovingMarker at the nearest DataPoint
+                            LineChart.ShowMovingMarkerAtDataPoint(this, nearestDataPoint);
+                        }));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Show MovingMarker near x and y value
+        /// </summary>
+        /// <param name="xValue">XValue corrosponding to mouse position</param>
+        /// <param name="yValue">YValue corrosponding to mouse position</param>
+        public void ShowMovingMarker(Object xValue, Double yValue)
+        {   
+            if (MovingMarkerEnabled)
+            {   
+                Chart chart = Chart as Chart;
+
+                if (chart!= null && chart.ChartArea != null && chart.ChartArea.AxisX != null)
+                {
+                    Axis xAxis = chart.ChartArea.AxisX;
+                    Axis yAxis = this.PlotGroup.AxisY;
+
+                    Double internalXValue, internalYValue;
+
+                    // Convert user value to User value to internalValues
+                    RenderHelper.UserValueToInternalValues(xAxis, yAxis, xValue, yValue, out internalXValue, out internalYValue); ;
+                    
+                    if(!Double.IsNaN(yValue) && xValue != null)
+                        Dispatcher.BeginInvoke(new Action(delegate()
+                        {   
+                            // Find nearest DataPoint
+                            DataPoint nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, yValue);
+
+                            // Show MovingMarker at the nearest DataPoint
+                            LineChart.ShowMovingMarkerAtDataPoint(this, nearestDataPoint);
+                        }));
+                }
+            }
+        }
+
         void DataMappings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -2389,95 +2461,74 @@ namespace Visifire.Charts
             }
         }
 
-        internal DataPoint GetNearestDataPoint(object sender, MouseEventArgs e, List<DataPoint> listOfDataPoints)
+        /// <summary>
+        /// Hide ToolTip of DataSeries
+        /// </summary>
+        internal Boolean HideToolTip()
         {
-            DataPoint nearestDataPoint = null;
-
-            Chart chart = Chart as Chart;
-
-            if (chart.ChartArea.AxisX != null)
+            if (this.ToolTipElement != null)
             {
-                Double xValue;
-                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
-
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
-
-                foreach (DataPoint dp in listOfDataPoints)
-                {
-                    DataSeries ds = dp.Parent;
-
-                    if (!(Boolean)dp.Enabled)
-                        continue;
-
-                    if ((ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock)
-                        && dp.InternalYValues == null)
-                        continue;
-                    else
-                    {
-                        if (ds.RenderAs != RenderAs.CandleStick && ds.RenderAs != RenderAs.Stock 
-                            && Double.IsNaN(dp.YValue))
-                            continue;
-                    }
-
-                    if (chart.ChartArea.AxisX.AxisOrientation == Orientation.Horizontal)
-                    {
-                        dp._x_distance = Math.Abs(pixelPosition - dp._visualPosition.X);
-
-                        if (nearestDataPoint == null)
-                        {
-                            nearestDataPoint = dp;
-                            continue;
-                        }
-
-                        if (dp._x_distance < nearestDataPoint._x_distance)
-                            nearestDataPoint = dp;
-
-                        //if (pixelPosition > chart.ChartArea.PlottingCanvas.Width || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
-                        //{
-                        //    nearestDataPoint = null;
-                        //    ds.ToolTipElement.Hide();
-                        //    continue;
-                        //}
-                    }
-                    else
-                    {
-                         dp._x_distance = Math.Abs(pixelPosition - dp._visualPosition.Y);
-
-                        if (nearestDataPoint == null)
-                        {
-                            nearestDataPoint = dp;
-                            continue;
-                        }
-
-                        if (dp._x_distance < nearestDataPoint._x_distance)
-                            nearestDataPoint = dp;
-
-                        //if (pixelPosition > chart.ChartArea.PlottingCanvas.Height || xValue > ds.DataPoints[ds.DataPoints.Count - 1].InternalXValue + 0.5)
-                        //{
-                        //    nearestDataPoint = null;
-                        //    ds.ToolTipElement.Hide();
-                        //    break;
-                        //}
-                    }
-                }
+                this.ToolTipElement.Hide();
+                return true;
             }
-
-            return nearestDataPoint;
+            
+            return false;
         }
 
-        internal DataPoint GetNearestDataPointAlongYPosition(object sender, MouseEventArgs e, List<DataPoint> listOfDataPoints)
+        /// <summary>
+        /// Show ToolTip of DataSeries
+        /// </summary>
+        internal Boolean ShowToolTip()
         {
+            if (this.ToolTipElement != null)
+            {
+                this.ToolTipElement.Show();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Get nearest DataPoints from mouse pointer position
+         /// </summary>
+        /// <param name="e">MouseEventArgs</param>
+        /// <returns>DataPoint</returns>
+        internal DataPoint FindNearestDataPointFromMousePointer(MouseEventArgs e)
+        {   
+            DataSeries dataSeries = this;
+            Axis xAxis = dataSeries.PlotGroup.AxisX;
+            Axis yAxis = dataSeries.PlotGroup.AxisY;
+            Double internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(dataSeries.Chart as Chart, xAxis, e);
+            Double internalYValue = RenderHelper.CalculateInternalYValueFromPixelPos(dataSeries.Chart as Chart, yAxis, e);
+            dataSeries._nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
+            return dataSeries._nearestDataPoint;
+        }
+
+        /// <summary>
+        /// Get nearest DataPoints from mouse pointer position
+        /// </summary>
+        /// <param name="e">MouseEventArgs</param>
+        /// <returns>DataPoint</returns>
+        internal DataPoint FindNearestDataPointFromValues(Double internalXValue, Double internalYValue)
+        {
+            this._nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
+            return this._nearestDataPoint;
+        }
+
+ 
+        internal DataPoint GetNearestDataPointAlongYPosition(MouseEventArgs e, List<DataPoint> listOfDataPoints)
+        {   
             DataPoint nearestDataPoint = null;
 
             Chart chart = Chart as Chart;
 
             if (chart.ChartArea.AxisX != null)
-            {
+            {   
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-
+                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+              
                 foreach (DataPoint dp in listOfDataPoints)
                 {
                     DataSeries ds = dp.Parent;
@@ -2513,6 +2564,7 @@ namespace Visifire.Charts
                             nearestDataPoint = dp;
                     }
                 }
+                
             }
 
             return nearestDataPoint;
@@ -3640,7 +3692,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// 
+        /// Event handler for DataSeries event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -4033,7 +4085,7 @@ namespace Visifire.Charts
         /// Nearest DataPoint form mouse pointer
         /// Currently it is applicable for line chart interactivity only
         /// </summary>
-        internal DataPoint _lastNearestDataPoint;
+        internal DataPoint _nearestDataPoint;
 
         Nullable<Thickness> _borderThickness = null;
         Double _internalOpacity = Double.NaN;

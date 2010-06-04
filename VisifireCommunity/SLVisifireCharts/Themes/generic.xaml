@@ -310,6 +310,13 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
         <Setter Property="FontWeight" Value="Normal"/>
         <!--<Setter Property="Rows" Value="0"/>-->
     </Style>
+    
+    <Style TargetType="vc:CustomAxisLabels">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="FontStyle" Value="Normal"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+    </Style>
 
     <Style TargetType="vc:Ticks">
         <Setter Property="LineColor" Value="Gray"/>
