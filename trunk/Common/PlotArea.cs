@@ -50,7 +50,6 @@ namespace Visifire.Charts
 #endif
     public class PlotArea : ObservableObject
     {
-
         #region Public Methods
 
         /// <summary>
@@ -370,8 +369,7 @@ namespace Visifire.Charts
                 SetValue(BorderColorProperty, value);
             }
         }
-
-
+        
         /// <summary>
         /// Get or set ToolTipText property for the Chart
         /// </summary>
@@ -880,6 +878,60 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Calculates the top and left position of PlotArea
+        /// </summary>
+        /// <param name="chart"></param>
+        internal Point GetPlotAreaStartPosition()
+        {
+            Double left, top;
+            Chart chart = Chart as Chart;
+            Axis xAxis = chart.ChartArea.AxisX;
+            Axis yAxis = chart.ChartArea.AxisY;
+
+            if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {   
+                if (yAxis != null)
+                {
+                    left = Axis.GetAxisLeft(yAxis) + yAxis.Width;
+
+                    top = Axis.GetAxisTop(yAxis);
+                }
+                else
+                {
+                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth +
+                        chart._leftOffsetGrid.ActualWidth + Chart.BorderThickness.Left;
+
+                    top = Chart.Padding.Top + chart._topOffsetGrid.ActualHeight 
+                        + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight 
+                        + Chart.BorderThickness.Top;
+                }
+            }
+            else
+            {
+                if (xAxis != null)
+                {
+                    left = Axis.GetAxisLeft(xAxis) + xAxis.Width;
+
+                    top = Axis.GetAxisTop(xAxis);
+                }
+                else
+                {
+                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth
+                        + chart._leftOffsetGrid.ActualWidth + Chart.BorderThickness.Left;
+
+                    top = Chart.Padding.Top + chart._topOffsetGrid.ActualHeight 
+                        + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight 
+                        + Chart.BorderThickness.Top;
+                }
+            }
+            
+            this.SetValue(Canvas.LeftProperty, left);
+            this.SetValue(Canvas.TopProperty, top);
+
+            return new Point(left, top);
+        }
+
+        /// <summary>
         /// Apply properties to visual and parts of visual
         /// </summary>
         internal void ApplyProperties()
@@ -1285,7 +1337,7 @@ namespace Visifire.Charts
             PlotAreaMouseEventArgs eventArgs = new PlotAreaMouseEventArgs(e);
 
             if (chart.ChartArea.AxisX != null)
-            {
+            {   
                 Double xValue;
                 Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
                 Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
@@ -1300,7 +1352,7 @@ namespace Visifire.Charts
             }
 
             if (chart.ChartArea.AxisY != null)
-            {
+            {   
                 Double yValue;
                 Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
                 Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;

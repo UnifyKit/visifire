@@ -22,19 +22,23 @@
         <script type="text/javascript" >
             
             // Create Visifire object
-            var vChart = new Visifire('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 300);
+            var vChart = new Visifire('ClientBin/SL.Visifire.Charts.xap', "MyChart", 500, 800);
             
             // vChart1.setLogLevel(0); // If you want to disable logging.
             
-            var chartXml = '<vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
+            var chartXml = '<StackPanel>'
+               + '<vc:Chart IndicatorEnabled="true" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
                + ' <vc:Chart.Legends>'
                + ' <vc:Legend />'
                + ' </vc:Chart.Legends>'
+               + ' <vc:Chart.PlotArea>'
+               + ' <vc:PlotArea/>'
+               + ' </vc:Chart.PlotArea>'
                + '     <vc:Chart.Titles>'
                + '         <vc:Title Text="Athens 2004 Olympics" FontSize="14"/>'
                + '     </vc:Chart.Titles>'
                + '     <vc:Chart.Series>'
-               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries" RenderAs="Line" LabelEnabled="True">'
+               + '         <vc:DataSeries ShowInLegend="true" Name="MySeries1" RenderAs="Bar" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
                + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
@@ -43,7 +47,38 @@
                + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="16"/>'
                + '             </vc:DataSeries.DataPoints>'
                + '         </vc:DataSeries>'
-                              + '         <vc:DataSeries ShowInLegend="true" Name="MySeries2" RenderAs="Line" LabelEnabled="True">'
+                              + '         <vc:DataSeries ShowInLegend="true" Name="MySeries2" RenderAs="Bar" LabelEnabled="True">'
+               + '             <vc:DataSeries.DataPoints>'
+               + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="135"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="232"/>'
+//               + '                 <vc:DataPoint AxisXLabel="Russia" XValue="31"  YValue="327"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" XValue="41"  YValue="417"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="216"/>'
+               + '             </vc:DataSeries.DataPoints>'
+               + '         </vc:DataSeries>'
+               + '     </vc:Chart.Series>'
+               + ' </vc:Chart>'
+               + '<vc:Chart IndicatorEnabled="true" Width="500" Height="300" BorderThickness="0.5" Padding="3" AnimationEnabled="true" Theme="Theme1" >'
+               + ' <vc:Chart.Legends>'
+               + ' <vc:Legend />'
+               + ' </vc:Chart.Legends>'
+               + ' <vc:Chart.PlotArea>'
+               + ' <vc:PlotArea/>'
+               + ' </vc:Chart.PlotArea>'
+               + '     <vc:Chart.Titles>'
+               + '         <vc:Title Text="Athens 2004 Olympics" FontSize="24"/>'
+               + '     </vc:Chart.Titles>'
+               + '     <vc:Chart.Series>'
+               + '         <vc:DataSeries ShowInLegend="true" MovingMarkerEnabled="true" Name="MySeries3" RenderAs="Line" LabelEnabled="True">'
+               + '             <vc:DataSeries.DataPoints>'
+               + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="35"/>'
+               + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="32"/>'
+//               + '                 <vc:DataPoint AxisXLabel="Russia" XValue="31"  YValue="27"/>'
+               + '                 <vc:DataPoint AxisXLabel="Australia" XValue="41"  YValue="17"/>'
+               + '                 <vc:DataPoint AxisXLabel="Japan" XValue="51"  YValue="16"/>'
+               + '             </vc:DataSeries.DataPoints>'
+               + '         </vc:DataSeries>'
+                              + '         <vc:DataSeries ShowInLegend="true" MovingMarkerEnabled="true"  Name="MySeries4" RenderAs="Line" LabelEnabled="True">'
                + '             <vc:DataSeries.DataPoints>'
                + '                 <vc:DataPoint AxisXLabel="USA" XValue="10" YValue="135"/>'
                + '                 <vc:DataPoint AxisXLabel="China" XValue="21"  YValue="232"/>'
@@ -53,13 +88,24 @@
                + '             </vc:DataSeries.DataPoints>'
                + '         </vc:DataSeries>'
                + '     </vc:Chart.Series>'
-               + ' </vc:Chart>';
+               + ' </vc:Chart>'
+               + '</StackPanel>';
             
             // Set Chart XML
             vChart.setDataXml(chartXml);
-            vChart.loaded = function(args) 
-            {
-                chart = args[0];
+            vChart.loaded = function(args) {
+                chart1 = args[0];
+                chart2 = args[1];
+                chart1.PlotArea.MouseMove = function(sender, e) {
+                    chart2.ShowIndicator(e.XValue, e.YValue);
+                    chart2.Series[0].ShowMovingMarker(e.XValue, e.YValue);
+                    chart2.Series[1].ShowMovingMarker(e.XValue, e.YValue);
+                };
+
+                chart1.PlotArea.MouseLeave = function(sender, e) {
+                    chart2.Series[0].HideMovingMarker();
+                    chart2.Series[1].HideMovingMarker();
+                };
             };
             
             // Render chart

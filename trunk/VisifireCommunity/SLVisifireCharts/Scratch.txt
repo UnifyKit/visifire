@@ -1,4 +1,28 @@
-﻿//////////////// Code for Plank Color
+﻿                // List of nearest DataPoint from mouse pointer position
+                List<DataPoint> listOfNearestDataPoints = new List<DataPoint>();
+
+                // Find and set reference of the nearest DataPoint from mouse pointer position
+                foreach (DataSeries dataSeries in chart.InternalSeries)
+                {   
+                    if(RenderHelper.IsAxisIndependentCType(dataSeries))
+                        continue;
+
+                    Axis xAxis = dataSeries.PlotGroup.AxisX;
+                    Axis yAxis = dataSeries.PlotGroup.AxisY;
+
+                    if (e != null)
+                    {
+                        internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(Chart as Chart, xAxis, e);
+                        internalYValue = RenderHelper.CalculateInternalYValueFromPixelPos(Chart as Chart, yAxis, e);
+                    }
+
+                    dataSeries.FindNearestDataPointFromValues(internalXValue, internalYValue);
+
+                    if (dataSeries._nearestDataPoint != null)
+                        listOfNearestDataPoints.Add(dataSeries._nearestDataPoint);
+                }
+
+//////////////// Code for Plank Color
 //System.Windows.Shapes.Path path = null;
             //if (Chart.PlotArea.Background != null && !Graphics.AreBrushesEqual(Chart.PlotArea.Background, new SolidColorBrush(Colors.Transparent)))
             //{

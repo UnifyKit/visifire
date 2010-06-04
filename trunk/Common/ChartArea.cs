@@ -402,7 +402,9 @@ namespace Visifire.Charts
             String axisIndicatorText = "";
 
             foreach (DataPoint dp in nearestDataPointList)
-            {   
+            {
+                dp.Parent.ShowToolTip();
+
                 // Shifting of cordinates from PlotArea to ChartArea
                 Point positionOfDp = new Point(dp._visualPosition.X + xPlotOffset, dp._visualPosition.Y + yPlotOffset);
 
@@ -1302,6 +1304,8 @@ namespace Visifire.Charts
             return boundingRec;
         }
         
+        
+
         /// <summary>
         /// Create the center layout of the ChartArea
         /// </summary>
@@ -1350,43 +1354,7 @@ namespace Visifire.Charts
             Chart.PlotArea.AttachToolTip(Chart, Chart.PlotArea, Chart.PlotArea.BorderElement);
         }
 
-        /// <summary>
-        /// Get the start position of PlotArea
-        /// </summary>
-        /// <returns></returns>
-        internal Point GetPlotAreaStartPosition()
-        {
-            Double left, top;
-            if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
-            {
-                if (AxisY != null)
-                {
-                    left = GetAxisLeft(AxisY) + AxisY.Width;
-                    top = GetAxisTop(AxisY);
-                }
-                else
-                {
-                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
-                    top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
-                }
-            }
-            else
-            {
-                if (AxisX != null)
-                {
-                    left = GetAxisLeft(AxisX) + AxisX.Width;
-                    top = GetAxisTop(AxisX);
-                }
-                else
-                {
-                    left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
-                    top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
-                }
-            }
-
-            return new Point(left, top);
-        }
-
+      
         /// <summary>
         /// Get PlotArea position wrt ChartArea coordinates
         /// </summary>
@@ -1394,110 +1362,15 @@ namespace Visifire.Charts
         /// <returns></returns>
         internal Point GetPositionWithRespect2ChartArea(Point positionWithRespect2PlotArea)
         {
-            Point plotAreaStartPos = GetPlotAreaStartPosition();
+            Point plotAreaStartPos = Chart.PlotArea.GetPlotAreaStartPosition();
 
             return new Point(positionWithRespect2PlotArea.X + plotAreaStartPos.X,
                 positionWithRespect2PlotArea.Y + plotAreaStartPos.Y);
         }
 
-        internal Double GetAxisLeft(Axis axis)
-        {
-            Double left = 0;
-            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
-            {
-                if (axis.AxisOrientation == Orientation.Vertical)
-                {
-                    if (axis.AxisType == AxisTypes.Primary)
-                    {
-                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
-                    }
-                    else
-                    {
-                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + PlotAreaCanvas.Width;
-                    }
-                }
-                else
-                {
-                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
-                    {
-                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + Chart._leftAxisGrid.ActualWidth;
-                    }
-                }
-            }
-            else
-            {
-                if (axis.AxisOrientation == Orientation.Vertical)
-                {
-                    if (axis.AxisType == AxisTypes.Primary)
-                    {
-                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth;
-                    }
-                }
-                else
-                {
-                    if (axis.AxisType == AxisTypes.Primary ||  axis.AxisType == AxisTypes.Secondary)
-                    {
-                        left = Chart.Padding.Left + Chart._leftOuterPanel.ActualWidth + Chart._leftAxisGrid.ActualWidth;
-                    }
-                }
-            }
 
-            return left;
-        }
 
-        /// <summary>
-        /// Get top of Axis
-        /// </summary>
-        /// <param name="axis"></param>
-        /// <returns></returns>
-        internal Double GetAxisTop(Axis axis)
-        {
-            Double top = 0;
-            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
-            {
-                if (axis.AxisOrientation == Orientation.Vertical)
-                {
-                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
-                    }
-                }
-                else
-                {
-                    if (axis.AxisType == AxisTypes.Primary)
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + PlotAreaCanvas.Height;
-                    }
-                    else
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight;
-                    }
-                }
-            }
-            else
-            {
-                if (axis.AxisOrientation == Orientation.Vertical)
-                {
-                    if (axis.AxisType == AxisTypes.Primary)
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight;
-                    }
-                }
-                else
-                {
-                    if (axis.AxisType == AxisTypes.Primary)
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight + Chart._topAxisGrid.ActualHeight + PlotAreaCanvas.Height;
-                    }
-                    else
-                    {
-                        top = Chart.Padding.Top + Chart._topOuterPanel.ActualHeight;
-                    }
-                }
-            }
-
-            return top;
-        }
+       
 
         /// <summary>
         /// Event handler calls while selecting the PlotArea region while zooming
@@ -1728,142 +1601,176 @@ namespace Visifire.Charts
 
             #endregion
 
+            PositionIndicator(Chart, e, Double.NaN, Double.NaN);
+        }
+        
+        public void HideIndicator()
+        {
+            DisableIndicators();
+
+            foreach (DataSeries ds in Chart.InternalSeries)
+                ds.HideToolTip();
+        }
+
+        public void PositionIndicator(Chart chart, Double internalXValue, Double internalYValue)
+        {
+            PositionIndicator(chart, null, internalXValue, internalYValue);
+        }
+        
+        public void PositionIndicator(Chart chart, MouseEventArgs e, Double internalXValue, Double internalYValue)
+        {   
             #region Set position for Indicator
 
             if (Chart.IndicatorEnabled)
             {
-                Double x1 = e.GetPosition(Chart._toolTipCanvas).X;
-                Double x2 = e.GetPosition(Chart._plotAreaGrid).X;
+                /*Double xOffset = Double.NaN, yOffset = Double.NaN;
 
-                Double y1 = e.GetPosition(Chart._toolTipCanvas).Y;
-                Double y2 = e.GetPosition(Chart._plotAreaGrid).Y;
-
-                Double xOffset = Math.Abs(x1 - x2);
-                Double yOffset = Math.Abs(y1 - y2);
-
-                if (Chart.InternalSeries.Count > 0)
+                if (e != null)
                 {
-                    List<DataPoint> listOfNearestDataPoints = new List<DataPoint>();
+                    Double x1 = e.GetPosition(Chart._toolTipCanvas).X;
+                    Double x2 = e.GetPosition(Chart._plotAreaGrid).X;
 
-                    // Find out the first nearest DataPoint from mouse position
-                    foreach (DataSeries ds in Chart.Series)
+                    Double y1 = e.GetPosition(Chart._toolTipCanvas).Y;
+                    Double y2 = e.GetPosition(Chart._plotAreaGrid).Y;
+
+                    xOffset = Math.Abs(x1 - x2);
+                    yOffset = Math.Abs(y1 - y2);
+                }
+
+                chart.PlotArea.GetPlotAreaStartPosition();
+
+                Double xx1 = (Double)Chart.PlotArea.GetValue(Canvas.LeftProperty);
+                Double yy1 = (Double)Chart.PlotArea.GetValue(Canvas.TopProperty);
+
+                System.Diagnostics.Debug.WriteLine("XOffset=" + xOffset.ToString() + ", " + yOffset.ToString());
+                System.Diagnostics.Debug.WriteLine("XOffset=" + xx1.ToString() + ", " + yy1.ToString());
+                
+                xOffset = xx1;
+                yOffset = yy1;*/
+
+                Double xOffset = (Double)Chart.PlotArea.GetValue(Canvas.LeftProperty);
+                Double yOffset = (Double)Chart.PlotArea.GetValue(Canvas.TopProperty);
+                
+                // Find and set reference of the nearest DataPoint from mouse pointer position
+                // and ignore all Datapoints where if nearestDataPoint is null of its parent
+                List<DataPoint> listOfNearestDataPoints;
+
+                if(e == null)
+                    listOfNearestDataPoints = (from ds in chart.InternalSeries
+                                               where !RenderHelper.IsAxisIndependentCType(ds)
+                                               select ds.FindNearestDataPointFromValues(internalXValue, internalYValue))
+                                               .Where(dp => (dp.Parent._nearestDataPoint != null)).ToList();
+                else
+                    listOfNearestDataPoints = (from ds in chart.InternalSeries
+                                               where !RenderHelper.IsAxisIndependentCType(ds)
+                                               select ds.FindNearestDataPointFromMousePointer(e))
+                                               .Where(dp => (dp.Parent._nearestDataPoint != null)).ToList();
+
+                // Prepare ToolTips and Create a new list of nearest DataPoints
+                List<DataPoint> selectedNearestDataPoints = new List<DataPoint>();
+
+                // Prepare ToolTips and Create a new list of nearest DataPoints
+                foreach (DataPoint nearestDataPoint in listOfNearestDataPoints)
+                {   
+                    DataSeries dataSeries = nearestDataPoint.Parent;
+                                      
+                    if (dataSeries.ToolTipElement != null)
                     {
-                        if (ds.RenderAs != RenderAs.Pie && ds.RenderAs != RenderAs.Doughnut
-                             && ds.RenderAs != RenderAs.SectionFunnel && ds.RenderAs != RenderAs.StreamLineFunnel)
-                        {
-                            if (ds.DataPoints.Count > 0)
-                            {
-                                DataPoint nearestDataPoint = ds.GetNearestDataPoint(sender, e, ds.DataPoints.ToList());
+                        dataSeries.SetToolTipProperties(nearestDataPoint);
 
-                                if (nearestDataPoint != null)
-                                {
-                                    listOfNearestDataPoints.Add(nearestDataPoint);
-                                    _lastNearestDataPoint = nearestDataPoint;
-                                }
+                        if (!String.IsNullOrEmpty(dataSeries.ToolTipElement.Text))
+                        {
+                            selectedNearestDataPoints.Add(nearestDataPoint);
+                        }
+                    }
+
+                    // Setup ToolTip
+                    dataSeries.HideToolTip();
+                }
+
+
+                if (e != null)
+                    internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(chart, chart.ChartArea.AxisX, e);
+
+                DataPoint nearestDataPoint1 = RenderHelper.GetNearestDataPointAlongXAxis(selectedNearestDataPoints, chart.ChartArea.AxisX, internalXValue);
+
+                // Sorted list of nearest DataPoints ascending order of visualPosition along y-axis
+                List<DataPoint> finalSetOfDataPoints = new List<DataPoint>();
+
+                if(nearestDataPoint1 != null)
+                    finalSetOfDataPoints = (from dataPoint in selectedNearestDataPoints
+                                            where dataPoint.InternalXValue == nearestDataPoint1.InternalXValue
+                                            orderby dataPoint._visualPosition.Y ascending
+                                            select dataPoint)
+                                            .TakeWhile(dp => dp.Parent.HideToolTip()).ToList();
+
+                System.Diagnostics.Debug.WriteLine("NearestDataPoints Count : " + finalSetOfDataPoints.Count);
+
+               // System.Diagnostics.Debug.WriteLine("YValue : " + finalSetOfDataPoints[0].YValue);
+
+                // Clear all unwated temporary list
+                listOfNearestDataPoints = null;
+                selectedNearestDataPoints = null;
+                
+              //  System.Diagnostics.Debug.WriteLine("NearestDataPoints Count : " + listOfNearestDataPoints.Count);
+                
+                
+                if (finalSetOfDataPoints.Count > 0)
+                {
+                    CreateIndicators();
+
+                    _axisIndicatorElement.Visibility = Visibility.Visible;
+                    _verticalLineIndicator.Visibility = Visibility.Visible;
+                    _callOutPath4AxisIndicator.Visibility = Visibility.Visible;
+
+                    ArrangeToolTips4DataSeries(finalSetOfDataPoints.ToList(), xOffset, yOffset);
+
+                    foreach (DataPoint dp in finalSetOfDataPoints)
+                    {
+                        DataSeries dataSeries = dp.Parent;
+
+                        Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
+                        offset = GetScrollingOffsetOfAxis(AxisX, offset);
+
+                        if (AxisX.AxisOrientation == Orientation.Vertical)
+                        {
+                            if (dp._visualPosition.Y - offset > PlotAreaCanvas.Height
+                                || dp._visualPosition.Y - offset < 0)
+                            {
+                                dataSeries.HideToolTip();
+
+                                DisableIndicators();
+                            }
+                        }
+                        else
+                        {
+                            if (dp._visualPosition.X - offset > PlotAreaCanvas.Width
+                                  || dp._visualPosition.X - offset < 0)
+                            {
+                                dataSeries.HideToolTip();
+
+                                DisableIndicators();
                             }
                         }
                     }
 
-                    if (listOfNearestDataPoints != null && listOfNearestDataPoints.Count > 0)
+                    if (Chart._toolTipCanvas.Clip != null)
                     {
-                        DataPoint dp = listOfNearestDataPoints[0].Parent.GetNearestDataPoint(sender, e, listOfNearestDataPoints);
-                        listOfNearestDataPoints.Clear();
-                        _lastNearestDataPoint = dp;
+                        Rect clipRect = new Rect(0, -PLANK_DEPTH, Chart.ActualWidth, Chart.ActualHeight + PLANK_DEPTH);
+                        RectangleGeometry clipRectangle = Chart._toolTipCanvas.Clip as RectangleGeometry;
+
+                        if (!clipRectangle.Rect.Equals(clipRect))
+                            clipRectangle.Rect = clipRect;
                     }
-
-                    // Now find out the other nearest DataPoints from the last nearest DataPoint found above.
-                    // This is done for multiseries Column and Bar charts. If mouse pointer is at the center of 
-                    // two DataPoints of a DataSeries then ToolTip should appear for those DataPoints which have 
-                    // same XValue.
-                    foreach (DataSeries ds in Chart.Series)
+                    else
                     {
-                        if (ds.ToolTipElement != null)
-                            ds.ToolTipElement.Hide();
-
-                        if (ds.RenderAs == RenderAs.Pie || ds.RenderAs == RenderAs.Doughnut
-                             || ds.RenderAs == RenderAs.SectionFunnel || ds.RenderAs == RenderAs.StreamLineFunnel)
-                            continue;
-
-                        if (_lastNearestDataPoint == null)
-                            return;
-
-                        var otherNearestDP = (from dp in ds.DataPoints
-                                              where dp.InternalXValue == _lastNearestDataPoint.InternalXValue
-                                              select dp);
-
-                        if (otherNearestDP != null)
-                        {
-                            if (otherNearestDP.Count() > 0)
-                            {
-                                DataPoint dp = otherNearestDP.First().Parent.GetNearestDataPointAlongYPosition(sender, e, otherNearestDP.ToList());
-
-                                if (dp != null)
-                                {
-                                    if (dp.Parent.ToolTipElement != null)
-                                    {
-                                        dp.Parent.SetToolTipProperties(dp);
-
-                                        if (!String.IsNullOrEmpty(dp.Parent.ToolTipElement.Text))
-                                        {
-                                            listOfNearestDataPoints.Add(dp);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    System.Diagnostics.Debug.WriteLine("NearestDataPoints Count : " + listOfNearestDataPoints.Count);
-
-                    var nearestDataPointList = (from dataPoint in listOfNearestDataPoints
-                                                orderby dataPoint._visualPosition.Y ascending
-                                                select dataPoint);
-
-                    if (nearestDataPointList.Count() > 0)
-                    {
-                        CreateIndicators();
-
-                        _axisIndicatorElement.Visibility = Visibility.Visible;
-                        _verticalLineIndicator.Visibility = Visibility.Visible;
-                        _callOutPath4AxisIndicator.Visibility = Visibility.Visible;
-
-                        ArrangeToolTips4DataSeries(nearestDataPointList.ToList(), xOffset, yOffset);
-
-                        foreach (DataPoint dp in nearestDataPointList)
-                        {
-                            Double offset = AxisX.GetScrollBarValueFromOffset(AxisX.CurrentScrollScrollBarOffset);
-                            offset = GetScrollingOffsetOfAxis(AxisX, offset);
-
-                            if (AxisX.AxisOrientation == Orientation.Vertical)
-                            {
-                                if (dp._visualPosition.Y - offset > PlotAreaCanvas.Height
-                                    || dp._visualPosition.Y - offset < 0)
-                                {
-                                    if (dp.Parent.ToolTipElement != null)
-                                        dp.Parent.ToolTipElement.Hide();
-
-                                    DisableIndicators();
-                                }
-                            }
-                            else
-                            {
-                                if (dp._visualPosition.X - offset > PlotAreaCanvas.Width
-                                      || dp._visualPosition.X - offset < 0)
-                                {
-                                    if (dp.Parent.ToolTipElement != null)
-                                        dp.Parent.ToolTipElement.Hide();
-
-                                    DisableIndicators();
-                                }
-                            }
-                        }
-
                         RectangleGeometry clipRectangle = new RectangleGeometry();
                         clipRectangle.Rect = new Rect(0, -PLANK_DEPTH, Chart.ActualWidth, Chart.ActualHeight + PLANK_DEPTH);
                         Chart._toolTipCanvas.Clip = clipRectangle;
                     }
                 }
             }
+             
 
             #endregion
         }
@@ -1872,7 +1779,7 @@ namespace Visifire.Charts
         /// Create vertical line indicators
         /// </summary>
         private void CreateVerticalLineIndicator()
-        {
+        {   
             _verticalLineIndicator = new Line();
             _verticalLineIndicator.Stroke = new SolidColorBrush(Color.FromArgb((Byte)153, (Byte)153, (Byte)153, (Byte)153));
             _verticalLineIndicator.StrokeThickness = 1;
@@ -2956,6 +2863,9 @@ namespace Visifire.Charts
                 UpdateLayoutSettings(plotAreaSize);
             }
 
+            // Calculates the top and left position of PlotArea
+            Chart.PlotArea.GetPlotAreaStartPosition();
+
             return plotAreaSize;
         }
 
@@ -3547,7 +3457,7 @@ namespace Visifire.Charts
                         trendLine.CreateVisualObject(trendLineCanvas.Width, trendLineCanvas.Height);
 
                         if (trendLine.Visual != null)
-                        {
+                        {   
                             trendLineCanvas.Children.Add(trendLine.Visual);
                             if(trendLine.LabelTextBlock != null)
                                 Chart._elementCanvas.Children.Add(trendLine.LabelTextBlock);
@@ -3575,7 +3485,7 @@ namespace Visifire.Charts
 #endif
 
                             clipRectangle = new RectangleGeometry();
-                            Point pos = GetPlotAreaStartPosition();
+                            Point pos = Chart.PlotArea.GetPlotAreaStartPosition();
                             if (Chart.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                             {
                                 if (trendLine.Orientation == Orientation.Horizontal)
@@ -5449,13 +5359,45 @@ namespace Visifire.Charts
         {   
             Double overflow = 0;
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisY.AxisLabels.TopOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY.CustomAxisLabels)
+                {
+                    if (customLabels.TopOverflow > overflow)
+                        overflow = customLabels.TopOverflow;
+                }
+            }
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.TopOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY2.CustomAxisLabels)
+                {
+                    if (customLabels.TopOverflow > overflow)
+                        overflow = customLabels.TopOverflow;
+                }
+            }
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisX.AxisLabels.TopOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX.CustomAxisLabels)
+                {
+                    if (customLabels.TopOverflow > overflow)
+                        overflow = customLabels.TopOverflow;
+                }
+            }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.TopOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX2.CustomAxisLabels)
+                {
+                    if (customLabels.TopOverflow > overflow)
+                        overflow = customLabels.TopOverflow;
+                }
+            }
 
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
@@ -5487,13 +5429,45 @@ namespace Visifire.Charts
         {   
             Double overflow = 0;
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisY.AxisLabels.BottomOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY.CustomAxisLabels)
+                {
+                    if (customLabels.BottomOverflow > overflow)
+                        overflow = customLabels.BottomOverflow;
+                }
+            }
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.BottomOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY2.CustomAxisLabels)
+                {
+                    if (customLabels.BottomOverflow > overflow)
+                        overflow = customLabels.BottomOverflow;
+                }
+            }
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisX.AxisLabels.BottomOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX.CustomAxisLabels)
+                {
+                    if (customLabels.BottomOverflow > overflow)
+                        overflow = customLabels.BottomOverflow;
+                }
+            }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.BottomOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX2.CustomAxisLabels)
+                {
+                    if (customLabels.BottomOverflow > overflow)
+                        overflow = customLabels.BottomOverflow;
+                }
+            }
 
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
@@ -5525,13 +5499,45 @@ namespace Visifire.Charts
         {
             Double overflow = 0;
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisX.AxisLabels.RightOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX.CustomAxisLabels)
+                {
+                    if (customLabels.RightOverflow > overflow)
+                        overflow = customLabels.RightOverflow;
+                }
+            }
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.RightOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX2.CustomAxisLabels)
+                {
+                    if (customLabels.RightOverflow > overflow)
+                        overflow = customLabels.RightOverflow;
+                }
+            }
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisY.AxisLabels.RightOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY.CustomAxisLabels)
+                {
+                    if (customLabels.RightOverflow > overflow)
+                        overflow = customLabels.RightOverflow;
+                }
+            }
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.RightOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY2.CustomAxisLabels)
+                {
+                    if (customLabels.RightOverflow > overflow)
+                        overflow = customLabels.RightOverflow;
+                }
+            }
 
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {
@@ -5563,13 +5569,46 @@ namespace Visifire.Charts
         {
             Double overflow = 0;
             if (AxisX != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisX.AxisLabels.LeftOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX.CustomAxisLabels)
+                {
+                    if (customLabels.LeftOverflow > overflow)
+                        overflow = customLabels.LeftOverflow;
+                }
+            }
+
             if (AxisX2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
+            {
                 overflow = Math.Max(overflow, AxisX2.AxisLabels.LeftOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisX2.CustomAxisLabels)
+                {
+                    if (customLabels.LeftOverflow > overflow)
+                        overflow = customLabels.LeftOverflow;
+                }
+            }
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisY.AxisLabels.LeftOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY.CustomAxisLabels)
+                {
+                    if (customLabels.LeftOverflow > overflow)
+                        overflow = customLabels.LeftOverflow;
+                }
+            }
             if (AxisY2 != null && PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
+            {
                 overflow = Math.Max(overflow, AxisY2.AxisLabels.LeftOverflow);
+
+                foreach (CustomAxisLabels customLabels in AxisY2.CustomAxisLabels)
+                {
+                    if (customLabels.LeftOverflow > overflow)
+                        overflow = customLabels.LeftOverflow;
+                }
+            }
 
             if (AxisY != null && PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
             {

@@ -117,6 +117,36 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Text content for the label
+        /// </summary>
+        internal Double From
+        {
+            get
+            {
+                return _from;
+            }
+            set
+            {
+                _from = value;
+            }
+        }
+
+        /// <summary>
+        /// Text content for the label
+        /// </summary>
+        internal Double To
+        {
+            get
+            {
+                return _to;
+            }
+            set
+            {
+                _to = value;
+            }
+        }
+
+        /// <summary>
         /// Determines how the label should be placed around the point given in Position property
         /// </summary>
         /// </summary>
@@ -680,6 +710,10 @@ namespace Visifire.Charts
         /// Identifier for Text property
         /// </summary>
         private String _text;
+
+        private Double _from;
+
+        private Double _to;
 
         /// <summary>
         /// Identifier for ActualLeft property

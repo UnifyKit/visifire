@@ -230,8 +230,38 @@ namespace Visifire.Charts
             }
         }
 
+        public void HideIndicator()
+        {
+             if (ChartArea != null)
+                 Dispatcher.BeginInvoke(new Action(ChartArea.HideIndicator));
+        }
 
-       
+        /// <summary>
+        /// Position the indicator.
+        /// </summary>
+        /// <param name="xValue">XValue corrosponding to mouse position.</param>
+        /// <param name="yValue">YValue corrosponding to mouse position.</param>
+        public void ShowIndicator(Object xValue, Double yValue)
+        {
+            if (ChartArea != null && ChartArea.AxisX != null && IndicatorEnabled)
+            {
+                Axis xAxis = ChartArea.AxisX;
+                Axis yAxis = this.ChartArea.AxisY;
+
+                if (this.ChartArea.AxisY != null)
+                    yAxis = this.ChartArea.AxisY;
+                else if (this.ChartArea.AxisY2 != null)
+                    yAxis = this.ChartArea.AxisY2;
+
+                // Calculate internalXValue and internalYValue
+                Double internalXValue, internalYValue;
+                RenderHelper.UserValueToInternalValues(xAxis, yAxis, xValue, yValue, out internalXValue, out internalYValue); ;
+                       
+                if(!Double.IsNaN(yValue) && xValue != null)
+                    Dispatcher.BeginInvoke(new Action<Chart, Double, Double>(ChartArea.PositionIndicator), new object[]{this, internalXValue, yValue});
+            }
+        }
+
         /// <summary>
         /// Export Visifire chart 
         /// </summary>

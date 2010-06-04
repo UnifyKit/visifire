@@ -38,6 +38,16 @@ namespace Visifire.Charts
     public class AxisCollection : ObservableCollection<Axis> { }
 
     /// <summary>
+    /// Collection of CustomLabels
+    /// </summary>
+    public class CustomAxisLabelsCollection : ObservableCollection<CustomAxisLabels> { }
+
+    /// <summary>
+    /// Collection of CustomLabel
+    /// </summary>
+    public class CustomAxisLabelCollection : ObservableCollection<CustomAxisLabel> { }
+
+    /// <summary>
     /// Collection of Title
     /// </summary>
     public class TitleCollection : ObservableCollection<Title> { }
