@@ -974,7 +974,7 @@ namespace Visifire.Charts
             }
         }
 
-        public Double[] InternalYValues
+        internal Double[] InternalYValues
         {   
             get
             {

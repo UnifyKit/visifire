@@ -75,6 +75,9 @@ namespace Visifire.Charts
             // Initialize list of Ticks list 
             Ticks = new TicksCollection();
 
+            // Initialize CustomLabel list
+            CustomAxisLabels = new CustomAxisLabelsCollection();
+
             // Initialize AxisLabels element
             //AxisLabels = new AxisLabels();
 
@@ -84,6 +87,8 @@ namespace Visifire.Charts
             // Attach event handler on collection changed event with ticks collection
             Ticks.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(Ticks_CollectionChanged);
 
+            CustomAxisLabels.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(CustomLabels_CollectionChanged);
+            
             InternalAxisMinimum = Double.NaN;
             InternalAxisMaximum = Double.NaN;
         }
@@ -119,6 +124,8 @@ namespace Visifire.Charts
             b.Source = this;
             this.SetBinding(InternalMinHeightProperty, b);
 #endif
+
+
         }
 
         /// <summary>
@@ -314,9 +321,126 @@ namespace Visifire.Charts
             FireZoomEvent(_initialState, e);
         }
 
-        internal ZoomState _oldZoomState = new ZoomState(null, null);
-        internal ZoomState _zoomState = new ZoomState(null, null);
-        internal ZoomState _initialState = new ZoomState(null, null);
+        /// <summary>
+        /// Get top of Axis
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        internal static Double GetAxisTop(Axis axis)
+        {
+            Double top = 0;
+            Chart chart = axis.Chart as Chart;
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight
+                            + chart._topAxisGrid.ActualHeight + chart._topOffsetGrid.ActualHeight
+                        + chart.BorderThickness.Top;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight 
+                            + chart.ChartArea.PlotAreaCanvas.Height
+                            + chart._topOffsetGrid.ActualHeight
+                            + chart.BorderThickness.Top;
+                    }
+                    else
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight
+                            + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
+                    }
+                }
+            }
+            else
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight 
+                            + chart._topAxisGrid.ActualHeight
+                            + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight 
+                            + chart._topAxisGrid.ActualHeight + chart.ChartArea.PlotAreaCanvas.Height
+                            + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
+                    }
+                    else
+                    {
+                        top = chart.Padding.Top + chart._topOuterPanel.ActualHeight
+                            + chart._topOffsetGrid.ActualHeight + chart.BorderThickness.Top;
+                    }
+                }
+            }
+
+            return top;
+        }
+
+        internal static Double GetAxisLeft(Axis axis)
+        {
+            Double left = 0;
+            Chart chart = axis.Chart as Chart;
+            if (axis.AxisRepresentation == AxisRepresentations.AxisY)
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
+                            + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
+                    }
+                    else
+                    {
+                        left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
+                            + chart.ChartArea.PlotAreaCanvas.Width 
+                            + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
+                    {
+                        left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
+                            + chart._leftAxisGrid.ActualWidth 
+                            + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
+                    }
+                }
+            }
+            else
+            {
+                if (axis.AxisOrientation == Orientation.Vertical)
+                {
+                    if (axis.AxisType == AxisTypes.Primary)
+                    {
+                        left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
+                            + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
+                    }
+                }
+                else
+                {
+                    if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
+                    {
+                        left = chart.Padding.Left + chart._leftOuterPanel.ActualWidth
+                            + chart._leftAxisGrid.ActualWidth 
+                            + chart._leftOffsetGrid.ActualWidth + chart.BorderThickness.Left;
+                    }
+                }
+            }
+
+            return left;
+        }
+
 
         #endregion
 
@@ -1518,6 +1642,15 @@ namespace Visifire.Charts
             {
                 SetValue(EnabledProperty, value);
             }
+        }
+
+        /// <summary>
+        /// Collection of CustomLabel
+        /// </summary>
+        public CustomAxisLabelsCollection CustomAxisLabels
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -2830,7 +2963,7 @@ namespace Visifire.Charts
                 InternalAxisMaximum = (Double)AxisMaximumNumeric;
             }
 
-            // set the axis minimum value if the user has provided it
+            // seu the axis minimum value if the user has provided it
             if (!Double.IsNaN((Double)AxisMinimumNumeric))
             {
                 AxisManager.AxisMinimumValue = (Double)AxisMinimumNumeric;
@@ -3182,6 +3315,13 @@ namespace Visifire.Charts
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
 
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                customLabels.Placement = PlacementTypes.Left;
+                customLabels.Height = ScrollableSize;
+                customLabels.CreateVisualObject();
+            }
+
             // Set the alignement for the axis Title
             if (AxisTitleElement != null)
             {   
@@ -3241,18 +3381,92 @@ namespace Visifire.Charts
             
             #endregion
 
+            #region Set CustomAxisLabels Width
+
+            Double newTopOverflow4CustomLabels = 0;
+            Double newBottomOverflow4CustomLabels = 0;
+            Double topOverflow4CustomLabels = 0;
+            Double bottomOverflow4CustomLabels = 0;
+
+            List<CustomAxisLabels> reversedCustomAxisLabels = null;
+            if (CustomAxisLabels.Count > 0)
+            {
+                reversedCustomAxisLabels = CustomAxisLabels.ToList();
+                reversedCustomAxisLabels.Reverse();
+                {
+                    foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                    {
+                        if (customLabels.Visual != null)
+                        {
+                            Double totalAxisLabelsWidth = 0;
+
+                            if (customLabels.InternalMinHeight != 0 && customLabels.InternalMinWidth > customLabels.Visual.Width)
+                                totalAxisLabelsWidth = customLabels.InternalMinWidth;
+                            else
+                                totalAxisLabelsWidth = customLabels.Visual.Width;
+
+                            if (!Double.IsPositiveInfinity(customLabels.InternalMaxWidth) && customLabels.InternalMaxWidth < totalAxisLabelsWidth)
+                            {
+                                customLabels.Visual.Width = customLabels.InternalMaxWidth;
+                            }
+                            else
+                                customLabels.Visual.Width = totalAxisLabelsWidth;
+
+                            topOverflow4CustomLabels = Math.Max(topOverflow4CustomLabels, customLabels.TopOverflow);
+                            bottomOverflow4CustomLabels = Math.Max(bottomOverflow4CustomLabels, customLabels.BottomOverflow);
+
+                            if (!Double.IsPositiveInfinity(customLabels.InternalMaxWidth) && customLabels.InternalMaxWidth <= totalAxisLabelsWidth)
+                            {
+                                GetNewOverflow4LeftCustomLabels(customLabels, topOverflow4CustomLabels, bottomOverflow4CustomLabels, ref newTopOverflow4CustomLabels, ref newBottomOverflow4CustomLabels, customLabels.Visual.Width);
+                            }
+                            else
+                            {
+                                newTopOverflow4CustomLabels = topOverflow4CustomLabels;
+                                newBottomOverflow4CustomLabels = bottomOverflow4CustomLabels;
+                            }
+
+                            RectangleGeometry clipRectangle = new RectangleGeometry();
+                            clipRectangle.Rect = new Rect(-1, -4 - newTopOverflow4CustomLabels, customLabels.Visual.Width + 2, customLabels.Visual.Height + newTopOverflow4CustomLabels + newBottomOverflow4CustomLabels + 8);
+                            customLabels.Visual.Clip = clipRectangle;
+
+                        }
+                    }
+                }
+            }
+
+            if (topOverflow < topOverflow4CustomLabels)
+                topOverflow = topOverflow4CustomLabels;
+            if (bottomOverflow < bottomOverflow4CustomLabels)
+                bottomOverflow = bottomOverflow4CustomLabels;
+
+            #endregion
+
+            if (reversedCustomAxisLabels != null)
+            {
+                foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                    {
+                        InternalStackPanel.Width = customLabels.Visual.Width;
+
+                        if (Height == ScrollableSize)
+                            AxisElementsContainer.Children.Add(customLabels.Visual);
+                        else
+                            InternalStackPanel.Children.Add(customLabels.Visual);
+                    }
+                }
+            }
+
             if (AxisLabels.Visual != null)
             {
                 InternalStackPanel.Width += AxisLabels.Visual.Width;
 
                 if (Height == ScrollableSize)
-                {
-                    if (AxisLabels.Visual != null)
-                        AxisElementsContainer.Children.Add(AxisLabels.Visual);
-                }
+                    AxisElementsContainer.Children.Add(AxisLabels.Visual);
                 else
                 {
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
+                    AxisLabels.Visual.SetValue(Canvas.LeftProperty, InternalStackPanel.Width - AxisLabels.Visual.Width);
                 }
             }
 
@@ -3326,6 +3540,22 @@ namespace Visifire.Charts
             {
                 if (AxisLabels.Visual != null)
                     GetNewOverflow4LeftLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, axisContainer.Width);
+
+                if (reversedCustomAxisLabels != null)
+                {
+                    foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                    {
+                        if (customLabels.Visual != null)
+                        {
+                            GetNewOverflow4LeftCustomLabels(customLabels, topOverflow4CustomLabels, bottomOverflow4CustomLabels, ref newTopOverflow4CustomLabels, ref newBottomOverflow4CustomLabels, axisContainer.Width);
+                        }
+                    }
+                }
+
+                if (newTopOverflow < newTopOverflow4CustomLabels)
+                    newTopOverflow = newTopOverflow4CustomLabels;
+                if (newBottomOverflow < newBottomOverflow4CustomLabels)
+                    newBottomOverflow = newBottomOverflow4CustomLabels;
             }
 
             RectangleGeometry clipVisual = new RectangleGeometry();
@@ -3387,7 +3617,7 @@ namespace Visifire.Charts
                 Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
                 Double theta = Math.Atan(width / labelBase);
 
-                if (width > visualWidth)
+                if (width > visualWidth)
                     width = visualWidth;
 
                 bottomOverflow = (width / Math.Tan(theta));
@@ -3396,6 +3626,52 @@ namespace Visifire.Charts
                 newBottomOverflow = bottomOverflow - Height;
 
                 AxisLabels.BottomOverflow = newBottomOverflow;
+            }
+        }
+
+        private void GetNewOverflow4LeftCustomLabels(CustomAxisLabels customLabels, Double topOverflow, Double bottomOverflow, ref Double newTopOverflow, ref Double newBottomOverflow, Double visualWidth)
+        {
+            if ((Double)customLabels.InternalAngle > 0)
+            {
+                Double maxYPos = customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y;
+                Point lastLabelPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualTopPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualLeft - customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualWidth, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualTop);
+                Point topOffsetPosition = new Point(lastLabelPosition.X, actualTopPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, actualTopPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                topOverflow = (width / Math.Tan(theta));
+                topOverflow = topOverflow - maxYPos;
+
+                newTopOverflow = topOverflow;
+
+                customLabels.TopOverflow = newTopOverflow;
+            }
+            else if ((Double)customLabels.InternalAngle < 0)
+            {
+                Double maxYPos = customLabels.AxisLabelList[0].Position.Y;
+                Point firstLabelPosition = new Point(customLabels.AxisLabelList[0].Position.X, customLabels.AxisLabelList[0].Position.Y);
+                Point actualBottomPosition = new Point(customLabels.AxisLabelList[0].ActualLeft, customLabels.AxisLabelList[0].ActualTop + customLabels.AxisLabelList[0].ActualHeight);
+                Point bottomOffsetPosition = new Point(firstLabelPosition.X, actualBottomPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, actualBottomPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                bottomOverflow = (width / Math.Tan(theta));
+                bottomOverflow = bottomOverflow + maxYPos;
+
+                newBottomOverflow = bottomOverflow - Height;
+
+                customLabels.BottomOverflow = newBottomOverflow;
             }
         }
 
@@ -3453,6 +3729,13 @@ namespace Visifire.Charts
 
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
+
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                customLabels.Placement = PlacementTypes.Right;
+                customLabels.Height = ScrollableSize;
+                customLabels.CreateVisualObject();
+            }
 
             // Place the visual elements in the axis stack panel
             AxisElementsContainer.Children.Add(AxisLine);
@@ -3513,6 +3796,56 @@ namespace Visifire.Charts
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
+            #endregion
+
+            #region Set CustomAxisLabels Width
+
+            Double topOverflow4CustomLabels = 0;
+            Double bottomOverflow4CustomLabels = 0;
+            Double newTopOverflow4CustomLabels = 0;
+            Double newBottomOverflow4CustomLabels = 0;
+
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                if (customLabels.Visual != null)
+                {
+                    Double totalAxisLabelsWidth = 0;
+
+                    if (customLabels.InternalMinHeight != 0 && customLabels.InternalMinWidth > customLabels.Visual.Width)
+                        totalAxisLabelsWidth = customLabels.InternalMinWidth;
+                    else
+                        totalAxisLabelsWidth = customLabels.Visual.Width;
+
+                    if (!Double.IsPositiveInfinity(customLabels.InternalMaxWidth) && customLabels.InternalMaxWidth < totalAxisLabelsWidth)
+                    {
+                        customLabels.Visual.Width = customLabels.InternalMaxWidth;
+                    }
+                    else
+                        customLabels.Visual.Width = totalAxisLabelsWidth;
+
+                    topOverflow4CustomLabels = Math.Max(topOverflow4CustomLabels, customLabels.TopOverflow);
+                    bottomOverflow4CustomLabels = Math.Max(bottomOverflow4CustomLabels, customLabels.BottomOverflow);
+
+                    if (!Double.IsPositiveInfinity(customLabels.InternalMaxWidth) && customLabels.InternalMaxWidth <= totalAxisLabelsWidth)
+                    {
+                        GetNewOverflow4RightCustomLabels(customLabels, topOverflow4CustomLabels, bottomOverflow4CustomLabels, ref newTopOverflow4CustomLabels, ref newBottomOverflow4CustomLabels, customLabels.Visual.Width);
+                    }
+                    else
+                    {
+                        newBottomOverflow4CustomLabels = bottomOverflow4CustomLabels;
+                        newTopOverflow4CustomLabels = topOverflow4CustomLabels;
+                    }
+
+                    RectangleGeometry clipRectangle = new RectangleGeometry();
+                    clipRectangle.Rect = new Rect(-1, -4 - newTopOverflow4CustomLabels, customLabels.Visual.Width + 2, customLabels.Visual.Height + newTopOverflow4CustomLabels + newBottomOverflow4CustomLabels + 8);
+                    customLabels.Visual.Clip = clipRectangle;
+                }
+            }
+
+            if (topOverflow < topOverflow4CustomLabels)
+                topOverflow = topOverflow4CustomLabels;
+            if (bottomOverflow < bottomOverflow4CustomLabels)
+                bottomOverflow = bottomOverflow4CustomLabels;
 
             #endregion
 
@@ -3520,10 +3853,22 @@ namespace Visifire.Charts
             {   
                 if (AxisLabels.Visual != null)
                     AxisElementsContainer.Children.Add(AxisLabels.Visual);
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                        AxisElementsContainer.Children.Add(customLabels.Visual);
+                }
             }
             else
             {   
                 InternalStackPanel.Children.Add(AxisLabels.Visual);
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                        InternalStackPanel.Children.Add(customLabels.Visual);
+                }
 
                 ScrollViewerElement.Children.Add(InternalStackPanel);
 
@@ -3570,6 +3915,19 @@ namespace Visifire.Charts
             {
                 if (AxisLabels.Visual != null)
                     GetNewOverflow4RightLabels(topOverflow, bottomOverflow, ref newTopOverflow, ref newBottomOverflow, axisContainer.Width);
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                    {
+                        GetNewOverflow4LeftCustomLabels(customLabels, topOverflow4CustomLabels, bottomOverflow4CustomLabels, ref newTopOverflow4CustomLabels, ref newBottomOverflow4CustomLabels, axisContainer.Width);
+                    }
+                }
+
+                if (newTopOverflow < newTopOverflow4CustomLabels)
+                    newTopOverflow = newTopOverflow4CustomLabels;
+                if (newBottomOverflow < newBottomOverflow4CustomLabels)
+                    newBottomOverflow = newBottomOverflow4CustomLabels;
             }
 
             RectangleGeometry clipVisual = new RectangleGeometry();
@@ -3642,6 +4000,52 @@ namespace Visifire.Charts
             }
         }
 
+        private void GetNewOverflow4RightCustomLabels(CustomAxisLabels customLabels, Double topOverflow, Double bottomOverflow, ref Double newTopOverflow, ref Double newBottomOverflow, Double visualWidth)
+        {
+            if ((Double)customLabels.InternalAngle < 0)
+            {
+                Double maxYPos = customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y;
+                Point lastLabelPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualTopPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualLeft - customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualWidth, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualTop);
+                Point topOffsetPosition = new Point(lastLabelPosition.X, actualTopPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, actualTopPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(topOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                topOverflow = (width / Math.Tan(theta));
+                topOverflow = topOverflow - maxYPos;
+
+                newTopOverflow = topOverflow;
+
+                customLabels.TopOverflow = newTopOverflow;
+            }
+            else if ((Double)customLabels.InternalAngle > 0)
+            {
+                Double maxYPos = customLabels.AxisLabelList[0].Position.Y;
+                Point firstLabelPosition = new Point(customLabels.AxisLabelList[0].Position.X, customLabels.AxisLabelList[0].Position.Y);
+                Point actualBottomPosition = new Point(customLabels.AxisLabelList[0].ActualLeft, customLabels.AxisLabelList[0].ActualTop + customLabels.AxisLabelList[0].ActualHeight);
+                Point bottomOffsetPosition = new Point(firstLabelPosition.X, actualBottomPosition.Y);
+
+                Double width = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, actualBottomPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(bottomOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(width / labelBase);
+
+                if (width > visualWidth)
+                    width = visualWidth;
+
+                bottomOverflow = (width / Math.Tan(theta));
+                bottomOverflow = bottomOverflow + maxYPos;
+
+                newBottomOverflow = bottomOverflow - Height;
+
+                customLabels.BottomOverflow = newBottomOverflow;
+            }
+        }
+
         /// <summary>
         /// Applies setting for primary horizontal axis (Primary axis X or Primary axis Y in Bar)
         /// </summary>
@@ -3691,6 +4095,13 @@ namespace Visifire.Charts
 
             // Generate the visual object for the required elements
             AxisLabels.CreateVisualObject();
+
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                customLabels.Placement = PlacementTypes.Bottom;
+                customLabels.Width = ScrollableSize;
+                customLabels.CreateVisualObject();
+            }
 
             // Place the visual elements in the axis stack panel
             AxisElementsContainer.Children.Add(AxisLine);
@@ -3761,10 +4172,68 @@ namespace Visifire.Charts
 
             #endregion
 
+            #region Set CustomAxisLabels Height
+
+            Double newLeftOverflow4CustomLabels = 0;
+            Double newRightOverflow4CustomLabels = 0;
+            Double leftOverflow4CustomLabels = 0;
+            Double rightOverflow4CustomLabels = 0;
+
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                if (customLabels.Visual != null)
+                {
+                    Double totalAxisLabelsHeight = 0;
+
+                    if (customLabels.InternalMinHeight != 0 && customLabels.InternalMinHeight > customLabels.Visual.Height)
+                        totalAxisLabelsHeight = customLabels.InternalMinHeight;
+                    else
+                        totalAxisLabelsHeight = customLabels.Visual.Height;
+
+                    if (!Double.IsPositiveInfinity(customLabels.InternalMaxHeight) && customLabels.InternalMaxHeight < totalAxisLabelsHeight)
+                    {
+                        customLabels.Visual.Height = customLabels.InternalMaxHeight;
+                    }
+                    else
+                        customLabels.Visual.Height = totalAxisLabelsHeight;
+
+                    leftOverflow4CustomLabels = Math.Max(leftOverflow4CustomLabels, customLabels.LeftOverflow);
+                    rightOverflow4CustomLabels = Math.Max(rightOverflow4CustomLabels, customLabels.RightOverflow);
+
+                    if (!Double.IsPositiveInfinity(customLabels.InternalMaxHeight) && customLabels.InternalMaxHeight <= totalAxisLabelsHeight)
+                    {
+                        GetNewOverflow4BottomCustomLabels(customLabels, leftOverflow4CustomLabels, rightOverflow4CustomLabels, ref newLeftOverflow4CustomLabels, ref newRightOverflow4CustomLabels, customLabels.Visual.Height);
+                    }
+                    else
+                    {
+                        newLeftOverflow4CustomLabels = leftOverflow4CustomLabels;
+                        newRightOverflow4CustomLabels = rightOverflow4CustomLabels;
+                    }
+
+                    RectangleGeometry clipRectangle = new RectangleGeometry();
+                    clipRectangle.Rect = new Rect(-4 - newLeftOverflow4CustomLabels, 0, customLabels.Visual.Width + newLeftOverflow4CustomLabels + newRightOverflow4CustomLabels + 8, customLabels.Visual.Height);
+                    customLabels.Visual.Clip = clipRectangle;
+
+                }
+            }
+
+            if (leftOverflow < leftOverflow4CustomLabels)
+                leftOverflow = leftOverflow4CustomLabels;
+            if (rightOverflow < rightOverflow4CustomLabels)
+                rightOverflow = rightOverflow4CustomLabels;
+
+            #endregion
+
             if (Width == ScrollableSize)
             {
                 if (AxisLabels.Visual != null)
                     AxisElementsContainer.Children.Add(AxisLabels.Visual);
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                        AxisElementsContainer.Children.Add(customLabels.Visual);
+                }
             }
             else
             {
@@ -3774,6 +4243,17 @@ namespace Visifire.Charts
                     AxisLabels.Visual.SetValue(Canvas.TopProperty, InternalStackPanel.Height);
                     InternalStackPanel.Children.Add(AxisLabels.Visual);
                     InternalStackPanel.Height += AxisLabels.Visual.Height;
+                }
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                    {
+                        InternalStackPanel.Width = customLabels.Visual.Width;
+                        customLabels.Visual.SetValue(Canvas.TopProperty, InternalStackPanel.Height);
+                        InternalStackPanel.Children.Add(customLabels.Visual);
+                        InternalStackPanel.Height += customLabels.Visual.Height;
+                    }
                 }
 
                 ScrollViewerElement.Children.Add(InternalStackPanel);
@@ -3819,6 +4299,20 @@ namespace Visifire.Charts
             {
                 if (AxisLabels.Visual != null)
                     GetNewOverflow4BottomLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, axisContainer.Height);
+
+                foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                    {
+                        GetNewOverflow4BottomCustomLabels(customLabels, leftOverflow4CustomLabels, rightOverflow4CustomLabels, ref newLeftOverflow4CustomLabels, ref newRightOverflow4CustomLabels, axisContainer.Height);
+                    }
+                }
+
+
+                if (newLeftOverflow < newLeftOverflow4CustomLabels)
+                    newLeftOverflow = newLeftOverflow4CustomLabels;
+                if (newRightOverflow < newRightOverflow4CustomLabels)
+                    newRightOverflow = newRightOverflow4CustomLabels;
             }
             else
             {
@@ -3894,6 +4388,54 @@ namespace Visifire.Charts
                 newRightOverflow = rightOverflow;
 
                 AxisLabels.RightOverflow = newRightOverflow;
+            }
+        }
+
+        private void GetNewOverflow4BottomCustomLabels(CustomAxisLabels customLabels, Double leftOverflow, Double rightOverflow, ref Double newLeftOverflow, ref Double newRightOverflow, Double visualHeight)
+        {
+            if ((Double)customLabels.InternalAngle < 0)
+            {
+                Double maxXPos = customLabels.AxisLabelList[0].Position.X;
+                Point firstLabelPosition = new Point(customLabels.AxisLabelList[0].Position.X, customLabels.AxisLabelList[0].Position.Y);
+                Point actualLeftPosition = new Point(customLabels.AxisLabelList[0].ActualLeft, customLabels.AxisLabelList[0].ActualHeight);
+                Point leftOffsetPosition = new Point(actualLeftPosition.X, firstLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, actualLeftPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                leftOverflow = (height / Math.Tan(theta));
+                leftOverflow = leftOverflow - maxXPos;
+
+                newLeftOverflow = leftOverflow;
+
+                customLabels.LeftOverflow = newLeftOverflow;
+            }
+            else if ((Double)customLabels.InternalAngle > 0)
+            {
+                Double maxXPos = customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X;
+                Point lastLabelPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualRightPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualLeft + customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualWidth, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualHeight);
+                Point rightOffsetPosition = new Point(actualRightPosition.X, lastLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, actualRightPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                rightOverflow = (height / Math.Tan(theta));
+                rightOverflow = rightOverflow + maxXPos;
+
+                rightOverflow = rightOverflow - Width;
+
+                newRightOverflow = rightOverflow;
+
+                customLabels.RightOverflow = newRightOverflow;
             }
         }
 
@@ -3987,6 +4529,13 @@ namespace Visifire.Charts
 
             AxisLabels.CreateVisualObject();
 
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                customLabels.Placement = PlacementTypes.Top;
+                customLabels.Width = ScrollableSize;
+                customLabels.CreateVisualObject();
+            }
+
             CreateAxisTitleVisual(new Thickness(0, INNER_MARGIN, 0, INNER_MARGIN));
 
             // Place the visual elements in the axis stack panel
@@ -4036,8 +4585,80 @@ namespace Visifire.Charts
                 AxisLabels.Visual.Clip = clipRectangle;
             }
 
+            #endregion
+
+            #region Set CustomAxisLabels Height
+
+            Double leftOverflow4CustomLabels = 0;
+            Double rightOverflow4CustomLabels = 0;
+            Double newLeftOverflow4CustomLabels = 0;
+            Double newRightOverflow4CustomLabels = 0;
+
+            List<CustomAxisLabels> reversedCustomAxisLabels = null;
+            if (CustomAxisLabels.Count > 0)
+            {
+                reversedCustomAxisLabels = CustomAxisLabels.ToList();
+                reversedCustomAxisLabels.Reverse();
+                {
+                    foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                    {
+                        if (customLabels.Visual != null)
+                        {
+                            Double totalAxisLabelsHeight = 0;
+
+                            if (customLabels.InternalMinHeight != 0 && customLabels.InternalMinHeight > customLabels.Visual.Height)
+                                totalAxisLabelsHeight = customLabels.InternalMinHeight;
+                            else
+                                totalAxisLabelsHeight = customLabels.Visual.Height;
+
+                            if (!Double.IsPositiveInfinity(customLabels.InternalMaxHeight) && customLabels.InternalMaxHeight < totalAxisLabelsHeight)
+                            {
+                                customLabels.Visual.Height = customLabels.InternalMaxHeight;
+                            }
+                            else
+                                customLabels.Visual.Height = totalAxisLabelsHeight;
+
+                            leftOverflow4CustomLabels = Math.Max(leftOverflow4CustomLabels, customLabels.LeftOverflow);
+                            rightOverflow4CustomLabels = Math.Max(rightOverflow4CustomLabels, customLabels.RightOverflow);
+
+                            if (!Double.IsPositiveInfinity(customLabels.InternalMaxHeight) && customLabels.InternalMaxHeight <= totalAxisLabelsHeight)
+                            {
+                                GetNewOverflow4TopCustomLabels(customLabels, leftOverflow4CustomLabels, rightOverflow4CustomLabels, ref newLeftOverflow4CustomLabels, ref newRightOverflow4CustomLabels, customLabels.Visual.Height);
+                            }
+                            else
+                            {
+                                newLeftOverflow4CustomLabels = leftOverflow4CustomLabels;
+                                newRightOverflow4CustomLabels = rightOverflow4CustomLabels;
+                            }
+
+                            RectangleGeometry clipRectangle = new RectangleGeometry();
+                            clipRectangle.Rect = new Rect(-4 - newLeftOverflow4CustomLabels, -1, customLabels.Visual.Width + newLeftOverflow4CustomLabels + newRightOverflow4CustomLabels + 8, customLabels.Visual.Height + 2);
+                            customLabels.Visual.Clip = clipRectangle;
+                        }
+                    }
+                }
+            }
+
+            if (leftOverflow < leftOverflow4CustomLabels)
+                leftOverflow = leftOverflow4CustomLabels;
+            if (rightOverflow < rightOverflow4CustomLabels)
+                rightOverflow = rightOverflow4CustomLabels;
 
             #endregion
+
+            if (reversedCustomAxisLabels != null)
+            {
+                foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                {
+                    if (customLabels.Visual != null)
+                    {
+                        if (Width == ScrollableSize)
+                            AxisElementsContainer.Children.Add(customLabels.Visual);
+                        else
+                            InternalStackPanel.Children.Add(customLabels.Visual);
+                    }
+                }
+            }
 
             if (AxisLabels.Visual != null)
             {
@@ -4101,6 +4722,22 @@ namespace Visifire.Charts
             {
                 if (AxisLabels.Visual != null)
                     GetNewOverflow4TopLabels(leftOverflow, rightOverflow, ref newLeftOverflow, ref newRightOverflow, axisContainer.Height);
+
+                if (reversedCustomAxisLabels != null)
+                {
+                    foreach (CustomAxisLabels customLabels in reversedCustomAxisLabels)
+                    {
+                        if (customLabels.Visual != null)
+                        {
+                            GetNewOverflow4TopCustomLabels(customLabels, leftOverflow4CustomLabels, rightOverflow4CustomLabels, ref newLeftOverflow4CustomLabels, ref newRightOverflow4CustomLabels, axisContainer.Height);
+                        }
+                    }
+                }
+
+                if (newLeftOverflow < newLeftOverflow4CustomLabels)
+                    newLeftOverflow = newLeftOverflow4CustomLabels;
+                if (newRightOverflow < newRightOverflow4CustomLabels)
+                    newRightOverflow = newRightOverflow4CustomLabels;
             }
             else
             {
@@ -4175,6 +4812,54 @@ namespace Visifire.Charts
                 newRightOverflow = rightOverflow;
 
                 AxisLabels.RightOverflow = newRightOverflow;
+            }
+        }
+
+        private void GetNewOverflow4TopCustomLabels(CustomAxisLabels customLabels, Double leftOverflow, Double rightOverflow, ref Double newLeftOverflow, ref Double newRightOverflow, Double visualHeight)
+        {
+            if ((Double)customLabels.InternalAngle > 0)
+            {
+                Double maxXPos = customLabels.AxisLabelList[0].Position.X;
+                Point firstLabelPosition = new Point(customLabels.AxisLabelList[0].Position.X, customLabels.AxisLabelList[0].Position.Y);
+                Point actualLeftPosition = new Point(customLabels.AxisLabelList[0].ActualLeft - customLabels.AxisLabelList[0].ActualWidth, customLabels.AxisLabelList[0].ActualTop);
+                Point leftOffsetPosition = new Point(actualLeftPosition.X, firstLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, actualLeftPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(leftOffsetPosition, firstLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                leftOverflow = (height / Math.Tan(theta));
+                leftOverflow = leftOverflow - maxXPos;
+
+                newLeftOverflow = leftOverflow;
+
+                customLabels.LeftOverflow = newLeftOverflow;
+            }
+            else if ((Double)AxisLabels.InternalAngle < 0)
+            {
+                Double maxXPos = customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X;
+                Point lastLabelPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.X, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].Position.Y);
+                Point actualRightPosition = new Point(customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualLeft + customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualWidth, customLabels.AxisLabelList[customLabels.AxisLabelList.Count - 1].ActualHeight);
+                Point rightOffsetPosition = new Point(actualRightPosition.X, lastLabelPosition.Y);
+
+                Double height = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, actualRightPosition);
+                Double labelBase = Graphics.DistanceBetweenTwoPoints(rightOffsetPosition, lastLabelPosition);
+                Double theta = Math.Atan(height / labelBase);
+
+                if (height > visualHeight)
+                    height = visualHeight;
+
+                rightOverflow = (height / Math.Tan(theta));
+                rightOverflow = rightOverflow + maxXPos;
+
+                rightOverflow = rightOverflow - Width;
+
+                newRightOverflow = rightOverflow;
+
+                customLabels.RightOverflow = newRightOverflow;
             }
         }
 
@@ -4502,6 +5187,28 @@ namespace Visifire.Charts
             return (Double)Interval;
         }
 
+        private void CustomLabels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (CustomAxisLabels customLabels in e.NewItems)
+                    {
+                        if (Chart != null)
+                            customLabels.Chart = Chart;
+
+                        customLabels.Parent = this;
+
+                        customLabels.PropertyChanged -= customLabels_PropertyChanged;
+                        customLabels.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(customLabels_PropertyChanged);
+                    }
+                }
+            }
+
+            this.FirePropertyChanged(VcProperties.CustomAxisLabels);
+        }
+
         /// <summary>
         /// Event handler manages the addition and removal of ticks from axis
         /// </summary>
@@ -4581,6 +5288,16 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        ///  Event handler attached with PropertyChanged event of ticks
+        /// </summary>
+        /// <param name="sender">ObservableObject</param>
+        /// <param name="e">PropertyChangedEventArgs</param>
+        private void customLabels_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            this.FirePropertyChanged((VcProperties)Enum.Parse(typeof(VcProperties), e.PropertyName, true));
+        }
+
+        /// <summary>
         /// Applies axis settings for horizontal type axis
         /// </summary>
         private void ApplyHorizontalAxisSettings()
@@ -4648,6 +5365,19 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Set up axis labels for axis
+        /// </summary>
+        private void SetUpCustomAxisLabels()
+        {
+            foreach (CustomAxisLabels labels in CustomAxisLabels)
+            {
+                // set the params to create custom AxisLabels
+                labels.Maximum = AxisManager.AxisMaximumValue;
+                labels.Minimum = AxisManager.AxisMinimumValue;
+                labels.ParentAxis = this;
+            }
+        }
 
         /// <summary>
         /// Set up axis labels for axis
@@ -4971,6 +5701,16 @@ namespace Visifire.Charts
             else if (AxisRepresentation == AxisRepresentations.AxisY)
                 AxisLabels.ApplyStyleFromTheme(Chart, "AxisYLabels");
 
+            foreach (CustomAxisLabels customLabels in CustomAxisLabels)
+            {
+                customLabels.Chart = Chart;
+
+                if (AxisRepresentation == AxisRepresentations.AxisX)
+                    customLabels.ApplyStyleFromTheme(Chart, "CustomAxisXLabels");
+                else if (AxisRepresentation == AxisRepresentations.AxisY)
+                    customLabels.ApplyStyleFromTheme(Chart, "CustomAxisYLabels");
+            }
+
             // Create visual elements
             Visual = new StackPanel() { Background = InternalBackground };
 
@@ -4992,6 +5732,7 @@ namespace Visifire.Charts
             SetUpTicks();
             SetUpGrids();
             SetUpAxisLabels();
+            SetUpCustomAxisLabels();
 
             // set the placement order based on the axis orientation
             switch (AxisOrientation)
@@ -5191,6 +5932,10 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+        
+        internal ZoomState _oldZoomState = new ZoomState(null, null);
+        internal ZoomState _zoomState = new ZoomState(null, null);
+        internal ZoomState _initialState = new ZoomState(null, null);
 
         // Pixel position of zero line of a axis
         internal Double _zeroBaseLinePixPosition;

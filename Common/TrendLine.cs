@@ -1305,7 +1305,7 @@ namespace Visifire.Charts
                 Double offset = chart.ChartArea.AxisX.GetScrollBarValueFromOffset(chart.ChartArea.AxisX.CurrentScrollScrollBarOffset);
                 offset = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offset);
 
-                Double topOffsetGap = chart._topOffsetGrid.Height;
+                Double topOffsetGap = 0;// chart._topOffsetGrid.Height;
 
                 Double labelPadding = 2;
 
@@ -1315,6 +1315,7 @@ namespace Visifire.Charts
                 Size textBlockSize = new Size(LabelTextBlock.ActualWidth, LabelTextBlock.ActualHeight);
 #endif
 
+
                 if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 {
                     if (AxisType == AxisTypes.Primary)
@@ -1322,14 +1323,14 @@ namespace Visifire.Charts
                         if (Orientation == Orientation.Horizontal)
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(0, yPos));
-                            LabelTextBlock.SetValue(Canvas.LeftProperty, chart.ChartArea.GetPlotAreaStartPosition().X - labelPadding - textBlockSize.Width);
+                            LabelTextBlock.SetValue(Canvas.LeftProperty, chart.PlotArea.GetPlotAreaStartPosition().X - labelPadding - textBlockSize.Width);
                             LabelTextBlock.SetValue(Canvas.TopProperty, positionWithRespect2ChartArea.Y + topOffsetGap - textBlockSize.Height / 2);
                         }
                         else
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(xPos, 0));
                             LabelTextBlock.SetValue(Canvas.LeftProperty, positionWithRespect2ChartArea.X - offset - textBlockSize.Width / 2);
-                            Double newYPos = chart.ChartArea.GetAxisTop(chart.ChartArea.AxisX) + ((chart.IsScrollingActivated || chart.ZoomingEnabled) ? chart.ChartArea.AxisX.ScrollBarSize : 0);
+                            Double newYPos = Axis.GetAxisTop(chart.ChartArea.AxisX) + ((chart.IsScrollingActivated || chart.ZoomingEnabled) ? chart.ChartArea.AxisX.ScrollBarSize : 0);
                             LabelTextBlock.SetValue(Canvas.TopProperty, newYPos + topOffsetGap);
                         }
                     }
@@ -1338,9 +1339,9 @@ namespace Visifire.Charts
                         if (Orientation == Orientation.Horizontal)
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(0, yPos));
-                            Double newXPos = chart.ChartArea.GetAxisLeft(chart.ChartArea.AxisY2);
+                            Double newXPos = Axis.GetAxisLeft(chart.ChartArea.AxisY2);
                             LabelTextBlock.SetValue(Canvas.LeftProperty, newXPos + labelPadding);
-                            LabelTextBlock.SetValue(Canvas.TopProperty, positionWithRespect2ChartArea.Y + chart._topOffsetGrid.ActualHeight - textBlockSize.Height / 2);
+                            LabelTextBlock.SetValue(Canvas.TopProperty, positionWithRespect2ChartArea.Y - textBlockSize.Height / 2);
                         }
                     }
                 }
@@ -1351,14 +1352,14 @@ namespace Visifire.Charts
                         if (Orientation == Orientation.Horizontal)
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(0, yPos));
-                            LabelTextBlock.SetValue(Canvas.LeftProperty, chart.ChartArea.GetPlotAreaStartPosition().X - labelPadding - ((chart.IsScrollingActivated || chart.ZoomingEnabled) ? chart.ChartArea.AxisX.ScrollBarSize : 0) - textBlockSize.Width);
+                            LabelTextBlock.SetValue(Canvas.LeftProperty, chart.PlotArea.GetPlotAreaStartPosition().X - labelPadding - ((chart.IsScrollingActivated || chart.ZoomingEnabled) ? chart.ChartArea.AxisX.ScrollBarSize : 0) - textBlockSize.Width);
                             LabelTextBlock.SetValue(Canvas.TopProperty, positionWithRespect2ChartArea.Y - offset - textBlockSize.Height / 2);
                         }
                         else
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(xPos, 0));
                             LabelTextBlock.SetValue(Canvas.LeftProperty, positionWithRespect2ChartArea.X - textBlockSize.Width / 2);
-                            Double newYPos = chart.ChartArea.GetAxisTop(chart.ChartArea.AxisY);
+                            Double newYPos = Axis.GetAxisTop(chart.ChartArea.AxisY);
                             LabelTextBlock.SetValue(Canvas.TopProperty, newYPos);
 
                         }
@@ -1369,7 +1370,7 @@ namespace Visifire.Charts
                         {
                             positionWithRespect2ChartArea = chart.ChartArea.GetPositionWithRespect2ChartArea(new Point(xPos, 0));
                             LabelTextBlock.SetValue(Canvas.LeftProperty, positionWithRespect2ChartArea.X - textBlockSize.Width / 2);
-                            Double newYPos = chart.ChartArea.GetAxisTop(chart.ChartArea.AxisY2);
+                            Double newYPos = Axis.GetAxisTop(chart.ChartArea.AxisY2);
                             LabelTextBlock.SetValue(Canvas.TopProperty, newYPos);
                         }
                     }
