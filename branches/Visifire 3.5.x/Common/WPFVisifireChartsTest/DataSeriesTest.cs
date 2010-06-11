@@ -1980,7 +1980,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.IsFalse(dataSeries.ShadowEnabled);
+                Assert.IsFalse((Boolean)dataSeries.ShadowEnabled);
             }
             window.Dispatcher.InvokeShutdown();
             window.Close();

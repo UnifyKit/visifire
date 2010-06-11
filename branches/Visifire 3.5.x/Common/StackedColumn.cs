@@ -241,6 +241,18 @@ namespace Visifire.Charts
             clipRectangle.Rect = new Rect(0, -chart.ChartArea.PLANK_DEPTH - (chart.View3D ? 0 : 5), width + chart.ChartArea.PLANK_DEPTH, height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10));
             visual.Clip = clipRectangle;
 
+            // Clip Column Canvas
+            PlotArea plotArea = chart.PlotArea;
+            RectangleGeometry clipRetGeo = new RectangleGeometry();
+
+            clipRetGeo.Rect = new Rect(0,
+                plotArea.BorderThickness.Top - chart.ChartArea.PLANK_DEPTH,
+                width + chart.ChartArea.PLANK_DEPTH,
+                height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS
+                    - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
+
+            columnCanvas.Clip = clipRetGeo;
+
             return visual;
         }
 

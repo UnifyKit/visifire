@@ -1478,11 +1478,7 @@ namespace Visifire.Charts
 
                             if (AxisLabelContentDictionary.ContainsKey((Double)index))
                             {
-                                labelContent = AxisLabelContentDictionary[(Double)index];
-                                //if (ParentAxis.AxisOrientation == Orientation.Vertical)
-                                   //labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], false);
-                                //else
-                                //    labelContent = AutoFormatMultilineText(AxisLabelContentDictionary[(Double)index], true);
+                                labelContent = GetFormattedMultilineText(AxisLabelContentDictionary[(Double)index]);
                             }
                             else
                             {
@@ -1668,61 +1664,7 @@ namespace Visifire.Charts
 
             return axis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
         }
-
-        /// <summary>
-        /// Auto formats the AxisLabel text if bigger for Vertical charts
-        /// </summary>
-        /// <param name="text">Text as String</param>
-        /// <returns>Formatted text as String</returns>
-        private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
-        {
-            String multiLineText = "";
-
-            if (!Double.IsNaN(TextWrap))
-            {
-                AxisLabel label = CreateLabel(text);
-                ApplyAxisLabelFontProperties(label);
-                label.CreateVisualObject(null);
-
-                Double MaxLabelWidth = (ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Chart.ActualHeight : Chart.ActualWidth;
-                MaxLabelWidth *= TextWrap;
-
-                Int32 wrapAt = (Int32)(MaxLabelWidth / WidthOfACharacter);
-
-                if ((ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical && label.ActualHeight > MaxLabelWidth)
-                    || (label.ActualWidth > MaxLabelWidth))
-                {
-                    Int32 charCount = 0;
-                    foreach (Char c in text)
-                    {
-                        if (c != ' ')
-                        {
-                            charCount++;
-                            multiLineText += c;
-                        }
-                        else if (charCount >= wrapAt)
-                        {
-                            multiLineText += "\n";
-                            charCount = 0;
-
-                            if (autoIncrementWrapAt)
-                                wrapAt += 2;
-                        }
-                        else
-                            multiLineText += c;
-                    }
-                }
-                else
-                    multiLineText = text;
-            }
-            else
-                multiLineText = text;
-
-            multiLineText = GetFormattedMultilineText(multiLineText);
-
-            return multiLineText;
-        }
-
+        
         /// <summary>
         /// Sets the position of labels based on the placement type
         /// </summary>

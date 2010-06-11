@@ -2898,6 +2898,12 @@ namespace Visifire.Charts
             if(Logarithmic)
             {
                 Double minimum = PlotDetails.GetAxisYMinimumDataValueFromAllDataSeries(this);
+                if (!PlotDetails.CheckIfAnyDataPointVisualExistsInChart())
+                {
+                    minimum = 1;
+                    Maximum = Math.Pow(LogarithmBase, 1);
+                }
+
                 if (minimum <= 0 || Maximum <= 0)
                     throw new Exception("Negative or zero values cannot be plotted correctly on logarithmic charts.");
             }
@@ -5577,7 +5583,7 @@ namespace Visifire.Charts
             return offset;
         }
 
-        internal void CalculateViewMinimumAndMaximum(Chart chart, Double offsetInPixel)
+        internal void CalculateViewMinimumAndMaximum(Chart chart, Double offsetInPixel, Double plotAreaWidth, Double plotAreaHeight)
         {
             Double offsetInPixel4MinValue;
             Double offsetInPixel4MaxValue;
@@ -5589,7 +5595,7 @@ namespace Visifire.Charts
             {
                 offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
 
-                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Width;
+                lengthInPixel = plotAreaWidth;// chart.ChartArea.ChartVisualCanvas.Width;
                 offsetInPixel4MinValue = offsetInPixel;
                 offsetInPixel4MaxValue = offsetInPixel4MinValue + Width;
             }
@@ -5597,7 +5603,7 @@ namespace Visifire.Charts
             {
                 offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
 
-                lengthInPixel = chart.ChartArea.ChartVisualCanvas.Height;
+                lengthInPixel = plotAreaHeight;// chart.ChartArea.ChartVisualCanvas.Height;
                 offsetInPixel4MaxValue = lengthInPixel - offsetInPixel;
                 offsetInPixel4MinValue = offsetInPixel4MaxValue - Height;
             }
@@ -5645,7 +5651,7 @@ namespace Visifire.Charts
                     {   
                         Chart chart = Chart as Chart;
 
-                        CalculateViewMinimumAndMaximum(chart, offsetInPixel);
+                        CalculateViewMinimumAndMaximum(chart, offsetInPixel, chart.ChartArea.ChartVisualCanvas.Width, chart.ChartArea.ChartVisualCanvas.Height);
 
                         if (_zoomStateStack.Count == 0)
                         {   
@@ -5693,7 +5699,7 @@ namespace Visifire.Charts
             AxisLabels.IsNotificationEnable = false;
             AxisLabels.Chart = Chart;
 
-            if (!Double.IsNaN(ClosestPlotDistance) && !Chart.ChartArea.IsAutoCalculatedScrollBarScale)
+            if (!Double.IsNaN(ClosestPlotDistance) && !Chart.ChartArea.IsAutoCalculatedScrollBarScale && Chart.IsScrollingActivated)
                 throw new ArgumentException(" ScrollBarScale property and ClosestPlotDistance property in Axis cannot be set together.");
 
             if (AxisRepresentation == AxisRepresentations.AxisX)

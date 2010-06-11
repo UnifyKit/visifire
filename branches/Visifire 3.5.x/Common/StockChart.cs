@@ -444,7 +444,7 @@ namespace Visifire.Charts
             else
                 dataPointWidth = CandleStick.CalculateDataPointWidth(dsFaces.Visual.Width, dsFaces.Visual.Height, chart);
 
-            if (property == VcProperties.Enabled)
+            if (property == VcProperties.Enabled || (dpFaces == null && (property == VcProperties.XValue || property == VcProperties.YValues)))
             {
                 CreateOrUpdateAStockDataPoint(dataPoint, dsFaces.Visual as Canvas, dsFaces.LabelCanvas, dsFaces.Visual.Width, dsFaces.Visual.Height, dataPointWidth);
                 return;

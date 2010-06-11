@@ -473,7 +473,7 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             CreateAsyncTask(chart,
-               () => Assert.AreEqual(new Thickness(5), chart.Padding));
+               () => Assert.AreEqual(new Thickness(6), chart.Padding));
 
             EnqueueDelay(_sleepTime);
             EnqueueTestComplete();

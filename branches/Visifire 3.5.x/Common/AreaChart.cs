@@ -412,7 +412,7 @@ namespace Visifire.Charts
             PolygonalChartShapeParams areaParams = new PolygonalChartShapeParams();
             areaParams.Background = colorBrush;
             areaParams.Lighting = (Boolean)series.LightingEnabled;
-            areaParams.Shadow = series.ShadowEnabled;
+            areaParams.Shadow = (Boolean)series.ShadowEnabled;
             areaParams.Bevel = series.Bevel;
             areaParams.BorderColor = series.BorderColor;
             areaParams.BorderStyle = ExtendedGraphics.GetDashArray(series.BorderStyle);
@@ -1007,8 +1007,10 @@ namespace Visifire.Charts
                 visual.Children.Add(areaCanvas);
             }
 
+            PlotArea plotArea = chart.PlotArea;
+
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
+            clipRectangle.Rect = new Rect(0, plotArea.BorderThickness.Top - depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -1025,6 +1027,7 @@ namespace Visifire.Charts
             clipRectangle.Rect = new Rect(clipLeft, clipTop, clipWidth, clipHeight);
 
             labelCanvas.Clip = clipRectangle;
+
             return visual;
         }
 
@@ -1666,8 +1669,10 @@ namespace Visifire.Charts
                 visual.Children.Add(areaCanvas);
             }
 
+            PlotArea plotArea = chart.PlotArea;
+
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
+            clipRectangle.Rect = new Rect(0, plotArea.BorderThickness.Top - depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -2009,8 +2014,10 @@ namespace Visifire.Charts
                 visual.Children.Add(areaCanvas);
             }
 
+            PlotArea plotArea = chart.PlotArea;
+
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
+            clipRectangle.Rect = new Rect(0, plotArea.BorderThickness.Top - depth3d, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
             areaCanvas.Clip = clipRectangle;
 
             // Clip the label canvas
@@ -2776,6 +2783,9 @@ namespace Visifire.Charts
             Double xPosition, yPosition;
             Faces faces = dataPoint.Faces;
 
+            if (faces == null && property != VcProperties.Enabled && property != VcProperties.YValue)
+                return;
+
             switch (property)
             {    
                  case VcProperties.Bevel:
@@ -2974,7 +2984,7 @@ namespace Visifire.Charts
                 case VcProperties.YValue:
                 case VcProperties.YValues:
 
-                    if (isAxisChanged || dataPoint._oldYValue > 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue < 0 && dataPoint.InternalYValue > 0)
+                    if (isAxisChanged || dataPoint._oldYValue >= 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue <= 0 && dataPoint.InternalYValue > 0)
                         UpdateDataSeries(dataSeries, property, newValue);
                     else
                     {
@@ -3640,9 +3650,11 @@ namespace Visifire.Charts
 
             // Update existing Plank
             ColumnChart.CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, areaCanvas.Parent as Canvas, depth3d, Orientation.Horizontal);
-           
+
+            PlotArea plotArea = chart.PlotArea;
+
             RectangleGeometry clipRectangle = new RectangleGeometry();
-            clipRectangle.Rect = new Rect(0, -depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10);
+            clipRectangle.Rect = new Rect(0, plotArea.BorderThickness.Top - depth3d - 4, width + depth3d, height + depth3d + chart.ChartArea.PLANK_THICKNESS + 10 - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
 
             if (areaCanvas.Parent != null)
                 (areaCanvas.Parent as Canvas).Clip = clipRectangle;
@@ -3660,7 +3672,6 @@ namespace Visifire.Charts
 
             if (labelCanvas != null)
                 (labelCanvas as Canvas).Clip = clipRectangle;
-
         }
 
         /// <summary>

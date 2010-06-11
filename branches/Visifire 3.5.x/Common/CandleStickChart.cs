@@ -865,7 +865,16 @@ namespace Visifire.Charts
                 return;
             else
                 dataPointWidth = CalculateDataPointWidth(dsFaces.Visual.Width, dsFaces.Visual.Height, chart);
-            
+
+            if (property == VcProperties.Enabled || (dpFaces == null && (property == VcProperties.XValue || property == VcProperties.YValues)))
+            {
+                CreateOrUpdateACandleStick(dataPoint, dsFaces.Visual as Canvas, dsFaces.LabelCanvas, dsFaces.Visual.Width, dsFaces.Visual.Height, dataPointWidth);
+                return;
+            }
+
+            if (dpFaces == null)
+                return;
+
             switch (property)
             {   
                 case VcProperties.BorderThickness:

@@ -1326,6 +1326,26 @@ namespace Visifire.Charts
                     , height + chart.ChartArea.PLANK_DEPTH);
                 visual.Clip = clipRectangle;
             }
+
+            // Clip Column Canvas
+            PlotArea plotArea = chart.PlotArea;
+            RectangleGeometry clipRetGeo = new RectangleGeometry();
+
+            if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
+                clipRetGeo.Rect = new Rect(0,
+                    plotArea.BorderThickness.Top - chart.ChartArea.PLANK_DEPTH,
+                    width + chart.ChartArea.PLANK_DEPTH,
+                    height + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS
+                        - plotArea.BorderThickness.Bottom - plotArea.BorderThickness.Top);
+            else
+                clipRetGeo.Rect = new Rect(plotArea.BorderThickness.Left - chart.ChartArea.PLANK_THICKNESS,
+                    -chart.ChartArea.PLANK_DEPTH,
+                    width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS
+                        - plotArea.BorderThickness.Left - plotArea.BorderThickness.Right
+                    , height + chart.ChartArea.PLANK_DEPTH);
+
+            columnCanvas.Clip = clipRetGeo;
+
             return visual;
         }
 
@@ -1543,12 +1563,17 @@ namespace Visifire.Charts
                 columnVisual = dataSeries.Faces.Visual as Canvas;
             }
 
-            if(dataPoint.Faces != null)
+            if (dataPoint.Faces != null)
                 columnVisual = dataPoint.Faces.Visual as Canvas;
+
+            if (dataPoint.Faces == null && property != VcProperties.Enabled
+                && property != VcProperties.YValue && property != VcProperties.YValues
+                && property != VcProperties.XValue)
+                return;
 
             //if (labelCanvas == null)
             //    return;
-            
+
             switch (property)
             {
                 case VcProperties.Bevel:
@@ -2367,6 +2392,8 @@ namespace Visifire.Charts
                             currentTop = (Double)dataPoint.Faces.Visual.GetValue(Canvas.LeftProperty);
                             plankTop = Graphics.ValueToPixelPosition(0, axisSize, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
 
+                            if (plankTop < 0) plankTop = 0;
+
                             if (dataPoint._oldYValue > 0)
                             {
                                 storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate1, dataPoint, storyBoard, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { plankTop, plankTop, plankTop, currentTop }, null);
@@ -2878,7 +2905,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
-                    columnVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 5, 0.95);
+                    columnVisual.Effect = ExtendedGraphics.GetShadowEffect(330, 3.5, 0.95);
                 }
             }
             else

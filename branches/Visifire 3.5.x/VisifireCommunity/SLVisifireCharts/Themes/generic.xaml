@@ -194,7 +194,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
             </Setter.Value>
         </Setter>
 
-        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Padding" Value="6"/>
         <Setter Property="AnimationEnabled" Value="true"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Black"/>
