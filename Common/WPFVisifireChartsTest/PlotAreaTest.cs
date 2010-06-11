@@ -236,7 +236,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.IsFalse(chart.PlotArea.ShadowEnabled);
+                Assert.IsTrue((Boolean)chart.PlotArea.ShadowEnabled);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -596,7 +596,7 @@ namespace WPFVisifireChartsTest
             if (_isLoaded)
             {
                 chart.PlotArea.ShadowEnabled = true;
-                Assert.IsTrue(chart.PlotArea.ShadowEnabled);
+                Assert.IsTrue((Boolean)chart.PlotArea.ShadowEnabled);
             }
 
             window.Dispatcher.InvokeShutdown();

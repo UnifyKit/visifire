@@ -6,24 +6,25 @@
   
     <Grid x:Name="LayoutRoot" Background="White">
 
-        <vc:Chart Theme="Theme2" x:Name="MyChart" Width="500" Height="300">
+        <vc:Chart Width="500" Height="300" Theme="Theme1">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"></vc:Title>
+                <vc:Title Text="Visifire Area Chart" FontSize="12"/>
             </vc:Chart.Titles>
 
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint XValue="1/1/2010" YValue="10"/>
-                        <vc:DataPoint XValue="2/1/2010" YValue="20"/>
-                        <vc:DataPoint XValue="3/1/2010" YValue="40"/>
-                        <vc:DataPoint XValue="4/1/2010" YValue="50"/>
-                        <vc:DataPoint XValue="5/1/2010" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="2020"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="1562"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="3282"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="3098"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="5000"/>
+                        <vc:DataPoint AxisXLabel="June" YValue="2486"/>
+                        <vc:DataPoint AxisXLabel="July" YValue="1034"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-
     </Grid>
 </Window>

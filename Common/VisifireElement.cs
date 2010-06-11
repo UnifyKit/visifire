@@ -475,6 +475,38 @@ namespace Visifire.Commons
         #region Internal Methods
 
         /// <summary>
+        /// If you want the event-handler to be executed before all other attached event-handler
+        /// with this event then you can attach a delegate using AttachEventWithHighPriority 
+        /// method. 
+        /// Note: Currently it supports MouseLeftButtonUp event only.
+        /// </summary>
+        /// <param name="dlg"></param>
+        /// <param name="eventType"></param>
+        internal void AttachEventWithHighPriority(String eventType, Delegate dlg)
+        {
+            if (_onMouseLeftButtonUp != null)
+            {
+                // Get Invocation List
+                Delegate[] delegates = _onMouseLeftButtonUp.GetInvocationList();
+
+                // Detach delegates
+                foreach (Delegate deleg in delegates)
+                    MouseLeftButtonUp -= (MouseButtonEventHandler)deleg;
+
+                // Attach delegate
+                MouseLeftButtonUp += (MouseButtonEventHandler)dlg;
+
+                // Attach all detached delegates
+                foreach (Delegate deleg in delegates)
+                    MouseLeftButtonUp += (MouseButtonEventHandler)deleg;
+            }
+            else
+            {
+                MouseLeftButtonUp += (MouseButtonEventHandler)dlg;
+            }
+        }
+
+        /// <summary>
         /// ToolTipText property changed Event handler
         /// </summary>
         /// <param name="d">DependencyObject</param>

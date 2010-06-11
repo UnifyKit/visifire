@@ -1954,16 +1954,21 @@ namespace Visifire.Charts
                 return 0;
         }
 
+        /// <summary>
+        /// Find out the minimum value from all DataSeries
+        /// </summary>
+        /// <param name="axisY"></param>
+        /// <returns></returns>
         internal Double GetAxisYMinimumDataValueFromAllDataSeries(Axis axisY)
         {
             Double min = Double.PositiveInfinity;
 
-            var yValues = (from dp in ListOfAllDataPoints where dp.Parent.RenderAs != RenderAs.CandleStick && dp.Parent.RenderAs != RenderAs.Stock select dp.YValue).ToList();
+            var yValues = (from dp in ListOfAllDataPoints where dp.Parent.RenderAs != RenderAs.CandleStick && dp.Parent.RenderAs != RenderAs.Stock && !Double.IsNaN(dp.YValue) select dp.YValue).ToList();
 
             if (yValues.Count() > 0)
                 min = Math.Min(min, yValues.Min());
 
-            List<Double[]> yValuesArray = (from dp in ListOfAllDataPoints where dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock select dp.YValues).ToList();
+            List<Double[]> yValuesArray = (from dp in ListOfAllDataPoints where (dp.Parent.RenderAs == RenderAs.CandleStick || dp.Parent.RenderAs == RenderAs.Stock) && dp.YValues != null select dp.YValues).ToList();
 
             if (yValuesArray.Count() > 0)
             {
@@ -1974,6 +1979,40 @@ namespace Visifire.Charts
             return min;
         }
 
+        /// <summary>
+        /// Check whether any DataPoint visual exists in chart or not. This is required particularly for
+        /// Logarithmic axis. For log axis, if all series are disabled or DataPoints from all series doesn't
+        /// have existence then default axis scale should be generated similar to muneric axis.
+        /// </summary>
+        /// <returns></returns>
+        internal Boolean CheckIfAnyDataPointVisualExistsInChart()
+        {
+            if (Chart != null && Chart.ChartArea != null && Chart.ChartArea._isDefaultSeriesSet)
+                return false;
+            else
+            {
+                Double maxCountOfDps = Double.MinValue;
+                foreach (PlotGroup plotGroup in PlotGroups)
+                {
+                    foreach (DataSeries ds in plotGroup.DataSeriesList)
+                    {
+                        var dps = (from dp in ds.DataPoints
+                                   where ((Boolean)dp.Enabled &&
+                                       (((ds.RenderAs == RenderAs.CandleStick || ds.RenderAs == RenderAs.Stock) && dp.YValues != null)
+                                       || (ds.RenderAs != RenderAs.CandleStick && ds.RenderAs != RenderAs.Stock && !Double.IsNaN(dp.YValue))))
+                                   select dp);
+
+                        if (dps.Count() > 0)
+                            maxCountOfDps = Math.Max(maxCountOfDps, dps.Count());
+                    }
+                }
+
+                if (maxCountOfDps > 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Returns the maximum ZValue
@@ -1985,7 +2024,6 @@ namespace Visifire.Charts
                     where !Double.IsNaN(plotData.MinimumZ)
                     select plotData.MaximumZ).Max();
         }
-
 
         /// <summary>
         /// Returns the minimum ZValue

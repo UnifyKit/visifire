@@ -126,7 +126,7 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(new Thickness(4), chart.Legends[0].Padding);
+                Assert.AreEqual(new Thickness(3), chart.Legends[0].Padding);
             }
 
             window.Dispatcher.InvokeShutdown();
