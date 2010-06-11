@@ -1480,15 +1480,11 @@ namespace Visifire.Charts
                     {   
                         if (dp.Enabled == false)
                         {
-                            if (dp.Marker != null && dp.Marker.Visual != null)
-                                dp.Marker.Visual.Visibility = Visibility.Collapsed;
-                            else
-                                dp.Marker.Visual.Visibility = Visibility.Visible;
+                            //if (dp.Marker != null && dp.Marker.Visual != null)
+                            //    dp.Marker.Visual.Visibility = Visibility.Collapsed;
 
-                            if (dp.LabelVisual != null)
-                                dp.LabelVisual.Visibility = Visibility.Collapsed;
-                            else
-                                dp.LabelVisual.Visibility = Visibility.Collapsed;
+                            //if (dp.LabelVisual != null)
+                            //    dp.LabelVisual.Visibility = Visibility.Collapsed;
 
                             chart._toolTip.Hide();
                             continue;
@@ -1521,7 +1517,7 @@ namespace Visifire.Charts
                         // Update GeometryGroup for shadow
                         if (dataSeries.Faces.Parts[1] != null)
                         {
-                            if (dataSeries.ShadowEnabled)
+                            if ((Boolean)dataSeries.ShadowEnabled)
                             {
                                 (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
 
@@ -1828,7 +1824,7 @@ namespace Visifire.Charts
                 PathFigure shadowPathFigure;
 
                 // For line shadow
-                if (dataPoint.Parent.ShadowEnabled)
+                if ((Boolean)dataPoint.Parent.ShadowEnabled)
                 {
                     shadowLineSeg = dataPoint.ShadowFaces.Parts[0] as LineSegment;
                     shadowPathFigure = dataPoint.ShadowFaces.Parts[1] as PathFigure;
@@ -2239,9 +2235,9 @@ namespace Visifire.Charts
             lineParams.LineColor = series.Color;
             lineParams.LineStyle = ExtendedGraphics.GetDashArray(series.LineStyle);
             lineParams.Lighting = (Boolean)series.LightingEnabled;
-            lineParams.ShadowEnabled = series.ShadowEnabled;
+            lineParams.ShadowEnabled = (Boolean)series.ShadowEnabled;
 
-            if (series.ShadowEnabled)
+            if ((Boolean)series.ShadowEnabled)
                 lineParams.LineShadowGeometryGroup = new GeometryGroup();
 
             #endregion
@@ -2382,6 +2378,7 @@ namespace Visifire.Charts
 
             Canvas visual, labelsCanvas, chartsCanvas;
             RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelsCanvas, out chartsCanvas, width, height);
+            
 
             Double depth3d = plankDepth / (plotDetails.Layer3DCount == 0 ? 1 : plotDetails.Layer3DCount) * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1 - (plotDetails.Layer3DCount == 0 ? 0 : 1));

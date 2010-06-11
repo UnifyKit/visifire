@@ -1622,11 +1622,11 @@ namespace Visifire.Charts
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
             {
                 if (VisifireControl.IsXbapApp)
-                {
+                {   
                     _shadowGrid.Children.Clear();
 
                     if (_rootElement != null)
-                    {
+                    {   
                         // Shadow grid contains multiple rectangles that give a blurred effect at the edges 
                         ChartShadowLayer = ExtendedGraphics.Get2DRectangleShadow(null, width - Chart.SHADOW_DEPTH, height - Chart.SHADOW_DEPTH, new CornerRadius(6), new CornerRadius(6), 6);
                         ChartShadowLayer.Width = width - Chart.SHADOW_DEPTH;

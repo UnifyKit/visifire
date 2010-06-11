@@ -492,7 +492,7 @@ namespace WPFVisifireChartsTest
             window.Content = chart;
             window.Show();
             if (_isLoaded)
-                Assert.AreEqual(new Thickness(5), chart.Padding);
+                Assert.AreEqual(new Thickness(6), chart.Padding);
 
             window.Dispatcher.InvokeShutdown();
             window.Close();

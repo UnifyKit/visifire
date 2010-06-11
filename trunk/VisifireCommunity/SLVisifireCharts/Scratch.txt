@@ -1,4 +1,107 @@
-﻿                // List of nearest DataPoint from mouse pointer position
+﻿
+        private Boolean CheckIfLegendAvailable(PlacementTypes placementType)
+        {
+            foreach (Legend legend in Chart.Legends)
+            {
+                if (!legend.DockInsidePlotArea)
+                {
+                    switch (placementType)
+                    {
+                        case PlacementTypes.Bottom:
+                            if (legend.VerticalAlignment == System.Windows.VerticalAlignment.Bottom &&
+                                (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Top:
+                            if (legend.VerticalAlignment == System.Windows.VerticalAlignment.Top &&
+                                (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                                || legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Left:
+                            if (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Left &&
+                                (legend.VerticalAlignment == System.Windows.VerticalAlignment.Center
+                                || legend.VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+
+                                return true;
+                            break;
+                        case PlacementTypes.Right:
+                            if (legend.HorizontalAlignment == System.Windows.HorizontalAlignment.Right &&
+                                (legend.VerticalAlignment == System.Windows.VerticalAlignment.Center
+                                || legend.VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+
+                                return true;
+                            break;
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Auto formats the AxisLabel text if bigger for Vertical charts
+        /// </summary>
+        /// <param name="text">Text as String</param>
+        /// <returns>Formatted text as String</returns>
+        private String AutoFormatMultilineText(String text, Boolean autoIncrementWrapAt)
+        {
+            String multiLineText = "";
+
+            if (!Double.IsNaN(TextWrap))
+            {
+                AxisLabel label = CreateLabel(text);
+                ApplyAxisLabelFontProperties(label);
+                label.CreateVisualObject(null);
+
+                Double MaxLabelWidth = (ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical) ? Chart.ActualHeight : Chart.ActualWidth;
+                MaxLabelWidth *= TextWrap;
+
+                Int32 wrapAt = (Int32)(MaxLabelWidth / WidthOfACharacter);
+
+                if ((ParentAxis.PlotDetails.ChartOrientation == ChartOrientationType.Vertical && label.ActualHeight > MaxLabelWidth)
+                    || (label.ActualWidth > MaxLabelWidth))
+                {
+                    Int32 charCount = 0;
+                    foreach (Char c in text)
+                    {
+                        if (c != ' ')
+                        {
+                            charCount++;
+                            multiLineText += c;
+                        }
+                        else if (charCount >= wrapAt)
+                        {
+                            multiLineText += "\n";
+                            charCount = 0;
+
+                            if (autoIncrementWrapAt)
+                                wrapAt += 2;
+                        }
+                        else
+                            multiLineText += c;
+                    }
+                }
+                else
+                    multiLineText = text;
+            }
+            else
+                multiLineText = text;
+
+            multiLineText = GetFormattedMultilineText(multiLineText);
+
+            return multiLineText;
+        }
+        ...............................
+
+
+                // List of nearest DataPoint from mouse pointer position
                 List<DataPoint> listOfNearestDataPoints = new List<DataPoint>();
 
                 // Find and set reference of the nearest DataPoint from mouse pointer position

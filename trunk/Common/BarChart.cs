@@ -781,7 +781,7 @@ namespace Visifire.Charts
 
             if ((Boolean)dataPoint.ShadowEnabled)
             {
-                barVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+                barVisual.Effect = ExtendedGraphics.GetShadowEffect(325, 3.3, 0.95);
             }
             else
                 barVisual.Effect = null;
@@ -963,6 +963,18 @@ namespace Visifire.Charts
             RectangleGeometry clipRectangle = new RectangleGeometry();
             clipRectangle.Rect = new Rect(-(chart.View3D ? 0 : 5) - chart.ChartArea.PLANK_THICKNESS, -chart.ChartArea.PLANK_DEPTH, width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS + (chart.View3D ? 0 : 10), height + chart.ChartArea.PLANK_DEPTH);
             visual.Clip = clipRectangle;
+
+            // Clip Column Canvas
+            PlotArea plotArea = chart.PlotArea;
+            RectangleGeometry clipRetGeo = new RectangleGeometry();
+
+            clipRetGeo.Rect = new Rect(plotArea.BorderThickness.Left - chart.ChartArea.PLANK_THICKNESS,
+                    -chart.ChartArea.PLANK_DEPTH,
+                    width + chart.ChartArea.PLANK_DEPTH + chart.ChartArea.PLANK_THICKNESS
+                        - plotArea.BorderThickness.Left - plotArea.BorderThickness.Right
+                    , height + chart.ChartArea.PLANK_DEPTH);
+
+            columnCanvas.Clip = clipRetGeo;
 
             return visual;
         }

@@ -803,6 +803,23 @@ namespace Visifire.Charts
 
             CreateAndPositionChartGrid(animationEnabled, animationDuration);
 
+            PlotArea plotArea = (Chart as Chart).PlotArea;
+
+            Size visualSize;
+
+#if WPF
+            Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
+            visualSize = new Size(Visual.DesiredSize.Width, Visual.DesiredSize.Height);
+#else
+            visualSize = new Size(Visual.ActualWidth, Visual.ActualHeight);
+#endif
+
+            RectangleGeometry rectGeo = new RectangleGeometry();
+            rectGeo.Rect = new Rect(plotArea.BorderThickness.Left, plotArea.BorderThickness.Top, visualSize.Width - plotArea.BorderThickness.Left - plotArea.BorderThickness.Right, visualSize.Height - plotArea.BorderThickness.Top - plotArea.BorderThickness.Bottom);
+            rectGeo.RadiusX = plotArea.CornerRadius.TopRight;
+            rectGeo.RadiusY = plotArea.CornerRadius.TopRight;
+            Visual.Clip = rectGeo;
+            
             Visual.Opacity = this.Opacity;
         }
         
