@@ -978,16 +978,21 @@ namespace Visifire.Charts
         {   
             get
             {
-                Chart chart = Chart as Chart;
-                Double[] convertedYValues = new Double[4];
-                convertedYValues[0] = (YValues.Length > 0 ? ConvertYValue2LogarithmicValue(chart, YValues[0], Parent.AxisYType) : Double.NaN);
-                convertedYValues[1] = (YValues.Length > 1 ? ConvertYValue2LogarithmicValue(chart, YValues[1], Parent.AxisYType) : Double.NaN);
-                convertedYValues[2] = (YValues.Length > 2 ? ConvertYValue2LogarithmicValue(chart, YValues[2], Parent.AxisYType) : Double.NaN);
-                convertedYValues[3] = (YValues.Length > 3 ? ConvertYValue2LogarithmicValue(chart, YValues[3], Parent.AxisYType) : Double.NaN);
+                if (YValues != null)
+                {
+                    Chart chart = Chart as Chart;
+                    Double[] convertedYValues = new Double[4];
+                    convertedYValues[0] = (YValues.Length > 0 ? ConvertYValue2LogarithmicValue(chart, YValues[0], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[1] = (YValues.Length > 1 ? ConvertYValue2LogarithmicValue(chart, YValues[1], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[2] = (YValues.Length > 2 ? ConvertYValue2LogarithmicValue(chart, YValues[2], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[3] = (YValues.Length > 3 ? ConvertYValue2LogarithmicValue(chart, YValues[3], Parent.AxisYType) : Double.NaN);
 
-                Double[] newYValues = (from value in convertedYValues where !Double.IsNaN(value) select value).ToArray();
+                    Double[] newYValues = (from value in convertedYValues where !Double.IsNaN(value) select value).ToArray();
 
-                return newYValues;
+                    return newYValues;
+                }
+                else
+                    return null;
             }
         }
         
@@ -2277,19 +2282,19 @@ namespace Visifire.Charts
 
             if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
             {
-                if (_oldYValues != null)
+                if (oldValue != null)
                 {
                     Double[] convertedYValues = new Double[4];
-                    convertedYValues[0] = (YValues.Length > 0 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[0], Parent.AxisYType) : Double.NaN);
-                    convertedYValues[1] = (YValues.Length > 1 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[1], Parent.AxisYType) : Double.NaN);
-                    convertedYValues[2] = (YValues.Length > 2 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[2], Parent.AxisYType) : Double.NaN);
-                    convertedYValues[3] = (YValues.Length > 3 ? ConvertYValue2LogarithmicValue(chart, _oldYValues[3], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[0] = (((Double[])oldValue).Length > 0 ? ConvertYValue2LogarithmicValue(chart, ((Double[])oldValue)[0], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[1] = (((Double[])oldValue).Length > 1 ? ConvertYValue2LogarithmicValue(chart, ((Double[])oldValue)[1], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[2] = (((Double[])oldValue).Length > 2 ? ConvertYValue2LogarithmicValue(chart, ((Double[])oldValue)[2], Parent.AxisYType) : Double.NaN);
+                    convertedYValues[3] = (((Double[])oldValue).Length > 3 ? ConvertYValue2LogarithmicValue(chart, ((Double[])oldValue)[3], Parent.AxisYType) : Double.NaN);
 
                     oldValue = (from value in convertedYValues where !Double.IsNaN(value) select value).ToArray();
                 }
             }
             else
-                oldValue = ConvertYValue2LogarithmicValue(chart, _oldYValue, Parent.AxisYType);
+                oldValue = ConvertYValue2LogarithmicValue(chart, Convert.ToDouble(oldValue), Parent.AxisYType);
 
             return oldValue;
         }
@@ -2518,7 +2523,7 @@ namespace Visifire.Charts
         /// <param name="d">DependencyObject</param>
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        {   
             DataPoint dataPoint = d as DataPoint;
             ApplySelectionChanged(dataPoint, (Boolean)e.NewValue);
         }
@@ -3454,7 +3459,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="sender">FrameworkElement</param>
         /// <param name="e">MouseButtonEventArgs</param>
-        private void Visual_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Visual_ExplodeUnExplode(object sender, MouseButtonEventArgs e)
         {
             InteractiveAnimation(false);
         }
@@ -3780,6 +3785,43 @@ namespace Visifire.Charts
 
         #region Internal Methods
 
+        /// <summary>
+        /// Attach event-handler with MouseLeftButtonUp event for selection of DataPoint.
+        /// This is used for selection of DataPoint.
+        /// </summary>
+        internal void AttachEventForSelection()
+        {   
+            if (Parent != null && Parent.SelectionEnabled)
+            {
+                IsNotificationEnable = false;
+                MouseLeftButtonUp -= dataPoint_selectOrDeselect;
+                AttachEventWithHighPriority("MouseLeftButtonUp", new MouseButtonEventHandler(dataPoint_selectOrDeselect));
+                IsNotificationEnable = true;
+            }
+        }
+        
+        /// <summary>
+        /// Detach event-handler with MouseLeftButtonUp event.
+        /// This is used for selection of DataPoint.
+        /// </summary>
+        internal void DetachEventForSelection()
+        {
+            IsNotificationEnable = false;
+            MouseLeftButtonUp -= dataPoint_selectOrDeselect;
+            IsNotificationEnable = true;
+        }
+
+        /// <summary>
+        /// Event handler for DataSeries event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        static void dataPoint_selectOrDeselect(object sender, MouseButtonEventArgs e)
+        {   
+            DataPoint dp = sender as DataPoint;
+            dp.Selected = (dp.Parent != null && dp.Parent.SelectionEnabled) ? !dp.Selected : false;
+        }
+        
         /// <summary>
         /// Binds to an Object
         /// </summary>
@@ -4169,8 +4211,8 @@ namespace Visifire.Charts
 
                             if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
                             {
-                                element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                                element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                                element.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_ExplodeUnExplode);
+                                element.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_ExplodeUnExplode);
                             }
                         }
                     }
@@ -4180,8 +4222,8 @@ namespace Visifire.Charts
 
                         if ((Chart as Chart).ChartArea != null && (Chart as Chart).ChartArea._isDefaultInteractivityAllowed)
                         {
-                            Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
-                            Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_MouseLeftButtonUp);
+                            Faces.Visual.MouseLeftButtonUp -= new MouseButtonEventHandler(Visual_ExplodeUnExplode);
+                            Faces.Visual.MouseLeftButtonUp += new MouseButtonEventHandler(Visual_ExplodeUnExplode);
                         }
                     }
 

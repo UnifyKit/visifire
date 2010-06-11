@@ -412,7 +412,7 @@ namespace Visifire.Charts
                 case RenderAs.Stock:
 
                     List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
-                    minimumY = (from dp in dataPointsInViewPort select dp.YValues.Min()).Min();
+                    minimumY = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Min()).Min();
 
                     break;
                 default:
@@ -475,7 +475,7 @@ namespace Visifire.Charts
 
                     List<DataPoint> dataPointsInViewPort = RenderHelper.GetDataPointsUnderViewPort(_dataPointsInCurrentPlotGroup, true);
 
-                    maximumY = (from dp in dataPointsInViewPort select dp.YValues.Max()).Max();
+                    maximumY = (from dp in dataPointsInViewPort where dp.YValues != null select dp.YValues.Max()).Max();
                     break;
                 default:
 
@@ -595,10 +595,16 @@ namespace Visifire.Charts
                 }
                 else if (property == VcProperties.YValues)
                 {
-                    _yValues.Remove( ((Double[])oldValue).Max());
-                    _yValues.Remove( ((Double[])oldValue).Min());
-                    _yValues.Add(maxY =((Double[])newValue).Max());
-                    _yValues.Add(minY =((Double[])newValue).Min());
+                    if (oldValue != null)
+                    {
+                        _yValues.Remove(((Double[])oldValue).Max());
+                        _yValues.Remove(((Double[])oldValue).Min());
+                    }
+                    if(newValue != null)
+                    {
+                        _yValues.Add(maxY = ((Double[])newValue).Max());
+                        _yValues.Add(minY = ((Double[])newValue).Min());
+                    }
                 }
 
                 // variables to store the yValuee sum in case of stacked type charts

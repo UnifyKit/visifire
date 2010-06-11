@@ -637,6 +637,12 @@ namespace Visifire.Charts
             set;
         }
 
+        internal Canvas LabelVisual
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Get or set the Value of the TrendLine
         /// </summary>

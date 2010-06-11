@@ -17,9 +17,23 @@ namespace Visifire.Charts
 {
     public static class RenderHelper
     {
+
+        internal static void ResetMarkersForSeries(List<DataSeries > dataSeriesList4Rendering)
+        {
+            foreach (DataSeries ds in dataSeriesList4Rendering)
+            {
+                foreach (DataPoint dp in ds.DataPoints)
+                {
+                    dp.Marker = null;
+                }
+            }
+        }
+
         internal static Panel GetVisualObject(Panel preExistingPanel, RenderAs chartType, Double width, Double height, PlotDetails plotDetails, List<DataSeries> dataSeriesList4Rendering, Chart chart, Double plankDepth, bool animationEnabled)
         {
             Panel renderedCanvas = null;
+
+            ResetMarkersForSeries(dataSeriesList4Rendering);
 
             switch (chartType)
             {
@@ -812,7 +826,7 @@ namespace Visifire.Charts
         /// <param name="internalXValue">internalXValue</param>
         /// <param name="internalYValue">internalYValue</param>
         /// <returns></returns>
-        internal static DataPoint GetNearestDataPoint(DataSeries dataSeries, Double internalXValue, Double internalYValue)
+        internal static DataPoint GetNearestDataPoint(DataSeries dataSeries, Double xValueAtMousePos, Double yValueAtMousePos)
         {
             DataPoint nearestDataPoint = null;
 
@@ -821,40 +835,40 @@ namespace Visifire.Charts
                                                 where
                                                 !(RenderHelper.IsFinancialCType(dp.Parent) && dp.InternalYValues == null)
                                                 || !(!RenderHelper.IsFinancialCType(dp.Parent) && Double.IsNaN(dp.YValue))
-                                                orderby Math.Abs(dp.InternalXValue - internalXValue)
+                                                orderby Math.Abs(dp.InternalXValue - xValueAtMousePos)
                                                 select dp).ToList();
-
+            
             if (dataPointsAlongX.Count > 0)
             {   
-                // Get the internalYValue of the first DataPoint of the ordered list
-                Double firstValue = dataPointsAlongX[0].InternalYValue;
+                // Get the internalXValue of the first DataPoint of the ordered list
+                Double xValue = dataPointsAlongX[0].InternalXValue;
 
                 // DataPoints along y pixel direction which have same XValue
-                List<DataPoint> dataPointsAlongYHavingSameXValue = new List<DataPoint>();
+                List<DataPoint> dataPointsAlongYAxisHavingSameXValue = new List<DataPoint>();
 
                 foreach (DataPoint dp in dataPointsAlongX)
                 {
-                    if (dp.InternalYValue == firstValue)
-                        dataPointsAlongYHavingSameXValue.Add(dp);
+                    if (dp.InternalXValue == xValue)
+                        dataPointsAlongYAxisHavingSameXValue.Add(dp);
                 }
 
-                if (Double.IsNaN(internalYValue))
+                if (!Double.IsNaN(yValueAtMousePos))
                 {
                     // Sort according to YValue or YValues
                     if (RenderHelper.IsFinancialCType(dataSeries))
-                        dataPointsAlongYHavingSameXValue = (from dp in dataPointsAlongYHavingSameXValue
-                                                            where (dp.InternalYValues == null)
-                                                            orderby Math.Abs(dp.InternalYValues.Max() - internalYValue)
+                        dataPointsAlongYAxisHavingSameXValue = (from dp in dataPointsAlongYAxisHavingSameXValue
+                                                            where (dp.InternalYValues != null)
+                                                            orderby Math.Abs(dp.InternalYValues.Max() - yValueAtMousePos)
                                                             select dp).ToList();
                     else
-                        dataPointsAlongYHavingSameXValue = (from dp in dataPointsAlongYHavingSameXValue
+                        dataPointsAlongYAxisHavingSameXValue = (from dp in dataPointsAlongYAxisHavingSameXValue
                                                             where !Double.IsNaN(dp.InternalYValue)
-                                                            orderby Math.Abs(dp.InternalYValue - internalYValue)
+                                                            orderby Math.Abs(dp.InternalYValue - yValueAtMousePos)
                                                             select dp).ToList();
                 }
 
-                if (dataPointsAlongYHavingSameXValue.Count > 0)
-                    nearestDataPoint = dataPointsAlongYHavingSameXValue.First();
+                if (dataPointsAlongYAxisHavingSameXValue.Count > 0)
+                    nearestDataPoint = dataPointsAlongYAxisHavingSameXValue.First();
             }
 
             return nearestDataPoint;

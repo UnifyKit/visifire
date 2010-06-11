@@ -181,7 +181,7 @@ namespace SLVisifireChartsTest
 
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.IsFalse(chart.PlotArea.ShadowEnabled));
+                () => Assert.IsFalse((Boolean)chart.PlotArea.ShadowEnabled));
 
             EnqueueTestComplete();
         }
@@ -458,7 +458,7 @@ namespace SLVisifireChartsTest
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
                 () => chart.PlotArea.ShadowEnabled = true,
-                () => Assert.IsTrue(chart.PlotArea.ShadowEnabled));
+                () => Assert.IsTrue((Boolean)chart.PlotArea.ShadowEnabled));
 
             EnqueueTestComplete();
         }

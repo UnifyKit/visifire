@@ -539,7 +539,7 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
             ("ShadowEnabled",
-            typeof(Boolean),
+            typeof(Nullable<Boolean>),
             typeof(DataSeries),
             new PropertyMetadata(OnShadowEnabledPropertyChanged));
 
@@ -1385,11 +1385,20 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the ShadowEnabled property
         /// </summary>
-        public Boolean ShadowEnabled
+        [System.ComponentModel.TypeConverter(typeof(NullableBoolConverter))]
+        public Nullable<Boolean> ShadowEnabled
         {
             get
             {
-                return (Boolean)GetValue(ShadowEnabledProperty);
+                if ((Nullable<Boolean>)GetValue(ShadowEnabledProperty) == null)
+                {
+                    if (RenderAs == RenderAs.Line || RenderAs == RenderAs.StepLine)
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                    return (Nullable<Boolean>)GetValue(ShadowEnabledProperty);
             }
             set
             {
@@ -1549,7 +1558,7 @@ namespace Visifire.Charts
             {
                 if ((Nullable<Boolean>)GetValue(ShowInLegendProperty) == null)
                 {
-                    if ((Chart as Chart).Series.Count > 1)
+                    if (Chart != null && (Chart as Chart).Series.Count > 1)
                         return true;
                     else
                         return false;
@@ -2214,7 +2223,7 @@ namespace Visifire.Charts
                             return "Open: #Open\nClose: #Close\nHigh:  #High\nLow:   #Low";
 
                         default:
-                            if (chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
+                            if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
                                 return "#XValue, #YValue";
                             else
                                 return "#AxisXLabel, #YValue";
@@ -3661,27 +3670,25 @@ namespace Visifire.Charts
         {
             DataSeries dataSeries = d as DataSeries;
 
-            if (!dataSeries._isSelectedEventAttached)
+            if (dataSeries.SelectionEnabled)
             {
-                Object event1 = dataSeries.GetMouseLeftButtonDownEventHandler();
-
-                if (event1 != null)
-                    dataSeries.IsNotificationEnable = false;
-
-                dataSeries._isSelectedEventAttached = true;
-                dataSeries.MouseLeftButtonUp += new MouseButtonEventHandler(dataSeries_MouseLeftButtonUp);
-                dataSeries.IsNotificationEnable = true;
+                if (dataSeries.InternalDataPoints != null)
+                {
+                    foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+                        dataPoint.AttachEventForSelection();
+                }
             }
             else
             {   
-                dataSeries.IsNotificationEnable = false;
-                dataSeries.MouseLeftButtonUp -= new MouseButtonEventHandler(dataSeries_MouseLeftButtonUp);
-                dataSeries.IsNotificationEnable = true;
-                dataSeries._isSelectedEventAttached = false;
+                if (dataSeries.InternalDataPoints != null)
+                {
+                    foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
+                        dataPoint.DetachEventForSelection();
+                }
             }
-
+            
             if (!dataSeries.SelectionEnabled)
-            {
+            {   
                 foreach (DataPoint dp in dataSeries.InternalDataPoints)
                 {
                     dp.DeSelect(dp, false, true);
@@ -3691,16 +3698,6 @@ namespace Visifire.Charts
             dataSeries.AttachOrDetachIntaractivity();
         }
 
-        /// <summary>
-        /// Event handler for DataSeries event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        static void dataSeries_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            DataPoint dp = sender as DataPoint;
-            dp.Selected = (dp.Parent != null && dp.Parent.SelectionEnabled) ? !dp.Selected : false;
-        }
 
         /// <summary>
         /// ZIndexProperty changed call back function
@@ -3746,6 +3743,7 @@ namespace Visifire.Charts
                         else
                             dataPoint._isAutoName = false;
 
+                        dataPoint.AttachEventForSelection();
                         dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         dataPoint.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(DataPoint_PropertyChanged);
                     }
@@ -3753,6 +3751,18 @@ namespace Visifire.Charts
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
             {
+                if (e.OldItems != null)
+                {
+                    foreach (DataPoint dataPoint in e.OldItems)
+                        dataPoint.DetachEventForSelection();
+                }
+
+                if (e.NewItems != null)
+                {
+                    foreach (DataPoint dataPoint in e.NewItems)
+                        dataPoint.AttachEventForSelection();
+                }
+
                 FirePropertyChanged(VcProperties.DataPoints);
                 return;
             }
@@ -3774,6 +3784,8 @@ namespace Visifire.Charts
                             dataPoint.Marker = null;
                             dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         }
+
+                        dataPoint.AttachEventForSelection();
                     }
                 }
             }
@@ -3886,7 +3898,7 @@ namespace Visifire.Charts
         internal void AttachEvent2AreaVisualFaces(ObservableObject Object)
         {
             if (Faces != null)
-            {
+            {   
                 foreach (FrameworkElement face in Faces.VisualComponents)
                     AttachEvents2AreaVisual(Object, this, face);
             }

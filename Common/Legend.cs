@@ -810,6 +810,8 @@ namespace Visifire.Charts
                     SetValue(HorizontalAlignmentProperty, value);
                     FirePropertyChanged(VcProperties.HorizontalAlignment);
                 }
+                else
+                    SetValue(HorizontalAlignmentProperty, value);
 #else
                 SetValue(HorizontalAlignmentProperty, value);
 
@@ -835,6 +837,8 @@ namespace Visifire.Charts
                     SetValue(VerticalAlignmentProperty, value);
                     FirePropertyChanged(VcProperties.VerticalAlignment);
                 }
+                else
+                    SetValue(VerticalAlignmentProperty, value);
 #else
                  SetValue(VerticalAlignmentProperty, value);
 #endif
@@ -874,6 +878,8 @@ namespace Visifire.Charts
                     SetValue(BorderThicknessProperty, value);
                     FirePropertyChanged(VcProperties.BorderThickness);
                 }
+                else
+                    SetValue(BorderThicknessProperty, value);
 #else
                 SetValue(BorderThicknessProperty, value);
 #endif
@@ -1001,6 +1007,8 @@ namespace Visifire.Charts
                     SetValue(FontSizeProperty, value);
                     FirePropertyChanged(VcProperties.FontSize);
                 }
+                else
+                    SetValue(FontSizeProperty, value);
 #else
                 SetValue(FontSizeProperty, value);
 #endif
@@ -1314,7 +1322,7 @@ namespace Visifire.Charts
 
 
         /// <summary>
-        /// Get or set the FontFamily property of title
+        /// Get or set the FontFamily property of Legend
         /// </summary>
         internal FontFamily InternalFontFamily
         {
@@ -1337,7 +1345,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the FontSize property of title
+        /// Get or set the FontSize property of Legend
         /// </summary>
         internal Double InternalFontSize
         {
@@ -1352,7 +1360,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the FontStyle property of title text
+        /// Get or set the FontStyle property of Legend text
         /// </summary>
 #if WPF
         [TypeConverter(typeof(System.Windows.FontStyleConverter))]
@@ -1370,7 +1378,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the FontWeight property of title text
+        /// Get or set the FontWeight property of Legend text
         /// </summary>
 #if WPF
          [System.ComponentModel.TypeConverter(typeof(System.Windows.FontWeightConverter))]
@@ -1388,7 +1396,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the BorderThickness of title
+        /// Get or set the BorderThickness of Legend
         /// </summary>
         internal Thickness InternalBorderThickness
         {
@@ -1403,7 +1411,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the Background property of title
+        /// Get or set the Background property of Legend
         /// </summary>
         internal Brush InternalBackground
         {
@@ -1418,7 +1426,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the HorizontalAlignment property of title
+        /// Get or set the HorizontalAlignment property of Legend
         /// </summary>
         internal HorizontalAlignment InternalHorizontalAlignment
         {
@@ -1433,7 +1441,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the VerticalAlignment property of title
+        /// Get or set the VerticalAlignment property of Legend
         /// </summary>
         internal VerticalAlignment InternalVerticalAlignment
         {
@@ -1448,7 +1456,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get or set the Padding property of title
+        /// Get or set the Padding property of Legend
         /// </summary>
         internal Thickness InternalPadding
         {
@@ -3083,7 +3091,30 @@ namespace Visifire.Charts
             else
                 Visual.Width = Visual.DesiredSize.Width;
 
+            PlotArea plotArea = (Chart as Chart).PlotArea;
+
+            RectangleGeometry rectGeo = new RectangleGeometry();
+            rectGeo.Rect = new Rect(InternalBorderThickness.Left, InternalBorderThickness.Top, Visual.Width - InternalBorderThickness.Left - InternalBorderThickness.Right, Visual.Height - InternalBorderThickness.Top - InternalBorderThickness.Bottom);
+            rectGeo.RadiusX = CornerRadius.TopLeft;
+            rectGeo.RadiusY = CornerRadius.TopRight;
+            LegendContainer.Clip = rectGeo;
+
             ApplyShadow(innerGrid);
+
+            if (VerticalAlignment == System.Windows.VerticalAlignment.Bottom && (HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                || HorizontalAlignment == System.Windows.HorizontalAlignment.Left || HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                || HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+                Visual.Margin = new Thickness(0, DEFAULT_MARGIN, 0, 0);
+            else if (VerticalAlignment == System.Windows.VerticalAlignment.Top && (HorizontalAlignment == System.Windows.HorizontalAlignment.Center
+                || HorizontalAlignment == System.Windows.HorizontalAlignment.Left || HorizontalAlignment == System.Windows.HorizontalAlignment.Right
+                || HorizontalAlignment == System.Windows.HorizontalAlignment.Stretch))
+                Visual.Margin = new Thickness(0, 0, 0, DEFAULT_MARGIN);
+            else if (HorizontalAlignment == System.Windows.HorizontalAlignment.Left && (VerticalAlignment == System.Windows.VerticalAlignment.Center
+                || VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+                Visual.Margin = new Thickness(0, 0, DEFAULT_MARGIN, 0);
+            else if (HorizontalAlignment == System.Windows.HorizontalAlignment.Right && (VerticalAlignment == System.Windows.VerticalAlignment.Center
+                || VerticalAlignment == System.Windows.VerticalAlignment.Stretch))
+                Visual.Margin = new Thickness(DEFAULT_MARGIN, 0, 0, 0);
         }
 
         #endregion
@@ -3098,6 +3129,8 @@ namespace Visifire.Charts
         #endregion
 
         #region Data
+
+        private const Double DEFAULT_MARGIN = 3.5;
 
         /// <summary>
         /// Handler for MouseLeftButtonDown event
@@ -3124,6 +3157,7 @@ namespace Visifire.Charts
         /// Handler for MouseRightButtonUp event
         /// </summary>
         private event EventHandler<LegendMouseButtonEventArgs> _onMouseRightButtonUp;
+
 #endif
 
         private const Double SCROLLBAR_SIZE_OF_SCROLLVIEWER = 18;
@@ -3135,6 +3169,7 @@ namespace Visifire.Charts
         private Nullable<Thickness> _borderThickness = null;
         private Brush _internalBackground = null;
         private Nullable<HorizontalAlignment> _internalHorizontalAlignment = null;
+        
         private Nullable<VerticalAlignment> _internalVerticalAlignment = null;
         private Nullable<Thickness> _internalPadding = null;
         private Double _internalOpacity = Double.NaN;
