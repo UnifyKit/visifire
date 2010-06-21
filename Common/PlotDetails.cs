@@ -563,7 +563,15 @@ namespace Visifire.Charts
                         || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                         )
                     )
-                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                    {
+                        if (axisX.XValueType == ChartValueTypes.Time)
+                        {
+                            DateTime dt = DateTime.Parse("12/30/1899 " + trendLine.InternalDateValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                            trendLine.InternalNumericValue = DateTimeHelper.DateDiff(dt, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        }
+                        else
+                            trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                    }
                 }
             }
         }
@@ -586,8 +594,18 @@ namespace Visifire.Charts
                     {
                         if (trendLine.InternalDateStartValue != null && trendLine.InternalDateEndValue != null)
                         {
-                            trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
-                            trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            if (axisX.XValueType == ChartValueTypes.Time)
+                            {
+                                DateTime startDate = DateTime.Parse("12/30/1899 " + trendLine.InternalDateStartValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                                trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(startDate, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                                DateTime endDate = DateTime.Parse("12/30/1899 " + trendLine.InternalDateEndValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                                trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(endDate, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            }
+                            else
+                            {
+                                trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                                trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            }
                         }
                     }
                 }
@@ -2142,7 +2160,15 @@ namespace Visifire.Charts
                 || (trendLine.Orientation == Orientation.Horizontal && axisX.PlotDetails.ChartOrientation == ChartOrientationType.Horizontal)
                 )
                 )
-                    trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                {
+                    if (axisX.XValueType == ChartValueTypes.Time)
+                    {
+                        DateTime dt = DateTime.Parse("12/30/1899 " + trendLine.InternalDateValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(dt, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                    }
+                    else
+                        trendLine.InternalNumericValue = DateTimeHelper.DateDiff(trendLine.InternalDateValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                }
             }
         }
 
@@ -2162,8 +2188,17 @@ namespace Visifire.Charts
                 {
                     if (trendLine.InternalDateStartValue != null && trendLine.InternalDateEndValue != null)
                     {
-                        trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
-                        trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        if (axisX.XValueType == ChartValueTypes.Time)
+                        {
+                            DateTime startDate = DateTime.Parse("12/30/1899 " + trendLine.InternalDateStartValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                            trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(startDate, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            DateTime endDate = DateTime.Parse("12/30/1899 " + trendLine.InternalDateEndValue.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                            trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(endDate, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        }
+                        {
+                            trendLine.InternalNumericStartValue = DateTimeHelper.DateDiff(trendLine.InternalDateStartValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                            trendLine.InternalNumericEndValue = DateTimeHelper.DateDiff(trendLine.InternalDateEndValue, axisX.MinDate, axisX.MinDateRange, axisX.MaxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                        }
                     }
                 }
             }
@@ -2406,9 +2441,17 @@ namespace Visifire.Charts
         internal Double GetAbsoluteSumOfDataPoints(List<DataPoint> dataPoints)
         {
             if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.SectionFunnel || dataPoints[0].Parent.RenderAs == RenderAs.StreamLineFunnel))
-                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) && dataPoint.InternalYValue >=0 select Math.Abs(dataPoint.InternalYValue)).Sum();
+                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) && dataPoint.YValue >=0 select Math.Abs(dataPoint.YValue)).Sum();
+            else if (dataPoints.Count > 0 && (dataPoints[0].Parent.RenderAs == RenderAs.CandleStick || dataPoints[0].Parent.RenderAs == RenderAs.Stock))
+            {
+                var values = (from dataPoint in dataPoints where dataPoint.YValues != null && dataPoint.YValues.Length > 1 select Math.Abs(dataPoint.YValues[1]));
+                if (values.Count() > 0)
+                    return values.Sum();
+                else
+                    return 0;
+            }
             else
-                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.InternalYValue) select Math.Abs(dataPoint.InternalYValue)).Sum();
+                return (from dataPoint in dataPoints where !Double.IsNaN(dataPoint.YValue) select Math.Abs(dataPoint.YValue)).Sum();
         }
 
         /// <summary>
@@ -2416,7 +2459,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="plotGroup">PlotGroup</param>
         /// <returns>Dictionary[Double, List[Double]] </returns>
-        internal Dictionary<Double, List<Double>> GetDataPointValuesInStackedOrder(PlotGroup plotGroup)
+        internal Dictionary<Double, List<Double>> GetDataPointValuesInStackedOrder4StackedArea(PlotGroup plotGroup)
         {
             Double[] xValues = plotGroup.XWiseStackedDataList.Keys.ToArray();
             Array.Sort(xValues);
@@ -2425,10 +2468,11 @@ namespace Visifire.Charts
 
             for (Int32 i = 0; i < xValues.Length; i++)
             {
-                var yValuePositive = (from entry in plotGroup.XWiseStackedDataList[xValues[i]].Positive group entry.InternalYValue by entry.Parent);
-                var yValueNegative = (from entry in plotGroup.XWiseStackedDataList[xValues[i]].Negative group entry.InternalYValue by entry.Parent);
+                var yValuePositive = (from entry in plotGroup.XWiseStackedDataList[xValues[i]].Positive group AreaChart.GetInternalYValue4StackedArea(entry) by entry.Parent);
+                var yValueNegative = (from entry in plotGroup.XWiseStackedDataList[xValues[i]].Negative group AreaChart.GetInternalYValue4StackedArea(entry) by entry.Parent);
 
                 Double[] indexedYValues = new Double[yValuePositive.Count() + yValueNegative.Count()];
+
                 for (Int32 index = 0; index < indexedYValues.Length; index++)
                     indexedYValues[index] = 0;
 
@@ -2448,7 +2492,6 @@ namespace Visifire.Charts
                         indexedYValues[index] += entry.Sum();
                 }
 
-
                 dataPointsInStackOrder.Add(xValues[i], indexedYValues.ToList());
             }
 
@@ -2460,7 +2503,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="plotGroup">PlotGroup</param>
         /// <returns>Dictionary[Double, List[DataPoint]]</returns>
-        internal Dictionary<Double, List<DataPoint>> GetDataPointInStackOrder(PlotGroup plotGroup)
+        internal Dictionary<Double, List<DataPoint>> GetDataPointInStackOrder4StackedArea(PlotGroup plotGroup)
         {
             Double[] xValues = plotGroup.XWiseStackedDataList.Keys.ToArray();
             Array.Sort(xValues);
@@ -2468,6 +2511,7 @@ namespace Visifire.Charts
             Dictionary<Double, List<DataPoint>> dataPointsInStackOrder = new Dictionary<Double, List<DataPoint>>();
 
             Int32 enabledSeriesCount = (from series in plotGroup.DataSeriesList where series.Enabled == true select series).Count();
+
 
             for (Int32 i = 0; i < xValues.Length; i++)
             {

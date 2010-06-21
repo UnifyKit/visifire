@@ -29,7 +29,6 @@ using Visifire.Charts;
 using Visifire.Commons;
 using System.Windows.Media.Imaging;
 using System.Text;
-using System.Linq;
 using System.Windows.Media.Effects;
 
 namespace Visifire.Charts

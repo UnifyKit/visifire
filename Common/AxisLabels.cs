@@ -2434,7 +2434,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="value">Double value</param>
         /// <returns>String</returns>
-        private String GetFormattedString(Double value)
+        internal String GetFormattedString(Double value)
         {
             return (ParentAxis != null) ? ParentAxis.GetFormattedString(value) : value.ToString();
         }

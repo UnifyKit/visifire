@@ -154,7 +154,7 @@ namespace Visifire.Charts
             String str = new String(unParsed.ToCharArray());
             if (str.Contains("##XValue"))
                 str = str.Replace("##XValue", "#XValue");
-            else
+            else if (str.Contains("#XValue"))
             {
                 if (String.IsNullOrEmpty(_parent.XValueFormatString))
                 {
@@ -186,43 +186,49 @@ namespace Visifire.Charts
 
             if (str.Contains("##YValue"))
                 str = str.Replace("##YValue", "#YValue");
-            else
+            else if (str.Contains("#YValue"))
             {
                 if (String.IsNullOrEmpty(_parent.YValueFormatString))
                 {
                     if (Parent.PlotGroup != null)
-                        str = str.Replace("#YValue", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValue, Parent.AxisYType)));
+                        str = str.Replace("#YValue", Parent.PlotGroup.AxisY.GetFormattedString(YValue));
                 }
                 else
-                    str = str.Replace("#YValue", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValue, Parent.AxisYType).ToString(Parent.YValueFormatString));
+                    str = str.Replace("#YValue", YValue.ToString(Parent.YValueFormatString));
             }
 
             if (str.Contains("##ZValue"))
                 str = str.Replace("##ZValue", "#ZValue");
-            else
-            {
+            else if (str.Contains("#ZValue"))
                 str = str.Replace("#ZValue", ZValue.ToString(Parent.ZValueFormatString));
-            }
 
             if (str.Contains("##Series"))
                 str = str.Replace("##Series", "#Series");
-            else
-                str = str.Replace("#Series", Parent.Name);
+            else if (str.Contains("#Series"))
+            {
+                if (Parent._isAutoName)
+                {
+                    String[] s = Parent.Name.Split('_');
+                    str = str.Replace("#Series", s[0]);
+                }
+                else
+                    str = str.Replace("#Series", Parent.Name);
+            }
 
             if (str.Contains("##AxisXLabel"))
                 str = str.Replace("##AxisXLabel", "#AxisXLabel");
-            else
+            else if (str.Contains("#AxisXLabel"))
                 str = str.Replace("#AxisXLabel", String.IsNullOrEmpty(AxisXLabel) ? GetAxisXLabelString() : AxisXLabel);
 
             if (str.Contains("##Percentage"))
                 str = str.Replace("##Percentage", "#Percentage");
-            else
+            else if(str.Contains("#Percentage"))
                 str = str.Replace("#Percentage", Percentage().ToString("#0.##"));
 
 
             if (str.Contains("##Sum"))
                 str = str.Replace("##Sum", "#Sum");
-            else
+            else if (str.Contains("#Sum"))
             {
                 if (Parent.PlotGroup != null && Parent.PlotGroup.XWiseStackedDataList != null && Parent.PlotGroup.XWiseStackedDataList.ContainsKey(InternalXValue))
                 {
@@ -237,19 +243,19 @@ namespace Visifire.Charts
             {
                 if (str.Contains("##High"))
                     str = str.Replace("##High", "#High");
-                else
+                else if(str.Contains("#High"))
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 2)
-                            str = str.Replace("#High", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[2], Parent.AxisYType)));
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 2)
+                            str = str.Replace("#High", Parent.PlotGroup.AxisY.GetFormattedString(YValues[2]));
                         else
                             str = str.Replace("#High", "");
                     }
                     else
                     {
-                        if (InternalYValues != null && InternalYValues.Length > 2)
-                            str = str.Replace("#High", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[2], Parent.AxisYType).ToString(Parent.YValueFormatString));
+                        if (YValues != null && YValues.Length > 2)
+                            str = str.Replace("#High", YValues[2].ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#High", "");
                     }
@@ -258,19 +264,19 @@ namespace Visifire.Charts
 
                 if (str.Contains("##Low"))
                     str = str.Replace("##Low", "#Low");
-                else
+                else if (str.Contains("#Low"))
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 3)
-                            str = str.Replace("#Low", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[3], Parent.AxisYType)));
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", Parent.PlotGroup.AxisY.GetFormattedString(YValues[3]));
                         else
                             str = str.Replace("#Low", "");
                     }
                     else
                     {
-                        if (InternalYValues != null && InternalYValues.Length > 3)
-                            str = str.Replace("#Low", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[3], Parent.AxisYType).ToString(Parent.YValueFormatString));
+                        if (YValues != null && YValues.Length > 3)
+                            str = str.Replace("#Low", YValues[3].ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Low", "");
                     }
@@ -278,19 +284,19 @@ namespace Visifire.Charts
 
                 if (str.Contains("##Open"))
                     str = str.Replace("##Open", "#Open");
-                else
+                else if (str.Contains("#Open"))
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 0)
-                            str = str.Replace("#Open", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[0], Parent.AxisYType)));
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 0)
+                            str = str.Replace("#Open", Parent.PlotGroup.AxisY.GetFormattedString(YValues[0]));
                         else
                             str = str.Replace("#Open", "");
                     }
                     else
                     {
-                        if (InternalYValues != null && InternalYValues.Length > 0)
-                            str = str.Replace("#Open", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[0], Parent.AxisYType).ToString(Parent.YValueFormatString));
+                        if (YValues != null && YValues.Length > 0)
+                            str = str.Replace("#Open", YValues[0].ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Open", "");
                     }
@@ -299,19 +305,19 @@ namespace Visifire.Charts
 
                 if (str.Contains("##Close"))
                     str = str.Replace("##Close", "#Close");
-                else
+                else if (str.Contains("#Close"))
                 {
                     if (String.IsNullOrEmpty(_parent.YValueFormatString))
                     {
-                        if (Parent.PlotGroup != null && InternalYValues != null && InternalYValues.Length > 1)
-                            str = str.Replace("#Close", Parent.PlotGroup.AxisY.GetFormattedString(ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[1], Parent.AxisYType)));
+                        if (Parent.PlotGroup != null && YValues != null && YValues.Length > 1)
+                            str = str.Replace("#Close", Parent.PlotGroup.AxisY.GetFormattedString(YValues[1]));
                         else
                             str = str.Replace("#Close", "");
                     }
                     else
                     {
-                        if (InternalYValues != null && InternalYValues.Length > 1)
-                            str = str.Replace("#Close", ConvertLogarithmicValue2ActualValue(Chart as Chart, InternalYValues[1], Parent.AxisYType).ToString(Parent.YValueFormatString));
+                        if (YValues != null && YValues.Length > 1)
+                            str = str.Replace("#Close", YValues[1].ToString(Parent.YValueFormatString));
                         else
                             str = str.Replace("#Close", "");
                     }
@@ -995,24 +1001,40 @@ namespace Visifire.Charts
                     return null;
             }
         }
-        
+
         /// <summary>
         /// Get the YValue that will be used for Internal purpose.
         /// </summary>
-        [System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
+        //[System.ComponentModel.TypeConverter(typeof(Converters.ValueConverter))]
         internal Double InternalYValue
         {
             get
             {
-                //if (( Double.IsNaN(YValue) || Enabled == false) && Parent != null)// && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedArea))
-                //{
-                //   return 0;
-                //}
-                //else
-                    return ConvertYValue2LogarithmicValue(Chart as Chart, YValue, Parent.AxisYType);
+                return ConvertYValue2LogarithmicValue(this);
             }
         }
         
+        /// <summary>
+        /// Modify YValue for Logarithmic scale
+        /// </summary>
+        /// <param name="yValue"></param>
+        /// <returns></returns>
+        internal static Double ConvertYValue2LogarithmicValue(DataPoint dataPoint)
+        {   
+            Axis axis = null;
+
+            Double value = 0;
+            if (dataPoint.Parent != null && dataPoint.Parent.PlotGroup != null)
+                axis = dataPoint.Parent.PlotGroup.AxisY;
+
+            if (axis != null && axis.Logarithmic)
+                value = Math.Log(dataPoint.YValue, axis.LogarithmBase);
+            else
+                value = dataPoint.YValue;
+
+            return value;
+        }
+
         /// <summary>
         /// Get or set the value that will appear on X-Axis for all charts. 
         /// </summary>
@@ -2257,6 +2279,24 @@ namespace Visifire.Charts
                     RenderHelper.UpdateVisualObject(Parent.RenderAs, this, property, newValue, renderAxis);
                 }
 
+                #region Update list of selected DataPoints
+
+                if (Parent.ListOfSelectedDataPoints != null)
+                {
+                    if (Selected)
+                    {
+                        if (!Parent.ListOfSelectedDataPoints.Contains(this))
+                            Parent.ListOfSelectedDataPoints.Add(this);
+                    }
+                    else
+                    {
+                        if (Parent.ListOfSelectedDataPoints.Contains(this))
+                            Parent.ListOfSelectedDataPoints.Remove(this);
+                    }
+                }
+
+                #endregion
+
                 if (property == VcProperties.Color)
                     UpdateLegendMarker(this, (Brush)newValue);
 
@@ -2524,7 +2564,7 @@ namespace Visifire.Charts
         /// <param name="e">DependencyPropertyChangedEventArgs</param>
         private static void OnSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {   
-            DataPoint dataPoint = d as DataPoint;
+            DataPoint dataPoint = d as DataPoint;            
             ApplySelectionChanged(dataPoint, (Boolean)e.NewValue);
         }
 
@@ -2691,27 +2731,6 @@ namespace Visifire.Charts
         private static void OnYValuesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataPoint dataPoint = d as DataPoint;
-            //Double[] newYValues = new Double[4] 
-            //{ 
-            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[0]),
-            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[1]),
-            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[2]),
-            //    dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.NewValue)[3])
-            //};
-
-            //Double[] oldYValues = null;
-
-            //if (e.OldValue != null)
-            //{
-            //    oldYValues = new Double[4] 
-            //    { 
-            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[0]),
-            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[1]),
-            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[2]),
-            //        dataPoint.ConvertYValue2LogarithmicValue((Double)((Double[]) e.OldValue)[3])
-            //    };
-            //}
-
             dataPoint._oldYValues = (Double[]) e.OldValue;
 
             if (dataPoint.Parent != null)
@@ -3691,22 +3710,44 @@ namespace Visifire.Charts
         {   
             Double percentage = 0;
 
-            if (Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel)
+            if (Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Bar
+                || Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line
+                || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.SectionFunnel
+                || Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Bubble
+                || Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
             {
                 if ((Parent.Chart as Chart).PlotDetails != null)
                 {
                     Double sum = (Parent.Chart as Chart).PlotDetails.GetAbsoluteSumOfDataPoints(Parent.InternalDataPoints.ToList());
-                    if (sum > 0) percentage = ((InternalYValue / sum) * 100);
+                    if (sum > 0) percentage = ((YValue / sum) * 100);
                     else percentage = 0;
+                }
+            }
+            else if (Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.Stock)
+            {
+                if ((Parent.Chart as Chart).PlotDetails != null)
+                {
+                    Double sum = (Parent.Chart as Chart).PlotDetails.GetAbsoluteSumOfDataPoints(Parent.InternalDataPoints.ToList());
+                    if (sum > 0)
+                    {
+                        if (YValues != null && YValues.Length > 1)
+                            percentage = ((YValues[1] / sum) * 100);
+                        else
+                            percentage = 0;
+                    }
+                    else
+                        percentage = 0;
                 }
             }
             else if (Parent.RenderAs == RenderAs.StreamLineFunnel)
             {
-                percentage = ((InternalYValue / Parent.PlotGroup.MaximumY) * 100);
+                percentage = ((YValue / Parent.PlotGroup.MaximumY) * 100);
             }
-            else if (Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.StackedBar100 || Parent.RenderAs == RenderAs.StackedColumn100)
+            else if (Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedBar
+                || Parent.RenderAs == RenderAs.StackedColumn || Parent.RenderAs == RenderAs.StackedArea100
+                || Parent.RenderAs == RenderAs.StackedBar100 || Parent.RenderAs == RenderAs.StackedColumn100)
             {
-                percentage = InternalYValue / Parent.PlotGroup.XWiseStackedDataList[InternalXValue].AbsoluteYValueSum * 100;// _stackSum[XValue].Y Contains Absolute sum
+                percentage = YValue / Parent.PlotGroup.XWiseStackedDataList[InternalXValue].AbsoluteYValueSum * 100;// _stackSum[XValue].Y Contains Absolute sum
             }
 
             return percentage;

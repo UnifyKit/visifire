@@ -6,23 +6,17 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1">
-
-            <vc:Chart.Titles>
-                <vc:Title Text="Visifire Area Chart" FontSize="12"/>
-            </vc:Chart.Titles>
-
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+                  Width="500" Height="300" Theme="Theme1">
+            
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Jan" YValue="2020"/>
-                        <vc:DataPoint AxisXLabel="Feb" YValue="1562"/>
-                        <vc:DataPoint AxisXLabel="Mar" YValue="3282"/>
-                        <vc:DataPoint AxisXLabel="Apr" YValue="3098"/>
-                        <vc:DataPoint AxisXLabel="May" YValue="5000"/>
-                        <vc:DataPoint AxisXLabel="June" YValue="2486"/>
-                        <vc:DataPoint AxisXLabel="July" YValue="1034"/>
+                        <vc:DataPoint YValue="6"/>
+                        <vc:DataPoint YValue="12"/>
+                        <vc:DataPoint YValue="30"/>
+                        <vc:DataPoint YValue="32"/>
+                        <vc:DataPoint YValue="42"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
