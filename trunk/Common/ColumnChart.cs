@@ -1445,6 +1445,9 @@ namespace Visifire.Charts
 
                 break;
             }
+
+            chart.ChartArea.AttachOrDetachIntaractivity(chart.InternalSeries);
+            Visifire.Charts.Chart.SelectDataPoints(chart);
         }
 
         private static void Update2DAnd3DColumnBorderColor(DataPoint dataPoint, Boolean view3d)

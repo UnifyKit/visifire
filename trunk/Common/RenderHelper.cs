@@ -411,6 +411,7 @@ namespace Visifire.Charts
            // if(property != VcProperties.ViewportRangeEnabled)
                 chart.ChartArea.AttachScrollBarOffsetChangedEventWithAxes();
 
+            chart.ChartArea.AttachOrDetachIntaractivity(chart.InternalSeries);
             Visifire.Charts.Chart.SelectDataPoints(chart);
             //AttachEventsToolTipHref2DataSeries();
         }
@@ -564,6 +565,7 @@ namespace Visifire.Charts
             }
 
             //chart.ChartArea.AttachScrollEvents();
+            
         }
 
         internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange)

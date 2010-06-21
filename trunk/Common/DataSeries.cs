@@ -2511,6 +2511,10 @@ namespace Visifire.Charts
             Double internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(dataSeries.Chart as Chart, xAxis, e);
             Double internalYValue = RenderHelper.CalculateInternalYValueFromPixelPos(dataSeries.Chart as Chart, yAxis, e);
             dataSeries._nearestDataPoint = RenderHelper.GetNearestDataPoint(this, internalXValue, internalYValue);
+
+            if (dataSeries._nearestDataPoint == null)
+                dataSeries.HideToolTip();
+
             return dataSeries._nearestDataPoint;
         }
 
@@ -2856,6 +2860,12 @@ namespace Visifire.Charts
         /// Internal XValue Type 
         /// </summary>
         internal ChartValueTypes InternalXValueType
+        {
+            get;
+            set;
+        }
+
+        internal List<DataPoint> ListOfSelectedDataPoints
         {
             get;
             set;
