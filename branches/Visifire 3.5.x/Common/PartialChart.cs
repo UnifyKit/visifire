@@ -327,7 +327,7 @@ namespace Visifire.Charts
         {
             Chart c = d as Chart;
 
-            if(c._zoomIconSeparater != null)
+            if (c._zoomIconContainer != null)
             {
                 if ((Boolean)e.NewValue)
                     c._zoomIconContainer.Visibility = Visibility.Visible;
@@ -2163,9 +2163,9 @@ namespace Visifire.Charts
 
             foreach (DataSeries ds in chart.InternalSeries)
             {
-                if (ds.SelectionEnabled)
-                {   
-                    foreach (DataPoint dp in ds.DataPoints)
+                if (ds.SelectionEnabled && ds.ListOfSelectedDataPoints != null)
+                {
+                    foreach (DataPoint dp in ds.ListOfSelectedDataPoints)
                     {
                         if (dp.Selected)
                         {
@@ -2180,6 +2180,35 @@ namespace Visifire.Charts
                 }
             }
         }
+
+        ///// <summary>
+        ///// Visually select the DataPoints which are selected
+        ///// </summary>
+        ///// <param name="chart"></param>
+        //internal static void SelectDataPoints(Chart chart)
+        //{
+        //    if (chart == null || chart.InternalSeries == null)
+        //        return;
+
+        //    foreach (DataSeries ds in chart.InternalSeries)
+        //    {
+        //        if (ds.SelectionEnabled)
+        //        {
+        //            foreach (DataPoint dp in ds.DataPoints)
+        //            {
+        //                if (dp.Selected)
+        //                {
+        //                    dp.Select(true);
+
+        //                    if (ds.SelectionMode == SelectionModes.Single)
+        //                        dp.DeSelectOthers();
+        //                }
+        //                else
+        //                    dp.DeSelect(dp, true, true);
+        //            }
+        //        }
+        //    }
+        //}
         
         /// <summary>
         /// Get ColorSet by ColorSet name

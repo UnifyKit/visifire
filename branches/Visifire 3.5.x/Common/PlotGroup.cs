@@ -241,6 +241,7 @@ namespace Visifire.Charts
 #endif
         void AddXWiseStackedDataEntry(ref XWiseStackedData xWiseData, DataPoint dataPoint)
         {
+
             if (dataPoint.YValue >= 0)
             {
                 xWiseData.Positive.Add(dataPoint);

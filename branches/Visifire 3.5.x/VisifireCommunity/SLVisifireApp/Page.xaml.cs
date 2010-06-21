@@ -22,6 +22,6 @@ namespace SLVisifireApp
         public Page()
         {
             InitializeComponent();
-        }
+        }        
     }
 }
