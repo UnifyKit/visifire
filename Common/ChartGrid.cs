@@ -832,30 +832,48 @@ namespace Visifire.Charts
         {
             if (Visual != null)
             {
-                foreach (Rectangle rec in InterlacedRectangles)
-                    rec.Fill = InterlacedColor;
-
-                foreach (Line line in InterlacedLines)
+                if(InterlacedRectangles != null)
                 {
-                    line.Stroke = LineColor;
-                    line.StrokeThickness = LineThickness;
-                    line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                    foreach (Rectangle rec in InterlacedRectangles)
+                        rec.Fill = InterlacedColor;
                 }
 
-                if (Chart != null && ParentAxis != null)
+                if (InterlacedLines != null)
+                {   
+                    foreach (Line line in InterlacedLines)
+                    {
+                        line.Stroke = LineColor;
+                        line.StrokeThickness = LineThickness;
+                        line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                    }
+                }
+
+                Chart chart = Chart as Chart;
+
+                if (Chart != null && ParentAxis != null && chart.ChartArea != null)
                 {
                     if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisY
                         && ParentAxis.AxisType == AxisTypes.Primary)
                     {
-                        foreach (Line line in (Chart as Chart).ChartArea.InterlacedLines)
-                        {
-                            line.Stroke = LineColor;
-                            line.StrokeThickness = LineThickness;
-                            line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                        List<Line> interlacedLinesOverVerticalPlank = chart.ChartArea.InterlacedLinesOverVerticalPlank;
+
+                        if (interlacedLinesOverVerticalPlank != null)
+                        {   
+                            foreach (Line line in interlacedLinesOverVerticalPlank)
+                            {
+                                line.Stroke = LineColor;
+                                line.StrokeThickness = LineThickness;
+                                line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+                            }
                         }
 
-                        foreach (Path path in (Chart as Chart).ChartArea.InterlacedPaths)
-                            path.Fill = InterlacedColor;
+                        List<Path> interlacedPathsOverVerticalPlank = chart.ChartArea.InterlacedPathsOverVerticalPlank;
+
+                        if (interlacedPathsOverVerticalPlank != null)
+                        {   
+                            foreach (Path path in interlacedPathsOverVerticalPlank)
+                                path.Fill = InterlacedColor;
+                        }
                     }
                 }
             }

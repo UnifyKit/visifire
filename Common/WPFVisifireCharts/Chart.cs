@@ -131,7 +131,12 @@ namespace Visifire.Charts
         void Chart_LayoutUpdated(object sender, EventArgs e)
         {
             if (_currentVisibility == Visibility.Collapsed && this.Visibility == Visibility.Visible)
-                Render();
+            {
+                if (IsInDesignMode)
+                    InvokeRender();
+                else
+                    Render();
+            }
 
             _currentVisibility = this.Visibility;
         }
@@ -142,9 +147,12 @@ namespace Visifire.Charts
         void Chart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (!Double.IsNaN(e.NewSize.Width) && !Double.IsNaN(e.NewSize.Height) && e.NewSize.Width != 0 && e.NewSize.Height != 0)
-            {
+            {   
                 // Render the chart with new size
-                Render();
+                if (IsInDesignMode)
+                    InvokeRender();
+                else
+                    Render();
             }
         }
 
@@ -154,14 +162,10 @@ namespace Visifire.Charts
         void Chart_Loaded(object sender, RoutedEventArgs e)
         {
             // Render the chart with new size
-            Render();
-        }
-
-        public object Containt
-        {
-            get;
-            set;
-
+            if (IsInDesignMode)
+                InvokeRender();
+            else
+                Render();
         }
 
         #endregion

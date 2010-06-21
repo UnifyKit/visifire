@@ -429,7 +429,7 @@ namespace Visifire.Charts
         /// <returns>
         /// The identifier for the Visifire.Charts.Title.ShadowEnabled dependency property.
         /// </returns>
-        public new static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
+        public static readonly DependencyProperty ShadowEnabledProperty = DependencyProperty.Register
             ("ShadowEnabled",
             typeof(Boolean),
             typeof(Title),

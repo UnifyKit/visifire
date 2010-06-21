@@ -1247,6 +1247,30 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Get the actual value of Interval property which is calculated internally or set by user. 
+        /// It is a read-only property.
+        /// </summary>
+        public Double ActualInterval
+        {
+            get
+            {
+                return InternalInterval;
+            }
+        }
+
+        /// <summary>
+        /// Get the actual value of IntervalType property which is calculated internally or set by user. 
+        /// It is a read-only property.
+        /// </summary>
+        public IntervalTypes ActualIntervalType
+        {
+            get
+            {
+                return InternalIntervalType;
+            }
+        }
+
+        /// <summary>
         /// Get or set the Color of the axis line
         /// </summary>
         public Brush LineColor
@@ -1969,7 +1993,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get the actual value of AxisMinimum property which is calculated internally or set by user.
+        /// Get the actual value of AxisMinimum property which is calculated internally or set by user. 
+        /// It is a read-only property.
         /// </summary>
         public Object ActualAxisMinimum
         {   
@@ -1996,7 +2021,8 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Get the actual value of AxisMaximum property which is calculated internally or set by user.
+        /// Get the actual value of AxisMaximum property which is calculated internally or set by user. 
+        /// It is a read-only property.
         /// </summary>
         public Object ActualAxisMaximum
         {   
@@ -4928,7 +4954,7 @@ namespace Visifire.Charts
                 }
 
             }
-            catch (ArgumentException e1)
+            catch
             {
                 throw new ArgumentException("Internal Size Error");
             }
