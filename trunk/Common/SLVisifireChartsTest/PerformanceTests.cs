@@ -503,24 +503,8 @@ namespace SLVisifireChartsTest
                         start = DateTime.UtcNow;
 
                         (sender as DataPoint).YValue = 80;
-
-                        EnqueueConditional(() => { return ObservableObject._isPropertyChangedFired; });
-
-                        EnqueueCallback(() =>
-                        {
-                            //if (chart.ChartArea._renderCount > 0)
-                            {
-                                DateTime end = DateTime.UtcNow;
-                                totalDuration = (end - start).TotalSeconds;
-                                _htmlElement3.SetProperty("value", "Total Updation Time: " + totalDuration + "s. Number of Render Count: " + chart.ChartArea._renderCount + " Click here to exit.");
-                            }
-
-                            EnqueueCallback(() =>
-                            {
-                                _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.PerformanceTest_OnClick));
-                            });
-                        });
-
+                       
+                        _htmlElement3.AttachEvent("onclick", new EventHandler<System.Windows.Browser.HtmlEventArgs>(this.PerformanceTest_OnClick));
                     };
                     dataSeries.DataPoints.Add(dataPoint);
                     numberofDataPoint++;

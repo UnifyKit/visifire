@@ -4,17 +4,17 @@
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" Height="362" Width="683">
   
     <Grid x:Name="LayoutRoot" Background="White">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
+        <vc:Chart x:Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts"
                   Width="500" Height="300" Theme="Theme1">
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Line">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="6"/>
-                        <vc:DataPoint YValue="12"/>
-                        <vc:DataPoint YValue="30"/>
-                        <vc:DataPoint YValue="32"/>
-                        <vc:DataPoint YValue="42"/>
+                        <vc:DataPoint AxisXLabel="abc1" YValue="6"/>
+                        <vc:DataPoint AxisXLabel="abc2" YValue="12"/>
+                        <vc:DataPoint AxisXLabel="abc3" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="abc4" YValue="32"/>
+                        <vc:DataPoint AxisXLabel="abc5" YValue="42"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

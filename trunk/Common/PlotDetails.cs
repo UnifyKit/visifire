@@ -500,6 +500,9 @@ namespace Visifire.Charts
             axis.XValueType = ChartValueTypes.Numeric;
             Boolean isAnyDateTimeSeriesExist = false;
 
+            if (Chart.InternalSeries.Count == 0)
+                return axis.IsDateTimeAxis;
+
             int seriesCount = (from dataSeries in Chart.InternalSeries
                                where dataSeries.InternalXValueType == ChartValueTypes.Date
                                select dataSeries).Count();
@@ -1851,9 +1854,14 @@ namespace Visifire.Charts
         /// <returns>Returns the maximum data value as Double</returns>
         internal Double GetAxisXMaximumDataValue(Axis axisX)
         {
-            return (from plotData in PlotGroups
+            var maxValues = (from plotData in PlotGroups
                     where (!Double.IsNaN(plotData.MaximumX) && plotData.AxisX == axisX)
-                    select plotData.MaximumX).Max();
+                    select plotData.MaximumX);
+
+            if (maxValues.Count() > 0)
+                return maxValues.Max();
+            else
+                return 0;
         }
 
         /// <summary>
@@ -1870,20 +1878,26 @@ namespace Visifire.Charts
             {
                 foreach (PlotGroup plotGroup in PlotGroups)
                 {
-                    Double tempMaximumY;
-                    plotGroup.CalculateMaxYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMaximumY);
-
-                    if (!Double.IsNaN(tempMaximumY))
+                    if (axisY == plotGroup.AxisY)
                     {
-                        max = Math.Max(max, tempMaximumY);
+                        Double tempMaximumY;
+                        plotGroup.CalculateMaxYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMaximumY);
+
+                        if (!Double.IsNaN(tempMaximumY))
+                        {
+                            max = Math.Max(max, tempMaximumY);
+                        }
                     }
                 }
             }
             else
-            {   
-                max = (from plotData in PlotGroups
-                    where plotData.AxisY == axisY
-                    select plotData.MaximumY).Max();
+            {
+                var maxValues = (from plotData in PlotGroups
+                       where plotData.AxisY == axisY
+                       select plotData.MaximumY);
+
+                if (maxValues.Count() > 0)
+                    max = maxValues.Max();
             }
 
             max = (Double.IsNaN(max) || Double.IsInfinity(max)) ? (axisY.Logarithmic ? axisY.LogarithmBase : 1) : max;
@@ -1939,12 +1953,15 @@ namespace Visifire.Charts
             {
                 foreach (PlotGroup plotGroup in PlotGroups)
                 {
-                    Double tempMinimumY;
+                    if (axisY == plotGroup.AxisY)
+                    {
+                        Double tempMinimumY;
 
-                    plotGroup.CalculateMinYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMinimumY);
+                        plotGroup.CalculateMinYValueWithInAXValueRange(axisX._numericViewMinimum, axisX._numericViewMaximum, out tempMinimumY);
 
-                    if (!Double.IsNaN(tempMinimumY))
-                        min = Math.Min(min, tempMinimumY);
+                        if (!Double.IsNaN(tempMinimumY))
+                            min = Math.Min(min, tempMinimumY);
+                    }
                 }
             }
             else

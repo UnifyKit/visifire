@@ -223,7 +223,7 @@ namespace Visifire.Charts
                 {
                     if ((Boolean)ds.Enabled)
                     {   
-                        if (ds.PlotGroup.AxisY.ViewportRangeEnabled)
+                        if (ds.PlotGroup != null && ds.PlotGroup.AxisY.ViewportRangeEnabled)
                             Chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(ds.UpdateVisual), new object[] { VcProperties.ViewportRangeEnabled, null });
 
                         //ds.UpdateVisual(VcProperties.DataPoints, ds.InternalDataPoints);
@@ -3255,8 +3255,8 @@ namespace Visifire.Charts
 
                             newYCoord = new Double[] { position - plankDepth, position - plankThickness };
 
-                            if (Chart._internalAnimationEnabled)
-                            {
+                            if (Chart._internalAnimationEnabled && AxisY.Grids[0].AnimationEnabled)
+                            {   
                                 line.X2 = line.X1;
                                 line.Y2 = line.Y1;
                                 Storyboard4PlankGridLines.Children.Add(AxisY.Grids[0].CreateDoubleAnimation(line, "X2", plankDepth, 0, 0.75, 0.75));
@@ -3271,8 +3271,8 @@ namespace Visifire.Charts
                                 System.Windows.Shapes.Path path = new System.Windows.Shapes.Path();
                                 path.StrokeThickness = 0;
 
-                                if (Chart._internalAnimationEnabled)
-                                {
+                                if (Chart._internalAnimationEnabled && AxisY.Grids[0].AnimationEnabled)
+                                {   
                                     path.Opacity = 0;
                                     Storyboard4PlankGridLines.Children.Add(AxisY.Grids[0].CreateDoubleAnimation(path, "Opacity", 0, 1, 1, 0.75));
                                 }
