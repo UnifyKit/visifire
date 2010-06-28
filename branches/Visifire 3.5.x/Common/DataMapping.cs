@@ -85,8 +85,9 @@ namespace Visifire.Charts
             if (!IsNullable(targetPropertyInfo.PropertyType, out innerTypeOfNullableProperty))
             {
                 // Convert 'the type of the property value of source' to 'the type of the property value of target'
-                propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType,
-                System.Globalization.CultureInfo.CurrentCulture);
+                if(!targetPropertyInfo.PropertyType.Equals(typeof(Brush)))
+                    propertyValue = Convert.ChangeType(propertyValue, targetPropertyInfo.PropertyType, 
+                        System.Globalization.CultureInfo.CurrentCulture);
             }
             else if (innerTypeOfNullableProperty != null)
             {

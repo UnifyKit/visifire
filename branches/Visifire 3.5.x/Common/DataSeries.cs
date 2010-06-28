@@ -2701,34 +2701,40 @@ namespace Visifire.Charts
                     }
                     else
                     {   
-                        Double OldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
-                        Double OldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
-                        Double OldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
-                        Double OldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+                        Double oldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                        Double oldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                        Double oldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                        Double oldAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
                         chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, true, true, false, AxisRepresentations.AxisX, true);
 
-                        Double NewAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
-                        Double NewAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
-                        Double NewAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
-                        Double NewAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
+                        Double newAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
+                        Double newAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
+                        Double newAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
+                        Double newAxisMinX = chart.PlotDetails.GetAxisXMinimumDataValue(PlotGroup.AxisX);
 
                         // System.Diagnostics.Debug.WriteLine("OldAxisMaxY = " + OldAxisMaxY.ToString() + " OldAxisMinY=" + OldAxisMinY.ToString());
                         // System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
 
                         if (PlotGroup.AxisY.ViewportRangeEnabled)
-                        {   
+                        {
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisY;
                         }
-                        if (NewAxisMaxY != OldAxisMaxY || NewAxisMinY != OldAxisMinY)
-                        {   
+                        if (newAxisMaxY != oldAxisMaxY || newAxisMinY != oldAxisMinY)
+                        {
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisY;
                         }
-                        else if (NewAxisMaxX != OldAxisMaxX || NewAxisMinX != OldAxisMinX)
+                        else if (newAxisMaxX != oldAxisMaxX || newAxisMinX != oldAxisMinX)
+                        {
+                            renderAxis = true;
+                        }
+                        // New value will be null if one or more number of DataPoints removed
+                        else if (property == VcProperties.DataPoints && newValue == null)
                         {   
                             renderAxis = true;
+                            axisRepresentation = AxisRepresentations.AxisX;
                         }
                     }
 
@@ -3795,7 +3801,7 @@ namespace Visifire.Charts
                             dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
                         }
 
-                        dataPoint.AttachEventForSelection();
+                        dataPoint.DetachEventForSelection();
                     }
                 }
             }
@@ -3812,6 +3818,8 @@ namespace Visifire.Charts
             // Validate whether partial is allowed
             if (ValidatePartialUpdate(RenderAs, VcProperties.DataPoints))
                 DataPointRenderManager(VcProperties.DataPoints, e.NewItems);
+
+
         }
 
         private void DataPointRenderManager(VcProperties property, object newValue)
