@@ -6,20 +6,21 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+        <vc:Chart x:Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
                   Width="500" Height="300" Theme="Theme1">
-            
+           
             <vc:Chart.Series>
                 <vc:DataSeries RenderAs="Column">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="6"/>
-                        <vc:DataPoint YValue="12"/>
-                        <vc:DataPoint YValue="30"/>
-                        <vc:DataPoint YValue="32"/>
-                        <vc:DataPoint YValue="42"/>
+                        <vc:DataPoint AxisXLabel="abc1" YValue="6"/>
+                        <vc:DataPoint AxisXLabel="abc2" YValue="12"/>
+                        <vc:DataPoint AxisXLabel="abc3" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="abc4" YValue="32"/>
+                        <vc:DataPoint AxisXLabel="abc5" YValue="42"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
+        
     </Grid>
 </UserControl>
