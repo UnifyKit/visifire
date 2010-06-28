@@ -27,7 +27,7 @@ namespace Visifire.Charts
     /// Visifire.Charts.ChartGrid class. It contains grids of axis.
     /// </summary>
     public class ChartGrid : ObservableObject
-    {
+    {   
         #region Public Methods
 
         /// <summary>
@@ -124,6 +124,34 @@ namespace Visifire.Charts
             typeof(Brush),
             typeof(ChartGrid),
             new PropertyMetadata(OnInterlacedColorPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.ChartGrid.AnimationEnabled dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.ChartGrid.AnimationEnabled dependency property.
+        /// </returns>
+        public static readonly DependencyProperty AnimationEnabledProperty = DependencyProperty.Register
+            ("AnimationEnabled",
+            typeof(Boolean),
+            typeof(ChartGrid),
+            new PropertyMetadata(true, null));
+
+        /// <summary>
+        /// Enable or disable animation
+        /// </summary>
+        public Boolean AnimationEnabled
+        {
+            get
+            {
+                return (Boolean)GetValue(AnimationEnabledProperty);
+            }
+            set
+            {
+                SetValue(AnimationEnabledProperty, value);
+            }
+        }
+
 
         /// <summary>
         /// Get or set the grid interval
@@ -364,7 +392,7 @@ namespace Visifire.Charts
        /// <param name="animationEnabled">Whether animation is enabled</param>
        /// <param name="animationDuration">Animation duration</param>
         private void CreateAndPositionChartGrid(bool animationEnabled, Double animationDuration)
-        {   
+        {
             Double interval = (Double)Interval; // Interval  for the chart grid
             Decimal index = 0;// = (Decimal)Minimum;   // starting point for the loop that generates grids
             Decimal minVal = (Decimal)Minimum;  // smallest value from where the grid must be drawn
@@ -378,8 +406,7 @@ namespace Visifire.Charts
             Int32 countRectangles = 0;          // counts the number of color bands for animating them alternately in opposite direction
             Double position = 0;                // value of the line position for the running loop cycle
             Double prevPosition = 0;            // value of the line position for the previous position
-
-            
+                       
             // if axisX and the first data point is in a gap between the prescribed interval, the index must dateTime from the 
             // datapoint rather than the axis minimum
             // if ((DataMinimum - interval) < Minimum && ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
@@ -772,9 +799,11 @@ namespace Visifire.Charts
         /// <param name="animationEnabled">Whether animation is enabled</param>
         /// <param name="animationDuration">Animation duration</param>
         internal void CreateVisualObject(Double width, Double height, bool animationEnabled, Double animationDuration)
-        {   
+        {
+            animationEnabled = animationEnabled && AnimationEnabled;
+
             if (!(Boolean)Enabled || (Double.IsNaN(width) && Double.IsNaN(height)))
-            {
+            {   
                 Visual = null;
                 return;
             }

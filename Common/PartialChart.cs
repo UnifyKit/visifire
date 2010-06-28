@@ -731,7 +731,7 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// Enables or disables animation
+        /// Enable or disable animation
         /// </summary>
         public Boolean AnimationEnabled
         {
@@ -1397,6 +1397,10 @@ namespace Visifire.Charts
                             }
 
                             ds.Visual = null;
+
+                            ds.DataSource = null;
+                            ds.Chart = null;
+                            
                         }
                     }
                 }
