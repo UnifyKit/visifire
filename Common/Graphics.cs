@@ -183,6 +183,11 @@ namespace Visifire.Charts
         /// </summary>
         public Canvas LabelCanvas;
 
+        /// <summary>
+        /// DataContext
+        /// </summary>
+        public Object DataContext;
+        
         internal void ClearList(ref List<DependencyObject> listReference)
         {
             foreach (FrameworkElement fe in listReference)
@@ -1048,7 +1053,7 @@ namespace Visifire.Commons
             return new SolidColorBrush(Color.FromArgb((byte)255, (byte)RAND.Next(255), (byte)RAND.Next(255), (byte)RAND.Next(255)));
         }
 
-        internal static void DrawPointAt(Point point, Canvas visual, Color fillColor)
+        public static void DrawPointAt(Point point, Canvas visual, Color fillColor)
         {
             Ellipse e = new Ellipse() { Height = 4, Width = 4, Fill = new SolidColorBrush(fillColor), Stroke = new SolidColorBrush(Colors.Red), StrokeThickness = .25 };
 

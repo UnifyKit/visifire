@@ -1318,11 +1318,11 @@ namespace Visifire.Charts
             if (chart.ChartArea.AxisX != null)
             {
                 Double xValue;
-                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lenthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+                AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+                Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+                Double lenthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lenthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lenthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
@@ -1334,11 +1334,11 @@ namespace Visifire.Charts
             if (chart.ChartArea.AxisY != null)
             {
                 Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lenthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+                AxisOrientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
+                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lenthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
 
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
+                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lenthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lenthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisY.Logarithmic)
                     eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
@@ -1362,11 +1362,11 @@ namespace Visifire.Charts
             if (chart.ChartArea.AxisX != null)
             {   
                 Double xValue;
-                Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-                Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+                AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+                Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+                Double lengthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
+                xValue = chart.ChartArea.AxisX.PixelPositionToXValue(lengthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisX.IsDateTimeAxis)
                     eventArgs.XValue = DateTimeHelper.XValueToDateTime(chart.ChartArea.AxisX.MinDate, xValue, chart.ChartArea.AxisX.InternalIntervalType);
@@ -1377,11 +1377,11 @@ namespace Visifire.Charts
             if (chart.ChartArea.AxisY != null)
             {   
                 Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+                AxisOrientation axisOrientation = chart.ChartArea.AxisY.AxisOrientation;
+                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
 
-                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+                yValue = chart.ChartArea.AxisY.PixelPositionToYValue(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
 
                 if(chart.ChartArea.AxisY.Logarithmic)
                     eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY.AxisType);
@@ -1392,11 +1392,11 @@ namespace Visifire.Charts
             if (chart.ChartArea.AxisY2 != null)
             {
                 Double yValue;
-                Orientation axisOrientation = chart.ChartArea.AxisY2.AxisOrientation;
-                Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-                Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+                AxisOrientation axisOrientation = chart.ChartArea.AxisY2.AxisOrientation;
+                Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+                Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
 
-                yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+                yValue = chart.ChartArea.AxisY2.PixelPositionToYValue(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
 
                 if (chart.ChartArea.AxisY2.Logarithmic)
                     eventArgs.YValue = DataPoint.ConvertLogarithmicValue2ActualValue(chart, yValue, chart.ChartArea.AxisY2.AxisType);

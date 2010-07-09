@@ -388,6 +388,7 @@ namespace Visifire.Commons
                     case RenderAs.Doughnut:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Radar:
                         return true;
                  default:
                      return false;

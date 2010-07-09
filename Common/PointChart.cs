@@ -240,7 +240,7 @@ namespace Visifire.Charts
 
             marker.CreateVisual();
 
-            marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
 
             marker.AddToParent(pointChartCanvas, xPosition, yPosition, new Point(0.5, 0.5));
 
@@ -253,8 +253,8 @@ namespace Visifire.Charts
 
             dataPoint.Marker = marker;
             dataPoint.Faces = dpFaces;
-            
-            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+
+            dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
@@ -318,7 +318,7 @@ namespace Visifire.Charts
 
             Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
                                         where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
-                                        select tick.TickLength).Sum();
+                                        select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfAxisX == 0)
                 tickLengthOfAxisX = 5;
@@ -327,7 +327,7 @@ namespace Visifire.Charts
                                                where axis.AxisType == AxisTypes.Primary
                                                from tick in axis.Ticks
                                                where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                               select tick.TickLength).Sum();
+                                               select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfPrimaryAxisY == 0)
                 tickLengthOfPrimaryAxisY = 8;
@@ -336,7 +336,7 @@ namespace Visifire.Charts
                                                  where axis.AxisType == AxisTypes.Secondary
                                                  from tick in axis.Ticks
                                                  where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                                 select tick.TickLength).Sum();
+                                                 select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfSecondaryAxisY == 0)
                 tickLengthOfSecondaryAxisY = 8;
@@ -585,7 +585,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
                     break;
 
                 case VcProperties.ShowInLegend:
@@ -630,7 +630,7 @@ namespace Visifire.Charts
             {
                 Double tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
                                             where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
-                                            select tick.TickLength).Sum();
+                                            select (Double)tick.TickLength).Sum();
 
                 if (tickLengthOfAxisX == 0)
                     tickLengthOfAxisX = 5;
@@ -639,7 +639,7 @@ namespace Visifire.Charts
                                                    where axis.AxisType == AxisTypes.Primary
                                                    from tick in axis.Ticks
                                                    where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                                   select tick.TickLength).Sum();
+                                                   select (Double)tick.TickLength).Sum();
 
                 if (tickLengthOfPrimaryAxisY == 0)
                     tickLengthOfPrimaryAxisY = 8;
@@ -648,7 +648,7 @@ namespace Visifire.Charts
                                                      where axis.AxisType == AxisTypes.Secondary
                                                      from tick in axis.Ticks
                                                      where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                                     select tick.TickLength).Sum();
+                                                     select (Double)tick.TickLength).Sum();
 
                 if (tickLengthOfSecondaryAxisY == 0)
                     tickLengthOfSecondaryAxisY = 8;

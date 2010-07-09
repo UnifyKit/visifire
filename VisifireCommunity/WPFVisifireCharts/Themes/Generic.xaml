@@ -275,7 +275,7 @@
     </Style>
 
     <Style TargetType="{x:Type vc:Axis}">
-        <Setter Property="LineThickness" Value="0.5"/>
+        <!--<Setter Property="LineThickness" Value="0.5"/>-->
         <Setter Property="LineColor" Value="Gray"/>
         <Setter Property="TitleFontFamily" Value="Verdana"/>
     </Style>
@@ -292,7 +292,6 @@
     </Style>
 
     <Style TargetType="{x:Type vc:ChartGrid}">
-        <Setter Property="LineThickness" Value="0.25"/>
         <Setter Property="LineStyle" Value="Solid"/>
         <Setter Property="LineColor" Value="Gray"/>
     </Style>

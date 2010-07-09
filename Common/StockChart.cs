@@ -317,7 +317,7 @@ namespace Visifire.Charts
             dataPointVisual.Children.Add(closeLine);
 
             // Attach tooltip, events, href etc
-            dataPointVisual.Opacity = dataPoint.Parent.Opacity * dataPoint.Opacity;
+            dataPointVisual.Opacity = (Double)dataPoint.Parent.Opacity * (Double)dataPoint.Opacity;
             Chart chart = dataPoint.Chart as Chart;
             dataPoint.SetCursor2DataPointVisualFaces();
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
@@ -513,7 +513,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.Opacity:
-                    dpFaces.Visual.Opacity = dataSeries.Opacity * dataPoint.Opacity;
+                    dpFaces.Visual.Opacity = (Double)dataSeries.Opacity * (Double)dataPoint.Opacity;
                     break;
 
                 case VcProperties.ShowInLegend:

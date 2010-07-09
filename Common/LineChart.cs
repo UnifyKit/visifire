@@ -41,6 +41,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Visifire.Commons;
+using Visifire.Charts;
 
 namespace Visifire.Charts
 {   
@@ -144,13 +145,15 @@ namespace Visifire.Charts
 
                 tb.CreateVisualObject(new ElementData() { Element = dataPoint });
 
+                dataPoint.LabelVisual = tb.Visual;
+
                 Double labelLeft = 0;
                 Double labelTop = 0;
                 Double gap = 6;
 
                 if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
-                {
-                    SetLabelPosition4LineDataPoint(dataPoint, width, height, isPositive, markerLeft, markerTop, ref labelLeft, ref labelTop, gap, new Size(tb.TextBlockDesiredSize.Width, tb.TextBlockDesiredSize.Height));
+                {   
+                    SetLabelPosition4LineDataPoint(dataPoint,  ref labelLeft, ref labelTop);
 
                     retVal.X = labelLeft;
                     retVal.Y = labelTop;
@@ -178,8 +181,8 @@ namespace Visifire.Charts
                     }
 
                     if (autoLabelStyle != dataPoint.LabelStyle)
-                    {
-                        SetLabelPosition4LineDataPoint(dataPoint, width, height, isPositive, markerLeft, markerTop, ref labelLeft, ref labelTop, gap, new Size(tb.TextBlockDesiredSize.Width, tb.TextBlockDesiredSize.Height));
+                    {   
+                        SetLabelPosition4LineDataPoint(dataPoint, ref labelLeft, ref labelTop);
 
                         retVal.X = labelLeft;
                         retVal.Y = labelTop;
@@ -196,7 +199,7 @@ namespace Visifire.Charts
                     if (isPositive)
                     {
                         Point centerOfRotation = new Point(markerLeft,
-                            markerTop - tb.TextBlockDesiredSize.Height / 2);
+                        markerTop - tb.TextBlockDesiredSize.Height / 2);
                         Double radius = dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         Double angle = 0;
                         Double angleInRadian = 0;
@@ -318,7 +321,7 @@ namespace Visifire.Charts
         {
             String labelText;
 
-            if (dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine)
+            if (dataPoint.Parent.RenderAs == RenderAs.Spline || dataPoint.Parent.RenderAs == RenderAs.Line || dataPoint.Parent.RenderAs == RenderAs.StepLine)
                 labelText = "";
             else
                 labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
@@ -382,12 +385,7 @@ namespace Visifire.Charts
 
             if ((Boolean)dataPoint.LabelEnabled && !String.IsNullOrEmpty(labelText))
             {
-                dataPoint.Marker.FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
-                dataPoint.Marker.FontFamily = dataPoint.LabelFontFamily;
-                dataPoint.Marker.FontSize = (Double)dataPoint.LabelFontSize;
-                dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
-                dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
-                dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
+                ApplyLabelProperties(dataPoint);
 
                 if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
                 {
@@ -452,7 +450,7 @@ namespace Visifire.Charts
 
             dataPoint.Marker.CreateVisual();
 
-            dataPoint.Marker.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
 
             ApplyDefaultInteractivityForMarker(dataPoint);
 
@@ -483,10 +481,18 @@ namespace Visifire.Charts
         /// <param name="labelTop"></param>
         /// <param name="gap"></param>
         /// <param name="textBlockSize"></param>
-        internal static void SetLabelPosition4LineDataPoint(DataPoint dataPoint, Double plotWidth, Double plotHeight,
-            Boolean isPositive, Double markerLeft, Double markerTop, ref Double labelLeft, ref Double labelTop,
-            Double gap, Size textBlockSize)
+        internal static Point SetLabelPosition4LineDataPoint(DataPoint dataPoint, ref Double labelLeft, ref Double labelTop)
         {
+            Double GAP = 6;
+            Chart chart = dataPoint.Chart as Chart;
+            Double plotWidth = chart.ChartArea.PlotAreaCanvas.Width;
+            Double plotHeight = chart.ChartArea.PlotAreaCanvas.Height;
+            Boolean isPositive = dataPoint.InternalYValue >= 0;
+            Double markerLeft = dataPoint._visualPosition.X;
+            Double markerTop = dataPoint._visualPosition.Y;
+
+            Size textBlockSize = new Size(dataPoint.LabelVisual.Width, dataPoint.LabelVisual.Height);
+            
             Point currPoint = new Point(markerLeft, markerTop);
             Point prevPoint = new Point(0, 0);
             Point nextPoint = new Point(0, 0);
@@ -508,69 +514,69 @@ namespace Visifire.Charts
                         if (currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y <= 50 && textBlockSize.Width < 50)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y > 50) || currPoint.X + textBlockSize.Width > plotWidth)
                         {
                             //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                             //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((prevPoint.Y > currPoint.Y && nextPoint.Y > currPoint.Y) && prevPoint.Y - currPoint.Y > 20 && prevPoint.Y - currPoint.Y > nextPoint.Y - currPoint.Y)
                         {
                             if (currPoint.X - textBlockSize.Width - (dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor) <= 2)
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                                 labelTop = currPoint.Y - textBlockSize.Height / 2;// -gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
-                                labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                                 labelTop = currPoint.Y - textBlockSize.Height / 2;// -gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (nextPoint.X - currPoint.X > 120 && textBlockSize.Width < 50)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y > prevPoint.Y && currPoint.Y - prevPoint.Y > currPoint.Y - nextPoint.Y && prevPoint.X != 0)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if(currPoint.Y >= nextPoint.Y && prevPoint == new Point(0,0))
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y <= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
                             if (textBlockSize.Width < 15)
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                                 labelTop = currPoint.Y + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (prevPoint == new Point(0, 0) && (currPoint.X - textBlockSize.Width / 2) > 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                             labelTop = currPoint.Y - textBlockSize.Height / 2;// -gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
 
@@ -581,46 +587,46 @@ namespace Visifire.Charts
                         if (currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y <= 50 && textBlockSize.Width < 50)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y > 50) || currPoint.X + textBlockSize.Width > plotWidth)
                         {
                             //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                             //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
-                            labelLeft = currPoint.X - gap - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - GAP - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((prevPoint.Y > currPoint.Y && nextPoint.Y > currPoint.Y) && prevPoint.Y - currPoint.Y > 20 && prevPoint.Y - currPoint.Y > nextPoint.Y - currPoint.Y)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (nextPoint.X - currPoint.X > 120 && textBlockSize.Width < 50 && prevPoint.X == 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y > prevPoint.Y && currPoint.Y - prevPoint.Y > currPoint.Y - nextPoint.Y && prevPoint.X != 0)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint == new Point(0, 0))
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
                             if (currPoint.Y - nextPoint.Y >= 10)
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (currPoint.Y <= nextPoint.Y && prevPoint.Y >= currPoint.Y)
@@ -628,23 +634,23 @@ namespace Visifire.Charts
                             if (textBlockSize.Width < 20)
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (prevPoint == new Point(0, 0) && (currPoint.X - textBlockSize.Width / 2) > 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
 
                         forcedAutoPlacement = true;
@@ -653,14 +659,14 @@ namespace Visifire.Charts
                 else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                 {
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                     forcedAutoPlacement = true;
                 }
                 else
                 {
                      labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                     labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                     labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                      //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                     forcedAutoPlacement = true;
                 }
@@ -674,46 +680,46 @@ namespace Visifire.Charts
                         if (currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y <= 50 && textBlockSize.Width < 50)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y > 50) || currPoint.X + textBlockSize.Width > plotWidth)
                         {
                             //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                             //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
-                            labelLeft = currPoint.X - gap - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - GAP - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((prevPoint.Y > currPoint.Y && nextPoint.Y > currPoint.Y) && prevPoint.Y - currPoint.Y > 20 && prevPoint.Y - currPoint.Y > nextPoint.Y - currPoint.Y)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (nextPoint.X - currPoint.X > 100 && textBlockSize.Width < 50 && prevPoint.X == 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y > prevPoint.Y && currPoint.Y > nextPoint.Y && currPoint.Y - prevPoint.Y > currPoint.Y - nextPoint.Y && prevPoint.X != 0)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint == new Point(0, 0))
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
                             if (currPoint.Y - nextPoint.Y >= 10)
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (currPoint.Y <= nextPoint.Y && prevPoint.Y >= currPoint.Y)
@@ -721,23 +727,23 @@ namespace Visifire.Charts
                             if (textBlockSize.Width < 20 || prevPoint.Y - currPoint.Y < 20)
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (prevPoint == new Point(0, 0) && (currPoint.X - textBlockSize.Width / 2) > 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;
-                            labelTop = currPoint.Y + gap - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;
+                            labelTop = currPoint.Y + GAP - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
 
                         forcedAutoPlacement = true;
@@ -747,62 +753,62 @@ namespace Visifire.Charts
                         if (currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y <= 50 && textBlockSize.Width < 50)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((currPoint.X + textBlockSize.Width > plotWidth && prevPoint.Y - currPoint.Y > 50) || currPoint.X + textBlockSize.Width > plotWidth)
                         {
                             //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                             //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if ((prevPoint.Y > currPoint.Y && nextPoint.Y > currPoint.Y) && prevPoint.Y - currPoint.Y > 20 && prevPoint.Y - currPoint.Y > nextPoint.Y - currPoint.Y)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (nextPoint.X - currPoint.X > 100 && textBlockSize.Width < 50 && nextPoint.Y - currPoint.Y < 20)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y > prevPoint.Y && currPoint.Y - prevPoint.Y > currPoint.Y - nextPoint.Y && prevPoint.X != 0)
                         {
-                            labelLeft = currPoint.X - textBlockSize.Width - gap - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X - textBlockSize.Width - GAP - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor; ;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint == new Point(0, 0))
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y >= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else if (currPoint.Y <= nextPoint.Y && prevPoint.Y >= currPoint.Y)
                         {
                             if (textBlockSize.Width < 15)
                             {
                                 labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                                labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                                labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                             else
                             {
-                                labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                                labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                                 labelTop = currPoint.Y + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                             }
                         }
                         else if (prevPoint == new Point(0, 0) && (currPoint.X - textBlockSize.Width / 2) > 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else
                         {
-                            labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
 
                         forcedAutoPlacement = true;
@@ -811,14 +817,14 @@ namespace Visifire.Charts
                 else if (dataPoint.LabelStyle == LabelStyles.OutSide)
                 {
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     forcedAutoPlacement = true;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                 }
                 else
                 {
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     forcedAutoPlacement = true;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                 }
@@ -845,7 +851,7 @@ namespace Visifire.Charts
                 {
                     //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Center;
-                    labelLeft = currPoint.X - gap - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                    labelLeft = currPoint.X - GAP - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                     labelTop = currPoint.Y - textBlockSize.Height / 2;// +dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                 }
                 else if (prevPoint.Y <= currPoint.Y && nextPoint.Y <= currPoint.Y && (nextPoint != new Point(0, 0)) && (prevPoint != new Point(0, 0)))
@@ -853,39 +859,39 @@ namespace Visifire.Charts
                     //dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                 }
                 else if (prevPoint.Y > currPoint.Y && nextPoint.Y > currPoint.Y)
                 {
                     //dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                 }
                 else if ((prevPoint.X == 0 && prevPoint.Y == 0))
                 {
                     if (currPoint.Y > nextPoint.Y && (currPoint.Y - nextPoint.Y > 20) && currPoint.X - textBlockSize.Width / 2 < 0)
                     {
                         labelLeft = currPoint.X + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                     else if (currPoint.Y > nextPoint.Y && (currPoint.Y - nextPoint.Y > 20))
                     {
                         if (currPoint.X - textBlockSize.Width >= 0)
                         {
                             labelLeft = currPoint.X - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                         else
                         {
                             labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                            labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                            labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                         }
                     }
                     else if(currPoint.X - textBlockSize.Width / 2 > 0)
                     {
                         labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                     else if (currPoint.Y > nextPoint.Y)
                     {
@@ -905,14 +911,14 @@ namespace Visifire.Charts
                     if (currPoint.Y > prevPoint.Y)
                     {
                         labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y + gap / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y + GAP / 2 + dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                     else
                     {
                         //dataPoint.Marker.TextAlignmentX = AlignmentX.Left;
                         //dataPoint.Marker.TextAlignmentY = AlignmentY.Top;
                         labelLeft = currPoint.X - textBlockSize.Width - dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                 }
                 else if (nextPoint.X == 0 && nextPoint.Y == 0)
@@ -920,7 +926,7 @@ namespace Visifire.Charts
                     //dataPoint.Marker.TextAlignmentX = AlignmentX.Right;
                     //dataPoint.Marker.TextAlignmentY = AlignmentY.Bottom;
                     labelLeft = currPoint.X + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                 }
                 else if ((prevPoint.Y <= currPoint.Y && nextPoint.Y >= currPoint.Y) || (prevPoint.Y > currPoint.Y && nextPoint.Y < currPoint.Y))
                 {
@@ -929,25 +935,28 @@ namespace Visifire.Charts
                     if ((prevPoint.Y <= currPoint.Y && nextPoint.Y >= currPoint.Y) && (nextPoint.Y - currPoint.Y < 10 || prevPoint.Y < currPoint.Y))
                     {
                         labelLeft = currPoint.X + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                     else if (currPoint.Y - nextPoint.Y > 20)
                     {
-                        labelLeft = currPoint.X + gap + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
+                        labelLeft = currPoint.X + GAP + dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
                         labelTop = currPoint.Y - textBlockSize.Height / 2;// +dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                     else
                     {
                         labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                        labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                        labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                     }
                 }
                 else
                 {
                     labelLeft = currPoint.X - textBlockSize.Width / 2;// +dataPoint.Marker.MarkerSize.Width / 2 * dataPoint.Marker.ScaleFactor;
-                    labelTop = currPoint.Y - gap / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
+                    labelTop = currPoint.Y - GAP / 2 - textBlockSize.Height - dataPoint.Marker.MarkerSize.Height / 2 * dataPoint.Marker.ScaleFactor;
                 }
             }
+
+
+            return new Point(labelLeft, labelTop);
         }
 
         /// <summary>
@@ -1049,7 +1058,7 @@ namespace Visifire.Charts
             line.StrokeThickness = lineParams.LineThickness;
             line.StrokeDashArray = lineParams.LineStyle;
 
-            line.Data = GetPathGeometry(null, pointCollectionList, false, width, height, line2dLabelCanvas);
+            line.Data = GetPathGeometry(tagReference.RenderAs, null, pointCollectionList, false, width, height, line2dLabelCanvas);
 
             if (lineParams.ShadowEnabled)
             {
@@ -1064,7 +1073,7 @@ namespace Visifire.Charts
                     lineShadow.Opacity = 0.5;
 
                     if (lineParams.ShadowEnabled)
-                        lineShadow.Data = GetPathGeometry(null, shadowPointCollectionList, true, width, height, null);
+                        lineShadow.Data = GetPathGeometry(tagReference.RenderAs, null, shadowPointCollectionList, true, width, height, null);
 
                     TranslateTransform tt = new TranslateTransform() { X = 2, Y = 2 };
                     lineShadow.RenderTransform = tt;
@@ -1096,7 +1105,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="dataPointCollectionList">List of Segments. And EachSegments contains a list of DataPoints</param>
         /// <returns></returns>
-        private static Geometry GetPathGeometry(GeometryGroup oldData, List<List<DataPoint>> dataPointCollectionList, Boolean isShadow, Double width, Double height, Canvas line2dLabelCanvas)
+        private static Geometry GetPathGeometry(RenderAs renderAs, GeometryGroup oldData, List<List<DataPoint>> dataPointCollectionList, Boolean isShadow, Double width, Double height, Canvas line2dLabelCanvas)
         {   
             GeometryGroup gg;
 
@@ -1134,7 +1143,7 @@ namespace Visifire.Charts
                     if (isShadow)
                         pointCollection[0].ShadowFaces = faces;
                     else
-                    {
+                    {   
                         pointCollection[0].Faces = faces;
                         faces.PreviousDataPoint = null;
 
@@ -1142,7 +1151,7 @@ namespace Visifire.Charts
                             faces.NextDataPoint = pointCollection[1];
 
                         if (pointCollection[0].Marker != null && pointCollection[0].Marker.Visual != null)
-                        {
+                        {   
                             Point newMarkerPosition = pointCollection[0].Marker.CalculateActualPosition(pointCollection[0]._visualPosition.X, pointCollection[0]._visualPosition.Y, new Point(0.5, 0.5));
 
                             pointCollection[0].Marker.Visual.Visibility = Visibility.Visible;
@@ -1150,20 +1159,18 @@ namespace Visifire.Charts
                             pointCollection[0].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
                         }
                         else
-                        {
+                        {   
                             CreateMarkerAForLineDataPoint(pointCollection[0], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
                         }
 
                         if ((Boolean)pointCollection[0].LabelEnabled)
-                        {
+                        {   
                             if (pointCollection[0].LabelVisual != null)
-                            {
+                            {   
                                 Double labelLeft = 0;
                                 Double labelTop = 0;
 
-                                SetLabelPosition4LineDataPoint(pointCollection[0], width, height, pointCollection[0].InternalYValue >= 0,
-                                    pointCollection[0]._visualPosition.X, pointCollection[0]._visualPosition.Y, ref labelLeft, ref labelTop, 6,
-                                    new Size(pointCollection[0].LabelVisual.Width, pointCollection[0].LabelVisual.Height));
+                                SetLabelPosition4LineDataPoint(pointCollection[0], ref labelLeft, ref labelTop);
 
                                 (((pointCollection[0].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[0].TextParser(pointCollection[0].LabelText);
                                 pointCollection[0].LabelVisual.Visibility = Visibility.Visible;
@@ -1171,100 +1178,16 @@ namespace Visifire.Charts
                                 pointCollection[0].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
                             }
                             else
-                            {
+                            {   
                                 CreateLabel4LineDataPoint(pointCollection[0], width, height, pointCollection[0].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
                             }
                         }
-
-                        //CreateMarkerAForLineDataPoint(pointCollection[0], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-
-                        //if((Boolean)pointCollection[0].LabelEnabled)
-                        //    CreateLabel4LineDataPoint(pointCollection[0], width, height, pointCollection[0].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-
                     }
 
-                    /*
-                     * PolyLineSegment segment = new PolyLineSegment();
-                       segment.Points = GeneratePointCollection(segment, pointCollection, createFaces);
-                       pathFigure.Segments.Add(segment);
-                     */
-
-                    for (int i = 1; i < pointCollection.Count; i++)
-                    {
-                        LineSegment segment = new LineSegment();
-
-                        segment.Point = pointCollection[i]._visualPosition;
-
-                        faces = new Faces();
-
-                        faces.PreviousDataPoint = pointCollection[i - 1];
-
-                        if(!isShadow)
-                        {
-                            if (i != pointCollection.Count - 1)
-                                faces.NextDataPoint = pointCollection[i + 1];
-                            else
-                                faces.NextDataPoint = null;
-                        }
-
-                        //Add LineSegment
-                        faces.Parts.Add(segment);
-
-                        // Add PathFigure
-                        faces.Parts.Add(pathFigure);
-
-                        if (isShadow)
-                            pointCollection[i].ShadowFaces = faces;
-                        else
-                            pointCollection[i].Faces = faces;
-
-                        pathFigure.Segments.Add(segment);
-
-                        if(!isShadow)
-                        {
-                            if (pointCollection[i].Marker != null && pointCollection[i].Marker.Visual != null)
-                            {
-                                Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
-
-                                pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
-                                pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
-                                pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
-                            }
-                            else
-                            {
-                                CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-                            }
-
-                            if ((Boolean)pointCollection[i].LabelEnabled)
-                            {
-                                if (pointCollection[i].LabelVisual != null)
-                                {
-                                    Double labelLeft = 0;
-                                    Double labelTop = 0;
-
-                                    SetLabelPosition4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0,
-                                        pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, ref labelLeft, ref labelTop, 6,
-                                        new Size(pointCollection[i].LabelVisual.Width, pointCollection[i].LabelVisual.Height));
-
-                                    (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
-
-                                    pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
-                                    pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
-                                    pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
-                                }
-                                else
-                                {
-                                    CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-                                }
-                            }
-
-                            //CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
-
-                            //if ((Boolean)pointCollection[i].LabelEnabled)
-                            //    CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
-
-                        }
-                    }
+                    if (renderAs == RenderAs.Spline)
+                        GeneratePointCollections4SpLine(pointCollection, width, height, isShadow, pathFigure, ref line2dLabelCanvas);
+                    else
+                        GeneratePointCollections4Line(pointCollection, width, height, isShadow, pathFigure, ref line2dLabelCanvas);
                 }
 
                 geometry.Figures.Add(pathFigure);
@@ -1272,6 +1195,184 @@ namespace Visifire.Charts
             }
 
             return gg;
+        }
+        
+        private static void GeneratePointCollections4SpLine(List<DataPoint> pointCollection, Double width, Double height, Boolean isShadow, PathFigure pathFigure, ref Canvas line2dLabelCanvas)
+        {   
+            Point[] knotPoints = (from dp in pointCollection select dp._visualPosition).ToArray();
+
+            // Get Bezier Spline Control Points.
+            Point[] cp1, cp2;
+            Bezier.GetCurveControlPoints(2, knotPoints, out cp1, out cp2);
+            
+            Double xPosition = 0;
+            Double yPosition = 0;
+
+            if (pointCollection.Count > 0 && pointCollection[0].Faces != null)
+                pointCollection[0].Faces.DataContext = pointCollection;
+            
+            /* PolyLineSegment segment = new PolyLineSegment();
+               segment.Points = GeneratePointCollection(segment, pointCollection, createFaces);
+               pathFigure.Segments.Add(segment);
+            */
+            for (int i = 1; i < pointCollection.Count; i++)
+            {   
+                Faces faces = new Faces();
+                faces.DataContext = pointCollection;
+
+                BezierSegment segment = new BezierSegment()
+                {      
+                    Point1 = cp1[i - 1],
+                    Point2 = cp2[i - 1],
+                    Point3 = knotPoints[i]
+                };
+
+                //Graphics.DrawPointAt(segment.Point1, line2dLabelCanvas, Colors.Red);
+                //Graphics.DrawPointAt(segment.Point2, line2dLabelCanvas, Colors.Green);
+                //Graphics.DrawPointAt(segment.Point3, line2dLabelCanvas, Colors.Blue);
+
+                faces.PreviousDataPoint = pointCollection[i - 1];
+
+                if (!isShadow)
+                {   
+                    if (i != pointCollection.Count - 1)
+                        faces.NextDataPoint = pointCollection[i + 1];
+                    else
+                        faces.NextDataPoint = null;
+                }
+
+                // Add LineSegment
+                faces.Parts.Add(segment);
+
+                // Add PathFigure
+                faces.Parts.Add(pathFigure);
+
+                if (isShadow)
+                    pointCollection[i].ShadowFaces = faces;
+                else
+                    pointCollection[i].Faces = faces;
+
+                pathFigure.Segments.Add(segment);
+
+                if (!isShadow)
+                {   
+                    if (pointCollection[i].Marker != null && pointCollection[i].Marker.Visual != null)
+                    {
+                        Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
+
+                        pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
+                        pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
+                        pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
+                    }
+                    else
+                    {   
+                        CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    }
+
+                    if ((Boolean)pointCollection[i].LabelEnabled)
+                    {
+                        if (pointCollection[i].LabelVisual != null)
+                        {
+                            Double labelLeft = 0;
+                            Double labelTop = 0;
+
+                            SetLabelPosition4LineDataPoint(pointCollection[i], ref labelLeft, ref labelTop);
+
+                            (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
+
+                            pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
+                            pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                            pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        }
+                        else
+                        {
+                            CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private static void GeneratePointCollections4Line(List<DataPoint> pointCollection, Double width, Double height, Boolean isShadow, PathFigure pathFigure, ref Canvas line2dLabelCanvas)
+        {              
+            Double xPosition = 0;
+            Double yPosition = 0;
+
+            /*
+             * PolyLineSegment segment = new PolyLineSegment();
+               segment.Points = GeneratePointCollection(segment, pointCollection, createFaces);
+               pathFigure.Segments.Add(segment);
+            */
+
+            for (int i = 1; i < pointCollection.Count; i++)
+            {   
+                LineSegment segment = new LineSegment();
+
+                segment.Point = pointCollection[i]._visualPosition;
+
+                Faces faces = new Faces();
+
+                faces.PreviousDataPoint = pointCollection[i - 1];
+
+                if(!isShadow)
+                {
+                    if (i != pointCollection.Count - 1)
+                        faces.NextDataPoint = pointCollection[i + 1];
+                    else
+                        faces.NextDataPoint = null;
+                }
+
+                //Add LineSegment
+                faces.Parts.Add(segment);
+
+                // Add PathFigure
+                faces.Parts.Add(pathFigure);
+
+                if (isShadow)
+                    pointCollection[i].ShadowFaces = faces;
+                else
+                    pointCollection[i].Faces = faces;
+
+                pathFigure.Segments.Add(segment);
+
+                if(!isShadow)
+                {
+                    if (pointCollection[i].Marker != null && pointCollection[i].Marker.Visual != null)
+                    {
+                        Point newMarkerPosition = pointCollection[i].Marker.CalculateActualPosition(pointCollection[i]._visualPosition.X, pointCollection[i]._visualPosition.Y, new Point(0.5, 0.5));
+
+                        pointCollection[i].Marker.Visual.Visibility = Visibility.Visible;
+                        pointCollection[i].Marker.Visual.SetValue(Canvas.TopProperty, newMarkerPosition.Y);
+                        pointCollection[i].Marker.Visual.SetValue(Canvas.LeftProperty, newMarkerPosition.X);
+                    }
+                    else
+                    {
+                        CreateMarkerAForLineDataPoint(pointCollection[i], width, height, ref line2dLabelCanvas, out xPosition, out yPosition);
+                    }
+
+                    if ((Boolean)pointCollection[i].LabelEnabled)
+                    {
+                        if (pointCollection[i].LabelVisual != null)
+                        {
+                            Double labelLeft = 0;
+                            Double labelTop = 0;
+
+                            SetLabelPosition4LineDataPoint(pointCollection[i], ref labelLeft, ref labelTop);
+
+                            (((pointCollection[i].LabelVisual as Border).Child as Canvas).Children[0] as TextBlock).Text = pointCollection[i].TextParser(pointCollection[i].LabelText);
+
+                            pointCollection[i].LabelVisual.Visibility = Visibility.Visible;
+                            pointCollection[i].LabelVisual.SetValue(Canvas.LeftProperty, labelLeft);
+                            pointCollection[i].LabelVisual.SetValue(Canvas.TopProperty, labelTop);
+                        }
+                        else
+                        {
+                            CreateLabel4LineDataPoint(pointCollection[i], width, height, pointCollection[i].InternalYValue >= 0, xPosition, yPosition, ref line2dLabelCanvas, true);
+                        }
+                    }
+                }
+            }
         }
 
         public static void Update(ObservableObject sender, VcProperties property, object newValue, Boolean isAxisChanged)
@@ -1284,37 +1385,6 @@ namespace Visifire.Charts
                 UpdateDataSeries(sender as DataSeries, property, newValue);
         }
 
-        //internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
-        //{   
-        //    foreach(
-        //}
-
-        //internal static void Update(Chart chart, RenderAs currentRenderAs, List<DataSeries> selectedDataSeries4Rendering, VcProperties property, object newValue)
-        //{   
-        //    Boolean is3D = chart.View3D;
-        //    ChartArea chartArea = chart.ChartArea;
-        //    Canvas ChartVisualCanvas = chart.ChartArea.ChartVisualCanvas;
-
-        //    // Double width = chart.ChartArea.ChartVisualCanvas.Width;
-        //    // Double height = chart.ChartArea.ChartVisualCanvas.Height;
-
-        //    Panel preExistingPanel = null;
-        //    Dictionary<RenderAs, Panel> RenderedCanvasList = chart.ChartArea.RenderedCanvasList;
-
-        //    if (chartArea.RenderedCanvasList.ContainsKey(currentRenderAs))
-        //    {   
-        //        preExistingPanel = RenderedCanvasList[currentRenderAs];
-        //    }
-
-        //    Panel renderedChart = chartArea.RenderSeriesFromList(preExistingPanel, selectedDataSeries4Rendering);
-
-        //    if (preExistingPanel == null)
-        //    {
-        //        chartArea.RenderedCanvasList.Add(currentRenderAs, renderedChart);
-        //        ChartVisualCanvas.Children.Add(renderedChart);
-        //    }
-        //}
-
         /// <summary>
         /// 
         /// </summary>
@@ -1326,8 +1396,7 @@ namespace Visifire.Charts
             DataPoint dataPoint = null;
             DataSeries dataSeries = obj as DataSeries;
             Boolean isDataPoint = false;
-
-
+            
             if (dataSeries == null)
             {
                 isDataPoint = true;
@@ -1344,7 +1413,7 @@ namespace Visifire.Charts
             Path lineShadowPath = null;
 
             if (dataSeries.Faces != null)
-            {
+            {   
                 if (dataSeries.Faces.Parts.Count > 0)
                 {
                     linePath = dataSeries.Faces.Parts[0] as Path;
@@ -1358,7 +1427,7 @@ namespace Visifire.Charts
             }
             else if (dataSeries.Faces == null && property == VcProperties.Enabled && (Boolean)newValue == true)
             {
-                ColumnChart.Update(chart, RenderAs.Line, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Line select ds).ToList());
+                ColumnChart.Update(chart, dataSeries.RenderAs, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Spline || ds.RenderAs == RenderAs.Line select ds).ToList());
                 return;
             }
             else
@@ -1385,7 +1454,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (linePath != null)
-                        linePath.Opacity = dataSeries.Opacity;
+                        linePath.Opacity = (Double)dataSeries.Opacity;
                     break;
                 case VcProperties.LineStyle:
                 case VcProperties.LineThickness:
@@ -1415,7 +1484,7 @@ namespace Visifire.Charts
                             if (line2dCanvas.Parent == null) 
                             {
 
-                                ColumnChart.Update(chart, RenderAs.Line, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Line select ds).ToList());
+                                ColumnChart.Update(chart, dataSeries.RenderAs, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.Spline select ds).ToList());
                                 return;
                             }
                             
@@ -1436,120 +1505,463 @@ namespace Visifire.Charts
                 case VcProperties.YValues:
                 case VcProperties.XValue:
                 case VcProperties.ViewportRangeEnabled:
+                case VcProperties.DataPointUpdate:
                 RENDER_SERIES:
+                    if(dataSeries.RenderAs == RenderAs.Line)
+                        UpdateLineSeries(dataSeries, width, height, label2dCanvas);
+                    else
+                        UpdateSplineSeries(property, dataSeries, width, height, label2dCanvas);
+                break;
+            }
+        }
 
-                    if (dataSeries.Enabled == false)
-                        return;
+        /// <summary>
+        /// Updates a spline DataSeries
+        /// </summary>
+        /// <param name="property">VcProperties</param>
+        /// <param name="dataSeries">DataSeries</param>
+        /// <param name="width">Width of the parent of the visual</param>
+        /// <param name="height">Height of the parent of the visual</param>
+        /// <param name="label2dCanvas">LabelCanvas</param>
+        internal static void UpdateSplineSeries(VcProperties property, DataSeries dataSeries, Double width, Double height, Canvas label2dCanvas)
+        {   
+            Chart chart = dataSeries.Chart as Chart;
+            Boolean isAnimatedUpdate = (Boolean) chart.AnimatedUpdate;
 
-                    Axis axisX = plotGroup.AxisX;
-                    Axis axisY = plotGroup.AxisY;
+            if (dataSeries.Enabled == false)
+                return;
 
-                    // line2dCanvas.OpacityMask = new SolidColorBrush(Colors.Transparent);
-                    // label2dCanvas.OpacityMask = new SolidColorBrush(Colors.Transparent);
+            Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
+            Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
 
-                    (dataSeries.Faces.Visual as Canvas).Width = width;
-                    (dataSeries.Faces.Visual as Canvas).Height = height;
-                    (dataSeries.Faces.LabelCanvas as Canvas).Width = width;
-                    (dataSeries.Faces.LabelCanvas as Canvas).Height = height;
-                    
-                    Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
-                    Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
-                    chartsCanvas.Width = width;
-                    chartsCanvas.Height = height;
-                    labelsCanvas.Width = width;
-                    labelsCanvas.Height = height;
-                    
-                    List<DataPoint> pc = new List<DataPoint>();
-                    List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
+            UpdateSizeOfTheParentCanvas(dataSeries, width, height);
+                        
+            // Groups of broken line segments
+            List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
+            
+            HideAllMarkersAndLabels(dataSeries);
 
+            List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+
+            LineChart.CreateGroupOfBrokenLineSegment(dataSeries, viewPortDataPoints, width, height, out pointCollectionList);
+
+            if (property != VcProperties.DataPointUpdate || isAnimatedUpdate == false)
+                ReDrawLineSplineSereis(dataSeries, pointCollectionList, width, height, label2dCanvas);
+
+            if (property == VcProperties.DataPointUpdate && isAnimatedUpdate == true)
+            {
+                /* If old YValue of any DataPoint was NAN then its needed to redraw 
+                the Spline of while doing PartialUpdate  */
+                Boolean forceRedraw = false;
+                foreach (List<DataPoint> pointList in pointCollectionList)
+                {
+                    foreach (DataPoint dp in pointList)
+                        if (dp.Faces == null)
+                        {
+                            forceRedraw = true;
+                            break;
+                        }
+
+                    if (forceRedraw)
+                        break;
+                }
+
+                if(forceRedraw)
+                    ReDrawLineSplineSereis(dataSeries, pointCollectionList, width, height, label2dCanvas);
+                
+                AnimateSpline(pointCollectionList);
+            }
+
+            dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+
+            Clip(chart, chartsCanvas, labelsCanvas, dataSeries.PlotGroup);
+        }
+
+
+
+        /// <summary>
+        /// Redraw Line/Spline DataSeries
+        /// </summary>
+        /// <param name="dataSeries">DataSeries</param>
+        /// <param name="pointCollectionList">List<List<DataPoint>></param>
+        /// <param name="width">Width of the PlotArea</param>
+        /// <param name="height">Height of the PlotArea</param>
+        /// <param name="label2dCanvas">LabelCanvas reference</param>
+        private static void ReDrawLineSplineSereis(DataSeries dataSeries, List<List<DataPoint>> pointCollectionList, Double width, Double height, Canvas label2dCanvas)
+        {
+            GeometryGroup gg = (dataSeries.Faces.Parts[0] as Path).Data as GeometryGroup;
+
+            // Apply new Data for Line
+            LineChart.GetPathGeometry(dataSeries.RenderAs, gg, pointCollectionList, false, width, height, label2dCanvas);
+
+            LineChart.ApplyShadow(dataSeries, ref pointCollectionList, width, height, label2dCanvas);
+        }
+
+
+        /// <summary>
+        /// Updates the size of parent canvas and label canvas
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        private static void UpdateSizeOfTheParentCanvas(DataSeries dataSeries, Double width, Double height)
+        {
+            (dataSeries.Faces.Visual as Canvas).Width = width;
+            (dataSeries.Faces.Visual as Canvas).Height = height;
+            (dataSeries.Faces.LabelCanvas as Canvas).Width = width;
+            (dataSeries.Faces.LabelCanvas as Canvas).Height = height;
+
+            Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
+            Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
+            chartsCanvas.Width = width;
+            chartsCanvas.Height = height;
+            labelsCanvas.Width = width;
+            labelsCanvas.Height = height;
+        }
+
+        /// <summary>
+        /// Create group of broken line segment
+        /// </summary>
+        /// <param name="dataSeries">DataSeries</param>
+        /// <param name="viewPortDataPoints">ViewPort DataPoints</param>
+        /// <param name="width">Width</param>
+        /// <param name="height">Height</param>
+        /// <param name="pointCollectionList">List of group of DataPoints</param>
+        private static void CreateGroupOfBrokenLineSegment(DataSeries dataSeries, List<DataPoint> viewPortDataPoints, Double width, Double height, out List<List<DataPoint>> pointCollectionList)
+        {
+            Chart chart = dataSeries.Chart as Chart;
+            Axis axisX = dataSeries.PlotGroup.AxisX;
+            Axis axisY = dataSeries.PlotGroup.AxisY;
+
+            List<DataPoint> pc = new List<DataPoint>();
+            pointCollectionList = new List<List<DataPoint>>();
+
+            pointCollectionList.Add(pc);
+
+            foreach (DataPoint dp in viewPortDataPoints)
+            {
+                if (dp.Enabled == false)
+                {
+                    chart._toolTip.Hide();
+                    continue;
+                }
+
+                if (Double.IsNaN(dp.YValue))
+                {
+                    pc = new List<DataPoint>();
                     pointCollectionList.Add(pc);
-                    // List<DataPoint> enabledDataPoints = (from dp in dataSeries.InternalDataPoints where (Boolean) dp.Enabled == true select dp).ToList();
+                    continue;
+                }
 
-                    foreach (DataPoint dp in dataSeries.InternalDataPoints)
+                Double x = Graphics.ValueToPixelPosition(0, width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
+                Double y = Graphics.ValueToPixelPosition(height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
+
+                // Point newMarkerPosition;
+                dp._visualPositionOld = dp._visualPosition;
+                dp._visualPosition = new Point(x, y);
+
+                pc.Add(dp);
+            }
+        }
+
+        /// <summary>
+        /// Generate new shadow for line and apply for line and Spline
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="pointCollectionList"></param>
+        private static void ApplyShadow(DataSeries dataSeries, ref List<List<DataPoint>> pointCollectionList, Double width, Double height, Canvas label2dCanvas)
+        {
+            if (VisifireControl.IsXbapApp)
+            {   
+                // Update GeometryGroup for shadow
+                if (dataSeries.Faces.Parts[1] != null)
+                {
+                    if ((Boolean)dataSeries.ShadowEnabled)
                     {
-                        if (dp.Marker != null && dp.Marker.Visual != null)
-                            dp.Marker.Visual.Visibility = Visibility.Collapsed;
+                        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
 
-                        if (dp.LabelVisual != null)
-                            dp.LabelVisual.Visibility = Visibility.Collapsed;
-                    }
+                        // gg.Children.Clear();
+                        GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
 
-                    List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
-
-                    foreach (DataPoint dp in viewPortDataPoints)
-                    {   
-                        if (dp.Enabled == false)
-                        {
-                            //if (dp.Marker != null && dp.Marker.Visual != null)
-                            //    dp.Marker.Visual.Visibility = Visibility.Collapsed;
-
-                            //if (dp.LabelVisual != null)
-                            //    dp.LabelVisual.Visibility = Visibility.Collapsed;
-
-                            chart._toolTip.Hide();
-                            continue;
-                        }
-
-                        if (Double.IsNaN(dp.YValue))
-                        {
-                            pc = new List<DataPoint>();
-                            pointCollectionList.Add(pc);
-                            continue;
-                        }
-
-                        Double x = Graphics.ValueToPixelPosition(0, width, axisX.InternalAxisMinimum, axisX.InternalAxisMaximum, dp.InternalXValue);
-                        Double y = Graphics.ValueToPixelPosition(height, 0, axisY.InternalAxisMinimum, axisY.InternalAxisMaximum, dp.InternalYValue);
-
-                        //Point newMarkerPosition;
-                        dp._visualPosition = new Point(x, y);
-
-                        pc.Add(dp);
-                    }
-
-                    // gg.Children.Clear();
-                    GeometryGroup gg = (dataSeries.Faces.Parts[0] as Path).Data as GeometryGroup;
-
-                    // Apply new Data for Line
-                    LineChart.GetPathGeometry(gg, pointCollectionList, false, width, height, label2dCanvas);
-
-                    if (VisifireControl.IsXbapApp)
-                    {
-                        // Update GeometryGroup for shadow
-                        if (dataSeries.Faces.Parts[1] != null)
-                        {
-                            if ((Boolean)dataSeries.ShadowEnabled)
-                            {
-                                (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
-
-                                // gg.Children.Clear();
-                                GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
-
-                                // Apply new Data for Line
-                                LineChart.GetPathGeometry(ggShadow, pointCollectionList, true, width, height, label2dCanvas);
-                            }
-                            else
-                                (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
-                        }
+                        // Apply new Data for Line
+                        LineChart.GetPathGeometry(dataSeries.RenderAs, ggShadow, pointCollectionList, true, width, height, label2dCanvas);
                     }
                     else
+                        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                {
+                    if ((Boolean)dataSeries.ShadowEnabled)
                     {
-                        if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
-                        {
-                            if ((Boolean)dataSeries.ShadowEnabled)
+                        dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    }
+                    else
+                        dataSeries.Faces.Visual.Effect = null;
+                }
+            }
+        }
+
+        private static void HideAllMarkersAndLabels(DataSeries dataSeries)
+        {
+            foreach (DataPoint dp in dataSeries.InternalDataPoints)
+            {
+                if (dp.Marker != null && dp.Marker.Visual != null)
+                    dp.Marker.Visual.Visibility = Visibility.Collapsed;
+
+                if (dp.LabelVisual != null)
+                    dp.LabelVisual.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private static void AnimateSpline(List<List<DataPoint>> pointCollectionList)
+        {
+            Storyboard storyBoard = new Storyboard();
+            
+            foreach (List<DataPoint> pointCollection in pointCollectionList)
+            {
+                AnimateBezierCurves(pointCollection, storyBoard);
+                AnimateMarkers4Spline(pointCollection, storyBoard);
+                AnimateLabel4Spline(pointCollection, storyBoard);
+            }
+
+            storyBoard.Begin();
+        }
+
+        private static Point[] CollectOldControlPoints(Int32 index, List<DataPoint> pointCollection, out Point oldStartPoint)
+        {
+            DataPoint dp = pointCollection[index];
+            BezierSegment bezierSeg = dp.Faces.Parts[0] as BezierSegment;
+            PathFigure pathFigure = dp.Faces.Parts[1] as PathFigure;
+            Point[] cPoints = new Point[3];
+
+            oldStartPoint = pathFigure.StartPoint;
+
+            if (bezierSeg != null)
+                return new Point[] { bezierSeg.Point1, bezierSeg.Point2, bezierSeg.Point3 };
+            else
+                return null;
+        }
+
+        private static void AnimateBezierCurves(List<DataPoint> pointCollection, Storyboard storyBoard)
+        {
+            Boolean shadowEnabled = (pointCollection.Count > 0) ? (Boolean)pointCollection[0].Parent.ShadowEnabled : false;
+
+            // Animate Spline Bezier Curve
+            Point[] newKnotPoints = (from dp in pointCollection select dp._visualPosition).ToArray();
+            Point[] newCPoints1, newCPoints2; // Get Bezier Spline Control Points.
+            Bezier.GetCurveControlPoints(2, newKnotPoints, out newCPoints1, out newCPoints2);
+
+            for (Int32 dpIndex = 1; dpIndex < pointCollection.Count; dpIndex++)
+            {
+                Point oldStartPoint;
+                DataPoint dp = pointCollection[dpIndex];
+                Point[] oldBezierPoints = CollectOldControlPoints(dpIndex, pointCollection, out oldStartPoint);
+                Point[] newBezierPoints = new Point[3] { newCPoints1[dpIndex - 1], newCPoints2[dpIndex - 1], newKnotPoints[dpIndex] };
+
+                BezierSegment bezierSeg = dp.Faces.Parts[0] as BezierSegment;
+                PathFigure pathFigure = dp.Faces.Parts[1] as PathFigure;
+                               
+                ApplyAnimationToBezierSegments(dpIndex, storyBoard, bezierSeg, oldBezierPoints,
+                    newBezierPoints, pathFigure, oldStartPoint, pointCollection[0]._visualPosition);
+
+                // Animate Shadow for Spline for Xbap
+                if (shadowEnabled && VisifireControl.IsXbapApp)
+                {
+                    bezierSeg = dp.ShadowFaces.Parts[0] as BezierSegment;
+                    pathFigure = dp.ShadowFaces.Parts[1] as PathFigure;
+
+                    ApplyAnimationToBezierSegments(dpIndex, storyBoard, bezierSeg, oldBezierPoints,
+                        newBezierPoints, pathFigure, oldStartPoint, pointCollection[0]._visualPosition);
+                }
+            }
+        }
+
+        private static void AnimateLabel4Spline(List<DataPoint> pointCollection, Storyboard storyBoard)
+        {
+             // Animate Marker
+            foreach (DataPoint dataPoint in pointCollection)
+            {
+                if ((Boolean)dataPoint.LabelEnabled)
+                {
+                    FrameworkElement labelVisual = dataPoint.LabelVisual;
+
+                    if (labelVisual != null)
+                    {
+                        Point oldLabelPosition = new Point((Double)labelVisual.GetValue(Canvas.LeftProperty), (Double)labelVisual.GetValue(Canvas.TopProperty));
+
+                        Double newMarkerXPos = 0, newMarkerYPos = 0;
+                        Point newLabelPosition = SetLabelPosition4LineDataPoint(dataPoint, ref newMarkerXPos, ref newMarkerYPos);
+
+                        //// Set the labels to its old position
+                        //labelVisual.SetValue(Canvas.LeftProperty, oldLabelPosition.X);
+                        //labelVisual.SetValue(Canvas.TopProperty, oldLabelPosition.Y);
+
+                        labelVisual.Visibility = Visibility.Visible;
+
+                        if (!oldLabelPosition.Equals(newLabelPosition))
+                        {   
+                            // Animation for (Canvas.Top) property
+                            DoubleAnimation da = new DoubleAnimation()
                             {
-                                dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
-                            }
-                            else
-                                dataSeries.Faces.Visual.Effect = null;
+                                From = oldLabelPosition.X,
+                                To = newLabelPosition.X,
+                                Duration = new Duration(new TimeSpan(0, 0, 1)),
+                                SpeedRatio = 2
+                            };
+
+                            Storyboard.SetTarget(da, labelVisual);
+                            Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
+                            Storyboard.SetTargetName(da, (String)labelVisual.GetValue(FrameworkElement.NameProperty));
+
+                            storyBoard.Children.Add(da);
+
+                            // Animation for (Canvas.Top) property
+                            da = new DoubleAnimation()
+                            {
+                                From = oldLabelPosition.Y,
+                                To = newLabelPosition.Y,
+                                Duration = new Duration(new TimeSpan(0, 0, 1)),
+                                SpeedRatio = 2
+                            };
+
+                            Storyboard.SetTarget(da, labelVisual);
+                            Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
+                            Storyboard.SetTargetName(da, (String)labelVisual.GetValue(FrameworkElement.NameProperty));
+
+                            storyBoard.Children.Add(da);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void AnimateMarkers4Spline(List<DataPoint> pointCollection, Storyboard storyBoard)
+        {   
+            // Animate Marker
+            foreach (DataPoint dataPoint in pointCollection)
+            {
+                if ((Boolean)dataPoint.MarkerEnabled)
+                {
+                    #region Attach Animation with Marker
+
+                    FrameworkElement marker = dataPoint.Marker.Visual;
+
+                    if (marker != null)
+                    {
+                        Point newMarkerPosition = dataPoint.Marker.CalculateActualPosition(dataPoint._visualPosition.X, dataPoint._visualPosition.Y, new Point(0.5, 0.5));
+                        Point oldMarkerPosition = new Point((Double)marker.GetValue(Canvas.LeftProperty), (Double)marker.GetValue(Canvas.TopProperty));
+
+                        dataPoint.Marker.Visual.Visibility = Visibility.Visible;
+
+                        if (!oldMarkerPosition.Equals(newMarkerPosition))
+                        {
+                            // Animation for (Canvas.Top) property
+                            DoubleAnimation da = new DoubleAnimation()
+                            {
+                                From = oldMarkerPosition.X,
+                                To = newMarkerPosition.X,
+                                Duration = new Duration(new TimeSpan(0, 0, 1)),
+                                SpeedRatio = 2
+                            };
+
+                            Storyboard.SetTarget(da, marker);
+                            Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
+                            Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
+
+                            storyBoard.Children.Add(da);
+
+                            // Animation for (Canvas.Top) property
+                            da = new DoubleAnimation()
+                            {
+                                From = oldMarkerPosition.Y,
+                                To = newMarkerPosition.Y,
+                                Duration = new Duration(new TimeSpan(0, 0, 1)),
+                                SpeedRatio = 2
+                            };
+
+                            Storyboard.SetTarget(da, marker);
+                            Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
+                            Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
+
+                            storyBoard.Children.Add(da);
                         }
                     }
 
-                    dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+                    #endregion
 
-                    Clip(chart, chartsCanvas, labelsCanvas , dataSeries.PlotGroup);
+                }
 
-                    break;
             }
+        }
+
+
+        internal static void UpdateLineSeries(DataSeries dataSeries, Double width, Double height,Canvas label2dCanvas)
+        {
+            Chart chart = dataSeries.Chart as Chart;
+
+            if (dataSeries.Enabled == false)
+                return;
+
+            Canvas chartsCanvas = dataSeries.Faces.Visual.Parent as Canvas;
+            Canvas labelsCanvas = dataSeries.Faces.LabelCanvas.Parent as Canvas;
+
+            UpdateSizeOfTheParentCanvas(dataSeries, width, height);
+
+            // Groups of broken line segments
+            List<List<DataPoint>> pointCollectionList = new List<List<DataPoint>>();
+
+            HideAllMarkersAndLabels(dataSeries);
+
+            // Collect DataPoints under viewport
+            List<DataPoint> viewPortDataPoints = RenderHelper.GetDataPointsUnderViewPort(dataSeries, false);
+                        
+            LineChart.CreateGroupOfBrokenLineSegment(dataSeries, viewPortDataPoints, width, height, out pointCollectionList);
+
+            // gg.Children.Clear();
+            GeometryGroup gg = (dataSeries.Faces.Parts[0] as Path).Data as GeometryGroup;
+
+            // Apply new Data for Line
+            LineChart.GetPathGeometry(dataSeries.RenderAs, gg, pointCollectionList, false, width, height, label2dCanvas);
+
+            if (VisifireControl.IsXbapApp)
+            {
+                // Update GeometryGroup for shadow
+                if (dataSeries.Faces.Parts[1] != null)
+                {
+                    if ((Boolean)dataSeries.ShadowEnabled)
+                    {
+                        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Visible;
+
+                        // gg.Children.Clear();
+                        GeometryGroup ggShadow = (dataSeries.Faces.Parts[1] as Path).Data as GeometryGroup;
+
+                        // Apply new Data for Line
+                        LineChart.GetPathGeometry(dataSeries.RenderAs, ggShadow, pointCollectionList, true, width, height, label2dCanvas);
+                    }
+                    else
+                        (dataSeries.Faces.Parts[1] as Path).Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
+                {
+                    if ((Boolean)dataSeries.ShadowEnabled)
+                    {
+                        dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+                    }
+                    else
+                        dataSeries.Faces.Visual.Effect = null;
+                }
+            }
+
+            dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+
+            Clip(chart, chartsCanvas, labelsCanvas , dataSeries.PlotGroup);
+
         }
         
         private static void UpdateDataPoint(DataPoint dataPoint, VcProperties property, object newValue)
@@ -1711,7 +2123,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
                     break;
                 case  VcProperties.ShowInLegend:
                     chart.InvokeRender();
@@ -1736,8 +2148,11 @@ namespace Visifire.Charts
                 case VcProperties.XValue:
                     if (Double.IsNaN(dataPoint._oldYValue) || dataPoint.Faces == null) // Broken point of broken line
                         UpdateDataSeries(dataPoint.Parent, property, newValue);
+                    else if (dataSeries.RenderAs == RenderAs.Spline)
+                        UpdateDataSeries(dataSeries, VcProperties.DataPointUpdate, newValue);
                     else
-                        UpdateXAndYValue(dataPoint, line2dLabelCanvas);
+                        UpdateXAndYValueOfLineDataPoint(dataPoint, line2dLabelCanvas);
+
                     break;
 
                 case VcProperties.YValue:
@@ -1746,18 +2161,82 @@ namespace Visifire.Charts
                         UpdateDataSeries(dataPoint.Parent, property, newValue);
                     else
                     {
-                        //UpdateXAndYValue(dataPoint, ref line2dLabelCanvas);
-                        chart.Dispatcher.BeginInvoke(new Action<DataPoint, Canvas>(UpdateXAndYValue), new object[] { dataPoint, line2dLabelCanvas });
 
-
+                        if(dataSeries.RenderAs == RenderAs.Spline)
+                            UpdateDataSeries(dataPoint.Parent, VcProperties.DataPointUpdate, newValue);
+                        else // dataSeries.RenderAs == RenderAs.Line
+                            chart.Dispatcher.BeginInvoke(new Action<DataPoint, Canvas>(UpdateXAndYValueOfLineDataPoint), new object[] { dataPoint, line2dLabelCanvas });
                     }
                    
                    break;
             }
         }
 
-        private static void UpdateXAndYValue(DataPoint dataPoint, Canvas line2dLabelCanvas)
+        internal static void ApplyAnimationToBezierSegments(Int32 index, Storyboard storyBoard, BezierSegment bezierSegment,
+            Point[] oldCtrlPoints, Point[] newCtrlPoints, PathFigure pathFigure, Point oldFirstPointOfBezierSeg, 
+            Point newFirstPointOfBezierSeg)
         {
+            if (index == 1)
+            {
+                PointAnimation pointAnimation = new PointAnimation()
+                {
+                    From = oldFirstPointOfBezierSeg,
+                    To = newFirstPointOfBezierSeg,
+                    SpeedRatio = 2,
+                    Duration = new Duration(new TimeSpan(0, 0, 1))
+                };
+
+                Storyboard.SetTarget(pointAnimation, pathFigure);
+                Storyboard.SetTargetProperty(pointAnimation, new PropertyPath("StartPoint"));
+                Storyboard.SetTargetName(pointAnimation, (String)pathFigure.GetValue(FrameworkElement.NameProperty));
+
+                storyBoard.Children.Add(pointAnimation);
+#if WPF
+                pathFigure.BeginAnimation(PathFigure.StartPointProperty, pointAnimation);
+#endif
+            }
+
+            // Loop for 3 control points
+            for (int i = 0; i < 3; i++)
+            {
+                // Creates PointAnimation for each control points
+                if (!oldCtrlPoints[i].Equals(newCtrlPoints[i]))
+                {
+                    PointAnimation pointAnimation = new PointAnimation()
+                    {
+                        From = oldCtrlPoints[i],
+                        To = newCtrlPoints[i],
+                        SpeedRatio = 2,
+                        Duration = new Duration(new TimeSpan(0, 0, 1))
+                    };
+
+                    Storyboard.SetTarget(pointAnimation, bezierSegment);
+                    Storyboard.SetTargetProperty(pointAnimation, new PropertyPath("Point" + (i + 1).ToString()));
+                    Storyboard.SetTargetName(pointAnimation, (String)bezierSegment.GetValue(FrameworkElement.NameProperty));
+
+                    storyBoard.Children.Add(pointAnimation);
+
+#if WPF
+                    switch(i)
+                    {
+                        case 0:
+                            bezierSegment.BeginAnimation(BezierSegment.Point1Property, pointAnimation);
+                            break;
+                        case 1:
+                            bezierSegment.BeginAnimation(BezierSegment.Point2Property, pointAnimation);
+                            break;
+                        case 2:
+                            bezierSegment.BeginAnimation(BezierSegment.Point3Property, pointAnimation);
+                            break;
+                    }
+#endif
+                }
+            }
+
+        }
+
+        private static void UpdateXAndYValueOfLineDataPoint(DataPoint dataPoint, Canvas line2dLabelCanvas)
+        {   
             Boolean isAnimationEnabled = (Boolean)(dataPoint.Chart as Chart).AnimatedUpdate;
 
             if (!(Boolean)dataPoint.Enabled)
@@ -1772,8 +2251,7 @@ namespace Visifire.Charts
 
             Marker dataPointMarker = dataPoint.Marker;
             Marker legendMarker = dataPoint.LegendMarker;
-
-
+            
             Double height = chart.ChartArea.ChartVisualCanvas.Height;
             Double width = chart.ChartArea.ChartVisualCanvas.Width;
 
@@ -1819,7 +2297,7 @@ namespace Visifire.Charts
             PathFigure pathFigure = dataPoint.Faces.Parts[1] as PathFigure;
 
             if (VisifireControl.IsXbapApp)
-            {
+            {   
                 LineSegment shadowLineSeg;
                 PathFigure shadowPathFigure;
 
@@ -1877,7 +2355,7 @@ namespace Visifire.Charts
             {   
                 #region Apply Animation to the DataPoint
 
-                Storyboard storyBorad = new Storyboard();
+                Storyboard storyBoard = new Storyboard();
                 PointAnimation pointAnimation = new PointAnimation();
 
                 pointAnimation.From = oldPoint;
@@ -1888,15 +2366,12 @@ namespace Visifire.Charts
                 //target.SetValue(FrameworkElement.NameProperty, "Segment_" + dataPoint.Name);
 
                 Storyboard.SetTarget(pointAnimation, target);
-//#if SL
-                Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-//#else
-               // Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
 
-//#endif
+                Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
+
                 Storyboard.SetTargetName(pointAnimation, (String)target.GetValue(FrameworkElement.NameProperty));
 
-                storyBorad.Children.Add(pointAnimation);
+                storyBoard.Children.Add(pointAnimation);
 
                 if (VisifireControl.IsXbapApp)
                 {
@@ -1915,7 +2390,7 @@ namespace Visifire.Charts
                         Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
                         Storyboard.SetTargetName(pointAnimation, (String)shadowTarget.GetValue(FrameworkElement.NameProperty));
 
-                        storyBorad.Children.Add(pointAnimation);
+                        storyBoard.Children.Add(pointAnimation);
 
 #if WPF
                         if (lineSeg != null)
@@ -1947,7 +2422,7 @@ namespace Visifire.Charts
                     Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
                     Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
 
-                    storyBorad.Children.Add(da);
+                    storyBoard.Children.Add(da);
 
                     // Animation for (Canvas.Top) property
                     da = new DoubleAnimation()
@@ -1962,7 +2437,7 @@ namespace Visifire.Charts
                     Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
                     Storyboard.SetTargetName(da, (String)marker.GetValue(FrameworkElement.NameProperty));
 
-                    storyBorad.Children.Add(da);
+                    storyBoard.Children.Add(da);
                 }
 
                 #endregion
@@ -1986,7 +2461,7 @@ namespace Visifire.Charts
                     Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Left)"));
                     Storyboard.SetTargetName(da, (String)label.GetValue(FrameworkElement.NameProperty));
 
-                    storyBorad.Children.Add(da);
+                    storyBoard.Children.Add(da);
 
                     // Animation for (Canvas.Top) property
                     da = new DoubleAnimation()
@@ -2001,13 +2476,13 @@ namespace Visifire.Charts
                     Storyboard.SetTargetProperty(da, new PropertyPath("(Canvas.Top)"));
                     Storyboard.SetTargetName(da, (String)label.GetValue(FrameworkElement.NameProperty));
 
-                    storyBorad.Children.Add(da);
+                    storyBoard.Children.Add(da);
 
                 }
 
                 #endregion
 
-                dataPoint.Storyboard = storyBorad;
+                dataPoint.Storyboard = storyBoard;
 #if WPF
                 if (lineSeg != null)
                     (target as LineSegment).BeginAnimation(LineSegment.PointProperty, pointAnimation);
@@ -2015,10 +2490,10 @@ namespace Visifire.Charts
                     (target as PathFigure).BeginAnimation(PathFigure.StartPointProperty, pointAnimation);
 #endif
                 // Start the animation
-                storyBorad.Begin();
+                storyBoard.Begin();
             }
 
-            //chart.ChartArea.ChartVisualCanvas.Background = new SolidColorBrush(Colors.Blue);
+            // chart.ChartArea.ChartVisualCanvas.Background = new SolidColorBrush(Colors.Blue);
             dataSeries.Faces.Visual.Width = chart.ChartArea.ChartVisualCanvas.Width;
             dataSeries.Faces.Visual.Height = chart.ChartArea.ChartVisualCanvas.Height;
 
@@ -2084,6 +2559,16 @@ namespace Visifire.Charts
             marker.BorderThickness = ((Thickness)dataPoint.MarkerBorderThickness).Left;
             marker.ShadowEnabled = (Boolean) dataPoint.ShadowEnabled;
             marker.MarkerFillColor = dataPoint.MarkerColor;
+        }
+
+        internal static void ApplyLabelProperties(DataPoint dataPoint)
+        {
+            dataPoint.Marker.FontColor = Chart.CalculateDataPointLabelFontColor(dataPoint.Chart as Chart, dataPoint, dataPoint.LabelFontColor, LabelStyles.OutSide);
+            dataPoint.Marker.FontFamily = dataPoint.LabelFontFamily;
+            dataPoint.Marker.FontSize = (Double)dataPoint.LabelFontSize;
+            dataPoint.Marker.FontStyle = (FontStyle)dataPoint.LabelFontStyle;
+            dataPoint.Marker.FontWeight = (FontWeight)dataPoint.LabelFontWeight;
+            dataPoint.Marker.TextBackground = dataPoint.LabelBackground;
         }
 
         /// <summary>
@@ -2370,7 +2855,7 @@ namespace Visifire.Charts
         /// <param name="animationEnabled">Whether animation is enabled for chart</param>
         /// <returns>Canvas</returns>
         internal static Canvas GetVisualObjectForLineChart(Panel preExistingPanel, Double width, Double height, PlotDetails plotDetails, List<DataSeries> seriesList, Chart chart, Double plankDepth, bool animationEnabled)
-        {
+        {   
             if (Double.IsNaN(width) || Double.IsNaN(height) || width <= 0 || height <= 0) 
                 return null;
 
@@ -2379,7 +2864,6 @@ namespace Visifire.Charts
             Canvas visual, labelsCanvas, chartsCanvas;
             RenderHelper.RepareCanvas4Drawing(preExistingPanel as Canvas, out visual, out labelsCanvas, out chartsCanvas, width, height);
             
-
             Double depth3d = plankDepth / (plotDetails.Layer3DCount == 0 ? 1 : plotDetails.Layer3DCount) * (chart.View3D ? 1 : 0);
             Double visualOffset = depth3d * (plotDetails.SeriesDrawingIndex[seriesList[0]] + 1 - (plotDetails.Layer3DCount == 0 ? 0 : 1));
             
@@ -2387,6 +2871,7 @@ namespace Visifire.Charts
 
             visual.SetValue(Canvas.TopProperty, visualOffset);
             visual.SetValue(Canvas.LeftProperty, -visualOffset);
+
             // visual.Background = new SolidColorBrush(Colors.Yellow);
                         
             Boolean isMovingMarkerEnabled = false; // Whether moving marker is enabled for atleast one series
@@ -2475,8 +2960,7 @@ namespace Visifire.Charts
             // System.Diagnostics.Debug.WriteLine(clipRectangle.Rect.ToString());
             chartsCanvas.Clip = clipRectangle;
         }
-
-
+        
         /// <summary>
         /// MouseEnter event handler for MouseEnter event over PlotAreaCanvas
         /// </summary>
@@ -2493,7 +2977,7 @@ namespace Visifire.Charts
         /// <param name="sender">object</param>
         /// <param name="e">MouseEventArgs</param>
         static void PlotAreaCanvas_MouseLeave(object sender, MouseEventArgs e)
-        {
+        {   
             _isMouseEnteredInPlotArea = false;
 
             PlotArea plotArea = ((FrameworkElement)sender).Tag as PlotArea;
@@ -2505,7 +2989,7 @@ namespace Visifire.Charts
             // Disable Moving marker for PlotArea Canvas
             foreach (DataSeries ds in chart.InternalSeries)
             {
-                if(ds.RenderAs != RenderAs.Line) return;
+                if (!(ds.RenderAs == RenderAs.Line && ds.RenderAs == RenderAs.Spline)) return;
                 
                 if (ds._movingMarker != null)
                 {
@@ -2526,7 +3010,7 @@ namespace Visifire.Charts
             Chart chart = plotArea.Chart as Chart;
             if (chart == null) return;
 
-            ((FrameworkElement) sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs>(MoveMovingMarker), chart, sender, e, RenderAs.Line);
+            ((FrameworkElement) sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs[]>(MoveMovingMarker), chart, sender, e, new RenderAs[]{RenderAs.Line, RenderAs.Spline});
         }
 
         /// <summary>
@@ -2535,14 +3019,15 @@ namespace Visifire.Charts
         /// <param name="chart">Chart reference</param>
         /// <param name="sender">object</param>
         /// <param name="e">MouseEventArgs</param>
-        internal static void MoveMovingMarker(Chart chart, object sender, MouseEventArgs e, RenderAs chartType)
+        internal static void MoveMovingMarker(Chart chart, object sender, MouseEventArgs e, params RenderAs[] chartTypes)
         {   
             if (!_isMouseEnteredInPlotArea)
                 return;
 
             foreach (DataSeries ds in chart.InternalSeries)
             {
-                if (ds.RenderAs != chartType)
+                // If not found
+                if (Array.IndexOf(chartTypes, ds.RenderAs) == -1)
                     continue;
 
                 Double internalXValue = RenderHelper.CalculateInternalXValueFromPixelPos(chart, ds.PlotGroup.AxisX, e);

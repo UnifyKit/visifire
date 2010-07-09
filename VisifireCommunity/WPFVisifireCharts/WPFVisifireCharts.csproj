@@ -109,6 +109,9 @@
     <Compile Include="..\..\Common\BarChart.cs">
       <Link>BarChart.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\Bezire.cs">
+      <Link>Bezire.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\BubbleChart.cs">
       <Link>BubbleChart.cs</Link>
     </Compile>
@@ -120,6 +123,12 @@
     </Compile>
     <Compile Include="..\..\Common\ChartGrid.cs">
       <Link>ChartGrid.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\CircularAxis.cs">
+      <Link>CircularAxis.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\CircularAxisLabel.cs">
+      <Link>CircularAxisLabel.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\Collections.cs">
       <Link>Collections.cs</Link>
@@ -219,6 +228,9 @@
     </Compile>
     <Compile Include="..\..\Common\PointChart.cs">
       <Link>PointChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\RadarChart.cs">
+      <Link>RadarChart.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\RenderHelper.cs">
       <Link>RenderHelper.cs</Link>

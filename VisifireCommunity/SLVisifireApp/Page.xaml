@@ -6,21 +6,30 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart x:Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                  Width="500" Height="300" Theme="Theme1">
-           
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+    Width="500" Height="300" Theme="Theme1">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Spline Chart"></vc:Title>
+            </vc:Chart.Titles>
+
+            <vc:Chart.PlotArea>
+                <vc:PlotArea ShadowEnabled="false"></vc:PlotArea>
+            </vc:Chart.PlotArea>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Spline" MarkerSize="8" >
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="abc1" YValue="6"/>
-                        <vc:DataPoint AxisXLabel="abc2" YValue="12"/>
-                        <vc:DataPoint AxisXLabel="abc3" YValue="30"/>
-                        <vc:DataPoint AxisXLabel="abc4" YValue="32"/>
-                        <vc:DataPoint AxisXLabel="abc5" YValue="42"/>
+                        <vc:DataPoint AxisXLabel="Sun" YValue="5"/>
+                        <vc:DataPoint AxisXLabel="Mon" YValue="6"/>
+                        <vc:DataPoint AxisXLabel="Tue" YValue="10"/>
+                        <vc:DataPoint AxisXLabel="Wed" YValue="18"/>
+                        <vc:DataPoint AxisXLabel="Thu" YValue="10"/>
+                        <vc:DataPoint AxisXLabel="Fri" YValue="30"/>
+                        <vc:DataPoint AxisXLabel="Sat" YValue="32"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>
         </vc:Chart>
-        
     </Grid>
 </UserControl>

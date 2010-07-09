@@ -60,7 +60,7 @@ namespace Visifire.Charts
 #if SL
     [System.Windows.Browser.ScriptableType]
 #endif
-    public class Axis : ObservableObject
+    public partial class Axis : ObservableObject
     {
         #region Public Methods
 
@@ -140,7 +140,7 @@ namespace Visifire.Charts
             {
                 Double minPixelValue;
                 Double scrollBarOffset;
-                if (AxisOrientation == Orientation.Horizontal)
+                if (AxisOrientation == AxisOrientation.Horizontal)
                 {
                     minPixelValue = Graphics.ValueToPixelPosition(0, ScrollableSize, InternalAxisMinimum, InternalAxisMaximum, xValue);
                     scrollBarOffset = minPixelValue / (ScrollableSize - Width);
@@ -206,7 +206,7 @@ namespace Visifire.Charts
 
             Double newChartSize = 0;
 
-            if(AxisOrientation == Orientation.Horizontal)
+            if (AxisOrientation == AxisOrientation.Horizontal)
                 newChartSize = Width + Width * _internalZoomingScale;
             else
                 newChartSize = Height + Height * _internalZoomingScale;
@@ -332,7 +332,7 @@ namespace Visifire.Charts
             Chart chart = axis.Chart as Chart;
             if (axis.AxisRepresentation == AxisRepresentations.AxisY)
             {
-                if (axis.AxisOrientation == Orientation.Vertical)
+                if (axis.AxisOrientation == AxisOrientation.Vertical)
                 {
                     if (axis.AxisType == AxisTypes.Primary || axis.AxisType == AxisTypes.Secondary)
                     {
@@ -359,7 +359,7 @@ namespace Visifire.Charts
             }
             else
             {
-                if (axis.AxisOrientation == Orientation.Vertical)
+                if (axis.AxisOrientation == AxisOrientation.Vertical)
                 {
                     if (axis.AxisType == AxisTypes.Primary)
                     {
@@ -393,7 +393,7 @@ namespace Visifire.Charts
             Chart chart = axis.Chart as Chart;
             if (axis.AxisRepresentation == AxisRepresentations.AxisY)
             {
-                if (axis.AxisOrientation == Orientation.Vertical)
+                if (axis.AxisOrientation == AxisOrientation.Vertical)
                 {
                     if (axis.AxisType == AxisTypes.Primary)
                     {
@@ -419,7 +419,7 @@ namespace Visifire.Charts
             }
             else
             {
-                if (axis.AxisOrientation == Orientation.Vertical)
+                if (axis.AxisOrientation == AxisOrientation.Vertical)
                 {
                     if (axis.AxisType == AxisTypes.Primary)
                     {
@@ -614,7 +614,7 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
             ("LineThickness",
-            typeof(Double),
+            typeof(Nullable<Double>),
             typeof(Axis),
             new PropertyMetadata(OnLineThicknessPropertyChanged));
 
@@ -1288,11 +1288,22 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the thickness of the axis line
         /// </summary>
-        public Double LineThickness
+#if SL
+        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
+#endif
+        public Nullable<Double> LineThickness
         {
             get
             {
-                return (Double)GetValue(LineThicknessProperty);
+                if (GetValue(LineThicknessProperty) == null)
+                {
+                    if (Chart != null && (Chart as Chart).PlotDetails != null && (Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                        return 1;
+                    else
+                        return 0.5;
+                }
+                else
+                    return (Double)GetValue(LineThicknessProperty);
             }
             set
             {
@@ -2183,7 +2194,7 @@ namespace Visifire.Charts
         /// Vertical = AxisY for all types except bar, 
         /// Horizontal = AxesX for types except bar
         /// </summary>
-        internal Orientation AxisOrientation
+        internal AxisOrientation AxisOrientation
         {
             get
             {
@@ -3147,7 +3158,7 @@ namespace Visifire.Charts
         private void CreateAxisLine(Double y1, Double y2, Double x1, Double x2, Double width, Double height)
         {
             AxisLine = new Line() { Y1 = y1, Y2 = y2, X1 = x1, X2 = x2, Width = width, Height = height };
-            AxisLine.StrokeThickness = LineThickness;
+            AxisLine.StrokeThickness = (Double)LineThickness;
             AxisLine.Stroke = LineColor;
             AxisLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
         }
@@ -3264,7 +3275,7 @@ namespace Visifire.Charts
 
                         if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         {
-                            if (axis.AxisOrientation == Orientation.Horizontal)
+                            if (axis.AxisOrientation == AxisOrientation.Horizontal)
                             {
                                 if (axis.AxisType == AxisTypes.Primary)
                                     size = Math.Max(size, textBlockSize.Height);
@@ -3279,7 +3290,7 @@ namespace Visifire.Charts
                         }
                         else
                         {
-                            if (axis.AxisOrientation == Orientation.Vertical)
+                            if (axis.AxisOrientation == AxisOrientation.Vertical)
                             {
                                 if (axis.AxisType == AxisTypes.Primary)
                                     size = Math.Max(size, textBlockSize.Width);
@@ -3338,7 +3349,7 @@ namespace Visifire.Charts
             AxisLabels.Placement = PlacementTypes.Left;
             AxisLabels.Height = ScrollableSize;
             
-            CreateAxisLine(StartOffset, Height - EndOffset, LineThickness / 2, LineThickness / 2, LineThickness, this.Height);
+            CreateAxisLine(StartOffset, Height - EndOffset, (Double)LineThickness / 2, (Double)LineThickness / 2, (Double)LineThickness, this.Height);
 
             // Set parameters for the Major Grids
             foreach (ChartGrid grid in Grids)
@@ -3746,7 +3757,7 @@ namespace Visifire.Charts
             AxisLabels.Placement = PlacementTypes.Right;
             AxisLabels.Height = ScrollableSize;
 
-            CreateAxisLine(StartOffset, Height - EndOffset, LineThickness / 2, LineThickness / 2, LineThickness, this.Height);
+            CreateAxisLine(StartOffset, Height - EndOffset, (Double)LineThickness / 2, (Double)LineThickness / 2, (Double)LineThickness, this.Height);
 
             // Set parameters for the Major Grids
             foreach (ChartGrid grid in Grids)
@@ -4112,7 +4123,7 @@ namespace Visifire.Charts
             AxisLabels.Placement = PlacementTypes.Bottom;
             AxisLabels.Width = ScrollableSize;
 
-            CreateAxisLine(LineThickness / 2, LineThickness / 2, StartOffset, Width - EndOffset, this.Width, LineThickness);
+            CreateAxisLine((Double)LineThickness / 2, (Double)LineThickness / 2, StartOffset, Width - EndOffset, this.Width, (Double)LineThickness);
 
             // Set parameters for the Major Grids
             foreach (ChartGrid grid in Grids)
@@ -4546,7 +4557,7 @@ namespace Visifire.Charts
             AxisLabels.Placement = PlacementTypes.Top;
             AxisLabels.Width = ScrollableSize;
 
-            CreateAxisLine(LineThickness / 2, LineThickness / 2, StartOffset, Width - EndOffset, this.Width, LineThickness);
+            CreateAxisLine((Double)LineThickness / 2, (Double)LineThickness / 2, StartOffset, Width - EndOffset, this.Width, (Double)LineThickness);
 
             // Set parameters for the Major Grids
             foreach (ChartGrid grid in Grids)
@@ -4919,7 +4930,7 @@ namespace Visifire.Charts
 #endif
                     Size size = Graphics.CalculateVisualSize(AxisTitleElement.Visual);
 
-                    if (AxisOrientation == Orientation.Horizontal)
+                    if (AxisOrientation == AxisOrientation.Horizontal)
                     {
                         if (size.Width > Width && Width != 0)
                         {
@@ -5346,7 +5357,6 @@ namespace Visifire.Charts
             }
         }
 
-
         /// <summary>
         /// Set up ticks for axis
         /// </summary>
@@ -5368,8 +5378,13 @@ namespace Visifire.Charts
                 tick.Minimum = AxisManager.AxisMinimumValue;
                 tick.DataMaximum = Maximum;
                 tick.DataMinimum = Minimum;
-                //tick.TickLength = 5;
                 tick.ParentAxis = this;
+
+                if (PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                {
+                    if(tick.GetValue(Visifire.Charts.Ticks.TickLengthProperty) == null)
+                        tick.TickLength = 2.3;
+                }
 
                 tick.IsNotificationEnable = true;
             }
@@ -5392,6 +5407,9 @@ namespace Visifire.Charts
                 grid.DataMaximum = Maximum;
                 grid.DataMinimum = Minimum;
                 grid.ParentAxis = this;
+
+                if (PlotDetails.ChartOrientation == ChartOrientationType.Circular && grid.GetValue(ChartGrid.LineThicknessProperty) == null)
+                    grid.LineThickness = 0.50;
 
                 grid.IsNotificationEnable = true;
             }
@@ -5423,6 +5441,7 @@ namespace Visifire.Charts
             AxisLabels.DataMinimum = Minimum;
             AxisLabels.ParentAxis = this;
             AxisLabels.InternalRows = (Int32)AxisLabels.Rows;
+
             //AxisLabels.Padding = this.Padding;
 
             if (AxisRepresentation == AxisRepresentations.AxisX)
@@ -5465,7 +5484,7 @@ namespace Visifire.Charts
         {
             tickLengthOfAxisX = (from tick in chart.AxesX[0].Ticks
                                  where (Boolean)chart.AxesX[0].Enabled && (Boolean)tick.Enabled
-                                 select tick.TickLength).Sum();
+                                 select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfAxisX == 0)
                 tickLengthOfAxisX = 5;
@@ -5474,7 +5493,7 @@ namespace Visifire.Charts
                                         where axis.AxisType == AxisTypes.Primary
                                         from tick in axis.Ticks
                                         where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                        select tick.TickLength).Sum();
+                                        select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfPrimaryAxisY == 0)
                 tickLengthOfPrimaryAxisY = 8;
@@ -5483,7 +5502,7 @@ namespace Visifire.Charts
                                           where axis.AxisType == AxisTypes.Secondary
                                           from tick in axis.Ticks
                                           where (Boolean)axis.Enabled && (Boolean)tick.Enabled
-                                          select tick.TickLength).Sum();
+                                          select (Double)tick.TickLength).Sum();
 
             if (tickLengthOfSecondaryAxisY == 0)
                 tickLengthOfSecondaryAxisY = 8;
@@ -5566,7 +5585,7 @@ namespace Visifire.Charts
         /// </summary>
         internal void SetScrollBar()
         {
-            if (this.AxisOrientation == Orientation.Vertical)
+            if (this.AxisOrientation == AxisOrientation.Vertical)
                 ScrollBarElement = (AxisType == AxisTypes.Primary) ? Chart._leftAxisScrollBar : Chart._rightAxisScrollBar;
             else
                 ScrollBarElement = (AxisType == AxisTypes.Primary) ? Chart._bottomAxisScrollBar : Chart._topAxisScrollBar;
@@ -5613,11 +5632,11 @@ namespace Visifire.Charts
         {
             Double offsetInPixel4MinValue;
             Double offsetInPixel4MaxValue;
-            
-            Orientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
+
+            AxisOrientation axisOrientation = chart.ChartArea.AxisX.AxisOrientation;
             Double lengthInPixel;
 
-            if (axisOrientation == Orientation.Horizontal)
+            if (axisOrientation == AxisOrientation.Horizontal)
             {
                 offsetInPixel = chart.ChartArea.GetScrollingOffsetOfAxis(chart.ChartArea.AxisX, offsetInPixel);
 
@@ -5743,54 +5762,71 @@ namespace Visifire.Charts
                     customLabels.ApplyStyleFromTheme(Chart, "CustomAxisYLabels");
             }
 
-            // Create visual elements
-            Visual = new StackPanel() { Background = InternalBackground };
-
-            AxisElementsContainer = new StackPanel();
-            InternalStackPanel = new Canvas();
-            ScrollViewerElement = new Canvas();
-
-            if (!String.IsNullOrEmpty(this.Title))
+            if (Chart.PlotDetails.ChartOrientation != ChartOrientationType.Circular)
             {
-                AxisTitleElement = new Title();
-                ApplyTitleProperties();
+                // Create visual elements
+                Visual = new StackPanel() { Background = InternalBackground };
+
+                AxisElementsContainer = new StackPanel();
+                InternalStackPanel = new Canvas();
+                ScrollViewerElement = new Canvas();
+
+                if (!String.IsNullOrEmpty(this.Title))
+                {
+                    AxisTitleElement = new Title();
+                    ApplyTitleProperties();
+                }
+                else
+                    AxisTitleElement = null;
+
+                ApplyVisualProperty();
+
+                SetUpAxisManager();
+                SetUpTicks();
+                SetUpGrids();
+                SetUpAxisLabels();
+                SetUpCustomAxisLabels();
+
+                // set the placement order based on the axis orientation
+                switch (AxisOrientation)
+                {
+                    case AxisOrientation.Horizontal:
+                        ApplyHorizontalAxisSettings();
+                        _zeroBaseLinePixPosition = Graphics.ValueToPixelPosition(0, Width, InternalAxisMinimum, InternalAxisMaximum, 0);
+
+                        break;
+
+                    case AxisOrientation.Vertical:
+                        ApplyVerticalAxisSettings();
+                        _zeroBaseLinePixPosition = Height - Graphics.ValueToPixelPosition(0, Height, InternalAxisMinimum, InternalAxisMaximum, 0);
+
+                        break;
+                }
+
+                IsNotificationEnable = true;
+                AxisLabels.IsNotificationEnable = true;
+
+                if (!(Boolean)this.Enabled)
+                {
+                    Visual.Visibility = Visibility.Collapsed;
+                }
+
+                AttachEventForZoomBar();
             }
             else
-                AxisTitleElement = null;
-
-            ApplyVisualProperty();
-
-            SetUpAxisManager();
-            SetUpTicks();
-            SetUpGrids();
-            SetUpAxisLabels();
-            SetUpCustomAxisLabels();
-
-            // set the placement order based on the axis orientation
-            switch (AxisOrientation)
             {
-                case Orientation.Horizontal:
-                    ApplyHorizontalAxisSettings();
-                    _zeroBaseLinePixPosition = Graphics.ValueToPixelPosition(0, Width, InternalAxisMinimum, InternalAxisMaximum, 0);
-                    
-                    break;
+                if (AxisRepresentation == AxisRepresentations.AxisX)
+                {
+                    Int32 maxDataPointsCount = Chart.PlotDetails.GetMaxDataPointsCountFromInternalSeriesList(Chart.InternalSeries);
 
-                case Orientation.Vertical:
-                    ApplyVerticalAxisSettings();
-                    _zeroBaseLinePixPosition = Height - Graphics.ValueToPixelPosition(0, Height, InternalAxisMinimum, InternalAxisMaximum, 0);
-                    
-                    break;
+                    CircularPlotDetails.CalculateAxisXPoints4Radar(Width, Height, this, maxDataPointsCount);
+                }
+
+                if (CircularPlotDetails.ListOfPoints4CircularAxis.Count == 0)
+                    return;
+
+                CreateAxesForCircularChart();   
             }
-
-            IsNotificationEnable = true;
-            AxisLabels.IsNotificationEnable = true;
-
-            if (!(Boolean)this.Enabled)
-            {
-                Visual.Visibility = Visibility.Collapsed;
-            }
-
-            AttachEventForZoomBar();
         }
 
         private void AttachEventForZoomBar()
@@ -5801,7 +5837,7 @@ namespace Visifire.Charts
             Chart chart = Chart as Chart;
 
             Boolean isAllLineCharts = (((from ds in chart.Series
-                                         where (ds.RenderAs == RenderAs.Line || ds.RenderAs == RenderAs.Area || ds.RenderAs == RenderAs.StepLine) 
+                                         where ( RenderHelper.IsLineCType(ds) || ds.RenderAs == RenderAs.Area) 
                                         select ds).Count() == chart.Series.Count)
                                         && chart.PlotDetails.ListOfAllDataPoints.Count <= 500);
 
@@ -6000,7 +6036,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Stores the  orientation (vertical or horizontal) of the axis 
         /// </summary>
-        private Orientation _orientation;
+        private AxisOrientation _orientation;
 
         /// <summary>
         /// Stores the units extracted from the scaling sets
