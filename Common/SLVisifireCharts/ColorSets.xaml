@@ -24,6 +24,26 @@
         </vc:ColorSet.Brushes>
     </vc:ColorSet>
     
+    <vc:ColorSet Id="SpiderWeb">
+        <vc:ColorSet.Brushes>
+            <SolidColorBrush Color="#854386d8"></SolidColorBrush>
+            <SolidColorBrush Color="#85ff9a2e"></SolidColorBrush>
+            <SolidColorBrush Color="#85db443f"></SolidColorBrush>
+            <SolidColorBrush Color="#85a8d44f"></SolidColorBrush>
+            <SolidColorBrush Color="#858560b3"></SolidColorBrush>
+            <SolidColorBrush Color="#853cbfe3"></SolidColorBrush>
+            <SolidColorBrush Color="#85AFD8F8"></SolidColorBrush>
+            <SolidColorBrush Color="#85008E8E"></SolidColorBrush>
+            <SolidColorBrush Color="#858BBA00"></SolidColorBrush>
+            <SolidColorBrush Color="#85FABD0F"></SolidColorBrush>
+            <SolidColorBrush Color="#85FA6E46"></SolidColorBrush>
+            <SolidColorBrush Color="#859D080D"></SolidColorBrush>
+            <SolidColorBrush Color="#85A186BE"></SolidColorBrush>
+            <SolidColorBrush Color="#85CC6600"></SolidColorBrush>
+            <SolidColorBrush Color="#85FDC689"></SolidColorBrush>
+        </vc:ColorSet.Brushes>
+    </vc:ColorSet>
+    
     <vc:ColorSet Id="CandleLight">
         <vc:ColorSet.Brushes>
             <SolidColorBrush Color="#a8d44f"></SolidColorBrush>

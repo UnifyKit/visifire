@@ -757,7 +757,7 @@ namespace Visifire.Charts
                 dataPoint.Parent.Storyboard = ApplyBarChartAnimation(columnVisual, dataPoint.Parent.Storyboard, isPositive);
             }
 
-            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
@@ -1097,7 +1097,7 @@ namespace Visifire.Charts
             else
                 dataPoint._visualPosition = new Point(left, top + finalHeight / 2);
 
-            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);

@@ -1111,7 +1111,7 @@ namespace Visifire.Charts
 
             }
 
-            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
@@ -1164,7 +1164,7 @@ namespace Visifire.Charts
 
                 if (marker != null)
                 {
-                    dataPoint.Marker.Visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
+                    dataPoint.Marker.Visual.Opacity = (Double)dataPoint.InternalOpacity * (Double)dataPoint.Parent.InternalOpacity;
 
                     marker.AddToParent(labelCanvas, left + markerPosition.X, top + markerPosition.Y, new Point(0.5, 0.5));
                 }
@@ -1751,10 +1751,10 @@ namespace Visifire.Charts
                 case VcProperties.Opacity:
 
                     if(marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
 
                     if(dataPoint.Faces.Visual != null)
-                        dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
 
                     break;
 

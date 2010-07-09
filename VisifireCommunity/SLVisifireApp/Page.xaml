@@ -5,17 +5,31 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d" d:DesignHeight="330" d:DesignWidth="510">
     <Grid x:Name="LayoutRoot">
         
-        <vc:Chart Theme="Theme1" x:Name="MyChart" Width="500" Height="300" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                 >
-                   
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
+                  Width="500" Height="300" Theme="Theme1" BorderThickness="0.5" BorderBrush="Gray">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Radar Chart" Padding="0,0,0,5"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesY>
+                <vc:Axis>
+                    <vc:Axis.Ticks>
+                        <vc:Ticks Enabled="false"/>
+                    </vc:Axis.Ticks>
+                </vc:Axis>
+            </vc:Chart.AxesY>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Line" >
+                <vc:DataSeries RenderAs="Radar">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="30.50"/>
-                        <vc:DataPoint YValue="63.20"/>
-                        <vc:DataPoint YValue="33.20"/>
-                        <vc:DataPoint YValue="40.20"/>
-                        <vc:DataPoint YValue="70.20"/>
+                        <vc:DataPoint AxisXLabel="USA" YValue="20"/>
+                        <vc:DataPoint AxisXLabel="Japan" YValue="18"/>
+                        <vc:DataPoint AxisXLabel="Australia" YValue="22"/>
+                        <vc:DataPoint AxisXLabel="Canada" YValue="20"/>
+                        <vc:DataPoint AxisXLabel="France" YValue="25"/>
+                        <vc:DataPoint AxisXLabel="Russia" YValue="22"/>
+                        <vc:DataPoint AxisXLabel="Asia" YValue="20"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

@@ -1892,6 +1892,11 @@ namespace Visifire.Charts
 
             // Attach event to title visual object 
             AttachEvents2Visual(this, TextElement);
+
+
+            Size visualSize = Graphics.CalculateVisualSize(Visual);
+            Visual.Height = visualSize.Height;
+            Visual.Width = visualSize.Width;
         }
 
         #endregion

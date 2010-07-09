@@ -141,7 +141,15 @@ namespace Visifire.Charts
         Top = 0,
         Left = 1,
         Right = 2,
-        Bottom = 3 
+        Bottom = 3,
+        Circular = 4
+    }
+
+    internal enum AxisOrientation
+    {
+        Vertical = 0,
+        Horizontal = 1,
+        Circular = 2
     }
 
     /// <summary>
@@ -152,7 +160,13 @@ namespace Visifire.Charts
         Mantissa = 1, 
         Exponent = 2 
     }
-    
+
+    internal enum ScaleDirection
+    {
+        ScaleX,
+        ScaleY
+    }
+
     /// <summary>
     /// This property is used to select the chart type
     /// </summary>
@@ -176,7 +190,9 @@ namespace Visifire.Charts
         SectionFunnel = 15,
         Stock = 16,
         CandleStick = 17,
-        StepLine = 18
+        StepLine = 18,
+        Spline = 19,
+        Radar = 20
     }
 
     /// <summary>
@@ -206,7 +222,8 @@ namespace Visifire.Charts
         Undefined = 0,     // Undefined - not yet assigned 
         Vertical = 1,      // Vertical - charts of type point, bubble line, column(all similar types), area(all similar types)
         Horizontal = 2,    // Horizontal - charts of type bar(all similar types)
-        NoAxis = 3         // NoAxis - charts of type pie or doughnut
+        NoAxis = 3,         // NoAxis - charts of type pie or doughnut
+        Circular = 4
     }
 
     /// <summary>
@@ -321,6 +338,7 @@ namespace Visifire.Charts
         LineEnabled,
         Logarithmic,
         LogarithmBase,
+        DataPointUpdate,
         Margin,
         MarkerBorderColor,
         MarkerBorderThickness,

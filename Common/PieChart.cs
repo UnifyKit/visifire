@@ -1,4 +1,24 @@
-﻿#if WPF
+﻿/*   
+    Copyright (C) 2008 Webyog Softworks Private Limited
+
+    This file is a part of Visifire Charts.
+ 
+    Visifire is a free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+      
+    You should have received a copy of the GNU General Public License
+    along with Visifire Charts.  If not, see <http://www.gnu.org/licenses/>.
+    
+    If GPL is not suitable for your products or company, Webyog provides Visifire 
+    under a flexible commercial license designed to meet your specific usage and 
+    distribution requirements. If you have already obtained a commercial license 
+    from Webyog, you can use this file under those license terms.
+    
+*/
+
+#if WPF
 
 using System;
 using System.Collections.Generic;
@@ -704,7 +724,7 @@ namespace Visifire.Charts
 
             Canvas visual = new Canvas() { Height = textBlockSize.Height, Width = textBlockSize.Width, Background = dataPoint.LabelBackground, Tag = new ElementData() { Element = dataPoint } };
 
-            visual.Opacity = dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity;
+            visual.Opacity = (Double)dataPoint.InternalOpacity * (Double)dataPoint.Parent.InternalOpacity;
 
             visual.Children.Add(textBlock);
 
@@ -4120,7 +4140,7 @@ namespace Visifire.Charts
                     // apply animation to the labels
                     if (isAnimationEnabled)
                     {
-                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, dataPoint, series.Storyboard, dataPoint.LabelVisual, 2, dataPoint.InternalOpacity * dataPoint.Parent.InternalOpacity, 0.5);
+                        series.Storyboard = CreateOpacityAnimation(currentDataSeries, dataPoint, series.Storyboard, dataPoint.LabelVisual, 2, (Double)dataPoint.InternalOpacity * (Double)dataPoint.Parent.InternalOpacity, 0.5);
                         dataPoint.LabelVisual.Opacity = 0;
                     }
                 }

@@ -2086,17 +2086,16 @@ namespace Visifire.Charts
 
                 /* Line and bubble are first while updating DataPoints one by one. So to take advantage of updating DataPoints one by one
                 conditions are written below */
-                if (Parent.RenderAs != RenderAs.Line || (Parent.RenderAs == RenderAs.Line && chart.AnimatedUpdate == false) || Parent.RenderAs != RenderAs.StepLine || (Parent.RenderAs == RenderAs.StepLine && chart.AnimatedUpdate == false))
-                {
-                    if (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
+                if (Parent.RenderAs == RenderAs.Spline 
+                    || (Parent.RenderAs != RenderAs.Line && Parent.RenderAs != RenderAs.StepLine) 
+                    || ((Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine) && chart.AnimatedUpdate == false))
+                {   
+                    if((!recursive && (property == VcProperties.YValue) && Parent.RenderAs == RenderAs.Spline)
+                    ||
+                    (!recursive && (property == VcProperties.YValue) && (chart.PlotDetails.ListOfAllDataPoints.Count > 1000 || !(Boolean)chart.AnimatedUpdate))
+                    ||
+                    (!recursive && property == VcProperties.XValue && (!RenderHelper.IsLineCType(Parent) || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point)))
                     {
-                        chart.PARTIAL_DP_RENDER_LOCK = true;
-                        chart._partialRenderBlockedCount = 0;
-                        chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
-                        chart._datapoint2UpdatePartially.Add(this, property);
-                    }
-                    else if (!recursive && property == VcProperties.XValue && (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.StepLine || Parent.RenderAs != RenderAs.Bubble || Parent.RenderAs != RenderAs.Point))
-                    {   
                         chart.PARTIAL_DP_RENDER_LOCK = true;
                         chart._partialRenderBlockedCount = 0;
                         chart._datapoint2UpdatePartially = new Dictionary<DataPoint, VcProperties>();
@@ -2104,10 +2103,8 @@ namespace Visifire.Charts
                     }
                     else
                         chart.PARTIAL_DP_RENDER_LOCK = false;
-
                 }
-
-
+                
                 if (!chart.PARTIAL_DP_RENDER_LOCK || recursive)
                 {
                     if (Parent.RenderAs == RenderAs.Area)
@@ -3334,7 +3331,7 @@ namespace Visifire.Charts
                 }
             }
 
-            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            if (Parent != null && Marker != null && (RenderHelper.IsLineCType(Parent) || RenderHelper.IsAreaCType(Parent)))
             {               
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(true, true);
@@ -3356,7 +3353,7 @@ namespace Visifire.Charts
                 InteractivityHelper.ApplyBorderEffect(Marker.MarkerShape, BorderStyles.Solid, InteractivityHelper.SELECTED_MARKER_BORDER_COLOR, 1.2, 2.4, InteractivityHelper.SELECTED_MARKER_FILL_COLOR);
                 Marker.MarkerShape.Margin = new Thickness(- 1.2, -1.2,0,0);
 
-                if (Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine)
+                if (RenderHelper.IsLineCType(Parent))
                     LineChart.SelectMovingMarker(this);
             }
         }
@@ -3399,9 +3396,8 @@ namespace Visifire.Charts
                 }
             }
 
-            if (Parent != null && Marker != null && (Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100))
+            if (Parent != null && Marker != null && (RenderHelper.IsLineCType(Parent) || RenderHelper.IsAreaCType(Parent)))
             {
-               
                 if (allowPropertyChange)
                     UpdateExplodedPropertyForSelection(false, selfDeSelect);
 
@@ -3538,7 +3534,10 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
+                        if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                            labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue + 1);
+                        else
+                            labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
                     }
                 }
                 else
@@ -3711,11 +3710,10 @@ namespace Visifire.Charts
             Double percentage = 0;
 
             if (Parent.RenderAs == RenderAs.Column || Parent.RenderAs == RenderAs.Bar
-                || Parent.RenderAs == RenderAs.Area || Parent.RenderAs == RenderAs.Line
-                || Parent.RenderAs == RenderAs.StepLine || Parent.RenderAs == RenderAs.SectionFunnel
+                || Parent.RenderAs == RenderAs.Area || RenderHelper.IsLineCType(Parent) || Parent.RenderAs == RenderAs.SectionFunnel
                 || Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Bubble
                 || Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut)
-            {
+            {   
                 if ((Parent.Chart as Chart).PlotDetails != null)
                 {
                     Double sum = (Parent.Chart as Chart).PlotDetails.GetAbsoluteSumOfDataPoints(Parent.InternalDataPoints.ToList());
@@ -4239,13 +4237,13 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="Object">Object where events to be attached</param>
         internal void AttachEvent2DataPointVisualFaces(ObservableObject Object)
-        {   
-            if (Parent.RenderAs == RenderAs.Pie || Parent.RenderAs == RenderAs.Doughnut || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
-            {
+        {
+            if (RenderHelper.IsAxisIndependentCType(Parent))
+            {   
                 if (Faces != null)
-                {
+                {   
                     if ((Parent.Chart as Chart).View3D)
-                    {
+                    {   
                         foreach (FrameworkElement element in Faces.VisualComponents)
                         {
                             AttachEvents2Visual(Object, this, element);
@@ -4281,13 +4279,13 @@ namespace Visifire.Charts
                     }
                 }
             }
-            else if (Parent.RenderAs == RenderAs.StackedArea
-                || Parent.RenderAs == RenderAs.StackedArea100 || Parent.RenderAs == RenderAs.Line || Parent.RenderAs == RenderAs.StepLine)
+            else if (Parent.RenderAs == RenderAs.StackedArea || Parent.RenderAs == RenderAs.StackedArea100 
+                || RenderHelper.IsLineCType(Parent))
             {
-                if (Parent.RenderAs != RenderAs.Line || Parent.RenderAs != RenderAs.StepLine)
-                {
+                if (!RenderHelper.IsLineCType(Parent))
+                {   
                     if (Parent.Faces != null)
-                    {
+                    {   
                         if (Object.GetType().Equals(typeof(DataPoint)))
                         {
                             foreach (FrameworkElement face in Parent.Faces.VisualComponents)
@@ -4302,7 +4300,7 @@ namespace Visifire.Charts
             else if (Faces != null)
             {
                 if (Parent.RenderAs == RenderAs.Bubble || Parent.RenderAs == RenderAs.Point || Parent.RenderAs == RenderAs.Stock || Parent.RenderAs == RenderAs.CandleStick || Parent.RenderAs == RenderAs.SectionFunnel || Parent.RenderAs == RenderAs.StreamLineFunnel)
-                {
+                {   
                     foreach (FrameworkElement face in Faces.VisualComponents)
                     {
                         AttachEvents2Visual(Object, this, face);
@@ -4469,6 +4467,7 @@ namespace Visifire.Charts
         /// Visual target render point of the visual
         /// </summary>
         internal Point _visualPosition;
+        internal Point _visualPositionOld;
 
         internal Double _targetBubleSize;
 

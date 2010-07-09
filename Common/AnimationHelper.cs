@@ -36,6 +36,48 @@ namespace Visifire.Commons
     {
         #region Public Methods
 
+        public static void ApplyScaleAnimation(ScaleDirection direction, Storyboard storyBoard, FrameworkElement element, Double from, Double to, TimeSpan duration, TimeSpan beginTime, Boolean applyFromValueInitially)
+        {
+            if (storyBoard == null)
+                storyBoard = new Storyboard();
+
+            if (element.RenderTransform == null || !element.RenderTransform.GetType().Equals(typeof(ScaleTransform)))
+                element.RenderTransform = new ScaleTransform();
+
+            if (applyFromValueInitially)
+            {
+                if (direction == ScaleDirection.ScaleX)
+                    (element.RenderTransform as ScaleTransform).ScaleX = from;
+                else
+                    (element.RenderTransform as ScaleTransform).ScaleY = from;
+            }
+
+            DoubleAnimation da = new DoubleAnimation()
+            {
+                From = from,
+                To = to,
+                Duration = new Duration(duration),
+                BeginTime = beginTime,
+                SpeedRatio = 2
+            };
+
+            Transform transform = element.RenderTransform;
+            String property = (direction == ScaleDirection.ScaleX) ? "(ScaleTransform.ScaleX)" : "(ScaleTransform.ScaleY)";
+
+            Storyboard.SetTarget(da, transform);
+            Storyboard.SetTargetProperty(da, new PropertyPath(property));
+            Storyboard.SetTargetName(da, (String)element.GetValue(FrameworkElement.NameProperty));
+
+#if WPF
+            if(direction == ScaleDirection.ScaleX)
+                transform.BeginAnimation(ScaleTransform.ScaleXProperty, da);
+            else
+                transform.BeginAnimation(ScaleTransform.ScaleYProperty, da);
+            
+#endif
+            storyBoard.Children.Add(da);
+        }
+
         /// <summary>
         /// Apply point animation
         /// </summary>
@@ -252,7 +294,7 @@ namespace Visifire.Commons
         internal static Storyboard ApplyOpacityAnimation(Marker marker, FrameworkElement parentObj, Storyboard storyboard, Double beginTime, Double targetValue)
         {   
             if (marker != null && parentObj != null)
-                return ApplyOpacityAnimation(marker.Visual, parentObj, storyboard, beginTime, 0.75, 0,targetValue);
+                return ApplyOpacityAnimation(marker.Visual, parentObj, storyboard, beginTime, 0.75, 0, targetValue);
             else
                 return storyboard;
         }
