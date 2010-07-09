@@ -554,8 +554,8 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
             EnqueueDelay(_sleepTime);
             CreateAsyncTask(chart,
-                () => Assert.AreEqual(Orientation.Horizontal, chart.AxesX[0].AxisOrientation),
-                () => Assert.AreEqual(Orientation.Vertical, chart.AxesY[0].AxisOrientation));
+                () => Assert.AreEqual(AxisOrientation.Horizontal, chart.AxesX[0].AxisOrientation),
+                () => Assert.AreEqual(AxisOrientation.Vertical, chart.AxesY[0].AxisOrientation));
 
 
             EnqueueTestComplete();
@@ -1370,9 +1370,9 @@ namespace SLVisifireChartsTest
             _axisX = new Axis();
             _axisY = new Axis();
 
-            _axisX.AxisOrientation = Orientation.Horizontal;
+            _axisX.AxisOrientation = AxisOrientation.Horizontal;
 
-            _axisY.AxisOrientation = Orientation.Vertical;
+            _axisY.AxisOrientation = AxisOrientation.Vertical;
 
             chart.AxesX.Add(_axisX);
             chart.AxesY.Add(_axisY);
@@ -1380,10 +1380,10 @@ namespace SLVisifireChartsTest
             Common.CreateAndAddDefaultDataSeries(chart);
 
             CreateAsyncTest(chart,
-               () => _axisX.AxisOrientation = Orientation.Horizontal,
-               () => Assert.AreEqual(Orientation.Horizontal, _axisX.AxisOrientation),
-               () => _axisY.AxisOrientation = Orientation.Vertical,
-               () => Assert.AreEqual(Orientation.Vertical, _axisY.AxisOrientation));
+               () => _axisX.AxisOrientation = AxisOrientation.Horizontal,
+               () => Assert.AreEqual(AxisOrientation.Horizontal, _axisX.AxisOrientation),
+               () => _axisY.AxisOrientation = AxisOrientation.Vertical,
+               () => Assert.AreEqual(AxisOrientation.Vertical, _axisY.AxisOrientation));
         }
 
         /// <summary>

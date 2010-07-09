@@ -1408,7 +1408,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (linePath != null)
-                        linePath.Opacity = dataSeries.Opacity;
+                        linePath.Opacity = (Double)dataSeries.Opacity;
                     break;
                 case VcProperties.LineStyle:
                 case VcProperties.LineThickness:
@@ -1438,7 +1438,7 @@ namespace Visifire.Charts
                             if (line2dCanvas.Parent == null)
                             {
 
-                                ColumnChart.Update(chart, RenderAs.Line, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.Line select ds).ToList());
+                                ColumnChart.Update(chart, RenderAs.StepLine, (from ds in chart.InternalSeries where ds.RenderAs == RenderAs.StepLine select ds).ToList());
                                 return;
                             }
 
@@ -1747,7 +1747,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
                     break;
                 case VcProperties.ShowInLegend:
                     chart.InvokeRender();
@@ -2724,7 +2724,7 @@ namespace Visifire.Charts
             Chart chart = plotArea.Chart as Chart;
             if (chart == null) return;
 
-            ((FrameworkElement)sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs>(LineChart.MoveMovingMarker), chart, sender, e, RenderAs.StepLine);
+            ((FrameworkElement)sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs[]>(LineChart.MoveMovingMarker), chart, sender, e, new RenderAs[]{RenderAs.StepLine});
         }
 
      /*   /// <summary>

@@ -333,7 +333,7 @@ namespace Visifire.Charts
             bubbleFaces.Visual = marker.Visual;
             dataPoint.Faces = bubbleFaces;
 
-            dataPoint.Faces.Visual.Opacity = dataPoint.Opacity * dataPoint.Parent.Opacity;
+            dataPoint.Faces.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataPoint.Parent.Opacity;
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint);
             dataPoint.AttachEvent2DataPointVisualFaces(dataPoint.Parent);
             dataPoint._parsedToolTipText = dataPoint.TextParser(dataPoint.ToolTipText);
@@ -764,7 +764,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
                     if (marker != null)
-                        marker.Visual.Opacity = dataPoint.Opacity * dataSeries.Opacity;
+                        marker.Visual.Opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
                     break;
 
                 case VcProperties.ShowInLegend:

@@ -480,7 +480,7 @@ namespace Visifire.Charts
 
             CreateAndPositionLabel(labelCanvas, dataPoint);
 
-            dataPointVisual.Opacity = dataPoint.Parent.Opacity * dataPoint.Opacity;
+            dataPointVisual.Opacity = (Double)dataPoint.Parent.Opacity * (Double)dataPoint.Opacity;
 
             Chart chart = dataPoint.Chart as Chart;
             dataPoint.SetCursor2DataPointVisualFaces();
@@ -945,7 +945,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.Opacity:
-                    dpFaces.Visual.Opacity = dataSeries.Opacity * dataPoint.Opacity;
+                    dpFaces.Visual.Opacity = (Double)dataSeries.Opacity * (Double)dataPoint.Opacity;
                     break;
 
                 case VcProperties.ShowInLegend:

@@ -463,18 +463,23 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-        private Int64 RemoveDecimalPoint(Decimal number)
+        private Decimal RemoveDecimalPoint(Decimal number)
         {
             // Number is already an integer.
-            if ((Int64)(number) == number)
-                return (Int64)(number);
+            if (IsInterger(number))
+                return number;
             else
                 // Multiply 10 to move the decimal point to one digit right.
-                while ((Int64)(number) != number)
+                while (!IsInterger(number))
                     number = number * 10;
 
-            return (Int64)(number);
+            return number;
 
+        }
+
+        public Boolean IsInterger(Decimal number)
+        {
+            return (Decimal.Remainder(number, number) == 0);
         }
 
         /// <summary>
@@ -487,7 +492,7 @@ namespace Visifire.Charts
             Int32 count = 0;                  // local variable as counter.
 
             // While number is not an integer.
-            while ((Int64)(number) != number)
+            while (!IsInterger(number))
             {
                 count++;
                 number = number * 10;
@@ -502,14 +507,13 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-        private Int64 RemoveZeroFromInt(Int64 number)
-        {
+        private Decimal RemoveZeroFromInt(Decimal number)
+        {   
             // While the number is divided by 10.
             while ((number % 10) == 0)
                 number = number / 10;
 
             return number;
-
         }
 
         /// <summary>
@@ -517,7 +521,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Returns an integer.</returns>
-        private Int32 NoOfZeroAtEndInInt(Int64 number)
+        private Int32 NoOfZeroAtEndInInt(Decimal number)
         {
             Int32 count = 0;            // Keep track the no of zeros.
 
@@ -537,18 +541,18 @@ namespace Visifire.Charts
         /// <param name="mantissaOrExponent">According to the argument mantissa or exponent will be returned.</param>
         /// <param name="number">Number used for calculation.</param>
         /// <returns>Reuurns mantissa or exponent.</returns>
-        private Int64 GetMantissaOrExponent(MantissaOrExponent mantissaOrExponent, Decimal number)
+        private Decimal GetMantissaOrExponent(MantissaOrExponent mantissaOrExponent, Decimal number)
         {
             if (mantissaOrExponent == MantissaOrExponent.Exponent)
-            {
-                Int32 exponent;
+            {   
+                Decimal exponent;
                 exponent = NoOfZeroAtEndInInt(RemoveDecimalPoint(number));
                 exponent -= IndexOfDecimalPoint(number);
-                return (Int64)exponent;
+                return exponent;
             }
             else
             {
-                Int64 mantissa;
+                Decimal mantissa;
                 mantissa = RemoveZeroFromInt(RemoveDecimalPoint(number));
                 return mantissa;
             }
@@ -564,8 +568,8 @@ namespace Visifire.Charts
         /// <returns>Returns an integer.</returns>
         private Int32 OrderOfMagnitude(Decimal number)
         {
-            Int64 mantissa;                       // Mantissa of number.
-            Int64 exponent;                       // Exponent of number.
+            Decimal mantissa;                       // Mantissa of number.
+            Decimal exponent;                       // Exponent of number.
 
             if (number == 0)
                 return 0;
@@ -615,7 +619,7 @@ namespace Visifire.Charts
         /// <returns>Reduced interval.</returns>
         private Decimal ReduceInterval(Decimal intervalValue)
         {
-            Int64 mantissa;                       // Mantissa of interval value.
+            Decimal mantissa;                       // Mantissa of interval value.
 
             mantissa = GetMantissaOrExponent(MantissaOrExponent.Mantissa, intervalValue);
 

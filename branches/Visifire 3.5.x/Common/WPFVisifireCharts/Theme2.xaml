@@ -33,13 +33,13 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
     <Style x:Key="AxisX"  TargetType="{x:Type vc:Axis}">
-        <Setter Property="LineThickness" Value="0.5" />
+        <!--<Setter Property="LineThickness" Value="0.5" />-->
         <Setter Property="LineColor" Value="Gray" />
         <Setter Property="TitleFontSize" Value="11"/>
         <Setter Property="TitleFontFamily" Value="Verdana"/>
     </Style>
     <Style x:Key="AxisY"  TargetType="{x:Type vc:Axis}">
-        <Setter Property="LineThickness" Value="0.5" />
+        <!--<Setter Property="LineThickness" Value="0.5" />-->
         <Setter Property="LineColor" Value="Gray" />
         <Setter Property="TitleFontSize" Value="11"/>
         <Setter Property="TitleFontFamily" Value="Verdana"/>

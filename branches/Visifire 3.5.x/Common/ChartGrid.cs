@@ -109,9 +109,9 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty LineThicknessProperty = DependencyProperty.Register
             ("LineThickness",
-            typeof(Double),
+            typeof(Nullable<Double>),
             typeof(ChartGrid),
-            new PropertyMetadata(0.25, OnLineThicknessPropertyChanged));
+            new PropertyMetadata(OnLineThicknessPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.ChartGrid.InterlacedColor dependency property.
@@ -218,11 +218,17 @@ namespace Visifire.Charts
        /// <summary>
        /// Get or set the grid line thickness 
        /// </summary>
-       public Double LineThickness
+#if SL
+       [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
+#endif
+       public Nullable<Double> LineThickness
        {   
            get
            {
-               return (Double)GetValue(LineThicknessProperty);
+               if (GetValue(LineThicknessProperty) == null)
+                   return 0.25;
+               else
+                   return (Nullable<Double>)GetValue(LineThicknessProperty);
            }
            set
            {
@@ -446,7 +452,6 @@ namespace Visifire.Charts
 
             if (minVal != maxVal)
             {
-                InterlacedRectangles = new List<Rectangle>();
                 Decimal xValue;
 
                 for (xValue = minVal; xValue <= maxVal; )
@@ -454,7 +459,7 @@ namespace Visifire.Charts
                     Line line = new Line();
                     InterlacedLines.Add(line);
                     line.Stroke = LineColor;
-                    line.StrokeThickness = LineThickness;
+                    line.StrokeThickness = (Double)LineThickness;
                     line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
 
                     line.Width = Width;
@@ -514,7 +519,7 @@ namespace Visifire.Charts
                             position = Graphics.ValueToPixelPosition(Height, 0, Minimum, Maximum, (Double)xValue);
 
                             if (position == 0)
-                                position += this.LineThickness;
+                                position += (Double)this.LineThickness;
 
                             line.X1 = 0;
                             line.X2 = Width;
@@ -786,10 +791,160 @@ namespace Visifire.Charts
             get;
             set;
         }
-        
+
+        private List<Path> InterlacedPaths
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         #region Internal Methods
+
+        /// <summary>
+        /// Calculate grid points for circular chart
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="center"></param>
+        /// <param name="spikesCount"></param>
+        /// <returns></returns>
+        private List<Point> GetGridPoints(Double radius, Point center, Double spikesCount)
+        {
+            Double startAngle = -Math.PI / 2;
+
+            Double actualAngle = startAngle;
+
+            Int32 nextIteration = 1;
+
+            Double minAngle = 0;
+
+            List<Point> points = new List<Point>();
+
+            Double minAngleInDegree = 360 / spikesCount;
+
+            for (Int32 i = 0; i < spikesCount; i++)
+            {
+                Double x = radius * Math.Cos(actualAngle) + center.X;
+                Double y = radius * Math.Sin(actualAngle) + center.Y;
+
+                points.Add(new Point(x, y));
+
+                minAngle = minAngleInDegree * nextIteration++;
+                actualAngle = AxisLabel.GetRadians(minAngle) - (Math.PI / 2);
+            }
+
+            return points;
+        }
+
+        /// <summary>
+        /// Create and position ChartGrid for circular chart
+        /// </summary>
+        internal void CreateAndPositionChartGrid4CircularAxesY()
+        {
+            Double interval = (Double)Interval; // Interval  for the chart grid
+            Decimal index = 0;                  // starting point for the loop that generates grids
+            Decimal minVal = (Decimal)Minimum;  // smallest value from where the grid must be drawn
+            Decimal maxVal = (Decimal)Maximum;  // largest value from where the grid must be drawn
+
+            // gap between two intervals
+            Decimal gap = (Decimal)interval;    
+
+            Int32 countRectangles = 0;          // counts the number of color bands for animating them alternately in opposite direction
+            Double position = 0;                // value of the line position for the running loop cycle
+
+            InterlacedPaths = new List<Path>();
+            InterlacedLines = new List<Line>();
+
+            List<Point> previousPoints = new List<Point>();
+            List<Point> currPoints = new List<Point>();
+
+            CircularPlotDetails plotDetails = ParentAxis.CircularPlotDetails;
+
+            if (minVal != maxVal)
+            {
+                Decimal xValue;
+
+                for (xValue = minVal; xValue <= maxVal; )
+                {
+                    position = Graphics.ValueToPixelPosition(Height, 0, Minimum, Maximum, (Double)xValue);
+
+                    Double radius = Height - position;
+
+                    List<Point> points = GetGridPoints(radius, plotDetails.Center, plotDetails.ListOfPoints4CircularAxis.Count);
+
+                    currPoints = points;
+
+                    Int32 i;
+                    for (i = 0; i < points.Count - 1; i++)
+                    {
+                        Line line = new Line();
+                        InterlacedLines.Add(line);
+                        line.Stroke = LineColor;
+                        line.StrokeThickness = (Double)LineThickness;
+                        line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+
+                        line.X1 = points[i].X;
+                        line.X2 = points[i + 1].X;
+                        line.Y1 = points[i].Y;
+                        line.Y2 = points[i + 1].Y;
+
+                        Visual.Children.Add(line);
+                    }
+
+                    // Create last line
+                    Line lastLine = new Line();
+                    InterlacedLines.Add(lastLine);
+                    lastLine.Stroke = LineColor;
+                    lastLine.StrokeThickness = (Double)LineThickness;
+                    lastLine.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
+
+                    lastLine.X1 = points[i].X;
+                    lastLine.X2 = points[0].X;
+                    lastLine.Y1 = points[i].Y;
+                    lastLine.Y2 = points[0].Y;
+
+                    Visual.Children.Add(lastLine);
+
+                    if (index % 2 == 1)
+                    {
+                        Path path = new Path();
+                        path.StrokeThickness = 0;
+
+                        List<Point> listOfPreAndCurrPoints = new List<Point>();
+
+                        for (Int32 newPointIndex = 0; newPointIndex < currPoints.Count; newPointIndex++)
+                        {
+                            listOfPreAndCurrPoints.Add(currPoints[newPointIndex]);
+                        }
+
+                        listOfPreAndCurrPoints.Add(currPoints[0]);
+
+                        for (Int32 prePointIndex = 0; prePointIndex < previousPoints.Count; prePointIndex++)
+                        {
+                            listOfPreAndCurrPoints.Add(previousPoints[prePointIndex]);
+                        }
+
+                        listOfPreAndCurrPoints.Add(previousPoints[0]);
+                        listOfPreAndCurrPoints.Add(currPoints[0]);
+
+                        path.Data = ParentAxis.GetPathGeometry(listOfPreAndCurrPoints);
+
+                        countRectangles++;
+                        path.Fill = InterlacedColor;
+                        path.SetValue(Canvas.ZIndexProperty, 10);
+                        Visual.Children.Add(path);
+                        InterlacedPaths.Add(path);
+                    }
+
+                    previousPoints = currPoints;
+
+                    index += (ParentAxis.SkipOffset + 1);
+
+                    xValue = minVal + index * gap;
+                }
+            }
+        }
 
         /// <summary>
         /// Creates the visual element for chart grid
@@ -818,37 +973,45 @@ namespace Visifire.Charts
 
             if (animationEnabled)
             {
-                Storyboard = new Storyboard();
+                if ((Chart as Chart).PlotDetails.ChartOrientation != ChartOrientationType.Circular)
+                {
+                    Storyboard = new Storyboard();
 
-                ScaleTransform st = new ScaleTransform() { ScaleX = 1, ScaleY = 1 };
-                Visual.RenderTransformOrigin = new Point(0.5, 0.5);
-                Visual.RenderTransform = st;
+                    ScaleTransform st = new ScaleTransform() { ScaleX = 1, ScaleY = 1 };
+                    Visual.RenderTransformOrigin = new Point(0.5, 0.5);
+                    Visual.RenderTransform = st;
 
-                if (Placement == PlacementTypes.Top || Placement == PlacementTypes.Bottom)
-                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleY)", 0, 1, 0, animationDuration));
-                else
-                    Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleX)", 0, 1, 0, animationDuration));
+                    if (Placement == PlacementTypes.Top || Placement == PlacementTypes.Bottom)
+                        Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleY)", 0, 1, 0, animationDuration));
+                    else
+                        Storyboard.Children.Add(CreateDoubleAnimation(st, "(ScaleTransform.ScaleX)", 0, 1, 0, animationDuration));
+                }
             }
 
-            CreateAndPositionChartGrid(animationEnabled, animationDuration);
+            if ((Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                CreateAndPositionChartGrid4CircularAxesY();
+            else
+            {
+                CreateAndPositionChartGrid(animationEnabled, animationDuration);
 
-            PlotArea plotArea = (Chart as Chart).PlotArea;
+                PlotArea plotArea = (Chart as Chart).PlotArea;
 
-            Size visualSize;
+                Size visualSize;
 
 #if WPF
-            Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
-            visualSize = new Size(Visual.DesiredSize.Width, Visual.DesiredSize.Height);
+                Visual.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                visualSize = new Size(Visual.DesiredSize.Width, Visual.DesiredSize.Height);
 #else
-            visualSize = new Size(Visual.ActualWidth, Visual.ActualHeight);
+                visualSize = new Size(Visual.ActualWidth, Visual.ActualHeight);
 #endif
 
-            RectangleGeometry rectGeo = new RectangleGeometry();
-            rectGeo.Rect = new Rect(plotArea.BorderThickness.Left, plotArea.BorderThickness.Top, visualSize.Width - plotArea.BorderThickness.Left - plotArea.BorderThickness.Right, visualSize.Height - plotArea.BorderThickness.Top - plotArea.BorderThickness.Bottom);
-            rectGeo.RadiusX = plotArea.CornerRadius.TopRight;
-            rectGeo.RadiusY = plotArea.CornerRadius.TopRight;
-            Visual.Clip = rectGeo;
-            
+                RectangleGeometry rectGeo = new RectangleGeometry();
+                rectGeo.Rect = new Rect(plotArea.BorderThickness.Left, plotArea.BorderThickness.Top, visualSize.Width - plotArea.BorderThickness.Left - plotArea.BorderThickness.Right, visualSize.Height - plotArea.BorderThickness.Top - plotArea.BorderThickness.Bottom);
+                rectGeo.RadiusX = plotArea.CornerRadius.TopRight;
+                rectGeo.RadiusY = plotArea.CornerRadius.TopRight;
+                Visual.Clip = rectGeo;
+            }
+
             Visual.Opacity = this.Opacity;
         }
         
@@ -867,12 +1030,18 @@ namespace Visifire.Charts
                         rec.Fill = InterlacedColor;
                 }
 
+                if (InterlacedPaths != null)
+                {
+                    foreach (Path path in InterlacedPaths)
+                        path.Fill = InterlacedColor;
+                }
+
                 if (InterlacedLines != null)
                 {   
                     foreach (Line line in InterlacedLines)
                     {
                         line.Stroke = LineColor;
-                        line.StrokeThickness = LineThickness;
+                        line.StrokeThickness = (Double)LineThickness;
                         line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
                     }
                 }
@@ -891,7 +1060,7 @@ namespace Visifire.Charts
                             foreach (Line line in interlacedLinesOverVerticalPlank)
                             {
                                 line.Stroke = LineColor;
-                                line.StrokeThickness = LineThickness;
+                                line.StrokeThickness = (Double)LineThickness;
                                 line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
                             }
                         }

@@ -286,7 +286,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
     </Style>
 
     <Style TargetType="vc:Axis">
-        <Setter Property="LineThickness" Value="0.5" />
+        <!--<Setter Property="LineThickness" Value="0.5" />-->
         <Setter Property="LineColor" Value="Gray" />
         <Setter Property="TitleFontFamily" Value="Verdana"/>
     </Style>
@@ -298,7 +298,6 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
     </Style>
 
     <Style TargetType="vc:ChartGrid">
-        <Setter Property="LineThickness" Value="0.25"/>
         <Setter Property="LineStyle" Value="Solid"/>
         <Setter Property="LineColor" Value="Gray"/>
     </Style>

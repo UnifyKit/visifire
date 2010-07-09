@@ -1324,7 +1324,18 @@ namespace Visifire.Charts
                         trendLine.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Element_PropertyChanged);
                     }
                 }
-
+            }
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove
+                || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {   
+                if (e.OldItems != null)
+                {
+                    foreach (TrendLine trendLine in e.OldItems)
+                    {   
+                        trendLine.Chart = null;
+                        trendLine.PropertyChanged -= Element_PropertyChanged;
+                    }
+                }
             }
 
             _forcedRedraw = true;
@@ -1397,10 +1408,8 @@ namespace Visifire.Charts
                             }
 
                             ds.Visual = null;
-
                             ds.DataSource = null;
                             ds.Chart = null;
-                            
                         }
                     }
                 }
@@ -1421,6 +1430,10 @@ namespace Visifire.Charts
                         }
 
                         ds.RemoveToolTip();
+
+                        ds.DataSource = null;
+                        ds.Visual = null;
+                        ds.Chart = null;
                     }
 
                     InternalSeries.Clear();
@@ -1429,7 +1442,7 @@ namespace Visifire.Charts
 
             _datapoint2UpdatePartially = null;
 
-            System.Diagnostics.Debug.WriteLine("xxxxxx---------IsBackGround=" + System.Threading.Thread.CurrentThread.IsBackground.ToString());
+            System.Diagnostics.Debug.WriteLine("Running Thread IsBackGround=" + System.Threading.Thread.CurrentThread.IsBackground.ToString());
             InvokeRender();
         }
         
@@ -2433,7 +2446,7 @@ namespace Visifire.Charts
             {
                 Double intensity;
 
-                if (labelStyle == LabelStyles.Inside && (dataPoint.Parent.RenderAs != RenderAs.Line && dataPoint.Parent.RenderAs != RenderAs.StepLine))
+                if (labelStyle == LabelStyles.Inside && !RenderHelper.IsLineCType(dataPoint.Parent))
                 {
                     intensity = Graphics.GetBrushIntensity(dataPoint.Color);
                     returnBrush = Graphics.GetDefaultFontColor(intensity);
