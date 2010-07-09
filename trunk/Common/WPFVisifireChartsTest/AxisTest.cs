@@ -745,8 +745,8 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                Assert.AreEqual(Orientation.Horizontal, chart.AxesX[0].AxisOrientation);
-                Assert.AreEqual(Orientation.Vertical, chart.AxesY[0].AxisOrientation);
+                Assert.AreEqual(AxisOrientation.Horizontal, chart.AxesX[0].AxisOrientation);
+                Assert.AreEqual(AxisOrientation.Vertical, chart.AxesY[0].AxisOrientation);
             }
 
             window.Dispatcher.InvokeShutdown();
@@ -1802,10 +1802,10 @@ namespace WPFVisifireChartsTest
             window.Show();
             if (_isLoaded)
             {
-                _axisX.AxisOrientation = Orientation.Horizontal;
-                Assert.AreEqual(Orientation.Horizontal, _axisX.AxisOrientation);
-                _axisY.AxisOrientation = Orientation.Vertical;
-                Assert.AreEqual(Orientation.Vertical, _axisY.AxisOrientation);
+                _axisX.AxisOrientation = AxisOrientation.Horizontal;
+                Assert.AreEqual(AxisOrientation.Horizontal, _axisX.AxisOrientation);
+                _axisY.AxisOrientation = AxisOrientation.Vertical;
+                Assert.AreEqual(AxisOrientation.Vertical, _axisY.AxisOrientation);
             }
 
             window.Dispatcher.InvokeShutdown();

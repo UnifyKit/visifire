@@ -47,6 +47,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Line:
+                case RenderAs.Spline:
                     renderedCanvas = LineChart.GetVisualObjectForLineChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
@@ -88,6 +89,10 @@ namespace Visifire.Charts
 
                 case RenderAs.Doughnut:
                     renderedCanvas = PieChart.GetVisualObjectForDoughnutChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled);
+                    break;
+
+                case RenderAs.Radar:
+                    renderedCanvas = RadarChart.GetVisualObjectForRadarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled);
                     break;
 
                 case RenderAs.StackedArea:
@@ -176,12 +181,31 @@ namespace Visifire.Charts
                 chart.PARTIAL_DP_RENDER_LOCK = false;
                 Boolean isNeed2UpdateAllSeries = false;
 
-                foreach(KeyValuePair<DataPoint, VcProperties>  dpInfo in chart._datapoint2UpdatePartially)
+                List<DataSeries> _splineDataSeries = (from value in chart._datapoint2UpdatePartially 
+                                                      where value.Key.Parent.RenderAs == RenderAs.Spline
+                                                      select value.Key.Parent).Distinct().ToList();
+
+                foreach (DataSeries splineDs in _splineDataSeries)
+                    splineDs.UpdateVisual(VcProperties.DataPointUpdate, null);
+
+                List<KeyValuePair<DataPoint, VcProperties>> remainingDpInfo = (from dpInfo in chart._datapoint2UpdatePartially where !_splineDataSeries.Contains(dpInfo.Key.Parent) select dpInfo).ToList();
+
+                // If there is nothing to render anymore
+                if (remainingDpInfo.Count == 0)
+                    return;
+
+                foreach (KeyValuePair<DataPoint, VcProperties> dpInfo in remainingDpInfo)
                 {   
                     DataPoint dp = dpInfo.Key;
 
-                    if (dpInfo.Value == VcProperties.XValue)
+                    if (dp.Parent.RenderAs == RenderAs.Spline)
                     {
+                        isNeed2UpdateAllSeries = false;
+                        continue;
+                    }
+
+                    if (dpInfo.Value == VcProperties.XValue)
+                    {   
                         isNeed2UpdateAllSeries = true;
                         break;
                     }
@@ -253,11 +277,14 @@ namespace Visifire.Charts
 
                      //renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
-                  case RenderAs.Line:
+                  case RenderAs.Spline:
+                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        break;
 
+                  case RenderAs.Line:
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-                            //LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
+                            // LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         else
                             //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
 
@@ -432,7 +459,7 @@ namespace Visifire.Charts
                     // renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
                 case RenderAs.Line:
-
+                case RenderAs.Spline:
                     //if (isAXisChanged && isDataPoint && chart._partialUpdateAnimation)
                     //{   foreach (DataSeries ds in chart.Series)
                     //    {   
@@ -744,11 +771,11 @@ namespace Visifire.Charts
         /// <returns>Double internalXValue</returns>
         internal static Double CalculateInternalXValueFromPixelPos(Chart chart, Axis xAxis, MouseEventArgs e)
         {
-            Orientation axisOrientation = xAxis.AxisOrientation;
-            Double pixelPosition = (axisOrientation == Orientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
-            Double lengthInPixel = ((axisOrientation == Orientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
+            AxisOrientation axisOrientation = xAxis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Horizontal) ? e.GetPosition(chart.ChartArea.PlottingCanvas).X : e.GetPosition(chart.ChartArea.PlottingCanvas).Y;
+            Double lengthInPixel = ((axisOrientation == AxisOrientation.Horizontal) ? chart.ChartArea.ChartVisualCanvas.Width : chart.ChartArea.ChartVisualCanvas.Height);
 
-            return xAxis.PixelPositionToXValue(lengthInPixel, (axisOrientation == Orientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
+            return xAxis.PixelPositionToXValue(lengthInPixel, (axisOrientation == AxisOrientation.Horizontal) ? pixelPosition : lengthInPixel - pixelPosition);
         }
 
         /// <summary>
@@ -760,11 +787,11 @@ namespace Visifire.Charts
         /// <returns>Double internalYValue</returns>
         internal static Double CalculateInternalYValueFromPixelPos(Chart chart, Axis yAxis, MouseEventArgs e)
         {
-            Orientation axisOrientation = yAxis.AxisOrientation;
-            Double pixelPosition = (axisOrientation == Orientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
-            Double lengthInPixel = ((axisOrientation == Orientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
+            AxisOrientation axisOrientation = yAxis.AxisOrientation;
+            Double pixelPosition = (axisOrientation == AxisOrientation.Vertical) ? e.GetPosition(chart.ChartArea.PlottingCanvas).Y : e.GetPosition(chart.ChartArea.PlottingCanvas).X;
+            Double lengthInPixel = ((axisOrientation == AxisOrientation.Vertical) ? chart.ChartArea.ChartVisualCanvas.Height : chart.ChartArea.ChartVisualCanvas.Width);
 
-            return yAxis.PixelPositionToYValue(lengthInPixel, (axisOrientation == Orientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
+            return yAxis.PixelPositionToYValue(lengthInPixel, (axisOrientation == AxisOrientation.Vertical) ? pixelPosition : lengthInPixel - pixelPosition);
         }
 
         /// <summary>
@@ -889,13 +916,31 @@ namespace Visifire.Charts
         }
 
         /// <summary>
-        /// (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine)
+        /// (dataSeries.RenderAs == RenderAs.Line 
+        /// || dataSeries.RenderAs == RenderAs.StepLine 
+        /// || dataSeries.RenderAs == RenderAs.StepLine)
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <returns></returns>
         public static Boolean IsLineCType(DataSeries dataSeries)
         {
-            return (dataSeries.RenderAs == RenderAs.Line || dataSeries.RenderAs == RenderAs.StepLine);
+            return (dataSeries.RenderAs == RenderAs.Line 
+                || dataSeries.RenderAs == RenderAs.Spline
+                || dataSeries.RenderAs == RenderAs.StepLine);
+        }
+
+        /// <summary>
+        /// dataSeries.RenderAs == RenderAs.Area
+        /// || dataSeries.RenderAs == RenderAs.StackedArea
+        /// || dataSeries.RenderAs == RenderAs.StackedArea100
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsAreaCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.Area
+                || dataSeries.RenderAs == RenderAs.StackedArea
+                || dataSeries.RenderAs == RenderAs.StackedArea100);
         }
 
         /// <summary>
@@ -910,14 +955,21 @@ namespace Visifire.Charts
         /// <returns></returns>
         public static Boolean IsIndependentCType(DataSeries dataSeries)
         {
-            return (dataSeries.RenderAs == RenderAs.Area || dataSeries.RenderAs == RenderAs.Column
-                || dataSeries.RenderAs == RenderAs.Bar || dataSeries.RenderAs == RenderAs.Line
-                || dataSeries.RenderAs == RenderAs.StepLine
+            return (dataSeries.RenderAs == RenderAs.Area
+                || dataSeries.RenderAs == RenderAs.Bar
+                || dataSeries.RenderAs == RenderAs.Bubble
+                || dataSeries.RenderAs == RenderAs.Column
+                || dataSeries.RenderAs == RenderAs.Spline
+                || dataSeries.RenderAs == RenderAs.StepLine 
+                || dataSeries.RenderAs == RenderAs.Line
+                || dataSeries.RenderAs == RenderAs.Point 
+                || dataSeries.RenderAs == RenderAs.CandleStick
+                || dataSeries.RenderAs == RenderAs.Stock
                 );
         }
 
         /// <summary>
-        /// Chart types which works with only single DataSeries.
+        /// Chart types which works without axis
         /// (dataSeries.RenderAs == RenderAs.Pie 
         /// || dataSeries.RenderAs == RenderAs.Doughnut
         /// || dataSeries.RenderAs == RenderAs.SectionFunnel 
@@ -926,9 +978,11 @@ namespace Visifire.Charts
         /// <param name="dataSeries"></param>
         /// <returns></returns>
         public static Boolean IsAxisIndependentCType(DataSeries dataSeries)
-        {
-            return (dataSeries.RenderAs == RenderAs.Pie || dataSeries.RenderAs == RenderAs.Doughnut
-                || dataSeries.RenderAs == RenderAs.SectionFunnel || dataSeries.RenderAs == RenderAs.StreamLineFunnel);
+        {   
+            return (dataSeries.RenderAs == RenderAs.Pie 
+                || dataSeries.RenderAs == RenderAs.Doughnut
+                || dataSeries.RenderAs == RenderAs.SectionFunnel 
+                || dataSeries.RenderAs == RenderAs.StreamLineFunnel);
         }
    }
 }

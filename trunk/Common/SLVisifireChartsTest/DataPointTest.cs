@@ -1703,7 +1703,7 @@ namespace SLVisifireChartsTest
 
             Axis axisX = new Axis();
             axisX.Interval = 1;
-            axisX.AxisOrientation = Orientation.Horizontal;
+            axisX.AxisOrientation = AxisOrientation.Horizontal;
             axisX.AxisType = AxisTypes.Primary;
             chart.AxesX.Add(axisX);
 

@@ -225,14 +225,14 @@ namespace Visifire.Charts
         /// <param name="type">Current Interval type</param>
         /// <param name="maxInterval">Max Interval</param>
         /// <returns>Calculated auto interval</returns>
-        public static double CalculateAutoInterval(Double width, Double height, Orientation axisOrientation, DateTime minDateTime, DateTime maxDateTime, out IntervalTypes type, Double maxInterval, ChartValueTypes xValueType)
+        public static double CalculateAutoInterval(Double width, Double height, AxisOrientation axisOrientation, DateTime minDateTime, DateTime maxDateTime, out IntervalTypes type, Double maxInterval, ChartValueTypes xValueType)
         {   
             TimeSpan timeSpan = maxDateTime.Subtract(minDateTime);
 
             // Algorithm will interval close to 10.
             // We need to align the time span for PrefferedNumberOfIntervals
-            double maxIntervals = axisOrientation == Orientation.Horizontal ? maxInterval * 0.8 : maxInterval;
-            double rangeMultiplicator = (axisOrientation == Orientation.Horizontal ? width : height) / (200 * 10 / maxIntervals);
+            double maxIntervals = axisOrientation == AxisOrientation.Horizontal ? maxInterval * 0.8 : maxInterval;
+            double rangeMultiplicator = (axisOrientation == AxisOrientation.Horizontal ? width : height) / (200 * 10 / maxIntervals);
             
             timeSpan = new TimeSpan((long)((double)timeSpan.Ticks / rangeMultiplicator));
 

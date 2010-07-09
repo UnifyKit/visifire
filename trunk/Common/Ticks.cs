@@ -78,9 +78,9 @@ namespace Visifire.Charts
         /// </returns>
         public static readonly DependencyProperty TickLengthProperty = DependencyProperty.Register
         ("TickLength",
-        typeof(Double),
+        typeof(Nullable<Double>),
         typeof(Ticks),
-        new PropertyMetadata((Double)5, OnTickLengthPropertyChanged));
+        new PropertyMetadata(OnTickLengthPropertyChanged));
 
         /// <summary>
         /// Identifies the Visifire.Charts.Ticks.LineStyle dependency property.
@@ -248,11 +248,17 @@ namespace Visifire.Charts
         /// <summary>
         /// Get or set the Length of the ticks
         /// </summary>
-        public Double TickLength
+#if SL
+        [System.ComponentModel.TypeConverter(typeof(Converters.NullableDoubleConverter))]
+#endif
+        public Nullable<Double> TickLength
         {
             get
             {
-                return (Double)GetValue(TickLengthProperty);
+                if (GetValue(TickLengthProperty) == null)
+                    return 5;
+                else
+                    return (Nullable<Double>)GetValue(TickLengthProperty);
             }
             set
             {
@@ -533,7 +539,7 @@ namespace Visifire.Charts
                             line.X1 = position;
                             line.X2 = position;
                             line.Y1 = 0;
-                            line.Y2 = TickLength;
+                            line.Y2 = (Double)TickLength;
                             break;
 
                         case PlacementTypes.Bottom:
@@ -545,7 +551,7 @@ namespace Visifire.Charts
                             line.X1 = position;
                             line.X2 = position;
                             line.Y1 = 0;
-                            line.Y2 = TickLength;
+                            line.Y2 = (Double)TickLength;
                             break;
 
                         case PlacementTypes.Left:
@@ -556,7 +562,7 @@ namespace Visifire.Charts
                                 return;
 
                             line.X1 = 0;
-                            line.X2 = TickLength;
+                            line.X2 = (Double)TickLength;
                             line.Y1 = position;
                             line.Y2 = position;
                             break;
@@ -587,13 +593,13 @@ namespace Visifire.Charts
                 case PlacementTypes.Top:
                 case PlacementTypes.Bottom:
                     Visual.Width = Width;
-                    Visual.Height = TickLength;
+                    Visual.Height = (Double)TickLength;
                     break;
 
                 case PlacementTypes.Left:
                 case PlacementTypes.Right:
                     Visual.Height = Height;
-                    Visual.Width = TickLength;
+                    Visual.Width = (Double)TickLength;
                     break;
 
             }

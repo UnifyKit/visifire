@@ -1242,6 +1242,9 @@ namespace Visifire.Charts
         /// <param name="value">Value of the property</param>
         internal override void UpdateVisual(VcProperties propertyName, object value)
         {
+            if (Chart == null)
+                return;
+
             if (StartValue != null && EndValue != null && Value != null)
                 throw new Exception("Value property cannot be set with StartValue and EndValue in TrendLine");
 

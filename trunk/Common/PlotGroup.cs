@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 #endif
 using System.Linq;
+using System.Windows;
+
 namespace Visifire.Charts
 {
     /// <summary>
@@ -493,11 +495,60 @@ namespace Visifire.Charts
             };
         }
 
+        private static void CalculateMinMaxOfASplineCurve(DataSeries dataSeries, ref Double chartSpecificMinX, ref Double chartSpecificMaxX, ref Double chartSpecificMinY, ref Double chartSpecificMaxY)
+        {
+            if (dataSeries.RenderAs == RenderAs.Spline)
+            {
+                List<Point> knotPoints = (from dataPoint in dataSeries.InternalDataPoints where !Double.IsNaN(dataPoint.InternalXValue) && !Double.IsNaN(dataPoint.YValue) select new Point(dataPoint.InternalXValue, dataPoint.YValue)).ToList();
+
+                if (knotPoints.Count() > 0)
+                {
+                    // Get Bezier Spline Control Points.
+                    Point[] controlPoints1, controlPoints2;
+                    Bezier.GetCurveControlPoints(2, knotPoints.ToArray(), out controlPoints1, out controlPoints2);
+
+                    if (controlPoints1 != null && controlPoints2 != null)
+                    {
+                        // Calculate Max and min value among control points of Bezier segment.
+                        if (controlPoints1.Count() > 0)
+                        {
+                            chartSpecificMinX = Math.Min(Double.IsNaN(chartSpecificMinX) ? Double.MaxValue : chartSpecificMinX, (from point in controlPoints1 select point.X).Min());
+                            chartSpecificMinY = Math.Min(Double.IsNaN(chartSpecificMinY) ? Double.MaxValue : chartSpecificMinY, (from point in controlPoints1 select point.Y).Min());
+
+                            chartSpecificMaxX = Math.Max(Double.IsNaN(chartSpecificMaxX) ? Double.MinValue : chartSpecificMaxX, (from point in controlPoints1 select point.X).Max());
+                            chartSpecificMaxY = Math.Max(Double.IsNaN(chartSpecificMaxY) ? Double.MinValue : chartSpecificMaxY, (from point in controlPoints1 select point.Y).Max());
+                        }
+
+                        if (controlPoints2.Count() > 0)
+                        {
+                            chartSpecificMinX = Math.Min(chartSpecificMinX, (from point in controlPoints2 select point.X).Min());
+                            chartSpecificMinY = Math.Min(chartSpecificMinY, (from point in controlPoints2 select point.Y).Min());
+
+                            chartSpecificMaxX = Math.Max(chartSpecificMaxX, (from point in controlPoints2 select point.X).Max());
+                            chartSpecificMaxY = Math.Max(chartSpecificMaxY, (from point in controlPoints2 select point.Y).Max());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
+                chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
+                chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
+            }
+        }
+
         /// <summary>
         /// Updates all properties of this class by calculating each property.
         /// </summary>
         public void Update(VcProperties property, object oldValue, object newValue)
         {
+            Double chartSpecificMinX = Double.NaN; // Min XValue specific to chart type. 
+            Double chartSpecificMaxX = Double.NaN; // Min XValue specific to chart type. 
+            Double chartSpecificMinY = Double.NaN; // Min YValue specific to chart type. 
+            Double chartSpecificMaxY = Double.NaN; // Min YValue specific to chart type. 
+
             // List to store a concatinated set of InternalDataPoints from all DataSeries in this group
             
 
@@ -508,19 +559,19 @@ namespace Visifire.Charts
             if (property == VcProperties.None || property == VcProperties.DataPoints)
             {
                 _dataPointsInCurrentPlotGroup = new List<DataPoint>();
+
                 foreach (DataSeries dataSeries in DataSeriesList)
                 {
-                    // check if data series is enabled
-                    // if (dataSeries.Enabled == true)
-                    {
-                       // List<DataPoint>  = (from datapoint in dataSeries.InternalDataPoints select datapoint).ToList();
+                    if (dataSeries.RenderAs == RenderAs.Spline)
+                        CalculateMinMaxOfASplineCurve(dataSeries, ref chartSpecificMinX, ref chartSpecificMaxX, ref chartSpecificMinY, ref chartSpecificMaxY);
 
-                        // Concatinate the lists of InternalDataPoints
-                        _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataSeries.InternalDataPoints);
+                    System.Diagnostics.Debug.WriteLine("MinY=" + chartSpecificMinY.ToString() + " ,MaxY=" + chartSpecificMaxY.ToString());
 
-                        // set the plot group reference
-                        dataSeries.PlotGroup = this;
-                    }
+                    // Concatinate the lists of InternalDataPoints
+                    _dataPointsInCurrentPlotGroup.InsertRange(_dataPointsInCurrentPlotGroup.Count, dataSeries.InternalDataPoints);
+                    
+                    // set the plot group reference
+                    dataSeries.PlotGroup = this;
                 }
             }
 
@@ -528,7 +579,13 @@ namespace Visifire.Charts
 
             if (property == VcProperties.None || property == VcProperties.XValue || property == VcProperties.DataPoints || property == VcProperties.Series)
             {
-                _xValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToArray();
+                _xValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.InternalXValue) select dataPoint.InternalXValue).Distinct().ToList();
+
+                if (!Double.IsNaN(chartSpecificMinX))
+                    _xValues.Add(chartSpecificMinX);
+
+                if (!Double.IsNaN(chartSpecificMaxX))
+                    _xValues.Add(chartSpecificMaxX);
 
                 // Calculate max XValue
                 MaximumX = (_xValues.Count() > 0) ? (_xValues).Max() : 0;
@@ -537,7 +594,7 @@ namespace Visifire.Charts
                 MinimumX = (_xValues.Count() > 0) ? (_xValues).Min() : 0;
 
                 // Calculates and sets the min difference for XValues
-                MinDifferenceX = GetMinDifference(_xValues);
+                MinDifferenceX = GetMinDifference(_xValues.ToArray());
             }
 
             if (property == VcProperties.None || property == VcProperties.DataPoints || property == VcProperties.Series || property == VcProperties.ZValue)
@@ -563,7 +620,7 @@ namespace Visifire.Charts
             {
                 Double maxY = Double.NaN, minY = Double.NaN;
 
-                if (property == VcProperties.None || property == VcProperties.DataPoints)
+                if ( RenderAs == RenderAs.Spline || property == VcProperties.None || property == VcProperties.DataPoints)
                 {
                     List<Type> dependentVariableTypes = GetDependentVariableTypes();
 
@@ -572,7 +629,11 @@ namespace Visifire.Charts
                     else
                         _yValues = (from dataPoint in _dataPointsInCurrentPlotGroup where !Double.IsNaN(dataPoint.YValue) select dataPoint.YValue).ToList();
 
-                    //List<Double> yValuesList = new List<Double>();
+                    if (!Double.IsNaN(chartSpecificMinY))
+                        _yValues.Add(chartSpecificMinY);
+
+                    if (!Double.IsNaN(chartSpecificMaxY))
+                        _yValues.Add(chartSpecificMaxY);
 
                     foreach (DataPoint dp in _dataPointsInCurrentPlotGroup)
                     {
@@ -607,6 +668,7 @@ namespace Visifire.Charts
                         _yValues.Add(minY = ((Double[])newValue).Min());
                     }
                 }
+                
 
                 // variables to store the yValuee sum in case of stacked type charts
                 // var positiveYValue;
@@ -622,12 +684,14 @@ namespace Visifire.Charts
                     case RenderAs.Doughnut:
                     case RenderAs.Line:
                     case RenderAs.StepLine:
+                    case RenderAs.Spline:
                     case RenderAs.Pie:
                     case RenderAs.Point:
                     case RenderAs.Stock:
                     case RenderAs.CandleStick:
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
+                    case RenderAs.Radar:
 
                         if (property == VcProperties.YValue)
                         {
@@ -748,6 +812,9 @@ namespace Visifire.Charts
 
                         break;
                 }
+
+
+                System.Diagnostics.Debug.WriteLine("XXXX--MinY=" + MinimumY.ToString() + " , XXX-MaxY=" + MaximumY.ToString());
             }
 
         }
@@ -755,7 +822,7 @@ namespace Visifire.Charts
 
         #endregion
 
-        Double[] _xValues;
+        List<Double> _xValues;
         Double[] _zValues;
         List<Double> _yValues;
         List<DataPoint> _dataPointsInCurrentPlotGroup;

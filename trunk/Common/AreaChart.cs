@@ -784,7 +784,7 @@ namespace Visifire.Charts
                             }
 
                             // Start creating front face of 3D area
-                            frontFacePath = new Path() { Opacity = currentDataPoint.Parent.Opacity };
+                            frontFacePath = new Path() { Opacity = (Double)currentDataPoint.Parent.Opacity };
                             //frontFacePath = new Path() { Opacity = 0.5 };
                             ApplyBorderProperties(frontFacePath, currentDataPoint.Parent);
                             dataSeriesFaces.FrontFacePaths.Add(frontFacePath);
@@ -882,7 +882,7 @@ namespace Visifire.Charts
                                 pf.Segments.Add(new LineSegment() { Point = new Point(lastDataPoint._visualPosition.X, plankYPos) });
                                 areaBase.Data = pg;
                                 areaBase.SetValue(Canvas.ZIndexProperty, (Int32) 1);
-                                areaBase.Opacity = lastDataPoint.Parent.Opacity;
+                                areaBase.Opacity = (Double)lastDataPoint.Parent.Opacity;
                                 areaCanvas.Children.Add(areaBase);
                                 dataSeriesFaces.FrontFacePaths.Add(areaBase);
                                 series.Faces.VisualComponents.Add(areaBase);
@@ -1541,7 +1541,7 @@ namespace Visifire.Charts
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, (Double)curDataPoints[index].Opacity * (Double)curDataPoints[index].Parent.Opacity);
                     }
 
                     curDataPoints[index]._visualPosition = new Point(curXPosition, curYPosition);
@@ -1559,7 +1559,7 @@ namespace Visifire.Charts
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, (Double)nextDataPoints[index].Opacity * (Double)nextDataPoints[index].Parent.Opacity);
                         }
 
                         nextDataPoints[index]._visualPosition = new Point(nextXPosition, nextYPosition);
@@ -1909,7 +1909,7 @@ namespace Visifire.Charts
                         marker.AddToParent(labelCanvas, curXPosition, curYPosition, new Point(0.5, 0.5));
                         // Apply marker animation
                         if (animationEnabled)
-                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, curDataPoints[index].Opacity * curDataPoints[index].Parent.Opacity);
+                            curDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, curDataPoints[index].Parent.Storyboard, 1, (Double)curDataPoints[index].Opacity * (Double)curDataPoints[index].Parent.Opacity);
                     }
 
                     curDataPoints[index]._visualPosition = new Point(curXPosition, curYPosition);
@@ -1927,7 +1927,7 @@ namespace Visifire.Charts
                             marker.AddToParent(labelCanvas, nextXPosition, nextYPosition, new Point(0.5, 0.5));
                             // Apply marker animation
                             if (animationEnabled)
-                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, nextDataPoints[index].Opacity * nextDataPoints[index].Parent.Opacity);
+                                nextDataPoints[index].Parent.Storyboard = AnimationHelper.ApplyOpacityAnimation(marker, currentDataSeries, nextDataPoints[index].Parent.Storyboard, 1, (Double)nextDataPoints[index].Opacity * (Double)nextDataPoints[index].Parent.Opacity);
                         }
 
                         nextDataPoints[index]._visualPosition = new Point(nextXPosition, nextYPosition);
@@ -2615,7 +2615,7 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = sideBrush;
-                sides.Opacity = dataPoint.Parent.Opacity;
+                sides.Opacity = (Double)dataPoint.Parent.Opacity;
                 ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
                 
@@ -2706,7 +2706,7 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = topBrush;
-                sides.Opacity = dataPoint.Parent.Opacity;
+                sides.Opacity = (Double)dataPoint.Parent.Opacity;
                 ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126))); //sideBrush;
 
@@ -2750,7 +2750,7 @@ namespace Visifire.Charts
                 sides.Data = pg;
 
                 sides.Fill = sideBrush;
-                sides.Opacity = dataPoint.Parent.Opacity;
+                sides.Opacity = (Double)dataPoint.Parent.Opacity;
                 ApplyBorderProperties(sides, dataPoint.Parent);
                 // sides.Fill = new SolidColorBrush(Color.FromArgb(255, (byte)rand.Next(155), (byte)rand.Next(200), (byte)rand.Next(126)));
 
@@ -2885,7 +2885,7 @@ namespace Visifire.Charts
 
                 case VcProperties.Opacity:
 
-                    Double opacity = dataPoint.Opacity * dataSeries.Opacity;
+                    Double opacity = (Double)dataPoint.Opacity * (Double)dataSeries.Opacity;
                     if (marker != null)
                         marker.Visual.Opacity = opacity;
 
