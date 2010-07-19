@@ -172,7 +172,7 @@ namespace Visifire.Charts
 
             marker.ShadowEnabled = (Boolean)dataPoint.ShadowEnabled;
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 marker.PixelLavelShadow = false;
             else
                 marker.PixelLavelShadow = true;

@@ -952,13 +952,15 @@ namespace Visifire.Charts
                 foreach (FrameworkElement face in series.Faces.VisualComponents)
                     VisifireElement.AttachEvents2AreaVisual(series, series, face);
 
-                if (!VisifireControl.IsXbapApp)
+                if (VisifireControl.IsMediaEffectsEnabled)
                 {
                     if ((Boolean)series.ShadowEnabled)
                     {
                         if (series.Faces != null && series.Faces.Visual != null)
                         {
+#if !WP
                             series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+#endif
                         }
                     }
                 }
@@ -1649,13 +1651,15 @@ namespace Visifire.Charts
 
                         curDataPoints[index].Parent.Faces.Visual = visual;
 
-                        if (!VisifireControl.IsXbapApp)
+                        if (VisifireControl.IsMediaEffectsEnabled)
                         {
                             if ((Boolean)series.ShadowEnabled)
                             {
                                 if (series.Faces != null && series.Faces.Visual != null)
                                 {
+#if !WP
                                     series.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(135, 2, 1);
+#endif
                                 }
                             }
                         }
@@ -2014,9 +2018,12 @@ namespace Visifire.Charts
                                 storyboard = ApplyStackedAreaAnimation(currentDataSeries, area2d, storyboard, (1.0 / seriesList.Count) * (seriesList.IndexOf(curDataPoints[index].Parent)), 1.0 / seriesList.Count);
                             }
                         }
+
                         curDataPoints[index].Parent.Faces.Visual = visual;
 
-                        if (!VisifireControl.IsXbapApp)
+                        #if !WP
+
+                        if (VisifireControl.IsMediaEffectsEnabled)
                         {
                             if ((Boolean)series.ShadowEnabled)
                             {
@@ -2026,6 +2033,8 @@ namespace Visifire.Charts
                                 }
                             }
                         }
+
+                        #endif
                     }
 
                     curBase += curPercentageY;
@@ -3857,7 +3866,8 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.ShadowEnabled:
-                    if (!VisifireControl.IsXbapApp)
+#if !WP
+                    if (VisifireControl.IsMediaEffectsEnabled)
                     {
                         if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
                         {
@@ -3869,6 +3879,7 @@ namespace Visifire.Charts
                                 dataSeries.Faces.Visual.Effect = null;
                         }
                     }
+#endif
                     break;
 
                 case VcProperties.DataPoints:

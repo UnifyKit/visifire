@@ -193,7 +193,9 @@ namespace Visifire.Charts
             foreach (FrameworkElement fe in listReference)
             {
                 Panel parent = fe.Parent as Panel;
-                parent.Children.Remove(fe);
+
+                if (parent != null)
+                    parent.Children.Remove(fe);
             }
 
             listReference.Clear();
@@ -204,7 +206,9 @@ namespace Visifire.Charts
             foreach (FrameworkElement fe in listReference)
             {
                 Panel parent = fe.Parent  as Panel;
-                parent.Children.Remove(fe);
+                
+                if (parent != null)
+                    parent.Children.Remove(fe);
             }
 
             listReference.Clear();
@@ -635,6 +639,7 @@ namespace Visifire.Charts
             return path;
         }
 
+#if !WP
         public static DropShadowEffect GetShadowEffect(Double direction, Double shadowDepth, Double opacity)
         {
             return new System.Windows.Media.Effects.DropShadowEffect()
@@ -652,7 +657,7 @@ namespace Visifire.Charts
 #endif
             };
         }
-
+#endif
         internal static PathGeometry GetShadowClip(Size clipSize, CornerRadius radius)
         {
             PathGeometry pathGeometry = new PathGeometry();

@@ -43,7 +43,7 @@ namespace Visifire.Commons
         /// <returns>String</returns>
         public static String GetAbsolutePath(String path)
         {
-#if SL
+#if SL && !WP
             String address, queryString;
             String BaseUri = System.Windows.Browser.HtmlPage.Document.DocumentUri.ToString();
 
@@ -100,7 +100,7 @@ namespace Visifire.Commons
             typeof(VisifireControl),
             null);
 
-#if SL
+#if SL &&!WP
 
         /// <summary>
         /// Sliverlight Object Id
@@ -111,13 +111,12 @@ namespace Visifire.Commons
             get;
             set;
         }
-
 #endif
 
         /// <summary>
         /// Enables or disables all ToolTips in chart
         /// </summary>
-#if SL
+#if SL &&!WP
         [System.Windows.Browser.ScriptableMember]
 #endif
         public Boolean ToolTipEnabled
@@ -456,7 +455,7 @@ namespace Visifire.Commons
             try
             {   
                 WriteableBitmap bitmap = new WriteableBitmap(this, null);
-
+#if !WP
                 if (bitmap != null)
                 {   
                     SaveFileDialog saveDlg = new SaveFileDialog();
@@ -488,6 +487,7 @@ namespace Visifire.Commons
                         }
                     }
                 }
+#endif
             }
             catch (Exception ex)
             {
@@ -640,7 +640,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Whether the chart is running under an XBAP application
         /// </summary>
-        internal static Boolean IsXbapApp
+        internal static Boolean IsXBAPApp
         {
             get
             {
@@ -649,6 +649,24 @@ namespace Visifire.Commons
 #else
 
                 return false;
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Whether the chart is running under an XBAP application
+        /// </summary>
+        internal static Boolean IsMediaEffectsEnabled
+        {
+            get
+            {
+#if WPF
+                return !IsXBAPApp;
+#elif WP
+                return false;
+#else
+
+                return true;
 #endif
             }
         }

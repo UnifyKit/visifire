@@ -304,13 +304,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Page Include="..\..\Common\SLVisifireCharts\Logger.xaml">
-      <Link>Logger.xaml</Link>
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <EmbeddedResource Include="..\..\Common\SLVisifireCharts\Theme1.xaml">
       <Link>Theme1.xaml</Link>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
@@ -332,6 +325,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Page Include="..\..\Common\SLVisifireCharts\Logger.xaml">
+      <Link>Logger.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

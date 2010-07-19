@@ -1158,7 +1158,7 @@ namespace Visifire.Charts
                 Line.StrokeDashArray = ExtendedGraphics.GetDashArray(LineStyle);
             }
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 ApplyShadow4XBAP();
             else
                 ApplyShadow();
@@ -1172,7 +1172,7 @@ namespace Visifire.Charts
             if (Rectangle != null)
                 Rectangle.Fill = LineColor;
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 ApplyShadow4XBAP();
             else
                 ApplyShadow();
@@ -1206,6 +1206,7 @@ namespace Visifire.Charts
         {
             if (ShadowEnabled)
             {
+#if !WP
                 if (Line != null)
                 {
                     Line.Effect = new System.Windows.Media.Effects.DropShadowEffect() { Opacity = 0.5 };
@@ -1215,10 +1216,12 @@ namespace Visifire.Charts
                 {
                     Rectangle.Effect = new System.Windows.Media.Effects.DropShadowEffect() { Opacity = 0.5 };
                 }
+#endif
             }
 
             else
             {
+#if !WP
                 if (Line != null)
                 {
                     Line.Effect = null;
@@ -1228,6 +1231,7 @@ namespace Visifire.Charts
                 {
                     Rectangle.Effect = null;
                 }
+#endif
             }
         }
 
@@ -1252,7 +1256,7 @@ namespace Visifire.Charts
             {   
                 FirePropertyChanged(propertyName);
             }
-            else if((VisifireControl.IsXbapApp && propertyName == VcProperties.ShadowEnabled))
+            else if((!VisifireControl.IsMediaEffectsEnabled && propertyName == VcProperties.ShadowEnabled))
             {
                 FirePropertyChanged(propertyName);
             }
