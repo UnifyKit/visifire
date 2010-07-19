@@ -160,7 +160,9 @@ namespace Visifire.Charts
 
         void Logger_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {   
+#if !WP
             System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(HelpLink), "_blank");
+#endif
         }
 
         public override void OnApplyTemplate()

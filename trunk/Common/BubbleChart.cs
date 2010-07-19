@@ -316,7 +316,7 @@ namespace Visifire.Charts
                 }
             }
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 marker.PixelLavelShadow = false; // pixelLavelShadow;
             else
                 marker.PixelLavelShadow = true;

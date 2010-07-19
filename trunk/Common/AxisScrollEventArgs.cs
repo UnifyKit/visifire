@@ -30,7 +30,7 @@ namespace Visifire.Charts
     /// Visifire.Charts.AxisScrollEventArgs class
     /// </summary>
 
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class AxisScrollEventArgs : EventArgs

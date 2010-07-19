@@ -29,7 +29,7 @@ namespace Visifire.Charts
     /// Visifire.Charts.LegendMouseButtonEventArgs class
     /// </summary>
 
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public sealed class LegendMouseEventArgs : EventArgs

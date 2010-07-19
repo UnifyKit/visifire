@@ -45,7 +45,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.ToolTip class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class ToolTip : Visifire.Commons.VisifireElement

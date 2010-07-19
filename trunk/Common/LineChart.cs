@@ -149,7 +149,6 @@ namespace Visifire.Charts
 
                 Double labelLeft = 0;
                 Double labelTop = 0;
-                Double gap = 6;
 
                 if (Double.IsNaN(dataPoint.LabelAngle) || dataPoint.LabelAngle == 0)
                 {   
@@ -1062,7 +1061,7 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     lineShadow = new Path() { IsHitTestVisible = false };
                     lineShadow.Stroke = Graphics.GetLightingEnabledBrush(new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
@@ -1082,7 +1081,9 @@ namespace Visifire.Charts
                 }
                 else
                 {
+#if !WP
                     visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+#endif
                     lineShadow = null;
                 }
             }
@@ -1671,7 +1672,7 @@ namespace Visifire.Charts
         /// <param name="pointCollectionList"></param>
         private static void ApplyShadow(DataSeries dataSeries, ref List<List<DataPoint>> pointCollectionList, Double width, Double height, Canvas label2dCanvas)
         {
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {   
                 // Update GeometryGroup for shadow
                 if (dataSeries.Faces.Parts[1] != null)
@@ -1694,12 +1695,14 @@ namespace Visifire.Charts
             {
                 if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
                 {
+#if !WP
                     if ((Boolean)dataSeries.ShadowEnabled)
                     {
                         dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
                     }
                     else
                         dataSeries.Faces.Visual.Effect = null;
+#endif
                 }
             }
         }
@@ -1768,7 +1771,7 @@ namespace Visifire.Charts
                     newBezierPoints, pathFigure, oldStartPoint, pointCollection[0]._visualPosition);
 
                 // Animate Shadow for Spline for Xbap
-                if (shadowEnabled && VisifireControl.IsXbapApp)
+                if (shadowEnabled && !VisifireControl.IsMediaEffectsEnabled)
                 {
                     bezierSeg = dp.ShadowFaces.Parts[0] as BezierSegment;
                     pathFigure = dp.ShadowFaces.Parts[1] as PathFigure;
@@ -1926,7 +1929,7 @@ namespace Visifire.Charts
             // Apply new Data for Line
             LineChart.GetPathGeometry(dataSeries.RenderAs, gg, pointCollectionList, false, width, height, label2dCanvas);
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {
                 // Update GeometryGroup for shadow
                 if (dataSeries.Faces.Parts[1] != null)
@@ -1949,12 +1952,14 @@ namespace Visifire.Charts
             {
                 if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
                 {
+#if !WP
                     if ((Boolean)dataSeries.ShadowEnabled)
                     {
                         dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
                     }
                     else
                         dataSeries.Faces.Visual.Effect = null;
+#endif
                 }
             }
 
@@ -2239,7 +2244,7 @@ namespace Visifire.Charts
         {   
             Boolean isAnimationEnabled = (Boolean)(dataPoint.Chart as Chart).AnimatedUpdate;
 
-            if (!(Boolean)dataPoint.Enabled)
+            if (!(Boolean)dataPoint.Enabled || dataPoint.Faces == null)
                 return;
 
             Chart chart = dataPoint.Chart as Chart;
@@ -2296,7 +2301,7 @@ namespace Visifire.Charts
             LineSegment lineSeg = dataPoint.Faces.Parts[0] as LineSegment;
             PathFigure pathFigure = dataPoint.Faces.Parts[1] as PathFigure;
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {   
                 LineSegment shadowLineSeg;
                 PathFigure shadowPathFigure;
@@ -2373,7 +2378,7 @@ namespace Visifire.Charts
 
                 storyBoard.Children.Add(pointAnimation);
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     if (shadowTarget != null)
                     {
@@ -2804,7 +2809,7 @@ namespace Visifire.Charts
 
             series.Faces.Parts.Add(polyline);
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 series.Faces.Parts.Add(PolylineShadow);
 
             labelCanvas.Children.Add(line2dLabelCanvas);

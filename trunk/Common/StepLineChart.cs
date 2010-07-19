@@ -1052,7 +1052,7 @@ namespace Visifire.Charts
 
             if (lineParams.ShadowEnabled)
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     lineShadow = new Path() { IsHitTestVisible = false };
                     lineShadow.Stroke = Graphics.GetLightingEnabledBrush(new SolidColorBrush(Colors.LightGray), "Linear", new Double[] { 0.65, 0.55 });
@@ -1072,7 +1072,9 @@ namespace Visifire.Charts
                 }
                 else
                 {
+#if !WP
                     visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
+#endif
                     lineShadow = null;
                 }
             }
@@ -1527,7 +1529,7 @@ namespace Visifire.Charts
                 // Apply new Data for Line
                 StepLineChart.GetPathGeometry(gg, pointCollectionList, false, width, height, label2dCanvas);
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     // Update GeometryGroup for shadow
                     if (dataSeries.Faces.Parts[1] != null)
@@ -1550,12 +1552,14 @@ namespace Visifire.Charts
                 {
                     if (dataSeries.Faces != null && dataSeries.Faces.Visual != null)
                     {
+#if !WP
                         if ((Boolean)dataSeries.ShadowEnabled)
                         {
                             dataSeries.Faces.Visual.Effect = ExtendedGraphics.GetShadowEffect(315, 2.5, 1);
                         }
                         else
                             dataSeries.Faces.Visual.Effect = null;
+#endif
                     }
                 }
 
@@ -1894,7 +1898,7 @@ namespace Visifire.Charts
 
             PathFigure shadowPathFigure;
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {
                 // For line shadow
                 if ((Boolean)dataPoint.Parent.ShadowEnabled)
@@ -2035,7 +2039,7 @@ namespace Visifire.Charts
                     storyBorad.Children.Add(pointAnimation3);
                 }
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     if (shadowTarget != null)
                     {
@@ -2519,7 +2523,7 @@ namespace Visifire.Charts
 
             series.Faces.Parts.Add(polyline);
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 series.Faces.Parts.Add(PolylineShadow);
 
             labelCanvas.Children.Add(line2dLabelCanvas);
@@ -2726,127 +2730,7 @@ namespace Visifire.Charts
 
             ((FrameworkElement)sender).Dispatcher.BeginInvoke(new Action<Chart, object, MouseEventArgs, RenderAs[]>(LineChart.MoveMovingMarker), chart, sender, e, new RenderAs[]{RenderAs.StepLine});
         }
-
-     /*   /// <summary>
-        /// Move the moving marker
-        /// </summary>
-        /// <param name="chart">Chart reference</param>
-        /// <param name="sender">object</param>
-        /// <param name="e">MouseEventArgs</param>
-        private static void MoveMovingMarker(Chart chart, object sender, MouseEventArgs e)
-        {
-            if (!_isMouseEnteredInPlotArea)
-                return;
-
-            Double xPosition = e.GetPosition(sender as Canvas).X;
-            Double yPosition = e.GetPosition(sender as Canvas).Y;
-
-            foreach (DataSeries ds in chart.InternalSeries)
-            {
-                if (ds.RenderAs != RenderAs.StepLine)
-                    continue;
-
-                if (!ds.MovingMarkerEnabled)
-                {
-                    ds._movingMarker.Visibility = Visibility.Collapsed;
-                    continue;
-                }
-
-                if (ds._movingMarker != null)
-                {
-                    if (ds._movingMarker.Visibility == Visibility.Collapsed)
-                        ds._movingMarker.Visibility = Visibility.Visible;
-
-                    DataPoint nearestDataPoint = null;
-
-                    foreach (DataPoint dp in ds.DataPoints)
-                    {
-                        if (!(Boolean)dp.Enabled)
-                            continue;
-
-                        if (dp.Marker != null)
-                        {
-                            dp._x_distance = Math.Abs(xPosition - dp._visualPosition.X);
-
-                            if (nearestDataPoint == null)
-                            {
-                                nearestDataPoint = dp;
-                                continue;
-                            }
-
-                            if (dp._x_distance < nearestDataPoint._x_distance)
-                                nearestDataPoint = dp;
-                        }
-                    }
-
-
-                    if (nearestDataPoint != null)
-                    {
-                        var nearestDPAlongXPosition = from dp in ds.DataPoints where dp.InternalXValue == nearestDataPoint.InternalXValue select dp;
-
-                        DataPoint newNearestDp = nearestDPAlongXPosition.First().Parent.GetNearestDataPointAlongYPosition(e, nearestDPAlongXPosition.ToList());
-
-                        if (newNearestDp != null)
-                            nearestDataPoint = newNearestDp;
-                    }
-
-                    // DataPoint nearestDataPoint = (from dp in ds.DataPoints orderby Math.Abs(xPosition - dp._visualPosition.X) select dp).First();
-
-                    Ellipse movingMarker = ds._movingMarker;
-
-                    if (nearestDataPoint == null)
-                    {
-                        ds._movingMarker.Visibility = Visibility.Collapsed;
-                        return;
-                    }
-
-                    if (nearestDataPoint.Selected)
-                    {
-                        LineChart.SelectMovingMarker(nearestDataPoint);
-                    }
-                    else
-                    {
-                        movingMarker.Fill = nearestDataPoint.Parent.Color;
-
-                        Double movingMarkerSize = (Double)nearestDataPoint.Parent.MarkerSize * (Double)nearestDataPoint.Parent.MarkerScale * MOVING_MARKER_SCALE;
-
-                        if (movingMarkerSize < 6)
-                            movingMarkerSize = 6;
-
-                        movingMarker.Height = movingMarkerSize;
-                        movingMarker.Width = movingMarker.Height;
-                        movingMarker.StrokeThickness = 0;
-
-                        movingMarker.SetValue(Canvas.LeftProperty, nearestDataPoint._visualPosition.X - movingMarker.Width / 2);
-                        movingMarker.SetValue(Canvas.TopProperty, nearestDataPoint._visualPosition.Y - movingMarker.Height / 2);
-                    }
-                }
-            }
-        }
-        */
-
-        /// <summary>
-        /// Apply Selected effect on Moving Markers
-        /// </summary>
-        /// <param name="dataPoint"></param>
-        //internal static void SelectMovingMarker(DataPoint dataPoint)
-        //{
-        //    Ellipse movingMarker = dataPoint.Parent._movingMarker;
-
-        //    if (movingMarker != null)
-        //    {
-        //        movingMarker.Stroke = dataPoint.Marker.MarkerShape.Stroke;
-        //        movingMarker.StrokeThickness = 2;
-        //        //_movingMarker.Fill = nearestDataPoint.Marker.MarkerShape.Fill;
-
-        //        movingMarker.Width = dataPoint.Marker.MarkerShape.Width + 2;
-        //        movingMarker.Height = movingMarker.Width;
-
-        //        movingMarker.SetValue(Canvas.LeftProperty, dataPoint.Marker.Position.X - movingMarker.Width / 2);
-        //        movingMarker.SetValue(Canvas.TopProperty, dataPoint.Marker.Position.Y - movingMarker.Height / 2);
-        //    }
-        //}
-
+        
         #endregion
 
         #region Internal Events And Delegates

@@ -190,7 +190,7 @@ namespace Visifire.Charts
         {   
             #region Apply Shadow
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {
                 Faces dpFaces = dataPoint.Faces;
 
@@ -251,10 +251,12 @@ namespace Visifire.Charts
             }
             else
             {
+#if !WP
                 if ((Boolean)dataPoint.ShadowEnabled)
                     dataPointVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
                 else
                     dataPointVisual.Effect = null;
+#endif
             }
             #endregion
         }

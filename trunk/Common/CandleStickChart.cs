@@ -266,7 +266,7 @@ namespace Visifire.Charts
         {
             Canvas dataPointVisual = dataPoint.Faces.Visual as Canvas;
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {
                 Faces faces = dataPoint.Faces;
                 Rectangle openCloseRect = faces.VisualComponents[1] as Rectangle;
@@ -318,10 +318,12 @@ namespace Visifire.Charts
             }
             else
             {
+#if !WP
                 if ((Boolean)dataPoint.ShadowEnabled)
                     dataPointVisual.Effect = ExtendedGraphics.GetShadowEffect(315, 5, 0.95);
                 else
                     dataPointVisual.Effect = null;
+#endif
             }
         }
 
