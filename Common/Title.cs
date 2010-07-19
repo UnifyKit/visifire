@@ -47,7 +47,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.Title class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class Title : ObservableObject
@@ -1597,7 +1597,7 @@ namespace Visifire.Charts
                 title.TextElement.Foreground = Charts.Chart.CalculateFontColor((title.Chart as Chart), title.Background, title.InternalFontColor, title.DockInsidePlotArea);
                 title.TextElement.TextWrapping = TextWrapping.Wrap;
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     if (title.ShadowTextElement != null)
                     {
@@ -1663,7 +1663,7 @@ namespace Visifire.Charts
         {
             if (ShadowEnabled)
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     Brush brush = GetParentColor(Chart as Chart);
                     if (((Background == null || Graphics.AreBrushesEqual(Background, new SolidColorBrush(Colors.Transparent))) && (brush == null || Graphics.AreBrushesEqual(brush, new SolidColorBrush(Colors.White))))
@@ -1707,6 +1707,7 @@ namespace Visifire.Charts
                 }
                 else
                 {
+#if !WP
                     DropShadowEffect shadow = new DropShadowEffect()
                     {
                         BlurRadius = 5,
@@ -1721,11 +1722,12 @@ namespace Visifire.Charts
                     };
 
                     Visual.Effect = shadow;
+#endif
                 }
             }
             else
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     if (InnerCanvas.Children.Contains(ShadowGrid))
                     {
@@ -1738,7 +1740,9 @@ namespace Visifire.Charts
                 }
                 else
                 {
+#if !WP
                     Visual.Effect = null;
+#endif
                 }
             }
         }
@@ -1865,7 +1869,7 @@ namespace Visifire.Charts
             InnerCanvas = new Canvas() { Tag = tag };
             InnerCanvas.Children.Add(TextElement);
 
-            if (VisifireControl.IsXbapApp && ShadowEnabled)
+            if (!VisifireControl.IsMediaEffectsEnabled && ShadowEnabled)
             {
                 ShadowTextElement = new TextBlock();
                 ShadowTextElement.IsHitTestVisible = false;
@@ -1880,7 +1884,7 @@ namespace Visifire.Charts
 
             SetAlignment4TextBlock(TextElement);
 
-            if (VisifireControl.IsXbapApp && ShadowEnabled)
+            if (!VisifireControl.IsMediaEffectsEnabled && ShadowEnabled)
                 SetAlignment4TextBlock(ShadowTextElement);
 
             this.Height = InnerCanvas.Height;

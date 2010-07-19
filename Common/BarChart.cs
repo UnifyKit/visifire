@@ -710,7 +710,7 @@ namespace Visifire.Charts
 
                 dataPoint.Faces = column;
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                     ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, false, false);
 
             }
@@ -723,7 +723,7 @@ namespace Visifire.Charts
                 dataPoint.Faces = column;
             }
 
-            if (!VisifireControl.IsXbapApp)
+            if (VisifireControl.IsMediaEffectsEnabled)
                 ApplyOrRemoveShadow(chart, dataPoint);
 
             dataPoint.Faces.LabelCanvas = labelCanvas;
@@ -779,12 +779,14 @@ namespace Visifire.Charts
             
             Canvas barVisual = faces.Visual as Canvas;
 
+#if !WP
             if ((Boolean)dataPoint.ShadowEnabled)
             {
                 barVisual.Effect = ExtendedGraphics.GetShadowEffect(325, 3.3, 0.95);
             }
             else
                 barVisual.Effect = null;
+#endif
         }
 
         internal static void DrawStackedBarsAtXValue(RenderAs chartType, Double xValue, PlotGroup plotGroup, Canvas columnCanvas, Canvas labelCanvas, Double drawingIndex, Double heightPerBar, Double maxBarHeight, Double limitingYValue, Double depth3d, Boolean animationEnabled)
@@ -1049,7 +1051,7 @@ namespace Visifire.Charts
                 barVisual.SetValue(Canvas.ZIndexProperty, GetStackedBarZIndex(chart.ChartArea.PlotAreaCanvas.Height, left, top, columnCanvas.Width, columnCanvas.Height, (dataPoint.InternalYValue > 0), PositiveOrNegativeZIndex));
 
                 dataPoint.Faces = bar;
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                     ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, true, false);
             }
             else
@@ -1059,7 +1061,7 @@ namespace Visifire.Charts
                 dataPoint.Faces = bar;
             }
 
-            if (!VisifireControl.IsXbapApp)
+            if (VisifireControl.IsMediaEffectsEnabled)
                 ApplyOrRemoveShadow(chart, dataPoint);
 
             dataPoint.Faces.LabelCanvas = labelCanvas;

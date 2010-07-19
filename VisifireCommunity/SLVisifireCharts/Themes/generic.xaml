@@ -744,7 +744,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                 </Grid>
                             </ControlTemplate>
                             <ControlTemplate x:Key="VerticalThumbGripControlTemplate" TargetType="Thumb">
-                                <Grid Margin="0,3,0,0"  >
+                                <Grid Margin="0,3,0,0"  Background="Transparent" >
                                     <TextBlock RenderTransformOrigin=".5,.5" Text="||" FontSize="5" VerticalAlignment="Center">
                                         <TextBlock.RenderTransform>
                                             <RotateTransform Angle="90"></RotateTransform>
@@ -836,7 +836,7 @@ xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" xmlns:vcc="c
                                 </Grid>
                             </ControlTemplate>
                             <ControlTemplate x:Key="HorizontalThumbGripControlTemplate" TargetType="Thumb">
-                                <Grid Margin="1,1,0,1" >
+                                <Grid Margin="1,1,0,1" Background="Transparent" >
                                     <TextBlock Text="||" FontSize="5" VerticalAlignment="Center"></TextBlock>
                                 </Grid>
                             </ControlTemplate>

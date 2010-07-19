@@ -3,6 +3,7 @@
   <PropertyGroup>
     <ReferencePath>
     </ReferencePath>
+    <FullDeploy>true</FullDeploy>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

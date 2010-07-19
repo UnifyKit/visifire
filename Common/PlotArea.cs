@@ -33,7 +33,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Browser;
+
+#if !WP
+    using System.Windows.Browser;
+#endif
+
 #endif
 
 using Visifire.Commons;
@@ -45,7 +49,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.PlotArea class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class PlotArea : ObservableObject
@@ -551,7 +555,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseLeftButtonDown event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonDown
@@ -575,7 +579,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseLeftButtonUp event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<PlotAreaMouseButtonEventArgs> MouseLeftButtonUp
@@ -643,7 +647,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseMove event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<PlotAreaMouseEventArgs> MouseMove
@@ -1045,7 +1049,7 @@ namespace Visifire.Charts
 
             Chart chart = Chart as Chart;
 
-            if(VisifireControl.IsXbapApp)
+            if(!VisifireControl.IsMediaEffectsEnabled)
                 GetShadow4XBAP(chart, plotAreaViewPortSize, plankOffset, plankDepth, plankThickness);
             else
                 GetShadow(chart, plotAreaViewPortSize, plankOffset, plankDepth, plankThickness);
@@ -1165,8 +1169,9 @@ namespace Visifire.Charts
                         ShadowElement = new Border() { CornerRadius = CornerRadius };
                         ShadowElement.Width = BorderElement.Width;
                         ShadowElement.Height = BorderElement.Height;
-
+#if !WP
                         ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+#endif
                         //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
 
                         if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
@@ -1191,8 +1196,9 @@ namespace Visifire.Charts
                                 ShadowElement.Width = plotAreaViewPortSize.Width - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
                                 ShadowElement.Height = plotAreaViewPortSize.Height - plankDepth;
 
+#if !WP
                                 ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
-
+#endif
                                 //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height - 4);
 
                                 if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
@@ -1213,8 +1219,9 @@ namespace Visifire.Charts
                                 InnerShadowElement = new Border() { CornerRadius = CornerRadius };
                                 InnerShadowElement.Width = plotAreaViewPortSize.Width - plankThickness - plankDepth - ChartArea.SCROLLVIEWER_OFFSET4HORIZONTAL_CHART;
                                 InnerShadowElement.Height = BorderElement.Height;
-
+#if !WP
                                 InnerShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+#endif
                                 InnerShadowElement.SetValue(Canvas.LeftProperty, plankOffset);
                                 if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
                                 {
@@ -1239,9 +1246,9 @@ namespace Visifire.Charts
                                 ShadowElement.Height = plotAreaViewPortSize.Height - plankOffset;
 
                                 ShadowElement.SetValue(Canvas.LeftProperty, plankOffset);
-
+#if !WP
                                 ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
-
+#endif
                                 if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
                                     (ShadowElement as Border).Background = this.Background;
                                 else
@@ -1275,8 +1282,9 @@ namespace Visifire.Charts
                             ShadowElement = new Border() { CornerRadius = CornerRadius };
                             ShadowElement.Width = plotAreaViewPortSize.Width;
                             ShadowElement.Height = plotAreaViewPortSize.Height - plankOffset;
-
+#if !WP
                             ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
+#endif
                             //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
                             if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
                                 (ShadowElement as Border).Background = this.Background;
