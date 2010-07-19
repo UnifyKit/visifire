@@ -18,7 +18,9 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Windows.Shapes;
+#if !WP 
 using System.Windows.Browser;
+#endif
 
 #endif
 
@@ -33,7 +35,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Legend of chart
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class Legend : ObservableObject
@@ -1522,7 +1524,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseLeftButtonDown event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<LegendMouseButtonEventArgs> MouseLeftButtonDown
@@ -1546,7 +1548,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseLeftButtonUp event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<LegendMouseButtonEventArgs> MouseLeftButtonUp
@@ -1614,7 +1616,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the MouseMove event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<LegendMouseEventArgs> MouseMove
@@ -2276,7 +2278,7 @@ namespace Visifire.Charts
         {   
             if (ShadowEnabled)
             {   
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {   
                     Grid shadowGrid = ExtendedGraphics.Get2DRectangleShadow(this, Visual.Width, Visual.Height,
                                                         CornerRadius, CornerRadius, 6);
@@ -2293,6 +2295,7 @@ namespace Visifire.Charts
                 }
                 else
                 {   
+#if !WP                  
                     DropShadowEffect shadow = new DropShadowEffect()
                     {
                         BlurRadius = 5,
@@ -2302,11 +2305,12 @@ namespace Visifire.Charts
 #if WPF
                         Color = Color.FromArgb((Byte)255, (Byte)185, (Byte)185, (Byte)185)
 #else
-                    Color = Color.FromArgb((Byte)255, (Byte)135, (Byte)135, (Byte)135)
+                        Color = Color.FromArgb((Byte)255, (Byte)135, (Byte)135, (Byte)135)
 #endif
                     };
 
                     Visual.Effect = shadow;
+#endif
                 }
             }
         }

@@ -38,9 +38,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+#if !WP
 using System.Windows.Browser;
-
 #endif
+#endif
+
 using Visifire.Charts;
 using System.Windows.Media.Effects;
 
@@ -194,6 +196,7 @@ namespace Visifire.Commons
             {
                 if (PixelLavelShadow)
                 {
+#if !WP
                     DropShadowEffect drp = new DropShadowEffect();
                     drp.Color = Colors.Gray;
                     drp.BlurRadius = 5;
@@ -201,6 +204,7 @@ namespace Visifire.Commons
                     drp.Opacity = 0.90;
                     drp.Direction = 315;
                     MarkerShape.Effect = drp;
+#endif
                 }
                 else
                 {
@@ -224,14 +228,16 @@ namespace Visifire.Commons
 
                     // Add Shape for Marker into Visual
                     Visual.Children.Add(MarkerShadow);
-
+#if !WP
                     MarkerShape.Effect = null;
+#endif
                 }
             }
             else
             {
+#if !WP
                 MarkerShape.Effect = null;
-                
+#endif         
                 if(MarkerShadow != null)
                     Visual.Children.Remove(MarkerShadow);
 

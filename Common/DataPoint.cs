@@ -54,7 +54,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.DataPoint class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public class DataPoint : ObservableObject
@@ -2053,6 +2053,16 @@ namespace Visifire.Charts
         internal Boolean UpdateVisual(VcProperties property, object newValue, Boolean recursive)
         {
             Chart chart = Chart as Chart;
+
+            if (IsInDesignMode)
+            {
+                if(chart != null)
+                    chart.RENDER_LOCK = false;
+
+                FirePropertyChanged(property);
+
+                return false;
+            }
 
             /* Don’t proceed for the chart types which do not support partial update of properties
              * (Except Color property).

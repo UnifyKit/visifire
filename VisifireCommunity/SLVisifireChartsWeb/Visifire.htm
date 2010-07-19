@@ -10,14 +10,13 @@
     <div id="Div1">
         
         <script type="text/javascript">
-            
             var background = "White";
-           
-            var vChart = new Visifire("ClientBin/SL.Visifire.Charts.xap", "MyChart", 500, 300, background);
+            var vChart = new Visifire("ClientBin/SL.Visifire.Charts.xap", 500, 300);
             vChart.setDataUri('data.xml');
             vChart.render("Div1");
-            
+        
         </script>
     </div>
+    
 </body>
 </html>

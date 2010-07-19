@@ -1068,7 +1068,7 @@ namespace Visifire.Charts
                 
                 dataPoint.Faces = columnFaces;
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                     ColumnChart.ApplyOrRemoveShadow4XBAP(dataPoint, false, false);
 
             }   
@@ -1080,7 +1080,7 @@ namespace Visifire.Charts
 
             dataPoint.Faces = columnFaces;
 
-            if (!VisifireControl.IsXbapApp)
+            if (VisifireControl.IsMediaEffectsEnabled)
                 ColumnChart.ApplyOrRemoveShadow(chart, dataPoint);
 
             columnVisual.SetValue(Canvas.LeftProperty, left);
@@ -1730,7 +1730,7 @@ namespace Visifire.Charts
                     break;
 
                 case VcProperties.ShadowEnabled:
-                    if (VisifireControl.IsXbapApp)
+                    if (!VisifireControl.IsMediaEffectsEnabled)
                     {
                         ApplyOrRemoveShadow4XBAP(dataPoint,
                             (dataSeries.RenderAs == RenderAs.StackedColumn || dataSeries.RenderAs == RenderAs.StackedColumn100
@@ -2727,7 +2727,8 @@ namespace Visifire.Charts
 
                 columnVisual.Children.Add(gradienceCanvas);
 
-                dataPoint.Faces.LightingElements.Add(columnVisual);
+                foreach (FrameworkElement fe in gradienceCanvas.Children)
+                    dataPoint.Faces.LightingElements.Add(fe);
             }
              
             foreach (FrameworkElement fe in faces.Parts)
@@ -2818,7 +2819,7 @@ namespace Visifire.Charts
 
             ApplyRemoveLighting(dataPoint);
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
                 ApplyOrRemoveShadow4XBAP(dataPoint, isStacked, isTopOfStack);
 
             return faces;
@@ -2899,9 +2900,10 @@ namespace Visifire.Charts
                 throw new Exception("Faces of DataPoint is null. ColumnChart.ApplyOrRemoveShadow()");
             
             Canvas columnVisual = faces.Visual as Canvas;
-
+#if !WP
             if ((Boolean)dataPoint.ShadowEnabled)
             {
+
                 if (chart.View3D)
                 {
                     columnVisual.Effect = ExtendedGraphics.GetShadowEffect(50, 5, 0.95);
@@ -2910,9 +2912,12 @@ namespace Visifire.Charts
                 {
                     columnVisual.Effect = ExtendedGraphics.GetShadowEffect(330, 3.5, 0.95);
                 }
+
             }
+
             else
                 columnVisual.Effect = null;
+#endif
         }
         
         ///// <summary>

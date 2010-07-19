@@ -225,7 +225,6 @@ namespace Visifire.Charts
 
             chart.ChartArea.PrePartialUpdateConfiguration(chart, Visifire.Charts.ElementTypes.Chart, VcProperties.None, null, null, false, true, true, AxisRepresentations.AxisY, true);
 
-            //chart.ChartArea.RenderSeries();
             Int32 renderedSeriesCount = 0;      // Contain count of series that have been already rendered
 
             // Contains a list of serties as per the drawing order generated in the plotdetails
@@ -269,13 +268,7 @@ namespace Visifire.Charts
                     case RenderAs.Column:
                     case RenderAs.Bar:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
-                        //    foreach (DataPoint dp in ds.DataPoints)
-                        //        ColumnChart.Update(dp, property, newValue, false);
-                        //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         break;
-
-                     //renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
                   case RenderAs.Spline:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
@@ -284,10 +277,7 @@ namespace Visifire.Charts
                   case RenderAs.Line:
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-                            // LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         else
-                            //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
                             foreach(DataSeries ds in selectedDataSeries4Rendering)
                                 LineChart.Update(ds, property, newValue, false);
                         break;
@@ -296,24 +286,13 @@ namespace Visifire.Charts
 
                         if (property == VcProperties.Enabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-                        //LineChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
                         else
-                            //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
                             foreach (DataSeries ds in selectedDataSeries4Rendering)
                                 StepLineChart.Update(ds, property, newValue, false);
                         break;
 
 
                     case RenderAs.Point:
-
-                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
-                        //{
-                        //    foreach (DataPoint dp in ds.InternalDataPoints)
-                        //    {
-                        //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                        //    }
-                        //}
                         if (property == VcProperties.ViewportRangeEnabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         else
@@ -321,20 +300,9 @@ namespace Visifire.Charts
                             foreach (DataSeries ds in selectedDataSeries4Rendering)
                                 PointChart.Update(ds, property, newValue, false);
                         }
-
-                        // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
                         break;
 
                     case RenderAs.Bubble:
-
-                        //foreach (DataSeries ds in selectedDataSeries4Rendering)
-                        //{
-                        //    foreach (DataPoint dp in ds.InternalDataPoints)
-                        //    {
-                        //        RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                        //    }
-                        //}
                         if (property == VcProperties.ViewportRangeEnabled)
                             ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         else
@@ -342,49 +310,26 @@ namespace Visifire.Charts
                             foreach (DataSeries ds in selectedDataSeries4Rendering)
                                 BubbleChart.Update(ds, property, newValue, false);
                         }
-
-                        // ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        // BubbleChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-
-                        //renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.Area:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                       // AreaChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-                        //renderedCanvas = AreaChart.GetVisualObjectForAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedColumn:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-                        //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedColumn100:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-
-                         //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedBar:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-                        //renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedBar100:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        //ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-
-                        //renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.Pie:
@@ -398,18 +343,15 @@ namespace Visifire.Charts
                     case RenderAs.StackedArea:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         chart.ChartArea.AttachEventsToolTipHref2DataSeries();
-                        //renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.StackedArea100:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
                         chart.ChartArea.AttachEventsToolTipHref2DataSeries();
-                        //renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.SectionFunnel:
-                       // renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, false);
-
+                        // renderedCanvas = FunnelChart.GetVisualObjectForFunnelChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled, false);
                         break;
 
                     case RenderAs.StreamLineFunnel:
@@ -418,25 +360,17 @@ namespace Visifire.Charts
 
                     case RenderAs.Stock:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-
-                        //StockChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-                       // renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
 
                     case RenderAs.CandleStick:
                         ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
-                       // CandleStick.Update(chart, currentRenderAs, selectedDataSeries4Rendering, property, newValue);
-                       // renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                         break;
                 }
-
-                // renderedChart = RenderSeriesFromList(selectedDataSeries4Rendering);
 
                 renderedSeriesCount += selectedDataSeries4Rendering.Count;
             }
 
-           // if(property != VcProperties.ViewportRangeEnabled)
-                chart.ChartArea.AttachScrollBarOffsetChangedEventWithAxes();
+            chart.ChartArea.AttachScrollBarOffsetChangedEventWithAxes();
 
             chart.ChartArea.AttachOrDetachIntaractivity(chart.InternalSeries);
             Visifire.Charts.Chart.SelectDataPoints(chart);
@@ -453,86 +387,45 @@ namespace Visifire.Charts
                 case RenderAs.Column:
                 case RenderAs.Bar:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                    //ColumnChart.GetVisualObjectForColumnChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
-                    
-                    // renderedCanvas = BarChart.GetVisualObjectForBarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
 
                 case RenderAs.Line:
                 case RenderAs.Spline:
-                    //if (isAXisChanged && isDataPoint && chart._partialUpdateAnimation)
-                    //{   foreach (DataSeries ds in chart.Series)
-                    //    {   
-                    //        //if (ds == dataPoint.Parent)
-                    //        //    continue;
-                            
-                    //        foreach (DataPoint dp in ds.DataPoints)
-                    //        {   
-                    //            RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //    LineChart.Update(sender, property, newValue);
-
                     LineChart.Update(sender, property, newValue, isAXisChanged);
                     
                     break;
 
                 case RenderAs.StepLine:
-
-                    //if (isAXisChanged && isDataPoint && chart._partialUpdateAnimation)
-                    //{   foreach (DataSeries ds in chart.Series)
-                    //    {   
-                    //        //if (ds == dataPoint.Parent)
-                    //        //    continue;
-
-                    //        foreach (DataPoint dp in ds.DataPoints)
-                    //        {   
-                    //            RenderHelper.UpdateVisualObject(ds.RenderAs, dp, property, newValue, false);
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //    LineChart.Update(sender, property, newValue);
-
                     StepLineChart.Update(sender, property, newValue, isAXisChanged);
 
                     break;
 
                 case RenderAs.Point:
                     PointChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = PointChart.GetVisualObjectForPointChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Bubble:
                     BubbleChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = BubbleChart.GetVisualObjectForBubbleChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Area:
                     AreaChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = AreaChart.GetVisualObjectForAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedColumn:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = ColumnChart.GetVisualObjectForStackedColumnChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedColumn100:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                   // renderedCanvas = ColumnChart.GetVisualObjectForStackedColumn100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = BarChart.GetVisualObjectForStackedBarChart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedBar100:
                     ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = BarChart.GetVisualObjectForStackedBar100Chart(width, height, plotDetails, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.Pie:
@@ -544,9 +437,6 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.StackedArea:
-                    //if (isDataPoint)
-                    //    sender = (sender as DataPoint).Parent;
-
                     List<DataSeries> stackedAreaList = (from ds in chart.Series where ds.RenderAs == RenderAs.StackedArea select ds).ToList();
 
                     if (stackedAreaList.Count > 0)
@@ -554,22 +444,15 @@ namespace Visifire.Charts
 
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
 
-                    //ColumnChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.StackedArea100:
-                    //if (isDataPoint)
-                    //    sender = (sender as DataPoint).Parent;
-                    //ColumnChart.Update(sender, property, newValue, isAXisChanged);
-
                     List<DataSeries> stackedArea100List = (from ds in chart.Series where ds.RenderAs == RenderAs.StackedArea select ds).ToList();
 
                     if (stackedArea100List.Count > 0)
                         ColumnChart.Update(chart, stackedArea100List[0].RenderAs, stackedArea100List);
 
                     chart.ChartArea.AttachEventsToolTipHref2DataSeries();
-                    //renderedCanvas = AreaChart.GetVisualObjectForStackedArea100Chart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.SectionFunnel:
@@ -582,12 +465,10 @@ namespace Visifire.Charts
 
                 case RenderAs.Stock:
                     StockChart.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = StockChart.GetVisualObjectForStockChart(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
 
                 case RenderAs.CandleStick:
                     CandleStick.Update(sender, property, newValue, isAXisChanged);
-                    //renderedCanvas = CandleStick.GetVisualObjectForCandleStick(width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
             }
 

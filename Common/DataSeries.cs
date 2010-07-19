@@ -57,7 +57,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.DataSeries class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     [TemplatePart(Name = RootElementName, Type = typeof(Grid))]
@@ -1393,7 +1393,12 @@ namespace Visifire.Charts
                 if ((Nullable<Boolean>)GetValue(ShadowEnabledProperty) == null)
                 {
                     if (RenderHelper.IsLineCType(this))
-                        return true;
+                    {
+                        if (Chart != null && !(Chart as Chart).ZoomingEnabled)
+                            return true;
+                        else
+                            return false;
+                    }
                     else
                         return false;
                 }
@@ -2608,6 +2613,16 @@ namespace Visifire.Charts
             if (!IsNotificationEnable || (Chart != null && (Double.IsNaN((Chart as Chart).ActualWidth) || Double.IsNaN((Chart as Chart).ActualHeight) || (Chart as Chart).ActualWidth == 0 || (Chart as Chart).ActualHeight == 0)))
                 return;
 
+            if (IsInDesignMode)
+            {
+                if (Chart != null)
+                    (Chart as Chart).RENDER_LOCK = false;
+
+                FirePropertyChanged(property);
+                return;
+            }
+
+
             if (ValidatePartialUpdate(RenderAs, property))
             {
                 if (NonPartialUpdateChartTypes(RenderAs) && property != VcProperties.ScrollBarScale)
@@ -2711,7 +2726,10 @@ namespace Visifire.Charts
                         property = VcProperties.DataPoints;
                     }
                     else
-                    {   
+                    {
+                        if (chart.PlotDetails == null || PlotGroup == null)
+                            return;
+
                         Double oldAxisMaxY = chart.PlotDetails.GetAxisYMaximumDataValue(PlotGroup.AxisY);
                         Double oldAxisMinY = chart.PlotDetails.GetAxisYMinimumDataValue(PlotGroup.AxisY);
                         Double oldAxisMaxX = chart.PlotDetails.GetAxisXMaximumDataValue(PlotGroup.AxisX);
@@ -2728,7 +2746,7 @@ namespace Visifire.Charts
                         // System.Diagnostics.Debug.WriteLine("NewAxisMaxY = " + NewAxisMaxY.ToString() + " NewAxisMinY=" + NewAxisMinY.ToString());
 
                         if (PlotGroup.AxisY.ViewportRangeEnabled)
-                        {
+                        {   
                             renderAxis = true;
                             axisRepresentation = AxisRepresentations.AxisY;
                         }
@@ -2749,20 +2767,36 @@ namespace Visifire.Charts
                         }
                     }
 
-                    //if (!_isZooming)
-                    {   
-                        // Render Axis if required
-                        chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
-                    }
+                    // Render Axis if required
+                    chart.ChartArea.PrePartialUpdateConfiguration(this, ElementTypes.DataSeries, property, null, newValue, false, false, renderAxis, axisRepresentation, true);
 
-                    // Return
-                    if (renderAxis && (RenderAs != RenderAs.Spline || _isZooming))
+                    if (property == VcProperties.DataPointUpdate && !_isZooming)
                     {
+                        if (renderAxis)
+                        {
+                            foreach (DataSeries ds in chart.InternalSeries)
+                            {
+                                if(ds.RenderAs == RenderAs.Spline)
+                                    RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
+                                else
+                                {
+                                    foreach (DataPoint dp in ds.InternalDataPoints)
+                                    {
+                                        dp.UpdateVisual(VcProperties.YValue, dp.InternalYValue, false);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                            RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
+                    }
+                    else if (renderAxis)
+                    {   
                         // Need to Rerender all charts if axis changes
                         RenderHelper.UpdateVisualObject(chart, property, newValue, false);
                     }
                     else
-                    {
+                    {   
                         RenderHelper.UpdateVisualObject(this.RenderAs, this, property, newValue, renderAxis);
                     }
                 }
@@ -2776,8 +2810,6 @@ namespace Visifire.Charts
                 else
                     foreach (DataPoint dp in InternalDataPoints)
                         RenderHelper.UpdateVisualObject(RenderAs, dp, property, newValue, renderAxis);
-
-                // FirePropertyChanged(VcProperties.DataPoints);
             }
         }
 
@@ -3815,8 +3847,15 @@ namespace Visifire.Charts
 
                             dataPoint.Faces = null;
                             dataPoint.Marker = null;
+
                             dataPoint.LabelVisual = null;
                             dataPoint.PropertyChanged -= DataPoint_PropertyChanged;
+                        }
+
+                        if (dataPoint.Parent != null)
+                        {
+                            DataSeries ds = dataPoint.Parent;
+                            ds.InternalDataPoints.Remove(dataPoint);
                         }
 
                         dataPoint.DetachEventForSelection();

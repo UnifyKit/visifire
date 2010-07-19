@@ -5,20 +5,83 @@
     xmlns:vc="clr-namespace:Visifire.Charts;assembly=WPFVisifire.Charts" 
      Height="300" Width="500">
     <Grid>
-        <vc:Chart Theme="Theme1" x:Name="chart1" Width="400" Height="300">
+        <vc:Chart Theme="Theme1" BorderBrush="Gray" Padding="6" ScrollingEnabled="True" ZoomingEnabled="True"
+                  x:Name="MyChart">
 
             <vc:Chart.Titles>
-                <vc:Title Text="Visifire Chart"></vc:Title>
+                <vc:Title Text="Visifire Line Chart"/>
             </vc:Chart.Titles>
 
+            <vc:Chart.PlotArea>
+                <vc:PlotArea ShadowEnabled="false"></vc:PlotArea>
+            </vc:Chart.PlotArea>
+
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Line" Cursor="Hand" MarkerEnabled="True" MarkerType="Circle">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint YValue="10"/>
-                        <vc:DataPoint YValue="20"/>
-                        <vc:DataPoint YValue="30"/>
-                        <vc:DataPoint YValue="40"/>
-                        <vc:DataPoint YValue="50"/>
+                        <vc:DataPoint AxisXLabel="Jan" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="June" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="July" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan1" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb1" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar1" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr1" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May1" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun1e" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul1y" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug1" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept1" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan2" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb2" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar2" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr2" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May2" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun12" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul12" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug12" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept21" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan1" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb1" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar1" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr1" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May1" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun1e" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul1y" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug1" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept1" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan2" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb2" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar2" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr2" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May2" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun12" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul12" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug12" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept21" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan1" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb1" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar1" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr1" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May1" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun1e" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul1y" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug1" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept1" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Jan2" YValue="3009"/>
+                        <vc:DataPoint AxisXLabel="Feb2" YValue="4547"/>
+                        <vc:DataPoint AxisXLabel="Mar2" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Apr2" YValue="6208"/>
+                        <vc:DataPoint AxisXLabel="May2" YValue="5222"/>
+                        <vc:DataPoint AxisXLabel="Jun12" YValue="7047"/>
+                        <vc:DataPoint AxisXLabel="Jul12" YValue="6508"/>
+                        <vc:DataPoint AxisXLabel="Aug12" YValue="7547"/>
+                        <vc:DataPoint AxisXLabel="Sept21" YValue="6508"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

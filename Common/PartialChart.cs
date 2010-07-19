@@ -163,7 +163,7 @@ namespace Visifire.Charts
         {
             if (ShadowEnabled)
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     _chartBorder.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
                     _bevelCanvas.Margin = new Thickness(0, 0, SHADOW_DEPTH, SHADOW_DEPTH);
@@ -226,7 +226,8 @@ namespace Visifire.Charts
 
             foreach (DataSeries ds in Series)
             {
-                _rootElement.Children.Add(ds);
+                if (!_rootElement.Children.Contains(ds))
+                    _rootElement.Children.Insert(0, ds);
             }
         }
 
@@ -266,7 +267,7 @@ namespace Visifire.Charts
         /// Export Visifire chart 
         /// </summary>
         /// <param name="Chart">Visifire.Charts.Chart</param>
-#if SL
+#if SL &&!WP
         [System.Windows.Browser.ScriptableMember()]
 #endif
         public void Export()
@@ -334,7 +335,8 @@ namespace Visifire.Charts
                 else
                     c._zoomIconContainer.Visibility = Visibility.Collapsed;
             }
-            
+
+            c._resetZoomState = true;
             c.InvokeRender();
         }
 
@@ -1408,9 +1410,10 @@ namespace Visifire.Charts
                             }
 
                             ds.Visual = null;
-                            ds.DataSource = null;
-                            ds.Chart = null;
                         }
+
+                        ds.DataSource = null;
+                        ds.Chart = null;
                     }
                 }
             }
@@ -1638,7 +1641,7 @@ namespace Visifire.Charts
         {   
             if (!_isShadowApplied && ShadowEnabled && !Double.IsNaN(height) && height != 0 && !Double.IsNaN(width) && width != 0)
             {
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {   
                     _shadowGrid.Children.Clear();
 
@@ -1664,14 +1667,15 @@ namespace Visifire.Charts
                 }
                 else
                 {
+                    #if !WP
                     if (_rootElement != null)
                         _rootElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
-
+                    #endif
                     _isShadowApplied = true;
                 }
             }
 
-            if (VisifireControl.IsXbapApp)
+            if (!VisifireControl.IsMediaEffectsEnabled)
             {
                 if (ShadowEnabled && ChartShadowLayer != null)
                     ChartShadowLayer.Visibility = Visibility.Visible;
@@ -1689,15 +1693,17 @@ namespace Visifire.Charts
                 _bevelCanvas.Margin = new Thickness(0, 0, 0, 0);
                 _isShadowApplied = false;
 
-                if (VisifireControl.IsXbapApp)
+                if (!VisifireControl.IsMediaEffectsEnabled)
                 {
                     if (ChartShadowLayer != null)
                         ChartShadowLayer.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
+#if !WP
                     if (_rootElement != null)
                         _rootElement.Effect = null;
+#endif
                 }
             }
         }
@@ -2585,6 +2591,12 @@ namespace Visifire.Charts
         /// while partial update. 
         /// </summary>
         internal Boolean _forcedRedraw;
+
+        /// <summary>
+        /// This flag is used to specify whether zooming need to be resetted while
+        /// partial update.
+        /// </summary>
+        internal Boolean _resetZoomState;
 
         /// <summary>
         /// Number of time render call is lapsed or failed due to render lock

@@ -45,8 +45,9 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+#if !WP
 using System.Windows.Browser;
-
+#endif
 #endif
 using Visifire.Commons;
 using System.Windows.Data;
@@ -57,7 +58,7 @@ namespace Visifire.Charts
     /// <summary>
     /// Visifire.Charts.Axis class
     /// </summary>
-#if SL
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
 #endif
     public partial class Axis : ObservableObject
@@ -266,6 +267,9 @@ namespace Visifire.Charts
         /// <param name="maxXValue">Max XValue</param>
         public void Zoom(Object minXValue, Object maxXValue)
         {
+            if (Chart != null && (Chart as Chart).PlotDetails != null && (Chart as Chart).PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                return;
+
             System.Diagnostics.Debug.WriteLine("minXValue : " + minXValue + ", MaxXValue : " + maxXValue);
 
             Chart chart = (Chart as Chart);
@@ -933,7 +937,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Height of the Axis
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new Double Height
@@ -945,7 +949,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Width of the Axis
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new Double Width
@@ -5686,9 +5690,14 @@ namespace Visifire.Charts
             if (Chart != null && (Chart as Chart).Series.Count > 0)
             {   
                 if (PlotDetails.ListOfAllDataPoints.Count != 0)
-                {   
+                {
                     if (_oldScrollBarOffsetInPixel == offsetInPixel && !(Chart as Chart).ChartArea._isDragging)
+                    {
+                        if ((Chart as Chart)._resetZoomState)
+                            ResetZoomState(Chart as Chart);
+
                         return;
+                    }
 
                     _oldScrollBarOffsetInPixel = offsetInPixel;
 
@@ -5699,7 +5708,7 @@ namespace Visifire.Charts
                         CalculateViewMinimumAndMaximum(chart, offsetInPixel, chart.ChartArea.ChartVisualCanvas.Width, chart.ChartArea.ChartVisualCanvas.Height);
 
                         if (_zoomStateStack.Count == 0)
-                        {   
+                        {
                             _zoomStateStack.Push(new ZoomState(ViewMinimum, ViewMaximum));
                             _oldZoomState.MinXValue = null;
                             _oldZoomState.MaxXValue = null;
@@ -5964,7 +5973,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the Scroll event
         /// </summary>
-#if SL  
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public event EventHandler<AxisScrollEventArgs> Scroll
@@ -5982,7 +5991,7 @@ namespace Visifire.Charts
         /// <summary>
         /// Event handler for the OnZoom event
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public event EventHandler<AxisZoomEventArgs> OnZoom

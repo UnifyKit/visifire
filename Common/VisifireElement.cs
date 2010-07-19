@@ -25,7 +25,9 @@ using System.ComponentModel;
 using Visifire.Charts;
 
 #if SL
-using System.Windows.Browser;
+    #if SL && !WP
+        using System.Windows.Browser;
+    #endif
 #endif
 
 using System.Windows.Controls;
@@ -59,10 +61,15 @@ namespace Visifire.Commons
         /// </summary>
         /// <param name="propertyName">Name of the property as String</param>
         /// <param name="value">Property Value as String</param>
+        /// 
+#if !WP
         [System.Windows.Browser.ScriptableMember()]
+#endif
         public void SetPropertyFromJs(String propertyName, String value)
         {
+#if !WP
             JsHelper.SetProperty(this, propertyName, value);
+#endif
         }
 
 #endif
@@ -87,7 +94,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Name of the object
         /// </summary>
-#if SL
+#if (SL &&!WP)
         [ScriptableMember]
 #endif
         public new String Name
@@ -156,8 +163,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Event handler for the MouseLeftButtonDown event 
         /// </summary>
-#if SL
-        [ScriptableMember]
+#if SL &&!WP
+        [ScriptableMember] 
 #endif
         public new event MouseButtonEventHandler MouseLeftButtonDown
         {
@@ -180,8 +187,8 @@ namespace Visifire.Commons
         /// <summary>
         /// Event handler for the MouseLeftButtonUp event 
         /// </summary>
-#if SL
-        [ScriptableMember]
+#if SL &&!WP
+        [ScriptableMember] 
 #endif
         public new event MouseButtonEventHandler MouseLeftButtonUp
         {
@@ -248,7 +255,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Event handler for the MouseEnter event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<MouseEventArgs> MouseEnter
@@ -272,7 +279,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Event handler for the MouseLeave event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<MouseEventArgs> MouseLeave
@@ -296,7 +303,7 @@ namespace Visifire.Commons
         /// <summary>
         /// Event handler for the MouseMove event 
         /// </summary>
-#if SL
+#if SL &&!WP
         [ScriptableMember]
 #endif
         public new event EventHandler<MouseEventArgs> MouseMove
@@ -382,7 +389,7 @@ namespace Visifire.Commons
         {
 #if WPF
             System.Diagnostics.Process.Start("explorer.exe", _tempHref);
-#else
+#elif !WP
             System.Windows.Browser.HtmlPage.Window.Navigate(new Uri(VisifireControl.GetAbsolutePath(_tempHref)), _tempHrefTarget.ToString());
 #endif
         }

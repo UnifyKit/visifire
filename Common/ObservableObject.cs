@@ -116,7 +116,9 @@ namespace Visifire.Commons
         /// Visifire Control reference
         /// </summary>
 #if SL
+#if !WP
         [System.Windows.Browser.ScriptableMember]
+#endif
 #else
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 #endif
@@ -214,6 +216,9 @@ namespace Visifire.Commons
 
                 if (IsInDesignMode)
                 {
+                    if (Chart != null)
+                        (Chart as Chart)._forcedRedraw = true;
+
                     this.PropertyChanged(this, new PropertyChangedEventArgs(Enum.GetName(typeof(VcProperties), propertyName)));
                 }
                 else if (Chart != null && (Chart as Chart)._isTemplateApplied)
@@ -270,10 +275,19 @@ namespace Visifire.Commons
         {
             get
             {
+
+#if WP
+                if (Application.Current.RootVisual != null)
+                    return DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual as DependencyObject);
+                else
+                    return false;
+#else
                 return !System.Windows.Browser.HtmlPage.IsEnabled;
+#endif
+
             }
         }
-#endif
+#endif  
         #endregion
 
         #region Private Delegates

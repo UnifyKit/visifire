@@ -23,7 +23,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+#if !WP
 using System.Windows.Browser;
+#endif
 using System.Globalization;
 using System.Linq;
 using System.Windows.Controls.Primitives;
@@ -92,7 +94,9 @@ namespace Visifire.Charts
 
     #endregion
     
+#if SL &&!WP
     [System.Windows.Browser.ScriptableType]
+#endif
     public partial class Chart
     {
         #region Public Methods
@@ -123,7 +127,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Height of the chart
         /// </summary>
+#if SL &&!WP
         [ScriptableMember]
+#endif
         public new Double Height
         {
             get
@@ -139,7 +145,9 @@ namespace Visifire.Charts
         /// <summary>
         /// Width of the chart
         /// </summary>
+#if SL &&!WP 
         [ScriptableMember]
+#endif
         public new Double Width
         {
             get
