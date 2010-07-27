@@ -213,7 +213,7 @@ namespace Visifire.Charts
             if (dataPoint._isPriceUp)
                 return (dataPointColor == null) ? dataPoint.Parent.PriceUpColor : dataPointColor;
             else
-                return dataPoint.Parent.PriceDownColor;
+                return (dataPointColor == null) ? dataPoint.Parent.PriceDownColor : dataPointColor;
         }
 
         internal static void ApplyOrRemoveBevel(DataPoint dataPoint, Double dataPointWidth)
@@ -511,7 +511,9 @@ namespace Visifire.Charts
             Brush openCloseRectColor;
             openCloseRectColor = GetOpenCloseRectangleFillbrush(dataPoint, dataPointColor);
 
-            if (dataPointColor == null)
+            if (dataPoint.StickColor != null)
+                highLowLineColor = dataPoint.StickColor;
+            else if (dataPointColor == null)
                 highLowLineColor = dataPoint.Parent.PriceUpColor;
             else
                 highLowLineColor = dataPointColor;

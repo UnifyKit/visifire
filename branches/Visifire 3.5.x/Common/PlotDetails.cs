@@ -396,16 +396,30 @@ namespace Visifire.Charts
         /// <summary>
         /// Generate sequestial xvalue for the circular chart types where AxisXLabel placement does not depend upon XValue
         /// </summary>
-        internal void GenerateInternalXValueForCircularChart()
+        internal void GenerateInternalXValueForCircularChart(Axis axisX)
         {
             List<DataSeries> dataSeries = Chart.InternalSeries.ToList();
 
             foreach (DataSeries ds in dataSeries)
             {
-                Int32 xValue = 0;
-                foreach (DataPoint dataPoint in ds.DataPoints)
+                if (ds.RenderAs != RenderAs.Polar)
                 {
-                    dataPoint.InternalXValue = xValue++;
+                    Int32 xValue = 0;
+                    foreach (DataPoint dataPoint in ds.DataPoints)
+                    {
+                        dataPoint.InternalXValue = xValue++;
+                    }
+                }
+                else
+                {
+                    axisX.IsDateTimeAxis = CheckIsDateTimeAxis(axisX);
+
+                    if (axisX.IsDateTimeAxis)
+                    {
+                        GenerateXValueForDataTimeAxis(axisX);
+
+                        axisX.MinDate = DateTime.Parse("12/30/1899", System.Globalization.CultureInfo.InvariantCulture);
+                    }
                 }
             }
         }
@@ -422,17 +436,24 @@ namespace Visifire.Charts
 
             _axisXPrimary = GetAxisXFromChart(Chart, AxisTypes.Primary);
 
+            DataSeries ds = null;
+            if (Chart.InternalSeries.Count > 0)
+            {
+                ds = Chart.InternalSeries[0];
+            }
+
             // Generate XValues for DataTime axis
-            GenerateXValueForDataTimeAxis(_axisXPrimary);
+            if (ds != null && ds.RenderAs != RenderAs.Polar)
+                GenerateXValueForDataTimeAxis(_axisXPrimary);
 
             // Create list of datapoints from all series
             CreateListOfDataPoints();
 
             // Identifies the various plot groups and populates the list
             PopulatePlotGroups();
-            
+
             if (ChartOrientation == ChartOrientationType.Circular)
-                GenerateInternalXValueForCircularChart();
+                GenerateInternalXValueForCircularChart(_axisXPrimary);
 
             SetTrendLineValues(_axisXPrimary);
 
@@ -445,7 +466,7 @@ namespace Visifire.Charts
             if (ChartOrientation == ChartOrientationType.Circular)
             {
                 if (!CheckWhetherAllDataSeriesArePrimary(Chart.InternalSeries))
-                    throw new Exception("Radar chart does not support Secondary AxisY");
+                    throw new Exception("Circular charts does not support Secondary AxisY");
 
                 AxisXPrimaryLabels = GetAxisXLabels4CircularAxisType();
             }
@@ -489,7 +510,6 @@ namespace Visifire.Charts
 
                 foreach (DataPoint dp in ds.InternalDataPoints)
                 {
-
                     if (dp.InternalXValueAsDateTime == null)
                     {
                         throw new Exception("Wrong property value as date for XValue in DataPoint position " + dataPointIndex.ToString() + " and DataSeries position " + dataSeriesIndex.ToString());
@@ -507,14 +527,10 @@ namespace Visifire.Charts
                         }
                         else if (ds.InternalXValueType == ChartValueTypes.DateTime)
                         {
-                            // if (axis.IntervalType == IntervalTypes.Years || axis.IntervalType == IntervalTypes.Months || axis.IntervalType == IntervalTypes.Weeks || axis.IntervalType == IntervalTypes.Days)
-                            //    xValuesAsDateTimeList.Add((DateTime)dp.InternalXValueAsDateTime.Date);
-                            // else
                             xValuesAsDateTimeList.Add((DateTime)dp.InternalXValueAsDateTime);
                         }
                         else if (ds.InternalXValueType == ChartValueTypes.Time)
                         {
-                            //System.Diagnostics.Debug.WriteLine(dp.InternalXValueAsDateTime.TimeOfDay.ToString());
                             dp.InternalXValueAsDateTime = DateTime.Parse("12/30/1899 " + dp.InternalXValueAsDateTime.TimeOfDay.ToString(), System.Globalization.CultureInfo.InvariantCulture);
                             xValuesAsDateTimeList.Add(dp.InternalXValueAsDateTime);
                         }
@@ -696,7 +712,7 @@ namespace Visifire.Charts
         {   
             if (axisX != null)
             {
-                axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTimes
+                axisX._isDateTimeAutoInterval = false;// Minimum difference between two DataTime values
                 axisX.IsDateTimeAxis = CheckIsDateTimeAxis(axisX);
 
                 if (axisX.IsDateTimeAxis)
@@ -710,7 +726,12 @@ namespace Visifire.Charts
 
                     if (xValuesAsDateTimeList.Count != 0)
                     {
-                        DateTimeHelper.CalculateMinMaxDate(xValuesAsDateTimeList, out minDate, out maxDate, out minDateRange, out maxDateRange);
+                        if (this.ChartOrientation == ChartOrientationType.Circular)
+                        {
+                            DateTimeHelper.CalculateMinMaxDate4PolarChart(xValuesAsDateTimeList, axisX, out minDate, out maxDate, out minDateRange, out maxDateRange);
+                        }
+                        else
+                            DateTimeHelper.CalculateMinMaxDate(xValuesAsDateTimeList, out minDate, out maxDate, out minDateRange, out maxDateRange);
 
                         IntervalTypes autoIntervalType = axisX.InternalIntervalType;
                         Double maxInterval = (axisX.XValueType == ChartValueTypes.Date || axisX.XValueType == ChartValueTypes.Time) ? 8 : 8;
@@ -727,11 +748,6 @@ namespace Visifire.Charts
                         {
                             if (axisX.XValueType != ChartValueTypes.Time)
                             {
-                                //if (axisX.AxisMinimum == null)
-                                //{
-                                //    minDate = minDate.AddDays(-1);
-                                //    autoIntervalType = IntervalTypes.Days;
-                                //}
                                 if (axisX.AxisMinimum == null)
                                 {
                                     if (axisX.InternalIntervalType == IntervalTypes.Hours)
@@ -988,6 +1004,12 @@ namespace Visifire.Charts
                             }
                         }
 
+                        if (ChartOrientation == ChartOrientationType.Circular)
+                        {
+                            if (axisX.AxisMaximum == null)
+                                axisX.InternalIntervalType = IntervalTypes.Days;
+                        }
+
                         axisX.MinDate = minDate;
                         axisX.MaxDate = maxDate;
                         axisX.MinDateRange = minDateRange;
@@ -1013,7 +1035,16 @@ namespace Visifire.Charts
                             {
                                 foreach (DataPoint dp in ds.InternalDataPoints)
                                 {
-                                    dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+                                    if (ds.RenderAs == RenderAs.Polar)
+                                    {
+                                        minDate = DateTime.Parse("12/30/1899", System.Globalization.CultureInfo.InvariantCulture);
+                                        
+                                        dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
+
+                                        
+                                    }
+                                    else
+                                        dp.InternalXValue = DateTimeHelper.DateDiff((DateTime)dp.InternalXValueAsDateTime, minDate, minDateRange, maxDateRange, axisX.InternalIntervalType, axisX.XValueType);
 
                                     if (dp.InternalXValue == 0 && axisX._isAllXValueZero == true)
                                         axisX._isAllXValueZero = true;
@@ -1590,6 +1621,7 @@ namespace Visifire.Charts
                     break;
 
                 case RenderAs.Radar:
+                case RenderAs.Polar:
                     chartOrientation = ChartOrientationType.Circular;
                     break;
 
@@ -1913,6 +1945,23 @@ namespace Visifire.Charts
 
             // Generates the dictionary with InternalXValue as key, AxisLabel as value
             return uniqueXValueDataPoints.ToDictionary(GetXValue, GetAxisLabel);
+        }
+
+        private Boolean ValidateChartCombination(params RenderAs[] renderTypes)
+        {   
+            ChartOrientationType chartOrientation = ChartOrientationType.Undefined;
+
+            foreach (RenderAs renderType in renderTypes)
+            {
+                if (chartOrientation == ChartOrientationType.Undefined)
+                    chartOrientation = GetChartOrientation(renderType);
+                else if (chartOrientation == GetChartOrientation(renderType))
+                    continue;
+                else
+                    return false;
+            }
+
+            return true;
         }
 
         #endregion

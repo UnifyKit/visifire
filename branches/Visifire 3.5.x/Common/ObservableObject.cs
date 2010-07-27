@@ -255,6 +255,14 @@ namespace Visifire.Commons
 
         #region Internal Properties
 
+        /// <summary>
+        /// Whether the element has been created by default
+        /// </summary>
+        internal Boolean IsDefault
+        {
+            get;
+            set;
+        }
 #if WPF
 
         /// <summary>
@@ -403,6 +411,7 @@ namespace Visifire.Commons
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
                     case RenderAs.Radar:
+                    case RenderAs.Polar:
                         return true;
                  default:
                      return false;

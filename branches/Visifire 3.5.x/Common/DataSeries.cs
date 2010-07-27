@@ -2232,6 +2232,9 @@ namespace Visifire.Charts
                         case RenderAs.Radar:
                             return "#AxisXLabel, #YValue";
 
+                        case RenderAs.Polar:
+                            return "#XValue, #YValue";
+
                         default:
                             if (chart != null && chart.ChartArea != null && chart.ChartArea.AxisX != null && chart.ChartArea.AxisX.XValueType != ChartValueTypes.Numeric)
                                 return "#XValue, #YValue";
@@ -2420,6 +2423,16 @@ namespace Visifire.Charts
                 if(Faces != null && Faces.Visual != null)
                 {
                     (Faces.Visual as Polygon).Fill = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
+                }
+
+                foreach (DataPoint dp in InternalDataPoints)
+                    dp.PartialUpdateOfColorProperty(dp.Color);
+            }
+            else if (RenderAs == RenderAs.Polar)
+            {
+                if (Faces != null && Faces.Visual != null)
+                {
+                    (Faces.Visual as Path).Stroke = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
                 }
 
                 foreach (DataPoint dp in InternalDataPoints)

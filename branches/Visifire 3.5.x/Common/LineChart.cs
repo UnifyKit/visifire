@@ -2162,7 +2162,7 @@ namespace Visifire.Charts
 
                 case VcProperties.YValue:
                 case VcProperties.YValues:
-                    if (Double.IsNaN(dataPoint._oldYValue) || dataPoint.Faces == null) // Broken point of broken line
+                    if (Double.IsNaN(dataPoint._oldYValue) || Double.IsNaN(dataPoint.InternalYValue) || dataPoint.Faces == null) // Broken point of broken line
                         UpdateDataSeries(dataPoint.Parent, property, newValue);
                     else
                     {

@@ -1422,19 +1422,22 @@ namespace Visifire.Charts
             // if the axis labels belong to axis x
             if (ParentAxis.AxisRepresentation == AxisRepresentations.AxisX)
             {
-                // if the data minimum - interval is less than the actual minimum
-                if (Double.IsNaN((Double)Parent.AxisMinimumNumeric))
+                if (ParentAxis.AxisOrientation != AxisOrientation.Circular)
                 {
-                    if (ParentAxis.XValueType != ChartValueTypes.Numeric)
+                    // if the data minimum - interval is less than the actual minimum
+                    if (Double.IsNaN((Double)Parent.AxisMinimumNumeric))
                     {
-                        index = (Decimal)ParentAxis.FirstLabelPosition;
-                    }
-                    else
-                    {
-                        if ((DataMinimum - Minimum) / interval >= 1)
-                            index = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
+                        if (ParentAxis.XValueType != ChartValueTypes.Numeric)
+                        {
+                            index = (Decimal)ParentAxis.FirstLabelPosition;
+                        }
                         else
-                            index = (Decimal)DataMinimum;
+                        {
+                            if ((DataMinimum - Minimum) / interval >= 1)
+                                index = (Decimal)(DataMinimum - Math.Floor((DataMinimum - Minimum) / interval) * interval);
+                            else
+                                index = (Decimal)DataMinimum;
+                        }
                     }
                 }
 
@@ -1468,11 +1471,6 @@ namespace Visifire.Charts
                                             tempIndex--;
 
                                         dt = DateTimeHelper.UpdateDate(Parent.FirstLabelDate, (Double)interval * count, ParentAxis.InternalIntervalType);
-                                        //dt = DateTimeHelper.AlignDateTime(dt, ParentAxis.InternalInterval, ParentAxis.InternalIntervalType);
-
-                                        //if (ParentAxis.InternalIntervalType == IntervalTypes.Years)
-                                        //    dt = new DateTime(dt.Year, 1, 1, 0, 0, 0);
-
                                         labelContent = AxisLabels.FormatDate(dt, ParentAxis);
                                     }
                                     else if (ParentAxis.XValueType == ChartValueTypes.Time)
@@ -1535,21 +1533,115 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        for (Int32 i = 0; i < ParentAxis.CircularPlotDetails.ListOfPoints4CircularAxis.Count; i++)
+                        if (ParentAxis.CircularPlotDetails != null && ParentAxis.CircularPlotDetails.CircularChartType == RenderAs.Radar)
+                        {
+                            Int32 maxDataPointsCount = ParentAxis.PlotDetails.GetMaxDataPointsCountFromInternalSeriesList((ParentAxis.Chart as Chart).InternalSeries);
+
+                            ParentAxis.CircularPlotDetails.CalculateAxisXLabelsPoints4Radar(ParentAxis.Width, ParentAxis.Height, (Boolean)Enabled, maxDataPointsCount);
+
+                            for (Int32 i = 0; i < ParentAxis.CircularPlotDetails.ListOfPoints4CircularAxis.Count; i++)
+                            {
+                                String labelContent = "";
+
+                                if (AxisLabelContentDictionary.ContainsKey(i))
+                                {
+                                    labelContent = GetFormattedMultilineText(AxisLabelContentDictionary[i]);
+                                }
+                                else
+                                    labelContent = GetFormattedString(i + 1);
+
+                                AxisLabel label = CreateLabel(labelContent);
+
+                                AxisLabelList.Add(label);
+                                LabelValues.Add((Double)index);
+                            }
+                        }
+                        else
                         {
                             String labelContent = "";
 
-                            if (AxisLabelContentDictionary.ContainsKey(i))
+                            //Decimal currIndex;
+                            //Decimal nextIndex;
+                            //Decimal indexDiff = 0;
+
+                            for (; index < maxVal; )
                             {
-                                labelContent = GetFormattedMultilineText(AxisLabelContentDictionary[i]);
+                                //currIndex = index;
+
+                                DateTime firstDate = DateTimeHelper.XValueToDateTime(Parent.MinDate, Minimum, ParentAxis.InternalIntervalType);
+
+                                if (ParentAxis.XValueType == ChartValueTypes.Date || ParentAxis.XValueType == ChartValueTypes.Time)
+                                {
+                                    DateTime dt = ParentAxis.MinDate;
+                                    Decimal tempIndex = index;
+
+                                    if (ParentAxis._isAllXValueZero)
+                                        tempIndex--;
+
+                                    dt = DateTimeHelper.UpdateDate(firstDate, interval * count, ParentAxis.InternalIntervalType);
+                                    labelContent = AxisLabels.FormatDate(dt, ParentAxis);
+                                }
+                                else if (ParentAxis.XValueType == ChartValueTypes.DateTime)
+                                {
+                                    DateTime dt = ParentAxis.MinDate;
+                                    Decimal tempIndex = index;
+
+                                    if (ParentAxis._isAllXValueZero)
+                                        tempIndex--;
+
+                                    dt = DateTimeHelper.UpdateDate(firstDate, interval * count, ParentAxis.InternalIntervalType);
+
+                                    String valueFormatString = (String.IsNullOrEmpty((String)ParentAxis.GetValue(Axis.ValueFormatStringProperty))) ? "M/d/yyyy" : ParentAxis.ValueFormatString;
+
+                                    String formattedDate = ParentAxis.AddPrefixAndSuffix(dt.ToString(valueFormatString, System.Globalization.CultureInfo.CurrentCulture));
+
+                                    labelContent = formattedDate;
+
+                                }
+                                else
+                                {
+                                    labelContent = GetFormattedString((Double)index);
+                                }
+
+                                AxisLabel label = CreateLabel(labelContent);
+
+                                AxisLabelList.Add(label);
+
+                                LabelValues.Add((Double)index);
+
+                                if (ParentAxis.IsDateTimeAxis)
+                                {
+                                    count++;
+
+                                    DateTime dt = DateTimeHelper.UpdateDate(firstDate, (Double)(count * gap), ParentAxis.InternalIntervalType);
+                                    Decimal oneUnit = (Decimal)DateTimeHelper.DateDiff(dt, firstDate, ParentAxis.MinDateRange, ParentAxis.MaxDateRange, ParentAxis.InternalIntervalType, ParentAxis.XValueType);
+
+                                    index = minval + oneUnit;
+                                }
+                                else
+                                {
+                                    index = minval + (++count) * gap;
+                                }
+
+                                //nextIndex = index;
+
+                                //if (index > maxVal)
+                                //{
+                                //    Decimal lastIndexDiff = maxVal - currIndex;
+
+                                //    if(lastIndexDiff != indexDiff)
+                                //        labelContent = "";
+                                //}
+                                //else
+                                //{
+                                //    indexDiff = nextIndex - currIndex;
+                                //}
+
                             }
-                            else
-                                labelContent = GetFormattedString(i + 1);
 
-                            AxisLabel label = CreateLabel(labelContent);
+                            if (ParentAxis.CircularPlotDetails != null && LabelValues.Count > 0)
+                                ParentAxis.CircularPlotDetails.CalculateAxisXLabelsPoints4Polar(ParentAxis.Width, ParentAxis.Height, (Boolean)Enabled, LabelValues, (Double)minval, (Double)maxVal);
 
-                            AxisLabelList.Add(label);
-                            LabelValues.Add((Double)index);
                         }
                     }
                 }
@@ -1802,10 +1894,35 @@ namespace Visifire.Charts
                 CalculateHorizontalDefaults(Height, Width);
             else
                 CalculateVerticalDefaults();
-            
+
+            Boolean isChartGridEnabled = false;
+
+            if(ParentAxis.Grids.Count > 0 && (Boolean)ParentAxis.Grids[0].Enabled)
+                isChartGridEnabled = true;
+
+            if (ParentAxis.CircularPlotDetails != null && ParentAxis.CircularPlotDetails.CircularChartType == RenderAs.Polar)
+            {
+                if (Double.IsNaN((Double)InternalAngle))
+                {
+                    Double angle = AxisLabel.GetRadians(ParentAxis.CircularPlotDetails.MinAngleInDegree);
+
+                    if (angle > Math.PI)
+                        angle = angle - (Math.PI + Math.PI / 2);
+                    else
+                        angle = (angle + Math.PI / 2);
+
+                    if (angle >= Math.PI / 4 &&
+                        angle <= Math.PI)
+                        InternalAngle = -90;
+                    else if (angle > Math.PI
+                        && angle <= 3 * Math.PI / 2 + Math.PI / 4)
+                        InternalAngle = 90;
+                }
+            }
+
             // Calculate the width of the labels
             //for (Int32 i = 0; i < AxisLabelList.Count; i++)
-             for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
+            for (Int32 i = 0; i < AxisLabelList.Count; i += (ParentAxis.SkipOffset + 1))
             {   
                 AxisLabel label = AxisLabelList[i];
 
@@ -1859,7 +1976,10 @@ namespace Visifire.Charts
                 label.Position = new Point(width - left + Padding.Left, position);
 
                 if (ParentAxis.CircularPlotDetails != null && ParentAxis.CircularPlotDetails.ChartOrientation == ChartOrientationType.Circular)
-                    label.ChartOrientation = ParentAxis.CircularPlotDetails.ChartOrientation;
+                {
+                    if (isChartGridEnabled)
+                        label._padding4AxisYLabelInCircularChart = 3.5;
+                }
 
                 // Create the visual element again
                 //label.CreateVisualObject(true, _tag);
@@ -2017,6 +2137,19 @@ namespace Visifire.Charts
 
                 CircularAxisLabel clabel = new CircularAxisLabel(points[i], center, radius, radius, label, i);
 
+                label._padding4AxisXLabelInCircularChart = 8;
+
+                if ((clabel.Angle > 3 * Math.PI / 2 && clabel.Angle < 2 * Math.PI - 0.35)
+                    || (clabel.Angle > Math.PI + 0.35 && clabel.Angle < 3 * Math.PI / 2))
+                {
+                    label._padding4AxisYLabelInCircularChart = 4;
+                }
+                else if ((clabel.Angle > 0.35 && clabel.Angle < Math.PI / 2)
+                    || (clabel.Angle > Math.PI / 2 && clabel.Angle < Math.PI - 0.35))
+                {
+                    label._padding4AxisYLabelInCircularChart = -4;
+                }
+                
                 circularAxisLabels.Add(clabel);
             }
 
@@ -2024,7 +2157,7 @@ namespace Visifire.Charts
             List<CircularAxisLabel> labelsAtRight;
 
             Axis.GetLeftAndRightLabels(circularAxisLabels, out labelsAtLeft, out labelsAtRight);
-            
+
             foreach (CircularAxisLabel label in labelsAtLeft)
             {
                 label.AxisLabel.SetPosition4CircularLabel(label, true);
@@ -2070,10 +2203,10 @@ namespace Visifire.Charts
                 //Double distance = Graphics.DistanceBetweenTwoPoints(label.Center, label.NextPosition);
                 //minDistance = Math.Min(minDistance, distance);
 
-                if(label.NextPosition.X != label.Center.X)
+                if(Math.Round(label.NextPosition.X) != Math.Round(label.Center.X))
                     xRadius = (label.NextPosition.X - label.Center.X)/ Math.Cos(label.Angle);
 
-                if (label.NextPosition.Y != label.Center.Y)
+                if (Math.Round(label.NextPosition.Y) != Math.Round(label.Center.Y))
                     yRadius = (label.NextPosition.Y - label.Center.Y) / Math.Sin(label.Angle);
 
                 Double minRadius = Math.Min(xRadius, yRadius);
@@ -2654,10 +2787,13 @@ namespace Visifire.Charts
             // Create a new 
             Visual = new Canvas();
 
-            if (!(Boolean)Enabled)
+            if (ParentAxis.AxisOrientation != AxisOrientation.Circular)
             {
-                Visual = null;
-                return;
+                if (!(Boolean)Enabled)
+                {
+                    Visual = null;
+                    return;
+                }
             }
 
             // Create new Labels list
@@ -2718,6 +2854,14 @@ namespace Visifire.Charts
             SetLabelPosition();
 
             Visual.Opacity = InternalOpacity;
+
+            if (ParentAxis.AxisOrientation == AxisOrientation.Circular)
+            {
+                if (!(Boolean)Enabled)
+                {
+                    Visual.Visibility = System.Windows.Visibility.Collapsed;
+                }
+            }
         }
 
         #endregion

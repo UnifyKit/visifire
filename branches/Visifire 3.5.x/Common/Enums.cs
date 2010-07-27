@@ -192,9 +192,10 @@ namespace Visifire.Charts
         CandleStick = 17,
         StepLine = 18,
         Spline = 19,
-        Radar = 20
+        Radar = 20,
+        Polar = 21
     }
-
+    
     /// <summary>
     /// Styles for labels
     /// </summary>
@@ -371,6 +372,7 @@ namespace Visifire.Charts
         ShowInLegend,
         StartAngle,
         StartFromZero,
+        StickColor,
         Suffix,
         ScrollBarScale,
         ScrollBarSize,

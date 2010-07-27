@@ -1782,7 +1782,7 @@ namespace Visifire.Charts
 
                 case VcProperties.YValue:
                 case VcProperties.YValues:
-                    if (Double.IsNaN(dataPoint._oldYValue) || dataPoint.Faces == null) // Broken point of broken line
+                    if (Double.IsNaN(dataPoint._oldYValue) || Double.IsNaN(dataPoint.InternalYValue) || dataPoint.Faces == null) // Broken point of broken line
                         UpdateDataSeries(dataPoint.Parent, property, newValue);
                     else
                     {
@@ -1875,7 +1875,6 @@ namespace Visifire.Charts
             Point shadowOldPoint = new Point();
 
             // Collect reference of line geometry object
-           
             LineSegment lineSeg1 = dataPoint.Faces.Parts[0] as LineSegment;     //Line Segment from previous DataPoint to Step point.
             LineSegment lineSeg2 = dataPoint.Faces.Parts[1] as LineSegment;     //Line Segment from Step point to the current DataPoint.
             LineSegment nextLineSeg1 = lineSeg2;                                //Line Segment from current DataPoint to next Step point.
@@ -1952,13 +1951,15 @@ namespace Visifire.Charts
                         dataPoint.Storyboard.Pause();
 
                     oldPoint = pathFigure.StartPoint;
-                //    pathFigure.StartPoint = new Point(x, y);
+                    // pathFigure.StartPoint = new Point(x, y);
                     
                 }
                 else
                 {
                     pathFigure.StartPoint = new Point(x, y);
-                    nextLineSeg1.Point = new Point(xNext, y);
+                    
+                    if(nextLineSeg1 != null)
+                        nextLineSeg1.Point = new Point(xNext, y);
                 }
                     
             }
@@ -1972,7 +1973,7 @@ namespace Visifire.Charts
                     if (dataPoint.Storyboard != null)
                         dataPoint.Storyboard.Pause();
 
-                    //oldPoint = lineSeg2.Point;
+                    // oldPoint = lineSeg2.Point;
                 }
                 else
                 {
@@ -2001,15 +2002,9 @@ namespace Visifire.Charts
                 pointAnimation2.To = newPoint;
                 pointAnimation2.SpeedRatio = 2;
                 pointAnimation2.Duration = new Duration(new TimeSpan(0, 0, 1));
-                //target.SetValue(FrameworkElement.NameProperty, "Segment_" + dataPoint.Name);
 
                 Storyboard.SetTarget(pointAnimation2, target);
-                //#if SL
                 Storyboard.SetTargetProperty(pointAnimation2, (lineSeg2 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-                //#else
-                // Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-
-                //#endif
                 Storyboard.SetTargetName(pointAnimation2, (String)target.GetValue(FrameworkElement.NameProperty));
                 storyBorad.Children.Add(pointAnimation2);
 
@@ -2026,15 +2021,8 @@ namespace Visifire.Charts
                     pointAnimation3.SpeedRatio = 2;
                     pointAnimation3.Duration = new Duration(new TimeSpan(0, 0, 1));
 
-                    //target.SetValue(FrameworkElement.NameProperty, "Segment_" + dataPoint.Name);
-
                     Storyboard.SetTarget(pointAnimation3, target);
-                    //#if SL
                     Storyboard.SetTargetProperty(pointAnimation3, (nextLineSeg1 != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-                    //#else
-                    // Storyboard.SetTargetProperty(pointAnimation, (lineSeg != null) ? new PropertyPath("Point") : new PropertyPath("StartPoint"));
-
-                    //#endif
                     Storyboard.SetTargetName(pointAnimation3, (String)target.GetValue(FrameworkElement.NameProperty));
                     storyBorad.Children.Add(pointAnimation3);
                 }
