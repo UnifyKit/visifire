@@ -156,7 +156,7 @@ namespace Visifire.Charts
             set;
         }
 
-        internal ChartOrientationType ChartOrientation
+        internal ChartOrientationType AxisOrientation4CircularChart
         {
             get;
             set;
@@ -350,11 +350,11 @@ namespace Visifire.Charts
 
         private void SetPosition4LeftCircularLabel(CircularAxisLabel label)
         {
-            Point newPos = newPos = new Point(label.Position.X, label.Position.Y);
+            Point newPos = new Point(label.Position.X, label.Position.Y);
 
-            if (label.Angle == Math.PI / 2)
+            if (Math.Round(label.Angle, 1) == Math.Round(Math.PI / 2, 1))
                 SetPositionBottom(newPos);
-            else if (label.Angle == 3 * Math.PI / 2)
+            else if (Math.Round(label.Angle, 1) == Math.Round(3 * Math.PI / 2, 1))
                 SetPositionTop(newPos);
             else
                 SetPositionLeft(newPos);
@@ -362,11 +362,11 @@ namespace Visifire.Charts
 
         private void SetPosition4RightCircularLabel(CircularAxisLabel label)
         {
-            Point newPos = newPos = new Point(label.Position.X, label.Position.Y);
+            Point newPos = new Point(label.Position.X, label.Position.Y);
 
-            if (label.Angle == Math.PI / 2)
+            if (Math.Round(label.Angle, 1) == Math.Round(Math.PI / 2, 1))
                 SetPositionBottom(newPos);
-            else if (label.Angle == 3 * Math.PI / 2)
+            else if (Math.Round(label.Angle, 1) == Math.Round(3 * Math.PI / 2, 1))
                 SetPositionTop(newPos);
             else
                 SetPositionRight(newPos);
@@ -461,8 +461,8 @@ namespace Visifire.Charts
 
             // calculate the top and left for the TextBlock 
             // Stores the top and left of the textblock
-            Double top = (ActualTextHeight / 2) * Math.Cos(GetRadians(angle));
-            Double left = -(ActualTextHeight / 2) * Math.Sin(GetRadians(angle)) - (Placement == PlacementTypes.Circular ? PADDING_4_CIRCULAR_LABEL : 0);
+            Double top = (ActualTextHeight / 2) * Math.Cos(GetRadians(angle)) + _padding4AxisYLabelInCircularChart;
+            Double left = -(ActualTextHeight / 2) * Math.Sin(GetRadians(angle)) - _padding4AxisXLabelInCircularChart;
 
             // set the top and left for the AxisLabel element
             Visual.SetValue(Canvas.LeftProperty, newPos.X - left);
@@ -514,9 +514,8 @@ namespace Visifire.Charts
             Rotation.CenterY = 0.5;
             
             // calculate the top and left for the TextBlock
-            left = length * Math.Cos(radians + relativeAngle) + (Placement == PlacementTypes.Circular ? PADDING_4_CIRCULAR_LABEL : 0);
-            top = length * Math.Sin(radians + relativeAngle) +
-                (ChartOrientation == ChartOrientationType.Circular ? PADDING_4_AXISY_LABEL_IN_CIRCULAR_CHART : 0);
+            left = length * Math.Cos(radians + relativeAngle) + _padding4AxisXLabelInCircularChart;
+            top = length * Math.Sin(radians + relativeAngle) + _padding4AxisYLabelInCircularChart;
 
             // set the top and left for the AxisLabel element
             Visual.SetValue(Canvas.LeftProperty, newPos.X - left);
@@ -566,7 +565,7 @@ namespace Visifire.Charts
 
                 // set the top and left for the AxisLabel element
                 Visual.SetValue(Canvas.LeftProperty, newPos.X - left);
-                Visual.SetValue(Canvas.TopProperty, newPos.Y + top + (Placement == PlacementTypes.Circular ? PADDING_4_CIRCULAR_LABEL : 0));
+                Visual.SetValue(Canvas.TopProperty, newPos.Y + top + _padding4AxisXLabelInCircularChart);
 
                 // set the actual Top, left same as the visual top and left
                 ActualTop = (Double)Visual.GetValue(Canvas.TopProperty);
@@ -612,7 +611,7 @@ namespace Visifire.Charts
 
                 // set the top and left for the AxisLabel element
                 Visual.SetValue(Canvas.LeftProperty, newPos.X - left);
-                Visual.SetValue(Canvas.TopProperty, newPos.Y - top - (Placement == PlacementTypes.Circular ? PADDING_4_CIRCULAR_LABEL : 0));
+                Visual.SetValue(Canvas.TopProperty, newPos.Y - top - _padding4AxisXLabelInCircularChart);
 
                 // set the actual Top, left same as the visual top and left
                 ActualTop = (Double)Visual.GetValue(Canvas.TopProperty);
@@ -814,8 +813,9 @@ namespace Visifire.Charts
         /// </summary>
         private Double _actualTextWidth;
 
-        private const Double PADDING_4_CIRCULAR_LABEL = 8;
-        private const Double PADDING_4_AXISY_LABEL_IN_CIRCULAR_CHART = 2;
+        internal Double _padding4AxisXLabelInCircularChart;
+
+        internal Double _padding4AxisYLabelInCircularChart;
 
         #endregion
     }

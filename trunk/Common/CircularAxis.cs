@@ -184,17 +184,23 @@ namespace Visifire.Charts
                 // Generate the visual object for the required elements
                 AxisLabels.CreateVisualObject();
 
-                if(AxisLabels.Visual != null)
+                if (AxisLabels.Visual != null)
                     CircularAxisVisual.Children.Add(AxisLabels.Visual);
 
                 ApplyCircularPathProperties();
 
-                CircularPath.Data = GetPathGeometry(CircularPlotDetails.ListOfPoints4CircularAxis);
+                if (CircularPlotDetails.ListOfPoints4CircularAxis.Count > 0)
+                {
+                    CircularPath.Data = GetPathGeometry(CircularPlotDetails.ListOfPoints4CircularAxis);
+                }
 
                 CircularAxisVisual.Children.Add(CircularPath);
             }
             else
             {
+                if (CircularPlotDetails.ListOfPoints4CircularAxis.Count == 0)
+                    return;
+
                 Double height = CircularPlotDetails.Radius;
 
                 // Set the parameters for the axis labels
@@ -203,10 +209,32 @@ namespace Visifire.Charts
 
                 for (Int32 i = 0; i < CircularPlotDetails.ListOfPoints4CircularAxis.Count; i++)
                 {
-                    if(i == 0)
-                        CreateAxisYElements4CircularChart(height, CircularPlotDetails.ListOfPoints4CircularAxis[i], CircularPlotDetails.MinAngleInDegree, i, CircularPlotDetails.Center, true);
+                    if (CircularPlotDetails.CircularChartType == RenderAs.Radar)
+                    {
+                        if (i == 0)
+                            CreateAxisYElements4RadarChart(height, CircularPlotDetails.ListOfPoints4CircularAxis[i], CircularPlotDetails.MinAngleInDegree, i, CircularPlotDetails.Center, true);
+                        else
+                            CreateAxisYElements4RadarChart(height, CircularPlotDetails.ListOfPoints4CircularAxis[i], CircularPlotDetails.MinAngleInDegree, i, CircularPlotDetails.Center, false);
+                    }
                     else
-                        CreateAxisYElements4CircularChart(height, CircularPlotDetails.ListOfPoints4CircularAxis[i], CircularPlotDetails.MinAngleInDegree, i, CircularPlotDetails.Center, false);
+                    {
+                        Double newMinAngle = 0;
+                        if (CircularPlotDetails.MinAngleInDegree > 360)
+                        {
+                            Double tempMinAngle = 0;
+                            Int32 indexCount = Convert.ToInt32(Math.Floor(CircularPlotDetails.MinAngleInDegree / 360));
+                            for (Int32 index = 1; index <= indexCount; index++)
+                            {
+                                tempMinAngle = Math.Max(tempMinAngle, index * 360);
+                            }
+
+                            newMinAngle = CircularPlotDetails.MinAngleInDegree - tempMinAngle;
+                        }
+                        else
+                            newMinAngle = CircularPlotDetails.MinAngleInDegree;
+
+                        CreateAxisYElements4PolarChart(height, newMinAngle, CircularPlotDetails.ListOfPoints4CircularAxis[i], CircularPlotDetails.AnglesInRadian[i], i, CircularPlotDetails.Center);
+                    }
                 }
 
                 CleanUpGrids();
@@ -249,6 +277,70 @@ namespace Visifire.Charts
             }
         }
 
+        internal Double CalculateAngleByCoordinate(Point position, Point center)
+        {
+            return Math.Atan2((position.Y - center.Y), (position.X - center.X));
+        }
+
+
+        private void CreateAxisYElements4PolarChart(Double height, Double minAngleInDegree, Point point, Double angle, Double index, Point center)
+        {
+            AxisElementsContainer = new StackPanel() { Background = InternalBackground };
+            AxisElementsContainer.Orientation = Orientation.Horizontal;
+
+            ApplyAxisProperties4CircularChart();
+
+            CreateAxisLine(0, height, (Double)LineThickness / 2, (Double)LineThickness / 2, (Double)LineThickness, height);
+
+            RotateTransform transform = new RotateTransform();
+            Double rotationAngleIndegree = Visifire.Commons.CircularLabel.ResetMeanAngle(CalculateAngleByCoordinate(point, center)) * 180 / Math.PI;
+            transform.Angle = rotationAngleIndegree + 90;
+
+            Double axisLabelsWidth = 0;
+
+            if (Math.Round(minAngleInDegree) == Math.Round(rotationAngleIndegree))
+            {
+                AxisLabels.CreateVisualObject();
+
+                if (AxisLabels.Visual != null)
+                {
+                    AxisElementsContainer.Children.Add(AxisLabels.Visual);
+                    axisLabelsWidth = AxisLabels.Visual.Width;
+                }
+            }
+
+            Double ticksWidth = 0;
+
+            List<Ticks> ticks = Ticks.Reverse().ToList();
+
+            foreach (Ticks tick in ticks)
+            {
+                tick.SetParms(PlacementTypes.Left, Double.NaN, height);
+
+                tick.CreateVisualObject();
+
+                if (tick.Visual != null)
+                {
+                    AxisElementsContainer.Children.Add(tick.Visual);
+                    ticksWidth += tick.Visual.Width;
+                }
+            }
+
+            if (AxisLine != null)
+                AxisElementsContainer.Children.Add(AxisLine);
+
+            AxisElementsContainer.SetValue(Canvas.LeftProperty, point.X - axisLabelsWidth - ticksWidth);
+            AxisElementsContainer.SetValue(Canvas.TopProperty, point.Y);
+
+            if (transform != null)
+            {
+                AxisElementsContainer.RenderTransformOrigin = new Point(1, 0);
+                AxisElementsContainer.RenderTransform = transform;
+            }
+
+            CircularAxisVisual.Children.Add(AxisElementsContainer);
+        }
+
         /// <summary>
         /// Create AxisY elements for circular chart
         /// </summary>
@@ -258,7 +350,7 @@ namespace Visifire.Charts
         /// <param name="index"></param>
         /// <param name="center"></param>
         /// <param name="isAxisLabelsEnabled"></param>
-        private void CreateAxisYElements4CircularChart(Double height, Point point, Double minAngle, Double index, Point center, Boolean isAxisLabelsEnabled)
+        private void CreateAxisYElements4RadarChart(Double height, Point point, Double minAngle, Double index, Point center, Boolean isAxisLabelsEnabled)
         {
             AxisElementsContainer = new StackPanel() { Background = InternalBackground };
             AxisElementsContainer.Orientation = Orientation.Horizontal;
@@ -363,16 +455,16 @@ namespace Visifire.Charts
         {
             // Labels at angle >= 3 * Math.PI / 2 && angle < 0
             List<CircularAxisLabel> labelsR1 = (from cl in labels
-                                            where cl.Angle >= 3 * Math.PI / 2
+                                                where cl.Angle >= 3 * Math.PI / 2
                                                 orderby cl.Angle
                                                 ascending
-                                            select cl).ToList();
+                                                select cl).ToList();
 
             // Labels at angle >= 0 && angle < <= Math.PI / 2
             List<CircularAxisLabel> labelsR2 = (from cl in labels
                                                 where cl.Angle >= 0 && cl.Angle <= Math.PI / 2
                                                 orderby cl.Angle ascending
-                                            select cl).ToList();
+                                                select cl).ToList();
 
             // Combine labels at right present at the right side of the circular region
             labelsAtRight = new List<CircularAxisLabel>();

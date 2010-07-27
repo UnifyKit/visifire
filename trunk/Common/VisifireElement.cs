@@ -971,7 +971,7 @@ namespace Visifire.Commons
 
         internal virtual object GetMouseRightButtonUpEventHandler()
         {
-            return this._onMouseRightButtonDown;
+            return this._onMouseRightButtonUp;
         }
 #endif
 
@@ -1012,7 +1012,7 @@ namespace Visifire.Commons
         /// Temp HrefTarget
         /// </summary>
         internal HrefTargets _tempHrefTarget;
-
+        
         #endregion
     }
 }

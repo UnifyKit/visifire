@@ -6,21 +6,33 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://sc
 mc:Ignorable="d"
 >
     <Grid x:Name="LayoutRoot">
-        <vc:Chart x:Name="MyChart" xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts"
-                  Width="500" Height="300" Theme="Theme1">
+        <vc:Chart xmlns:vc="clr-namespace:Visifire.Charts;assembly=SLVisifire.Charts" Width="500" Height="300" Theme="Theme1">
+
+            <vc:Chart.Titles>
+                <vc:Title Text="Visifire Polar Chart"/>
+            </vc:Chart.Titles>
+
+            <vc:Chart.AxesX>
+                <vc:Axis Interval="30"/>
+            </vc:Chart.AxesX>
 
             <vc:Chart.Series>
-                <vc:DataSeries RenderAs="Column">
+                <vc:DataSeries RenderAs="Polar" LineThickness="2.5">
                     <vc:DataSeries.DataPoints>
-                        <vc:DataPoint AxisXLabel="Jan" YValue="3009"/>
-                        <vc:DataPoint AxisXLabel="Feb" YValue="4547"/>
-                        <vc:DataPoint AxisXLabel="Mar" YValue="7047"/>
-                        <vc:DataPoint AxisXLabel="Apr" YValue="6208"/>
-                        <vc:DataPoint AxisXLabel="May" YValue="5222"/>
-                        <vc:DataPoint AxisXLabel="June" YValue="7047"/>
-                        <vc:DataPoint AxisXLabel="July" YValue="6508"/>
-                        <vc:DataPoint AxisXLabel="Aug" YValue="7547"/>
-                        <vc:DataPoint AxisXLabel="Sept" YValue="6508"/>
+                        <vc:DataPoint XValue="10" YValue="0"/>
+                        <vc:DataPoint XValue="30" YValue="5"/>
+                        <vc:DataPoint XValue="60" YValue="10"/>
+                        <vc:DataPoint XValue="90" YValue="15"/>
+                        <vc:DataPoint XValue="120" YValue="20"/>
+                        <vc:DataPoint XValue="150" YValue="25"/>
+                        <vc:DataPoint XValue="180" YValue="30"/>
+                        <vc:DataPoint XValue="210" YValue="35"/>
+                        <vc:DataPoint XValue="240" YValue="40"/>
+                        <vc:DataPoint XValue="270" YValue="45"/>
+                        <vc:DataPoint XValue="300" YValue="50"/>
+                        <vc:DataPoint XValue="330" YValue="55"/>
+                        <vc:DataPoint XValue="360" YValue="60"/>
+                        <vc:DataPoint XValue="390" YValue="55"/>
                     </vc:DataSeries.DataPoints>
                 </vc:DataSeries>
             </vc:Chart.Series>

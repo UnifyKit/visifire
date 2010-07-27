@@ -130,6 +130,9 @@
     <Compile Include="..\..\Common\CircularAxisLabel.cs">
       <Link>CircularAxisLabel.cs</Link>
     </Compile>
+    <Compile Include="..\..\Common\CircularPlotDetails.cs">
+      <Link>CircularPlotDetails.cs</Link>
+    </Compile>
     <Compile Include="..\..\Common\Collections.cs">
       <Link>Collections.cs</Link>
     </Compile>
@@ -228,6 +231,9 @@
     </Compile>
     <Compile Include="..\..\Common\PointChart.cs">
       <Link>PointChart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PolarChart.cs">
+      <Link>PolarChart.cs</Link>
     </Compile>
     <Compile Include="..\..\Common\RadarChart.cs">
       <Link>RadarChart.cs</Link>

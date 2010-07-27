@@ -2041,11 +2041,14 @@ namespace Visifire.Charts
         {
             Chart chart = d as Chart;
             PlotArea plotArea = (PlotArea)e.NewValue;
+             
             plotArea.Chart = chart;
             plotArea.PropertyChanged -= chart.Element_PropertyChanged;
             plotArea.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(chart.Element_PropertyChanged);
 
-            chart.InvokeRender();
+
+            if (!plotArea.IsDefault)
+                chart.InvokeRender();
         }
 
         /// <summary>

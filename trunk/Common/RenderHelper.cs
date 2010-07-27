@@ -95,6 +95,10 @@ namespace Visifire.Charts
                     renderedCanvas = RadarChart.GetVisualObjectForRadarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled);
                     break;
 
+                case RenderAs.Polar:
+                    renderedCanvas = PolarChart.GetVisualObjectForPolarChart(width, height, plotDetails, dataSeriesList4Rendering, chart, animationEnabled);
+                    break;
+
                 case RenderAs.StackedArea:
                     renderedCanvas = AreaChart.GetVisualObjectForStackedAreaChart(preExistingPanel, width, height, plotDetails, dataSeriesList4Rendering, chart, plankDepth, animationEnabled);
                     break;
@@ -271,7 +275,12 @@ namespace Visifire.Charts
                         break;
 
                   case RenderAs.Spline:
-                        ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        if (property == VcProperties.Enabled)
+                            ColumnChart.Update(chart, currentRenderAs, selectedDataSeries4Rendering);
+                        else
+                            foreach (DataSeries ds in selectedDataSeries4Rendering)
+                                UpdateVisualObject(ds.RenderAs, ds, property, newValue, false);
+
                         break;
 
                   case RenderAs.Line:
@@ -794,6 +803,16 @@ namespace Visifire.Charts
         public static Boolean IsFinancialCType(DataSeries dataSeries)
         {
             return (dataSeries.RenderAs == RenderAs.CandleStick || dataSeries.RenderAs == RenderAs.Stock);
+        }
+
+        /// <summary>
+        /// (dataSeries.RenderAs == RenderAs.Radar || dataSeries.RenderAs == RenderAs.Polar);
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns></returns>
+        public static Boolean IsCircularCType(DataSeries dataSeries)
+        {
+            return (dataSeries.RenderAs == RenderAs.Radar || dataSeries.RenderAs == RenderAs.Polar);
         }
 
         /// <summary>
