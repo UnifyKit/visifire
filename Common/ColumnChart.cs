@@ -1810,10 +1810,7 @@ namespace Visifire.Charts
                     {
                         if (dataSeries.RenderAs == RenderAs.Column || dataSeries.RenderAs == RenderAs.Bar)
                         {
-                            //if (chart.AnimatedUpdate)
-                                chart.Dispatcher.BeginInvoke(new Action<Chart, DataPoint, Boolean>(UpdateVisualForYValue4ColumnChart), new object[] { chart, dataPoint, isAxisChanged });
-                            //else
-                            //    UpdateVisualForYValue4ColumnChart(chart, dataPoint, isAxisChanged);
+                            chart.Dispatcher.BeginInvoke(new Action<Chart, DataPoint, Boolean>(UpdateVisualForYValue4ColumnChart), new object[] { chart, dataPoint, isAxisChanged });
                         }
                         else if (plotDetails.ChartOrientation == ChartOrientationType.Vertical)
                         {
@@ -1981,6 +1978,13 @@ namespace Visifire.Charts
             // Parent of the current DataPoint
             Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
             columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
+
+            if (Double.IsNaN(dataPoint.InternalYValue))
+            {
+                columnChartCanvas.Children.Remove(oldVisual);
+                dataPoint.Faces = null;
+                return;
+            }
 
             Boolean isPositive = (dataPoint.InternalYValue >= 0); // Whether YValue is positive
             
@@ -2461,244 +2465,6 @@ namespace Visifire.Charts
                 dataPoint.Select(true);
         }
 
-        public static void UpdateVisualForYValue4ColumnChart1(Chart chart, DataPoint dataPoint, Boolean isAxisChanged)
-        {   
-            DataSeries currentDataSeries;
-
-            DataSeries dataSeries = dataPoint.Parent;             // parent of the current DataPoint
-            Canvas oldVisual = dataPoint.Faces.Visual as Canvas;  // Old visual for the column
-            Canvas columnChartCanvas = oldVisual.Parent as Canvas;     // Existing parent canvas of column
-
-            Boolean isPositive = (dataPoint.InternalYValue >= 0); // Whether YValue is positive
-            Double depth3d = chart.ChartArea.PLANK_DEPTH / chart.PlotDetails.Layer3DCount * (chart.View3D ? 1 : 0);
-            
-            Double oldMarkerTop = Double.NaN;
-            Double currentMarkerTop = Double.NaN;
-            Double oldLabelTop = Double.NaN;
-            Double currentLabelTop = Double.NaN;
-
-            if (dataPoint.Marker != null && dataPoint.Marker.Visual != null)
-            {   
-                if(dataPoint.Parent.RenderAs == RenderAs.Column)
-                    oldMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.TopProperty);
-                else
-                    oldMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.LeftProperty);
-            }
-
-            if (dataPoint.LabelVisual != null)
-            {
-                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                        oldLabelTop = (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty);
-                    else
-                        oldLabelTop = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
-            }
-
-            Canvas labelCanvas = (columnChartCanvas.Parent as Canvas).Children[0] as Canvas;
-
-            UpdateParentVisualCanvasSize(chart, columnChartCanvas);
-            UpdateParentVisualCanvasSize(chart, labelCanvas);
-
-            // Create new Column with new YValue
-            if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                CreateColumnDataPointVisual(columnChartCanvas, labelCanvas, chart.PlotDetails, dataPoint,
-                isPositive, oldVisual.Width, depth3d, false);
-            else
-                BarChart.CreateBarDataPointVisual(dataPoint, labelCanvas, columnChartCanvas, isPositive, oldVisual.Height, depth3d, false);
-
-           // Visifire.Profiler.Profiler.Start("Remove");
-            columnChartCanvas.Children.Remove(oldVisual);
-            //Visifire.Profiler.Profiler.Report("Remove", true, true);
-
-            // Update existing Plank
-            CreateOrUpdatePlank(chart, dataSeries.PlotGroup.AxisY, columnChartCanvas, depth3d, 
-                dataPoint.Parent.RenderAs == RenderAs.Column ? Orientation.Horizontal : Orientation.Vertical);
-
-            Boolean animationEnabled = (Boolean)chart.AnimatedUpdate;
-
-            if (animationEnabled && dataPoint.Storyboard != null)
-            {
-                dataPoint.Storyboard.Stop();
-            }
-
-            #region Animate Column
-
-           // animationEnabled = false;
-            if (animationEnabled)
-            {   
-                Storyboard storyBoard;
-
-                // Calculate scale factor from the old value YValue of the DataPoint
-                Double axisSize = (dataPoint.Parent.RenderAs == RenderAs.Column) ? columnChartCanvas.Height : columnChartCanvas.Width;
-                Double limitingYValue = 0;
-                PlotGroup plotGroup = dataSeries.PlotGroup;
-
-                if (plotGroup.AxisY.InternalAxisMinimum > 0)
-                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMinimum;
-                if (plotGroup.AxisY.InternalAxisMaximum < 0)
-                    limitingYValue = (Double)plotGroup.AxisY.InternalAxisMaximum;
-
-                if (dataPoint.InternalYValue > (Double)plotGroup.AxisY.InternalAxisMaximum)
-                    System.Diagnostics.Debug.WriteLine("Max Value greater then axis max");
-
-                Double oldBottom, oldTop, oldColumnHeight;
-
-                Double axisYMin = plotGroup.AxisY.InternalAxisMinimum !=  plotGroup.AxisY._oldInternalAxisMinimum ? plotGroup.AxisY.InternalAxisMinimum : plotGroup.AxisY._oldInternalAxisMinimum;
-                Double axisYMax = plotGroup.AxisY.InternalAxisMaximum !=  plotGroup.AxisY._oldInternalAxisMaximum ? plotGroup.AxisY.InternalAxisMaximum : plotGroup.AxisY._oldInternalAxisMaximum;
-
-                // Double axisYMin = isAxisChanged ? plotGroup.AxisY.InternalAxisMinimum : plotGroup.AxisY._oldInternalAxisMinimum;
-                // Double axisYMax = isAxisChanged ? plotGroup.AxisY.InternalAxisMaximum : plotGroup.AxisY._oldInternalAxisMaximum;
-
-                // Double axisYMin = isAxisChanged ? plotGroup.AxisY.InternalAxisMinimum : plotGroup.AxisY.InternalAxisMinimum;
-                // Double axisYMax = isAxisChanged ? plotGroup.AxisY.InternalAxisMaximum : plotGroup.AxisY.InternalAxisMaximum;
-                
-                System.Diagnostics.Debug.WriteLine("AxisChanged=" + isAxisChanged.ToString());
-                if (dataPoint._oldYValue >= 0)
-                {   
-                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                    {
-                        oldBottom = Graphics.ValueToPixelPosition(axisSize, 0, axisYMin, axisYMax, limitingYValue);
-                        oldTop = Graphics.ValueToPixelPosition(axisSize, 0, axisYMin, axisYMax, dataPoint._oldYValue);
-                    }
-                    else
-                    {
-                        oldBottom = Graphics.ValueToPixelPosition(0, axisSize, axisYMin, axisYMax, limitingYValue);
-                        oldTop = Graphics.ValueToPixelPosition(0, axisSize, axisYMin, axisYMax, dataPoint._oldYValue);
-                    }
-
-                    oldColumnHeight = Math.Abs(oldTop - oldBottom);
-                }
-                else
-                {
-                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                    {
-                        oldBottom = Graphics.ValueToPixelPosition(axisSize, 0, axisYMin, axisYMax, dataPoint._oldYValue);
-                        oldTop = Graphics.ValueToPixelPosition(axisSize, 0, axisYMin, axisYMax, limitingYValue);
-                    }
-                    else
-                    {
-                        oldTop = Graphics.ValueToPixelPosition(0, axisSize, axisYMin, axisYMax, dataPoint._oldYValue);
-                        oldBottom = Graphics.ValueToPixelPosition(0, axisSize, axisYMin, axisYMax, limitingYValue);
-                    }
-                    
-                    oldColumnHeight = Math.Abs(oldTop - oldBottom);
-                }
-
-                Double oldScaleFactor = oldColumnHeight / ((dataPoint.Parent.RenderAs == RenderAs.Column) ? dataPoint.Faces.Visual.Height : dataPoint.Faces.Visual.Width);
-
-                if (Double.IsInfinity(oldScaleFactor))
-                    oldScaleFactor = 0;
-
-                if (Double.IsNaN(oldScaleFactor))
-                    oldScaleFactor = 1;
-                // else if (oldScaleFactor > 1)
-                //     oldScaleFactor = oldColumnHeight / ((dataPoint.Parent.RenderAs == RenderAs.Column) ? columnChartCanvas.Height : columnChartCanvas.Width);
-
-                // End Calculate scale factor from the old value YValue of the DataPoint
-
-                storyBoard = new Storyboard();
-
-                if (!Double.IsNaN(oldMarkerTop))
-                {
-                    if(dataPoint.Parent.RenderAs == RenderAs.Column)
-                        currentMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.TopProperty);
-                    else
-                        currentMarkerTop = (Double)dataPoint.Marker.Visual.GetValue(Canvas.LeftProperty);
-                }
-
-                if (!Double.IsNaN(oldLabelTop))
-                {
-                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                        currentLabelTop = (Double)dataPoint.LabelVisual.GetValue(Canvas.TopProperty);
-                    else
-                        currentLabelTop = (Double)dataPoint.LabelVisual.GetValue(Canvas.LeftProperty);
-                }
-
-                String property2Animate = (dataPoint.Parent.RenderAs == RenderAs.Column) ? "(Canvas.Top)" : "(Canvas.Left)";
-
-                if ((dataPoint._oldYValue < 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue > 0 && dataPoint.InternalYValue > 0))
-                {
-                    currentDataSeries = dataPoint.Parent;
-                    storyBoard = ApplyColumnChartAnimation(currentDataSeries, dataPoint.Faces.Visual as Panel, storyBoard, isPositive, 0, new Double[] { 0, 1 }, new Double[] { oldScaleFactor, 1 }, dataPoint.Parent.RenderAs);
-
-                    if ((Boolean)dataPoint.MarkerEnabled && !Double.IsNaN(oldMarkerTop))
-                    {   
-                        storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldMarkerTop, currentMarkerTop },
-                            AnimationHelper.GenerateKeySplineList( new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
-                    }
-
-                    if ((Boolean)dataPoint.LabelEnabled && !Double.IsNaN(oldLabelTop))
-                    {
-                        storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.LabelVisual, property2Animate, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 1 }, new Double[] { oldLabelTop, currentLabelTop },
-                            AnimationHelper.GenerateKeySplineList(new Point(0, 0), new Point(1, 1), new Point(0, 1), new Point(0.5, 1)));
-                    }
-                }
-                else
-                {   
-                    Double currentTop;  // Top position of the DataPoint with new Value
-                    Double plankTop;    // Top position of the Plank (Top position of the Zero Line)
-
-                    if (dataPoint.Parent.RenderAs == RenderAs.Column)
-                    {
-                        currentTop = (Double)dataPoint.Faces.Visual.GetValue(Canvas.TopProperty);
-                        plankTop = axisSize - Graphics.ValueToPixelPosition(0, axisSize, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
-
-                        if (dataPoint._oldYValue <= 0)
-                        {
-                            storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate, dataPoint, storyBoard, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { plankTop, plankTop, plankTop, currentTop }, null);
-                            storyBoard = ApplyColumnChartAnimation(dataPoint.Parent, dataPoint.Faces.Visual as Panel, storyBoard, false, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldScaleFactor, 0, 0, 1 }, dataPoint.Parent.RenderAs);
-                        }
-                        else
-                        {
-                            storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate, dataPoint, storyBoard, 0, new Double[] { 0, 0.5, 0.5 }, new Double[] { oldTop, plankTop, plankTop }, null);
-                            storyBoard = ApplyColumnChartAnimation(dataPoint.Parent, dataPoint.Faces.Visual as Panel, storyBoard, false, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldScaleFactor, 0, 0, 1 }, dataPoint.Parent.RenderAs);
-                        }
-                    }
-                    else
-                    {   
-                        currentTop =(Double)dataPoint.Faces.Visual.GetValue(Canvas.LeftProperty);
-                        plankTop = Graphics.ValueToPixelPosition(0, axisSize, (Double)plotGroup.AxisY.InternalAxisMinimum, (Double)plotGroup.AxisY.InternalAxisMaximum, 0);
-
-                        if (dataPoint._oldYValue > 0)
-                        {
-                            storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate, dataPoint, storyBoard, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { plankTop, plankTop, plankTop, currentTop }, null);
-                            storyBoard = ApplyColumnChartAnimation(dataPoint.Parent, dataPoint.Faces.Visual as Panel, storyBoard, true, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldScaleFactor, 0, 0, 1 }, dataPoint.Parent.RenderAs);
-                        }
-                        else
-                        {
-                            storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Faces.Visual, property2Animate, dataPoint, storyBoard, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldTop, plankTop, plankTop}, null);
-                            storyBoard = ApplyColumnChartAnimation(dataPoint.Parent, dataPoint.Faces.Visual as Panel, storyBoard, true, 0, new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldScaleFactor, 0, 0, 1 }, dataPoint.Parent.RenderAs);
-                        }
-                    }
-
-                    if ((Boolean)dataPoint.MarkerEnabled && !Double.IsNaN(oldMarkerTop))
-                    {
-                        storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.Marker.Visual, property2Animate, dataPoint, storyBoard, 0,
-                            new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldMarkerTop, plankTop, plankTop, currentMarkerTop },
-                            null);
-                    }
-
-                    if ((Boolean)dataPoint.LabelEnabled && !Double.IsNaN(oldLabelTop))
-                    {
-                        storyBoard = AnimationHelper.ApplyPropertyAnimation(dataPoint.LabelVisual, property2Animate, dataPoint, storyBoard, 0,
-                           new Double[] { 0, 0.5, 0.5, 1 }, new Double[] { oldLabelTop, plankTop, plankTop, currentLabelTop },
-                           null);
-                    }
-                }
-
-                dataPoint.Storyboard = storyBoard;
-
-#if WPF
-                storyBoard.Begin(dataPoint.Chart._rootElement, true);
-#else           
-                storyBoard.Begin();
-#endif          
-            }
-            
-            #endregion Apply Animation
-        }
-        
         private static void ApplyRemoveLighting(DataPoint dataPoint)
         {   
             Faces faces = dataPoint.Faces;

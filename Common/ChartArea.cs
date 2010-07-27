@@ -1159,7 +1159,7 @@ namespace Visifire.Charts
         {
             if (Chart.PlotArea == null)
             {
-                Chart.PlotArea = new PlotArea();
+                Chart.PlotArea = new PlotArea() { IsDefault = true };
             }
 
             Chart.PlotArea.Chart = Chart;
@@ -1502,12 +1502,12 @@ namespace Visifire.Charts
 
                 if(e == null)
                     listOfNearestDataPoints = (from ds in chart.InternalSeries
-                                               where !RenderHelper.IsAxisIndependentCType(ds) && ds.RenderAs != RenderAs.Radar
+                                               where !RenderHelper.IsAxisIndependentCType(ds) && !RenderHelper.IsCircularCType(ds)
                                                select ds.FindNearestDataPointFromValues(xValueAtMousePos, internalYValue))
                                                .Where(dp => (dp != null && dp.Parent._nearestDataPoint != null)).ToList();
                 else
                     listOfNearestDataPoints = (from ds in chart.InternalSeries
-                                               where !RenderHelper.IsAxisIndependentCType(ds) && ds.RenderAs != RenderAs.Radar
+                                               where !RenderHelper.IsAxisIndependentCType(ds) && !RenderHelper.IsCircularCType(ds)
                                                select ds.FindNearestDataPointFromMousePointer(e))
                                                .Where(dp => (dp != null && dp.Parent._nearestDataPoint != null)).ToList();
 
@@ -2394,7 +2394,7 @@ namespace Visifire.Charts
             if (chart.Series.Count > 0)
             {
                 chart.Dispatcher.BeginInvoke(new Action<VcProperties, object>(chart.Series[0].UpdateVisual), new object[] { VcProperties.ScrollBarScale, null });
-                chart.Dispatcher.BeginInvoke(new Action<Chart, Double, Double, Double>(AxisX.CalculateViewMinimumAndMaximum), new object[] { chart, AxisX.ScrollBarElement.Value, ChartVisualCanvas.Width, ChartVisualCanvas.Height });
+                //chart.Dispatcher.BeginInvoke(new Action<Chart, Double, Double, Double>(AxisX.CalculateViewMinimumAndMaximum), new object[] { chart, AxisX.ScrollBarElement.Value, ChartVisualCanvas.Width, ChartVisualCanvas.Height });
                 chart.Dispatcher.BeginInvoke(new Action(ActivateDraggingLock));
             }
         }
@@ -3220,7 +3220,7 @@ namespace Visifire.Charts
         /// <param name="plankOpacity">PlankOpacity</param>
         private void DrawVerticalPlank(Double height, Double plankDepth, Double plankThickness, Double plankOpacity, Boolean isPartialUpdate)
         {
-            if (isPartialUpdate)
+            if (isPartialUpdate && _verticalPlank != null)
             {
                 ColumnChart.Update3DPlank(plankThickness, height, plankDepth, _verticalPlank);
                 CreateGridLinesOverPlank(height, _verticalPlank.Visual as Panel, plankDepth, plankThickness);
@@ -3760,7 +3760,9 @@ namespace Visifire.Charts
             {
                 if (Chart.InternalSeries.Count > 0)
                 {
-                    CircularPlotDetails circularPlotDetails = new CircularPlotDetails(Chart.PlotDetails.ChartOrientation);
+                    DataSeries ds = Chart.InternalSeries[0];
+
+                    CircularPlotDetails circularPlotDetails = new CircularPlotDetails(Chart.PlotDetails.ChartOrientation, ds.RenderAs);
 
                     Canvas visual = new Canvas();
 
@@ -4421,12 +4423,12 @@ namespace Visifire.Charts
             if(_financialColorSet == null)
                 _financialColorSet = Chart.GetColorSetByName("CandleLight");
 
-            if (_radarColorSet == null)
-                _radarColorSet = Chart.GetColorSetByName("SpiderWeb");
+            if (_circularChartColorSet == null)
+                _circularChartColorSet = Chart.GetColorSetByName("SpiderWeb");
 
             _financialColorSet.ResetIndex();
 
-            _radarColorSet.ResetIndex();
+            _circularChartColorSet.ResetIndex();
 
             // Load chart colorSet
             if (!String.IsNullOrEmpty(Chart.ColorSet))
@@ -4467,14 +4469,14 @@ namespace Visifire.Charts
                     dataSeries.IsNotificationEnable = true;
                 }
             }
-            else if (dataSeries.RenderAs == RenderAs.Radar)
+            else if (RenderHelper.IsCircularCType(dataSeries))
             {
                 if (dataSeries.Color == null)
                 {
                     Brush seriesColor = dataSeries.GetValue(DataSeries.ColorProperty) as Brush;
 
                     if (seriesColor == null)
-                        dataSeries._internalColor = _radarColorSet.GetNewColorFromColorSet();
+                        dataSeries._internalColor = _circularChartColorSet.GetNewColorFromColorSet();
                     else
                         dataSeries._internalColor = seriesColor;
 
@@ -4486,7 +4488,7 @@ namespace Visifire.Charts
 
                         if (dPColor == null)
                             if (seriesColor == null)
-                                dp._internalColor = _radarColorSet.GetNewColorFromColorSet();
+                                dp._internalColor = _circularChartColorSet.GetNewColorFromColorSet();
                             else
                                 dp._internalColor = seriesColor;
                         else
@@ -4572,7 +4574,7 @@ namespace Visifire.Charts
             }
         }
 
-        private void SetColor4RadarSeries(DataSeries dataSeries, ColorSet colorSet4MultiSeries, Boolean isUniqueColor4EachDP)
+        private void SetColor4CircularSeries(DataSeries dataSeries, ColorSet colorSet4MultiSeries, Boolean isUniqueColor4EachDP)
         {
             if (dataSeries.Color == null)
             {
@@ -4637,9 +4639,9 @@ namespace Visifire.Charts
                     dataSeries.IsNotificationEnable = true;
                 }
             }
-            else if (dataSeries.RenderAs == RenderAs.Radar)
+            else if (RenderHelper.IsCircularCType(dataSeries))
             {
-                colorSet4MultiSeries = _radarColorSet;
+                colorSet4MultiSeries = _circularChartColorSet;
 
                 if (!String.IsNullOrEmpty(dataSeries.ColorSet))
                 {
@@ -4651,7 +4653,7 @@ namespace Visifire.Charts
                     FLAG_UNIQUE_COLOR_4_EACH_DP = true;
                 }
 
-                SetColor4RadarSeries(dataSeries, colorSet4MultiSeries, FLAG_UNIQUE_COLOR_4_EACH_DP);
+                SetColor4CircularSeries(dataSeries, colorSet4MultiSeries, FLAG_UNIQUE_COLOR_4_EACH_DP);
             }
             else
             {
@@ -6383,7 +6385,7 @@ namespace Visifire.Charts
 
         internal ColorSet _financialColorSet = null;
 
-        internal ColorSet _radarColorSet = null;
+        internal ColorSet _circularChartColorSet = null;
 
         /// <summary>
         /// Number of redrawing chart for a single render call 

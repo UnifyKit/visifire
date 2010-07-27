@@ -215,6 +215,43 @@ namespace Visifire.Charts
         }
 
         /// <summary>
+        /// Calculate Min Max date from a List of dates for Polar chart
+        /// </summary>
+        /// <param name="dateTimeList">List of DateTimes</param>
+        /// <param name="minDate">min Date</param>
+        /// <param name="maxDate">out Max Date</param>
+        /// <param name="minDateRange">Minimum date difference</param>
+        /// <param name="maxDateRange">Maximum date difference</param>
+        internal static void CalculateMinMaxDate4PolarChart(System.Collections.Generic.List<DateTime> dateTimeList, Axis axisX, out DateTime minDate, out DateTime maxDate, out TimeSpan minDateRange, out TimeSpan maxDateRange)
+        {
+            if(axisX.AxisMinimum == null)
+                minDate = DateTime.Parse("12/30/1899", System.Globalization.CultureInfo.InvariantCulture);
+            else
+                minDate = Convert.ToDateTime(axisX.AxisMinimum);
+
+            if (axisX.AxisMaximum != null)
+                maxDate = Convert.ToDateTime(axisX.AxisMaximum);
+            else
+                maxDate = dateTimeList[dateTimeList.Count - 1];
+
+            dateTimeList.Sort();
+
+            minDateRange = new TimeSpan();
+            maxDateRange = new TimeSpan();
+
+            if (dateTimeList.Count > 0)
+            {
+                if (dateTimeList.Count >= 2)
+                {
+                    minDateRange = dateTimeList[1].Subtract(minDate);
+                    maxDateRange = maxDate.Subtract(minDate);
+                }
+            }
+            else
+                maxDate = minDate;
+        }
+
+        /// <summary>
         /// Recalculates a DateTime interval obtained from maximum and minimum DateTime.
         /// </summary>
         /// <param name="width">Width of available space</param>

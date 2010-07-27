@@ -3056,7 +3056,7 @@ namespace Visifire.Charts
                 case VcProperties.YValue:
                 case VcProperties.YValues:
 
-                    if (isAxisChanged || dataPoint._oldYValue >= 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue <= 0 && dataPoint.InternalYValue > 0)
+                    if (isAxisChanged || Double.IsNaN(dataPoint.InternalYValue) || dataPoint._oldYValue >= 0 && dataPoint.InternalYValue < 0 || dataPoint._oldYValue <= 0 && dataPoint.InternalYValue > 0)
                         UpdateDataSeries(dataSeries, property, newValue);
                     else
                     {

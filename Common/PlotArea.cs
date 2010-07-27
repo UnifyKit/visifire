@@ -1174,7 +1174,7 @@ namespace Visifire.Charts
 #endif
                         //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
 
-                        if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                        if (this.Background != null)
                             (ShadowElement as Border).Background = this.Background;
                         else
                         {
@@ -1201,7 +1201,7 @@ namespace Visifire.Charts
 #endif
                                 //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height - 4);
 
-                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                if (this.Background != null)
                                 {
                                     (ShadowElement as Border).Background = this.Background;
                                     //clipSize = new Size(ShadowGrid.Width + 5, ShadowGrid.Height + 5);
@@ -1223,7 +1223,7 @@ namespace Visifire.Charts
                                 InnerShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
 #endif
                                 InnerShadowElement.SetValue(Canvas.LeftProperty, plankOffset);
-                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                if (this.Background != null)
                                 {
                                     InnerShadowElement.Clip = ExtendedGraphics.GetShadowClip(new Size(InnerShadowElement.Width, InnerShadowElement.Height + 6));
                                     (InnerShadowElement as Border).Background = this.Background;
@@ -1249,7 +1249,7 @@ namespace Visifire.Charts
 #if !WP
                                 ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
 #endif
-                                if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                                if (this.Background != null)
                                     (ShadowElement as Border).Background = this.Background;
                                 else
                                 {
@@ -1286,12 +1286,11 @@ namespace Visifire.Charts
                             ShadowElement.Effect = ExtendedGraphics.GetShadowEffect(315, 4, 0.95);
 #endif
                             //clipSize = new Size(ShadowGrid.Width, ShadowGrid.Height);
-                            if (this.Background != null && !Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
+                            if (this.Background != null)
                                 (ShadowElement as Border).Background = this.Background;
                             else
                             {   
                                 if ((this.Background == null || Graphics.AreBrushesEqual(this.Background, new SolidColorBrush(Colors.Transparent)))
-
                                     && (Chart.Background != null && !Graphics.AreBrushesEqual(Chart.Background, new SolidColorBrush(Colors.Transparent))))
                                     (ShadowElement as Border).Background = Chart.Background;
                                 else

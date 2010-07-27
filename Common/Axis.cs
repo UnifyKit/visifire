@@ -1526,7 +1526,12 @@ namespace Visifire.Charts
                             return true;
                     }
                     else
-                        return false;
+                    {
+                        if (AxisOrientation == AxisOrientation.Circular)
+                            return true;
+                        else
+                            return false;
+                    }
                 }
                 else
                     return (Nullable<Boolean>)GetValue(StartFromZeroProperty);
@@ -2463,7 +2468,9 @@ namespace Visifire.Charts
 
             axis.AxisLabels.Parent = axis;
             axis.AxisLabels.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(AxisLabels_PropertyChanged);
-            axis.FirePropertyChanged(VcProperties.AxisLabels);
+            
+            if(!axis.AxisLabels.IsDefault)
+                axis.FirePropertyChanged(VcProperties.AxisLabels);
         }
 
         /// <summary>
@@ -2959,14 +2966,16 @@ namespace Visifire.Charts
             if (AxisRepresentation == AxisRepresentations.AxisY && ViewportRangeEnabled && Logarithmic)
                 startFromMinimumValue4LogScale = true;
 
+            Boolean isCircularAxis = (AxisOrientation == AxisOrientation.Circular) ? true : false;
+
             // Create and initialize the AxisManagers
-            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride, AxisRepresentation, Logarithmic, LogarithmBase, startFromMinimumValue4LogScale);
+            AxisManager = new AxisManager(Maximum, Minimum, (Boolean)StartFromZero, overflowValidity, stackingOverride, isCircularAxis, AxisRepresentation, Logarithmic, LogarithmBase, startFromMinimumValue4LogScale);
 
             // Set the include zero state
             AxisManager.IncludeZero = IncludeZero;
 
             // settings specific to axis X
-            if (AxisRepresentation == AxisRepresentations.AxisX)
+            if (AxisRepresentation == AxisRepresentations.AxisX && AxisOrientation != AxisOrientation.Circular)
             {
                 Double interval = GenerateDefaultInterval();
 
@@ -3009,12 +3018,54 @@ namespace Visifire.Charts
                 AxisManager.AxisMaximumValue = (Double)AxisMaximumNumeric;
                 InternalAxisMaximum = (Double)AxisMaximumNumeric;
             }
+            else
+            {
+                if (AxisOrientation == AxisOrientation.Circular)
+                {
+                    if (IsDateTimeAxis && AxisMaximum != null)
+                    {
+                        Double axisMaxNumeric;
+                        if (XValueType != ChartValueTypes.Time)
+                        {
+                            axisMaxNumeric = DateTimeHelper.DateDiff(AxisMaximumDateTime, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+                        }
+                        else
+                        {
+                            axisMaxNumeric = DateTimeHelper.DateDiff(Convert.ToDateTime(AxisMaximum), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+                        }
 
-            // seu the axis minimum value if the user has provided it
+                        AxisManager.AxisMaximumValue = axisMaxNumeric;
+                        InternalAxisMaximum = axisMaxNumeric;
+                    }
+                }
+            }
+
+            // set the axis minimum value if the user has provided it
             if (!Double.IsNaN((Double)AxisMinimumNumeric))
             {
                 AxisManager.AxisMinimumValue = (Double)AxisMinimumNumeric;
                 InternalAxisMinimum = (Double)AxisMinimumNumeric;
+            }
+            else
+            {
+                if (AxisOrientation == AxisOrientation.Circular)
+                {
+                    if (IsDateTimeAxis && AxisMinimum != null)
+                    {
+                        Double axisMinNumeric;
+                        if (XValueType != ChartValueTypes.Time)
+                        {
+                            axisMinNumeric = DateTimeHelper.DateDiff(AxisMinimumDateTime, MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+                        }
+                        else
+                        {
+                            axisMinNumeric = DateTimeHelper.DateDiff(Convert.ToDateTime(AxisMinimum), MinDate, MinDateRange, MaxDateRange, InternalIntervalType, XValueType);
+                        }
+
+                        AxisManager.AxisMinimumValue = axisMinNumeric;
+                        InternalAxisMinimum = axisMinNumeric;
+                    }
+                }
             }
 
             // Calculate the various parameters for creating the axis
@@ -3025,7 +3076,7 @@ namespace Visifire.Charts
             //      if (!SetAxesXLimits())
             //          return;
 
-            if (AxisRepresentation == AxisRepresentations.AxisX)
+            if (AxisRepresentation == AxisRepresentations.AxisX && AxisOrientation != AxisOrientation.Circular)
                 if (!SetAxesXLimits())
                     return;
 
@@ -3091,7 +3142,6 @@ namespace Visifire.Charts
             }
             else
             {
-                // Set the internal axis limits the one obtained from axis manager
                 InternalAxisMaximum = AxisManager.AxisMaximumValue;
                 InternalAxisMinimum = AxisManager.AxisMinimumValue;
             }
@@ -5747,7 +5797,7 @@ namespace Visifire.Charts
         internal void CreateVisualObject(Chart Chart)
         {   
             if(AxisLabels == null)
-                AxisLabels = new AxisLabels();
+                AxisLabels = new AxisLabels() {  IsDefault = true };
 
             IsNotificationEnable = false;
             AxisLabels.IsNotificationEnable = false;
@@ -5824,16 +5874,6 @@ namespace Visifire.Charts
             }
             else
             {
-                if (AxisRepresentation == AxisRepresentations.AxisX)
-                {
-                    Int32 maxDataPointsCount = Chart.PlotDetails.GetMaxDataPointsCountFromInternalSeriesList(Chart.InternalSeries);
-
-                    CircularPlotDetails.CalculateAxisXPoints4Radar(Width, Height, this, maxDataPointsCount);
-                }
-
-                if (CircularPlotDetails.ListOfPoints4CircularAxis.Count == 0)
-                    return;
-
                 CreateAxesForCircularChart();   
             }
         }

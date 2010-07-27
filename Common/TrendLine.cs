@@ -935,6 +935,22 @@ namespace Visifire.Charts
         {
             TrendLine trendLine = d as TrendLine;
 
+            if (trendLine.Value == null)
+            {
+                if (trendLine.Visual == null)
+                    return;
+                else
+                {
+                    Panel parent = trendLine.Visual.Parent as Panel;
+
+                    if (parent != null)
+                    {
+                        parent.Children.Remove(trendLine.Visual);
+                        trendLine.Visual = null;
+                    }
+                }
+            }
+
             // Double / Int32 value entered in Managed Code
             if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
             {
@@ -989,6 +1005,22 @@ namespace Visifire.Charts
         {
             TrendLine trendLine = d as TrendLine;
 
+            if (trendLine.StartValue == null)
+            {
+                if (trendLine.Visual == null)
+                    return;
+                else
+                {
+                    Panel parent = trendLine.Visual.Parent as Panel;
+
+                    if (parent != null)
+                    {
+                        parent.Children.Remove(trendLine.Visual);
+                        trendLine.Visual = null;
+                    }
+                }
+            }
+
             // Double / Int32 value entered in Managed Code
             if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
             {
@@ -1042,6 +1074,22 @@ namespace Visifire.Charts
         private static void OnEndValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TrendLine trendLine = d as TrendLine;
+
+            if (trendLine.EndValue == null)
+            {
+                if (trendLine.Visual == null)
+                    return;
+                else
+                {
+                    Panel parent = trendLine.Visual.Parent as Panel;
+
+                    if (parent != null)
+                    {
+                        parent.Children.Remove(trendLine.Visual);
+                        trendLine.Visual = null;
+                    }
+                }
+            }
 
             // Double / Int32 value entered in Managed Code
             if (e.NewValue.GetType().Equals(typeof(Double)) || e.NewValue.GetType().Equals(typeof(Int32)))
