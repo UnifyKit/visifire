@@ -593,6 +593,15 @@ namespace Visifire.Charts
                 // Calculate min XValue
                 MinimumX = (_xValues.Count() > 0) ? (_xValues).Min() : 0;
 
+                if (RenderAs == RenderAs.Polar)
+                {
+                    if (_xValues.Count > 0 && MaximumX < 360)
+                        MaximumX = 360;
+
+                    if (_xValues.Count > 0 && MinimumX < 0)
+                        MinimumX = 0;
+                }
+
                 // Calculates and sets the min difference for XValues
                 MinDifferenceX = GetMinDifference(_xValues.ToArray());
             }
@@ -692,6 +701,7 @@ namespace Visifire.Charts
                     case RenderAs.SectionFunnel:
                     case RenderAs.StreamLineFunnel:
                     case RenderAs.Radar:
+                    case RenderAs.Polar:
 
                         if (property == VcProperties.YValue)
                         {

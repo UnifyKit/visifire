@@ -20,7 +20,7 @@ namespace Visifire.Charts
         /// <param name="minValue">Minimum Value.</param>
         /// <param name="startFromZero">Makes sure that the zero is included in the axis range</param>
         /// <param name="allowLimitOverflow">Applies limits so that axis range doesn't cross it</param>
-        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, AxisRepresentations axisRepresentation, Boolean isLogarithmic, Double logarithmicBase, Boolean startFromMinimumValue4LogScale)
+        public AxisManager(Double maxValue, Double minValue, Boolean startFromZero, Boolean allowLimitOverflow, Boolean stackingOverride, Boolean isCircularAxis, AxisRepresentations axisRepresentation, Boolean isLogarithmic, Double logarithmicBase, Boolean startFromMinimumValue4LogScale)
         {
             if (maxValue < minValue)
                 throw (new ArgumentException("Invalid Argument:: Maximum Data value should be always greater than the minimum data value."));
@@ -77,6 +77,12 @@ namespace Visifire.Charts
                 else
                     AxisMinimumValue = minValue;
             }
+            if (isCircularAxis && axisRepresentation == AxisRepresentations.AxisX)
+            {
+                IsCircularAxis = isCircularAxis;
+                if (!this._overrideAxisMaximumValue)
+                    AxisMaximumValue = 360;
+            }
         }
         #endregion
 
@@ -97,6 +103,9 @@ namespace Visifire.Charts
             {
                 if (this._max < 10 && this._min >= 0)
                     this._maxNoOfInterval = (Int32)(_max + 1);
+                else if (IsCircularAxis)
+                    this._maxNoOfInterval = 20;
+
             }
             else
             {
@@ -322,6 +331,12 @@ namespace Visifire.Charts
             set;
         }
 
+        public Boolean IsCircularAxis
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Get or set the maximum number of intervals.
         /// </summary>
@@ -540,7 +555,7 @@ namespace Visifire.Charts
         /// </summary>
         /// <param name="mantissaOrExponent">According to the argument mantissa or exponent will be returned.</param>
         /// <param name="number">Number used for calculation.</param>
-        /// <returns>Reuurns mantissa or exponent.</returns>
+        /// <returns>Returns mantissa or exponent.</returns>
         private Decimal GetMantissaOrExponent(MantissaOrExponent mantissaOrExponent, Decimal number)
         {
             if (mantissaOrExponent == MantissaOrExponent.Exponent)
@@ -619,7 +634,7 @@ namespace Visifire.Charts
         /// <returns>Reduced interval.</returns>
         private Decimal ReduceInterval(Decimal intervalValue)
         {
-            Decimal mantissa;                       // Mantissa of interval value.
+            Decimal mantissa; // Mantissa of interval value.
 
             mantissa = GetMantissaOrExponent(MantissaOrExponent.Mantissa, intervalValue);
 
@@ -635,8 +650,6 @@ namespace Visifire.Charts
                 return 0;
 
         }
-
-
 
         /// <summary>
         /// Function calculates the max value, min value, interval and number of intervals of the axis

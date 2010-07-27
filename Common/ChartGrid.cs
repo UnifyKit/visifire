@@ -809,7 +809,7 @@ namespace Visifire.Charts
         /// <param name="center"></param>
         /// <param name="spikesCount"></param>
         /// <returns></returns>
-        private List<Point> GetGridPoints(Double radius, Point center, Double spikesCount)
+        private List<Point> GetGridPoints4Radar(Double radius, Point center, Double spikesCount)
         {
             Double startAngle = -Math.PI / 2;
 
@@ -832,6 +832,28 @@ namespace Visifire.Charts
 
                 minAngle = minAngleInDegree * nextIteration++;
                 actualAngle = AxisLabel.GetRadians(minAngle) - (Math.PI / 2);
+            }
+
+            return points;
+        }
+
+        /// <summary>
+        /// Calculate grid points for circular chart
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="center"></param>
+        /// <param name="spikesCount"></param>
+        /// <returns></returns>
+        private List<Point> GetGridPoints4Polar(Double radius, Point center, List<Double> angles)
+        {
+            List<Point> points = new List<Point>();
+
+            for (Int32 i = 0; i < angles.Count; i++)
+            {
+                Double x = radius * Math.Cos(angles[i]) + center.X;
+                Double y = radius * Math.Sin(angles[i]) + center.Y;
+
+                points.Add(new Point(x, y));
             }
 
             return points;
@@ -871,7 +893,12 @@ namespace Visifire.Charts
 
                     Double radius = Height - position;
 
-                    List<Point> points = GetGridPoints(radius, plotDetails.Center, plotDetails.ListOfPoints4CircularAxis.Count);
+                    List<Point> points;
+
+                    if (plotDetails.CircularChartType == RenderAs.Radar)
+                        points = GetGridPoints4Radar(radius, plotDetails.Center, plotDetails.ListOfPoints4CircularAxis.Count);
+                    else
+                        points = GetGridPoints4Polar(radius, plotDetails.Center, plotDetails.AnglesInRadian);
 
                     currPoints = points;
 

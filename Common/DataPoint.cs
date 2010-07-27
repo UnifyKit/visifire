@@ -452,6 +452,19 @@ namespace Visifire.Charts
              typeof(Brush),
              typeof(DataPoint),
              new PropertyMetadata(OnColorPropertyChanged));
+
+        /// <summary>
+        /// Identifies the Visifire.Charts.DataPoint.StickColor dependency property.
+        /// </summary>
+        /// <returns>
+        /// The identifier for the Visifire.Charts.DataPoint.StickColor dependency property.
+        /// </returns>
+        public static readonly DependencyProperty StickColorProperty = DependencyProperty.Register
+             ("StickColor",
+             typeof(Brush),
+             typeof(DataPoint),
+             new PropertyMetadata(OnStickColorPropertyChanged));
+
         
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.Enabled dependency property.
@@ -1115,7 +1128,22 @@ namespace Visifire.Charts
                 SetValue(ColorProperty, value);
             }
         }
-        
+
+        /// <summary>
+        /// Get or set the high-low line color of CandleStick DataPoint
+        /// </summary>
+        public Brush StickColor
+        {
+            get
+            {
+                return (Brush)GetValue(StickColorProperty);
+            }
+            set
+            {
+                SetValue(StickColorProperty, value);
+            }
+        }
+
         /// <summary>
         /// Enables or disables the DataPoint
         /// </summary>
@@ -2865,6 +2893,17 @@ namespace Visifire.Charts
             DataPoint dataPoint = d as DataPoint;
             dataPoint.InvokeUpdateVisual(VcProperties.Color, e.NewValue);
         }
+
+        /// <summary>
+        /// StickColorProperty changed call back function
+        /// </summary>
+        /// <param name="d">DependencyObject</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs</param>
+        private static void OnStickColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataPoint dataPoint = d as DataPoint;
+            dataPoint.InvokeUpdateVisual(VcProperties.StickColor, e.NewValue);
+        }
         
         /// <summary>
         /// EnabledProperty changed call back function
@@ -3544,7 +3583,7 @@ namespace Visifire.Charts
                     }
                     else
                     {
-                        if (chart.PlotDetails.ChartOrientation == ChartOrientationType.Circular)
+                        if (Parent.RenderAs == RenderAs.Radar)
                             labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue + 1);
                         else
                             labelString = Parent.PlotGroup.AxisX.GetFormattedString(InternalXValue);
@@ -4091,7 +4130,7 @@ namespace Visifire.Charts
 
         internal void ExplodeOrUnExplodeWithoutAnimation()
         {
-            if (Faces.Visual != null)
+            if (Faces != null && Faces.Visual != null)
             {
                 if (_interactiveExplodeState)
                 {
