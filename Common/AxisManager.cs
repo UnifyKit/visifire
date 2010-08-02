@@ -494,7 +494,7 @@ namespace Visifire.Charts
 
         public Boolean IsInterger(Decimal number)
         {
-            return (Decimal.Remainder(number, number) == 0);
+            return (Decimal.Truncate(number) == number);
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace Visifire.Charts
             while ((number % 10) == 0)
                 number = number / 10;
 
-            return number;
+            return Decimal.Truncate(number);
         }
 
         /// <summary>

@@ -14,9 +14,11 @@ using System.ComponentModel;
 using System.Windows.Threading;
 using Visifire.Charts;
 using Visifire.Commons;
+using System.Windows.Data;
 
 namespace SLVisifireApp
 {
+
     public partial class Page : UserControl
     {
         public Page()
