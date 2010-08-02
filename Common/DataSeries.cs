@@ -2430,9 +2430,10 @@ namespace Visifire.Charts
             }
             else if (RenderAs == RenderAs.Polar)
             {
-                if (Faces != null && Faces.Visual != null)
+                if (Faces != null)
                 {
-                    (Faces.Visual as Path).Stroke = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
+                    foreach(FrameworkElement fe in Faces.Parts)
+                        (fe as Path).Stroke = (Boolean)LightingEnabled ? Graphics.GetLightingEnabledBrush((Brush)newValue, "Linear", null) : (Brush)newValue;
                 }
 
                 foreach (DataPoint dp in InternalDataPoints)
@@ -2614,6 +2615,27 @@ namespace Visifire.Charts
             }
 
             return nearestDataPoint;
+        }
+
+        internal void StopDataPointsAnimation()
+        {
+            if (Chart != null &&  (Boolean)(Chart as Chart).AnimatedUpdate)
+            {
+                foreach (DataPoint dp in InternalDataPoints)
+                {
+                    if (dp.Storyboard != null)
+                        dp.Storyboard.Stop();
+                }
+            }
+        }
+
+        internal void StopDataSeriesAnimation()
+        {
+            if (Chart != null && (Boolean)(Chart as Chart).AnimatedUpdate)
+            {
+                if (Storyboard != null)
+                    Storyboard.Stop();
+            }
         }
 
         /// <summary>

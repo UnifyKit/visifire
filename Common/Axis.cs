@@ -4028,7 +4028,7 @@ namespace Visifire.Charts
             }
 
             RectangleGeometry clipVisual = new RectangleGeometry();
-            clipVisual.Rect = new Rect(-1, -4 - topOverflow, axisContainer.Width + 2, size.Height + topOverflow + bottomOverflow + 8);
+            clipVisual.Rect = new Rect(-1, -4 - newTopOverflow, axisContainer.Width + 2, size.Height + newTopOverflow + newBottomOverflow + 8);
             axisContainer.Clip = clipVisual;
 
             Visual.Children.Add(axisContainer);

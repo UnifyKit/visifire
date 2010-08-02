@@ -1466,6 +1466,8 @@ namespace Visifire.Charts
                     if (dataSeries.Enabled == false)
                         return;
 
+                    dataSeries.StopDataPointsAnimation();
+
                 Axis axisX = plotGroup.AxisX;
                 Axis axisY = plotGroup.AxisY;
                 

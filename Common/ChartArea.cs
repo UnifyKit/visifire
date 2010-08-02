@@ -1213,10 +1213,6 @@ namespace Visifire.Charts
                 positionWithRespect2PlotArea.Y + plotAreaStartPos.Y);
         }
 
-
-
-       
-
         /// <summary>
         /// Event handler calls while selecting the PlotArea region while zooming
         /// </summary>
@@ -1297,23 +1293,19 @@ namespace Visifire.Charts
                             maxValue = maxXValue;
                         }
 
-                        Size currentPlotAreaSize = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
-                        if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
+                        //Size currentPlotAreaSize = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
+                        //if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
+                        if (!minValue.Equals(maxValue) && _zoomRegionSelected)
                         {
-                            if (!minValue.Equals(maxValue))
-                            {
-                                AxisX.Zoom(minValue, maxValue);
-                            }
+                            AxisX.Zoom(minValue, maxValue);
                         }
 
                         AxisX._zoomState.MinXValue = minValue;
                         AxisX._zoomState.MaxXValue = maxValue;
 
-                        if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
-                        {
-                            if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue))
-                                AxisX.FireZoomEvent(AxisX._zoomState, e);
-                        }
+                        //if (currentPlotAreaSize == plotAreaSizeBeforeZoom)
+                        if (!AxisX._zoomState.MinXValue.Equals(AxisX._zoomState.MaxXValue) && _zoomRegionSelected)
+                            AxisX.FireZoomEvent(AxisX._zoomState, e);
 
                         Chart._zoomRectangle.Visibility = Visibility.Collapsed;
                         _zoomStart = false;
@@ -1333,7 +1325,7 @@ namespace Visifire.Charts
             {
                 if (Chart.ZoomingEnabled)
                 {
-                    plotAreaSizeBeforeZoom = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
+                    //plotAreaSizeBeforeZoom = new Size(PlotAreaCanvas.Width, PlotAreaCanvas.Height);
 
                     Double x = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).X;
                     Double y = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).Y;
@@ -1363,6 +1355,7 @@ namespace Visifire.Charts
                     Chart._toolTip.Hide();
 
                     _zoomStart = true;
+                    _zoomRegionSelected = false;
 
                     Chart._zoomRectangle.IsHitTestVisible = false;
                 }
@@ -1440,6 +1433,8 @@ namespace Visifire.Charts
                         Double y = e.GetPosition(Chart._zoomRectangle.Parent as Canvas).Y;
 
                         SetPosition4ZoomRectangle(x, y);
+
+                        _zoomRegionSelected = true;
                     }
                 }
             }
@@ -2102,7 +2097,7 @@ namespace Visifire.Charts
         /// </summary>
         private void CalculatePlankParameters()
         {
-            if (Chart.View3D)
+            if (Chart.View3D && PlotDetails.ChartOrientation != ChartOrientationType.Circular)
             {
                 if (PlotDetails.ChartOrientation == ChartOrientationType.Vertical)
                 {
@@ -6422,6 +6417,11 @@ namespace Visifire.Charts
         /// Whether zooming has started using Zoom rectangle
         /// </summary>
         private Boolean _zoomStart = false;
+
+        /// <summary>
+        /// Whether a region is selected for zooming using Zoom rectangle
+        /// </summary>
+        private Boolean _zoomRegionSelected = false;
 
         /// <summary>
         /// Min position of Zoom
