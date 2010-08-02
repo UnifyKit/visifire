@@ -367,7 +367,6 @@ namespace Visifire.Charts
             typeof(DataPoint),
             new PropertyMetadata(OnHrefChanged));
 
-#if WPF
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.Opacity dependency property.
         /// </summary>
@@ -379,8 +378,7 @@ namespace Visifire.Charts
             typeof(Double),
             typeof(DataPoint),
             new PropertyMetadata(1.0, OnOpacityPropertyChanged));
-#endif
-
+        
         /// <summary>
         /// Identifies the Visifire.Charts.DataPoint.YValue dependency property.
         /// </summary>
@@ -923,7 +921,7 @@ namespace Visifire.Charts
             {
 #if SL
                 if (Opacity != value)
-                {
+                {   
                     InternalOpacity = value;
                     SetValue(OpacityProperty, value);
                     InvokeUpdateVisual(VcProperties.Opacity, value);

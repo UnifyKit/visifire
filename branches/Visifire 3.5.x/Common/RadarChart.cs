@@ -65,6 +65,13 @@ namespace Visifire.Charts
 
         #region Private Methods
 
+        /// <summary>
+        /// Calculate radar points
+        /// </summary>
+        /// <param name="series"></param>
+        /// <param name="listOfRadarPoints"></param>
+        /// <param name="plotGroup"></param>
+        /// <param name="circularPlotDetails"></param>
         private static void CalculateRadarPoints(DataSeries series, ref List<Point> listOfRadarPoints, PlotGroup plotGroup, CircularPlotDetails circularPlotDetails)
         {
             DataPoint currDataPoint;
@@ -85,8 +92,6 @@ namespace Visifire.Charts
                 nextDataPoint = series.InternalDataPoints[i + 1];
 
                 Point dataPointPosition = GetRadarPoint(circularPlotDetails, plotGroup, currDataPoint, dataPointIndex);
-
-                Double radianAngle = Visifire.Commons.CircularLabel.ResetMeanAngle(CalculateAngleByCoordinate(dataPointPosition, circularPlotDetails.Center));
 
                 if (!Double.IsNaN(currDataPoint.InternalYValue) && (currDataPoint.InternalYValue > plotGroup.AxisY.InternalAxisMaximum
                     || currDataPoint.InternalYValue < plotGroup.AxisY.InternalAxisMinimum))
@@ -120,8 +125,6 @@ namespace Visifire.Charts
                     dataPointIndex = series.InternalDataPoints.IndexOf(nextDataPoint);
                     dataPointPosition = GetRadarPoint(circularPlotDetails, plotGroup, nextDataPoint, dataPointIndex);
 
-                    radianAngle = Visifire.Commons.CircularLabel.ResetMeanAngle(CalculateAngleByCoordinate(dataPointPosition, circularPlotDetails.Center));
-
                     if (!Double.IsNaN(nextDataPoint.InternalYValue) && (nextDataPoint.InternalYValue > plotGroup.AxisY.InternalAxisMaximum
                     || nextDataPoint.InternalYValue < plotGroup.AxisY.InternalAxisMinimum))
                     {
@@ -147,6 +150,15 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Draw marker for radar DataPoints
+        /// </summary>
+        /// <param name="series"></param>
+        /// <param name="labelCanvas"></param>
+        /// <param name="chart"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="center"></param>
         private static void DrawMarkers(DataSeries series, Canvas labelCanvas, Chart chart, Double width, Double height, Point center)
         {
             foreach(DataPoint dp in series.InternalDataPoints)
@@ -170,6 +182,16 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Get marker for radar DataPoint
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="plotWidth"></param>
+        /// <param name="plotHeight"></param>
+        /// <param name="yPosition"></param>
+        /// <param name="dataPoint"></param>
+        /// <param name="isPositionTop"></param>
+        /// <returns></returns>
         private static Marker GetMarkerForDataPoint(Chart chart, Double plotWidth, Double plotHeight, Double yPosition, DataPoint dataPoint, Boolean isPositionTop)
         {
             String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
@@ -204,7 +226,7 @@ namespace Visifire.Charts
                     dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
                     dataPoint.Marker.TextOrientation = Orientation.Vertical;
 
-                    SetPositionForDataPointsLabel(chart, isPositionTop, dataPoint, yPosition);
+                    SetPositionForDataPointLabel(chart, isPositionTop, dataPoint, yPosition);
 
                     dataPoint.Marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
                 }
@@ -215,7 +237,7 @@ namespace Visifire.Charts
                 {
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
 
-                    SetPositionForDataPointsLabel(chart, isPositionTop, dataPoint, yPosition);
+                    SetPositionForDataPointLabel(chart, isPositionTop, dataPoint, yPosition);
                 }
             }
 
@@ -238,7 +260,14 @@ namespace Visifire.Charts
             return dataPoint.Marker;
         }
 
-        private static void SetPositionForDataPointsLabel(Chart chart, Boolean isPositionTop, DataPoint dataPoint, Double yPosition)
+        /// <summary>
+        /// Set position for DataPoint label
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="isPositionTop"></param>
+        /// <param name="dataPoint"></param>
+        /// <param name="yPosition"></param>
+        private static void SetPositionForDataPointLabel(Chart chart, Boolean isPositionTop, DataPoint dataPoint, Double yPosition)
         {
             if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
             {
@@ -286,6 +315,12 @@ namespace Visifire.Charts
             }
         }
 
+        /// <summary>
+        /// Draw DataSeries visual (polygon) for Radar
+        /// </summary>
+        /// <param name="listOfRadarPoints"></param>
+        /// <param name="series"></param>
+        /// <param name="radarCanvas"></param>
         private static void DrawDataSeriesPolygon(List<Point> listOfRadarPoints, DataSeries series, Canvas radarCanvas)
         {
             if (listOfRadarPoints.Count > 0)
@@ -369,6 +404,11 @@ namespace Visifire.Charts
             return visual;
         }
 
+        /// <summary>
+        /// Get darker color for Radar series
+        /// </summary>
+        /// <param name="seriesColor"></param>
+        /// <returns></returns>
         private static Brush GetDarkerColor(Brush seriesColor)
         {
             if (seriesColor != null && seriesColor.GetType().Equals(typeof(SolidColorBrush)))

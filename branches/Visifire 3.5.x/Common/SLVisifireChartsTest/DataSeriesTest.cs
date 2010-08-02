@@ -5000,9 +5000,12 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
             try
             {
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+                if (_htmlElement1 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                if (_htmlElement2 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                if (_htmlElement3 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
                 System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
             }
             catch { }
@@ -5048,9 +5051,12 @@ namespace SLVisifireChartsTest
             EnqueueTestComplete();
             try
             {
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
-                System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
+                if(_htmlElement1 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement1);
+                if (_htmlElement2 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement2);
+                if (_htmlElement3 != null)
+                    System.Windows.Browser.HtmlPage.Document.Body.RemoveChild(_htmlElement3);
                 System.Windows.Browser.HtmlPage.Plugin.SetStyleAttribute("height", "100%");
             }
             catch { }
