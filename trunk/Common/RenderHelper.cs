@@ -482,7 +482,6 @@ namespace Visifire.Charts
             }
 
             //chart.ChartArea.AttachScrollEvents();
-            
         }
 
         internal static List<DataPoint> GetDataPointsUnderViewPort(List<DataPoint> dataPoints, Boolean isUsedForAxisRange)

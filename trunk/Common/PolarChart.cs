@@ -65,44 +65,132 @@ namespace Visifire.Charts
 
         #region Private Methods
 
-        private static void CalculatePolarPoints(DataSeries series, PlotGroup plotGroup, CircularPlotDetails circularPlotDetails)
+        /// <summary>
+        /// Create Polar series
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="series"></param>
+        /// <param name="polarCanvas"></param>
+        /// <param name="labelCanvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="plotGroup"></param>
+        /// <param name="circularPlotDetails"></param>
+        private static void CreatePolarSeries(Chart chart, DataSeries series, Canvas polarCanvas, Canvas labelCanvas, Double width, Double height, PlotGroup plotGroup, CircularPlotDetails circularPlotDetails)
         {
-            for (Int32 i = 0; i < series.InternalDataPoints.Count; i++)
+            List<List<DataPoint>> brokenLineDataPointsGroup = GetBrokenLineDataPointsGroup(series, circularPlotDetails, plotGroup);
+            foreach (List<DataPoint> dataPointList in brokenLineDataPointsGroup)
             {
-                DataPoint currDataPoint = series.InternalDataPoints[i];
+                foreach (DataPoint dataPoint in dataPointList)
+                    DrawMarker(dataPoint, labelCanvas, width, height, circularPlotDetails.Center);
 
-                if (!(Boolean)currDataPoint.Enabled)
-                    continue;
-
-                Point dataPointPosition = GetPolarPoint(circularPlotDetails, plotGroup, currDataPoint);
-
-                currDataPoint._visualPosition = dataPointPosition;
+                DrawDataSeriesPath(series, dataPointList, polarCanvas);
             }
         }
 
-        private static void DrawMarkers(DataSeries series, Canvas labelCanvas, Chart chart, Double width, Double height, Point center)
+        /// <summary>
+        /// Get broken list of polar DataPoints collection
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="circularPlotDetails"></param>
+        /// <param name="plotGroup"></param>
+        /// <returns></returns>
+        private static List<List<DataPoint>> GetBrokenLineDataPointsGroup(DataSeries dataSeries, CircularPlotDetails circularPlotDetails, PlotGroup plotGroup)
         {
-            foreach (DataPoint dp in series.InternalDataPoints)
+            Boolean IsStartPoint = true;
+            Double xPosition;
+            Double yPosition;
+            Point endPoint = new Point();
+            List<List<DataPoint>> brokenLineDataPointsCollection = new List<List<DataPoint>>();
+            List<DataPoint> pointsList4EachBrokenLineGroup = new List<DataPoint>();
+
+            foreach (DataPoint dataPoint in dataSeries.InternalDataPoints)
             {
-                if (Double.IsNaN(dp._visualPosition.X) || Double.IsNaN(dp._visualPosition.Y))
+                if (dataPoint.Enabled == false)
                     continue;
 
-                Marker marker = null;
-
-                Double radianAngle = Visifire.Commons.CircularLabel.ResetMeanAngle(CalculateAngleByCoordinate(dp._visualPosition, center));
-
-                if (radianAngle > 0 && radianAngle < Math.PI)
-                    marker = GetMarkerForDataPoint(chart, width, height, dp._visualPosition.Y, dp, false);
-                else
-                    marker = GetMarkerForDataPoint(chart, width, height, dp._visualPosition.Y, dp, true);
-
-                if (marker != null)
+                if (Double.IsNaN(dataPoint.InternalYValue) || ((dataPoint.InternalYValue > plotGroup.AxisY.InternalAxisMaximum)
+                    || (dataPoint.InternalYValue < plotGroup.AxisY.InternalAxisMinimum)))
                 {
-                    marker.AddToParent(labelCanvas, dp._visualPosition.X, dp._visualPosition.Y, new Point(0.5, 0.5));
+                    xPosition = Double.NaN;
+                    yPosition = Double.NaN;
+                    IsStartPoint = true;
+                }
+                else
+                {
+                    Point point = GetPolarPoint(circularPlotDetails, plotGroup, dataPoint);
+                    xPosition = point.X;
+                    yPosition = point.Y;
+
+                    #region Generate GeometryGroup for line
+
+                    if (IsStartPoint)
+                    {
+                        IsStartPoint = !IsStartPoint;
+
+                        if (pointsList4EachBrokenLineGroup.Count > 0)
+                        {
+                            brokenLineDataPointsCollection.Add(pointsList4EachBrokenLineGroup);
+                        }
+
+                        pointsList4EachBrokenLineGroup = new List<DataPoint>();
+                    }
+                    else
+                    {
+                        endPoint = new Point(xPosition, yPosition);
+                        IsStartPoint = false;
+                    }
+
+                    #endregion Generate GeometryGroup for line and line shadow
+
+                    dataPoint._visualPosition = new Point(xPosition, yPosition);
+                    pointsList4EachBrokenLineGroup.Add(dataPoint);
+
                 }
             }
+
+            brokenLineDataPointsCollection.Add(pointsList4EachBrokenLineGroup);
+
+            return brokenLineDataPointsCollection;
         }
 
+        /// <summary>
+        /// Draw marker for polar DataPoint
+        /// </summary>
+        /// <param name="dp"></param>
+        /// <param name="labelCanvas"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="center"></param>
+        private static void DrawMarker(DataPoint dp, Canvas labelCanvas, Double width, Double height, Point center)
+        {
+            Marker marker = null;
+
+            Chart chart = (dp.Chart as Chart);
+
+            Double radianAngle = Visifire.Commons.CircularLabel.ResetMeanAngle(CalculateAngleByCoordinate(dp._visualPosition, center));
+
+            if (radianAngle > 0 && radianAngle < Math.PI)
+                marker = GetMarkerForDataPoint(chart, width, height, dp._visualPosition.Y, dp, false);
+            else
+                marker = GetMarkerForDataPoint(chart, width, height, dp._visualPosition.Y, dp, true);
+
+            if (marker != null)
+            {
+                marker.AddToParent(labelCanvas, dp._visualPosition.X, dp._visualPosition.Y, new Point(0.5, 0.5));
+            }
+        }
+
+        /// <summary>
+        /// Get marker for DataPoint
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="plotWidth"></param>
+        /// <param name="plotHeight"></param>
+        /// <param name="yPosition"></param>
+        /// <param name="dataPoint"></param>
+        /// <param name="isPositionTop"></param>
+        /// <returns></returns>
         private static Marker GetMarkerForDataPoint(Chart chart, Double plotWidth, Double plotHeight, Double yPosition, DataPoint dataPoint, Boolean isPositionTop)
         {
             String labelText = (Boolean)dataPoint.LabelEnabled ? dataPoint.TextParser(dataPoint.LabelText) : "";
@@ -137,7 +225,7 @@ namespace Visifire.Charts
                     dataPoint.Marker.LabelAngle = dataPoint.LabelAngle;
                     dataPoint.Marker.TextOrientation = Orientation.Vertical;
 
-                    SetPositionForDataPointsLabel(chart, isPositionTop, dataPoint, yPosition);
+                    SetPositionForDataPointLabel(chart, isPositionTop, dataPoint, yPosition);
 
                     dataPoint.Marker.LabelStyle = (LabelStyles)dataPoint.LabelStyle;
                 }
@@ -148,7 +236,7 @@ namespace Visifire.Charts
                 {
                     dataPoint.Marker.TextAlignmentX = AlignmentX.Center;
 
-                    SetPositionForDataPointsLabel(chart, isPositionTop, dataPoint, yPosition);
+                    SetPositionForDataPointLabel(chart, isPositionTop, dataPoint, yPosition);
                 }
             }
 
@@ -171,7 +259,14 @@ namespace Visifire.Charts
             return dataPoint.Marker;
         }
 
-        private static void SetPositionForDataPointsLabel(Chart chart, Boolean isPositionTop, DataPoint dataPoint, Double yPosition)
+        /// <summary>
+        /// Set position for DataPoint label
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <param name="isPositionTop"></param>
+        /// <param name="dataPoint"></param>
+        /// <param name="yPosition"></param>
+        private static void SetPositionForDataPointLabel(Chart chart, Boolean isPositionTop, DataPoint dataPoint, Double yPosition)
         {
             if (!Double.IsNaN(dataPoint.LabelAngle) && dataPoint.LabelAngle != 0)
             {
@@ -219,7 +314,13 @@ namespace Visifire.Charts
             }
         }
 
-        private static void DrawDataSeriesPath(DataSeries series, Canvas polarCanvas)
+        /// <summary>
+        /// Draw DataSeries visual (Path) for Polar
+        /// </summary>
+        /// <param name="series"></param>
+        /// <param name="pointCollection"></param>
+        /// <param name="polarCanvas"></param>
+        private static void DrawDataSeriesPath(DataSeries series, List<DataPoint> pointCollection, Canvas polarCanvas)
         {
             if (series.InternalDataPoints.Count > 0)
             {
@@ -231,14 +332,19 @@ namespace Visifire.Charts
                 path.StrokeMiterLimit = 1;
                 path.Opacity = series.Opacity;
 
-                path.Data = GetPathGeometry(series.InternalDataPoints);
+                path.Data = GetPathGeometry(pointCollection);
 
-                series.Faces.Visual = path;
+                series.Faces.Parts.Add(path);
 
                 polarCanvas.Children.Add(path);
             }
         }
 
+        /// <summary>
+        /// Get path geometry for Polar points
+        /// </summary>
+        /// <param name="pointCollection"></param>
+        /// <returns></returns>
         private static Geometry GetPathGeometry(List<DataPoint> pointCollection)
         {
             PathGeometry geometry = new PathGeometry();
@@ -286,13 +392,11 @@ namespace Visifire.Charts
             {
                 PlotGroup plotGroup = series.PlotGroup;
 
-                series.Faces = new Faces();
-
                 if (circularPlotDetails.ListOfPoints4CircularAxis.Count > 0)
                 {
-                    CalculatePolarPoints(series, plotGroup, circularPlotDetails);
-                    DrawMarkers(series, labelCanvas, chart, width, height, circularPlotDetails.Center);
-                    DrawDataSeriesPath(series, polarCanvas);
+                    series.Faces = new Faces();
+                    CreatePolarSeries(chart, series, polarCanvas, labelCanvas, width, height, plotGroup, circularPlotDetails);
+                    
                 }
             }
 
@@ -315,35 +419,16 @@ namespace Visifire.Charts
             return visual;
         }
 
-        private static Brush GetDarkerColor(Brush seriesColor)
-        {
-            if (seriesColor != null && seriesColor.GetType().Equals(typeof(SolidColorBrush)))
-            {
-                Double intensity = Graphics.GetBrushIntensity(seriesColor);
-                Color color = Graphics.GetDarkerColor(Color.FromArgb((Byte)255, (seriesColor as SolidColorBrush).Color.R, (seriesColor as SolidColorBrush).Color.G, (seriesColor as SolidColorBrush).Color.B), intensity);
-
-                Brush newBrush = Graphics.CreateSolidColorBrush(color);
-                return newBrush;
-            }
-            else
-                return seriesColor;
-        }
-
         /// <summary>
-        /// Get point for Radar
+        /// Get point for Polar
         /// </summary>
         /// <param name="circularPlotDetails"></param>
         /// <param name="plotGroup"></param>
         /// <param name="dp"></param>
-        /// <param name="dataPointIndex"></param>
         /// <returns></returns>
         private static Point GetPolarPoint(CircularPlotDetails circularPlotDetails, PlotGroup plotGroup, DataPoint dp)
         {
-            Double yValue;
-            if (Double.IsNaN(dp.InternalYValue))
-                yValue = 0;
-            else
-                yValue = dp.InternalYValue;
+            Double yValue = dp.InternalYValue;
 
             Double yPosition = Graphics.ValueToPixelPosition(circularPlotDetails.Radius, 0, plotGroup.AxisY.InternalAxisMinimum, plotGroup.AxisY.InternalAxisMaximum, yValue);
 
@@ -386,7 +471,7 @@ namespace Visifire.Charts
         #region Internal Methods
 
         /// <summary>
-        /// Get visual object for Radar chart
+        /// Get visual object for Polar chart
         /// </summary>
         /// <param name="width">Width</param>
         /// <param name="height">Height</param>

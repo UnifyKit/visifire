@@ -1508,6 +1508,12 @@ namespace Visifire.Charts
                 case VcProperties.ViewportRangeEnabled:
                 case VcProperties.DataPointUpdate:
                 RENDER_SERIES:
+
+                    if (dataSeries.RenderAs == RenderAs.Spline && property != VcProperties.DataPointUpdate)
+                        dataSeries.StopDataSeriesAnimation();
+                    else if(dataSeries.RenderAs == RenderAs.Line)
+                        dataSeries.StopDataPointsAnimation();
+
                     if(dataSeries.RenderAs == RenderAs.Line)
                         UpdateLineSeries(dataSeries, width, height, label2dCanvas);
                     else
@@ -1570,7 +1576,19 @@ namespace Visifire.Charts
                 if(forceRedraw)
                     ReDrawLineSplineSereis(dataSeries, pointCollectionList, width, height, label2dCanvas);
                 
-                AnimateSpline(pointCollectionList);
+                dataSeries.Storyboard = AnimateSpline(pointCollectionList);
+                if(dataSeries.Storyboard != null)
+                    dataSeries.Storyboard.Begin();
+
+                if (dataSeries._movingMarker != null)
+                    dataSeries._movingMarker.Visibility = Visibility.Collapsed;
+
+                chart._toolTip.Hide();
+
+                if (dataSeries.ToolTipElement != null)
+                    dataSeries.ToolTipElement.Hide();
+
+                chart.ChartArea.DisableIndicators();
             }
 
             dataSeries._movingMarker.Visibility = Visibility.Collapsed;
@@ -1719,7 +1737,7 @@ namespace Visifire.Charts
             }
         }
 
-        private static void AnimateSpline(List<List<DataPoint>> pointCollectionList)
+        private static Storyboard AnimateSpline(List<List<DataPoint>> pointCollectionList)
         {
             Storyboard storyBoard = new Storyboard();
             
@@ -1730,7 +1748,7 @@ namespace Visifire.Charts
                 AnimateLabel4Spline(pointCollection, storyBoard);
             }
 
-            storyBoard.Begin();
+            return storyBoard;
         }
 
         private static Point[] CollectOldControlPoints(Int32 index, List<DataPoint> pointCollection, out Point oldStartPoint)
